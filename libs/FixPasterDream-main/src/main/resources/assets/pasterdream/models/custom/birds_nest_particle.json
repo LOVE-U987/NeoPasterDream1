@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/birds_nest.item",
+  "textures": {
+    "particle": "pasterdream:block/yun_duo_"
+  }
+}

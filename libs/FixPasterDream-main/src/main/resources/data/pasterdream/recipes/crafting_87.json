@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:mortar"
+    },
+    {
+      "item": "pasterdream:pink_slimeball"
+    },
+    {
+      "item": "minecraft:bone_block"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:dream_fertilizer",
+    "count": 9
+  }
+}

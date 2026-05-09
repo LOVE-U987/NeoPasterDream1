@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:block/xiu_shi_jin_shu_lan_gan_"
+  },
+  "render_type": "cutout"
+}

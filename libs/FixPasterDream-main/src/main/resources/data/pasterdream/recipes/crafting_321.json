@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:wind_iron_ingot"
+    }
+  },
+  "result": {
+    "item": "pasterdream:wind_iron_block",
+    "count": 1
+  }
+}

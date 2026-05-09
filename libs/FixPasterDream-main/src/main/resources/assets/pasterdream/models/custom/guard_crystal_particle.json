@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/guard_crystal.item",
+  "textures": {
+    "particle": "pasterdream:block/guard_crystal"
+  }
+}

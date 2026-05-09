@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "pasterdream:biome_shadow_0",
+  "spawners": {
+    "type": "pasterdream:terrorbeak",
+    "weight": 10,
+    "minCount": 1,
+    "maxCount": 2
+  }
+}

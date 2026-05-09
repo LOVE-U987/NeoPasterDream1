@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:cyan_stone"
+    }
+  },
+  "result": {
+    "item": "pasterdream:cyan_stone_button",
+    "count": 1
+  }
+}

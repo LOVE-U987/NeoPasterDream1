@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/wu_yun_",
+    "up": "pasterdream:block/wu_yun_",
+    "north": "pasterdream:block/wu_yun_",
+    "east": "pasterdream:block/wu_yun_",
+    "south": "pasterdream:block/wu_yun_",
+    "west": "pasterdream:block/wu_yun_",
+    "particle": "pasterdream:block/wu_yun_"
+  },
+  "render_type": "translucent"
+}

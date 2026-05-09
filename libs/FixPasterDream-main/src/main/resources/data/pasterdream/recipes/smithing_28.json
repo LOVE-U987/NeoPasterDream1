@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "pasterdream:dyedream_upgrade"
+  },
+  "base": {
+    "item": "pasterdream:meltdream_crystal_0"
+  },
+  "addition": {
+    "item": "pasterdream:dyedream_hoe"
+  },
+  "result": {
+    "item": "pasterdream:meltdream_hoe"
+  }
+}

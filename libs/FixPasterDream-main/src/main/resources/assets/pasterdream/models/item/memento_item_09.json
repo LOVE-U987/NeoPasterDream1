@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/bei_wang_que_de_xuan_lu_"
+  }
+}

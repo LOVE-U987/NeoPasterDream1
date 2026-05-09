@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "pasterdream:block/ran_meng_shi_jie_shu_xie_",
+    "particle": "pasterdream:block/ran_meng_shi_jie_shu_xie_"
+  },
+  "render_type": "cutout"
+}

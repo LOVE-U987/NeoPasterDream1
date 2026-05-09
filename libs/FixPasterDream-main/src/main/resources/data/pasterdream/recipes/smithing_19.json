@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "pasterdream:protect_deck"
+  },
+  "base": {
+    "item": "pasterdream:titanium_armor_leggings"
+  },
+  "addition": {
+    "item": "pasterdream:dyedream_upgrade"
+  },
+  "result": {
+    "item": "pasterdream:dyedream_armor_leggings"
+  }
+}

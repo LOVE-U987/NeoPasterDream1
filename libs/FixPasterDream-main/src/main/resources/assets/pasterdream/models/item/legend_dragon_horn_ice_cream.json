@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/chuan_shuo_long_jiao_bing_ji_ling_"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/shi_luo_zhi_jian_0"
+  }
+}

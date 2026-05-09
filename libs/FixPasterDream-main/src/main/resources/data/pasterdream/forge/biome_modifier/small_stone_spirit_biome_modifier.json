@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "pasterdream:wind_journey_biome_0",
+  "spawners": {
+    "type": "pasterdream:small_stone_spirit",
+    "weight": 20,
+    "minCount": 1,
+    "maxCount": 3
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:diamond_shovel"
+    },
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:blackstick"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:titanium_shovel",
+    "count": 1
+  }
+}

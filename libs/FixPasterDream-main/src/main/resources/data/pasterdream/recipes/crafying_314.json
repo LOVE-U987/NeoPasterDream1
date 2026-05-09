@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:dyedream_bud_block"
+    }
+  },
+  "result": {
+    "item": "pasterdream:dyedream_bud_wall",
+    "count": 6
+  }
+}

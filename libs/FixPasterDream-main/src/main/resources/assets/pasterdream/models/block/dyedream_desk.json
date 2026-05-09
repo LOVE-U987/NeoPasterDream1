@@ -1,0 +1,10 @@
+{
+  "parent": "pasterdream:custom/dyedream_desk",
+  "textures": {
+    "all": "pasterdream:block/dyedream_desk",
+    "particle": "pasterdream:block/mo_xing_po_pi_li_zi_1",
+    "0": "pasterdream:block/dyedream_desk",
+    "missing": "pasterdream:block/dyedream_desk"
+  },
+  "render_type": "cutout"
+}

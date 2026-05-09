@@ -1,0 +1,9 @@
+{
+  "parent": "pasterdream:custom/breakwind_curtain",
+  "textures": {
+    "all": "pasterdream:block/po_feng_mu_zhang_",
+    "particle": "pasterdream:block/po_feng_mu_zhang_",
+    "0": "pasterdream:block/po_feng_mu_zhang_"
+  },
+  "render_type": "translucent"
+}

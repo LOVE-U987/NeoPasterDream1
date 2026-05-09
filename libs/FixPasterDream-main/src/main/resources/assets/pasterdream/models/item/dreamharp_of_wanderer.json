@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "pasterdream:item/piao_bo_lu_zhe_de_ran_meng_shu_qin_"
+  }
+}

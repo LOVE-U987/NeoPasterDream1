@@ -1,0 +1,546 @@
+{
+  "dream0": {
+    "sounds": [
+      {
+        "name": "pasterdream:dream0",
+        "stream": false
+      }
+    ]
+  },
+  "notes": {
+    "sounds": [
+      {
+        "name": "pasterdream:notes0",
+        "stream": false
+      }
+    ]
+  },
+  "pliers0": {
+    "sounds": [
+      {
+        "name": "pasterdream:pliers0",
+        "stream": false
+      }
+    ]
+  },
+  "dream1": {
+    "sounds": [
+      {
+        "name": "pasterdream:dream1",
+        "stream": false
+      }
+    ]
+  },
+  "sweetdream": {
+    "sounds": [
+      {
+        "name": "pasterdream:sweetdream_music",
+        "stream": true
+      }
+    ]
+  },
+  "crack": {
+    "sounds": [
+      {
+        "name": "pasterdream:crack",
+        "stream": false
+      }
+    ]
+  },
+  "portal": {
+    "sounds": [
+      {
+        "name": "pasterdream:portal",
+        "stream": false
+      }
+    ]
+  },
+  "sword0": {
+    "sounds": [
+      {
+        "name": "pasterdream:sword0",
+        "stream": false
+      }
+    ]
+  },
+  "skill0": {
+    "sounds": [
+      {
+        "name": "pasterdream:skill0",
+        "stream": false
+      }
+    ]
+  },
+  "sword1": {
+    "sounds": [
+      {
+        "name": "pasterdream:sword1",
+        "stream": false
+      }
+    ]
+  },
+  "skill1": {
+    "sounds": [
+      {
+        "name": "pasterdream:skill1",
+        "stream": false
+      }
+    ]
+  },
+  "dream2": {
+    "sounds": [
+      {
+        "name": "pasterdream:dream2",
+        "stream": false
+      }
+    ]
+  },
+  "meltdream_chest": {
+    "sounds": [
+      {
+        "name": "pasterdream:meltdream_chest",
+        "stream": false
+      }
+    ]
+  },
+  "zipper": {
+    "sounds": [
+      {
+        "name": "pasterdream:zipper",
+        "stream": false
+      }
+    ]
+  },
+  "starcall_crack": {
+    "sounds": [
+      {
+        "name": "pasterdream:starcall_crack",
+        "stream": false
+      }
+    ]
+  },
+  "skill2": {
+    "sounds": [
+      {
+        "name": "pasterdream:skill2",
+        "stream": false
+      }
+    ]
+  },
+  "shadow0": {
+    "sounds": [
+      {
+        "name": "pasterdream:shadow0",
+        "stream": false
+      }
+    ]
+  },
+  "roar0": {
+    "sounds": [
+      {
+        "name": "pasterdream:roar0",
+        "stream": false
+      }
+    ]
+  },
+  "coin0": {
+    "sounds": [
+      {
+        "name": "pasterdream:coin0",
+        "stream": false
+      }
+    ]
+  },
+  "coin1": {
+    "sounds": [
+      {
+        "name": "pasterdream:coin1",
+        "stream": false
+      }
+    ]
+  },
+  "squeal_wave": {
+    "sounds": [
+      {
+        "name": "pasterdream:squeal_wave",
+        "stream": false
+      }
+    ]
+  },
+  "shadow_music_0": {
+    "sounds": [
+      {
+        "name": "pasterdream:shadow_music_0",
+        "stream": true
+      }
+    ]
+  },
+  "card0": {
+    "sounds": [
+      {
+        "name": "pasterdream:card0",
+        "stream": false
+      }
+    ]
+  },
+  "ghost0": {
+    "sounds": [
+      {
+        "name": "pasterdream:ghost0",
+        "stream": false
+      }
+    ]
+  },
+  "machine0": {
+    "sounds": [
+      {
+        "name": "pasterdream:machine0",
+        "stream": false
+      }
+    ]
+  },
+  "machine1": {
+    "sounds": [
+      {
+        "name": "pasterdream:machine1",
+        "stream": false
+      }
+    ]
+  },
+  "machine2": {
+    "sounds": [
+      {
+        "name": "pasterdream:machine2",
+        "stream": false
+      }
+    ]
+  },
+  "machine3": {
+    "sounds": [
+      {
+        "name": "pasterdream:machine3",
+        "stream": false
+      }
+    ]
+  },
+  "losemind0": {
+    "sounds": [
+      {
+        "name": "pasterdream:losemind0",
+        "stream": false
+      }
+    ]
+  },
+  "shadow_trap_0": {
+    "sounds": [
+      {
+        "name": "pasterdream:shadow_trap_0",
+        "stream": false
+      }
+    ]
+  },
+  "meltdream_chest_0": {
+    "sounds": [
+      {
+        "name": "pasterdream:meltdream_chest_0",
+        "stream": false
+      }
+    ]
+  },
+  "sword_wave": {
+    "sounds": [
+      {
+        "name": "pasterdream:sword_wave",
+        "stream": false
+      }
+    ]
+  },
+  "terrorbeak_roar": {
+    "sounds": [
+      {
+        "name": "pasterdream:terrorbeak_roar",
+        "stream": false
+      }
+    ]
+  },
+  "stone_break": {
+    "sounds": [
+      {
+        "name": "pasterdream:stone_break",
+        "stream": false
+      }
+    ]
+  },
+  "stone_break_0": {
+    "sounds": [
+      {
+        "name": "pasterdream:stone_break_0",
+        "stream": false
+      }
+    ]
+  },
+  "beetle_skill": {
+    "sounds": [
+      {
+        "name": "pasterdream:beetle_skill",
+        "stream": false
+      }
+    ]
+  },
+  "beetle_attack": {
+    "sounds": [
+      {
+        "name": "pasterdream:beetle_attack",
+        "stream": false
+      }
+    ]
+  },
+  "thermal_dagger": {
+    "sounds": [
+      {
+        "name": "pasterdream:thermal_dagger",
+        "stream": false
+      }
+    ]
+  },
+  "aaroncos_spawn": {
+    "sounds": [
+      {
+        "name": "pasterdream:aaroncos_spawn",
+        "stream": false
+      }
+    ]
+  },
+  "shadow_vortex": {
+    "sounds": [
+      {
+        "name": "pasterdream:shadow_vortex",
+        "stream": false
+      }
+    ]
+  },
+  "shadow_door": {
+    "sounds": [
+      {
+        "name": "pasterdream:shadow_door",
+        "stream": false
+      }
+    ]
+  },
+  "shadow_biome_0": {
+    "sounds": [
+      {
+        "name": "pasterdream:shadow_biome_0",
+        "stream": false
+      }
+    ]
+  },
+  "white_sword_rain": {
+    "sounds": [
+      {
+        "name": "pasterdream:white_sword_rain",
+        "stream": false
+      }
+    ]
+  },
+  "shadow_sword": {
+    "sounds": [
+      {
+        "name": "pasterdream:shadow_sword",
+        "stream": false
+      }
+    ]
+  },
+  "aaroncos_music": {
+    "sounds": [
+      {
+        "name": "pasterdream:aaroncos_music",
+        "stream": false
+      }
+    ]
+  },
+  "lightning_spell": {
+    "sounds": [
+      {
+        "name": "pasterdream:lightning_spell",
+        "stream": false
+      }
+    ]
+  },
+  "shadow_vortex_book": {
+    "sounds": [
+      {
+        "name": "pasterdream:shadow_vortex_book",
+        "stream": false
+      }
+    ]
+  },
+  "healing_spell": {
+    "sounds": [
+      {
+        "name": "pasterdream:healing_spell",
+        "stream": false
+      }
+    ]
+  },
+  "snowfall_dream_music": {
+    "sounds": [
+      {
+        "name": "pasterdream:snowfall_dream_music",
+        "stream": true
+      }
+    ]
+  },
+  "evasion": {
+    "sounds": [
+      {
+        "name": "pasterdream:evasion",
+        "stream": false
+      }
+    ]
+  },
+  "doll": {
+    "sounds": [
+      {
+        "name": "pasterdream:doll",
+        "stream": false
+      }
+    ]
+  },
+  "cloak": {
+    "sounds": [
+      {
+        "name": "pasterdream:cloak",
+        "stream": false
+      }
+    ]
+  },
+  "bone_wing_fire_ball": {
+    "sounds": [
+      {
+        "name": "pasterdream:bone_wing_fire_ball",
+        "stream": false
+      }
+    ]
+  },
+  "thundercloud_attack": {
+    "sounds": [
+      {
+        "name": "pasterdream:thundercloud_attack",
+        "stream": false
+      }
+    ]
+  },
+  "life_crystal": {
+    "sounds": [
+      {
+        "name": "pasterdream:life_crystal",
+        "stream": false
+      }
+    ]
+  },
+  "wind_journey": {
+    "sounds": [
+      {
+        "name": "pasterdream:wind_journey",
+        "stream": true
+      }
+    ]
+  },
+  "dreamharp_of_wanderer": {
+    "sounds": [
+      {
+        "name": "pasterdream:dreamharp_of_wanderer",
+        "stream": false
+      }
+    ]
+  },
+  "wind_knight_skill_0": {
+    "sounds": [
+      {
+        "name": "pasterdream:wind_knight_skill_0",
+        "stream": false
+      }
+    ]
+  },
+  "poison_spell": {
+    "sounds": [
+      {
+        "name": "pasterdream:poison_spell",
+        "stream": false
+      }
+    ]
+  },
+  "fury_spell": {
+    "sounds": [
+      {
+        "name": "pasterdream:fury_spell",
+        "stream": false
+      }
+    ]
+  },
+  "fury_spell_0": {
+    "sounds": [
+      {
+        "name": "pasterdream:fury_spell_0",
+        "stream": false
+      }
+    ]
+  },
+  "ice_spell": {
+    "sounds": [
+      {
+        "name": "pasterdream:ice_spell",
+        "stream": false
+      }
+    ]
+  },
+  "ding_0": {
+    "sounds": [
+      {
+        "name": "pasterdream:ding_0",
+        "stream": false
+      }
+    ]
+  },
+  "fox_fire": {
+    "sounds": [
+      {
+        "name": "pasterdream:fox_fire",
+        "stream": false
+      }
+    ]
+  },
+  "breeze_wind": {
+    "sounds": [
+      {
+        "name": "pasterdream:breeze_wind",
+        "stream": false
+      }
+    ]
+  },
+  "gale_wind": {
+    "sounds": [
+      {
+        "name": "pasterdream:gale_wind",
+        "stream": false
+      }
+    ]
+  },
+  "wind_chime": {
+    "sounds": [
+      {
+        "name": "pasterdream:wind_chime",
+        "stream": false
+      }
+    ]
+  },
+  "shadow_hand_lantern": {
+    "sounds": [
+      {
+        "name": "pasterdream:shadow_hand_lantern",
+        "stream": false
+      }
+    ]
+  }
+}

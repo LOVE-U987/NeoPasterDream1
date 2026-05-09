@@ -1,0 +1,11 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "plains",
+    "jungle",
+    "flower_forest",
+    "birch_forest"
+  ],
+  "features": "pasterdream:goldenrod",
+  "step": "vegetal_decoration"
+}

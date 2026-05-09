@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/tian_shi_fang_kuai__top",
+    "up": "pasterdream:block/tian_shi_fang_kuai__top",
+    "north": "pasterdream:block/tian_shi_fang_kuai_",
+    "east": "pasterdream:block/tian_shi_fang_kuai_",
+    "south": "pasterdream:block/tian_shi_fang_kuai_",
+    "west": "pasterdream:block/tian_shi_fang_kuai_",
+    "particle": "pasterdream:block/tian_shi_fang_kuai__top"
+  },
+  "render_type": "translucent"
+}

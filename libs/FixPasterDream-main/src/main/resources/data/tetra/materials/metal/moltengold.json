@@ -1,0 +1,27 @@
+{
+    "key": "moltengold",                 
+    "category": "metal",                
+    "primary": 5.9,                
+    "secondary": 2.8,               
+    "tertiary": 3,                 
+    "durability": 850,           
+    "integrityCost": 2,            
+    "integrityGain": 6,           
+    "magicCapacity": 118,           
+    "toolLevel": "minecraft:diamond",   
+    "toolEfficiency": 7.8,    
+    "tints": {
+        "glyph": "FFD700",
+        "texture": "FFD700"
+    },
+    "textures": [        
+        "metal",
+        "default"
+    ],
+    "material": {
+        "items": ["pasterdream:moltengold_ingot"]
+    },
+    "requiredTools": {
+        "hammer_dig": "minecraft:diamond"
+    }
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/mo_zhi_fang_jie_shi_",
+    "up": "pasterdream:block/mo_zhi_fang_jie_shi_",
+    "north": "pasterdream:block/mo_zhi_fang_jie_shi_",
+    "east": "pasterdream:block/mo_zhi_fang_jie_shi_",
+    "south": "pasterdream:block/mo_zhi_fang_jie_shi_",
+    "west": "pasterdream:block/mo_zhi_fang_jie_shi_",
+    "particle": "pasterdream:block/mo_zhi_fang_jie_shi_"
+  },
+  "render_type": "solid"
+}

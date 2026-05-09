@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/dan_ye_mian_tuan_"
+  }
+}

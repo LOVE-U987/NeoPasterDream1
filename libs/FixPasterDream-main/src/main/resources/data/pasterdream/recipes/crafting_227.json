@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:blackmetal_block"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:blackmetal_ingot",
+    "count": 4
+  }
+}

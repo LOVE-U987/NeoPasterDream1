@@ -1,0 +1,9 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "pasterdream:block/ran_meng_shi_ying_kuai_",
+    "top": "pasterdream:block/ran_meng_shi_ying_kuai_",
+    "side": "pasterdream:block/ran_meng_shi_ying_kuai_"
+  },
+  "render_type": "cutout"
+}

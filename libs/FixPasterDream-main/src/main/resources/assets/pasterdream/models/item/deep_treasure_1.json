@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/ran_meng_shen_hai_mi_bao_"
+  }
+}

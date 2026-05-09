@@ -1,0 +1,7 @@
+{
+  "parent": "block/template_glass_pane_noside",
+  "textures": {
+    "pane": "pasterdream:block/ran_meng_huo_ban_men_"
+  },
+  "render_type": "cutout"
+}

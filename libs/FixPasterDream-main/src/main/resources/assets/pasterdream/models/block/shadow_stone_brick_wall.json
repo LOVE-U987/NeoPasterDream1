@@ -1,0 +1,8 @@
+{
+  "parent": "block/template_wall_side",
+  "textures": {
+    "wall": "pasterdream:block/yin_ying_shi_zhuan_",
+    "particle": "pasterdream:block/yin_ying_shi_zhuan_"
+  },
+  "render_type": "cutout"
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "bcb",
+    "ada"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:dyedream_dye"
+    },
+    "b": {
+      "item": "pasterdream:dyedream_dust"
+    },
+    "c": {
+      "item": "pasterdream:traveler_belt"
+    },
+    "d": {
+      "item": "pasterdream:flower_12"
+    }
+  },
+  "result": {
+    "item": "pasterdream:dream_traveler_belt",
+    "count": 1
+  }
+}

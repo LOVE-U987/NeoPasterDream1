@@ -1,0 +1,22 @@
+{
+  "life_crystal": {
+    "category": "block",
+    "subtitle": "subtitle.pasterdream.life_crystal",
+    "sounds": [
+      {
+        "name": "pasterdream:life_crystal",
+        "stream": false
+      }
+    ]
+  },
+  "roar0": {
+    "category": "hostile",
+    "subtitle": "subtitle.pasterdream.roar0",
+    "sounds": [
+      {
+        "name": "pasterdream:roar0",
+        "stream": false
+      }
+    ]
+  }
+}

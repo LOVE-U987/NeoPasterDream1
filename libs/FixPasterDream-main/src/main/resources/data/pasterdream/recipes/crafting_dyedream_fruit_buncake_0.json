@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:cake_base"
+    },
+    {
+      "item": "pasterdream:dyedream_fruit"
+    },
+    {
+      "item": "pasterdream:milk_glassjar"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:dyedream_fruit_buncake",
+    "count": 1
+  }
+}

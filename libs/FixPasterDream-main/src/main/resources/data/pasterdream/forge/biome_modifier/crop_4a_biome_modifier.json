@@ -1,0 +1,13 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "windswept_hills",
+    "plains",
+    "windswept_forest",
+    "meadow",
+    "taiga",
+    "dark_forest"
+  ],
+  "features": "pasterdream:crop_4a",
+  "step": "vegetal_decoration"
+}

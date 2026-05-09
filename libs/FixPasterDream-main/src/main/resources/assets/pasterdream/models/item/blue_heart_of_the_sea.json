@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/wei_lan_hai_yang_zhi_xin_"
+  }
+}

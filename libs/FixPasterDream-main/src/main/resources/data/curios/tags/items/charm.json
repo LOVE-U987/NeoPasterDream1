@@ -1,0 +1,13 @@
+{
+  "replace": "false",
+  "values": [
+    "minecraft:air",
+    "pasterdream:embryo_charm",
+    "pasterdream:gold_charm",
+    "pasterdream:endeye_charm",
+    "pasterdream:sea_charm",
+    "pasterdream:carapax_charm",
+    "pasterdream:worldtree_seedpod",
+    "pasterdream:ceciliacare_charm"
+  ]
+}

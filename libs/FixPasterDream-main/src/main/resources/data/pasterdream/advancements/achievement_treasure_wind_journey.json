@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pasterdream:congeal_wind"
+    },
+    "title": {
+      "translate": "advancements.achievement_treasure_wind_journey.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_treasure_wind_journey.descr"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "achievement_treasure_wind_journey": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "parent": "pasterdream:achievement_treasure_start"
+}

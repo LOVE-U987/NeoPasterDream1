@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:block/dyedream_desk"
+    },
+    "facing=east": {
+      "model": "pasterdream:block/dyedream_desk",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:block/dyedream_desk",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:block/dyedream_desk",
+      "y": 270
+    }
+  }
+}

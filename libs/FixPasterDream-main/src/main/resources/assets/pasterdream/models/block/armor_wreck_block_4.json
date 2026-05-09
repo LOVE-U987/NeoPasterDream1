@@ -1,0 +1,9 @@
+{
+  "parent": "pasterdream:custom/armor_wreck",
+  "textures": {
+    "all": "pasterdream:block/armor_wreck",
+    "particle": "pasterdream:block/armor_wreck",
+    "0": "pasterdream:block/armor_wreck"
+  },
+  "render_type": "cutout"
+}

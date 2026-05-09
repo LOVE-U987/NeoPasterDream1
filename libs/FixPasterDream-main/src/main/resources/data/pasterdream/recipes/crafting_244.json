@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:dyedream_planks"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:dyedream_planks_button",
+    "count": 1
+  }
+}

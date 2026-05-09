@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "pasterdream:calcite_tiles"
+  },
+  "result": "pasterdream:calcite_tiles_wall"
+}

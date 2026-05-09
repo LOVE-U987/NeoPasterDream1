@@ -1,0 +1,44 @@
+[
+    {
+      "predicate": {
+        "items": ["pasterdream:titanium_hoe"]
+      },
+      "item": "tetra:modular_double",
+      "modules": {
+        "double/head_left": ["double/hoe_left", "hoe/titanium"],
+        "double/head_right": ["double/butt_right", "butt/titanium"],
+        "double/handle": ["double/basic_handle", "basic_handle/blackstick"]
+      },
+      "improvements": {
+        "double/handle:basic_handle/sturdy_grip": 0
+      }
+    },
+    {
+      "predicate": {
+        "items": ["pasterdream:moltengold_hoe"]
+      },
+      "item": "tetra:modular_double",
+      "modules": {
+        "double/head_left": ["double/hoe_left", "hoe/moltengold"],
+        "double/head_right": ["double/butt_right", "butt/moltengold"],
+        "double/handle": ["double/basic_handle", "basic_handle/blackstick"]
+      },
+      "improvements": {
+        "double/handle:basic_handle/sturdy_grip": 0
+      }
+    },
+    {
+      "predicate": {
+        "items": ["pasterdream:dyedream_hoe"]
+      },
+      "item": "tetra:modular_double",
+      "modules": {
+        "double/head_left": ["double/hoe_left", "hoe/dyedream"],
+        "double/head_right": ["double/butt_right", "butt/dyedream"],
+        "double/handle": ["double/basic_handle", "basic_handle/blackstick"]
+      },
+      "improvements": {
+        "double/handle:basic_handle/sturdy_grip": 0
+      }
+    }
+]  

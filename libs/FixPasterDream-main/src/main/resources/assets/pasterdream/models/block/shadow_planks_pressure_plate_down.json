@@ -1,0 +1,7 @@
+{
+  "parent": "block/pressure_plate_down",
+  "textures": {
+    "texture": "pasterdream:block/yin_ying_mu_ban_"
+  },
+  "render_type": "cutout"
+}

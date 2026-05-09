@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcb",
+    "dbd"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:iron_ingot"
+    },
+    "b": {
+      "item": "pasterdream:dyedream_ingot"
+    },
+    "c": {
+      "item": "minecraft:ghast_tear"
+    },
+    "d": {
+      "item": "pasterdream:blackstick"
+    }
+  },
+  "result": {
+    "item": "pasterdream:dyedream_upgrade",
+    "count": 1
+  }
+}

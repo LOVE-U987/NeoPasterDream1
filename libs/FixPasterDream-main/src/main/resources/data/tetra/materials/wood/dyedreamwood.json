@@ -1,0 +1,27 @@
+{
+    "key":"dyedreamwood",
+    "category":"wood",
+    "primary":4.2,
+    "secondary":0.4,
+    "tertiary":6,
+    "durability":200,
+    "integrityCost":2,
+    "integrityGain":4,
+    "magicCapacity":90,
+    "toolLevel":"minecraft:wood",
+    "toolEfficiency":0,
+    "tints":{
+        "glyph":"ff60ff",
+        "texture":"ff60ff"
+    },
+    "textures":[
+        "crude",
+        "default"
+    ],
+    "material":{
+        "items":["pasterdream:dyedream_planks"]
+    },
+    "requiredTools":{
+        "axe_dig":"minecraft:stone"
+    }
+}

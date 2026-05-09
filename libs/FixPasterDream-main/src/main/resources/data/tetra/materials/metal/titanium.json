@@ -1,0 +1,27 @@
+{
+    "key": "titanium",              
+    "category": "metal",             
+    "primary": 6.5,                  
+    "secondary": 2,                  
+    "tertiary": 4,               
+    "durability": 1349,         
+    "integrityCost": 2,              
+    "integrityGain": 7,                 
+    "magicCapacity": 118,                 
+    "toolLevel": "minecraft:diamond",    
+    "toolEfficiency": 8,            
+    "tints": {
+        "glyph": "E6E6FA",
+        "texture": "E6E6FA"
+    },
+    "textures": [        
+        "metal",
+        "default"
+    ],
+    "material": {
+        "items": ["pasterdream:titanium_ingot"]
+    },
+    "requiredTools": {
+        "hammer_dig": "minecraft:diamond"
+    }
+}

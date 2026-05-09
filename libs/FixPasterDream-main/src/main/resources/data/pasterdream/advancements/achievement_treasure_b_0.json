@@ -1,0 +1,39 @@
+{
+  "display": {
+    "icon": {
+      "item": "pasterdream:boboji_curio"
+    },
+    "title": {
+      "translate": "advancements.achievement_treasure_b_0.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_treasure_b_0.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "achievement_treasure_b_0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pasterdream:boboji_curio"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "parent": "pasterdream:achievement_treasure_wind_journey"
+}

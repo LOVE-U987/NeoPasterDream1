@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/mai_chong_feng_xing_zhe_shui_jing_"
+  }
+}

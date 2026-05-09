@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/ling_hun_kuang_tu_",
+    "up": "pasterdream:block/ling_hun_kuang_tu_",
+    "north": "pasterdream:block/ling_hun_kuang_tu_",
+    "east": "pasterdream:block/ling_hun_kuang_tu_",
+    "south": "pasterdream:block/ling_hun_kuang_tu_",
+    "west": "pasterdream:block/ling_hun_kuang_tu_",
+    "particle": "pasterdream:block/ling_hun_kuang_tu_"
+  },
+  "render_type": "solid"
+}

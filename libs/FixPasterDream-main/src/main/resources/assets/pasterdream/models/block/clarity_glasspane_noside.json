@@ -1,0 +1,7 @@
+{
+  "parent": "block/template_glass_pane_noside",
+  "textures": {
+    "pane": "pasterdream:block/cheng_che_bo_li_"
+  },
+  "render_type": "translucent"
+}

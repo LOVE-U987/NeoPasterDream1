@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/gong_fang_leng_que_pen_"
+  },
+  "render_type": "translucent"
+}

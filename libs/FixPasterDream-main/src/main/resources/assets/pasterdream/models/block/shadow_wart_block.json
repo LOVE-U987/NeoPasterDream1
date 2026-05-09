@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/yin_ying_you_kuai_",
+    "up": "pasterdream:block/yin_ying_you_kuai_",
+    "north": "pasterdream:block/yin_ying_you_kuai_",
+    "east": "pasterdream:block/yin_ying_you_kuai_",
+    "south": "pasterdream:block/yin_ying_you_kuai_",
+    "west": "pasterdream:block/yin_ying_you_kuai_",
+    "particle": "pasterdream:block/yin_ying_you_kuai_"
+  },
+  "render_type": "solid"
+}

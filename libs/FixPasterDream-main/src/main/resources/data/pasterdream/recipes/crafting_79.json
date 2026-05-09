@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a a",
+    "bbb",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:protect_deck"
+    },
+    "b": {
+      "item": "pasterdream:titanium_ingot"
+    }
+  },
+  "result": {
+    "item": "pasterdream:titanium_armor_chestplate",
+    "count": 1
+  }
+}

@@ -1,0 +1,41 @@
+[
+    {
+      "predicate": {
+        "items": ["pasterdream:titanium_shovel"]
+      },
+      "item": "tetra:modular_single",
+      "modules": {
+        "single/head": ["single/basic_shovel", "basic_shovel/titanium"],
+        "single/handle": ["single/basic_handle", "basic_handle/blackstick"]
+      },
+      "improvements": {
+        "single/handle:basic_handle/sturdy_grip": 0
+      }
+    },
+    {
+      "predicate": {
+        "items": ["pasterdream:dyedream_shovel"]
+      },
+      "item": "tetra:modular_single",
+      "modules": {
+        "single/head": ["single/basic_shovel", "basic_shovel/dyedream"],
+        "single/handle": ["single/basic_handle", "basic_handle/blackstick"]
+      },
+      "improvements": {
+        "single/handle:basic_handle/sturdy_grip": 0
+      }
+    },
+    {
+      "predicate": {
+        "items": ["pasterdream:moltengold_shovel"]
+      },
+      "item": "tetra:modular_single",
+      "modules": {
+        "single/head": ["single/basic_shovel", "basic_shovel/moltengold"],
+        "single/handle": ["single/basic_handle", "basic_handle/blackstick"]
+      },
+      "improvements": {
+        "single/handle:basic_handle/sturdy_grip": 0
+      }
+    }
+]  

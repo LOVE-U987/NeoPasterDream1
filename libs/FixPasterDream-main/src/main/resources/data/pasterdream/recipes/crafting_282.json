@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:cyan_stone_bricks"
+    }
+  },
+  "result": {
+    "item": "pasterdream:cyan_stone_brick_slab",
+    "count": 6
+  }
+}

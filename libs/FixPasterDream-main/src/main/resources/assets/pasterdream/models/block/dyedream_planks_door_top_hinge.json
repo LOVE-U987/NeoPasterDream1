@@ -1,0 +1,7 @@
+{
+  "parent": "block/door_top_rh",
+  "textures": {
+    "bottom": "pasterdream:blocks/ran_meng_men_1",
+    "top": "pasterdream:blocks/ran_meng_men_0"
+  }
+}

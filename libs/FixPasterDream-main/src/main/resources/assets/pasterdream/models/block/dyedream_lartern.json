@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/ran_meng_shui_jing_deng_",
+    "up": "pasterdream:block/ran_meng_shui_jing_deng_",
+    "north": "pasterdream:block/ran_meng_shui_jing_deng_",
+    "east": "pasterdream:block/ran_meng_shui_jing_deng_",
+    "south": "pasterdream:block/ran_meng_shui_jing_deng_",
+    "west": "pasterdream:block/ran_meng_shui_jing_deng_",
+    "particle": "pasterdream:block/ran_meng_shui_jing_deng_"
+  },
+  "render_type": "translucent"
+}

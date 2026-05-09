@@ -1,0 +1,11 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "windswept_hills",
+    "plains",
+    "windswept_forest",
+    "meadow"
+  ],
+  "features": "pasterdream:flower_3",
+  "step": "vegetal_decoration"
+}

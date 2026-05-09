@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:shadow_planks"
+    }
+  },
+  "result": {
+    "item": "pasterdream:shadow_planks_trapdoor",
+    "count": 2
+  }
+}

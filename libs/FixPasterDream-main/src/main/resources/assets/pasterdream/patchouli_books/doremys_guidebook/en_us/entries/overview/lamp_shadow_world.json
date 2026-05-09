@@ -1,0 +1,25 @@
+{
+  "sortnum": 0,
+  "name": "pasterdream.entry.lamp_shadow_world",
+  "icon": "pasterdream:shadowcandle",
+  "category": "pasterdream:overview",
+  "pages": [
+    {
+      "type": "text",
+      "text": "pasterdream.entry.lamp_shadow_world.page0"
+    },
+    {
+      "type": "text",
+      "text": "pasterdream.entry.lamp_shadow_world.page1"
+    },
+    {
+      "type": "text",
+      "text": "pasterdream.entry.lamp_shadow_world.page2"
+    },
+    {
+      "type":"patchouli:spotlight",
+      "item":"pasterdream:pale_boneneedle",
+      "text": "pasterdream.entry.lamp_shadow_world.page3"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "pasterdream:block/ying_jing_jue__top",
+    "particle": "pasterdream:block/ying_jing_jue__top"
+  },
+  "render_type": "cutout"
+}

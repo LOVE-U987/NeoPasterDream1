@@ -1,0 +1,12 @@
+{
+  "replace": "false",
+  "values": [
+    "minecraft:air",
+    "pasterdream:embryo_necklace",
+    "pasterdream:rabbit_0_necklace",
+    "pasterdream:feather_necklace",
+    "pasterdream:health_0_necklace",
+    "pasterdream:fire_0_necklace",
+    "pasterdream:cross_necklace"
+  ]
+}

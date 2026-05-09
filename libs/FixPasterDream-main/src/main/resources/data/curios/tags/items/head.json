@@ -1,0 +1,11 @@
+{
+  "replace": "false",
+  "values": [
+    "minecraft:air",
+    "pasterdream:garland",
+    "pasterdream:ghost_face_head",
+    "pasterdream:qym_head",
+    "pasterdream:snow_vow_head",
+    "pasterdream:hiyori_head"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:block/calle_card_block"
+    },
+    "facing=east": {
+      "model": "pasterdream:block/calle_card_block",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:block/calle_card_block",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:block/calle_card_block",
+      "y": 270
+    }
+  }
+}

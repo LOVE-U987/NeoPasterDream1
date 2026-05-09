@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcb",
+    "bdb"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:dyedream_glass"
+    },
+    "b": {
+      "item": "pasterdream:polished_calcite"
+    },
+    "c": {
+      "item": "pasterdream:titanium_ingot"
+    },
+    "d": {
+      "item": "pasterdream:chiseled_dyedreamquartz_block"
+    }
+  },
+  "result": {
+    "item": "pasterdream:dream_accumulator",
+    "count": 1
+  }
+}

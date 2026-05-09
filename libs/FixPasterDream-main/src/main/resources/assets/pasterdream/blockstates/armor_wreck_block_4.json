@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:block/armor_wreck_block_4"
+    },
+    "facing=east": {
+      "model": "pasterdream:block/armor_wreck_block_4",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:block/armor_wreck_block_4",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:block/armor_wreck_block_4",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "pasterdream:block/armor_wreck_block_4",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "pasterdream:block/armor_wreck_block_4",
+      "x": 90
+    }
+  }
+}

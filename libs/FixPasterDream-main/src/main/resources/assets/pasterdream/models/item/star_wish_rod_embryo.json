@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/zhan_xing_zhe_de_qi_yuan_yuan_pei_"
+  }
+}

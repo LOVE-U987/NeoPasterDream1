@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "bcb",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:dyedream_dye"
+    },
+    "b": {
+      "item": "pasterdream:dyedream_nugget"
+    },
+    "c": {
+      "item": "pasterdream:soul_essence"
+    }
+  },
+  "result": {
+    "item": "pasterdream:sweetdream_disc",
+    "count": 1
+  }
+}

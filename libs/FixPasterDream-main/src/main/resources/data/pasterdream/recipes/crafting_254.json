@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:meltdream_liquid_bucket"
+    },
+    {
+      "item": "pasterdream:elixir_bottle"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:meltdream_elixir_bottle",
+    "count": 1
+  }
+}

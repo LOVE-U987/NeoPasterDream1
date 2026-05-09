@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "minecraft:flint"
+  },
+  "base": {
+    "item": "minecraft:diamond_sword"
+  },
+  "addition": {
+    "item": "pasterdream:titanium_upgrade"
+  },
+  "result": {
+    "item": "pasterdream:titanium_sword"
+  }
+}

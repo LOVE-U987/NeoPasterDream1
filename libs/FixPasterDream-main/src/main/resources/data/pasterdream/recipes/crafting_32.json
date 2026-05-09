@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:dyedream_dust"
+    },
+    {
+      "item": "pasterdream:dyedream_bud_nugget"
+    },
+    {
+      "item": "pasterdream:dyedream_bud_nugget"
+    },
+    {
+      "item": "pasterdream:dyedream_bud_nugget"
+    },
+    {
+      "item": "pasterdream:dyedream_bud_nugget"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:dyedream_base",
+    "count": 1
+  }
+}

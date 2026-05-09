@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/wei_jie_xi_de_bi_ji_"
+  }
+}

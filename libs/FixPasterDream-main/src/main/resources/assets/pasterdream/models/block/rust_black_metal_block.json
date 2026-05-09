@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/xiu_shi_jin_shu_kuai_",
+    "up": "pasterdream:block/xiu_shi_jin_shu_kuai_",
+    "north": "pasterdream:block/xiu_shi_jin_shu_kuai_",
+    "east": "pasterdream:block/xiu_shi_jin_shu_kuai_",
+    "south": "pasterdream:block/xiu_shi_jin_shu_kuai_",
+    "west": "pasterdream:block/xiu_shi_jin_shu_kuai_",
+    "particle": "pasterdream:block/xiu_shi_jin_shu_kuai_"
+  },
+  "render_type": "solid"
+}

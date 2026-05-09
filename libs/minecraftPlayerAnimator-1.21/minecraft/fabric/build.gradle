@@ -1,0 +1,195 @@
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'com.modrinth.minotaur'
+apply plugin: 'com.matthewprenger.cursegradle'
+
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+sourceSets {
+    testmod {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+    }
+    main {
+        runtimeClasspath += testmod.runtimeClasspath
+    }
+}
+
+loom {
+    accessWidenerPath = project(":${project.module_name}:common").loom.accessWidenerPath
+    runs {
+        testmodClient {
+            client()
+            //ideConfigGenerated project.rootProject == project
+            //vmArg "-Dmixin.debug.export=true"
+            ideConfigGenerated(true)
+            name = "Testmod Client"
+            source sourceSets.testmod
+        }
+    }
+}
+
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
+}
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+
+    common(project(path: ":${project.module_name}:common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":${project.module_name}:common", configuration: "transformProductionFabric")) { transitive false }
+
+    common(shadowCommon(project(path: ":coreLib")) {transitive false}) {transitive false} //Why can I nest these?
+
+    //Testing libraries
+    //*
+    modLocalRuntime "io.github.kosmx.bendy-lib:bendy-lib-fabric:${project.bendy_lib}"
+    //modLocalRuntime "maven.modrinth:3dskinlayers:1.5.2-fabric-1.19"
+    //modLocalRuntime "maven.modrinth:emotecraft:2.2.6-SNAPSHOT-build.44-MC1.19.2-fabric"
+    //modLocalRuntime "maven.modrinth:modmenu:4.0.4"
+    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    //*/
+
+    modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
+
+}
+
+project.archivesBaseName = rootProject.archives_base_name + "-" + project.name
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+shadowJar {
+    exclude "architectury.common.json"
+
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier.set("dev-shadow")
+}
+
+remapJar {
+    injectAccessWidener = true
+    inputFile.set shadowJar.archiveFile
+    dependsOn shadowJar
+    archiveClassifier.set(null)
+}
+
+jar {
+    archiveClassifier.set("dev")
+}
+
+sourcesJar {
+    def commonSources = project(":${project.module_name}:common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+
+    def apiSources = project(":coreLib").sourcesJar
+    dependsOn apiSources
+    from apiSources.archiveFile.map { zipTree(it) }
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
+publishing {
+    publications {
+        mavenFabric(MavenPublication) {
+            artifactId = rootProject.archives_base_name + "-" + project.name
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        repositories {
+
+            if (project.keysExists) {
+                maven {
+                    url = 'https://maven.kosmx.dev/'
+                    credentials {
+                        username = project.keys.kosmx_maven_user
+                        password = project.keys.kosmx_maven
+                    }
+                }
+                maven {
+                    name = "GitHubPackages"
+                    url = "https://maven.pkg.github.com/kosmx/minecraftPlayerAnimator"
+                    credentials {
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
+                }
+            } else {
+                mavenLocal()
+            }
+        }
+    }
+}
+
+
+if(keysExists) {
+    modrinth {
+        versionType = project.cfType
+
+        uploadFile = remapJar
+
+        token = project.keys.modrinth_token
+
+        projectId = "playeranimator"
+
+        versionNumber = "${rootProject.mod_version}-fabric"
+        versionName = "${rootProject.mod_version}-fabric"
+
+        gameVersions = ["1.21", "1.21.1"]
+        changelog = changes
+        loaders = ["fabric"]
+        failSilently = false
+
+        dependencies {
+            optional.project "bendy-lib"
+        }
+    }
+
+    curseforge {
+        apiKey = project.keys.curseforge_key
+
+        project {
+            id = '658587' //https://www.curseforge.com/minecraft/mc-mods/playeranimator
+            changelogType = "markdown"
+            //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
+            changelog = changes
+            releaseType = project.cfType
+            addGameVersion "1.21"
+            addGameVersion "1.21.1"
+            addGameVersion "Fabric"
+
+            relations {
+                optionalDependency 'bendy-lib'
+            }
+
+            options {
+                forgeGradleIntegration = false
+                javaVersionAutoDetect = false // defaults to true
+            }
+
+
+            mainArtifact(remapJar)
+        }
+    }
+}

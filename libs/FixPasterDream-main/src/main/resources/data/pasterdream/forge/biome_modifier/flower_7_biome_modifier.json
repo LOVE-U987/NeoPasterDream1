@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "crimson_forest",
+  "features": "pasterdream:flower_7",
+  "step": "vegetal_decoration"
+}

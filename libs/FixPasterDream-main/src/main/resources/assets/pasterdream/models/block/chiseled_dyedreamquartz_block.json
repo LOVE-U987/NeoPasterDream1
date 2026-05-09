@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/zan_zhi_ran_meng_shi_ying_kuai__top",
+    "up": "pasterdream:block/zan_zhi_ran_meng_shi_ying_kuai__top",
+    "north": "pasterdream:block/zan_zhi_ran_meng_shi_ying_kuai_",
+    "east": "pasterdream:block/zan_zhi_ran_meng_shi_ying_kuai_",
+    "south": "pasterdream:block/zan_zhi_ran_meng_shi_ying_kuai_",
+    "west": "pasterdream:block/zan_zhi_ran_meng_shi_ying_kuai_",
+    "particle": "pasterdream:block/zan_zhi_ran_meng_shi_ying_kuai__top"
+  },
+  "render_type": "solid"
+}

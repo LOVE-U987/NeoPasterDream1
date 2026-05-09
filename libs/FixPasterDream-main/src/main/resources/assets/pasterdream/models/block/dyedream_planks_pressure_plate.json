@@ -1,0 +1,7 @@
+{
+  "parent": "block/pressure_plate_up",
+  "textures": {
+    "texture": "pasterdream:block/ran_meng_mu_ban_"
+  },
+  "render_type": "cutout"
+}

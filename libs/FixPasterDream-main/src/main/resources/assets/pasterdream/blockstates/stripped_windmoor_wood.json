@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "pasterdream:block/stripped_windmoor_wood",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "pasterdream:block/stripped_windmoor_wood"
+    },
+    "axis=z": {
+      "model": "pasterdream:block/stripped_windmoor_wood",
+      "x": 90
+    }
+  }
+}

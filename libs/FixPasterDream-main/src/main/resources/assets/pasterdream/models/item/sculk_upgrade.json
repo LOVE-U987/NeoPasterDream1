@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/hui_xiang_sheng_ji_tao_jian_"
+  }
+}

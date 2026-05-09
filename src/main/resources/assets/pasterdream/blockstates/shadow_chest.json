@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "pasterdream:block/shadow_chest" },
+    "facing=south": { "model": "pasterdream:block/shadow_chest", "y": 180 },
+    "facing=east": { "model": "pasterdream:block/shadow_chest", "y": 90 },
+    "facing=west": { "model": "pasterdream:block/shadow_chest", "y": 270 }
+  }
+}

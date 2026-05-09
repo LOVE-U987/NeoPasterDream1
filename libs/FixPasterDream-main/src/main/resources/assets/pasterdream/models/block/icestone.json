@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/bing_ling_shi_",
+    "up": "pasterdream:block/bing_ling_shi_",
+    "north": "pasterdream:block/bing_ling_shi_",
+    "east": "pasterdream:block/bing_ling_shi_",
+    "south": "pasterdream:block/bing_ling_shi_",
+    "west": "pasterdream:block/bing_ling_shi_",
+    "particle": "pasterdream:block/bing_ling_shi_"
+  },
+  "render_type": "solid"
+}

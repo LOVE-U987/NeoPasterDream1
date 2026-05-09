@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "soul_sand_valley",
+  "features": "pasterdream:soul_ore",
+  "step": "underground_ores"
+}

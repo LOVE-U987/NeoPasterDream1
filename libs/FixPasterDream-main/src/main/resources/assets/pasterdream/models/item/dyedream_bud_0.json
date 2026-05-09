@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/da_xing_ran_meng_jing_ya_"
+  },
+  "render_type": "translucent"
+}

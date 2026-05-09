@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " ab",
+    "aca",
+    "da "
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:jungle_spore"
+    },
+    "b": {
+      "item": "minecraft:spore_blossom"
+    },
+    "c": {
+      "item": "pasterdream:sword_embryo_0"
+    },
+    "d": {
+      "item": "minecraft:emerald_block"
+    }
+  },
+  "result": {
+    "item": "pasterdream:grass_sword",
+    "count": 1
+  }
+}

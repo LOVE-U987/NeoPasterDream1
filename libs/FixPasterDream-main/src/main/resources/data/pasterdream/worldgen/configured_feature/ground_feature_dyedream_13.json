@@ -1,0 +1,49 @@
+{
+  "type": "minecraft:simple_random_selector",
+  "config": {
+    "features": [
+      {
+        "feature": {
+          "type": "minecraft:netherrack_replace_blobs",
+          "config": {
+            "target": {
+              "Name": "minecraft:calcite"
+            },
+            "state": {
+              "Name": "minecraft:ice"
+            },
+            "radius": {
+              "type": "uniform",
+              "value": {
+                "min_inclusive": 3,
+                "max_inclusive": 6
+              }
+            }
+          }
+        },
+        "placement": []
+      },
+      {
+        "feature": {
+          "type": "minecraft:netherrack_replace_blobs",
+          "config": {
+            "target": {
+              "Name": "minecraft:calcite"
+            },
+            "state": {
+              "Name": "minecraft:packed_ice"
+            },
+            "radius": {
+              "type": "uniform",
+              "value": {
+                "min_inclusive": 3,
+                "max_inclusive": 6
+              }
+            }
+          }
+        },
+        "placement": []
+      }
+    ]
+  }
+}

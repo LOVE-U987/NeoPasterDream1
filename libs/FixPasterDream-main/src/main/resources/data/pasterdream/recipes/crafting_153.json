@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:blaze_powder"
+    },
+    "b": {
+      "item": "minecraft:netherite_scrap"
+    },
+    "c": {
+      "item": "pasterdream:moltengold_sword"
+    },
+    "d": {
+      "item": "pasterdream:moltengold_block"
+    }
+  },
+  "result": {
+    "item": "pasterdream:true_moltengold_sword",
+    "count": 1
+  }
+}

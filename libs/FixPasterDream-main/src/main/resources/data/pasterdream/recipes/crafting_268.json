@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:rabbit_foot"
+    },
+    {
+      "item": "minecraft:gunpowder"
+    },
+    {
+      "item": "pasterdream:amber_candy"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:popping_candy",
+    "count": 2
+  }
+}

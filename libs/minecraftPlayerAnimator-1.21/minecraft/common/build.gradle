@@ -1,0 +1,67 @@
+architectury {
+    common("neoforge", "fabric")
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/playerAnimator.accesswidener")
+}
+
+dependencies {
+    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
+    // Do NOT use other classes from fabric loader
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    implementation project(':coreLib')
+
+    //modApi "dev.architectury:architectury:${rootProject.architectury_version}"
+
+    modCompileOnly "io.github.kosmx.bendy-lib:bendy-lib:${project.bendy_lib}"
+    //modCompileOnly "maven.modrinth:3dskinlayers:1.5.2-fabric-1.19"
+
+    }
+
+publishing {
+    publications {
+        mavenCommon(MavenPublication) {
+            artifactId = rootProject.archives_base_name
+            from components.java
+
+            /*
+            pom.withXml {
+
+                def depsNode = asNode().appendNode("dependencies")
+
+                def apiNode = depsNode.appendNode("dependency")
+                apiNode.appendNode("groupId", project.group)
+                apiNode.appendNode("artifactId", "animCore")
+                apiNode.appendNode("version", project.version)
+                apiNode.appendNode("scope", "compile")
+            }//*/
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        repositories {
+
+            if (project.keysExists) {
+                maven {
+                    url = 'https://maven.kosmx.dev/'
+                    credentials {
+                        username = project.keys.kosmx_maven_user
+                        password = project.keys.kosmx_maven
+                    }
+                }
+                maven {
+                    name = "GitHubPackages"
+                    url = "https://maven.pkg.github.com/kosmx/minecraftPlayerAnimator"
+                    credentials {
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
+                }
+            } else {
+                mavenLocal()
+            }
+        }
+    }
+}

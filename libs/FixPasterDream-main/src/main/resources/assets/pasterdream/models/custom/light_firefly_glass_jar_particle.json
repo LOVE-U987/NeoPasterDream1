@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/ecology_glass_jar.item",
+  "textures": {
+    "particle": "pasterdream:block/ecology_glass_jar_break"
+  }
+}

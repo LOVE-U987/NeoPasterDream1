@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:shadow_planks"
+    },
+    {
+      "item": "pasterdream:shadow_planks"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:shadow_planks_pressure_plate",
+    "count": 1
+  }
+}

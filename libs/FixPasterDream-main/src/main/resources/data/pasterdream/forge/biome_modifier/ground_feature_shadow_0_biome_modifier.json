@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "pasterdream:biome_shadow_0",
+  "features": "pasterdream:ground_feature_shadow_0",
+  "step": "surface_structures"
+}

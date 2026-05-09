@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "cac",
+    "cdc"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:charged_amethyst"
+    },
+    "b": {
+      "item": "minecraft:end_crystal"
+    },
+    "c": {
+      "item": "pasterdream:moltengold_ingot"
+    },
+    "d": {
+      "item": "pasterdream:charged_amethyst_block"
+    }
+  },
+  "result": {
+    "item": "pasterdream:forced_tower",
+    "count": 1
+  }
+}

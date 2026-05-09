@@ -1,0 +1,10 @@
+{
+  "parent": "pasterdream:custom/starball_crack",
+  "textures": {
+    "all": "pasterdream:block/starcall_crack",
+    "particle": "pasterdream:block/starcall_crack",
+    "2": "pasterdream:block/starcall_crack",
+    "missing": "pasterdream:block/starcall_crack"
+  },
+  "render_type": "translucent"
+}

@@ -1,0 +1,39 @@
+{
+  "display": {
+    "icon": {
+      "item": "pasterdream:meltdream_liquid_bucket"
+    },
+    "title": {
+      "translate": "advancements.achievement_c_4.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_c_4.descr"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "achievement_c_4": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pasterdream:meltdream_liquid_bucket"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "parent": "pasterdream:achievement_b_0"
+}

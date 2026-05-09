@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/ran_meng_hai_cao_"
+  },
+  "render_type": "translucent"
+}

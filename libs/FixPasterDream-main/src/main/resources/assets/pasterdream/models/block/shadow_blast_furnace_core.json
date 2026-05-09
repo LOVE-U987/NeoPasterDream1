@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/an_ying_gao_lu_he_xin__top",
+    "up": "pasterdream:block/an_ying_gao_lu_he_xin__top",
+    "north": "pasterdream:block/an_ying_gao_lu_he_xin_",
+    "east": "pasterdream:block/an_ying_gao_lu_he_xin_",
+    "south": "pasterdream:block/an_ying_gao_lu_he_xin_",
+    "west": "pasterdream:block/an_ying_gao_lu_he_xin_",
+    "particle": "pasterdream:block/an_ying_gao_lu_he_xin__top"
+  },
+  "render_type": "solid"
+}

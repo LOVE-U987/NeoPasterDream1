@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:eggdough"
+    },
+    {
+      "item": "pasterdream:yeast"
+    },
+    {
+      "item": "minecraft:sugar"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:cake_base",
+    "count": 2
+  }
+}

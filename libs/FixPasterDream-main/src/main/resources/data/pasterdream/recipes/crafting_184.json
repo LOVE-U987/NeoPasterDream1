@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a  ",
+    "aa ",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:shadow_stone_tiles"
+    }
+  },
+  "result": {
+    "item": "pasterdream:shadow_stone_tiles_stairs",
+    "count": 4
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/meltdream_chest_1.item",
+  "textures": {
+    "particle": "pasterdream:block/mo_xing_po_pi_li_zi_2"
+  }
+}

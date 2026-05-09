@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a a",
+    "a a"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:titanium_ingot"
+    }
+  },
+  "result": {
+    "item": "pasterdream:titanium_armor_boots",
+    "count": 1
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "pasterdream:block/shadow_planks_slab"
+    },
+    "type=top": {
+      "model": "pasterdream:block/shadow_planks_slab_top"
+    },
+    "type=double": {
+      "model": "pasterdream:block/shadow_planks_slab_full"
+    }
+  }
+}

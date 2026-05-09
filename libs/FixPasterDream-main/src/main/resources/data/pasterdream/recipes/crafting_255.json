@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:sugar"
+    },
+    "b": {
+      "item": "pasterdream:meltdream_crystal_0"
+    }
+  },
+  "result": {
+    "item": "pasterdream:dream_cotton_candy",
+    "count": 8
+  }
+}

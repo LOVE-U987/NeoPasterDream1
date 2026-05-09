@@ -1,0 +1,58 @@
+[
+    {
+      "predicate": {
+        "items": ["pasterdream:titanium_pickaxe"]
+      },
+      "item": "tetra:modular_double",
+      "modules": {
+        "double/head_left": ["double/basic_pickaxe_left", "basic_pickaxe/titanium"],
+        "double/head_right": ["double/basic_pickaxe_right", "basic_pickaxe/titanium"],
+        "double/handle": ["double/basic_handle", "basic_handle/blackstick"]
+      },
+      "improvements": {
+        "double/handle:basic_handle/sturdy_grip": 0
+      }
+    },
+    {
+      "predicate": {
+        "items": ["pasterdream:moltengold_pickaxe"]
+      },
+      "item": "tetra:modular_double",
+      "modules": {
+        "double/head_left": ["double/basic_pickaxe_left", "basic_pickaxe/moltengold"],
+        "double/head_right": ["double/basic_pickaxe_right", "basic_pickaxe/moltengold"],
+        "double/handle": ["double/basic_handle", "basic_handle/blackstick"]
+      },
+      "improvements": {
+        "double/handle:basic_handle/sturdy_grip": 0
+      }
+    },
+    {
+      "predicate": {
+        "items": ["pasterdream:true_moltengold_pickaxe"]
+      },
+      "item": "tetra:modular_double",
+      "modules": {
+        "double/head_left": ["double/basic_pickaxe_left", "basic_pickaxe/netherite"],
+        "double/head_right": ["double/basic_pickaxe_right", "basic_pickaxe/moltengold"],
+        "double/handle": ["double/basic_handle", "basic_handle/blackstick"]
+      },
+      "improvements": {
+        "double/handle:basic_handle/sturdy_grip": 0
+      }
+    },
+    {
+      "predicate": {
+        "items": ["pasterdream:dyedream_pickaxe"]
+      },
+      "item": "tetra:modular_double",
+      "modules": {
+        "double/head_left": ["double/basic_pickaxe_left", "basic_pickaxe/dyedream"],
+        "double/head_right": ["double/basic_pickaxe_right", "basic_pickaxe/dyedream"],
+        "double/handle": ["double/basic_handle", "basic_handle/blackstick"]
+      },
+      "improvements": {
+        "double/handle:basic_handle/sturdy_grip": 0
+      }
+    }
+]

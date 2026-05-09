@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/fen_hong_nian_ye_qiu_"
+  }
+}

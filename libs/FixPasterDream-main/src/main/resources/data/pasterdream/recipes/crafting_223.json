@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:dream_wand"
+    },
+    {
+      "item": "pasterdream:manadust"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:mana_wand",
+    "count": 1
+  }
+}

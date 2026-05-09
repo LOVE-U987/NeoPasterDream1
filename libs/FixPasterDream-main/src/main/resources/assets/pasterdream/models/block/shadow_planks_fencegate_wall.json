@@ -1,0 +1,7 @@
+{
+  "parent": "block/template_fence_gate_wall",
+  "textures": {
+    "texture": "pasterdream:block/yin_ying_mu_ban_"
+  },
+  "render_type": "cutout"
+}

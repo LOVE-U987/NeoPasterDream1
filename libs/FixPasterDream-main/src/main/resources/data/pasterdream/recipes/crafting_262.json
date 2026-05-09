@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:yeast"
+    },
+    {
+      "item": "pasterdream:water_glassjar"
+    },
+    {
+      "item": "pasterdream:flour"
+    },
+    {
+      "item": "minecraft:sugar"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:yeast",
+    "count": 4
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/qin_yu_meng_de_ta_yun_zhi_xue_"
+  }
+}

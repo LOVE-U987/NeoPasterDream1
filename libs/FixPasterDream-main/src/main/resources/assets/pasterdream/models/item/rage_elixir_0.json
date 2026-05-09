@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/kuang_bao_zhan_yi_ling_yao_"
+  }
+}

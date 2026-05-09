@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "a a",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "tag": "minecraft:small_flowers"
+    }
+  },
+  "result": {
+    "item": "pasterdream:garland",
+    "count": 1
+  }
+}

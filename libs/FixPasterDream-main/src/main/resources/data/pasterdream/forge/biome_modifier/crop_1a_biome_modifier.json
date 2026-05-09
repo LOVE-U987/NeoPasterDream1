@@ -1,0 +1,16 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "plains",
+    "windswept_hills",
+    "windswept_forest",
+    "windswept_gravelly_hills",
+    "windswept_savanna",
+    "frozen_peaks",
+    "grove",
+    "jagged_peaks",
+    "snowy_slopes"
+  ],
+  "features": "pasterdream:crop_1a",
+  "step": "vegetal_decoration"
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/mi_meng_lu_zhe_yao_dai_"
+  }
+}

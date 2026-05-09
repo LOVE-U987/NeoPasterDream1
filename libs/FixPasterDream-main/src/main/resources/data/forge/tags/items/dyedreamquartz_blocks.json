@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:dyedreamquartz_block",
+    "pasterdream:smooth_dyedreamquartz_block",
+    "pasterdream:bricks_dyedreamquartz_block",
+    "pasterdream:pillar_dyedreamquartz_block",
+    "pasterdream:chiseled_dyedreamquartz_block"
+  ]
+}

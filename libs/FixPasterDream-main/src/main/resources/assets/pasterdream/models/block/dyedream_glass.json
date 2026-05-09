@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/ran_meng_bo_li_",
+    "up": "pasterdream:block/ran_meng_bo_li_",
+    "north": "pasterdream:block/ran_meng_bo_li_",
+    "east": "pasterdream:block/ran_meng_bo_li_",
+    "south": "pasterdream:block/ran_meng_bo_li_",
+    "west": "pasterdream:block/ran_meng_bo_li_",
+    "particle": "pasterdream:block/ran_meng_bo_li_"
+  },
+  "render_type": "translucent"
+}

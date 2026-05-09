@@ -1,0 +1,14 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": [
+    "jungle",
+    "bamboo_jungle",
+    "sparse_jungle"
+  ],
+  "spawners": {
+    "type": "pasterdream:spore_entity",
+    "weight": 10,
+    "minCount": 1,
+    "maxCount": 3
+  }
+}

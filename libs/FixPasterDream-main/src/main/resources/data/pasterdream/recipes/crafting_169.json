@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:red_dew_1_ring"
+    },
+    {
+      "item": "pasterdream:red_dew_0"
+    },
+    {
+      "item": "pasterdream:dyedream_dust"
+    },
+    {
+      "item": "pasterdream:meltdream_liquid_bucket"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:red_dew_2_ring",
+    "count": 1
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "parent": "pasterdream:custom/christmas_lights",
+  "textures": {
+    "all": "pasterdream:block/christmas_lights",
+    "particle": "pasterdream:block/christmas_lights",
+    "0": "pasterdream:block/christmas_lights"
+  },
+  "render_type": "cutout"
+}

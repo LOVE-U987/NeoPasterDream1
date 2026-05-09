@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "bcb",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:blaze_rod"
+    },
+    "b": {
+      "item": "pasterdream:moltengold_ingot"
+    },
+    "c": {
+      "item": "pasterdream:hithard_0_ring"
+    }
+  },
+  "result": {
+    "item": "pasterdream:hithard_1_ring",
+    "count": 1
+  }
+}

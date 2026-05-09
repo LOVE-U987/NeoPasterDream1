@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:ore",
+  "config": {
+    "size": 30,
+    "discard_chance_on_air_exposure": 0,
+    "targets": [
+      {
+        "target": {
+          "predicate_type": "blockstate_match",
+          "block_state": {
+            "Name": "pasterdream:dyedream_dirt"
+          }
+        },
+        "state": {
+          "Name": "pasterdream:dyedream_sand"
+        }
+      },
+      {
+        "target": {
+          "predicate_type": "blockstate_match",
+          "block_state": {
+            "Name": "pasterdream:dyedream_grass"
+          }
+        },
+        "state": {
+          "Name": "pasterdream:dyedream_sand"
+        }
+      },
+      {
+        "target": {
+          "predicate_type": "blockstate_match",
+          "block_state": {
+            "Name": "minecraft:calcite"
+          }
+        },
+        "state": {
+          "Name": "pasterdream:dyedream_sand"
+        }
+      }
+    ]
+  }
+}

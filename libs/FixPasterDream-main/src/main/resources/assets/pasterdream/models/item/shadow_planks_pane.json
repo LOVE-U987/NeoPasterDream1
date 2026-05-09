@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:block/yin_ying_mu_huo_ban_men_"
+  },
+  "render_type": "cutout"
+}

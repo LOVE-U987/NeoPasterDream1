@@ -1,0 +1,91 @@
+plugins {
+    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
+
+    //Publishing
+    id 'com.matthewprenger.cursegradle' version '1.4.0' apply false
+    id "com.modrinth.minotaur" version "2.7.4" apply false
+    id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
+}
+
+architectury {
+    minecraft = rootProject.minecraft_version
+}
+
+project.mod_version = mod_version + "+" + minecraft_version
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
+
+    group = rootProject.maven_group
+    archivesBaseName = rootProject.archives_base_name
+    version = rootProject.mod_version
+
+    repositories {
+        maven { url "https://maven.neoforged.net/releases" }
+        mavenCentral()
+        maven {
+            name 'KosmX\'s maven'
+            url 'https://maven.kosmx.dev/'
+        }
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = "Modrinth"
+                    url = "https://api.modrinth.com/maven"
+                }
+            }
+            filter {
+                includeGroup "maven.modrinth"
+            }
+        }
+    }
+
+    dependencies {
+        compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+        options.release = 21
+    }
+
+    java {
+        withSourcesJar()
+    }
+}
+
+ext.ENV = System.getenv()
+
+ext.cfType = ENV.RELEASE_TYPE ? ENV.RELEASE_TYPE : "alpha"
+ext.changes = ENV.CHANGELOG ? ENV.CHANGELOG.replaceAll("\\\\n", "\n") : ""
+ext.ENV = System.getenv()
+boolean upload = ENV.UPLOAD_TO_PORTAL ? ENV.UPLOAD_TO_PORTAL == "true" : false
+
+ext.keysExists = ENV.KOSMX_MAVEN_USER != null || project.getGradle().getStartParameter().isDryRun()
+
+if(keysExists) {
+    project.ext.keys = new Properties()
+    if (project.getGradle().getStartParameter().isDryRun()) {
+        println("Dry run, loading publish scripts")
+        //All of these are fake, don't waste your time with it. (Copied from API docs and random generated)
+        project.ext.keys.modrinth_token = "gho_pJ9dGXVKpfzZp4PUHSxYEq9hjk0h288Gwj4S"
+        project.ext.keys.curseforge_key = "00000000-0000-0000-0000-000000000000"
+        project.ext.keys.kosmx_maven = "V2h5IGRpZCB5b3UgZGVjb2RlIGl0PyAg"
+        project.ext.keys.kosmx_maven_user = "username"
+    } else {
+        println("Keys loaded, loading publish scripts")
+        project.ext.keys.modrinth_token = ENV.MODRINTH_TOKEN
+        project.ext.keys.curseforge_key = ENV.CURSEFORGE_TOKEN
+        project.ext.keys.kosmx_maven = ENV.KOSMX_MAVEN_TOKEN
+        project.ext.keys.kosmx_maven_user = ENV.KOSMX_MAVEN_USER
+    }
+
+    publish {
+        if (upload) {
+            finalizedBy(':minecraft:publishMod')
+        }
+    }
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/jun_wang_",
+    "up": "pasterdream:block/jun_wang_",
+    "north": "pasterdream:block/jun_wang_",
+    "east": "pasterdream:block/jun_wang_",
+    "south": "pasterdream:block/jun_wang_",
+    "west": "pasterdream:block/jun_wang_",
+    "particle": "pasterdream:block/jun_wang_"
+  },
+  "render_type": "solid"
+}

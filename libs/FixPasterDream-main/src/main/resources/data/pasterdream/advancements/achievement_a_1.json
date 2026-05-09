@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pasterdream:crop_1a"
+    },
+    "title": {
+      "translate": "advancements.achievement_a_1.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_a_1.descr"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "achievement_a_1": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "parent": "pasterdream:achievement_start"
+}

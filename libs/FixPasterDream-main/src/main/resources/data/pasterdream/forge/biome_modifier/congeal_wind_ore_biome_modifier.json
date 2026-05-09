@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "pasterdream:wind_journey_biome_0",
+  "features": "pasterdream:congeal_wind_ore",
+  "step": "underground_ores"
+}

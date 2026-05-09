@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/xiao_cuo_ran_meng_fen_chen_"
+  }
+}

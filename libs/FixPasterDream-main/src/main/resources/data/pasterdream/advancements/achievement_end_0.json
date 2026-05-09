@@ -1,0 +1,39 @@
+{
+  "display": {
+    "icon": {
+      "item": "pasterdream:forced_tower"
+    },
+    "title": {
+      "translate": "advancements.achievement_end_0.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_end_0.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "achievement_end_0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pasterdream:forced_tower"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "parent": "minecraft:end/dragon_breath"
+}

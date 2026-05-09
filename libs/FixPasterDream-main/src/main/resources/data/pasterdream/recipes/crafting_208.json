@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:glass_cup"
+    },
+    {
+      "item": "pasterdream:dyedream_fruit"
+    },
+    {
+      "item": "pasterdream:dyedream_dust_piece"
+    },
+    {
+      "item": "pasterdream:amber_candy"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:dyedream_juice",
+    "count": 1
+  }
+}

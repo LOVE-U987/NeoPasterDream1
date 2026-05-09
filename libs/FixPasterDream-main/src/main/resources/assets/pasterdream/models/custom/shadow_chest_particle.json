@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/shadow_chest.item",
+  "textures": {
+    "particle": "pasterdream:block/yin_ying_shi_wa_"
+  }
+}

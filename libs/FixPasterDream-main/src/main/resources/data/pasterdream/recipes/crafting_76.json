@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:mushroom_stew"
+    },
+    {
+      "item": "pasterdream:flower_14"
+    },
+    {
+      "item": "pasterdream:flower_12"
+    },
+    {
+      "item": "pasterdream:dyedream_corolla"
+    },
+    {
+      "item": "minecraft:ghast_tear"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:queer_soup",
+    "count": 1
+  }
+}

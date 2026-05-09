@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "testmod",
+  "version": "42",
+
+  "name": "Test mod",
+  "description": "This is an example description! Tell everyone what your mod is about!",
+  "authors": [
+    "Me!"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "license": "CC0-1.0",
+
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "dev.kosmx.animatorTestmod.PlayerAnimTestmod"
+    ]
+  },
+  "mixins": [
+    "testmod.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.6",
+    "minecraft": "*",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

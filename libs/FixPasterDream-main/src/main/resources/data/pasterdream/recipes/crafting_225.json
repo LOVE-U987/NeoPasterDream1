@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:blackmetal_ingot"
+    }
+  },
+  "result": {
+    "item": "pasterdream:blackmetal_block",
+    "count": 1
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:mortar"
+    },
+    {
+      "item": "pasterdream:glassjar"
+    },
+    {
+      "item": "pasterdream:glassjar"
+    },
+    {
+      "item": "pasterdream:grass_14"
+    },
+    {
+      "item": "pasterdream:grass_15"
+    },
+    {
+      "item": "pasterdream:grass_13"
+    },
+    {
+      "item": "pasterdream:flower_18"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:wind_plant_extract",
+    "count": 2
+  }
+}

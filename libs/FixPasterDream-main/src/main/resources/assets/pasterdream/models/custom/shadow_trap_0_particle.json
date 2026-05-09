@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/shadow_trap_0.item",
+  "textures": {
+    "particle": "pasterdream:block/yin_ying_"
+  }
+}

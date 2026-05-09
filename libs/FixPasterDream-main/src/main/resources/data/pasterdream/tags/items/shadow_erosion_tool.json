@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:shadow_erosion_sword",
+    "pasterdream:shadow_erosion_pickaxe",
+    "pasterdream:shadow_erosion_axe",
+    "pasterdream:shadow_erosion_hoe",
+    "pasterdream:shadow_erosion_shovel"
+  ]
+}

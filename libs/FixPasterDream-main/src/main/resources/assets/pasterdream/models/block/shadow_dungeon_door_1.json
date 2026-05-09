@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/air",
+    "up": "pasterdream:block/air",
+    "north": "pasterdream:block/air",
+    "east": "pasterdream:block/air",
+    "south": "pasterdream:block/air",
+    "west": "pasterdream:block/air",
+    "particle": "pasterdream:block/xiu_shi_jin_shu_kuai_"
+  },
+  "render_type": "cutout"
+}

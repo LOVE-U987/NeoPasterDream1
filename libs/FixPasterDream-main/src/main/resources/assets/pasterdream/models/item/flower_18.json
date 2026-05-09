@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:block/feng_dao_lu_wei__top"
+  }
+}

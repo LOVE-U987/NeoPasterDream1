@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:red_dye"
+    },
+    "b": {
+      "item": "minecraft:sugar"
+    },
+    "c": {
+      "item": "pasterdream:wafer_biscuit"
+    },
+    "d": {
+      "item": "minecraft:spruce_leaves"
+    }
+  },
+  "result": {
+    "item": "pasterdream:gingerbread_man",
+    "count": 1
+  }
+}

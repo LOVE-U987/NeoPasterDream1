@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:jellyfish_mud"
+    },
+    {
+      "item": "pasterdream:jellyfish_mud"
+    },
+    {
+      "item": "pasterdream:fig"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "pasterdream:wind_plant_extract"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:jellyfish_jello",
+    "count": 2
+  }
+}

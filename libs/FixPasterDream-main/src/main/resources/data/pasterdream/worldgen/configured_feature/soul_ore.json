@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:ore",
+  "config": {
+    "size": 16,
+    "discard_chance_on_air_exposure": 0,
+    "targets": [
+      {
+        "target": {
+          "predicate_type": "blockstate_match",
+          "block_state": {
+            "Name": "minecraft:soul_soil"
+          }
+        },
+        "state": {
+          "Name": "pasterdream:soul_ore"
+        }
+      }
+    ]
+  }
+}

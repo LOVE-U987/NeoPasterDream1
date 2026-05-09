@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "pasterdream:item/rong_meng_shui_jing_qiao_"
+  }
+}

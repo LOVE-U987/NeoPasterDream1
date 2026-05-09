@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "pasterdream:biome_shadow_1",
+  "features": "pasterdream:grass_11",
+  "step": "vegetal_decoration"
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:block/workshop_cauldeon"
+    },
+    "facing=east": {
+      "model": "pasterdream:block/workshop_cauldeon",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:block/workshop_cauldeon",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:block/workshop_cauldeon",
+      "y": 270
+    }
+  }
+}

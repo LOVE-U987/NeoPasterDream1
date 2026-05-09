@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/bing_ying_zhan_chui_yuan_pei_"
+  }
+}

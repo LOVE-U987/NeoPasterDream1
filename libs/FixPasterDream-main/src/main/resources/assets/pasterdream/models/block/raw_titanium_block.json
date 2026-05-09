@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/cu_tai_kuai_",
+    "up": "pasterdream:block/cu_tai_kuai_",
+    "north": "pasterdream:block/cu_tai_kuai_",
+    "east": "pasterdream:block/cu_tai_kuai_",
+    "south": "pasterdream:block/cu_tai_kuai_",
+    "west": "pasterdream:block/cu_tai_kuai_",
+    "particle": "pasterdream:block/cu_tai_kuai_"
+  },
+  "render_type": "solid"
+}

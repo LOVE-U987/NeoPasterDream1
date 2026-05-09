@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/golden_fox_sculpture.item",
+  "textures": {
+    "particle": "pasterdream:block/golden_fox_sculpture"
+  }
+}

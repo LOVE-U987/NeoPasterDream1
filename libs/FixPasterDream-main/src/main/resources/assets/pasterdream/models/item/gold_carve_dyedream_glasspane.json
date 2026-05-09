@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:block/xiang_jin_diao_hua_ran_meng_bo_li_"
+  },
+  "render_type": "translucent"
+}

@@ -1,0 +1,17 @@
+{
+  "sortnum": 1,
+  "name": "pasterdream.entry.meltdream",
+  "icon": "pasterdream:meltdream_elixir_bottle",
+  "category": "pasterdream:rules",
+  "pages": [
+    {
+      "type": "text",
+      "text": "pasterdream.entry.meltdream.page0"
+    },
+    {
+      "type":"patchouli:spotlight",
+      "item":"pasterdream:meltdream_energy_0_ring,pasterdream:dyedream_popsicle,pasterdream:dyedream_juice",
+      "text": "pasterdream.entry.meltdream.page1"
+    }
+  ]
+}

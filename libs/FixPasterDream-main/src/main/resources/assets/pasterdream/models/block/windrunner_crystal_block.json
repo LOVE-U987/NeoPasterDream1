@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/feng_xing_zhe_shui_jing_kuai_",
+    "up": "pasterdream:block/feng_xing_zhe_shui_jing_kuai_",
+    "north": "pasterdream:block/feng_xing_zhe_shui_jing_kuai_",
+    "east": "pasterdream:block/feng_xing_zhe_shui_jing_kuai_",
+    "south": "pasterdream:block/feng_xing_zhe_shui_jing_kuai_",
+    "west": "pasterdream:block/feng_xing_zhe_shui_jing_kuai_",
+    "particle": "pasterdream:block/feng_xing_zhe_shui_jing_kuai_"
+  },
+  "render_type": "solid"
+}

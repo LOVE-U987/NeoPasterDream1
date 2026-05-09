@@ -1,0 +1,41 @@
+[
+  {
+    "5": "minecraft:stone_bricks",
+    "6": "minecraft:stone_bricks",
+    "7": "minecraft:stone_bricks",
+    "8": "minecraft:stone_bricks",
+    "9": "minecraft:stone_bricks",
+    "10": "minecraft:stone_bricks",
+    "11": "minecraft:deepslate_tiles",
+    "12": "minecraft:deepslate_tiles",
+    "13": "minecraft:deepslate_tiles",
+    "14": "minecraft:stone_bricks",
+    "15": "minecraft:stone_bricks",
+    "16": "minecraft:stone_bricks",
+    "17": "minecraft:stone_bricks",
+    "18": "minecraft:stone_bricks",
+    "19": "minecraft:stone_bricks"
+  },
+  {
+    "5": "minecraft:polished_blackstone_bricks",
+    "6": "minecraft:polished_blackstone_bricks",
+    "8": "pasterdream:weapon_table",
+    "9": "minecraft:cauldron",
+    "10": "minecraft:polished_blackstone_bricks",
+    "11": "minecraft:polished_blackstone_bricks",
+    "15": "minecraft:grindstone",
+    "19": "minecraft:anvil"
+  },
+  {
+    "5": "minecraft:bricks",
+    "6": "minecraft:blast_furnace",
+    "10": "minecraft:bricks",
+    "11": "minecraft:blast_furnace"
+  },
+  {
+    "5": "minecraft:mud_brick_slab",
+    "6": "minecraft:mud_brick_slab",
+    "10": "minecraft:mud_brick_slab",
+    "11": "minecraft:mud_brick_slab"
+  }
+]

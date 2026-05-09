@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "ba"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:dyedream_glass"
+    },
+    "b": {
+      "item": "pasterdream:dyedream_bud_nugget"
+    }
+  },
+  "result": {
+    "item": "pasterdream:dyedream_bud_block",
+    "count": 4
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/aaroncos_hand_spawn_block.item",
+  "textures": {
+    "particle": "pasterdream:block/aaroncos_hand_spawn_block"
+  }
+}

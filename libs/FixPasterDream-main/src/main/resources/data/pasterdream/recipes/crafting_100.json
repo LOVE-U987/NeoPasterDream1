@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:pinkslime_block"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:pink_slimeball",
+    "count": 9
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "pasterdream:item/shuo_mo_da_jian_"
+  }
+}

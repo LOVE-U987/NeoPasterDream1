@@ -1,0 +1,7 @@
+{
+  "criteria": {
+    "achievement_hide_10": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

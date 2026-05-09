@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "pasterdream:item/ran_meng_he_jin_hao_"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:flower_18"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:reedrod",
+    "count": 3
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "abc",
+    "def"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:red_stained_glass"
+    },
+    "b": {
+      "item": "minecraft:spruce_leaves"
+    },
+    "c": {
+      "item": "minecraft:magenta_stained_glass"
+    },
+    "d": {
+      "item": "minecraft:light_blue_stained_glass"
+    },
+    "e": {
+      "item": "minecraft:lime_stained_glass"
+    },
+    "f": {
+      "item": "minecraft:yellow_stained_glass"
+    }
+  },
+  "result": {
+    "item": "pasterdream:christmas_lights",
+    "count": 5
+  }
+}

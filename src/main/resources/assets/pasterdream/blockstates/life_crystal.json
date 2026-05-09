@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "pasterdream:block/life_crystal" },
+    "facing=south": { "model": "pasterdream:block/life_crystal", "y": 180 },
+    "facing=east": { "model": "pasterdream:block/life_crystal", "y": 90 },
+    "facing=west": { "model": "pasterdream:block/life_crystal", "y": 270 }
+  }
+}

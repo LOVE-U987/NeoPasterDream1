@@ -1,0 +1,9 @@
+{
+  "parent": "pasterdream:custom/small_stone_spirit_block",
+  "textures": {
+    "all": "pasterdream:block/small_stone_spirit_block",
+    "particle": "pasterdream:block/cang_qing_yan_",
+    "0": "pasterdream:block/small_stone_spirit_block"
+  },
+  "render_type": "cutout"
+}

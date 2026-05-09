@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:cyan_stone"
+    }
+  },
+  "result": {
+    "item": "pasterdream:cyan_stone_pressure_plate",
+    "count": 1
+  }
+}

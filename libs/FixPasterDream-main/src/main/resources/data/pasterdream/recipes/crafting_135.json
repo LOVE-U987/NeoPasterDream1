@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:ice"
+    },
+    "b": {
+      "item": "pasterdream:dyedream_dye"
+    }
+  },
+  "result": {
+    "item": "pasterdream:dyedream_ice",
+    "count": 8
+  }
+}

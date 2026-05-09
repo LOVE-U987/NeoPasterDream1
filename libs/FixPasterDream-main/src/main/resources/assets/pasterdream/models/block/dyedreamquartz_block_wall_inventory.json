@@ -1,0 +1,8 @@
+{
+  "parent": "block/wall_inventory",
+  "textures": {
+    "wall": "pasterdream:block/ran_meng_shi_ying_kuai_",
+    "particle": "pasterdream:block/ran_meng_shi_ying_kuai_"
+  },
+  "render_type": "cutout"
+}

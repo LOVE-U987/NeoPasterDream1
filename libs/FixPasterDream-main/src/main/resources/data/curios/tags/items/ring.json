@@ -1,0 +1,16 @@
+{
+  "replace": "false",
+  "values": [
+    "minecraft:air",
+    "pasterdream:embryo_ring",
+    "pasterdream:red_dew_0_ring",
+    "pasterdream:red_dew_1_ring",
+    "pasterdream:red_dew_2_ring",
+    "pasterdream:red_dew_3_ring",
+    "pasterdream:hithard_0_ring",
+    "pasterdream:hithard_1_ring",
+    "pasterdream:counter_ring",
+    "pasterdream:meltdream_energy_0_ring",
+    "pasterdream:allkinds_ring"
+  ]
+}

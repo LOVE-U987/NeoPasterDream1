@@ -1,0 +1,14 @@
+{
+  "parent": "item/handheld_rod",
+  "textures": {
+    "layer0": "pasterdream:item/star_wish_rod"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "pasterdream:cast": 1.0
+      },
+      "model": "pasterdream:item/star_wish_rod_cast"
+    }
+  ]
+}

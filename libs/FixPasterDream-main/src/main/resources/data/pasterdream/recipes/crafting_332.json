@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcb",
+    "ded"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:chain"
+    },
+    "b": {
+      "item": "pasterdream:dyedream_glasspane"
+    },
+    "c": {
+      "item": "minecraft:pink_candle"
+    },
+    "d": {
+      "item": "pasterdream:blackmetal_grain"
+    },
+    "e": {
+      "item": "pasterdream:blackmetal_ingot"
+    }
+  },
+  "result": {
+    "item": "pasterdream:shadow_hand_lantern",
+    "count": 1
+  }
+}

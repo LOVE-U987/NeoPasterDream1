@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "a a"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:dyedream_ingot"
+    },
+    "b": {
+      "item": "pasterdream:protect_deck"
+    }
+  },
+  "result": {
+    "item": "pasterdream:dyedream_armor_helmet",
+    "count": 1
+  }
+}

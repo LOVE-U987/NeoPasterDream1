@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/diao_wen_cang_qing_yan_zhuan_",
+    "up": "pasterdream:block/diao_wen_cang_qing_yan_zhuan_",
+    "north": "pasterdream:block/diao_wen_cang_qing_yan_zhuan_",
+    "east": "pasterdream:block/diao_wen_cang_qing_yan_zhuan_",
+    "south": "pasterdream:block/diao_wen_cang_qing_yan_zhuan_",
+    "west": "pasterdream:block/diao_wen_cang_qing_yan_zhuan_",
+    "particle": "pasterdream:block/diao_wen_cang_qing_yan_zhuan_"
+  },
+  "render_type": "solid"
+}

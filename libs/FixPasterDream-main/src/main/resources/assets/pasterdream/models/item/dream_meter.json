@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/dream_meter.item",
+  "textures": {
+    "layer0": "pasterdream:item/dream_meter"
+  }
+}

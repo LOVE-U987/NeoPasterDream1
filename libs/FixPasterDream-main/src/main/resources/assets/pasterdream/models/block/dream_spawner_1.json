@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/shi_se_gou_meng_shua_guai_long_",
+    "up": "pasterdream:block/shi_se_gou_meng_shua_guai_long_",
+    "north": "pasterdream:block/shi_se_gou_meng_shua_guai_long_",
+    "east": "pasterdream:block/shi_se_gou_meng_shua_guai_long_",
+    "south": "pasterdream:block/shi_se_gou_meng_shua_guai_long_",
+    "west": "pasterdream:block/shi_se_gou_meng_shua_guai_long_",
+    "particle": "pasterdream:block/shi_se_gou_meng_shua_guai_long_"
+  },
+  "render_type": "cutout"
+}

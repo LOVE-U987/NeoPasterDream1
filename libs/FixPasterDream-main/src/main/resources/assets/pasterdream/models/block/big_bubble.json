@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/ju_xing_pao_pao_",
+    "up": "pasterdream:block/ju_xing_pao_pao_",
+    "north": "pasterdream:block/ju_xing_pao_pao_",
+    "east": "pasterdream:block/ju_xing_pao_pao_",
+    "south": "pasterdream:block/ju_xing_pao_pao_",
+    "west": "pasterdream:block/ju_xing_pao_pao_",
+    "particle": "pasterdream:block/ju_xing_pao_pao_"
+  },
+  "render_type": "translucent"
+}

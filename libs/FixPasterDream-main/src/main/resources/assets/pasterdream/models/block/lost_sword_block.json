@@ -1,0 +1,10 @@
+{
+  "parent": "pasterdream:custom/lost_sword",
+  "textures": {
+    "all": "pasterdream:block/lost_sword",
+    "particle": "pasterdream:block/mo_xing_po_pi_li_zi_3",
+    "1": "pasterdream:block/lost_sword",
+    "2": "pasterdream:block/lost_sword"
+  },
+  "render_type": "cutout"
+}

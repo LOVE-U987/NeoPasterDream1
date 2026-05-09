@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:snowball"
+    },
+    {
+      "item": "pasterdream:dyedream_dust_piece"
+    },
+    {
+      "item": "minecraft:stick"
+    },
+    {
+      "item": "pasterdream:flower_13"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:dyedream_popsicle",
+    "count": 1
+  }
+}

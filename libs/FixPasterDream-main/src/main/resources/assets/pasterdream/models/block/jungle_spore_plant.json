@@ -1,0 +1,8 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "pasterdream:block/cong_lin_bao_zi_zhi_zhu_",
+    "particle": "pasterdream:block/cong_lin_bao_zi_zhi_zhu_"
+  },
+  "render_type": "cutout"
+}

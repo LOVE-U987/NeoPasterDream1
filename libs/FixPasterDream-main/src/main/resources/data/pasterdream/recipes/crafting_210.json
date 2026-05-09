@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "aca",
+    "ada"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:rust_black_metal_block_bars"
+    },
+    "b": {
+      "item": "pasterdream:shadow_liquid_bucket"
+    },
+    "c": {
+      "item": "minecraft:blast_furnace"
+    },
+    "d": {
+      "item": "minecraft:cauldron"
+    }
+  },
+  "result": {
+    "item": "pasterdream:shadow_blast_furnace_core",
+    "count": 1
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "ba",
+    " b"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:amber_candy"
+    },
+    "b": {
+      "item": "minecraft:sugar"
+    }
+  },
+  "result": {
+    "item": "pasterdream:candy_cane",
+    "count": 1
+  }
+}

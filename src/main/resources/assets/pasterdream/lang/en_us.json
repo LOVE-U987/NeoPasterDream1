@@ -1,0 +1,18 @@
+{
+  "block.pasterdream.dream_accumulator": "Dream Accumulator",
+  "block.pasterdream.dyedream_desk": "Dyedream Desk",
+  "block.pasterdream.life_crystal": "Life Crystal",
+  "block.pasterdream.shadow_chest": "Shadow Chest",
+
+  "container.pasterdream.shadow_chest": "Shadow Chest",
+
+  "item.pasterdream.shadow_golem_spawn_egg": "Shadow Golem Spawn Egg",
+  "item.pasterdream.pink_slime_spawn_egg": "Pink Slime Spawn Egg",
+
+  "entity.pasterdream.shadow_golem": "Shadow Golem",
+  "entity.pasterdream.pink_slime": "Pink Slime",
+
+  "itemGroup.pasterdream.paster_tab_0": "PasterDream Basics",
+  "itemGroup.pasterdream.spawn_eggs_tab": "PasterDream Spawn Eggs",
+  "subtitle.pasterdream.life_crystal": "Crystal hums"
+}

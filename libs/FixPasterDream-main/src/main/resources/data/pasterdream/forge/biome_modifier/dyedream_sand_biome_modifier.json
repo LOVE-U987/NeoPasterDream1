@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "pasterdream:biome_dyedream_1",
+  "features": "pasterdream:dyedream_sand",
+  "step": "underground_ores"
+}

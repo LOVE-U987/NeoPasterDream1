@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/xiu_shi_jin_shu_sui_xie_"
+  }
+}

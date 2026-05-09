@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "pasterdream:dyedream_dust"
+  },
+  "base": {
+    "item": "pasterdream:dyedream_sword"
+  },
+  "addition": {
+    "item": "pasterdream:meltdream_crystal_0"
+  },
+  "result": {
+    "item": "pasterdream:dyedream_sword_0"
+  }
+}

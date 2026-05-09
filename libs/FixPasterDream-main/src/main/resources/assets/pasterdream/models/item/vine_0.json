@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:block/ran_meng_dong_xue_teng_man_"
+  }
+}

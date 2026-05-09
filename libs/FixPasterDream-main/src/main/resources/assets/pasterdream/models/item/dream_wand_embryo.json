@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/ju_meng_fa_zhang_yuan_pei_"
+  }
+}

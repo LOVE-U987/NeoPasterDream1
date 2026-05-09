@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:block/cyan_stone_pillar"
+    },
+    "facing=east": {
+      "model": "pasterdream:block/cyan_stone_pillar",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:block/cyan_stone_pillar",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:block/cyan_stone_pillar",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "pasterdream:block/cyan_stone_pillar",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "pasterdream:block/cyan_stone_pillar",
+      "x": 90
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "minecraft:sculk_vein"
+  },
+  "base": {
+    "item": "minecraft:netherite_boots"
+  },
+  "addition": {
+    "item": "pasterdream:sculk_upgrade"
+  },
+  "result": {
+    "item": "pasterdream:sculk_armor_boots"
+  }
+}

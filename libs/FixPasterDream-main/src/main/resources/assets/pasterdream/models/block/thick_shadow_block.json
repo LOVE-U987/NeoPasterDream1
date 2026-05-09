@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/hou_zhong_yin_ying_",
+    "up": "pasterdream:block/hou_zhong_yin_ying_",
+    "north": "pasterdream:block/hou_zhong_yin_ying_",
+    "east": "pasterdream:block/hou_zhong_yin_ying_",
+    "south": "pasterdream:block/hou_zhong_yin_ying_",
+    "west": "pasterdream:block/hou_zhong_yin_ying_",
+    "particle": "pasterdream:block/hou_zhong_yin_ying_"
+  },
+  "render_type": "translucent"
+}

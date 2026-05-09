@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:brokennotes_0"
+    },
+    {
+      "item": "pasterdream:brokennotes_0"
+    },
+    {
+      "item": "pasterdream:brokennotes_0"
+    },
+    {
+      "item": "pasterdream:brokennotes_0"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:unknownnotes_0",
+    "count": 1
+  }
+}

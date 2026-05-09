@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "pasterdream:item/duan_lie_ying_xiong_jian_"
+  }
+}

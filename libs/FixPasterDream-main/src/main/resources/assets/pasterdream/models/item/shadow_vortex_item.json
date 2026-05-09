@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/an_ying_xuan_wo_tou_zhi_wu_"
+  }
+}

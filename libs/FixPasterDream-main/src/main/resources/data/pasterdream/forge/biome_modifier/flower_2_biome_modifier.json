@@ -1,0 +1,11 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "flower_forest",
+    "jungle",
+    "bamboo_jungle",
+    "sparse_jungle"
+  ],
+  "features": "pasterdream:flower_2",
+  "step": "vegetal_decoration"
+}

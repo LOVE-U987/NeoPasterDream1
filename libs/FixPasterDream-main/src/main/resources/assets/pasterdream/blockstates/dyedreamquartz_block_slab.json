@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "pasterdream:block/dyedreamquartz_block_slab"
+    },
+    "type=top": {
+      "model": "pasterdream:block/dyedreamquartz_block_slab_top"
+    },
+    "type=double": {
+      "model": "pasterdream:block/dyedreamquartz_block_slab_full"
+    }
+  }
+}

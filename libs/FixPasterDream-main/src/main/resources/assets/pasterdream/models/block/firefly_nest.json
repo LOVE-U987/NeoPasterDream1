@@ -1,0 +1,12 @@
+{
+  "parent": "pasterdream:custom/firefly_nest",
+  "textures": {
+    "all": "pasterdream:block/firefly_nest",
+    "particle": "pasterdream:block/firefly_nest",
+    "0": "pasterdream:block/firefly_nest",
+    "1": "pasterdream:block/firefly_nest_grass",
+    "2": "pasterdream:block/firefly_nest_water",
+    "missing": "pasterdream:block/"
+  },
+  "render_type": "cutout_mipped"
+}

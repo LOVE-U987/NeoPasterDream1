@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:soul_dust"
+    },
+    "b": {
+      "item": "minecraft:ghast_tear"
+    }
+  },
+  "result": {
+    "item": "pasterdream:soul_essence",
+    "count": 1
+  }
+}

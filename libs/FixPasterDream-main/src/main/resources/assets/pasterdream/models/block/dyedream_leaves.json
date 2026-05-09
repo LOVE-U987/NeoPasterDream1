@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "pasterdream:block/ran_meng_shu_xie_",
+    "particle": "pasterdream:block/ran_meng_shu_xie_"
+  }
+}

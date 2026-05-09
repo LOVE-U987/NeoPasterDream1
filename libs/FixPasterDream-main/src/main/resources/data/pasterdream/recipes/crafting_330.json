@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:moss_phantom_membrane"
+    },
+    {
+      "item": "pasterdream:light_organ"
+    },
+    {
+      "item": "pasterdream:wind_plant_extract"
+    },
+    {
+      "item": "minecraft:torchflower_seeds"
+    },
+    {
+      "item": "minecraft:vine"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:light_moss_phantom_membrane",
+    "count": 1
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "item": "pasterdream:dreamjuice"
+    },
+    "title": {
+      "translate": "advancements.achievement_c_1.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_c_1.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "achievement_c_1": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": [
+            "pasterdream:dreamjuice"
+          ]
+        }
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  },
+  "parent": "pasterdream:achievement_b_0"
+}

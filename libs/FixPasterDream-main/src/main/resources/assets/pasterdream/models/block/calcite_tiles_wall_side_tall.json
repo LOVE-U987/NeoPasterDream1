@@ -1,0 +1,8 @@
+{
+  "parent": "block/template_wall_side_tall",
+  "textures": {
+    "wall": "pasterdream:block/fang_jie_shi_wa_",
+    "particle": "pasterdream:block/fang_jie_shi_wa_"
+  },
+  "render_type": "cutout"
+}

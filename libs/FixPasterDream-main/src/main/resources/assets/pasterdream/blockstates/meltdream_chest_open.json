@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:custom/meltdream_chest_open_particle"
+    },
+    "facing=east": {
+      "model": "pasterdream:custom/meltdream_chest_open_particle",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:custom/meltdream_chest_open_particle",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:custom/meltdream_chest_open_particle",
+      "y": 270
+    }
+  }
+}

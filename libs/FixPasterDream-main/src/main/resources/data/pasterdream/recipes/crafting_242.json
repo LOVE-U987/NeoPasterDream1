@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:water_glassjar"
+    },
+    {
+      "item": "pasterdream:goldenrod"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:goldenrod_tea",
+    "count": 1
+  }
+}

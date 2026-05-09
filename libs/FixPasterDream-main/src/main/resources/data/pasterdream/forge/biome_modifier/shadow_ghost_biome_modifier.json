@@ -1,0 +1,13 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": [
+    "pasterdream:biome_shadow_1",
+    "pasterdream:biome_shadow_2"
+  ],
+  "spawners": {
+    "type": "pasterdream:shadow_ghost",
+    "weight": 15,
+    "minCount": 4,
+    "maxCount": 5
+  }
+}

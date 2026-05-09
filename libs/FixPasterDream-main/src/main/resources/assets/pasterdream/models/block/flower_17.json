@@ -1,0 +1,8 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "pasterdream:block/lin_lie_xue_rong_hua_",
+    "particle": "pasterdream:block/lin_lie_xue_rong_hua_"
+  },
+  "render_type": "cutout"
+}

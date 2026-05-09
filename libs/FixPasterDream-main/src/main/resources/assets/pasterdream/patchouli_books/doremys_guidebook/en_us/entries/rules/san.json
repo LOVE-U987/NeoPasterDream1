@@ -1,0 +1,25 @@
+{
+  "sortnum": 0,
+  "name": "pasterdream.entry.san",
+  "icon": "pasterdream:garland",
+  "category": "pasterdream:rules",
+  "pages": [
+    {
+      "type": "text",
+      "text": "pasterdream.entry.san.page0"
+    },
+    {
+      "type": "text",
+      "text": "pasterdream.entry.san.page1"
+    },
+    {
+      "type":"patchouli:spotlight",
+      "item":"pasterdream:pineapple_love_sea,pasterdream:garland",
+      "text": "pasterdream.entry.san.page2"
+    },
+    {
+      "type": "text",
+      "text": "pasterdream.entry.san.page3"
+    }
+  ]
+}

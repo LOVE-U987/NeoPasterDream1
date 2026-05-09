@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "pasterdream:block/ejection_pressure_plate"
+    },
+    "powered=true": {
+      "model": "pasterdream:block/ejection_pressure_plate_down"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/wind_knight_spawnblock.item",
+  "textures": {
+    "particle": "pasterdream:block/wind_knight_spawnblock"
+  }
+}

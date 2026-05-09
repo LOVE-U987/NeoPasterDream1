@@ -1,0 +1,22 @@
+{
+    "key":"snailshell",
+    "category":"scale",
+    "primary":6,
+    "secondary":1,
+    "tertiary":0,
+    "durability":140,
+    "integrityCost":1,
+    "integrityGain":4,
+    "magicCapacity":90,
+    "toolLevel":0,
+    "toolEfficiency":0,
+    "tints":{
+        "glyph":"778899",
+        "texture":"778899"
+    },
+    "textures":[
+        "crude",
+        "default"
+    ],
+    "material":{"items":["pasterdream:basalt_snail_shell"]},
+    "requiredTools":{"axe_dig":"minecraft:stone"}}

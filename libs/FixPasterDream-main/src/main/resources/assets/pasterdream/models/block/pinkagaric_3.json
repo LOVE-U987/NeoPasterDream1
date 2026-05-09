@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/ran_meng_jun_guang_ti_",
+    "up": "pasterdream:block/ran_meng_jun_guang_ti_",
+    "north": "pasterdream:block/ran_meng_jun_guang_ti_",
+    "east": "pasterdream:block/ran_meng_jun_guang_ti_",
+    "south": "pasterdream:block/ran_meng_jun_guang_ti_",
+    "west": "pasterdream:block/ran_meng_jun_guang_ti_",
+    "particle": "pasterdream:block/ran_meng_jun_guang_ti_"
+  },
+  "render_type": "cutout"
+}

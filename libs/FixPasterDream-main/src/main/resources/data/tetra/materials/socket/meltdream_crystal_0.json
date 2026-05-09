@@ -1,0 +1,30 @@
+{
+    "key":"socket_meltdream_crystal_0",
+    "hidden":false,
+    "category":"socket",
+    "primary":10,
+    "secondary":0,
+    "tertiary":0,
+    "durability":57,
+    "integrityCost":2,
+    "integrityGain":0,
+    "magicCapacity":50,
+    "toolLevel":0,
+    "toolEfficiency":0,
+    "attributes":{
+        "generic.attack_damage":1,
+        "generic.attack_speed":-0.05
+    },
+    "effects":{
+        "intuit":1
+    },
+    "tints":{
+        "glyph":"ff60ff",
+        "texture":"ff60ff"
+    },
+    "textures":["shiny"],
+    "experienceCost":4,
+    "material":{
+        "items":["pasterdream:meltdream_crystal_0"]
+    }
+}

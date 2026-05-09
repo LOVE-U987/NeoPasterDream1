@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:raw_titanium"
+    },
+    {
+      "item": "pasterdream:raw_titanium"
+    },
+    {
+      "item": "pasterdream:raw_titanium"
+    },
+    {
+      "item": "pasterdream:raw_titanium"
+    },
+    {
+      "item": "pasterdream:raw_titanium"
+    },
+    {
+      "item": "pasterdream:raw_titanium"
+    },
+    {
+      "item": "pasterdream:raw_titanium"
+    },
+    {
+      "item": "pasterdream:raw_titanium"
+    },
+    {
+      "item": "pasterdream:raw_titanium"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:raw_titanium_block",
+    "count": 1
+  }
+}

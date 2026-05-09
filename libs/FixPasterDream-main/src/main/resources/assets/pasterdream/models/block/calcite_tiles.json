@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/fang_jie_shi_wa_",
+    "up": "pasterdream:block/fang_jie_shi_wa_",
+    "north": "pasterdream:block/fang_jie_shi_wa_",
+    "east": "pasterdream:block/fang_jie_shi_wa_",
+    "south": "pasterdream:block/fang_jie_shi_wa_",
+    "west": "pasterdream:block/fang_jie_shi_wa_",
+    "particle": "pasterdream:block/fang_jie_shi_wa_"
+  },
+  "render_type": "solid"
+}

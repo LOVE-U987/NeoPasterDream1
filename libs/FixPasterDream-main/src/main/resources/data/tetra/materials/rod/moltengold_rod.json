@@ -1,0 +1,28 @@
+{
+    "key":"moltengold_rod",
+    "primary":5,
+    "secondary":0.4,
+    "tertiary":1,
+    "durability":150,
+    "integrityCost":2,
+    "integrityGain":6,
+    "magicCapacity":108,
+    "toolLevel":0,
+    "toolEfficiency":0,
+    "effects":{
+        "fierySelf":[3,0.2]
+    },
+    "attributes":{
+        "generic.attack_speed":0.05
+    },
+    "tints":{
+        "glyph":"FFD700",
+        "texture":"FFD700"
+        },
+    "textures":[
+        "metal",
+        "default"
+        ],
+    "material":{"items":["pasterdream:moltengold_ingot"]},
+    "requiredTools":{"hammer_dig":"minecraft:stone"}
+}

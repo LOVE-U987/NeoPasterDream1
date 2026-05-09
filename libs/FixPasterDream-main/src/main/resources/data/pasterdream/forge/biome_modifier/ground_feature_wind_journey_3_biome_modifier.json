@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "pasterdream:wind_journey_biome_0",
+  "features": "pasterdream:ground_feature_wind_journey_3",
+  "step": "surface_structures"
+}

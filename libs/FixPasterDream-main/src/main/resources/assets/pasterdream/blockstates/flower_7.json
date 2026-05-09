@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=upper": {
+      "model": "pasterdream:block/flower_7"
+    },
+    "half=lower": {
+      "model": "pasterdream:block/flower_7_bottom"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "block/button_inventory",
+  "textures": {
+    "texture": "pasterdream:block/cang_qing_yan_"
+  },
+  "render_type": "cutout"
+}

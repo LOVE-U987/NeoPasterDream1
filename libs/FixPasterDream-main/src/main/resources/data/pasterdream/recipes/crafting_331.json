@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:light_butterfly_curio"
+    },
+    {
+      "item": "pasterdream:white_crystal"
+    },
+    {
+      "item": "pasterdream:soul_essence"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:bright_butterfly_curio",
+    "count": 1
+  }
+}

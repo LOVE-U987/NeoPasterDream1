@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/zan_zhi_yin_ying_shi_zhuan_",
+    "up": "pasterdream:block/zan_zhi_yin_ying_shi_zhuan_",
+    "north": "pasterdream:block/zan_zhi_yin_ying_shi_zhuan_",
+    "east": "pasterdream:block/zan_zhi_yin_ying_shi_zhuan_",
+    "south": "pasterdream:block/zan_zhi_yin_ying_shi_zhuan_",
+    "west": "pasterdream:block/zan_zhi_yin_ying_shi_zhuan_",
+    "particle": "pasterdream:block/zan_zhi_yin_ying_shi_zhuan_"
+  },
+  "render_type": "solid"
+}

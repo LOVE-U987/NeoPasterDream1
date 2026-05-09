@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/research_table.item",
+  "textures": {
+    "particle": "pasterdream:block/research_table"
+  }
+}

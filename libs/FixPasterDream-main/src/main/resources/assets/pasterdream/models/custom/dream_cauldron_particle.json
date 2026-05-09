@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/dream_cauldron.item",
+  "textures": {
+    "particle": "pasterdream:block/mo_zhi_fang_jie_shi_"
+  }
+}

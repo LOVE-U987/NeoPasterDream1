@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/life_crystal.item",
+  "textures": {
+    "particle": "pasterdream:block/ran_meng_fu_bing_"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:dyedream_block",
+    "pasterdream:blackmetal_block",
+    "pasterdream:titanium_block",
+    "pasterdream:moltengold_block"
+  ]
+}

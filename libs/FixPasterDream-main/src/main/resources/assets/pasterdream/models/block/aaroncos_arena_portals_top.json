@@ -1,0 +1,9 @@
+{
+  "parent": "block/slab_top",
+  "textures": {
+    "bottom": "pasterdream:block/ya_lun_ke_si_jing_ji_chang_chuan_song_men_",
+    "top": "pasterdream:block/ya_lun_ke_si_jing_ji_chang_chuan_song_men_",
+    "side": "pasterdream:block/ya_lun_ke_si_jing_ji_chang_chuan_song_men_"
+  },
+  "render_type": "translucent"
+}

@@ -1,0 +1,16 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "plains",
+    "jungle",
+    "desert",
+    "taiga",
+    "savanna",
+    "beach",
+    "badlands",
+    "windswept_hills",
+    "forest"
+  ],
+  "features": "pasterdream:ground_overworld_0",
+  "step": "surface_structures"
+}

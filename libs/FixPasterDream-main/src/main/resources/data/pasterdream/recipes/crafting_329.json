@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:phantom_membrane"
+    },
+    {
+      "item": "minecraft:moss_block"
+    },
+    {
+      "item": "pasterdream:jungle_spore"
+    },
+    {
+      "item": "pasterdream:yeast"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:moss_phantom_membrane",
+    "count": 1
+  }
+}

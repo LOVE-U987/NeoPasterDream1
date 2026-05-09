@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/chuang_zao_lan__diao_shi_"
+  },
+  "render_type": "translucent"
+}

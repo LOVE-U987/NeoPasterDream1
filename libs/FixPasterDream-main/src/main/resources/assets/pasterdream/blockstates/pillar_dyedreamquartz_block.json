@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:block/pillar_dyedreamquartz_block"
+    },
+    "facing=east": {
+      "model": "pasterdream:block/pillar_dyedreamquartz_block",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:block/pillar_dyedreamquartz_block",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:block/pillar_dyedreamquartz_block",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "pasterdream:block/pillar_dyedreamquartz_block",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "pasterdream:block/pillar_dyedreamquartz_block",
+      "x": 90
+    }
+  }
+}

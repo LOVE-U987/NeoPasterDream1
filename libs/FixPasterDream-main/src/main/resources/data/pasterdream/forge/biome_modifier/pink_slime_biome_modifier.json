@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "pasterdream:biome_dyedream_0",
+  "spawners": {
+    "type": "pasterdream:pink_slime",
+    "weight": 20,
+    "minCount": 5,
+    "maxCount": 6
+  }
+}

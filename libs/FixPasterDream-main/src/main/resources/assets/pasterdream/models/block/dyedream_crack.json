@@ -1,0 +1,9 @@
+{
+  "parent": "pasterdream:custom/dyedreamcrack",
+  "textures": {
+    "all": "pasterdream:block/dyedreamcrack",
+    "particle": "pasterdream:block/dyedreamcrack",
+    "0": "pasterdream:block/dyedreamcrack"
+  },
+  "render_type": "translucent"
+}

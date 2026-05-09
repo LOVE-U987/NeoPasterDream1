@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a ",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:pebble_0"
+    }
+  },
+  "result": {
+    "item": "minecraft:flint",
+    "count": 1
+  }
+}

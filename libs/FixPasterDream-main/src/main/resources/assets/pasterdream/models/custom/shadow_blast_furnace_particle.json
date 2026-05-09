@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/shadow_blast_furnace.item",
+  "textures": {
+    "particle": "pasterdream:block/an_ying_gao_lu_he_xin__top"
+  }
+}

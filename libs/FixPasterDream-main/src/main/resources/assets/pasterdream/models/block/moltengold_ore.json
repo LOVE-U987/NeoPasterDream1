@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/zhi_yan_jin_kuang_shi_",
+    "up": "pasterdream:block/zhi_yan_jin_kuang_shi_",
+    "north": "pasterdream:block/zhi_yan_jin_kuang_shi_",
+    "east": "pasterdream:block/zhi_yan_jin_kuang_shi_",
+    "south": "pasterdream:block/zhi_yan_jin_kuang_shi_",
+    "west": "pasterdream:block/zhi_yan_jin_kuang_shi_",
+    "particle": "pasterdream:block/zhi_yan_jin_kuang_shi_"
+  },
+  "render_type": "solid"
+}

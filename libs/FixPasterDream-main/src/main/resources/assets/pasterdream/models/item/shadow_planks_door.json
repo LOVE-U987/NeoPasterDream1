@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/yin_ying_mu_men_item"
+  },
+  "render_type": "translucent"
+}

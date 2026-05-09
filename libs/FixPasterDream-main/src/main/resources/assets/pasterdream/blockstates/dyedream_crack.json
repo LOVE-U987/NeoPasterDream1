@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:block/dyedream_crack"
+    },
+    "facing=east": {
+      "model": "pasterdream:block/dyedream_crack",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:block/dyedream_crack",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:block/dyedream_crack",
+      "y": 270
+    }
+  }
+}

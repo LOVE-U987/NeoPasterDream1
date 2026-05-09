@@ -1,0 +1,9 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "pasterdream:block/yin_ying_mu_ban_",
+    "top": "pasterdream:block/yin_ying_mu_ban_",
+    "side": "pasterdream:block/yin_ying_mu_ban_"
+  },
+  "render_type": "cutout"
+}

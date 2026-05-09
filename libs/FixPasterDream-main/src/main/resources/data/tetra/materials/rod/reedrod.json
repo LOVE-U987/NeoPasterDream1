@@ -1,0 +1,23 @@
+{
+    "key": "reedrod",              
+    "category": "misc",             
+    "primary": 1,                  
+    "secondary": 0.2,                  
+    "tertiary": 1,               
+    "durability": 40,         
+    "integrityCost": 1,              
+    "integrityGain": 2,                 
+    "magicCapacity": 24,                 
+    "toolLevel": 0,    
+    "toolEfficiency": 1,            
+    "tints": {
+        "glyph": "CD853F",
+        "texture": "CD853F"
+    },
+    "textures": [
+        "default"
+    ],
+    "material": {
+        "items": ["pasterdream:reedrod"]
+    }
+}

@@ -1,0 +1,20 @@
+{
+  "replace": "false",
+  "values": [
+    "minecraft:air",
+    "pasterdream:dark_alllegory_curio",
+    "pasterdream:calais_spice_bottle_curio",
+    "pasterdream:fourleaf_clover_curio",
+    "pasterdream:bright_butterfly_curio",
+    "pasterdream:iceshadow_curio",
+    "pasterdream:boboji_curio",
+    "pasterdream:paper_plane",
+    "pasterdream:wind_knight_flag",
+    "pasterdream:terra_charm",
+    "pasterdream:duke_coin_curio",
+    "pasterdream:moss_phantom_membrane",
+    "pasterdream:light_moss_phantom_membrane",
+    "pasterdream:shadow_breath",
+    "pasterdream:light_butterfly_curio"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a",
+    "a",
+    "b"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:moltengold_ingot"
+    },
+    "b": {
+      "item": "pasterdream:blackstick"
+    }
+  },
+  "result": {
+    "item": "pasterdream:moltengold_sword",
+    "count": 1
+  }
+}

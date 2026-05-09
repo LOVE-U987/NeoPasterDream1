@@ -1,0 +1,29 @@
+{
+  "display": {
+    "background": "pasterdream:textures/screens/yin_ying_.png",
+    "icon": {
+      "item": "pasterdream:twilight_lantern"
+    },
+    "title": {
+      "translate": "advancements.achievement_shadow_start.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_shadow_start.descr"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "achievement_shadow_start": {
+      "trigger": "minecraft:changed_dimension",
+      "conditions": {
+        "to": "pasterdream:lamp_shadow_world"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 100
+  }
+}

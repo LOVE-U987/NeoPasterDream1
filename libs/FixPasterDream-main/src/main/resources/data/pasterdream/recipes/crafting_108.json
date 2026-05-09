@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:dyedream_glass"
+    }
+  },
+  "result": {
+    "item": "pasterdream:carve_dyedream_glass",
+    "count": 4
+  }
+}

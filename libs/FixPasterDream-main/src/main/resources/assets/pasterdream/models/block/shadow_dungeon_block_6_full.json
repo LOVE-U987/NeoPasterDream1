@@ -1,0 +1,9 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "bottom": "pasterdream:block/an_ying_di_lao_qiang_bi_3",
+    "top": "pasterdream:block/an_ying_di_lao_qiang_bi_3",
+    "side": "pasterdream:block/an_ying_di_lao_qiang_bi_3"
+  },
+  "render_type": "solid"
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:clarity_glass"
+    },
+    {
+      "item": "pasterdream:clarity_glass"
+    },
+    {
+      "item": "pasterdream:clarity_glass"
+    },
+    {
+      "item": "pasterdream:polished_calcite"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:frame_clarity_glass",
+    "count": 4
+  }
+}

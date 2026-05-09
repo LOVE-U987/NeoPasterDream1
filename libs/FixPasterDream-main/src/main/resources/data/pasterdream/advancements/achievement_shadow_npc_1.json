@@ -1,0 +1,10 @@
+{
+  "criteria": {
+    "achievement_shadow_npc_1": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "bcb",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:seagrass"
+    },
+    "b": {
+      "item": "minecraft:scute"
+    },
+    "c": {
+      "item": "pasterdream:embryo_charm"
+    }
+  },
+  "result": {
+    "item": "pasterdream:carapax_charm",
+    "count": 1
+  }
+}

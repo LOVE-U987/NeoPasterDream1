@@ -1,0 +1,7 @@
+{
+  "parent": "block/button_inventory",
+  "textures": {
+    "texture": "pasterdream:block/ran_meng_mu_ban_"
+  },
+  "render_type": "cutout"
+}

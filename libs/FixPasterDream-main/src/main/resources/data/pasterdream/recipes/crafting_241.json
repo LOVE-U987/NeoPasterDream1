@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:cobblestone"
+    },
+    {
+      "item": "pasterdream:mortar"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:pebble_0",
+    "count": 2
+  }
+}

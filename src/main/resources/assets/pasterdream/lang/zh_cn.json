@@ -1,0 +1,19 @@
+{
+  "block.pasterdream.dream_accumulator": "蓄梦池",
+  "block.pasterdream.dyedream_desk": "染梦书桌",
+  "block.pasterdream.life_crystal": "生命水晶",
+  "block.pasterdream.shadow_chest": "影之箱子",
+
+  "container.pasterdream.shadow_chest": "影之箱子",
+
+  "item.pasterdream.shadow_golem_spawn_egg": "暗影魔像刷怪蛋",
+  "item.pasterdream.pink_slime_spawn_egg": "粉色史莱姆刷怪蛋",
+
+  "entity.pasterdream.shadow_golem": "暗影魔像",
+  "entity.pasterdream.pink_slime": "粉色史莱姆",
+
+  "itemGroup.pasterdream.paster_tab_0": "PasterDream 基础",
+  "itemGroup.pasterdream.spawn_eggs_tab": "PasterDream 刷怪蛋",
+
+  "subtitle.pasterdream.life_crystal": "水晶嗡鸣"
+}

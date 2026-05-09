@@ -1,0 +1,9 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "pasterdream:biome_dyedream_0",
+    "pasterdream:biome_dyedream_2"
+  ],
+  "features": "pasterdream:crop_3a",
+  "step": "vegetal_decoration"
+}

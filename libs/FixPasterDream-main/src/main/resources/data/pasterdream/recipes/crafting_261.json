@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:amber_candy"
+    },
+    {
+      "item": "pasterdream:amber_candy"
+    },
+    {
+      "item": "pasterdream:pink_slimeball"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:bubble_gum",
+    "count": 2
+  }
+}

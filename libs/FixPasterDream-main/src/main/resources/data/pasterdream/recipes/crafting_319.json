@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "pasterdream:wind_plant_extract"
+    },
+    {
+      "item": "pasterdream:congeal_wind"
+    },
+    {
+      "item": "pasterdream:congeal_wind"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:wind_iron_ingot",
+    "count": 1
+  }
+}

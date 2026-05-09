@@ -1,0 +1,8 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "pasterdream:block/gao_fen_ding_gu_",
+    "particle": "pasterdream:block/gao_fen_ding_gu_"
+  },
+  "render_type": "cutout"
+}

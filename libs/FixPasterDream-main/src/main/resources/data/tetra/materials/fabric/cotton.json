@@ -1,0 +1,26 @@
+{
+    "key":"cotton",
+    "category":"fabric",
+    "primary":1,
+    "secondary":1,
+    "tertiary":7,
+    "durability":50,
+    "integrityCost":1,
+    "integrityGain":2,
+    "magicCapacity":60,
+    "toolLevel":0,
+    "toolEfficiency":0,
+    "effects":{
+        "fierySelf":[6,0]
+    },
+    "tints":{
+        "glyph":"DCDCDC",
+        "texture":"DCDCDC"
+    },
+    "textures":[
+        "crude",
+        "default"
+    ],
+    "material":{"items":["pasterdream:cotton"]},
+    "requiredTools":{"cut":"minecraft:wood"}
+}

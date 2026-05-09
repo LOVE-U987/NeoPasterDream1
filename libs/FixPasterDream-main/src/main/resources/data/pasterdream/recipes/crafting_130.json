@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:cotton"
+    },
+    {
+      "item": "minecraft:white_dye"
+    },
+    {
+      "item": "pasterdream:water_glassjar"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:crop_4b",
+    "count": 1
+  }
+}

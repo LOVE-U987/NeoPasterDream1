@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:eggdough"
+    },
+    {
+      "item": "pasterdream:yeast"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "pasterdream:milk_glassjar"
+    },
+    {
+      "item": "pasterdream:milk_glassjar"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:cream_buncake",
+    "count": 2
+  }
+}

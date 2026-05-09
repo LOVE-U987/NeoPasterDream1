@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:blocks/diao_hua_ran_meng_bo_li_",
+    "up": "pasterdream:blocks/diao_hua_ran_meng_bo_li_",
+    "north": "pasterdream:blocks/diao_hua_ran_meng_bo_li_",
+    "east": "pasterdream:blocks/diao_hua_ran_meng_bo_li_",
+    "south": "pasterdream:blocks/diao_hua_ran_meng_bo_li_",
+    "west": "pasterdream:blocks/diao_hua_ran_meng_bo_li_",
+    "particle": "pasterdream:blocks/diao_hua_ran_meng_bo_li_"
+  },
+  "render_type": "translucent"
+}

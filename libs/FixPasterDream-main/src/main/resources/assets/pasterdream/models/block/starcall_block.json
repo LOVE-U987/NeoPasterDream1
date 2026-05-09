@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "pasterdream:block/air",
+    "particle": "pasterdream:block/air"
+  },
+  "render_type": "cutout"
+}

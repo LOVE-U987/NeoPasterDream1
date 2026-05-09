@@ -1,0 +1,28 @@
+{
+    "key": "dyedream",                
+    "category": "metal",             
+    "primary": 7,                
+    "secondary": 2,                
+    "tertiary": 5,                 
+    "durability": 941.6,               
+    "integrityCost": 2,                
+    "integrityGain": 8,               
+    "magicCapacity": 180,        
+    "toolLevel": "minecraft:diamond",    
+    "toolEfficiency": 10,         
+    "tints": {
+        "glyph": "FF60FF",
+        "texture": "FF60FF"
+    },
+    "textures": [       
+        "shiny", 
+        "metal",
+        "default"
+    ],
+    "material": {
+        "items": ["pasterdream:dyedream_ingot"]
+    },
+    "requiredTools": {
+        "hammer_dig": "minecraft:diamond"
+    }
+}

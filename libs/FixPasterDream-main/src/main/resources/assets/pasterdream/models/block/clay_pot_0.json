@@ -1,0 +1,10 @@
+{
+  "parent": "pasterdream:custom/clay_pot_0",
+  "textures": {
+    "all": "pasterdream:block/clay_pot_0",
+    "particle": "pasterdream:block/yin_ying_shi_wa_",
+    "side": "pasterdream:block/clay_pot_0",
+    "end": "pasterdream:block/clay_pot_0_top"
+  },
+  "render_type": "cutout"
+}

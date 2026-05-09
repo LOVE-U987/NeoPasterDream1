@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:shadow_stone"
+    }
+  },
+  "result": {
+    "item": "pasterdream:shadow_stone_brick",
+    "count": 4
+  }
+}

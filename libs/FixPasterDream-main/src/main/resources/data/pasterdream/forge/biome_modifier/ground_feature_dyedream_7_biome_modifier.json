@@ -1,0 +1,9 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "pasterdream:biome_dyedream_3",
+    "pasterdream:biome_dyedream_0"
+  ],
+  "features": "pasterdream:ground_feature_dyedream_7",
+  "step": "surface_structures"
+}

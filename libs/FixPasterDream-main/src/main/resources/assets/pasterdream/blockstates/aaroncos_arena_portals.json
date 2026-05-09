@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "pasterdream:block/aaroncos_arena_portals"
+    },
+    "type=top": {
+      "model": "pasterdream:block/aaroncos_arena_portals_top"
+    },
+    "type=double": {
+      "model": "pasterdream:block/aaroncos_arena_portals_full"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "playeranimator",
+  "version": "${version}",
+  "name": "Player Animator",
+  "description": "A lightweight library to easily animate the player",
+  "authors": [
+    "KosmX  "
+  ],
+  "contact": {
+    "homepage": "kosmx.dev",
+    "sources": "https://github.com/KosmX/fabricPlayerAnimation"
+  },
+  "provides": [
+    "player-animator"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "client": ["dev.kosmx.playerAnim.fabric.client.FabricClientInitializer"]
+  },
+  "mixins": [
+    "playerAnimator-common.mixins.json"
+  ],
+  "depends": {
+    "minecraft": ">=1.21 <1.21.2",
+    "fabric-resource-loader-v0": "*"
+  },
+  "breaks": {
+    "bettercombat": "<1.6.0"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": ["library"]
+    }
+  }
+}

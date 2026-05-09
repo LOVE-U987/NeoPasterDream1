@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "minecraft:wool"
+    },
+    {
+      "item": "pasterdream:cotton"
+    },
+    {
+      "item": "pasterdream:spool"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:fabric",
+    "count": 1
+  }
+}

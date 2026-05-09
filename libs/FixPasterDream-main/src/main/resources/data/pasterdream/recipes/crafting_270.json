@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "abc",
+    "de "
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:water_glassjar"
+    },
+    "b": {
+      "item": "pasterdream:flower_8"
+    },
+    "c": {
+      "item": "pasterdream:grass_7"
+    },
+    "d": {
+      "item": "minecraft:fermented_spider_eye"
+    },
+    "e": {
+      "item": "pasterdream:dyedream_dust_piece"
+    }
+  },
+  "result": {
+    "item": "pasterdream:dyedream_perfume",
+    "count": 1
+  }
+}

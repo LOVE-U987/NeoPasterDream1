@@ -1,0 +1,8 @@
+{
+  "parent": "block/template_glass_pane_post",
+  "textures": {
+    "edge": "pasterdream:block/ning_feng_tie_lan_gan_",
+    "pane": "pasterdream:block/ning_feng_tie_lan_gan_"
+  },
+  "render_type": "cutout_mipped"
+}

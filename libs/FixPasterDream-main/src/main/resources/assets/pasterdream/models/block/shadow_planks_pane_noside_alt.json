@@ -1,0 +1,7 @@
+{
+  "parent": "block/template_glass_pane_noside_alt",
+  "textures": {
+    "pane": "pasterdream:block/yin_ying_mu_huo_ban_men_"
+  },
+  "render_type": "cutout"
+}

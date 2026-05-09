@@ -1,0 +1,23 @@
+{
+  "display": {
+    "background": "pasterdream:textures/screens/guiblock.png",
+    "icon": {
+      "item": "pasterdream:meltdream_crystal_0"
+    },
+    "title": {
+      "translate": "advancements.achievement_start.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_start.descr"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "achievement_start": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "a a",
+    " b "
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:titanium_nugget"
+    },
+    "b": {
+      "item": "pasterdream:soul_essence"
+    }
+  },
+  "result": {
+    "item": "pasterdream:embryo_necklace",
+    "count": 1
+  }
+}

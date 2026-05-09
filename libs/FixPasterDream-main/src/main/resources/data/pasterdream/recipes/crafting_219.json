@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:charged_amethyst"
+    }
+  },
+  "result": {
+    "item": "pasterdream:charged_amethyst_block",
+    "count": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "pasterdream:shadow_blasting",
+  "input_ingredient": {
+    "item": "pasterdream:cloud"
+  },
+  "result": {
+    "item": "pasterdream:shadow_block"
+  },
+  "spend_fuel": 0
+}

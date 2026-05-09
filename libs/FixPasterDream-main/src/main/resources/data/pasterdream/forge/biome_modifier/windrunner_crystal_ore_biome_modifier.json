@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "pasterdream:wind_journey_biome_0",
+  "features": "pasterdream:windrunner_crystal_ore",
+  "step": "underground_ores"
+}

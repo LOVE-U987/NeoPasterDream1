@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "a a"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:titanium_ingot"
+    },
+    "b": {
+      "item": "pasterdream:protect_deck"
+    }
+  },
+  "result": {
+    "item": "pasterdream:titanium_armor_helmet",
+    "count": 1
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/qin_yu_meng_de_hu_die_xing_fa_qia_"
+  }
+}

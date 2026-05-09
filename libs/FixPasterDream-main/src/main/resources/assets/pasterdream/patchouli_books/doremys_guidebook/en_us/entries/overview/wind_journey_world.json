@@ -1,0 +1,34 @@
+{
+  "sortnum": 0,
+  "name": "pasterdream.entry.wind_journey_world",
+  "icon": "pasterdream:windrunner_crystal",
+  "category": "pasterdream:overview",
+  "pages": [
+    {
+      "type": "text",
+      "text": "pasterdream.entry.wind_journey_world.page0"
+    },
+    {
+      "type": "text",
+      "text": "pasterdream.entry.wind_journey_world.page1"
+    },
+    {
+      "type":"patchouli:spotlight",
+      "item":"pasterdream:queer_soup"
+    },
+    {
+      "type": "text",
+      "text": "pasterdream.entry.wind_journey_world.page2"
+    },
+    {
+      "type":"patchouli:spotlight",
+      "item":"pasterdream:windrunner_crystal_ore,pasterdream:windrunner_crystal",
+      "text": "pasterdream.entry.wind_journey_world.page3"
+    },
+    {
+      "type":"patchouli:spotlight",
+      "item":"pasterdream:congeal_wind_ore,pasterdream:congeal_wind",
+      "text": "pasterdream.entry.wind_journey_world.page4"
+    }
+  ]
+}

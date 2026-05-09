@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:charged_amethyst_block"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:charged_amethyst",
+    "count": 4
+  }
+}

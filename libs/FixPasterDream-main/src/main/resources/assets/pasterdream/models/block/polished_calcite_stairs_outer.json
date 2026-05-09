@@ -1,0 +1,9 @@
+{
+  "parent": "block/outer_stairs",
+  "textures": {
+    "bottom": "pasterdream:block/mo_zhi_fang_jie_shi_",
+    "top": "pasterdream:block/mo_zhi_fang_jie_shi_",
+    "side": "pasterdream:block/mo_zhi_fang_jie_shi_"
+  },
+  "render_type": "cutout"
+}

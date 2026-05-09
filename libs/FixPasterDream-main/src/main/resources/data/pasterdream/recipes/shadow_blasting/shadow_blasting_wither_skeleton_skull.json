@@ -1,0 +1,9 @@
+{
+  "type": "pasterdream:shadow_blasting",
+  "input_ingredient": {
+    "item": "minecraft:skeleton_skull"
+  },
+  "result": {
+    "item": "minecraft:wither_skeleton_skull"
+  }
+}

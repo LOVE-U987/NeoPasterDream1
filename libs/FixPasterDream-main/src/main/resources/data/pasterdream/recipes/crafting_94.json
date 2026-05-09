@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:dyedream_dust_piece"
+    },
+    {
+      "item": "pasterdream:dyedream_dust_piece"
+    },
+    {
+      "item": "pasterdream:dyedream_dust_piece"
+    },
+    {
+      "item": "pasterdream:dyedream_dust_piece"
+    },
+    {
+      "item": "pasterdream:dyedream_dust_piece"
+    },
+    {
+      "item": "pasterdream:dyedream_dust_piece"
+    },
+    {
+      "item": "pasterdream:dyedream_dust_piece"
+    },
+    {
+      "item": "pasterdream:dyedream_dust_piece"
+    },
+    {
+      "item": "pasterdream:dyedream_dust_piece"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:dyedream_dust",
+    "count": 1
+  }
+}

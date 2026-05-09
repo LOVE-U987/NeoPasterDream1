@@ -1,0 +1,39 @@
+{
+  "display": {
+    "icon": {
+      "item": "pasterdream:meltdream_crystal_0"
+    },
+    "title": {
+      "translate": "advancements.achievement_d_0.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_d_0.descr"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "achievement_d_0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pasterdream:meltdream_crystal_0"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 50
+  },
+  "parent": "pasterdream:achievement_c_0"
+}

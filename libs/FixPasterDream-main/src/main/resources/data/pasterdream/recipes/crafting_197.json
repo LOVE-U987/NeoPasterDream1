@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:glass"
+    },
+    {
+      "item": "pasterdream:shadow_planks"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:shadow_planks_pane",
+    "count": 1
+  }
+}

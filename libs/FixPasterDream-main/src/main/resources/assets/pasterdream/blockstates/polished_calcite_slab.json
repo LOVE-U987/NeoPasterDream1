@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "pasterdream:block/polished_calcite_slab"
+    },
+    "type=top": {
+      "model": "pasterdream:block/polished_calcite_slab_top"
+    },
+    "type=double": {
+      "model": "pasterdream:block/polished_calcite_slab_full"
+    }
+  }
+}

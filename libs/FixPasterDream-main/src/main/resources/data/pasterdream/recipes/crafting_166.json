@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " ab",
+    "aca",
+    "da "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:prismarine_shard"
+    },
+    "b": {
+      "item": "minecraft:prismarine_crystals"
+    },
+    "c": {
+      "item": "minecraft:trident"
+    },
+    "d": {
+      "item": "pasterdream:elder_guardian_scale"
+    }
+  },
+  "result": {
+    "item": "pasterdream:tide_sword",
+    "count": 1
+  }
+}

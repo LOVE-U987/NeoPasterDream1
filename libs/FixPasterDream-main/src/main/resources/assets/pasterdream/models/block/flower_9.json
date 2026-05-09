@@ -1,0 +1,8 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "pasterdream:block/ling_deng_hua_",
+    "particle": "pasterdream:block/ling_deng_hua_"
+  },
+  "render_type": "cutout"
+}

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:embryo_necklace"
+    },
+    {
+      "item": "minecraft:gold_ingot"
+    },
+    {
+      "item": "pasterdream:red_dew_0"
+    },
+    {
+      "item": "pasterdream:heart_chocolate_2"
+    },
+    {
+      "item": "pasterdream:dyedream_dye"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:health_0_necklace",
+    "count": 1
+  }
+}

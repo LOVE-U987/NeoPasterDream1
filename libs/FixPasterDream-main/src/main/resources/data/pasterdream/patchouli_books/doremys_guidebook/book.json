@@ -1,0 +1,10 @@
+{
+    "name": "pasterdream.patchouli_books.bookname",
+    "landing_text": "pasterdream.landing_text",
+    "model": "pasterdream:doremys_guidebook",
+    "version": 1,
+    "creative_tab": "pasterdream:paster_tab_0",
+    "custom_book_item":"pasterdream:doremys_guidebook",
+    "use_resource_pack": true,
+    "i18n": true
+}

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "bb"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:diamond"
+    },
+    "b": {
+      "item": "pasterdream:soul_dust"
+    }
+  },
+  "result": {
+    "item": "pasterdream:magic_stone",
+    "count": 32
+  }
+}

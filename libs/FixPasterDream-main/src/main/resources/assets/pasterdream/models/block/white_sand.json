@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/bai_sha_",
+    "up": "pasterdream:block/bai_sha_",
+    "north": "pasterdream:block/bai_sha_",
+    "east": "pasterdream:block/bai_sha_",
+    "south": "pasterdream:block/bai_sha_",
+    "west": "pasterdream:block/bai_sha_",
+    "particle": "pasterdream:block/bai_sha_"
+  },
+  "render_type": "solid"
+}

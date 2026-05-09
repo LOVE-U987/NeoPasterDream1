@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:dyedreamquartz_block_wall",
+    "pasterdream:polished_calcite_wall",
+    "pasterdream:calcite_tiles_wall",
+    "pasterdream:shadow_stone_brick_wall",
+    "pasterdream:shadow_stone_bricks_wall",
+    "pasterdream:shadow_stone_tiles_wall",
+    "pasterdream:rust_black_metal_block_wall",
+    "pasterdream:armor_wreck_block_3",
+    "pasterdream:cyan_stone_brick_wall",
+    "pasterdream:mossy_cyan_stone_brick_wall",
+    "pasterdream:dyedream_bud_wall"
+  ]
+}

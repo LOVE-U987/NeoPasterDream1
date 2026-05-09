@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:embryo_ring"
+    },
+    {
+      "item": "minecraft:gold_ingot"
+    },
+    {
+      "item": "pasterdream:red_dew_0"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:red_dew_0_ring",
+    "count": 1
+  }
+}

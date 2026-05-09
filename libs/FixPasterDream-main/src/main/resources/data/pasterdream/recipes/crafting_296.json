@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:stick"
+    },
+    "b": {
+      "item": "pasterdream:windmoor_planks"
+    }
+  },
+  "result": {
+    "item": "pasterdream:windmoor_fence_gate",
+    "count": 1
+  }
+}

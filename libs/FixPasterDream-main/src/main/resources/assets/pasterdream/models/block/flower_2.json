@@ -1,0 +1,8 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "pasterdream:block/yang_jie_geng_",
+    "particle": "pasterdream:block/yang_jie_geng_"
+  },
+  "render_type": "cutout"
+}

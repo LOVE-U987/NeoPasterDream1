@@ -1,0 +1,8 @@
+{
+  "parent": "block/wall_inventory",
+  "textures": {
+    "wall": "pasterdream:block/ran_meng_shui_jing_zhuan_",
+    "particle": "pasterdream:block/ran_meng_shui_jing_zhuan_"
+  },
+  "render_type": "translucent"
+}

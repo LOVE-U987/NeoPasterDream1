@@ -1,0 +1,12 @@
+{
+  "feature": "pasterdream:ground_feature_shadow_1",
+  "placement": [
+    {
+      "type": "minecraft:count_on_every_layer",
+      "count": 8
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

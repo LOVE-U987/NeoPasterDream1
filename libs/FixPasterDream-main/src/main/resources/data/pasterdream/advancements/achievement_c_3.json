@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pasterdream:dream_accumulator"
+    },
+    "title": {
+      "translate": "advancements.achievement_c_3.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_c_3.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "achievement_c_3": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "parent": "pasterdream:achievement_b_0"
+}

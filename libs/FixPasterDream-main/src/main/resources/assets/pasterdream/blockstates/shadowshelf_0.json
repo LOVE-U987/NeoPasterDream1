@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:block/shadowshelf_0"
+    },
+    "facing=east": {
+      "model": "pasterdream:block/shadowshelf_0",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:block/shadowshelf_0",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:block/shadowshelf_0",
+      "y": 270
+    }
+  }
+}

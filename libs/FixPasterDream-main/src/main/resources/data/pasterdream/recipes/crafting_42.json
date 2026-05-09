@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:glass_pane"
+    },
+    {
+      "item": "pasterdream:dyedream_planks"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:dyedream_planks_pane",
+    "count": 1
+  }
+}

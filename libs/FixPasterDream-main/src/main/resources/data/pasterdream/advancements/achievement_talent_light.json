@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pasterdream:talent_light"
+    },
+    "title": {
+      "translate": "advancements.achievement_talent_light.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_talent_light.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "achievement_talent_light": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "parent": "pasterdream:achievement_shadow_d_0"
+}

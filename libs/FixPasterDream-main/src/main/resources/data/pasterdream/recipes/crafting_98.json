@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:dyedream_ingot"
+    }
+  },
+  "result": {
+    "item": "pasterdream:dyedream_block",
+    "count": 1
+  }
+}

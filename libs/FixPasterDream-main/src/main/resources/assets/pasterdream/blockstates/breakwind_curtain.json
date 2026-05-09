@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:block/breakwind_curtain"
+    },
+    "facing=east": {
+      "model": "pasterdream:block/breakwind_curtain",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:block/breakwind_curtain",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:block/breakwind_curtain",
+      "y": 270
+    }
+  }
+}

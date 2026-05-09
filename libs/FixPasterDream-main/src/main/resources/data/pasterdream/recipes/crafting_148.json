@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:moltengold_nugget"
+    },
+    {
+      "item": "pasterdream:moltengold_nugget"
+    },
+    {
+      "item": "pasterdream:moltengold_nugget"
+    },
+    {
+      "item": "pasterdream:moltengold_nugget"
+    },
+    {
+      "item": "pasterdream:moltengold_nugget"
+    },
+    {
+      "item": "pasterdream:moltengold_nugget"
+    },
+    {
+      "item": "pasterdream:moltengold_nugget"
+    },
+    {
+      "item": "pasterdream:moltengold_nugget"
+    },
+    {
+      "item": "pasterdream:moltengold_nugget"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:moltengold_ingot",
+    "count": 1
+  }
+}

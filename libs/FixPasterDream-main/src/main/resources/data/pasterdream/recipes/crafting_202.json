@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "abc",
+    "d d"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:anvil"
+    },
+    "b": {
+      "item": "minecraft:smithing_table"
+    },
+    "c": {
+      "item": "minecraft:magma_block"
+    },
+    "d": {
+      "item": "minecraft:cut_copper"
+    }
+  },
+  "result": {
+    "item": "pasterdream:weapon_table",
+    "count": 1
+  }
+}

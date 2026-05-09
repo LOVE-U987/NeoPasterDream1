@@ -1,0 +1,39 @@
+{
+  "display": {
+    "icon": {
+      "item": "pasterdream:blackmetal_ingot"
+    },
+    "title": {
+      "translate": "advancements.achievement_shadow_b_0.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_shadow_b_0.descr"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "achievement_shadow_b_0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pasterdream:blackmetal_ingot"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "parent": "pasterdream:achievement_shadow_a_0"
+}

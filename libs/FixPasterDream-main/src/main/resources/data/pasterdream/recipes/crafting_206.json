@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcb",
+    " b "
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:meltdream_crystal_0"
+    },
+    "b": {
+      "item": "pasterdream:dyedream_nugget"
+    },
+    "c": {
+      "item": "pasterdream:embryo_ring"
+    }
+  },
+  "result": {
+    "item": "pasterdream:meltdream_energy_0_ring",
+    "count": 1
+  }
+}

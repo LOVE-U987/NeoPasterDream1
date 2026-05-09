@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/twilight_lantern.item.geo",
+  "textures": {
+    "particle": "pasterdream:block/yin_ying_shi_"
+  }
+}

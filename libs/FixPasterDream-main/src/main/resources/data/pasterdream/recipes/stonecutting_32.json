@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "tag": "pasterdream:cyan_stone"
+  },
+  "result": "pasterdream:cyan_stone_bricks"
+}

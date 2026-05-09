@@ -1,0 +1,9 @@
+{
+  "parent": "block/outer_stairs",
+  "textures": {
+    "bottom": "pasterdream:block/yin_ying_shi_wa_",
+    "top": "pasterdream:block/yin_ying_shi_wa_",
+    "side": "pasterdream:block/yin_ying_shi_wa_"
+  },
+  "render_type": "cutout"
+}

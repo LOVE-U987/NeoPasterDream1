@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "cdc"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:nightmare_fuel"
+    },
+    "b": {
+      "item": "minecraft:black_bed"
+    },
+    "c": {
+      "item": "pasterdream:shadow_stone_tiles"
+    },
+    "d": {
+      "item": "pasterdream:shadow_planks_slab"
+    }
+  },
+  "result": {
+    "item": "pasterdream:shadow_bed",
+    "count": 1
+  }
+}

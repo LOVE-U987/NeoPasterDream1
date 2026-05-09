@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "cdc",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:nightmare_fuel"
+    },
+    "b": {
+      "item": "pasterdream:shadow_light_0"
+    },
+    "c": {
+      "item": "pasterdream:blackmetal_grain"
+    },
+    "d": {
+      "item": "pasterdream:pure_horror"
+    }
+  },
+  "result": {
+    "item": "pasterdream:aaroncos_disc",
+    "count": 1
+  }
+}

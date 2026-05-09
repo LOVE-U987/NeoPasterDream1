@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:water_bucket"
+    },
+    {
+      "item": "pasterdream:glassjar"
+    },
+    {
+      "item": "pasterdream:glassjar"
+    },
+    {
+      "item": "pasterdream:glassjar"
+    },
+    {
+      "item": "pasterdream:glassjar"
+    },
+    {
+      "item": "pasterdream:glassjar"
+    },
+    {
+      "item": "pasterdream:glassjar"
+    },
+    {
+      "item": "pasterdream:glassjar"
+    },
+    {
+      "item": "pasterdream:glassjar"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:water_glassjar",
+    "count": 8
+  }
+}

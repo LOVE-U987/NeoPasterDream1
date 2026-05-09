@@ -1,0 +1,92 @@
+[
+    {
+      "predicate": {
+        "items": ["pasterdream:dyedream_sword"]
+      },
+      "item": "tetra:modular_sword",
+      "modules": {
+        "sword/blade": ["sword/basic_blade", "basic_blade/dyedream"],
+        "sword/hilt": ["sword/basic_hilt", "basic_hilt/blackstick"],
+        "sword/pommel": ["sword/decorative_pommel", "decorative_pommel/dyedream"],
+        "sword/guard": ["sword/makeshift_guard", "makeshift_guard/dyedream"]
+      },
+      "improvements": {
+        "sword/hilt:basic_hilt/sturdy_grip": 0
+      }
+    },    
+    {
+      "predicate": {
+        "items": ["pasterdream:titanium_sword"]
+      },
+      "item": "tetra:modular_sword",
+      "modules": {
+        "sword/blade": ["sword/basic_blade", "basic_blade/titanium"],
+        "sword/hilt": ["sword/basic_hilt", "basic_hilt/blackstick"],
+        "sword/pommel": ["sword/decorative_pommel", "decorative_pommel/titanium"],
+        "sword/guard": ["sword/makeshift_guard", "makeshift_guard/titanium"]
+      },
+      "improvements": {
+        "sword/hilt:basic_hilt/sturdy_grip": 0
+      }
+    },    
+    {
+      "predicate": {
+        "items": ["pasterdream:moltengold_sword"]
+      },
+      "item": "tetra:modular_sword",
+      "modules": {
+        "sword/blade": ["sword/basic_blade", "basic_blade/moltengold"],
+        "sword/hilt": ["sword/basic_hilt", "basic_hilt/blackstick"],
+        "sword/pommel": ["sword/decorative_pommel", "decorative_pommel/moltengold"],
+        "sword/guard": ["sword/makeshift_guard", "makeshift_guard/moltengold"]
+      },
+      "improvements": {
+        "sword/hilt:basic_hilt/sturdy_grip": 0
+      }
+    },    
+    {
+      "predicate": {
+        "items": ["pasterdream:true_moltengold_sword"]
+      },
+      "item": "tetra:modular_sword",
+      "modules": {
+        "sword/blade": ["sword/basic_blade", "basic_blade/moltengold"],
+        "sword/hilt": ["sword/basic_hilt", "basic_hilt/blackstick"],
+        "sword/pommel": ["sword/counterweight", "counterweight/netherite"],
+        "sword/guard": ["sword/makeshift_guard", "makeshift_guard/moltengold"]
+      },
+      "improvements": {
+        "sword/hilt:basic_hilt/sturdy_grip": 0
+      }
+    },    
+    {
+      "predicate": {
+        "items": ["pasterdream:truest_moltengold_sword"]
+      },
+      "item": "tetra:modular_sword",
+      "modules": {
+        "sword/blade": ["sword/basic_blade", "basic_blade/moltengold"],
+        "sword/hilt": ["sword/basic_hilt", "basic_hilt/blackstick"],
+        "sword/pommel": ["sword/counterweight", "counterweight/netherite"],
+        "sword/guard": ["sword/socket", "sword_socket/socket_nether_star"]
+      },
+      "improvements": {
+        "sword/hilt:basic_hilt/sturdy_grip": 0
+      }
+    },
+    {
+        "predicate": {
+          "items": ["pasterdream:dyedream_sword_0"]
+        },
+        "item": "tetra:modular_sword",
+        "modules": {
+          "sword/blade": ["sword/basic_blade", "basic_blade/dyedream"],
+          "sword/hilt": ["sword/basic_hilt", "basic_hilt/blackstick"],
+          "sword/pommel": ["sword/decorative_pommel", "decorative_pommel/dyedream"],
+          "sword/guard": ["sword/socket", "sword_socket/socket_meltdream_crystal_0"]
+        },
+        "improvements": {
+          "sword/hilt:basic_hilt/sturdy_grip": 0
+        }
+      }
+]

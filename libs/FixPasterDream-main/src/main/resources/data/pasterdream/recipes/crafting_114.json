@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:dyedream_dust_piece"
+    },
+    {
+      "item": "minecraft:bone_meal"
+    },
+    {
+      "item": "pasterdream:mortar"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:dyedream_dye",
+    "count": 7
+  }
+}

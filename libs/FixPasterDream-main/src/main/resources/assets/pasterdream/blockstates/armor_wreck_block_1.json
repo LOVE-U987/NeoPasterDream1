@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "pasterdream:block/armor_wreck_block_1"
+    },
+    "type=top": {
+      "model": "pasterdream:block/armor_wreck_block_1_top"
+    },
+    "type=double": {
+      "model": "pasterdream:block/armor_wreck_block_1_full"
+    }
+  }
+}

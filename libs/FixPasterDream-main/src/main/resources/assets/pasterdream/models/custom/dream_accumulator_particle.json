@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/dream_accumulator.item",
+  "textures": {
+    "particle": "pasterdream:block/mo_xing_po_pi_li_zi_0"
+  }
+}

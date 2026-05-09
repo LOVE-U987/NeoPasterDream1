@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "pasterdream:dyedream_crack"
+    },
+    "title": {
+      "translate": "advancements.achievement_a_0.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_a_0.descr"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "achievement_a_0": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 10,
+    "recipes": [
+      "pasterdream:crafting_215"
+    ]
+  },
+  "parent": "pasterdream:achievement_start"
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/jun_wang_",
+    "up": "pasterdream:block/fen_ding_gu_jun_gai_",
+    "north": "pasterdream:block/fen_ding_gu_jun_gai_",
+    "east": "pasterdream:block/fen_ding_gu_jun_gai_",
+    "south": "pasterdream:block/fen_ding_gu_jun_gai_",
+    "west": "pasterdream:block/fen_ding_gu_jun_gai_",
+    "particle": "pasterdream:block/jun_wang_"
+  },
+  "render_type": "solid"
+}

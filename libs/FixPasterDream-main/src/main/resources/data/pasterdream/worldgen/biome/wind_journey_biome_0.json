@@ -1,0 +1,100 @@
+{
+  "has_precipitation": true,
+  "temperature": 1,
+  "downfall": 0.5,
+  "effects": {
+    "additions_sound": {
+      "sound": "pasterdream:breeze_wind",
+      "tick_chance": 0.0111
+    },
+    "music": {
+      "sound": "pasterdream:wind_journey",
+      "min_delay": 12000,
+      "max_delay": 24000,
+      "replace_current_music": true
+    },
+    "particle": {
+      "options": {
+        "type": "pasterdream:firefly_particle"
+      },
+      "probability": 0.003
+    },
+    "foliage_color": -11149912,
+    "grass_color": -14107774,
+    "sky_color": -1376258,
+    "fog_color": -1376258,
+    "water_color": -11475496,
+    "water_fog_color": -9705764
+  },
+  "spawners": {
+    "monster": [
+      {
+        "type": "pasterdream:bone_wing",
+        "weight": 6,
+        "minCount": 1,
+        "maxCount": 2
+      },
+      {
+        "type": "pasterdream:ash_bone_wing",
+        "weight": 1,
+        "minCount": 1,
+        "maxCount": 1
+      },
+      {
+        "type": "pasterdream:firefly",
+        "weight": 10,
+        "minCount": 3,
+        "maxCount": 4
+      },
+      {
+        "type": "pasterdream:thundercloud",
+        "weight": 5,
+        "minCount": 1,
+        "maxCount": 2
+      },
+      {
+        "type": "pasterdream:highvoltage_thundercloud",
+        "weight": 1,
+        "minCount": 1,
+        "maxCount": 1
+      }
+    ],
+    "creature": [
+      {
+        "type": "pasterdream:jellyfish",
+        "weight": 10,
+        "minCount": 1,
+        "maxCount": 2
+      },
+      {
+        "type": "pasterdream:small_stone_spirit",
+        "weight": 12,
+        "minCount": 1,
+        "maxCount": 2
+      }
+    ],
+    "ambient": [],
+    "axolotls": [],
+    "underground_water_creature": [],
+    "water_creature": [],
+    "water_ambient": [],
+    "misc": []
+  },
+  "spawn_costs": {},
+  "carvers": {},
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "minecraft:bamboo_light"
+    ],
+    []
+  ]
+}

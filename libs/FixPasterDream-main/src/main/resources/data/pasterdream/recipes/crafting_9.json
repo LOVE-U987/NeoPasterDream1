@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:raw_titanium_block"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:raw_titanium",
+    "count": 9
+  }
+}

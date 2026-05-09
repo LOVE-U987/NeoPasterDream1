@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/ning_jie_zhi_feng_yun_kuang_",
+    "up": "pasterdream:block/ning_jie_zhi_feng_yun_kuang_",
+    "north": "pasterdream:block/ning_jie_zhi_feng_yun_kuang_",
+    "east": "pasterdream:block/ning_jie_zhi_feng_yun_kuang_",
+    "south": "pasterdream:block/ning_jie_zhi_feng_yun_kuang_",
+    "west": "pasterdream:block/ning_jie_zhi_feng_yun_kuang_",
+    "particle": "pasterdream:block/ning_jie_zhi_feng_yun_kuang_"
+  },
+  "render_type": "solid"
+}

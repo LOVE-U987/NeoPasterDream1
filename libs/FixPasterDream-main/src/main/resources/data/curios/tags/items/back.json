@@ -1,0 +1,8 @@
+{
+  "replace": "false",
+  "values": [
+    "minecraft:air",
+    "pasterdream:turnback_cloak",
+    "pasterdream:evasion_cloak"
+  ]
+}

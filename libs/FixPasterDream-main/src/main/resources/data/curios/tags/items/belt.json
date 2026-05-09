@@ -1,0 +1,10 @@
+{
+  "replace": "false",
+  "values": [
+    "minecraft:air",
+    "pasterdream:embryo_belt",
+    "pasterdream:nature_belt",
+    "pasterdream:traveler_belt",
+    "pasterdream:dream_traveler_belt"
+  ]
+}

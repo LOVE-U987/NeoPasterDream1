@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:block/small_stone_spirit_block"
+    },
+    "facing=east": {
+      "model": "pasterdream:block/small_stone_spirit_block",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:block/small_stone_spirit_block",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:block/small_stone_spirit_block",
+      "y": 270
+    }
+  }
+}

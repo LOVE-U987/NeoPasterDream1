@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "b b",
+    " b "
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:spool"
+    },
+    "b": {
+      "item": "pasterdream:fabric"
+    }
+  },
+  "result": {
+    "item": "pasterdream:storage_bag",
+    "count": 1
+  }
+}

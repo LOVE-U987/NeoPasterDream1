@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:embryo_necklace"
+    },
+    {
+      "item": "pasterdream:moltengold_ingot"
+    },
+    {
+      "item": "minecraft:blaze_rod"
+    },
+    {
+      "item": "pasterdream:flower_6"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:fire_0_necklace",
+    "count": 1
+  }
+}

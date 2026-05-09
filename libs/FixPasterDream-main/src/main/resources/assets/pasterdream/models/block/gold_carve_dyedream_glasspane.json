@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:blocks/xiang_jin_diao_hua_ran_meng_bo_li_",
+    "up": "pasterdream:blocks/xiang_jin_diao_hua_ran_meng_bo_li_",
+    "north": "pasterdream:blocks/xiang_jin_diao_hua_ran_meng_bo_li_",
+    "east": "pasterdream:blocks/xiang_jin_diao_hua_ran_meng_bo_li_",
+    "south": "pasterdream:blocks/xiang_jin_diao_hua_ran_meng_bo_li_",
+    "west": "pasterdream:blocks/xiang_jin_diao_hua_ran_meng_bo_li_",
+    "particle": "pasterdream:blocks/xiang_jin_diao_hua_ran_meng_bo_li_"
+  },
+  "render_type": "translucent"
+}

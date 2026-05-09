@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "pasterdream:wind_journey_biome_0",
+  "features": "pasterdream:grass_13",
+  "step": "vegetal_decoration"
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/yun_duo_",
+    "up": "pasterdream:block/yun_duo_",
+    "north": "pasterdream:block/yun_duo_",
+    "east": "pasterdream:block/yun_duo_",
+    "south": "pasterdream:block/yun_duo_",
+    "west": "pasterdream:block/yun_duo_",
+    "particle": "pasterdream:block/yun_duo_"
+  },
+  "render_type": "translucent"
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:mortar"
+    },
+    {
+      "item": "pasterdream:coarse_salt"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:salt",
+    "count": 1
+  }
+}

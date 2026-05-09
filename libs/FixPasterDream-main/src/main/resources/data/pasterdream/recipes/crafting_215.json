@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "abc",
+    "ddd",
+    "e f"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:bookshelf"
+    },
+    "b": {
+      "item": "minecraft:red_carpet"
+    },
+    "c": {
+      "item": "pasterdream:pergamyn"
+    },
+    "d": {
+      "tag": "minecraft:logs"
+    },
+    "e": {
+      "item": "minecraft:chest"
+    },
+    "f": {
+      "item": "minecraft:cartography_table"
+    }
+  },
+  "result": {
+    "item": "pasterdream:research_table",
+    "count": 1
+  }
+}

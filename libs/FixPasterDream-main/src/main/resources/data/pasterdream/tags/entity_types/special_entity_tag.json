@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "item",
+    "pasterdream:meltdream_crystal_entity",
+    "experience_orb",
+    "experience_bottle",
+    "item_frame",
+    "glow_item_frame",
+    "pasterdream:shadow_tune_totem",
+    "pasterdream:terrasword_wave",
+    "pasterdream:shaking_crystal",
+    "pasterdream:shadow_npc_0",
+    "pasterdream:fury_spell_entity",
+    "pasterdream:fox_fire",
+    "pasterdream:healing_spell_entity"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "tag": "forge:dyedreamquartz_blocks"
+  },
+  "result": "pasterdream:smooth_dyedreamquartz_block"
+}

@@ -1,0 +1,9 @@
+{
+  "type": "pasterdream:shadow_blasting",
+  "input_ingredient": {
+    "item": "pasterdream:rust_black_metal_grain"
+  },
+  "result": {
+    "item": "pasterdream:blackmetal_grain"
+  }
+}

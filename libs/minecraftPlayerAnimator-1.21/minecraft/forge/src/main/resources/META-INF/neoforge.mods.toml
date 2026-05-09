@@ -1,0 +1,24 @@
+modLoader = "javafml"
+loaderVersion = "*"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "playeranimator"
+version = "${version}"
+displayURL = "https://github.com/KosmX/minecraftPlayerAnimator"
+displayName = "Player Animator"
+authors = "KosmX"
+description = "A lightweight library to easily animate the player"
+#logoFile = ""
+
+[[mixins]]
+config = "playerAnimator-common.mixins.json"
+
+[[dependencies.playeranimator]]
+modId = "minecraft"
+type = "required"
+mandatory = true
+versionRange = "[1.21,1.21.2)"
+ordering = "NONE"
+side = "BOTH"

@@ -1,0 +1,8 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "pasterdream:block/lan_mai_",
+    "particle": "pasterdream:block/lan_mai_"
+  },
+  "render_type": "cutout"
+}

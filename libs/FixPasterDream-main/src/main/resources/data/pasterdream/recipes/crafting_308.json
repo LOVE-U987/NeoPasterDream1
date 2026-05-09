@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:qym_doll_0"
+    },
+    {
+      "item": "pasterdream:dream_aurorian_steel"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:uuz_doll_0",
+    "count": 1
+  }
+}

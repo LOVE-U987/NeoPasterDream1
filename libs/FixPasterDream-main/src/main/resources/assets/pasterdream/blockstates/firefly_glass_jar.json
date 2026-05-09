@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:custom/firefly_glass_jar_particle"
+    },
+    "facing=east": {
+      "model": "pasterdream:custom/firefly_glass_jar_particle",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:custom/firefly_glass_jar_particle",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:custom/firefly_glass_jar_particle",
+      "y": 270
+    }
+  }
+}

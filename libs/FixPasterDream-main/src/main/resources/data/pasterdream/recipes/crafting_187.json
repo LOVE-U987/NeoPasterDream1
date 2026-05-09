@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a",
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:shadow_stone_brick_slab"
+    }
+  },
+  "result": {
+    "item": "pasterdream:chiseled_shadow_stone_brick",
+    "count": 1
+  }
+}

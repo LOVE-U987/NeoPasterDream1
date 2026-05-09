@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/deng_ying_jing_ji_chang_fang_kuai_0",
+    "up": "pasterdream:block/deng_ying_jing_ji_chang_fang_kuai_0",
+    "north": "pasterdream:block/deng_ying_jing_ji_chang_fang_kuai_0",
+    "east": "pasterdream:block/deng_ying_jing_ji_chang_fang_kuai_0",
+    "south": "pasterdream:block/deng_ying_jing_ji_chang_fang_kuai_0",
+    "west": "pasterdream:block/deng_ying_jing_ji_chang_fang_kuai_0",
+    "particle": "pasterdream:block/deng_ying_jing_ji_chang_fang_kuai_0"
+  },
+  "render_type": "solid"
+}

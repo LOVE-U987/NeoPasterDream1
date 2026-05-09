@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "bbb",
+    "bbb"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:water_glassjar"
+    },
+    "b": {
+      "item": "pasterdream:flour"
+    }
+  },
+  "result": {
+    "item": "pasterdream:dough",
+    "count": 3
+  }
+}

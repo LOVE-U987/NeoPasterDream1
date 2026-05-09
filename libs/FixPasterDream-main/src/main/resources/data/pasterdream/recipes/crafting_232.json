@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:salt"
+    }
+  },
+  "result": {
+    "item": "pasterdream:salt_block",
+    "count": 1
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "bcb",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:dyedreamquartz"
+    },
+    "b": {
+      "item": "pasterdream:dyedream_glass"
+    },
+    "c": {
+      "item": "pasterdream:dyedream_dye"
+    }
+  },
+  "result": {
+    "item": "pasterdream:dyedream_lartern",
+    "count": 2
+  }
+}

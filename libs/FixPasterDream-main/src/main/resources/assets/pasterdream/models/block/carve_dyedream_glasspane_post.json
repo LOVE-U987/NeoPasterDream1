@@ -1,0 +1,8 @@
+{
+  "parent": "block/template_glass_pane_post",
+  "textures": {
+    "edge": "pasterdream:block/diao_hua_ran_meng_bo_li_",
+    "pane": "pasterdream:block/diao_hua_ran_meng_bo_li_"
+  },
+  "render_type": "translucent"
+}

@@ -1,0 +1,29 @@
+
+package net.pasterdream.potion;
+
+import net.pasterdream.procedures.FondillusionBuffPr0Procedure;
+
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffect;
+
+public class FondillusionBuffMobEffect extends MobEffect {
+	public FondillusionBuffMobEffect() {
+		super(MobEffectCategory.BENEFICIAL, -3438857);
+	}
+
+	@Override
+	public String getDescriptionId() {
+		return "effect.pasterdream.fondillusion_buff";
+	}
+
+	@Override
+	public void applyEffectTick(LivingEntity entity, int amplifier) {
+		FondillusionBuffPr0Procedure.execute(entity);
+	}
+
+	@Override
+	public boolean isDurationEffectTick(int duration, int amplifier) {
+		return true;
+	}
+}

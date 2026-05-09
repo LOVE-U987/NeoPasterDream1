@@ -1,0 +1,48 @@
+{
+  "has_precipitation": true,
+  "temperature": 0.4,
+  "downfall": 0.5,
+  "effects": {
+    "additions_sound": {
+      "sound": "pasterdream:breeze_wind",
+      "tick_chance": 0.0111
+    },
+    "music": {
+      "sound": "pasterdream:wind_journey",
+      "min_delay": 12000,
+      "max_delay": 24000,
+      "replace_current_music": true
+    },
+    "foliage_color": -11149912,
+    "grass_color": -14107774,
+    "sky_color": -1114369,
+    "fog_color": -1114369,
+    "water_color": -11475496,
+    "water_fog_color": -5639444
+  },
+  "spawners": {
+    "monster": [],
+    "creature": [],
+    "ambient": [],
+    "axolotls": [],
+    "underground_water_creature": [],
+    "water_creature": [],
+    "water_ambient": [],
+    "misc": []
+  },
+  "spawn_costs": {},
+  "carvers": {},
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ]
+}

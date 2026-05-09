@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/feng_bo_mu_men__item"
+  },
+  "render_type": "translucent"
+}

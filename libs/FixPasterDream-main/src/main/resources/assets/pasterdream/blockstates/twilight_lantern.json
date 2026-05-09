@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:custom/twilight_lantern_particle"
+    },
+    "facing=east": {
+      "model": "pasterdream:custom/twilight_lantern_particle",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:custom/twilight_lantern_particle",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:custom/twilight_lantern_particle",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:dyedream_dust"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:dyedream_dust_piece",
+    "count": 9
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.pasterdream.mixin",
+  "refmap": "pasterdream.refmap.json",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "SpiderMixin"
+  ],
+  "client": [
+    "BossHealthOverlayMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

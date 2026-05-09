@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "minecraft:nether_brick"
+  },
+  "base": {
+    "item": "pasterdream:true_moltengold_wand"
+  },
+  "addition": {
+    "item": "minecraft:nether_star"
+  },
+  "result": {
+    "item": "pasterdream:truest_moltengold_wand"
+  }
+}

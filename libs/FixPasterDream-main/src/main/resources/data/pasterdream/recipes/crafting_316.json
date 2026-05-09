@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:glassjar"
+    },
+    {
+      "item": "pasterdream:soul_dust"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:ecology_glass_jar",
+    "count": 1
+  }
+}

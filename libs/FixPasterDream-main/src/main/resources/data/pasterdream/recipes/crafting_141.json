@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:diamond"
+    },
+    "b": {
+      "item": "pasterdream:fabric"
+    },
+    "c": {
+      "item": "pasterdream:storage_bag"
+    },
+    "d": {
+      "item": "minecraft:ender_pearl"
+    }
+  },
+  "result": {
+    "item": "pasterdream:storage_bag_0",
+    "count": 1
+  }
+}

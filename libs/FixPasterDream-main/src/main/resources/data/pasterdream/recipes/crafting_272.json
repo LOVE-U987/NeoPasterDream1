@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:water_glassjar"
+    },
+    {
+      "item": "minecraft:nether_wart"
+    },
+    {
+      "item": "pasterdream:flower_9"
+    },
+    {
+      "item": "pasterdream:soul_dust"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:guiding_drug",
+    "count": 1
+  }
+}

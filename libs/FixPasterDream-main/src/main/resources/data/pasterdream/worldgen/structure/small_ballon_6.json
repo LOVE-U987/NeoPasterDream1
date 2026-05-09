@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:jigsaw",
+  "start_pool": "pasterdream:small_ballon_6",
+  "size": 1,
+  "max_distance_from_center": 64,
+  "spawn_overrides": {},
+  "step": "surface_structures",
+  "terrain_adaptation": "none",
+  "start_height": {
+  	"type": "very_biased_to_bottom",
+    "min_inclusive": {
+    	"absolute": 70
+    },
+    "max_inclusive": {
+    	"absolute": 120
+    }
+  },
+  "biomes": "pasterdream:wind_journey_biome_1",
+  "use_expansion_hack": false
+}

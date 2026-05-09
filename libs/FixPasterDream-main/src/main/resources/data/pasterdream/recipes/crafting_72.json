@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:crop_1a"
+    }
+  ],
+  "result": {
+    "item": "pasterdream:white_corolla",
+    "count": 1
+  }
+}

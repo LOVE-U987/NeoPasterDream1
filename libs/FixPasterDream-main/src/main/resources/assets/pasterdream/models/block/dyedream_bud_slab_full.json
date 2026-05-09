@@ -1,0 +1,9 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "bottom": "pasterdream:block/ran_meng_shui_jing_zhuan_",
+    "top": "pasterdream:block/ran_meng_shui_jing_zhuan_",
+    "side": "pasterdream:block/ran_meng_shui_jing_zhuan_"
+  },
+  "render_type": "translucent"
+}

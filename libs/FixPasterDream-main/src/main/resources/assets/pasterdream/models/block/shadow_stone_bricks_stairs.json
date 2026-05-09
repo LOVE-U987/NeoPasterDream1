@@ -1,0 +1,9 @@
+{
+  "parent": "block/stairs",
+  "textures": {
+    "bottom": "pasterdream:block/yin_ying_xi_shi_zhuan_",
+    "top": "pasterdream:block/yin_ying_xi_shi_zhuan_",
+    "side": "pasterdream:block/yin_ying_xi_shi_zhuan_"
+  },
+  "render_type": "cutout"
+}
