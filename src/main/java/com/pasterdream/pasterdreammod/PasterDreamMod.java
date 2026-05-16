@@ -13,6 +13,7 @@ import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDMenus;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDStructures;
+import com.pasterdream.pasterdreammod.worldgen.PDBiomeModifiers;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -74,6 +75,9 @@ public class PasterDreamMod {
 
         // 注册粒子类型
         PDParticles.PARTICLE_TYPES.register(modEventBus);
+
+        // 注册 BiomeModifier 序列化器（用于染梦维度特征注入）
+        PDBiomeModifiers.BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
 
         // 初始化染梦能量系统（注册 AttachmentType + 事件监听器）
         MeltDreamEnergyCapability.init(modEventBus);

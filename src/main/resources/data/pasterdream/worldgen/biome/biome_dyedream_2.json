@@ -16,19 +16,13 @@
     [],
     [],
     [],
-    [
-      "pasterdream:ore_dyedreamquartz",
-      "pasterdream:ore_dyedreamdust",
-      "pasterdream:ore_amber_candy"
-    ],
+    [],
+    [],
     [],
     [],
     [
-      "pasterdream:dyedream_trees",
-      "pasterdream:patch_dyedream_grass",
-      "pasterdream:patch_dyedream_lotus"
-    ],
-    []
+      "minecraft:freeze_top_layer"
+    ]
   ],
   "effects": {
     "foliage_color": -22035,
@@ -61,22 +55,5 @@
     "water_ambient": [],
     "misc": []
   },
-  "spawn_costs": {},
-  "features": [
-    [],
-    [
-      "minecraft:lake_lava_underground"
-    ],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [
-      "minecraft:freeze_top_layer"
-    ]
-  ]
+  "spawn_costs": {}
 }

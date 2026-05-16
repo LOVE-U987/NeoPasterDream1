@@ -16,21 +16,10 @@
     [],
     [],
     [],
-    [
-      "pasterdream:ore_dyedreamquartz",
-      "pasterdream:ore_dyedreamdust",
-      "pasterdream:ore_amber_candy"
-    ],
     [],
     [],
-    [
-      "pasterdream:dyedream_trees",
-      "pasterdream:patch_dyedream_grass",
-      "pasterdream:patch_dyedream_buds",
-      "pasterdream:patch_dyedream_lily_pad",
-      "pasterdream:patch_dyedream_lotus",
-      "pasterdream:patch_dyedream_seagrass"
-    ],
+    [],
+    [],
     []
   ],
   "effects": {
@@ -64,20 +53,5 @@
     "water_ambient": [],
     "misc": []
   },
-  "spawn_costs": {},
-  "features": [
-    [],
-    [
-      "minecraft:lake_lava_underground"
-    ],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    []
-  ]
+  "spawn_costs": {}
 }

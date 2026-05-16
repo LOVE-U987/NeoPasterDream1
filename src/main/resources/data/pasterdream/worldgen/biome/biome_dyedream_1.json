@@ -16,22 +16,13 @@
     [],
     [],
     [],
-    [
-      "pasterdream:ore_dyedreamquartz",
-      "pasterdream:ore_dyedreamdust",
-      "pasterdream:ore_amber_candy"
-    ],
+    [],
+    [],
     [],
     [],
     [
-      "pasterdream:dyedream_trees",
-      "pasterdream:patch_dyedream_grass",
-      "pasterdream:patch_pinkagaric",
-      "pasterdream:patch_dyedream_lily_pad",
-      "pasterdream:patch_dyedream_lotus",
-      "pasterdream:patch_dyedream_seagrass"
-    ],
-    []
+      "minecraft:freeze_top_layer"
+    ]
   ],
   "effects": {
     "foliage_color": -216083,
@@ -64,20 +55,5 @@
     "water_ambient": [],
     "misc": []
   },
-  "spawn_costs": {},
-  "features": [
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [
-      "minecraft:freeze_top_layer"
-    ]
-  ]
+  "spawn_costs": {}
 }
