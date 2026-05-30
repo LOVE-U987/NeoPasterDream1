@@ -13,6 +13,8 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
  */
 public class ShadowGolemRenderer extends GeoEntityRenderer<ShadowGolemEntity> {
 
+    private static final String NAME = "shadow_golem";
+
     /**
      * 构造暗影魔像渲染器
      *
@@ -20,6 +22,8 @@ public class ShadowGolemRenderer extends GeoEntityRenderer<ShadowGolemEntity> {
      */
     public ShadowGolemRenderer(EntityRendererProvider.Context context) {
         super(context, new DefaultedEntityGeoModel<>(
-                ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "shadow_golem")));
+                ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, NAME)));
+        PasterDreamMod.LOGGER.debug("[ShadowGolemRenderer] 初始化完成，资源名: {} | 模型=geo/entity/{}.geo.json 纹理=textures/entity/{}.png 动画=animations/entity/{}.animation.json",
+                NAME, NAME, NAME, NAME);
     }
 }

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "food",
+  "ingredients": [
+    {
+      "item": "pasterdream:flour"
+    },
+    {
+      "item": "pasterdream:water_glassjar"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:dough",
+    "count": 1
+  }
+}

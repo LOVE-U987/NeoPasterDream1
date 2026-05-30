@@ -1,6 +1,9 @@
 package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.block.BlockAPI;
+import com.pasterdream.pasterdreammod.api.block.BlockConfig;
+import com.pasterdream.pasterdreammod.api.block.builder.VariantSetResult;
 import com.pasterdream.pasterdreammod.block.DreamAccumulatorBlock;
 import com.pasterdream.pasterdreammod.block.DyedreamCrackBlock;
 import com.pasterdream.pasterdreammod.block.DyedreamDeskBlock;
@@ -14,6 +17,8 @@ import com.pasterdream.pasterdreammod.block.DarkCloudBlock;
 import com.pasterdream.pasterdreammod.block.DyedreamBudBlock;
 import com.pasterdream.pasterdreammod.block.DyedreamDoublePlantBlock;
 import com.pasterdream.pasterdreammod.block.DyedreamFlowerBlock;
+import com.pasterdream.pasterdreammod.block.DyedreamGrassBlock;
+import com.pasterdream.pasterdreammod.block.DyedreamLogBlock;
 import com.pasterdream.pasterdreammod.block.DyedreamLeavesBlock;
 import com.pasterdream.pasterdreammod.block.IceBudBlock;
 import com.pasterdream.pasterdreammod.block.LifeCrystalBlock;
@@ -21,8 +26,6 @@ import com.pasterdream.pasterdreammod.block.PinkagaricBlock;
 import com.pasterdream.pasterdreammod.block.ShadowChestBlock;
 import com.pasterdream.pasterdreammod.block.ThickCloudBlock;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.item.BlockItem;
-                import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
@@ -30,6 +33,8 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.Map;
 
 /**
  * 方块注册类
@@ -40,13 +45,10 @@ public class PDBlocks {
     /**
      * 方块注册器
      */
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(PasterDreamMod.MOD_ID);
+    public static final DeferredRegister.Blocks BLOCKS = BlockAPI.REGISTRY;
 
-    /**
-     * 蓄梦池方块 (dream_accumulator)
-     * 核心功能方块，用于收集梦境能量
-     * 原模组使用 TESR 特殊渲染，简化版使用普通方块 + 自定义模型
-     */
+    // ==================== 自定义方块（保持手动注册） ====================
+
     public static final DeferredBlock<DreamAccumulatorBlock> DREAM_ACCUMULATOR = BLOCKS.register("dream_accumulator",
             () -> new DreamAccumulatorBlock(BlockBehaviour.Properties.of()
                     .sound(SoundType.CALCITE)
@@ -54,11 +56,6 @@ public class PDBlocks {
                     .requiresCorrectToolForDrops()
                     .noOcclusion()));
 
-    /**
-     * 染梦书桌方块 (dyedream_desk)
-     * 方向性方块，玩家放置时根据朝向旋转
-     * 原模组有 GUI 和 TileEntity，简化版暂不包含
-     */
     public static final DeferredBlock<DyedreamDeskBlock> DYEDREAM_DESK = BLOCKS.register("dyedream_desk",
             () -> new DyedreamDeskBlock(BlockBehaviour.Properties.of()
                     .sound(SoundType.WOOD)
@@ -66,11 +63,6 @@ public class PDBlocks {
                     .requiresCorrectToolForDrops()
                     .noOcclusion()));
 
-    /**
-     * 生命水晶方块 (life_crystal)
-     * 站在附近可以缓慢恢复生命值
-     * 发光等级12，无TileEntity简化版
-     */
     public static final DeferredBlock<LifeCrystalBlock> LIFE_CRYSTAL = BLOCKS.register("life_crystal",
             () -> new LifeCrystalBlock(BlockBehaviour.Properties.of()
                     .sound(SoundType.GLASS)
@@ -78,74 +70,130 @@ public class PDBlocks {
                     .lightLevel(state -> 12)
                     .noOcclusion()));
 
-    /**
-     * 影之箱子方块 (shadow_chest)
-     * 装饰性方块，无存储功能（简化版）
-     * 具有暗影主题的粒子效果
-     */
     public static final DeferredBlock<ShadowChestBlock> SHADOW_CHEST = BLOCKS.register("shadow_chest",
             () -> new ShadowChestBlock(BlockBehaviour.Properties.of()
                     .sound(SoundType.DEEPSLATE_TILES)
                     .strength(1.0f, 0.5f)
                     .noOcclusion()));
 
-    // ==================== 染梦世界方块批量移植 ====================
+    // ==================== 简单换皮方块（API 批量注册） ====================
 
-    public static final DeferredBlock<Block> DYEDREAM_BLOCK = BLOCKS.registerSimpleBlock("dyedream_block",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE));
-    public static final DeferredBlock<Block> DYEDREAM_DIRT = BLOCKS.registerSimpleBlock("dyedream_dirt",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.DIRT));
-    public static final DeferredBlock<Block> DYEDREAM_SAND = BLOCKS.registerSimpleBlock("dyedream_sand",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.SAND));
-    public static final DeferredBlock<Block> DYEDREAM_PLANKS = BLOCKS.registerSimpleBlock("dyedream_planks",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS));
-    public static final DeferredBlock<Block> DYEDREAM_GLASS = BLOCKS.registerSimpleBlock("dyedream_glass",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS));
-    public static final DeferredBlock<Block> DYEDREAM_ICE = BLOCKS.registerSimpleBlock("dyedream_ice",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.ICE));
-    public static final DeferredBlock<Block> DYEDREAM_PACKED_ICE = BLOCKS.registerSimpleBlock("dyedream_packed_ice",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.PACKED_ICE));
-    public static final DeferredBlock<Block> DYEDREAMQUARTZ_BLOCK = BLOCKS.registerSimpleBlock("dyedreamquartz_block",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE));
-    public static final DeferredBlock<Block> SMOOTH_DYEDREAMQUARTZ_BLOCK = BLOCKS.registerSimpleBlock("smooth_dyedreamquartz_block",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE));
-    public static final DeferredBlock<Block> BRICKS_DYEDREAMQUARTZ_BLOCK = BLOCKS.registerSimpleBlock("bricks_dyedreamquartz_block",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE));
-    public static final DeferredBlock<Block> CHISELED_DYEDREAMQUARTZ_BLOCK = BLOCKS.registerSimpleBlock("chiseled_dyedreamquartz_block",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE));
-    public static final DeferredBlock<Block> DYEDREAM_BUD_BLOCK = BLOCKS.registerSimpleBlock("dyedream_bud_block",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE));
-    public static final DeferredBlock<Block> PINKSLIME_BLOCK = BLOCKS.registerSimpleBlock("pinkslime_block",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.SLIME_BLOCK));
-    public static final DeferredBlock<Block> ICESTONE = BLOCKS.registerSimpleBlock("icestone",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE));
+    private static final Map<String, DeferredBlock<Block>> SIMPLE_BLOCKS = BlockAPI.registerSimpleBlocks()
+            .add("dyedream_dirt", Blocks.DIRT, BlockConfig.of()
+                    .mineable("shovel").model("cube_all").tex("all", "pasterdream:block/dyedream_dirt"))
+            .add("dyedream_sand", Blocks.SAND, BlockConfig.of()
+                    .mineable("shovel").model("cube_all").tex("all", "pasterdream:block/dyedream_sand"))
+            .add("dyedream_planks", Blocks.OAK_PLANKS, BlockConfig.of()
+                    .mineable("axe").model("cube_all").tex("all", "pasterdream:block/dyedream_planks"))
+            .add("dyedream_glass", Blocks.GLASS, BlockConfig.of()
+                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_glass"))
+            .add("dyedream_ice", Blocks.ICE, BlockConfig.of()
+                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_ice"))
+            .add("dyedream_packed_ice", Blocks.PACKED_ICE, BlockConfig.of()
+                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_packed_ice"))
+            .add("pinkslime_block", Blocks.SLIME_BLOCK, BlockConfig.of()
+                    .model("cube_all").tex("all", "pasterdream:block/pinkslime_block"))
+            .addCustom("dyedream_block",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_block"))
+            .addCustom("dyedreamquartz_block",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz"))
+            .addCustom("smooth_dyedreamquartz_block",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz"))
+            .addCustom("bricks_dyedreamquartz_block",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz_brick"))
+            .addCustom("chiseled_dyedreamquartz_block",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).lightLevel(s -> 10).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz_chiseled"))
+            .addCustom("dyedream_bud_block",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_bud"))
+            .addCustom("icestone",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/icestone"))
+            .add("dyedream_worldtree_leaves", Blocks.OAK_LEAVES, BlockConfig.of()
+                    .mineable("hoe").model("cube_all").tex("all", "pasterdream:block/dyedream_worldtree"))
+            .add("dyedreamquartz_ore", Blocks.IRON_ORE, BlockConfig.of()
+                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz_ore"))
+            .add("dyedreamdust_ore", Blocks.IRON_ORE, BlockConfig.of()
+                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamdust_ore"))
+            .add("amber_candy_ore", Blocks.IRON_ORE, BlockConfig.of()
+                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/amber_candy_ore"))
+            .add("carve_dyedream_glass", Blocks.GLASS, BlockConfig.of()
+                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/carve_dyedream_glass"))
+            .add("gold_carve_dyedream_glass", Blocks.GLASS, BlockConfig.of()
+                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/gold_carve_dyedream_glass"))
+            .build();
+
+    // ==================== 简单方块公开引用 ====================
+
+    public static final DeferredBlock<Block> DYEDREAM_BLOCK = SIMPLE_BLOCKS.get("dyedream_block");
+    public static final DeferredBlock<Block> DYEDREAM_DIRT = SIMPLE_BLOCKS.get("dyedream_dirt");
+    public static final DeferredBlock<Block> DYEDREAM_SAND = SIMPLE_BLOCKS.get("dyedream_sand");
+    public static final DeferredBlock<Block> DYEDREAM_PLANKS = SIMPLE_BLOCKS.get("dyedream_planks");
+    public static final DeferredBlock<Block> DYEDREAM_GLASS = SIMPLE_BLOCKS.get("dyedream_glass");
+    public static final DeferredBlock<Block> DYEDREAM_ICE = SIMPLE_BLOCKS.get("dyedream_ice");
+    public static final DeferredBlock<Block> DYEDREAM_PACKED_ICE = SIMPLE_BLOCKS.get("dyedream_packed_ice");
+    public static final DeferredBlock<Block> DYEDREAMQUARTZ_BLOCK = SIMPLE_BLOCKS.get("dyedreamquartz_block");
+    public static final DeferredBlock<Block> SMOOTH_DYEDREAMQUARTZ_BLOCK = SIMPLE_BLOCKS.get("smooth_dyedreamquartz_block");
+    public static final DeferredBlock<Block> BRICKS_DYEDREAMQUARTZ_BLOCK = SIMPLE_BLOCKS.get("bricks_dyedreamquartz_block");
+    public static final DeferredBlock<Block> CHISELED_DYEDREAMQUARTZ_BLOCK = SIMPLE_BLOCKS.get("chiseled_dyedreamquartz_block");
+    public static final DeferredBlock<Block> DYEDREAM_BUD_BLOCK = SIMPLE_BLOCKS.get("dyedream_bud_block");
+    public static final DeferredBlock<Block> PINKSLIME_BLOCK = SIMPLE_BLOCKS.get("pinkslime_block");
+    public static final DeferredBlock<Block> ICESTONE = SIMPLE_BLOCKS.get("icestone");
+    public static final DeferredBlock<Block> DYEDREAM_WORLDTREE_LEAVES = SIMPLE_BLOCKS.get("dyedream_worldtree_leaves");
+    public static final DeferredBlock<Block> DYEDREAMQUARTZ_ORE = SIMPLE_BLOCKS.get("dyedreamquartz_ore");
+    public static final DeferredBlock<Block> DYEDREAMDUST_ORE = SIMPLE_BLOCKS.get("dyedreamdust_ore");
+    public static final DeferredBlock<Block> AMBER_CANDY_ORE = SIMPLE_BLOCKS.get("amber_candy_ore");
+    public static final DeferredBlock<Block> CARVE_DYEDREAM_GLASS = SIMPLE_BLOCKS.get("carve_dyedream_glass");
+    public static final DeferredBlock<Block> GOLD_CARVE_DYEDREAM_GLASS = SIMPLE_BLOCKS.get("gold_carve_dyedream_glass");
+
+    // ==================== 特殊方块（保持手动注册） ====================
+
     public static final DeferredBlock<DyedreamLeavesBlock> DYEDREAM_LEAVES = BLOCKS.registerBlock("dyedream_leaves",
             DyedreamLeavesBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES));
-    public static final DeferredBlock<Block> DYEDREAM_WORLDTREE_LEAVES = BLOCKS.registerSimpleBlock("dyedream_worldtree_leaves",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES));
-    public static final DeferredBlock<Block> DYEDREAMQUARTZ_ORE = BLOCKS.registerSimpleBlock("dyedreamquartz_ore",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE));
-    public static final DeferredBlock<Block> DYEDREAMDUST_ORE = BLOCKS.registerSimpleBlock("dyedreamdust_ore",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE));
-    public static final DeferredBlock<Block> AMBER_CANDY_ORE = BLOCKS.registerSimpleBlock("amber_candy_ore",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE));
-    public static final DeferredBlock<Block> CARVE_DYEDREAM_GLASS = BLOCKS.registerSimpleBlock("carve_dyedream_glass",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS));
-    public static final DeferredBlock<Block> GOLD_CARVE_DYEDREAM_GLASS = BLOCKS.registerSimpleBlock("gold_carve_dyedream_glass",
-            BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS));
-    public static final DeferredBlock<Block> DYEDREAM_GRASS = BLOCKS.registerSimpleBlock("dyedream_grass",
+    public static final DeferredBlock<DyedreamGrassBlock> DYEDREAM_GRASS = BLOCKS.registerBlock("dyedream_grass",
+            DyedreamGrassBlock::new,
             BlockBehaviour.Properties.ofFullCopy(Blocks.GRASS_BLOCK));
 
-    public static final DeferredBlock<RotatedPillarBlock> DYEDREAM_LOG = BLOCKS.registerBlock("dyedream_log",
-            RotatedPillarBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG));
-    public static final DeferredBlock<RotatedPillarBlock> DYEDREAM_WOOD = BLOCKS.registerBlock("dyedream_wood",
-            RotatedPillarBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG));
+    public static final DeferredBlock<DyedreamLogBlock> DYEDREAM_LOG = BLOCKS.registerBlock("dyedream_log",
+            DyedreamLogBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG));
+    public static final DeferredBlock<DyedreamLogBlock> DYEDREAM_WOOD = BLOCKS.registerBlock("dyedream_wood",
+            DyedreamLogBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG));
+    public static final DeferredBlock<DyedreamLogBlock> STRIPPED_DYEDREAM_LOG = BLOCKS.registerBlock("stripped_dyedream_log",
+            DyedreamLogBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG));
+    public static final DeferredBlock<DyedreamLogBlock> STRIPPED_DYEDREAM_WOOD = BLOCKS.registerBlock("stripped_dyedream_wood",
+            DyedreamLogBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG));
     public static final DeferredBlock<RotatedPillarBlock> PILLAR_DYEDREAMQUARTZ_BLOCK = BLOCKS.registerBlock("pillar_dyedreamquartz_block",
-            RotatedPillarBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE));
+            RotatedPillarBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops());
 
-    public static final DeferredBlock<StairBlock> DYEDREAM_PLANKS_STAIRS = BLOCKS.registerBlock("dyedream_planks_stairs",
-            p -> new StairBlock(DYEDREAM_PLANKS.get().defaultBlockState(), p),
-            BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_STAIRS));
+    // ==================== 建筑变体族（API 批量注册） ====================
+
+    private static final VariantSetResult PLANKS_VARIANTS = BlockAPI.createVariantSet("dyedream_planks", () -> DYEDREAM_PLANKS.get())
+            .withStairs()
+            .withSlab()
+            .withFence()
+            .withFenceGate(WoodType.OAK)
+            .withDoor(BlockSetType.OAK)
+            .withTrapdoor(BlockSetType.OAK)
+            .withPressurePlate(BlockSetType.OAK)
+            .withButton(BlockSetType.OAK, 30)
+            .build();
+
+    public static final DeferredBlock<StairBlock> DYEDREAM_PLANKS_STAIRS = PLANKS_VARIANTS.stairs();
+    public static final DeferredBlock<SlabBlock> DYEDREAM_PLANKS_SLAB = PLANKS_VARIANTS.slab();
+    public static final DeferredBlock<FenceBlock> DYEDREAM_PLANKS_FENCE = PLANKS_VARIANTS.fence();
+    public static final DeferredBlock<FenceGateBlock> DYEDREAM_PLANKS_FENCEGATE = PLANKS_VARIANTS.fenceGate();
+    public static final DeferredBlock<DoorBlock> DYEDREAM_PLANKS_DOOR = PLANKS_VARIANTS.door();
+    public static final DeferredBlock<TrapDoorBlock> DYEDREAM_PLANKS_TRAPDOOR = PLANKS_VARIANTS.trapdoor();
+    public static final DeferredBlock<PressurePlateBlock> DYEDREAM_PLANKS_PRESSURE_PLATE = PLANKS_VARIANTS.pressurePlate();
+    public static final DeferredBlock<ButtonBlock> DYEDREAM_PLANKS_BUTTON = PLANKS_VARIANTS.button();
+
+    // ==================== 其他变体（手动注册） ====================
+
     public static final DeferredBlock<StairBlock> DYEDREAM_BUD_STAIRS = BLOCKS.registerBlock("dyedream_bud_stairs",
             p -> new StairBlock(DYEDREAM_BUD_BLOCK.get().defaultBlockState(), p),
             BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_STAIRS));
@@ -153,8 +201,6 @@ public class PDBlocks {
             p -> new StairBlock(DYEDREAMQUARTZ_BLOCK.get().defaultBlockState(), p),
             BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_STAIRS));
 
-    public static final DeferredBlock<SlabBlock> DYEDREAM_PLANKS_SLAB = BLOCKS.registerBlock("dyedream_planks_slab",
-            SlabBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SLAB));
     public static final DeferredBlock<SlabBlock> DYEDREAM_BUD_SLAB = BLOCKS.registerBlock("dyedream_bud_slab",
             SlabBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_SLAB));
     public static final DeferredBlock<SlabBlock> DYEDREAMQUARTZ_BLOCK_SLAB = BLOCKS.registerBlock("dyedreamquartz_block_slab",
@@ -165,22 +211,41 @@ public class PDBlocks {
     public static final DeferredBlock<WallBlock> DYEDREAMQUARTZ_BLOCK_WALL = BLOCKS.registerBlock("dyedreamquartz_block_wall",
             WallBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.COBBLESTONE_WALL));
 
-    public static final DeferredBlock<FenceBlock> DYEDREAM_PLANKS_FENCE = BLOCKS.registerBlock("dyedream_planks_fence",
-            FenceBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_FENCE));
-    public static final DeferredBlock<FenceGateBlock> DYEDREAM_PLANKS_FENCEGATE = BLOCKS.registerBlock("dyedream_planks_fencegate",
-            p -> new FenceGateBlock(WoodType.OAK, p), BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_FENCE_GATE));
+    // ==================== 手动注册方块的 BlockConfig 初始化 ====================
+    static {
+        BlockAPI.putConfig("dyedream_log", BlockConfig.of()
+                .mineable("axe").model("cube_column")
+                .tex("end", "pasterdream:block/dyedream_log_top")
+                .tex("side", "pasterdream:block/dyedream_log"));
+        BlockAPI.putConfig("dyedream_wood", BlockConfig.of()
+                .mineable("axe").model("cube_all")
+                .tex("all", "pasterdream:block/dyedream_log"));
+        BlockAPI.putConfig("stripped_dyedream_log", BlockConfig.of()
+                .mineable("axe").model("cube_column")
+                .tex("end", "pasterdream:block/dyedream_log_top")
+                .tex("side", "pasterdream:block/dyedream_log"));
+        BlockAPI.putConfig("stripped_dyedream_wood", BlockConfig.of()
+                .mineable("axe").model("cube_all")
+                .tex("all", "pasterdream:block/dyedream_log"));
+        BlockAPI.putConfig("pillar_dyedreamquartz_block", BlockConfig.of()
+                .mineable("pickaxe").model("cube_column")
+                .tex("end", "pasterdream:block/dyedreamquartz_pillar_top")
+                .tex("side", "pasterdream:block/dyedreamquartz_pillar"));
+        BlockAPI.putConfig("dyedream_leaves", BlockConfig.of()
+                .mineable("hoe").model("cube_all")
+                .tex("all", "pasterdream:block/dyedream_leaves"));
+        BlockAPI.putConfig("dyedream_grass", BlockConfig.of()
+                .mineable("shovel").model("cube_top_bottom")
+                .tex("top", "pasterdream:block/dyedream_grass_top")
+                .tex("side", "pasterdream:block/dyedream_grass_side")
+                .tex("bottom", "pasterdream:block/dyedream_dirt"));
+        BlockAPI.putConfig("dyedream_lartern", BlockConfig.of()
+                .mineable("pickaxe"));
+        BlockAPI.putConfig("dyedream_desk", BlockConfig.of()
+                .mineable("axe"));
+    }
 
-    public static final DeferredBlock<DoorBlock> DYEDREAM_PLANKS_DOOR = BLOCKS.registerBlock("dyedream_planks_door",
-            p -> new DoorBlock(BlockSetType.OAK, p), BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_DOOR));
-    public static final DeferredBlock<TrapDoorBlock> DYEDREAM_PLANKS_TRAPDOOR = BLOCKS.registerBlock("dyedream_planks_trapdoor",
-            p -> new TrapDoorBlock(BlockSetType.OAK, p), BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_TRAPDOOR));
-
-    public static final DeferredBlock<PressurePlateBlock> DYEDREAM_PLANKS_PRESSURE_PLATE = BLOCKS.registerBlock("dyedream_planks_pressure_plate",
-            p -> new PressurePlateBlock(BlockSetType.OAK, p),
-            BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PRESSURE_PLATE));
-    public static final DeferredBlock<ButtonBlock> DYEDREAM_PLANKS_BUTTON = BLOCKS.registerBlock("dyedream_planks_button",
-            p -> new ButtonBlock(BlockSetType.OAK, 30, p),
-            BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_BUTTON));
+    // ==================== 玻璃面板和灯笼 ====================
 
     public static final DeferredBlock<IronBarsBlock> DYEDREAM_GLASSPANE = BLOCKS.registerBlock("dyedream_glasspane",
             IronBarsBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS_PANE));
@@ -190,7 +255,7 @@ public class PDBlocks {
             IronBarsBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS_PANE));
 
     public static final DeferredBlock<LanternBlock> DYEDREAM_LARTERN = BLOCKS.registerBlock("dyedream_lartern",
-            LanternBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.LANTERN));
+            LanternBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.LANTERN).lightLevel(s -> 15));
 
     // ==================== 自定义模型方块 ====================
 
@@ -238,7 +303,7 @@ public class PDBlocks {
         return BlockBehaviour.Properties.of()
                 .sound(SoundType.AMETHYST_CLUSTER)
                 .strength(1f, 0f)
-                .lightLevel(s -> 10)
+                .lightLevel(s -> 6)
                 .requiresCorrectToolForDrops()
                 .noOcclusion()
                 .hasPostProcess((bs, br, bp) -> true)
@@ -254,7 +319,7 @@ public class PDBlocks {
             IceBudBlock::new, BlockBehaviour.Properties.of()
                     .sound(SoundType.AMETHYST_CLUSTER)
                     .strength(1f, 0f)
-                    .lightLevel(s -> 9)
+                    .lightLevel(s -> 5)
                     .requiresCorrectToolForDrops()
                     .noOcclusion()
                     .hasPostProcess((bs, br, bp) -> true)
@@ -311,76 +376,66 @@ public class PDBlocks {
         return BlockBehaviour.Properties.ofFullCopy(Blocks.SUNFLOWER);
     }
 
-    // ========== 单格花（DyedreamFlowerBlock） ==========
-    public static final DeferredBlock<DyedreamFlowerBlock> FLOWER_1 = BLOCKS.registerBlock("flower_1",
-            p -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> FLOWER_2 = BLOCKS.registerBlock("flower_2",
-            p -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> FLOWER_3 = BLOCKS.registerBlock("flower_3",
-            p -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> FLOWER_5 = BLOCKS.registerBlock("flower_5",
-            p -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> FLOWER_6 = BLOCKS.registerBlock("flower_6",
-            p -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> FLOWER_8 = BLOCKS.registerBlock("flower_8",
-            p -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> FLOWER_9 = BLOCKS.registerBlock("flower_9",
-            p -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> FLOWER_13 = BLOCKS.registerBlock("flower_13",
-            p -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> FLOWER_14 = BLOCKS.registerBlock("flower_14",
-            p -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> FLOWER_15 = BLOCKS.registerBlock("flower_15",
-            p -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> FLOWER_16 = BLOCKS.registerBlock("flower_16",
-            p -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> FLOWER_17 = BLOCKS.registerBlock("flower_17",
-            p -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, p), flowerProps());
+    // ========== API 批量注册：花（单格 + 双层） ==========
 
-    // ========== 双层花（DyedreamDoublePlantBlock） ==========
-    public static final DeferredBlock<DyedreamDoublePlantBlock> FLOWER_7 = BLOCKS.registerBlock("flower_7",
-            DyedreamDoublePlantBlock::new, doublePlantProps());
-    public static final DeferredBlock<DyedreamDoublePlantBlock> FLOWER_10 = BLOCKS.registerBlock("flower_10",
-            DyedreamDoublePlantBlock::new, doublePlantProps());
-    public static final DeferredBlock<DyedreamDoublePlantBlock> FLOWER_11 = BLOCKS.registerBlock("flower_11",
-            DyedreamDoublePlantBlock::new, doublePlantProps());
-    public static final DeferredBlock<DyedreamDoublePlantBlock> FLOWER_12 = BLOCKS.registerBlock("flower_12",
-            DyedreamDoublePlantBlock::new, doublePlantProps());
-    public static final DeferredBlock<DyedreamDoublePlantBlock> FLOWER_18 = BLOCKS.registerBlock("flower_18",
-            DyedreamDoublePlantBlock::new, doublePlantProps());
+    private static final Map<String, DeferredBlock<Block>> FLOWERS_SINGLE = BlockAPI.batchRegister("flower")
+            .indexList(1, 2, 3, 5, 6, 8, 9, 13, 14, 15, 16, 17)
+            .factory((index, props) -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, props))
+            .withProperties(flowerProps())
+            .build();
 
-    // ========== 单格草（DyedreamFlowerBlock） ==========
-    public static final DeferredBlock<DyedreamFlowerBlock> GRASS_1 = BLOCKS.registerBlock("grass_1",
-            p -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> GRASS_2 = BLOCKS.registerBlock("grass_2",
-            p -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> GRASS_3 = BLOCKS.registerBlock("grass_3",
-            p -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> GRASS_5 = BLOCKS.registerBlock("grass_5",
-            p -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> GRASS_6 = BLOCKS.registerBlock("grass_6",
-            p -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> GRASS_7 = BLOCKS.registerBlock("grass_7",
-            p -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> GRASS_8 = BLOCKS.registerBlock("grass_8",
-            p -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> GRASS_9 = BLOCKS.registerBlock("grass_9",
-            p -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> GRASS_11 = BLOCKS.registerBlock("grass_11",
-            p -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> GRASS_12 = BLOCKS.registerBlock("grass_12",
-            p -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> GRASS_13 = BLOCKS.registerBlock("grass_13",
-            p -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, p), flowerProps());
-    public static final DeferredBlock<DyedreamFlowerBlock> GRASS_14 = BLOCKS.registerBlock("grass_14",
-            p -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, p), flowerProps());
+    private static final Map<String, DeferredBlock<Block>> FLOWERS_DOUBLE = BlockAPI.batchRegister("flower")
+            .indexList(7, 10, 11, 12, 18)
+            .factory((index, props) -> new DyedreamDoublePlantBlock())
+            .withProperties(doublePlantProps())
+            .build();
 
-    // ========== 双层草（DyedreamDoublePlantBlock） ==========
-    public static final DeferredBlock<DyedreamDoublePlantBlock> GRASS_4 = BLOCKS.registerBlock("grass_4",
-            DyedreamDoublePlantBlock::new, doublePlantProps());
-    public static final DeferredBlock<DyedreamDoublePlantBlock> GRASS_10 = BLOCKS.registerBlock("grass_10",
-            DyedreamDoublePlantBlock::new, doublePlantProps());
-    public static final DeferredBlock<DyedreamDoublePlantBlock> GRASS_15 = BLOCKS.registerBlock("grass_15",
-            DyedreamDoublePlantBlock::new, doublePlantProps());
+    public static final DeferredBlock<Block> FLOWER_1 = FLOWERS_SINGLE.get("flower_1");
+    public static final DeferredBlock<Block> FLOWER_2 = FLOWERS_SINGLE.get("flower_2");
+    public static final DeferredBlock<Block> FLOWER_3 = FLOWERS_SINGLE.get("flower_3");
+    public static final DeferredBlock<Block> FLOWER_5 = FLOWERS_SINGLE.get("flower_5");
+    public static final DeferredBlock<Block> FLOWER_6 = FLOWERS_SINGLE.get("flower_6");
+    public static final DeferredBlock<Block> FLOWER_7 = FLOWERS_DOUBLE.get("flower_7");
+    public static final DeferredBlock<Block> FLOWER_8 = FLOWERS_SINGLE.get("flower_8");
+    public static final DeferredBlock<Block> FLOWER_9 = FLOWERS_SINGLE.get("flower_9");
+    public static final DeferredBlock<Block> FLOWER_10 = FLOWERS_DOUBLE.get("flower_10");
+    public static final DeferredBlock<Block> FLOWER_11 = FLOWERS_DOUBLE.get("flower_11");
+    public static final DeferredBlock<Block> FLOWER_12 = FLOWERS_DOUBLE.get("flower_12");
+    public static final DeferredBlock<Block> FLOWER_13 = FLOWERS_SINGLE.get("flower_13");
+    public static final DeferredBlock<Block> FLOWER_14 = FLOWERS_SINGLE.get("flower_14");
+    public static final DeferredBlock<Block> FLOWER_15 = FLOWERS_SINGLE.get("flower_15");
+    public static final DeferredBlock<Block> FLOWER_16 = FLOWERS_SINGLE.get("flower_16");
+    public static final DeferredBlock<Block> FLOWER_17 = FLOWERS_SINGLE.get("flower_17");
+    public static final DeferredBlock<Block> FLOWER_18 = FLOWERS_DOUBLE.get("flower_18");
+
+    // ========== API 批量注册：草（单格 + 双层） ==========
+
+    private static final Map<String, DeferredBlock<Block>> GRASSES_SINGLE = BlockAPI.batchRegister("grass")
+            .indexList(1, 2, 3, 5, 6, 7, 8, 9, 11, 12, 13, 14)
+            .factory((index, props) -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, props))
+            .withProperties(flowerProps())
+            .build();
+
+    private static final Map<String, DeferredBlock<Block>> GRASSES_DOUBLE = BlockAPI.batchRegister("grass")
+            .indexList(4, 10, 15)
+            .factory((index, props) -> new DyedreamDoublePlantBlock())
+            .withProperties(doublePlantProps())
+            .build();
+
+    public static final DeferredBlock<Block> GRASS_1 = GRASSES_SINGLE.get("grass_1");
+    public static final DeferredBlock<Block> GRASS_2 = GRASSES_SINGLE.get("grass_2");
+    public static final DeferredBlock<Block> GRASS_3 = GRASSES_SINGLE.get("grass_3");
+    public static final DeferredBlock<Block> GRASS_4 = GRASSES_DOUBLE.get("grass_4");
+    public static final DeferredBlock<Block> GRASS_5 = GRASSES_SINGLE.get("grass_5");
+    public static final DeferredBlock<Block> GRASS_6 = GRASSES_SINGLE.get("grass_6");
+    public static final DeferredBlock<Block> GRASS_7 = GRASSES_SINGLE.get("grass_7");
+    public static final DeferredBlock<Block> GRASS_8 = GRASSES_SINGLE.get("grass_8");
+    public static final DeferredBlock<Block> GRASS_9 = GRASSES_SINGLE.get("grass_9");
+    public static final DeferredBlock<Block> GRASS_10 = GRASSES_DOUBLE.get("grass_10");
+    public static final DeferredBlock<Block> GRASS_11 = GRASSES_SINGLE.get("grass_11");
+    public static final DeferredBlock<Block> GRASS_12 = GRASSES_SINGLE.get("grass_12");
+    public static final DeferredBlock<Block> GRASS_13 = GRASSES_SINGLE.get("grass_13");
+    public static final DeferredBlock<Block> GRASS_14 = GRASSES_SINGLE.get("grass_14");
+    public static final DeferredBlock<Block> GRASS_15 = GRASSES_DOUBLE.get("grass_15");
 
 }

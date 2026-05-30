@@ -88,8 +88,6 @@ public class PDDyedreamBiomeModifier implements BiomeModifier {
                 addFeature(builder, GenerationStep.Decoration.VEGETAL_DECORATION, placedFeatureLookup, PDPlacedFeatures.PATCH_DYEDREAM_GRASS);
                 addFeature(builder, GenerationStep.Decoration.VEGETAL_DECORATION, placedFeatureLookup, PDPlacedFeatures.PATCH_DYEDREAM_BUDS);
                 addFeature(builder, GenerationStep.Decoration.VEGETAL_DECORATION, placedFeatureLookup, PDPlacedFeatures.PATCH_PINKAGARIC);
-                addFeature(builder, GenerationStep.Decoration.VEGETAL_DECORATION, placedFeatureLookup, PDPlacedFeatures.PATCH_DYEDREAM_LILY_PAD);
-                addFeature(builder, GenerationStep.Decoration.VEGETAL_DECORATION, placedFeatureLookup, PDPlacedFeatures.PATCH_DYEDREAM_LOTUS);
                 addFeature(builder, GenerationStep.Decoration.VEGETAL_DECORATION, placedFeatureLookup, PDPlacedFeatures.PATCH_DYEDREAM_SEAGRASS);
 
                 LOGGER.info("[modify] ✅ 染梦群系特征注入完成！");

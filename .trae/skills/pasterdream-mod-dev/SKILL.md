@@ -372,3 +372,88 @@ public static final ResourceLocation BLOCK_LOOT = ResourceLocation.fromNamespace
 | `PDStructures.java` | `DeferredRegister<StructureType<?>>` | 结构类型 | 主构造函数 |
 | `PDAdvancements.java` | 常量类（无注册器） | 成就引用 | 无需注册 |
 | `PDLootTables.java` | 常量类（无注册器） | 战利品表引用 | 无需注册 |
+
+---
+
+### 10. BlockAPI — 方块批量注册系统 ⭐
+
+**`BlockAPI`** 是一个 Facade + Builder 模式的方块注册 API，提供三种注册模式，配合 `BlockConfig` 实现**纹理/模型/挖掘标签/交互/动画**一站式配置。
+
+#### 三种注册模式
+
+| 模式 | Builder | 适用场景 | 示例 |
+|------|---------|---------|------|
+| **模式一** | `SimpleBlockBuilder` | 基础换皮方块 | 染梦木板、染梦玻璃 |
+| **模式二** | `VariantSetBuilder` | 建筑变体族 | 楼梯+台阶+墙+栅栏家具套 |
+| **模式三** | `BatchBlockBuilder` | 编号同类方块 | 花蕾1~17号、粉丁菇0~3 |
+
+#### BlockConfig 链式配置
+
+`BlockConfig.of()` 提供以下可选配置：
+
+| 方法 | 参数 | 说明 | 对应数据生成器 |
+|------|------|------|---------------|
+| `.mineable("axe")` | `"axe"`/`"pickaxe"`/`"shovel"`/`"hoe"` | 工具标签 | `PDBlockTagProvider` → `tags/block/mineable/` |
+| `.model("cube_all")` | 模型标识 | 方块模型类型 | `PDBlockModelProvider` → `models/block/` + `blockstates/` |
+| `.tex("layer", "path")` | 纹理层名+路径 | 纹理映射 | `PDBlockModelProvider` 读取生成 |
+| `.interact(handler)` | Lambda 回调 | 右键交互 | 运行时注册（非数据生成） |
+| `.animated("geo/...")` | GeckoLib 路径 | 动画支持 | 运行时注册 GeckoLib（待完善） |
+
+**支持模型类型：**
+
+| `model()` 参数 | 说明 | 需要 `tex()` 的层 |
+|---------------|------|------------------|
+| `"cube_all"` | 六面相同纹理 | `"all"` |
+| `"cube_column"` | 柱状（侧面+顶底） | `"side"`, `"end"` |
+| `"cube_top_bottom"` | 顶底不同 | `"top"`, `"side"`, `"bottom"` |
+| `"cube_6"` | 六面不同 | `"north"`, `"south"`, `"east"`, `"west"`, `"up"`, `"down"` |
+
+#### 完整使用示例
+
+```java
+// ===== 模式一：SimpleBlockBuilder（换皮方块）=====
+BlockAPI.registerSimpleBlocks()
+    .add("dyedream_dirt", Blocks.DIRT)                                 // 无配置，纯换皮
+    .add("dyedream_planks", Blocks.OAK_PLANKS, BlockConfig.of()        // 带配置
+        .mineable("axe")                                               // → 自动生成斧头标签
+        .model("cube_all")                                             // → 自动生成模型 JSON
+        .tex("all", "pasterdream:block/dyedream_planks")              // → 纹理引用
+    )
+    .add("dyedream_log", Blocks.OAK_LOG, BlockConfig.of()
+        .mineable("axe")
+        .model("cube_column")
+        .tex("end", "pasterdream:block/dyedream_log_top")
+        .tex("side", "pasterdream:block/dyedream_log_side")
+    )
+    .build();
+
+// ===== 模式二：VariantSetBuilder（建筑变体族）=====
+// 注册 stair/slab/wall/fence/gate/door/trapdoor/button/pressure_plate
+BlockAPI.registerVariantSet("dyedream_planks", Blocks.OAK_PLANKS)
+    .build();
+
+// ===== 模式三：BatchBlockBuilder（编号同类）=====
+BlockAPI.registerBatchBlocks()
+    .add("pinkagaric", 0, 3, Blocks.RED_MUSHROOM)       // pinkagaric_0~3
+    .add("dyedream_bud", 0, 2, Blocks.STONE)             // dyedream_bud_0~2
+    .build();
+```
+
+> **注意**：`PDBlockTagProvider` 和 `PDBlockModelProvider` 会自动读取 `BlockAPI.putConfig()` 存储的配置，
+> 运行 `runData` 即可生成对应的 `tags/`、`models/`、`blockstates/` JSON 文件。
+
+#### 数据生成器工作流
+
+1. 在 `PDBlocks.java` 中用 `BlockAPI` + `BlockConfig` 注册方块
+2. 运行 `.\gradlew runData` 生成标签 + 模型 JSON
+3. 生成的资源在 `src/generated/resources/` 目录
+4. 启动游戏验证工具图标和模型显示
+
+> ⚠️ **当前状态**：`PDBlockTagProvider` 和 `PDBlockModelProvider` 已完成并注册到 `PasterDreamMod.gatherData()`。
+> 但 `compileJava` 被 EntityAPI/ParticleAPI 中的前置错误阻塞（与 BlockAPI 无关），
+> 修复后方可运行 `runData`。
+
+#### 交互与动画（预留）
+
+`BlockConfig` 已预留 `.interact()` 和 `.animated()` 支持位，但目前的 `SimpleBlockBuilder` 只注册 `SelfDropBlock`（纯换皮方块），
+不会自动创建带交互或动画的自定义方块类。如需交互/动画，当前仍需手写 Block 子类 + BlockEntity。

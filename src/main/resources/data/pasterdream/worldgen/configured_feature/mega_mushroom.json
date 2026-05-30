@@ -1,0 +1,9 @@
+{
+  "type": "pasterdream:mega_mushroom",
+  "config": {
+    "stem_block": "pasterdream:pinkagaric_1",
+    "cap_outer_block": "pasterdream:pinkagaric_0",
+    "gill_inner_block": "pasterdream:pinkagaric_2",
+    "glow_cap_block": "pasterdream:pinkagaric_3"
+  }
+}

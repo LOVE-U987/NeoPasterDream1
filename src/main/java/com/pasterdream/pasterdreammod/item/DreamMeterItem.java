@@ -21,6 +21,7 @@ import java.util.function.Consumer;
  * 使用 GeckoLib 实现完整 3D 手持模型渲染
  * 包含空闲旋转动画，在 GUI、第一人称、第三人称中均显示 3D 模型
  */
+@SuppressWarnings("removal")
 public class DreamMeterItem extends Item implements GeoItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);

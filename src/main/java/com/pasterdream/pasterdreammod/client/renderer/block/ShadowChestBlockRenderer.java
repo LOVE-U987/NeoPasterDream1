@@ -13,12 +13,16 @@ import software.bernie.geckolib.renderer.GeoBlockRenderer;
  */
 public class ShadowChestBlockRenderer extends GeoBlockRenderer<ShadowChestBlockEntity> {
 
+    private static final String NAME = "shadow_chest";
+
     /**
      * 构造影之箱方块渲染器
      *
      * @param context 渲染器提供者上下文
      */
     public ShadowChestBlockRenderer(BlockEntityRendererProvider.Context context) {
-        super(new DefaultedBlockGeoModel<>(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "shadow_chest")));
+        super(new DefaultedBlockGeoModel<>(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, NAME)));
+        PasterDreamMod.LOGGER.debug("[ShadowChestBlockRenderer] 初始化完成，资源名: {} | 模型=geo/block/{}.geo.json 纹理=textures/block/{}.png 动画=animations/block/{}.animation.json",
+                NAME, NAME, NAME, NAME);
     }
 }

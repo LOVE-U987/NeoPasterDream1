@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.block;
 
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
@@ -13,6 +14,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 
 import java.util.function.Supplier;
+import net.minecraft.world.level.storage.loot.LootParams;
+import java.util.List;
 
 /**
  * 粉丁菇方块 —— 通用的粉丁菇基类，支持通过 {@link Supplier} 动态指定光照等级。
@@ -58,5 +61,10 @@ public class PinkagaricBlock extends Block {
     @Override
     public int getLightBlock(BlockState state, BlockGetter worldIn, BlockPos pos) {
         return lightLevel.get();
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        return List.of(new ItemStack(this));
     }
 }

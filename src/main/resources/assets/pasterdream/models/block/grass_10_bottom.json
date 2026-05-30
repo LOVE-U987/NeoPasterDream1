@@ -1,8 +1,8 @@
 {
   "parent": "block/cross",
   "textures": {
-    "cross": "pasterdream:block/ying_jing_jue_",
-    "particle": "pasterdream:block/ying_jing_jue_"
+    "cross": "pasterdream:block/hard_crystal_fern",
+    "particle": "pasterdream:block/hard_crystal_fern"
   },
   "render_type": "cutout"
 }

@@ -1,8 +1,8 @@
 {
   "parent": "block/cross",
   "textures": {
-    "cross": "pasterdream:block/feng_yu_cao__top",
-    "particle": "pasterdream:block/feng_yu_cao__top"
+    "cross": "pasterdream:block/wind_feather_grass_top",
+    "particle": "pasterdream:block/wind_feather_grass_top"
   },
   "render_type": "cutout"
 }

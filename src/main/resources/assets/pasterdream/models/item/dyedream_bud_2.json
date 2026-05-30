@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/xiao_xing_dyedream_bud"
+    "layer0": "pasterdream:item/small_dyedream_bud"
   },
   "render_type": "translucent"
 }

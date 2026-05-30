@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -10,6 +11,8 @@ import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.loot.LootParams;
+import java.util.List;
 
 /**
  * 染梦树苗 (Dyedream Sapling)
@@ -38,5 +41,10 @@ public class DyedreamSaplingBlock extends FlowerBlock {
             || state.is(PDBlocks.DYEDREAM_DIRT.get())
             || state.is(PDBlocks.DYEDREAM_SAND.get())
             || state.is(PDBlocks.DYEDREAM_BLOCK.get());
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        return List.of(new ItemStack(this));
     }
 }

@@ -1,8 +1,8 @@
 {
   "parent": "block/cross",
   "textures": {
-    "cross": "pasterdream:block/bai_e_hua_",
-    "particle": "pasterdream:block/bai_e_hua_"
+    "cross": "pasterdream:block/white_goose_flower",
+    "particle": "pasterdream:block/white_goose_flower"
   },
   "render_type": "cutout"
 }

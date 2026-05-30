@@ -1,0 +1,42 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "blob",
+    "body_block": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 80,
+          "data": {
+            "Name": "pasterdream:cloud"
+          }
+        },
+        {
+          "weight": 15,
+          "data": {
+            "Name": "pasterdream:thick_cloud"
+          }
+        },
+        {
+          "weight": 5,
+          "data": {
+            "Name": "pasterdream:chiseled_dyedreamquartz_block"
+          }
+        }
+      ]
+    },
+    "cluster_size": 90,
+    "base_radius": 6,
+    "y_radius": 2,
+    "irregularity": 0.3,
+    "fill_hang": true,
+    "replaceable": {
+      "type": "minecraft:matching_blocks",
+      "blocks": [
+        "minecraft:air",
+        "pasterdream:cloud",
+        "pasterdream:thick_cloud"
+      ]
+    }
+  }
+}

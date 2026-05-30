@@ -16,6 +16,14 @@ import software.bernie.geckolib.model.GeoModel;
  */
 public class DreamAccumulatorDisplayModel extends GeoModel<DreamAccumulatorDisplayItem> {
 
+    private static final String MODEL_PATH = "geo/block/dream_accumulator.geo.json";
+    private static final String TEXTURE_PATH = "textures/block/dream_accumulator.png";
+    private static final String ANIM_PATH = "animations/block/dream_accumulator.animation.json";
+
+    private static final ResourceLocation MODEL_RL = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, MODEL_PATH);
+    private static final ResourceLocation TEXTURE_RL = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, TEXTURE_PATH);
+    private static final ResourceLocation ANIM_RL = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, ANIM_PATH);
+
     /**
      * 获取动画资源位置
      *
@@ -24,7 +32,7 @@ public class DreamAccumulatorDisplayModel extends GeoModel<DreamAccumulatorDispl
      */
     @Override
     public ResourceLocation getAnimationResource(DreamAccumulatorDisplayItem animatable) {
-        return ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "animations/block/dream_accumulator.animation.json");
+        return ANIM_RL;
     }
 
     /**
@@ -35,7 +43,7 @@ public class DreamAccumulatorDisplayModel extends GeoModel<DreamAccumulatorDispl
      */
     @Override
     public ResourceLocation getModelResource(DreamAccumulatorDisplayItem animatable) {
-        return ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "geo/block/dream_accumulator.geo.json");
+        return MODEL_RL;
     }
 
     /**
@@ -46,6 +54,6 @@ public class DreamAccumulatorDisplayModel extends GeoModel<DreamAccumulatorDispl
      */
     @Override
     public ResourceLocation getTextureResource(DreamAccumulatorDisplayItem animatable) {
-        return ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "textures/block/dream_accumulator.png");
+        return TEXTURE_RL;
     }
 }

@@ -18,16 +18,20 @@ import software.bernie.geckolib.renderer.GeoBlockRenderer;
  */
 public class DreamAccumulatorBlockRenderer extends GeoBlockRenderer<DreamAccumulatorBlockEntity> {
 
+    private static final String NAME = "dream_accumulator";
+
     /**
      * 构造蓄梦池方块渲染器
      * 使用 DefaultedBlockGeoModel 自动加载资源文件
      *
      * 资源文件路径约定：
-     * - 模型：assets/pasterdream/geo/dream_accumulator.geo.json
-     * - 纹理：assets/pasterdream/textures/block/dream_accumulator.png
-     * - 动画：assets/pasterdream/animations/dream_accumulator.animation.json
+     * - 模型：assets/pasterdream/geo/{}/.geo.json
+     * - 纹理：assets/pasterdream/textures/block/{}.png
+     * - 动画：assets/pasterdream/animations/block/{}.animation.json
      */
     public DreamAccumulatorBlockRenderer() {
-        super(new DefaultedBlockGeoModel<>(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dream_accumulator")));
+        super(new DefaultedBlockGeoModel<>(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, NAME)));
+        PasterDreamMod.LOGGER.debug("[DreamAccumulatorBlockRenderer] 初始化完成，资源名: {} | 模型=geo/block/{}.geo.json 纹理=textures/block/{}.png 动画=animations/block/{}.animation.json",
+                NAME, NAME, NAME, NAME);
     }
 }

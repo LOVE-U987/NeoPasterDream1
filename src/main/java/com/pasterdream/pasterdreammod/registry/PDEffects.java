@@ -1,7 +1,6 @@
 package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
-import com.pasterdream.pasterdreammod.effect.SanVaryMobEffect;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffect;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -13,7 +12,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  * <p>
  * 参考 STORYLINE.md 和原模组效果设计：
  * - DREAMWISH_BUFF：梦境祝福效果，用于进入染梦维度
- * - san_increase / san_decrease：San 理智值增减效果（已实现）
  * - 暗影侵蚀效果：灯影世界中的负面状态（待实现）
  */
 public class PDEffects {
@@ -23,24 +21,6 @@ public class PDEffects {
      */
     public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(
             Registries.MOB_EFFECT, PasterDreamMod.MOD_ID);
-
-    // ==================== San 值效果 ====================
-
-    /**
-     * San 值增加效果 (san_increase)
-     * 瞬间生效，增加玩家 San 值
-     */
-    public static final DeferredHolder<MobEffect, MobEffect> SAN_INCREASE = MOB_EFFECTS.register(
-            "san_increase",
-            () -> new SanVaryMobEffect(true));
-
-    /**
-     * San 值减少效果 (san_decrease)
-     * 瞬间生效，减少玩家 San 值
-     */
-    public static final DeferredHolder<MobEffect, MobEffect> SAN_DECREASE = MOB_EFFECTS.register(
-            "san_decrease",
-            () -> new SanVaryMobEffect(false));
 
     // ==================== 后续待注册效果 ====================
 

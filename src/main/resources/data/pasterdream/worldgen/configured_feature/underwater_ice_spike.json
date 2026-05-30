@@ -1,0 +1,67 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "spike",
+    "body_block": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 50,
+          "data": {
+            "Name": "minecraft:ice"
+          }
+        },
+        {
+          "weight": 30,
+          "data": {
+            "Name": "minecraft:packed_ice"
+          }
+        },
+        {
+          "weight": 20,
+          "data": {
+            "Name": "minecraft:blue_ice"
+          }
+        }
+      ]
+    },
+    "ore_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:ice_bud_0"
+      }
+    },
+    "min_height": 30,
+    "max_height": 60,
+    "base_radius": 5,
+    "top_radius": 1,
+    "crystal_chance": 0.1,
+    "crystal_only_on_top": true,
+    "tilt_intensity": 0.25,
+    "water_required": true,
+    "check_hang": false,
+    "region_check": true,
+    "region_threshold": 0.3,
+    "replaceable": {
+      "type": "minecraft:any_of",
+      "predicates": [
+        {
+          "type": "minecraft:matching_blocks",
+          "blocks": [
+            "minecraft:air",
+            "minecraft:water",
+            "minecraft:ice",
+            "minecraft:packed_ice",
+            "minecraft:blue_ice",
+            "minecraft:sand",
+            "minecraft:gravel",
+            "pasterdream:dyedream_sand"
+          ]
+        },
+        {
+          "type": "minecraft:replaceable"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:biome_dyedream_1",
+  "features": [
+    "pasterdream:mega_mushroom"
+  ],
+  "step": "top_layer_modification"
+}

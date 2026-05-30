@@ -16,18 +16,26 @@ import software.bernie.geckolib.model.GeoModel;
  */
 public class DreamMeterItemModel extends GeoModel<DreamMeterItem> {
 
+    private static final String MODEL_PATH = "geo/dream_meter.geo.json";
+    private static final String TEXTURE_PATH = "textures/item/dream_meter.png";
+    private static final String ANIM_PATH = "animations/dream_meter.animation.json";
+
+    private static final ResourceLocation MODEL_RL = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, MODEL_PATH);
+    private static final ResourceLocation TEXTURE_RL = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, TEXTURE_PATH);
+    private static final ResourceLocation ANIM_RL = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, ANIM_PATH);
+
     @Override
     public ResourceLocation getAnimationResource(DreamMeterItem animatable) {
-        return ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "animations/dream_meter.animation.json");
+        return ANIM_RL;
     }
 
     @Override
     public ResourceLocation getModelResource(DreamMeterItem animatable) {
-        return ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "geo/dream_meter.geo.json");
+        return MODEL_RL;
     }
 
     @Override
     public ResourceLocation getTextureResource(DreamMeterItem animatable) {
-        return ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "textures/item/dream_meter.png");
+        return TEXTURE_RL;
     }
 }

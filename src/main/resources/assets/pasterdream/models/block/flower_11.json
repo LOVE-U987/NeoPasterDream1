@@ -1,8 +1,8 @@
 {
   "parent": "block/cross",
   "textures": {
-    "cross": "pasterdream:block/ye_meng_lian__top",
-    "particle": "pasterdream:block/ye_meng_lian__top"
+    "cross": "pasterdream:block/night_dream_lotus_top",
+    "particle": "pasterdream:block/night_dream_lotus_top"
   },
   "render_type": "cutout"
 }

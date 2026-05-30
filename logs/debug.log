@@ -1,0 +1,56 @@
+[305月2026 15:02:20.400] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleBuilder] 创建粒子构建器: modId=pasterdream, name=test_chain, 默认纹理=pasterdream:test_chain
+[305月2026 15:02:20.405] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleBuilder] test_chain → alwaysShow=true
+[305月2026 15:02:20.406] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleBuilder] test_chain → texture=minecraft:flame
+[305月2026 15:02:20.406] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleBuilder] test_chain → gravity=0.1
+[305月2026 15:02:20.406] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleBuilder] test_chain → generateJson=false
+[305月2026 15:02:20.407] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleBuilder] test_chain → basePath=build/api-test-output
+[305月2026 15:02:20.409] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleBuilder] 创建粒子构建器: modId=pasterdream, name=test_default_tex, 默认纹理=pasterdream:test_default_tex
+[305月2026 15:02:20.410] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleBuilder] 创建粒子构建器: modId=pasterdream, name=test_custom_tex, 默认纹理=pasterdream:test_custom_tex
+[305月2026 15:02:20.410] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleBuilder] test_custom_tex → texture=pasterdream:crystal_flame
+[305月2026 15:02:20.410] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleBuilder] 创建粒子构建器: modId=pasterdream, name=test_gravity, 默认纹理=pasterdream:test_gravity
+[305月2026 15:02:20.410] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleBuilder] test_gravity → gravity=0.05
+[305月2026 15:02:20.411] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleBuilder] 创建粒子构建器: modId=pasterdream, name=test_show, 默认纹理=pasterdream:test_show
+[305月2026 15:02:20.411] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleBuilder] test_show → alwaysShow=true
+[305月2026 15:02:20.500] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleGenerator] ✅ 已生成粒子定义 JSON → build\api-test-output\assets\pasterdream\particles\test_particle.json
+[305月2026 15:02:20.505] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleGenerator] ✅ 已生成粒子定义 JSON → build\api-test-output\assets\pasterdream\particles\test_gravity_particle.json
+[305月2026 15:02:20.519] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleTextureGenerator] ✅ 已生成粒子纹理元数据 → build\api-test-output\assets\pasterdream\textures\particle\test_texture_meta.json
+[305月2026 15:02:20.823] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleAPI] 🔍 查询粒子: test_cache_particle → 未找到
+[305月2026 15:02:20.824] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleAPI] 📊 获取所有已注册粒子: 共 0 个
+[305月2026 15:02:20.864] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinAPI] 🏛️ 开始创建遗迹构建器: test_ruin
+[305月2026 15:02:20.869] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_ruin → biomeTag=#minecraft:is_overworld
+[305月2026 15:02:20.869] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_ruin → templatePool=pasterdream:test_ruin_pool
+[305月2026 15:02:20.869] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_ruin → terrainAdaptation=beard_thin
+[305月2026 15:02:20.870] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_ruin → step=surface_structures
+[305月2026 15:02:20.870] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_ruin → size=7
+[305月2026 15:02:20.871] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_ruin → startHeight=0
+[305月2026 15:02:20.871] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_ruin → generateJson=false
+[305月2026 15:02:20.871] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinAPI] 🏛️ 开始创建遗迹构建器: test_full_ruin
+[305月2026 15:02:20.872] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_full_ruin → biomeTag=#pasterdream:is_dyedream
+[305月2026 15:02:20.872] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_full_ruin → templatePool=pasterdream:test_full_ruin_pool
+[305月2026 15:02:20.872] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_full_ruin → terrainAdaptation=beard_thin
+[305月2026 15:02:20.872] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_full_ruin → step=surface_structures
+[305月2026 15:02:20.873] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_full_ruin → size=12
+[305月2026 15:02:20.873] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_full_ruin → startHeight=64
+[305月2026 15:02:20.873] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_full_ruin → extraFields=已配置 (1 个字段)
+[305月2026 15:02:20.873] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_full_ruin → generateJson=false
+[305月2026 15:02:20.873] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinAPI] 🏛️ 开始创建遗迹构建器: test_default_ruin
+[305月2026 15:02:20.874] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinAPI] 🏛️ 开始创建遗迹构建器: test_biome1
+[305月2026 15:02:20.875] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_biome1 → biomeTag=#minecraft:is_overworld
+[305月2026 15:02:20.875] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_biome1 → generateJson=false
+[305月2026 15:02:20.875] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinAPI] 🏛️ 开始创建遗迹构建器: test_biome2
+[305月2026 15:02:20.875] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_biome2 → biomeTag=#minecraft:is_nether
+[305月2026 15:02:20.875] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinBuilder] test_biome2 → generateJson=false
+[305月2026 15:02:20.883] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [StructureTypeGenerator] ✅ 已生成 structure JSON → build\api-test-output\data\pasterdream\worldgen\structure\test_structure_gen.json
+[305月2026 15:02:20.889] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [StructureTypeGenerator] ✅ 已生成 structure JSON → build\api-test-output\data\pasterdream\worldgen\structure\test_custom_fields.json
+[305月2026 15:02:20.896] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [StructureSetGenerator] ✅ 已生成 structure_set JSON → build\api-test-output\data\pasterdream\worldgen\structure_set\test_structure_set.json
+[305月2026 15:02:20.902] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [TemplatePoolGenerator] ✅ 已生成 template_pool JSON → build\api-test-output\data\pasterdream\worldgen\template_pool\test_pool.json
+[305月2026 15:02:20.909] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [TemplatePoolGenerator] ✅ 已生成 template_pool JSON → build\api-test-output\data\pasterdream\worldgen\template_pool\test_multi_pool.json
+[305月2026 15:02:20.912] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinAPI] 🔍 检查遗迹是否存在: non_existent_ruin → false
+[305月2026 15:02:20.913] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinAPI] 📊 获取所有已注册遗迹: 共 0 个
+[305月2026 15:02:20.913] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinAPI] 🔍 查询遗迹: non_existent_ruin → 未找到
+[305月2026 15:02:20.914] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [StructureSetBuilder] 创建结构集构建器: modId=pasterdream, ruin=test_chain_ruin, setName=test_chain_set
+[305月2026 15:02:20.915] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [StructureSetBuilder] test_chain_set → spacing=48
+[305月2026 15:02:20.915] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [StructureSetBuilder] test_chain_set → separation=12
+[305月2026 15:02:20.915] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [StructureSetBuilder] test_chain_set → salt=67890
+[305月2026 15:02:20.916] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [StructureSetBuilder] test_chain_set → placementType=minecraft:concentric
+[305月2026 15:02:20.916] [main/DEBUG] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [StructureSetBuilder] test_chain_set → generateJson=false

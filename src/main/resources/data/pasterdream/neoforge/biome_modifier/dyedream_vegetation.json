@@ -5,10 +5,7 @@
     "pasterdream:dyedream_trees",
     "pasterdream:patch_dyedream_buds",
     "pasterdream:patch_pinkagaric",
-    "pasterdream:patch_dyedream_lily_pad",
-    "pasterdream:patch_dyedream_lotus",
     "pasterdream:patch_dyedream_seagrass",
-    "pasterdream:patch_cloud",
     "pasterdream:flower_8",
     "pasterdream:flower_9",
     "pasterdream:flower_10",
@@ -20,5 +17,5 @@
     "pasterdream:grass_4",
     "pasterdream:grass_7"
   ],
-  "step": "vegetal_decoration"
+  "step": "top_layer_modification"
 }

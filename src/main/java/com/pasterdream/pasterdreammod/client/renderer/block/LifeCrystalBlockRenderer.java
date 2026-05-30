@@ -13,12 +13,16 @@ import software.bernie.geckolib.renderer.GeoBlockRenderer;
  */
 public class LifeCrystalBlockRenderer extends GeoBlockRenderer<LifeCrystalBlockEntity> {
 
+    private static final String NAME = "life_crystal";
+
     /**
      * 构造生命水晶方块渲染器
      *
      * @param context 渲染器提供者上下文
      */
     public LifeCrystalBlockRenderer(BlockEntityRendererProvider.Context context) {
-        super(new DefaultedBlockGeoModel<>(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "life_crystal")));
+        super(new DefaultedBlockGeoModel<>(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, NAME)));
+        PasterDreamMod.LOGGER.debug("[LifeCrystalBlockRenderer] 初始化完成，资源名: {} | 模型=geo/block/{}.geo.json 纹理=textures/block/{}.png 动画=animations/block/{}.animation.json",
+                NAME, NAME, NAME, NAME);
     }
 }

@@ -1,8 +1,12 @@
 {
-  "type": "minecraft:forest_rock",
+  "type": "minecraft:random_selector",
   "config": {
-    "state": {
-      "Name": "pasterdream:cloud"
-    }
+    "features": [
+      {
+        "chance": 0.5,
+        "feature": "pasterdream:cloudfall_mound_dense"
+      }
+    ],
+    "default": "pasterdream:cloudfall_mound_sparse"
   }
 }

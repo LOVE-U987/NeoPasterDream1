@@ -64,6 +64,27 @@ public class PDCommands {
                                         })
                                 )
                         )
+                        .then(Commands.literal("bgm")
+                                .then(Commands.literal("debug")
+                                        .executes(context -> bgmDebug(context.getSource()))
+                                )
+                                .then(Commands.literal("play")
+                                        .then(Commands.argument("biome", StringArgumentType.word())
+                                                .executes(context -> {
+                                                    String biome = StringArgumentType.getString(context, "biome");
+                                                    return bgmPlay(context.getSource(), biome);
+                                                })
+                                        )
+                                )
+                                .then(Commands.literal("list")
+                                        .executes(context -> bgmList(context.getSource()))
+                                )
+                                .executes(context -> {
+                                    context.getSource().sendFailure(
+                                            Component.literal("§c用法: /pasterdream bgm <debug|play|list>"));
+                                    return 0;
+                                })
+                        )
         );
     }
 
@@ -189,4 +210,118 @@ public class PDCommands {
         });
         return count[0];
     }
+
+    // ==================== BGM 调试指令 ====================
+
+    private static final String[] BGM_BIOMES = {
+            "dream_meadow", "dream_heath", "dream_taiga", "dream_delta"
+    };
+
+    private static final java.util.Map<String, String> BGM_NAMES = java.util.Map.of(
+            "dream_meadow", "梦幻草原",
+            "dream_heath", "梦幻荒原",
+            "dream_taiga", "梦幻雪林",
+            "dream_delta", "梦幻三角洲"
+    );
+
+    /**
+     * 调试指令：检查当前玩家所在位置的群系音乐配置
+     */
+    private static int bgmDebug(CommandSourceStack source) {
+        if (!(source.getEntity() instanceof ServerPlayer player)) {
+            source.sendFailure(Component.literal("§c此指令只能由玩家执行！"));
+            return 0;
+        }
+
+        ResourceLocation biomeId = player.level().getBiome(player.blockPosition()).unwrapKey()
+                .map(key -> key.location())
+                .orElse(null);
+
+        var biome = player.level().getBiome(player.blockPosition()).value();
+        var musicOpt = biome.getBackgroundMusic();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("§6=== [PasterDream BGM 调试] ===\n");
+        sb.append("§e当前位置: ").append(player.blockPosition().toShortString()).append("\n");
+        sb.append("§e当前维度: ").append(player.level().dimension().location()).append("\n");
+        sb.append("§e当前群系: ").append(biomeId != null ? biomeId : "§c未知").append("\n");
+        sb.append("§e群系温度: ").append(biome.getBaseTemperature()).append("\n");
+
+        if (musicOpt.isPresent()) {
+            var music = musicOpt.get();
+            sb.append("§a音乐配置: 存在 ✓\n");
+            sb.append("  §7Sound: §f").append(music.getEvent().value().getLocation()).append("\n");
+            sb.append("  §7MinDelay: §f").append(music.getMinDelay()).append(" tick (").append(music.getMinDelay() / 20).append("s)\n");
+            sb.append("  §7MaxDelay: §f").append(music.getMaxDelay()).append(" tick (").append(music.getMaxDelay() / 20).append("s)\n");
+            sb.append("  §7ReplaceCurrent: §f").append(music.replaceCurrentMusic()).append("\n");
+
+            PasterDreamMod.LOGGER.info("[BGMDebug] 玩家 {} 在群系 {}，音乐配置: event={}, minDelay={}, maxDelay={}, replace={}",
+                    player.getName().getString(), biomeId,
+                    music.getEvent().value().getLocation(), music.getMinDelay(), music.getMaxDelay(), music.replaceCurrentMusic());
+        } else {
+            sb.append("§c音乐配置: 不存在 ✗\n");
+            PasterDreamMod.LOGGER.info("[BGMDebug] 玩家 {} 在群系 {}，无音乐配置", player.getName().getString(), biomeId);
+        }
+
+        source.sendSuccess(() -> Component.literal(sb.toString()), true);
+        return 1;
+    }
+
+    /**
+     * 调试指令：手动播放指定群系的BGM
+     */
+    private static int bgmPlay(CommandSourceStack source, String biome) {
+        if (!(source.getEntity() instanceof ServerPlayer player)) {
+            source.sendFailure(Component.literal("§c此指令只能由玩家执行！"));
+            return 0;
+        }
+
+        String soundName = "music." + biome;
+        ResourceLocation soundLocation = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, soundName);
+
+        var soundEvent = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.get(soundLocation);
+
+        if (soundEvent == null) {
+            source.sendFailure(Component.literal("§c未找到声音事件: " + soundLocation));
+            PasterDreamMod.LOGGER.info("[BGMDebug] 尝试播放 BGM 失败: {} 未注册", soundLocation);
+            return 0;
+        }
+
+        player.playNotifySound(soundEvent, net.minecraft.sounds.SoundSource.MUSIC, 1.0F, 1.0F);
+
+        String displayName = BGM_NAMES.getOrDefault(biome, biome);
+        source.sendSuccess(() -> Component.literal("§a正在播放 BGM: " + displayName + " (" + soundLocation + ")"), true);
+        PasterDreamMod.LOGGER.info("[BGMDebug] 已为玩家 {} 播放 BGM: {}", player.getName().getString(), soundLocation);
+        return 1;
+    }
+
+    /**
+     * 调试指令：列出所有已注册的BGM声音事件
+     */
+    private static int bgmList(CommandSourceStack source) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("§6=== [PasterDream BGM 清单] ===\n");
+
+        int found = 0;
+        for (String biome : BGM_BIOMES) {
+            String soundName = "music." + biome;
+            ResourceLocation soundLocation = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, soundName);
+            var soundEvent = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.get(soundLocation);
+
+            String displayName = BGM_NAMES.getOrDefault(biome, biome);
+            if (soundEvent != null) {
+                sb.append("§a✓ ").append(displayName).append(" §7(").append(soundLocation).append(")\n");
+                found++;
+            } else {
+                sb.append("§c✗ ").append(displayName).append(" §7(").append(soundLocation).append(") 未注册\n");
+            }
+        }
+        sb.append("§e已注册: ").append(found).append(" / ").append(BGM_BIOMES.length);
+
+        source.sendSuccess(() -> Component.literal(sb.toString()), true);
+
+        PasterDreamMod.LOGGER.info("[BGMDebug] BGM 清单: {}/{} 已注册", found, BGM_BIOMES.length);
+        return 1;
+    }
+
 }

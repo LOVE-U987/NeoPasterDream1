@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:block/zhan_feng_cao_"
+    "layer0": "pasterdream:block/wind_cutter_grass"
   }
 }

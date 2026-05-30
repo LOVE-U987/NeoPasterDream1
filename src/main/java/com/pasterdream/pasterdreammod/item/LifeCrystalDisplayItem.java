@@ -3,24 +3,15 @@ package com.pasterdream.pasterdreammod.item;
 import com.pasterdream.pasterdreammod.client.renderer.item.LifeCrystalDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animatable.instance.SingletonAnimatableInstanceCache;
-import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
-import java.util.function.Consumer;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
 
 /**
  * 生命水晶显示物品
  * 使用 GeoItem 实现 3D 物品渲染
  */
-public class LifeCrystalDisplayItem extends BlockItem implements GeoItem {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class LifeCrystalDisplayItem extends AbstractGeoDisplayItem {
 
     /**
      * 构造生命水晶显示物品
@@ -29,31 +20,46 @@ public class LifeCrystalDisplayItem extends BlockItem implements GeoItem {
      */
     public LifeCrystalDisplayItem(Item.Properties properties) {
         super(PDBlocks.LIFE_CRYSTAL.get(), properties);
-        SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
 
+    /**
+     * 创建自定义渲染器
+     *
+     * @return LifeCrystalDisplayItemRenderer 实例
+     */
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "display", 20, state -> PlayState.CONTINUE));
-}
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
+    protected BlockEntityWithoutLevelRenderer createRenderer() {
+        return new LifeCrystalDisplayItemRenderer();
     }
 
+    /**
+     * 获取动画控制器名称
+     *
+     * @return 控制器名称字符串
+     */
     @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            private LifeCrystalDisplayItemRenderer renderer;
+    protected String getControllerName() {
+        return "display";
+    }
 
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (renderer == null) {
-                    renderer = new LifeCrystalDisplayItemRenderer();
-                }
-                return renderer;
-            }
-        });
+    /**
+     * 获取动画过渡刻数
+     *
+     * @return 过渡刻数
+     */
+    @Override
+    protected int getTransitionTicks() {
+        return 20;
+    }
+
+    /**
+     * 动画状态谓词
+     *
+     * @param state 动画状态
+     * @return 播放状态
+     */
+    @Override
+    protected PlayState predicate(AnimationState<?> state) {
+        return PlayState.CONTINUE;
     }
 }

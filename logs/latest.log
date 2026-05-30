@@ -1,0 +1,13 @@
+[305月2026 15:02:20.500] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleGenerator] ✅ 已生成粒子定义 JSON → build\api-test-output\assets\pasterdream\particles\test_particle.json
+[305月2026 15:02:20.505] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleGenerator] ✅ 已生成粒子定义 JSON → build\api-test-output\assets\pasterdream\particles\test_gravity_particle.json
+[305月2026 15:02:20.519] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [ParticleTextureGenerator] ✅ 已生成粒子纹理元数据 → build\api-test-output\assets\pasterdream\textures\particle\test_texture_meta.json
+[305月2026 15:02:20.864] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinAPI] 🏛️ 开始创建遗迹构建器: test_ruin
+[305月2026 15:02:20.871] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinAPI] 🏛️ 开始创建遗迹构建器: test_full_ruin
+[305月2026 15:02:20.873] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinAPI] 🏛️ 开始创建遗迹构建器: test_default_ruin
+[305月2026 15:02:20.874] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinAPI] 🏛️ 开始创建遗迹构建器: test_biome1
+[305月2026 15:02:20.875] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [RuinAPI] 🏛️ 开始创建遗迹构建器: test_biome2
+[305月2026 15:02:20.883] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [StructureTypeGenerator] ✅ 已生成 structure JSON → build\api-test-output\data\pasterdream\worldgen\structure\test_structure_gen.json
+[305月2026 15:02:20.889] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [StructureTypeGenerator] ✅ 已生成 structure JSON → build\api-test-output\data\pasterdream\worldgen\structure\test_custom_fields.json
+[305月2026 15:02:20.896] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [StructureSetGenerator] ✅ 已生成 structure_set JSON → build\api-test-output\data\pasterdream\worldgen\structure_set\test_structure_set.json
+[305月2026 15:02:20.902] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [TemplatePoolGenerator] ✅ 已生成 template_pool JSON → build\api-test-output\data\pasterdream\worldgen\template_pool\test_pool.json
+[305月2026 15:02:20.909] [main/INFO] [com.pasterdream.pasterdreammod.PasterDreamMod/]: [TemplatePoolGenerator] ✅ 已生成 template_pool JSON → build\api-test-output\data\pasterdream\worldgen\template_pool\test_multi_pool.json

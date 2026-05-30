@@ -1,8 +1,8 @@
 {
   "parent": "block/cross",
   "textures": {
-    "cross": "pasterdream:block/xue_rong_hua_",
-    "particle": "pasterdream:block/xue_rong_hua_"
+    "cross": "pasterdream:block/edelweiss",
+    "particle": "pasterdream:block/edelweiss"
   },
   "render_type": "cutout"
 }

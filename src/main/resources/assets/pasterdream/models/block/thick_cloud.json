@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/hou_zhong_yun_duo_",
-    "up": "pasterdream:block/hou_zhong_yun_duo_",
-    "north": "pasterdream:block/hou_zhong_yun_duo_",
-    "east": "pasterdream:block/hou_zhong_yun_duo_",
-    "south": "pasterdream:block/hou_zhong_yun_duo_",
-    "west": "pasterdream:block/hou_zhong_yun_duo_",
-    "particle": "pasterdream:block/hou_zhong_yun_duo_"
+    "down": "pasterdream:block/dense_cloud",
+    "up": "pasterdream:block/dense_cloud",
+    "north": "pasterdream:block/dense_cloud",
+    "east": "pasterdream:block/dense_cloud",
+    "south": "pasterdream:block/dense_cloud",
+    "west": "pasterdream:block/dense_cloud",
+    "particle": "pasterdream:block/dense_cloud"
   },
   "render_type": "solid"
 }

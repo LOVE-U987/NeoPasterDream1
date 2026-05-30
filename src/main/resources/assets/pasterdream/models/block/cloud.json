@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/yun_duo_",
-    "up": "pasterdream:block/yun_duo_",
-    "north": "pasterdream:block/yun_duo_",
-    "east": "pasterdream:block/yun_duo_",
-    "south": "pasterdream:block/yun_duo_",
-    "west": "pasterdream:block/yun_duo_",
-    "particle": "pasterdream:block/yun_duo_"
+    "down": "pasterdream:block/fluffy_cloud",
+    "up": "pasterdream:block/fluffy_cloud",
+    "north": "pasterdream:block/fluffy_cloud",
+    "east": "pasterdream:block/fluffy_cloud",
+    "south": "pasterdream:block/fluffy_cloud",
+    "west": "pasterdream:block/fluffy_cloud",
+    "particle": "pasterdream:block/fluffy_cloud"
   },
   "render_type": "translucent"
 }

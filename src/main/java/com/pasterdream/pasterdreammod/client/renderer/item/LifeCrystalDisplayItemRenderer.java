@@ -14,10 +14,14 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
  */
 public class LifeCrystalDisplayItemRenderer extends GeoItemRenderer<LifeCrystalDisplayItem> {
 
+    private static final String NAME = "life_crystal";
+
     /**
      * 构造生命水晶显示物品渲染器
      */
     public LifeCrystalDisplayItemRenderer() {
-        super(new DefaultedBlockGeoModel<>(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "life_crystal")));
+        super(new DefaultedBlockGeoModel<>(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, NAME)));
+        PasterDreamMod.LOGGER.debug("[LifeCrystalDisplayItemRenderer] 初始化完成，资源名: {} | 模型=geo/block/{}.geo.json 纹理=textures/block/{}.png 动画=animations/block/{}.animation.json",
+                NAME, NAME, NAME, NAME);
     }
 }

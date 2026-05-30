@@ -1,8 +1,8 @@
 {
   "parent": "block/cross",
   "textures": {
-    "cross": "pasterdream:block/rong_mao_tai_",
-    "particle": "pasterdream:block/rong_mao_tai_"
+    "cross": "pasterdream:block/furry_moss",
+    "particle": "pasterdream:block/furry_moss"
   },
   "render_type": "cutout"
 }

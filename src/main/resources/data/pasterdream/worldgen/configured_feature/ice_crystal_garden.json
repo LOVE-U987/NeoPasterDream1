@@ -1,0 +1,53 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "scatter",
+    "body_block": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 35,
+          "data": {
+            "Name": "pasterdream:dyedream_ice"
+          }
+        },
+        {
+          "weight": 25,
+          "data": {
+            "Name": "pasterdream:dyedream_packed_ice"
+          }
+        },
+        {
+          "weight": 20,
+          "data": {
+            "Name": "pasterdream:icestone"
+          }
+        },
+        {
+          "weight": 10,
+          "data": {
+            "Name": "pasterdream:ice_bud_0"
+          }
+        },
+        {
+          "weight": 5,
+          "data": {
+            "Name": "minecraft:packed_ice"
+          }
+        },
+        {
+          "weight": 5,
+          "data": {
+            "Name": "minecraft:ice"
+          }
+        }
+      ]
+    },
+    "cluster_size": 8,
+    "check_hang": true,
+    "replaceable": {
+      "type": "minecraft:matching_blocks",
+      "blocks": ["minecraft:air"]
+    }
+  }
+}

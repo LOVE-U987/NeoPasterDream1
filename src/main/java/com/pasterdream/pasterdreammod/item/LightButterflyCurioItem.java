@@ -1,6 +1,5 @@
 package com.pasterdream.pasterdreammod.item;
 
-import com.pasterdream.pasterdreammod.capability.MeltDreamEnergyCapability;
 import net.minecraft.world.level.Level;
 
 import com.google.common.collect.HashMultimap;
@@ -28,6 +27,7 @@ import java.util.UUID;
 
 /**
  * Light Butterfly Curio Item (Curio Item)
+ * 在低亮度环境下获得夜视效果
  */
 public class LightButterflyCurioItem extends Item implements ICurioItem {
 
@@ -40,7 +40,6 @@ public class LightButterflyCurioItem extends Item implements ICurioItem {
         super.appendHoverText(itemstack, context, list, flag);
         list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7b\u7CBE\u826F \u2605\u2605\u2605"));
         list.add(Component.literal("\u00A77\u25AA \u00A79\u81EA\u8EAB\u5904\u4E8E\u4F4E\u4EAE\u5EA6\u73AF\u5883\u4E0B\u83B7\u5F97\u591C\u89C6"));
-        list.add(Component.literal("\u00A77\u25AA \u00A74\u878D\u68A6\u80FD\u91CF\u6D88\u8017\uFF1A0.24/min"));
 }
 
     @Override
@@ -53,7 +52,7 @@ public class LightButterflyCurioItem extends Item implements ICurioItem {
         double z = entity.getZ();
         if(!world.isClientSide)
         {
-        if(entity instanceof Player pl && world.getMaxLocalRawBrightness(BlockPos.containing(x, y, z)) <= 7 && MeltDreamEnergyCapability.consumeEnergy(pl,0.004))
+        if(entity instanceof Player pl && world.getMaxLocalRawBrightness(BlockPos.containing(x, y, z)) <= 7)
         {
         entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 240, 0, false, false));
 }

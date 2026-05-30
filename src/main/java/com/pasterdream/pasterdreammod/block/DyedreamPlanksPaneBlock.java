@@ -4,6 +4,10 @@ import net.minecraft.world.level.block.IronBarsBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
+import java.util.List;
 
 /**
  * 染梦木板栅栏方块 —— 继承铁栏杆行为，但使用木质属性。
@@ -20,5 +24,10 @@ public class DyedreamPlanksPaneBlock extends IronBarsBlock {
                 .strength(2f, 3f)
                 .noOcclusion()
                 .isRedstoneConductor((bs, br, bp) -> false));
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        return List.of(new ItemStack(this));
     }
 }

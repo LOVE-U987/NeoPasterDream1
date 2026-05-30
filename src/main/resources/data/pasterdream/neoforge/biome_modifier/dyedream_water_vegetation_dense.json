@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "pasterdream:biome_dyedream_0",
+    "pasterdream:biome_dyedream_1"
+  ],
+  "features": [
+    "pasterdream:patch_dyedream_lily_pad_dense",
+    "pasterdream:patch_dyedream_lotus_dense"
+  ],
+  "step": "vegetal_decoration"
+}

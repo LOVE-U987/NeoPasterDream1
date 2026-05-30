@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.block;
 
+import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.material.MapColor;
@@ -9,8 +10,13 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+
+import java.util.List;
 
 /**
  * 染梦花/草通用方块
@@ -47,5 +53,23 @@ public class DyedreamFlowerBlock extends FlowerBlock {
             || state.is(PDBlocks.DYEDREAM_DIRT.get())
             || state.is(PDBlocks.DYEDREAM_SAND.get())
             || state.is(PDBlocks.DYEDREAM_BLOCK.get());
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        String blockName = BuiltInRegistries.BLOCK.getKey(this).toString();
+        PasterDreamMod.LOGGER.info("[DyedreamFlowerBlock] ===== getDrops() 被调用 =====");
+        PasterDreamMod.LOGGER.info("[DyedreamFlowerBlock] 方块: {}", blockName);
+        PasterDreamMod.LOGGER.info("[DyedreamFlowerBlock] 方块状态: {}", state);
+        PasterDreamMod.LOGGER.info("[DyedreamFlowerBlock] 方块类: {}", this.getClass().getName());
+        PasterDreamMod.LOGGER.info("[DyedreamFlowerBlock] 掉落策略: 掉落自身 (this={})", this);
+        List<ItemStack> drops = List.of(new ItemStack(this));
+        PasterDreamMod.LOGGER.info("[DyedreamFlowerBlock] 掉落列表: {} (数量={})", drops, drops.size());
+        if (!drops.isEmpty()) {
+            PasterDreamMod.LOGGER.info("[DyedreamFlowerBlock] 掉落物品[0]: {} (空={})",
+                drops.get(0).getItem().toString(), drops.get(0).isEmpty());
+        }
+        PasterDreamMod.LOGGER.info("[DyedreamFlowerBlock] ===== getDrops() 结束 =====");
+        return drops;
     }
 }

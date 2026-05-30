@@ -1,0 +1,9 @@
+{
+  "type": "pasterdream:mega_calcite_pillar",
+  "config": {
+    "pillar_block": "minecraft:calcite",
+    "cloud_block": "pasterdream:cloud",
+    "thick_cloud_block": "pasterdream:thick_cloud",
+    "glow_block": "pasterdream:chiseled_dyedreamquartz_block"
+  }
+}

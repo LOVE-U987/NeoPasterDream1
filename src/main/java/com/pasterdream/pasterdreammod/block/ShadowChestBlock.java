@@ -30,7 +30,9 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.storage.loot.LootParams;
 import org.jetbrains.annotations.Nullable;
+import java.util.List;
 
 /**
  * 影之箱方块 - 使用 GeckoLib 动画的存储方块
@@ -174,5 +176,10 @@ public class ShadowChestBlock extends BaseEntityBlock implements SimpleWaterlogg
             }
             super.onRemove(state, level, pos, newState, isMoving);
         }
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        return List.of(new ItemStack(this));
     }
 }

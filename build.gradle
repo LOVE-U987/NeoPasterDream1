@@ -198,6 +198,96 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
+// ======================== 自定义任务 ========================
+
+/**
+ * 运行 DimensionAPI 示例程序
+ * 快速验证 DimensionAPI 的全部功能，输出到控制台。
+ * 使用方式: .\gradlew runDimensionApiDemo
+ */
+tasks.register('runDimensionApiDemo', JavaExec) {
+    description = '运行 DimensionAPI 示例程序，验证 API 全部功能'
+    group = 'PasterDream'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.api.dimension.example.DimensionApiDemo'
+    // 设置工作目录到项目根目录（确保 JSON 写入正确的路径）
+    workingDir = project.projectDir
+    // 启用标准输出
+    standardOutput = System.out
+}
+
+/**
+ * 生成维度 API 的测试 JSON 文件
+ * 实际生成 demo_* 维度的 JSON 到 resources 目录。
+ * 使用方式: .\gradlew generateDimensionTestJsons
+ */
+tasks.register('generateDimensionTestJsons', JavaExec) {
+    description = '生成维度 API 测试 JSON 文件到 resources 目录'
+    group = 'PasterDream'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.api.dimension.example.DimensionJsonGenerator'
+    workingDir = project.projectDir
+    standardOutput = System.out
+}
+
+// ======================== API 测试任务 ========================
+
+/**
+ * 运行 ParticleAPI 测试
+ * 快速验证粒子 API 的 Builder 链式调用、JSON 生成、缓存机制等功能。
+ * 使用方式: .\gradlew runParticleApiTest
+ */
+tasks.register('runParticleApiTest', JavaExec) {
+    description = '运行 ParticleAPI 测试，验证粒子 API 核心功能'
+    group = 'PasterDream'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.api.test.ParticleApiTestRunner'
+    workingDir = project.projectDir
+    standardOutput = System.out
+}
+
+/**
+ * 运行 EntityAPI 测试
+ * 快速验证实体 API 的 Builder 链式调用、验证逻辑、属性模板、缓存机制等功能。
+ * 使用方式: .\gradlew runEntityApiTest
+ */
+tasks.register('runEntityApiTest', JavaExec) {
+    description = '运行 EntityAPI 测试，验证实体 API 核心功能'
+    group = 'PasterDream'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.api.test.EntityApiTestRunner'
+    workingDir = project.projectDir
+    standardOutput = System.out
+}
+
+/**
+ * 运行 RuinAPI 测试
+ * 快速验证自定义遗迹 API 的 Builder 链式调用、JSON 生成、模板池配置等功能。
+ * 使用方式: .\gradlew runRuinApiTest
+ */
+tasks.register('runRuinApiTest', JavaExec) {
+    description = '运行 RuinAPI 测试，验证自定义遗迹 API 核心功能'
+    group = 'PasterDream'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.api.test.RuinApiTestRunner'
+    workingDir = project.projectDir
+    standardOutput = System.out
+}
+
+/**
+ * 运行所有 API 测试
+ * 按顺序运行 ParticleAPI / EntityAPI / RuinAPI 测试并汇总结果。
+ * 使用方式: .\gradlew runAllApiTests
+ */
+tasks.register('runAllApiTests', JavaExec) {
+    description = '运行所有 API 测试（ParticleAPI + EntityAPI + RuinAPI）'
+    group = 'PasterDream'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.api.test.RunAllApiTests'
+    workingDir = project.projectDir
+    standardOutput = System.out
+}
+
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
 idea {
     module {

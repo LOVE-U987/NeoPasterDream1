@@ -1,8 +1,8 @@
 {
   "parent": "block/cross",
   "textures": {
-    "cross": "pasterdream:block/yin_ying_jun_si_1",
-    "particle": "pasterdream:block/yin_ying_jun_si_1"
+    "cross": "pasterdream:block/shadow_mycelium_1",
+    "particle": "pasterdream:block/shadow_mycelium_1"
   },
   "render_type": "cutout"
 }

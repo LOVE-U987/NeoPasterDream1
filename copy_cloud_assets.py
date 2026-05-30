@@ -10,9 +10,9 @@ MAIN = r"c:\Users\97128\Documents\GitHub\NeoPasterDream1\src\main\resources\asse
 
 # 需要复制的文件
 FILES = [
-    ("textures/block/yun_duo_.png", "textures/block/yun_duo_.png"),
-    ("textures/block/wu_yun_.png", "textures/block/wu_yun_.png"),
-    ("textures/block/hou_zhong_yun_duo_.png", "textures/block/hou_zhong_yun_duo_.png"),
+    ("textures/block/fluffy_cloud.png", "textures/block/fluffy_cloud.png"),
+    ("textures/block/storm_cloud.png", "textures/block/storm_cloud.png"),
+    ("textures/block/dense_cloud.png", "textures/block/dense_cloud.png"),
     ("models/block/cloud.json", "models/block/cloud.json"),
     ("models/block/dark_cloud.json", "models/block/dark_cloud.json"),
     ("models/block/thick_cloud.json", "models/block/thick_cloud.json"),

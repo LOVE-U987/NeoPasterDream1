@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:biome_dyedream_1",
+  "features": [
+    "pasterdream:pinkagaric_cluster"
+  ],
+  "step": "top_layer_modification"
+}

@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * Red Dew2 Ring Item (Curio Item)
  */
+@SuppressWarnings("removal")
 public class RedDew2RingItem extends Item implements ICurioItem {
 
     public RedDew2RingItem() {

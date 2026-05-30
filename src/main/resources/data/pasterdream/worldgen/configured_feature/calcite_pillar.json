@@ -1,0 +1,97 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "pillar",
+    "body_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:calcite"
+      }
+    },
+    "ore_block": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 30,
+          "data": {
+            "Name": "pasterdream:dyedreamquartz_ore"
+          }
+        },
+        {
+          "weight": 20,
+          "data": {
+            "Name": "pasterdream:dyedreamdust_ore"
+          }
+        },
+        {
+          "weight": 15,
+          "data": {
+            "Name": "pasterdream:amber_candy_ore"
+          }
+        },
+        {
+          "weight": 10,
+          "data": {
+            "Name": "pasterdream:dyedream_bud_0"
+          }
+        },
+        {
+          "weight": 10,
+          "data": {
+            "Name": "pasterdream:dyedream_bud_1"
+          }
+        },
+        {
+          "weight": 10,
+          "data": {
+            "Name": "pasterdream:dyedream_bud_2"
+          }
+        },
+        {
+          "weight": 5,
+          "data": {
+            "Name": "minecraft:calcite"
+          }
+        }
+      ]
+    },
+    "debris_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:calcite"
+      }
+    },
+    "min_height": 15,
+    "max_height": 20,
+    "base_width": 2,
+    "top_width": 1,
+    "crystal_chance": 0.3,
+    "crystal_only_on_top": true,
+    "debris_count": 6,
+    "debris_radius": 3,
+    "check_hang": true,
+    "region_check": true,
+    "region_threshold": 0.3,
+    "replaceable": {
+      "type": "minecraft:any_of",
+      "predicates": [
+        {
+          "type": "minecraft:matching_blocks",
+          "blocks": [
+            "minecraft:air",
+            "minecraft:calcite",
+            "minecraft:stone",
+            "minecraft:dirt",
+            "minecraft:grass_block",
+            "pasterdream:dyedream_block",
+            "pasterdream:dyedream_dirt",
+            "pasterdream:dyedream_grass"
+          ]
+        },
+        {
+          "type": "minecraft:replaceable"
+        }
+      ]
+    }
+  }
+}
