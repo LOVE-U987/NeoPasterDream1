@@ -2,12 +2,9 @@ package com.pasterdream.pasterdreammod.api.particle;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.particle.builder.ParticleBuilder;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.Collections;
@@ -24,9 +21,11 @@ import java.util.function.Supplier;
  *   <li><b>粒子类型注册</b>：通过 Builder 链式配置粒子属性并注册到 DeferredRegister</li>
  *   <li><b>资源文件自动生成</b>：自动生成 {@code particles/{name}.json} 粒子定义文件</li>
  *   <li><b>纹理元数据生成</b>：自动生成 {@code textures/particle/{name}.json} 纹理描述文件</li>
- *   <li><b>Provider 注册辅助</b>：在客户端便捷注册 {@link ParticleProvider}</li>
  *   <li><b>查询管理</b>：缓存已注册的粒子结果，方便后续查询</li>
  * </ul>
+ * <p>
+ * 注意：此类不包含任何客户端专属类型引用，确保服务端兼容。
+ * 客户端 Provider 注册请直接使用 {@code RegisterParticleProvidersEvent} 事件。
  * <p>
  * 使用示例：
  * <pre>{@code
@@ -40,7 +39,12 @@ import java.util.function.Supplier;
  * // ====== 在 ClientSetup 中注册 Provider ======
  * @SubscribeEvent
  * public static void registerParticles(RegisterParticleProvidersEvent event) {
- *     ParticleAPI.registerProviderSprite(event, "sparkle", SparkleParticle.Provider::new);
+ *     ParticleResult result = ParticleAPI.getParticle("sparkle");
+ *     if (result != null) {
+ *         event.registerSpriteSet(
+ *             (SimpleParticleType) result.particleType(),
+ *             SparkleParticle.Provider::new);
+ *     }
  * }
  *
  * // ====== 查询粒子类型 ======
@@ -86,45 +90,8 @@ public final class ParticleAPI {
      * @return {@link ParticleBuilder} 实例
      */
     public static ParticleBuilder createParticle(String particleName) {
-        PasterDreamMod.LOGGER.info("[ParticleAPI] 🎨 开始创建粒子构建器: {}", particleName);
+        PasterDreamMod.LOGGER.info("[ParticleAPI] 开始创建粒子构建器: {}", particleName);
         return new ParticleBuilder(PasterDreamMod.MOD_ID, particleName);
-    }
-
-    // ======================== Provider 注册辅助 ========================
-
-    /**
-     * 注册粒子 Provider（精灵表模式）
-     * <p>
-     * 适用于使用 {@link net.minecraft.client.particle.SpriteSet} 的粒子，
-     * 如 {@link com.pasterdream.pasterdreammod.client.particle.LifeCrystalParticle.Provider}。
-     * <p>
-     * 需要在 {@link RegisterParticleProvidersEvent} 中调用。
-     * <p>
-     * 使用示例：
-     * <pre>{@code
-     * @SubscribeEvent
-     * public static void registerParticles(RegisterParticleProvidersEvent event) {
-     *     ParticleAPI.registerProviderSprite(event, "meltdream_crystal_particle",
-     *             LifeCrystalParticle.Provider::new);
-     * }
-     * }</pre>
-     *
-     * @param event           {@link RegisterParticleProvidersEvent}
-     * @param particleName    粒子注册名称（与 {@link #createParticle} 传入的名称一致）
-     * @param providerFactory 精灵表到 Provider 的工厂函数（{@link net.minecraft.client.particle.ParticleEngine.SpriteParticleRegistration}）
-     */
-    public static void registerProviderSprite(RegisterParticleProvidersEvent event,
-                                               String particleName,
-                                               ParticleEngine.SpriteParticleRegistration<SimpleParticleType> providerFactory) {
-        ParticleResult result = REGISTERED_PARTICLES.get(particleName);
-        if (result == null) {
-            PasterDreamMod.LOGGER.warn("[ParticleAPI] ⚠️ 未找到粒子 [{}] 的注册记录，跳过 Provider 注册", particleName);
-            return;
-        }
-
-        SimpleParticleType type = (SimpleParticleType) result.particleType();
-        event.registerSpriteSet(type, providerFactory);
-        PasterDreamMod.LOGGER.info("[ParticleAPI] ✅ 已注册粒子 Provider: {} | type={}", particleName, type);
     }
 
     // ======================== 查询方法 ========================

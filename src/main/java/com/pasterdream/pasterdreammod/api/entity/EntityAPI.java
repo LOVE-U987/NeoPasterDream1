@@ -6,8 +6,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -22,6 +20,9 @@ import java.util.function.Supplier;
  * 采用与 {@link com.pasterdream.pasterdreammod.api.block.BlockAPI} 相似的
  * Facade 模式 + Builder 模式设计，覆盖实体注册的完整流程。
  * <p>
+ * 注意：此类不包含任何客户端专属类型引用，确保服务端兼容。
+ * 客户端渲染器注册请直接使用 {@code EntityRenderersEvent.RegisterRenderers} 事件。
+ * <p>
  * 使用示例：
  * <pre>{@code
  * // ====== 在 PDEntities.java 中使用 ======
@@ -34,7 +35,9 @@ import java.util.function.Supplier;
  *     .build();
  *
  * // ====== 在 ClientSetup 中注册渲染器 ======
- * EntityAPI.registerRenderer(event, shadowGolem, ShadowGolemRenderer::new);
+ * EntityResult<ShadowGolemEntity> result = (EntityResult<ShadowGolemEntity>)
+ *     EntityAPI.getEntityResult("shadow_golem");
+ * event.registerEntityRenderer(result.entityType(), ShadowGolemRenderer::new);
  *
  * // ====== 在 PDEntityEvents 中注册属性 ======
  * EntityAPI.registerAttributes(event, shadowGolem);
@@ -79,59 +82,8 @@ public final class EntityAPI {
      * @return {@link EntityBuilder} 实例
      */
     public static EntityBuilder<?> createEntity(String name) {
-        PasterDreamMod.LOGGER.info("[EntityAPI] 🎭 开始创建实体构建器: {}", name);
+        PasterDreamMod.LOGGER.info("[EntityAPI] 开始创建实体构建器: {}", name);
         return new EntityBuilder<>(REGISTRY, PasterDreamMod.MOD_ID, name);
-    }
-
-    // ======================== 渲染器注册 ========================
-
-    /**
-     * 注册实体渲染器（客户端）
-     * <p>
-     * 需要在 {@link RegisterRenderers} 事件中调用。
-     *
-     * @param <T>      实体类型
-     * @param event    {@link RegisterRenderers}
-     * @param result   之前由 {@link #createEntity(String)} 返回的结果
-     * @param provider 实体渲染器提供者（如 {@code ShadowGolemRenderer::new}）
-     */
-    @SuppressWarnings("unchecked")
-    public static <T extends Entity> void registerRenderer(
-            RegisterRenderers event,
-            EntityResult<T> result,
-            net.minecraft.client.renderer.entity.EntityRendererProvider<? super T> provider) {
-        PasterDreamMod.LOGGER.info("[EntityAPI] 🎨 注册实体渲染器: {} | entityType={}", result.name(), result.entityType());
-        event.registerEntityRenderer(
-                (EntityType<T>) result.entityType(),
-                provider);
-        PasterDreamMod.LOGGER.info("[EntityAPI] ✅ 已注册实体渲染器: {}", result.name());
-    }
-
-    /**
-     * 按实体名称注册实体渲染器（客户端）
-     * <p>
-     * 便捷重载，自动根据实体名称查找已注册的 {@link EntityResult}。
-     * 需要在 {@link RegisterRenderers} 事件中调用。
-     *
-     * @param <T>        实体类型
-     * @param event      {@link RegisterRenderers}
-     * @param entityName 实体注册名称（与 {@link #createEntity(String)} 传入的名称一致）
-     * @param provider   实体渲染器提供者（如 {@code ShadowGolemRenderer::new}）
-     * @throws IllegalStateException 如果未找到对应的实体注册结果
-     */
-    @SuppressWarnings("unchecked")
-    public static <T extends Entity> void registerRenderer(
-            RegisterRenderers event,
-            String entityName,
-            net.minecraft.client.renderer.entity.EntityRendererProvider<? super T> provider) {
-        PasterDreamMod.LOGGER.debug("[EntityAPI] 🔍 按名称查找实体注册结果: {}", entityName);
-        EntityResult<T> result = (EntityResult<T>) ENTITY_CACHE.get(entityName);
-        if (result == null) {
-            PasterDreamMod.LOGGER.error("[EntityAPI] ❌ 未找到实体 [{}] 的注册结果", entityName);
-            throw new IllegalStateException("EntityAPI: 未找到实体 [" + entityName + "] 的注册结果，请确认已调用 createEntity().build()");
-        }
-        PasterDreamMod.LOGGER.debug("[EntityAPI] 找到实体 [{}] 的注册结果: {}", entityName, result);
-        registerRenderer(event, result, provider);
     }
 
     // ======================== 属性注册 ========================

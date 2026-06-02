@@ -6,9 +6,13 @@ import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 /**
@@ -17,7 +21,9 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
  * 监听 RenderLevelStageEvent.Stage.AFTER_SKY 事件，在天空渲染完成后绘制
  * 梦幻极光带。极光由多层半透明彩色光带组成，随时间正弦波动，
  * 使用粉/紫/青渐变色调，夜晚可见度最高。
+ * 通过 {@link EventBusSubscriber} 自动注册到游戏事件总线，仅在客户端生效。
  */
+@EventBusSubscriber(modid = PasterDreamMod.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class DyeDreamSkyRenderer {
 
     private static final int BAND_COUNT = 5;
@@ -31,6 +37,7 @@ public class DyeDreamSkyRenderer {
      *
      * @param event 渲染阶段事件
      */
+    @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_SKY) return;
 

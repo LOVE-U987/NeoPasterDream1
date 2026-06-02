@@ -1,11 +1,8 @@
 package com.pasterdream.pasterdreammod.item;
 
-import com.pasterdream.pasterdreammod.client.renderer.item.DreamMeterItemRenderer;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Rarity;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -14,14 +11,12 @@ import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.function.Consumer;
-
 /**
  * 忆梦魔导透镜 (Dream Meter)
  * 使用 GeckoLib 实现完整 3D 手持模型渲染
  * 包含空闲旋转动画，在 GUI、第一人称、第三人称中均显示 3D 模型
+ * 渲染器通过 RegisterClientExtensionsEvent 注册。
  */
-@SuppressWarnings("removal")
 public class DreamMeterItem extends Item implements GeoItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -31,19 +26,6 @@ public class DreamMeterItem extends Item implements GeoItem {
     public DreamMeterItem() {
         super(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON));
 }
-
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        super.initializeClient(consumer);
-        consumer.accept(new IClientItemExtensions() {
-            private final BlockEntityWithoutLevelRenderer renderer = new DreamMeterItemRenderer();
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return renderer;
-            }
-        });
-    }
 
     public void getTransformType(ItemDisplayContext type) {
         this.transformType = type;

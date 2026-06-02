@@ -7,10 +7,9 @@ import com.pasterdream.pasterdreammod.api.dimension.gen.DimensionTypeGenerator;
 import com.pasterdream.pasterdreammod.api.dimension.gen.SoundsJsonGenerator;
 import com.pasterdream.pasterdreammod.api.dimension.terrain.StructureTerrainNegotiator;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
-import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
+import net.minecraft.world.level.Level;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -27,8 +26,10 @@ import java.util.function.Supplier;
  *   <li><b>维度实例配置</b>：配置生物群系源、噪声设置、默认方块/流体等</li>
  *   <li><b>JSON 文件自动生成</b>：自动生成 dimension_type 和 dimension 的 JSON 文件</li>
  *   <li><b>ResourceKey 管理</b>：自动创建并返回维度类型和维度的 ResourceKey</li>
- *   <li><b>特殊效果注册</b>：配套的客户端特效注册辅助方法</li>
+ *   <li><b>特殊效果注册</b>：配套的客户端特效注册辅助，直接使用 {@code RegisterDimensionSpecialEffectsEvent}</li>
  * </ul>
+ * <p>
+ * 注意：此类不包含任何客户端专属类型引用，确保服务端兼容。
  * <p>
  * 使用示例：
  * <pre>{@code
@@ -52,7 +53,10 @@ import java.util.function.Supplier;
  * // ====== 在 ClientSetup 中注册特效 ======
  * @SubscribeEvent
  * public static void registerEffects(RegisterDimensionSpecialEffectsEvent event) {
- *     DimensionAPI.registerEffects(event, "dyedream_world", new DimensionSpecialEffects(...));
+ *     ResourceLocation id = ResourceLocation.fromNamespaceAndPath(modId, "dyedream_world");
+ *     event.register(id, new DimensionSpecialEffects(192f, true, SkyType.NORMAL, false, false) {
+ *         // 自定义雾色、天空色...
+ *     });
  * }
  * }</pre>
  */
@@ -78,56 +82,6 @@ public final class DimensionAPI {
      */
     public static DimensionBuilder createDimension(String dimensionName) {
         return new DimensionBuilder(PasterDreamMod.MOD_ID, dimensionName);
-    }
-
-    // ======================== 客户端特效注册 ========================
-
-    /**
-     * 注册维度特殊效果（客户端）
-     * <p>
-     * 对应 dimension_type JSON 中的 {@code "effects"} 字段。
-     * 需要在 {@link RegisterDimensionSpecialEffectsEvent} 中调用。
-     * <p>
-     * 使用示例：
-     * <pre>{@code
-     * // 在 ClientSetup.java 中：
-     * @SubscribeEvent
-     * public static void registerEffects(RegisterDimensionSpecialEffectsEvent event) {
-     *     DimensionAPI.registerEffects(event, "dyedream_world",
-     *             new DimensionSpecialEffects(192.0f, true, SkyType.NORMAL, false, false) {
-     *                 @Override
-     *                 public Vec3 getBrightnessDependentFogColor(Vec3 color, float sunHeight) {
-     *                     return color.multiply(0.94, 0.94, 0.91);
-     *                 }
-     *                 @Override
-     *                 public boolean isFoggyAt(int x, int y) { return false; }
-     *             });
-     * }
-     * }</pre>
-     *
-     * @param event   {@link RegisterDimensionSpecialEffectsEvent}
-     * @param name    维度注册名称（与 {@link #createDimension} 传入的名称一致）
-     * @param effects 自定义 {@link DimensionSpecialEffects} 实例
-     */
-    public static void registerEffects(RegisterDimensionSpecialEffectsEvent event,
-                                        String name,
-                                        DimensionSpecialEffects effects) {
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, name);
-        event.register(id, effects);
-        PasterDreamMod.LOGGER.info("[DimensionAPI] ✅ 已注册维度特效: {}", id);
-    }
-
-    /**
-     * 使用已注册的 {@link DimensionResult} 注册特殊效果
-     *
-     * @param event   {@link RegisterDimensionSpecialEffectsEvent}
-     * @param result  之前由 {@link #createDimension} 返回的结果
-     * @param effects 自定义 {@link DimensionSpecialEffects} 实例
-     */
-    public static void registerEffects(RegisterDimensionSpecialEffectsEvent event,
-                                        DimensionResult result,
-                                        DimensionSpecialEffects effects) {
-        registerEffects(event, result.dimensionName(), effects);
     }
 
     // ======================== 工具方法 ========================

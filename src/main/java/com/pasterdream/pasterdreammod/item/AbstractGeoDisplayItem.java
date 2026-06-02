@@ -1,6 +1,5 @@
 package com.pasterdream.pasterdreammod.item;
 
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -15,6 +14,10 @@ import software.bernie.geckolib.util.GeckoLibUtil;
  * 封装所有使用 GeoItem + BlockItem 的显示物品的公共逻辑，
  * 统一动画注册和实例缓存管理。
  * 客户端渲染器扩展通过 RegisterClientExtensionsEvent 单独注册。
+ * <p>
+ * 注意：该类及其子类不能直接引用客户端专属类（如 BlockEntityWithoutLevelRenderer），
+ * 否则专用服务端加载时会触发 ClassNotFoundException。
+ * 客户端渲染由 {@code client.PDClientItemExtensions} 统一注册。
  */
 public abstract class AbstractGeoDisplayItem extends BlockItem implements GeoItem {
 
@@ -51,13 +54,6 @@ public abstract class AbstractGeoDisplayItem extends BlockItem implements GeoIte
     public final AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
-
-    /**
-     * 创建自定义渲染器
-     *
-     * @return BlockEntityWithoutLevelRenderer 实例
-     */
-    protected abstract BlockEntityWithoutLevelRenderer createRenderer();
 
     /**
      * 获取动画控制器名称
