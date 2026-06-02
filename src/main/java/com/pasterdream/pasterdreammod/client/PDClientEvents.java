@@ -12,7 +12,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * 客户端事件处理类
@@ -21,7 +25,9 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
  * 每个生物群系拥有独特的粒子效果，同时染梦树叶和樱花树周围会飘落叶片。
  * <p>
  * 同时管理 {@link ModMusicManager} 的 tick 驱动。
+ * 通过 {@link EventBusSubscriber} 自动注册到游戏事件总线，仅在客户端生效。
  */
+@EventBusSubscriber(modid = PasterDreamMod.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class PDClientEvents {
 
     private static final ResourceKey<Biome> BIOME_DYEDREAM_0 = ResourceKey.create(
@@ -66,6 +72,7 @@ public class PDClientEvents {
      *   <li>在染梦维度中生成群系专属环境粒子和落叶</li>
      * </ol>
      */
+    @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;

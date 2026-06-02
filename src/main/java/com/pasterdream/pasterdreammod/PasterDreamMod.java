@@ -1,7 +1,5 @@
 package com.pasterdream.pasterdreammod;
 
-import com.pasterdream.pasterdreammod.client.DyeDreamSkyRenderer;
-import com.pasterdream.pasterdreammod.client.PDClientEvents;
 import com.pasterdream.pasterdreammod.command.PDCommands;
 import com.pasterdream.pasterdreammod.data.PDBlockModelProvider;
 import com.pasterdream.pasterdreammod.data.PDBlockTagProvider;
@@ -110,11 +108,8 @@ public class PasterDreamMod {
         // 在游戏总线上注册指令
         NeoForge.EVENT_BUS.addListener(PDCommands::register);
 
-        // 在游戏总线上注册客户端 Tick 事件（染梦维度环境粒子生成）
-        NeoForge.EVENT_BUS.addListener(PDClientEvents::onClientTick);
-
-        // 在游戏总线上注册染梦维度极光天幕渲染器
-        NeoForge.EVENT_BUS.addListener(DyeDreamSkyRenderer::onRenderLevelStage);
+        // 客户端 Tick 事件和极光天幕渲染器通过 @EventBusSubscriber(Dist.CLIENT)
+        // 在 PDClientEvents 和 DyeDreamSkyRenderer 中自动注册，避免服务端类加载
     }
 
     /**

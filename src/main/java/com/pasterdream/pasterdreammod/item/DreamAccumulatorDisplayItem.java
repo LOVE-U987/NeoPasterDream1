@@ -1,17 +1,12 @@
 package com.pasterdream.pasterdreammod.item;
 
-import com.pasterdream.pasterdreammod.client.renderer.item.DreamAccumulatorDisplayItemRenderer;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.level.block.Block;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.animation.PlayState;
 
 /**
  * 蓄梦池显示物品 (Dream Accumulator Display Item)
- * 用于手持时渲染 GeckoLib 动画模型
- *
- * 原模组使用 MCreator 生成的 DisplayItem 系统，
- * 这里重新实现为 NeoForge 1.21.1 兼容版本
+ * 用于手持时渲染 GeckoLab 动画模型，渲染器通过 RegisterClientExtensionsEvent 注册。
  */
 public class DreamAccumulatorDisplayItem extends AbstractGeoDisplayItem {
 
@@ -23,16 +18,6 @@ public class DreamAccumulatorDisplayItem extends AbstractGeoDisplayItem {
      */
     public DreamAccumulatorDisplayItem(Block block, Properties properties) {
         super(block, properties);
-    }
-
-    /**
-     * 创建自定义渲染器
-     *
-     * @return DreamAccumulatorDisplayItemRenderer 实例
-     */
-    @Override
-    protected BlockEntityWithoutLevelRenderer createRenderer() {
-        return new DreamAccumulatorDisplayItemRenderer();
     }
 
     /**

@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.client;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.client.renderer.item.DreamAccumulatorDisplayItemRenderer;
+import com.pasterdream.pasterdreammod.client.renderer.item.DreamMeterItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.LifeCrystalDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.ShadowChestDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.registry.PDItems;
@@ -36,6 +37,9 @@ public class PDClientItemExtensions {
 
         registerDisplayItem(event, PDItems.SHADOW_CHEST.get(), new ShadowChestDisplayItemRenderer());
         PasterDreamMod.LOGGER.info("[PDClientItemExtensions] 注册显示物品: shadow_chest → ShadowChestDisplayItemRenderer（GeckoLib 3D）");
+
+        registerDisplayItem(event, PDItems.DREAM_METER.get(), new DreamMeterItemRenderer());
+        PasterDreamMod.LOGGER.info("[PDClientItemExtensions] 注册显示物品: dream_meter → DreamMeterItemRenderer（GeckoLib 3D）");
     }
 
     /**
