@@ -80,7 +80,6 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-项目仓库-181717?style=for-the-badge\&logo=github\&logoColor=white)](https://github.com/LOVE-U987/NeoPasterDream1)
 
-> 💡 **提示**：本项目仍在早期开发阶段，暂不提供下载。
 
 *✨ 为了你自己，或者以往寻梦者之中的某一人 ✨*
 
