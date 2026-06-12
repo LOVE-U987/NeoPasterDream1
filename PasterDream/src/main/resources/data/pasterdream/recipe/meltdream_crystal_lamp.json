@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:meltdream_crystal_0"
+    }
+  },
+  "result": {
+    "id": "pasterdream:meltdream_crystal_lamp",
+    "count": 1
+  }
+}

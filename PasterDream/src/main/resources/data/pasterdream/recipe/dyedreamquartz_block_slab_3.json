@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "tag": "forge:dyedreamquartz_blocks"
+  },
+  "result": {
+    "id": "pasterdream:dyedreamquartz_block_slab",
+    "count": 2
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "pillar",
+    "body_block": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 60,
+          "data": {
+            "Name": "pasterdream:dyedream_packed_ice"
+          }
+        },
+        {
+          "weight": 40,
+          "data": {
+            "Name": "pasterdream:dyedream_ice"
+          }
+        }
+      ]
+    },
+    "top_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:snow_block"
+      }
+    },
+    "ore_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:ice_bud_0"
+      }
+    },
+    "debris_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:dyedream_packed_ice"
+      }
+    },
+    "min_height": 12,
+    "max_height": 25,
+    "base_width": 3,
+    "top_width": 1,
+    "crystal_chance": 0.1,
+    "debris_count": 8,
+    "debris_radius": 5,
+    "check_hang": true,
+    "region_check": true,
+    "region_threshold": 0.3,
+    "replaceable": {
+      "type": "minecraft:any_of",
+      "predicates": [
+        {
+          "type": "minecraft:matching_blocks",
+          "blocks": [
+            "minecraft:air",
+            "minecraft:water",
+            "minecraft:snow_block",
+            "minecraft:sand",
+            "minecraft:gravel",
+            "pasterdream:dyedream_sand",
+            "pasterdream:dyedream_ice",
+            "pasterdream:dyedream_packed_ice"
+          ]
+        },
+        {
+          "type": "minecraft:replaceable"
+        }
+      ]
+    }
+  }
+}

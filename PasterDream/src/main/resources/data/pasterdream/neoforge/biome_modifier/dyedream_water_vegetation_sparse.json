@@ -1,0 +1,13 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#pasterdream:is_dyedream_ocean",
+  "features": [
+    "pasterdream:patch_dyedream_lily_pad",
+    "pasterdream:patch_dyedream_lotus",
+    "pasterdream:patch_coral_reef",
+    "pasterdream:patch_coral_reef_pink",
+    "pasterdream:underwater_ice_spike",
+    "pasterdream:sea_ice_mound"
+  ],
+  "step": "vegetal_decoration"
+}

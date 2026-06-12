@@ -1,0 +1,18 @@
+[096月2026 09:53:23.289] [main/DEBUG] [PasterDreamAPI/]: [ParticleBuilder] 创建粒子构建器: modId=pasterdream, name=test_chain, 默认纹理=pasterdream:test_chain
+[096月2026 09:53:23.292] [main/DEBUG] [PasterDreamAPI/]: [ParticleBuilder] test_chain → alwaysShow=true
+[096月2026 09:53:23.293] [main/DEBUG] [PasterDreamAPI/]: [ParticleBuilder] test_chain → texture=minecraft:flame
+[096月2026 09:53:23.293] [main/DEBUG] [PasterDreamAPI/]: [ParticleBuilder] test_chain → gravity=0.1
+[096月2026 09:53:23.293] [main/DEBUG] [PasterDreamAPI/]: [ParticleBuilder] test_chain → generateJson=false
+[096月2026 09:53:23.294] [main/DEBUG] [PasterDreamAPI/]: [ParticleBuilder] test_chain → basePath=build/api-test-output
+[096月2026 09:53:23.294] [main/DEBUG] [PasterDreamAPI/]: [ParticleBuilder] 创建粒子构建器: modId=pasterdream, name=test_default_tex, 默认纹理=pasterdream:test_default_tex
+[096月2026 09:53:23.294] [main/DEBUG] [PasterDreamAPI/]: [ParticleBuilder] 创建粒子构建器: modId=pasterdream, name=test_custom_tex, 默认纹理=pasterdream:test_custom_tex
+[096月2026 09:53:23.295] [main/DEBUG] [PasterDreamAPI/]: [ParticleBuilder] test_custom_tex → texture=pasterdream:crystal_flame
+[096月2026 09:53:23.295] [main/DEBUG] [PasterDreamAPI/]: [ParticleBuilder] 创建粒子构建器: modId=pasterdream, name=test_gravity, 默认纹理=pasterdream:test_gravity
+[096月2026 09:53:23.295] [main/DEBUG] [PasterDreamAPI/]: [ParticleBuilder] test_gravity → gravity=0.05
+[096月2026 09:53:23.295] [main/DEBUG] [PasterDreamAPI/]: [ParticleBuilder] 创建粒子构建器: modId=pasterdream, name=test_show, 默认纹理=pasterdream:test_show
+[096月2026 09:53:23.296] [main/DEBUG] [PasterDreamAPI/]: [ParticleBuilder] test_show → alwaysShow=true
+[096月2026 09:53:23.331] [main/INFO] [PasterDreamAPI/]: [ParticleGenerator] ✅ 已生成粒子定义 JSON → build/api-test-output/assets/pasterdream/particles/test_particle.json
+[096月2026 09:53:23.333] [main/INFO] [PasterDreamAPI/]: [ParticleGenerator] ✅ 已生成粒子定义 JSON → build/api-test-output/assets/pasterdream/particles/test_gravity_particle.json
+[096月2026 09:53:23.336] [main/INFO] [PasterDreamAPI/]: [ParticleTextureGenerator] ✅ 已生成粒子纹理元数据 → build/api-test-output/assets/pasterdream/textures/particle/test_texture_meta.json
+[096月2026 09:53:23.496] [main/DEBUG] [PasterDreamAPI/]: [ParticleAPI] 🔍 查询粒子: test_cache_particle → 未找到
+[096月2026 09:53:23.497] [main/DEBUG] [PasterDreamAPI/]: [ParticleAPI] 📊 获取所有已注册粒子: 共 0 个

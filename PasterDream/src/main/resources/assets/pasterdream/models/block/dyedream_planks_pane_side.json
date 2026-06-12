@@ -1,0 +1,8 @@
+{
+  "parent": "block/template_glass_pane_side",
+  "textures": {
+    "edge": "pasterdream:block/dyedream_planks_pane",
+    "pane": "pasterdream:block/dyedream_planks_pane"
+  },
+  "render_type": "cutout"
+}

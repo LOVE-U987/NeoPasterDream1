@@ -1,0 +1,15 @@
+{
+  "name": "pasterdream:pinkagaric_house_3",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "pasterdream:pinkagaric_house_3",
+        "projection": "rigid",
+        "processors": "minecraft:empty"
+      }
+    }
+  ]
+}

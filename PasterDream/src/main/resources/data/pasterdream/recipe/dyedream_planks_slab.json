@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:dyedream_planks"
+    }
+  },
+  "result": {
+    "id": "pasterdream:dyedream_planks_slab",
+    "count": 6
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "pillar",
+    "body_block": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 40,
+          "data": {
+            "Name": "minecraft:packed_ice"
+          }
+        },
+        {
+          "weight": 30,
+          "data": {
+            "Name": "minecraft:ice"
+          }
+        },
+        {
+          "weight": 20,
+          "data": {
+            "Name": "minecraft:blue_ice"
+          }
+        },
+        {
+          "weight": 10,
+          "data": {
+            "Name": "pasterdream:dyedream_packed_ice"
+          }
+        }
+      ]
+    },
+    "ore_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:ice_bud_0"
+      }
+    },
+    "debris_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "minecraft:packed_ice"
+      }
+    },
+    "min_height": 8,
+    "max_height": 15,
+    "base_width": 3,
+    "top_width": 2,
+    "crystal_chance": 0.15,
+    "crystal_only_on_top": true,
+    "debris_count": 4,
+    "debris_radius": 3,
+    "check_hang": true,
+    "region_check": true,
+    "region_threshold": 0.3,
+    "replaceable": {
+      "type": "minecraft:any_of",
+      "predicates": [
+        {
+          "type": "minecraft:matching_blocks",
+          "blocks": [
+            "minecraft:air",
+            "minecraft:ice",
+            "minecraft:packed_ice",
+            "minecraft:blue_ice",
+            "minecraft:snow_block",
+            "minecraft:stone",
+            "minecraft:dirt",
+            "minecraft:grass_block",
+            "pasterdream:dyedream_ice",
+            "pasterdream:dyedream_packed_ice",
+            "pasterdream:icestone"
+          ]
+        },
+        {
+          "type": "minecraft:replaceable"
+        }
+      ]
+    }
+  }
+}

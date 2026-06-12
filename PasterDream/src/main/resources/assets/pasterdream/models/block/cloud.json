@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/fluffy_cloud",
+    "up": "pasterdream:block/fluffy_cloud",
+    "north": "pasterdream:block/fluffy_cloud",
+    "east": "pasterdream:block/fluffy_cloud",
+    "south": "pasterdream:block/fluffy_cloud",
+    "west": "pasterdream:block/fluffy_cloud",
+    "particle": "pasterdream:block/fluffy_cloud"
+  },
+  "render_type": "translucent"
+}

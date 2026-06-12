@@ -1,0 +1,63 @@
+{
+  "has_precipitation": true,
+  "temperature": 0.7,
+  "downfall": 0.5,
+  "carvers": {
+    "air": [
+      "minecraft:cave",
+      "minecraft:cave_extra_underground",
+      "minecraft:canyon"
+    ]
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ],
+  "effects": {
+    "foliage_color": -541729,
+    "grass_color": -728243,
+    "sky_color": 15464959,
+    "fog_color": 16175871,
+    "water_color": 6261759,
+    "water_fog_color": 3549951,
+    "music": {
+      "sound": "pasterdream:music.snowfall_dream_music",
+      "min_delay": 1200,
+      "max_delay": 1800,
+      "replace_current_music": true
+    }
+  },
+  "spawners": {
+    "monster": [],
+    "creature": [
+      {
+        "type": "allay",
+        "weight": 4,
+        "minCount": 1,
+        "maxCount": 3
+      },
+      {
+        "type": "pasterdream:pink_slime",
+        "weight": 30,
+        "minCount": 1,
+        "maxCount": 3
+      }
+    ],
+    "ambient": [],
+    "axolotls": [],
+    "underground_water_creature": [],
+    "water_creature": [],
+    "water_ambient": [],
+    "misc": []
+  },
+  "spawn_costs": {}
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "pasterdream:dyedream_base"
+  },
+  "experience": 1,
+  "cookingtime": 400,
+  "result": {
+    "id": "pasterdream:dyedream_ingot",
+    "count": 1
+  }
+}

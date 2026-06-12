@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "a",
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:dyedreamquartz_block"
+    }
+  },
+  "result": {
+    "id": "pasterdream:pillar_dyedreamquartz_block",
+    "count": 2
+  }
+}

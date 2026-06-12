@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:biome_dyedream_0",
+  "features": [
+    "pasterdream:mega_calcite_pillar"
+  ],
+  "step": "top_layer_modification"
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "pasterdream:cotton"
+    }
+  ],
+  "result": {
+    "id": "minecraft:string",
+    "count": 1
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/dream_train_structure"
+  },
+  "render_type": "translucent"
+}

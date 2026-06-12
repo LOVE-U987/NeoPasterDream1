@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "pasterdream:dyedreamquartz_block"
+  },
+  "experience": 1,
+  "cookingtime": 200,
+  "result": {
+    "id": "pasterdream:smooth_dyedreamquartz_block",
+    "count": 1
+  }
+}

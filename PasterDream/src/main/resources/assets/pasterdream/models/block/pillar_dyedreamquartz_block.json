@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "pasterdream:block/dyedreamquartz_pillar_top",
+    "side": "pasterdream:block/dyedreamquartz_pillar"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "pasterdream:block/carve_dyedream_glass"
+  },
+  "render_type": "translucent"
+}

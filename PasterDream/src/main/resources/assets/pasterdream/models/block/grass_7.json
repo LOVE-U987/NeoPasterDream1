@@ -1,0 +1,8 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "pasterdream:block/dyedream_moss",
+    "particle": "pasterdream:block/dyedream_moss"
+  },
+  "render_type": "cutout"
+}

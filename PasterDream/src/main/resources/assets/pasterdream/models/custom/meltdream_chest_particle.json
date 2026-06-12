@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "pasterdream:block/meltdream_chest_0",
+    "particle": "pasterdream:block/meltdream_chest_0"
+  }
+}

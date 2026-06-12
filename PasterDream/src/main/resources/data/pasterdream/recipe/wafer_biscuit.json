@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "food",
+  "ingredients": [
+    {
+      "item": "pasterdream:bread_slice"
+    },
+    {
+      "item": "pasterdream:bread_slice"
+    },
+    {
+      "item": "pasterdream:yeast"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:wafer_biscuit",
+    "count": 2
+  }
+}

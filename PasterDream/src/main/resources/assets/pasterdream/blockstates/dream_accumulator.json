@@ -1,0 +1,1 @@
+{"variants": {"facing=north": {"model": "pasterdream:block/dream_accumulator"}, "facing=south": {"model": "pasterdream:block/dream_accumulator", "y": 180}, "facing=east": {"model": "pasterdream:block/dream_accumulator", "y": 90}, "facing=west": {"model": "pasterdream:block/dream_accumulator", "y": 270}}}

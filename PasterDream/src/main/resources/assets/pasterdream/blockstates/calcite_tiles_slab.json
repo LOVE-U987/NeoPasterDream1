@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "type=bottom": { "model": "pasterdream:block/calcite_tiles_slab" },
+    "type=double": { "model": "pasterdream:block/calcite_tiles_slab_full" },
+    "type=top": { "model": "pasterdream:block/calcite_tiles_slab_top" }
+  }
+}

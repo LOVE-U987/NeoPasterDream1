@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "base": {
+    "item": "pasterdream:true_moltengold_sword"
+  },
+  "addition": {
+    "item": "minecraft:nether_star"
+  },
+  "template": {
+    "item": "minecraft:nether_brick"
+  },
+  "result": {
+    "id": "pasterdream:truest_moltengold_sword",
+    "count": 1
+  }
+}

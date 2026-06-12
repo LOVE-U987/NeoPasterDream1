@@ -1,0 +1,207 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.140'
+    id 'idea'
+}
+
+version = mod_version
+group = mod_group_id
+
+evaluationDependsOn(':PasterDreamAPI')
+
+sourceSets.main.resources {
+    srcDir('src/generated/resources')
+    exclude("**/*.bbmodel")
+    exclude("src/generated/**/.cache")
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+repositories {
+    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    flatDir {
+        dirs rootProject.file('libs')
+    }
+}
+
+base {
+    archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+    version = project.neo_version
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    runs {
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        gameTestServer {
+            type = "gameTestServer"
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        data {
+            data()
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    def apiProject = project(':PasterDreamAPI')
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+            sourceSet(apiProject.sourceSets.main)
+        }
+    }
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    implementation project(':PasterDreamAPI')
+
+    implementation files(rootProject.file('libs/geckolib-neoforge-1.21.1-4.8.4.jar'))
+    implementation files(rootProject.file('libs/player-animation-lib-forge-2.0.4+1.21.1.jar'))
+    implementation files(rootProject.file('libs/curios-neoforge-9.5.1+1.21.1.jar'))
+}
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+// 允许 runServer 时在控制台中输入命令（标准输入转发）
+tasks.named('runServer', JavaExec).configure {
+    standardInput = System.in
+}
+
+// ======================== 自定义任务 ========================
+
+tasks.register('runRecipeDemo', JavaExec) {
+    description = '运行 RecipeGenerationDemo，生成示例配方 JSON 到 resources 目录'
+    group = 'PasterDream'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.api.itemmigration.example.RecipeGenerationDemo'
+    workingDir = project.projectDir
+    standardOutput = System.out
+}
+
+tasks.register('runDimensionApiDemo', JavaExec) {
+    description = '运行 DimensionAPI 示例程序，验证 API 全部功能'
+    group = 'PasterDream'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.api.dimension.example.DimensionApiDemo'
+    workingDir = project.projectDir
+    standardOutput = System.out
+}
+
+tasks.register('generateDimensionTestJsons', JavaExec) {
+    description = '生成维度 API 测试 JSON 文件到 resources 目录'
+    group = 'PasterDream'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.api.dimension.example.DimensionJsonGenerator'
+    workingDir = project.projectDir
+    standardOutput = System.out
+}
+
+// ======================== API 测试任务 ========================
+
+tasks.register('runParticleApiTest', JavaExec) {
+    description = '运行 ParticleAPI 测试，验证粒子 API 核心功能'
+    group = 'PasterDream'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.test.ParticleApiTestRunner'
+    workingDir = project.projectDir
+    standardOutput = System.out
+}
+
+tasks.register('runEntityApiTest', JavaExec) {
+    description = '运行 EntityAPI 测试，验证实体 API 核心功能'
+    group = 'PasterDream'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.test.EntityApiTestRunner'
+    workingDir = project.projectDir
+    standardOutput = System.out
+}
+
+tasks.register('runRuinApiTest', JavaExec) {
+    description = '运行 RuinAPI 测试，验证自定义遗迹 API 核心功能'
+    group = 'PasterDream'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.test.RuinApiTestRunner'
+    workingDir = project.projectDir
+    standardOutput = System.out
+}
+
+tasks.register('runAllApiTests', JavaExec) {
+    description = '运行所有 API 测试（ParticleAPI + EntityAPI + RuinAPI）'
+    group = 'PasterDream'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.test.RunAllApiTests'
+    workingDir = project.projectDir
+    standardOutput = System.out
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "pasterdream:block/red_crystal_thorn_top",
+    "particle": "pasterdream:block/red_crystal_thorn_top"
+  },
+  "render_type": "cutout"
+}

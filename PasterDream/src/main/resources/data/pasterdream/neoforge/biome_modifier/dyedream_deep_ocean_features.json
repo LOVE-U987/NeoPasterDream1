@@ -1,0 +1,13 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:biome_dyedream_deep_ocean",
+  "features": [
+    "pasterdream:patch_dyedream_seagrass",
+    "pasterdream:ice_arch",
+    "pasterdream:ice_arch_ruined",
+    "pasterdream:dyedream_ice_pillar",
+    "pasterdream:ice_crystal_cluster",
+    "pasterdream:frost_spike"
+  ],
+  "step": "vegetal_decoration"
+}

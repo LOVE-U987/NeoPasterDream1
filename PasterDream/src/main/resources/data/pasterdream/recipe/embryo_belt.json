@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "aaa",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:titanium_nugget"
+    },
+    "b": {
+      "item": "pasterdream:soul_essence"
+    }
+  },
+  "result": {
+    "id": "pasterdream:embryo_belt",
+    "count": 1
+  }
+}

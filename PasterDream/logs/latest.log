@@ -1,0 +1,3 @@
+[096月2026 09:53:23.331] [main/INFO] [PasterDreamAPI/]: [ParticleGenerator] ✅ 已生成粒子定义 JSON → build/api-test-output/assets/pasterdream/particles/test_particle.json
+[096月2026 09:53:23.333] [main/INFO] [PasterDreamAPI/]: [ParticleGenerator] ✅ 已生成粒子定义 JSON → build/api-test-output/assets/pasterdream/particles/test_gravity_particle.json
+[096月2026 09:53:23.336] [main/INFO] [PasterDreamAPI/]: [ParticleTextureGenerator] ✅ 已生成粒子纹理元数据 → build/api-test-output/assets/pasterdream/textures/particle/test_texture_meta.json

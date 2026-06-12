@@ -1,0 +1,43 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "custom",
+    "body_block": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 75,
+          "data": {
+            "Name": "pasterdream:cloud"
+          }
+        },
+        {
+          "weight": 20,
+          "data": {
+            "Name": "pasterdream:thick_cloud"
+          }
+        },
+        {
+          "weight": 5,
+          "data": {
+            "Name": "minecraft:white_wool"
+          }
+        }
+      ]
+    },
+    "custom_generator_key": "cloud_bubble",
+    "replaceable": {
+      "type": "minecraft:any_of",
+      "predicates": [
+        {
+          "type": "minecraft:matching_blocks",
+          "blocks": [
+            "minecraft:air",
+            "minecraft:cave_air",
+            "minecraft:water"
+          ]
+        }
+      ]
+    }
+  }
+}

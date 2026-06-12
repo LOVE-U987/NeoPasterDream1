@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "food",
+  "ingredients": [
+    {
+      "item": "pasterdream:vine_0"
+    },
+    {
+      "item": "pasterdream:vine_0"
+    },
+    {
+      "item": "pasterdream:vine_0"
+    },
+    {
+      "item": "pasterdream:vine_0"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:dyedream_fruit",
+    "count": 1
+  }
+}

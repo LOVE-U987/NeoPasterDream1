@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X  ",
+    "XX ",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "pasterdream:calcite_tiles"
+    }
+  },
+  "result": {
+    "id": "pasterdream:calcite_tiles_stairs",
+    "count": 4
+  }
+}

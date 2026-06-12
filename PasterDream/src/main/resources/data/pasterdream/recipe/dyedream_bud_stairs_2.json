@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "pasterdream:dyedream_bud_block"
+  },
+  "result": {
+    "id": "pasterdream:dyedream_bud_stairs",
+    "count": 1
+  }
+}

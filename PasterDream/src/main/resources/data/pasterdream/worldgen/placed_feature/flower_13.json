@@ -1,0 +1,33 @@
+{
+  "feature": "pasterdream:flower_13",
+  "placement": [
+    {
+      "type": "minecraft:rarity_filter",
+      "chance": 64
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "MOTION_BLOCKING"
+    },
+    {
+      "type": "minecraft:block_predicate_filter",
+      "predicate": {
+        "type": "minecraft:matching_blocks",
+        "offset": [
+          0,
+          -1,
+          0
+        ],
+        "blocks": [
+          "pasterdream:dyedream_grass",
+          "pasterdream:dyedream_dirt",
+          "pasterdream:dyedream_sand",
+          "pasterdream:dyedream_block"
+        ]
+      }
+    }
+  ]
+}

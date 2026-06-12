@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "pasterdream:dyedreamquartz_block"
+  },
+  "result": {
+    "id": "pasterdream:dyedreamquartz_block_stairs",
+    "count": 1
+  }
+}

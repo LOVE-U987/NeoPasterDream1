@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smoking",
+  "ingredient": {
+    "item": "pasterdream:dough"
+  },
+  "result": {
+    "id": "pasterdream:bread_slice"
+  },
+  "experience": 0.35,
+  "cookingtime": 100
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/pinkagaric_net",
+    "up": "pasterdream:block/pinkagaric_net",
+    "north": "pasterdream:block/pinkagaric_net",
+    "east": "pasterdream:block/pinkagaric_net",
+    "south": "pasterdream:block/pinkagaric_net",
+    "west": "pasterdream:block/pinkagaric_net",
+    "particle": "pasterdream:block/pinkagaric_net"
+  },
+  "render_type": "solid"
+}

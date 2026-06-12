@@ -1,0 +1,242 @@
+{
+  "life_crystal": {
+    "category": "block",
+    "subtitle": "subtitle.pasterdream.life_crystal",
+    "sounds": [
+      {
+        "name": "pasterdream:life_crystal",
+        "stream": false
+      }
+    ]
+  },
+  "roar0": {
+    "category": "hostile",
+    "subtitle": "subtitle.pasterdream.roar0",
+    "sounds": [
+      {
+        "name": "pasterdream:roar0",
+        "stream": false
+      }
+    ]
+  },
+  "music.demo_music": {
+    "category": "music",
+    "subtitle": "subtitle.pasterdream.music.demo_music",
+    "sounds": [
+      {
+        "name": "pasterdream:music/demo_music",
+        "stream": true,
+        "volume": 0.3
+      }
+    ]
+  },
+  "music.dyedream_world": {
+    "category": "music",
+    "subtitle": "subtitle.pasterdream.music.dyedream_world",
+    "sounds": [
+      {
+        "name": "pasterdream:music/dyedream_world",
+        "stream": true,
+        "volume": 0.2
+      }
+    ]
+  },
+  "dyedream_world_music": {
+    "category": "record",
+    "subtitle": "subtitle.pasterdream.dyedream_world_music",
+    "sounds": [
+      {
+        "name": "pasterdream:music/dyedream_world",
+        "stream": true,
+        "volume": 0.2
+      }
+    ]
+  },
+  "sweetdream": {
+    "category": "record",
+    "subtitle": "subtitle.pasterdream.sweetdream",
+    "sounds": [
+      {
+        "name": "pasterdream:music/sweetdream_music",
+        "stream": true,
+        "volume": 0.3
+      }
+    ]
+  },
+  "snowfall_dream_music": {
+    "category": "record",
+    "subtitle": "subtitle.pasterdream.snowfall_dream_music",
+    "sounds": [
+      {
+        "name": "pasterdream:music/snowfall_dream_music",
+        "stream": true,
+        "volume": 0.4
+      }
+    ]
+  },
+  "aaroncos_music": {
+    "category": "record",
+    "subtitle": "subtitle.pasterdream.aaroncos_music",
+    "sounds": [
+      {
+        "name": "pasterdream:aaroncos_music",
+        "stream": false
+      }
+    ]
+  },
+  "wind_journey": {
+    "category": "record",
+    "subtitle": "subtitle.pasterdream.wind_journey",
+    "sounds": [
+      {
+        "name": "pasterdream:music/wind_journey",
+        "stream": true,
+        "volume": 0.2
+      }
+    ]
+  },
+
+  "wind_journey1": {
+    "category": "record",
+    "subtitle": "subtitle.pasterdream.wind_journey1",
+    "sounds": [
+      {
+        "name": "pasterdream:music/wind_journey1",
+        "stream": true,
+        "volume": 0.2
+      }
+    ]
+  },
+
+  "music.dream_meadow": {
+    "category": "music",
+    "subtitle": "subtitle.pasterdream.music.dream_meadow",
+    "sounds": [
+      {
+        "name": "pasterdream:music/dream_meadow_disc",
+        "stream": true,
+        "volume": 0.2
+      }
+    ]
+  },
+  "music.dream_heath": {
+    "category": "music",
+    "subtitle": "subtitle.pasterdream.music.dream_heath",
+    "sounds": [
+      {
+        "name": "pasterdream:music/dream_heath",
+        "stream": true,
+        "volume": 0.4
+      }
+    ]
+  },
+  "music.dream_taiga": {
+    "category": "music",
+    "subtitle": "subtitle.pasterdream.music.dream_taiga",
+    "sounds": [
+      {
+        "name": "pasterdream:music/dream_taiga",
+        "stream": true,
+        "volume": 0.2
+      }
+    ]
+  },
+  "music.dream_delta": {
+    "category": "music",
+    "subtitle": "subtitle.pasterdream.music.dream_delta",
+    "sounds": [
+      {
+        "name": "pasterdream:music/dream_delta",
+        "stream": true,
+        "volume": 0.4
+      }
+    ]
+  },
+  "music.snowfall_dream_music": {
+    "category": "music",
+    "subtitle": "subtitle.pasterdream.music.snowfall_dream_music",
+    "sounds": [
+      {
+        "name": "pasterdream:music/snowfall_dream_music",
+        "stream": true,
+        "volume": 0.2
+      }
+    ]
+  },
+  "music.sweetdream_music": {
+    "category": "music",
+    "subtitle": "subtitle.pasterdream.music.sweetdream_music",
+    "sounds": [
+      {
+        "name": "pasterdream:music/sweetdream_music",
+        "stream": true,
+        "volume": 0.2
+      }
+    ]
+  },
+
+  "dream_meadow_music": {
+    "category": "record",
+    "subtitle": "subtitle.pasterdream.dream_meadow_music",
+    "sounds": [
+      {
+        "name": "pasterdream:music/dream_meadow_disc",
+        "stream": true,
+        "volume": 0.3
+      }
+    ]
+  },
+  "dream_heath_music": {
+    "category": "record",
+    "subtitle": "subtitle.pasterdream.dream_heath_music",
+    "sounds": [
+      {
+        "name": "pasterdream:music/dream_heath",
+        "stream": true,
+        "volume": 0.3
+      }
+    ]
+  },
+  "dream_taiga_music": {
+    "category": "record",
+    "subtitle": "subtitle.pasterdream.dream_taiga_music",
+    "sounds": [
+      {
+        "name": "pasterdream:music/dream_taiga",
+        "stream": true,
+        "volume": 0.12
+      }
+    ]
+  },
+  "dream_delta_music": {
+    "category": "record",
+    "subtitle": "subtitle.pasterdream.dream_delta_music",
+    "sounds": [
+      {
+        "name": "pasterdream:music/dream_delta",
+        "stream": true,
+        "volume": 0.3
+      }
+    ]
+  },
+  "meltdream_chest": {
+    "category": "block",
+    "subtitle": "subtitle.pasterdream.meltdream_chest",
+    "sounds": [
+      {
+        "name": "pasterdream:meltdream_chest",
+        "stream": false
+      }
+    ]
+  },
+  "meltdream_chest_0": {
+    "category": "block",
+    "subtitle": "subtitle.pasterdream.meltdream_chest_0",
+    "sounds": [
+      {
+        "name": "pasterdream:meltdream_chest_0",
+        "stream": false
+      }
+    ]
+  }
+}

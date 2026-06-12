@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:random_selector",
+  "config": {
+    "features": [
+      {
+        "chance": 0.25,
+        "feature": "pasterdream:dyedream_tree_fancy"
+      },
+      {
+        "chance": 0.25,
+        "feature": "pasterdream:dyedream_tree_bushy"
+      },
+      {
+        "chance": 0.25,
+        "feature": "pasterdream:dyedream_tree_giant"
+      },
+      {
+        "chance": 0.25,
+        "feature": "pasterdream:dyedream_tree_weeping"
+      },
+      {
+        "chance": 0.25,
+        "feature": "pasterdream:dyedream_tree_glowing"
+      }
+    ],
+    "default": "pasterdream:dyedream_tree"
+  }
+}

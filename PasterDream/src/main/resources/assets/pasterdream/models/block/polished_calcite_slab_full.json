@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "bottom": "pasterdream:block/polished_calcite",
+    "top": "pasterdream:block/polished_calcite",
+    "side": "pasterdream:block/polished_calcite",
+    "all": "pasterdream:block/polished_calcite"
+  }
+}

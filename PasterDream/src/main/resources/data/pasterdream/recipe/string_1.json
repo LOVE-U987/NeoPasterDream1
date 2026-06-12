@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "tag": "minecraft:wool"
+    },
+    {
+      "item": "pasterdream:pliers"
+    }
+  ],
+  "result": {
+    "id": "minecraft:string",
+    "count": 2
+  }
+}

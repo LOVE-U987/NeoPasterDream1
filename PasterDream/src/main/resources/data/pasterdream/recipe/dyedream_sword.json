@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "base": {
+    "item": "pasterdream:titanium_sword"
+  },
+  "addition": {
+    "item": "pasterdream:dyedream_upgrade"
+  },
+  "template": {
+    "item": "pasterdream:dyedream_bud_nugget"
+  },
+  "result": {
+    "id": "pasterdream:dyedream_sword",
+    "count": 1
+  }
+}

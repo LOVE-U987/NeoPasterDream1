@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:gold_carve_dyedream_glass"
+    }
+  },
+  "result": {
+    "id": "pasterdream:gold_carve_dyedream_glasspane",
+    "count": 16
+  }
+}

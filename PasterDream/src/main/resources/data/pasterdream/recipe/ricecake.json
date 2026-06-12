@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "food",
+  "ingredients": [
+    {
+      "item": "pasterdream:dough"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "pasterdream:mortar"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:ricecake",
+    "count": 1
+  }
+}

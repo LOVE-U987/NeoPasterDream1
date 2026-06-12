@@ -1,0 +1,92 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "up": "true"
+      },
+      "apply": {
+        "model": "pasterdream:block/dyedream_bud_wall_post"
+      }
+    },
+    {
+      "when": {
+        "north": "low"
+      },
+      "apply": {
+        "model": "pasterdream:block/dyedream_bud_wall_side",
+        "uvlock": true,
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "east": "low"
+      },
+      "apply": {
+        "model": "pasterdream:block/dyedream_bud_wall_side",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "low"
+      },
+      "apply": {
+        "model": "pasterdream:block/dyedream_bud_wall_side",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "low"
+      },
+      "apply": {
+        "model": "pasterdream:block/dyedream_bud_wall_side",
+        "uvlock": true,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": "tall"
+      },
+      "apply": {
+        "model": "pasterdream:block/dyedream_bud_wall_side_tall",
+        "uvlock": true,
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "east": "tall"
+      },
+      "apply": {
+        "model": "pasterdream:block/dyedream_bud_wall_side_tall",
+        "uvlock": true,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "tall"
+      },
+      "apply": {
+        "model": "pasterdream:block/dyedream_bud_wall_side_tall",
+        "uvlock": true,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "tall"
+      },
+      "apply": {
+        "model": "pasterdream:block/dyedream_bud_wall_side_tall",
+        "uvlock": true,
+        "y": 270
+      }
+    }
+  ]
+}

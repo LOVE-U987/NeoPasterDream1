@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/pinkagaric_stem_top",
+    "up": "pasterdream:block/pinkagaric_stem_top",
+    "north": "pasterdream:block/pinkagaric_stem",
+    "east": "pasterdream:block/pinkagaric_stem",
+    "south": "pasterdream:block/pinkagaric_stem",
+    "west": "pasterdream:block/pinkagaric_stem",
+    "particle": "pasterdream:block/pinkagaric_stem_top"
+  },
+  "render_type": "solid"
+}

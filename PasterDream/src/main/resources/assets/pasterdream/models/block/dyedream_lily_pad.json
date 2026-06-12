@@ -1,0 +1,9 @@
+{
+  "parent": "pasterdream:custom/dyedream_lily_pad",
+  "textures": {
+    "all": "pasterdream:block/dyedream_lily_pad",
+    "particle": "pasterdream:block/dyedream_lily_pad",
+    "0": "pasterdream:block/dyedream_lily_pad"
+  },
+  "render_type": "cutout"
+}

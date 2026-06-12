@@ -1,0 +1,8 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "pasterdream:block/stem_grass",
+    "particle": "pasterdream:block/stem_grass"
+  },
+  "render_type": "cutout"
+}

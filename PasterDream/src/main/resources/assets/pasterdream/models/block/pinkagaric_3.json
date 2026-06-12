@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/pinkagaric_glow",
+    "up": "pasterdream:block/pinkagaric_glow",
+    "north": "pasterdream:block/pinkagaric_glow",
+    "east": "pasterdream:block/pinkagaric_glow",
+    "south": "pasterdream:block/pinkagaric_glow",
+    "west": "pasterdream:block/pinkagaric_glow",
+    "particle": "pasterdream:block/pinkagaric_glow"
+  },
+  "render_type": "cutout"
+}

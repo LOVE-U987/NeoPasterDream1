@@ -1,0 +1,8 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "pasterdream:block/golden_sunflower",
+    "particle": "pasterdream:block/golden_sunflower"
+  },
+  "render_type": "cutout"
+}
