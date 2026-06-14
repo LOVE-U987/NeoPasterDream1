@@ -1,8 +1,0 @@
-{
-  "parent": "block/cross",
-  "textures": {
-    "cross": "pasterdream:block/ice_crystal_sprout",
-    "particle": "pasterdream:block/ice_crystal_sprout"
-  },
-  "render_type": "cutout_mipped"
-}

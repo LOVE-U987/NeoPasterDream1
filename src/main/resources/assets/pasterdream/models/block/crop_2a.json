@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/cross",
-  "textures": {
-    "cross": "pasterdream:block/crop_2a",
-    "particle": "pasterdream:block/crop_2a"
-  },
-  "render_type": "cutout"
-}

@@ -1,8 +1,0 @@
-{
-  "parent": "block/cross",
-  "textures": {
-    "cross": "pasterdream:block/rice_seedling",
-    "particle": "pasterdream:block/rice_seedling"
-  },
-  "render_type": "cutout"
-}

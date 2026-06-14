@@ -1,8 +1,0 @@
-{
-  "parent": "block/cross",
-  "textures": {
-    "cross": "pasterdream:block/eustoma",
-    "particle": "pasterdream:block/eustoma"
-  },
-  "render_type": "cutout"
-}

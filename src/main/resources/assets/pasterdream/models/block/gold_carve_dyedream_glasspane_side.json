@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/glass_pane_side",
-  "textures": {
-    "pane": "pasterdream:block/gold_carve_dyedream_glass",
-    "edge": "pasterdream:block/gold_carve_dyedream_glass"
-  },
-  "render_type": "translucent"
-}

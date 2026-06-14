@@ -1,7 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "pasterdream:item/ice_bud"
-  },
-  "render_type": "translucent"
-}

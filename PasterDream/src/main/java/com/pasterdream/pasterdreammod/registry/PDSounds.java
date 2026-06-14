@@ -175,4 +175,95 @@ public class PDSounds {
     public static Supplier<SoundEvent> getDimensionMusic(String musicName) {
         return DIMENSION_MUSIC_CACHE.get(musicName);
     }
+
+    // ==================== 实体技能音效 ====================
+
+    /**
+     * 暗影尖啸幽灵召唤音效 (ghost0)
+     */
+    public static final Supplier<SoundEvent> GHOST_0 = SOUND_EVENTS.register("ghost0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "ghost0")));
+
+    /**
+     * 黑甲虫母体技能音效 (beetle_skill)
+     */
+    public static final Supplier<SoundEvent> BEETLE_SKILL = SOUND_EVENTS.register("beetle_skill",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "beetle_skill")));
+
+    /**
+     * 骨翼火球发射音效 (bone_wing_fire_ball)
+     */
+    public static final Supplier<SoundEvent> BONE_WING_FIRE_BALL = SOUND_EVENTS.register("bone_wing_fire_ball",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "bone_wing_fire_ball")));
+
+    /**
+     * 雷云攻击音效 (thundercloud_attack)
+     */
+    public static final Supplier<SoundEvent> THUNDERCLOUD_ATTACK = SOUND_EVENTS.register("thundercloud_attack",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "thundercloud_attack")));
+
+    /**
+     * 恐怖尖喙咆哮音效 (terrorbeak_roar)
+     */
+    public static final Supplier<SoundEvent> TERRORBEAK_ROAR = SOUND_EVENTS.register("terrorbeak_roar",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "terrorbeak_roar")));
+
+    /**
+     * 风之骑士技能音效 (wind_knight_skill_0)
+     */
+    public static final Supplier<SoundEvent> WIND_KNIGHT_SKILL_0 = SOUND_EVENTS.register("wind_knight_skill_0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "wind_knight_skill_0")));
+
+    /**
+     * 暗影音效 (shadow0)
+     * 暗影幽灵、暗影之手等暗影系实体使用的通用音效。
+     */
+    public static final Supplier<SoundEvent> SHADOW_0 = SOUND_EVENTS.register("shadow0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "shadow0")));
+
+    /**
+     * 暗影尖啸波音效 (squeal_wave)
+     * 暗影尖啸幽灵发射的音波弹射物音效。
+     */
+    public static final Supplier<SoundEvent> SQUEAL_WAVE = SOUND_EVENTS.register("squeal_wave",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "squeal_wave")));
+
+    /**
+     * 黑甲虫攻击音效 (beetle_attack)
+     */
+    public static final Supplier<SoundEvent> BEETLE_ATTACK = SOUND_EVENTS.register("beetle_attack",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "beetle_attack")));
+
+    /**
+     * 石头碎裂音效 (stone_break)
+     * 小石灵技能使用的音效。
+     */
+    public static final Supplier<SoundEvent> STONE_BREAK = SOUND_EVENTS.register("stone_break",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "stone_break")));
+
+    /**
+     * 石头碎裂音效变体 (stone_break_0)
+     * 小石灵技能使用的音效变体。
+     */
+    public static final Supplier<SoundEvent> STONE_BREAK_0 = SOUND_EVENTS.register("stone_break_0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "stone_break_0")));
+
+    /**
+     * 狐火生成音效 (fox_fire)
+     * 狐火实体生成时播放的特殊环境音效。
+     */
+    public static final Supplier<SoundEvent> FOX_FIRE = SOUND_EVENTS.register("fox_fire",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "fox_fire")));
 }

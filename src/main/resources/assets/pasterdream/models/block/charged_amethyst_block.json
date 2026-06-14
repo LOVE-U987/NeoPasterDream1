@@ -1,6 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "pasterdream:block/charged_amethyst_block"
-  }
-}

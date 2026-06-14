@@ -158,8 +158,34 @@ public class PDParticles {
             .generateJson(false)
             .build();
 
+    /**
+     * 孢子粒子（spore_particle）
+     * 4帧绿色孢子粒子，用于孢子实体飞行的孢子粉尘效果。
+     */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SPORE_PARTICLE =
+            PARTICLE_TYPES.register("spore_particle", () -> new SimpleParticleType(false));
+
+    /**
+     * 狐火粒子0（fox_fire_0_particle）
+     * 用于狐火实体每 tick 散发的橙色火焰粒子效果。
+     */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FOX_FIRE_0_PARTICLE =
+            PARTICLE_TYPES.register("fox_fire_0_particle", () -> new SimpleParticleType(false));
+
+    /**
+     * 狐火粒子1（fox_fire_1_particle）
+     * 用于狐火实体每 tick 散发的红色火焰粒子效果。
+     */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FOX_FIRE_1_PARTICLE =
+            PARTICLE_TYPES.register("fox_fire_1_particle", () -> new SimpleParticleType(false));
+
     // 静态初始化：将现有粒子注册到 ParticleAPI 缓存中，方便后续查询和 Provider 注册
     static {
+        initCache();
+    }
+
+    @SuppressWarnings("removal")
+    private static void initCache() {
         ParticleAPI.cacheParticle(new ParticleResult("meltdream_crystal_particle", MELTDREAM_CRYSTAL_PARTICLE));
         ParticleAPI.cacheParticle(new ParticleResult("shadow_stone_particle", SHADOW_STONE_PARTICLE));
         ParticleAPI.cacheParticle(new ParticleResult("dreamfertiliter_particle", DREAMFERTILITER_PARTICLE));

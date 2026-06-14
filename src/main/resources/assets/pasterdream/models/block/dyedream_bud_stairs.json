@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/stairs",
-  "textures": {
-    "bottom": "pasterdream:block/dyedream_bud",
-    "top": "pasterdream:block/dyedream_bud",
-    "side": "pasterdream:block/dyedream_bud"
-  }
-}

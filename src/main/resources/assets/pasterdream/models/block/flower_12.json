@@ -1,8 +1,0 @@
-{
-  "parent": "block/cross",
-  "textures": {
-    "cross": "pasterdream:block/dense_dream_night_lotus",
-    "particle": "pasterdream:block/dense_dream_night_lotus"
-  },
-  "render_type": "cutout"
-}

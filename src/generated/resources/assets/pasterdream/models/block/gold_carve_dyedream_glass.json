@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "render_type": "minecraft:translucent",
-  "textures": {
-    "all": "pasterdream:block/gold_carve_dyedream_glass"
-  }
-}

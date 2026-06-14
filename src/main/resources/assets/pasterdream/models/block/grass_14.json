@@ -1,8 +1,0 @@
-{
-  "parent": "block/cross",
-  "textures": {
-    "cross": "pasterdream:block/wind_cutter_grass",
-    "particle": "pasterdream:block/wind_cutter_grass"
-  },
-  "render_type": "cutout"
-}

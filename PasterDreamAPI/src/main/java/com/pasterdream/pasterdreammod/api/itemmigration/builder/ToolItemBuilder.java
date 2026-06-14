@@ -158,7 +158,26 @@ public class ToolItemBuilder extends BaseItemBuilder<ToolItemBuilder> {
     }
 
     /**
-     * 设置工具修复材料
+     * 设置工具修复材料（延迟 Supplier 版本）
+     * <p>
+     * 当修复材料需要引用尚未注册完成的 DeferredItem 时使用此重载，
+     * 避免在静态初始化阶段调用 {@code DeferredItem.get()} 导致的
+     * "Trying to access unbound value" 错误。
+     * 通过 Supplier 将 ItemStack 的创建延迟到注册表冻结之后执行。
+     * </p>
+     *
+     * @param stackSupplier 用于延迟创建修复材料 ItemStack 的 Supplier
+     * @return 当前构建器实例
+     */
+    public ToolItemBuilder repairWith(Supplier<ItemStack> stackSupplier) {
+        this.toolSpec = new ToolSpec(toolSpec.type(), toolSpec.durability(), toolSpec.miningSpeed(),
+                toolSpec.attackDamage(), toolSpec.attackSpeed(), toolSpec.enchantmentValue(),
+                toolSpec.incorrectTag(), () -> Ingredient.of(stackSupplier.get()));
+        return this;
+    }
+
+    /**
+     * 设置工具修复材料（ItemStack 版本）
      *
      * @param stacks 用于铁砧修复的物品栈，如 {@code new ItemStack(Items.COPPER_INGOT)}
      * @return 当前构建器实例

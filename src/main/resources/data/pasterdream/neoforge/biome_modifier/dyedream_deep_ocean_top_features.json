@@ -1,9 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "pasterdream:biome_dyedream_deep_ocean",
-  "features": [
-    "pasterdream:cloud_bubble",
-    "pasterdream:floating_ice_mound"
-  ],
-  "step": "top_layer_modification"
-}

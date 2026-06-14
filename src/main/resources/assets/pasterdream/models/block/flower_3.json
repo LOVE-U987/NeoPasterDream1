@@ -1,8 +1,0 @@
-{
-  "parent": "block/cross",
-  "textures": {
-    "cross": "pasterdream:block/blue_vein_flower",
-    "particle": "pasterdream:block/blue_vein_flower"
-  },
-  "render_type": "cutout"
-}

@@ -1,6 +1,6 @@
 ---
 name: "pasterdream-entity-api"
-description: "PasterDream模组实体注册专用API，提供Facade+Builder模式一键注册自定义实体。在需要创建新实体、配置实体属性/AI/碰撞箱/追踪范围或注册渲染器时调用。"
+description: "PasterDream模组实体注册专用API，提供Facade+Builder模式一键注册自定义实体。在需要创建新实体、配置实体属性/AI/碰撞箱/追踪范围/生物技能、动画系统或注册渲染器时调用。"
 ---
 
 # PasterDream Entity API
@@ -71,10 +71,13 @@ EntityAPI                            ← Facade 门面
   ├── registerAttributes(event, result)            ← 属性注册（缓存）
   ├── registerAttributes(event, result, supplier)  ← 属性注册（显式）
   ├── registerAttributes(event, name)              ← 按名称注册属性
-  ├── getEntityType(name)            ← 查询 EntityType
-  ├── getEntityResult(name)          ← 查询 EntityResult
-  ├── getRegisteredEntities()        ← 所有已注册实体
-  └── getSpawnEggColors(name)        ← 查询生成蛋颜色
+  ├── createSpawnEggItem(registry, name, supplier) ← 刷怪蛋物品注册
+  ├── setSpawnEggModelsOutputDir(path)             ← 刷怪蛋模型输出目录
+  ├── cacheSpawnEgg(name, bg, hl)                  ← 缓存刷怪蛋颜色
+  ├── getSpawnEggColors(name)      ← 查询刷怪蛋颜色
+  ├── getEntityType(name)          ← 查询 EntityType
+  ├── getEntityResult(name)        ← 查询 EntityResult
+  └── getRegisteredEntities()      ← 所有已注册实体
 
 EntityBuilder<T>                     ← Builder 构建器
   ├── category(MobCategory)          ← 实体分类（必要）
@@ -85,7 +88,7 @@ EntityBuilder<T>                     ← Builder 构建器
   ├── velocityUpdates(boolean)       ← 速度同步（默认 true）
   ├── attributes(Supplier<Builder>)  ← AI 属性（AttributeSupplier.Builder）
   ├── attributesBuilt(Supplier)      ← AI 属性（预构建）
-  ├── spawnEgg(int, int)             ← 生成蛋颜色 [底色, 高光色]
+  ├── spawnEgg(int, int)             ← 刷怪蛋颜色 [底色, 高光色]
   └── build()                        ← 注册 → EntityResult<T>
 
 EntityResult<T>                      ← Record 结果
@@ -200,22 +203,97 @@ public static void registerRenderers(EntityRenderersEvent.RegisterRenderers even
 }
 ```
 
-## 生成蛋颜色配置
+## 刷怪蛋系统
 
-生成蛋颜色以 16 进制格式传入，Builder 仅负责缓存颜色值，实际的 `SpawnEggItem` 注册需要额外处理：
+Entity API 提供了一个完整的刷怪蛋解决方案，包括**颜色配置**、**自动物品注册**和**模型文件自动生成**。
+
+### 1. 颜色配置（Builder 阶段）
+
+在 `EntityBuilder` 的链式调用中通过 `.spawnEgg()` 配置颜色：
 
 ```java
-// 1. 在 Builder 中配置颜色
-    .spawnEgg(0x2C2C2C, 0x6B3FAF)
+EntityResult<ShadowGolemEntity> golem = EntityAPI.createEntity("shadow_golem")
+    .category(MobCategory.MONSTER)
+    .size(2.2f, 3.5f)
+    .entityClass(ShadowGolemEntity.class)
+    .attributes(ShadowGolemEntity::createAttributes)
+    .spawnEgg(0x2C2C2C, 0x6B3FAF)    // 底色, 高光色
+    .build();
+```
 
-// 2. 在物品注册中查询颜色
-int[] colors = EntityAPI.getSpawnEggColors("shadow_golem");
-if (colors != null) {
-    int bgColor = colors[0];
-    int hlColor = colors[1];
-    // 创建 SpawnEggItem...
+颜色值以 16 进制 RGB 格式传入，Builder 在 `build()` 时自动缓存颜色。
+
+### 2. 刷怪蛋物品注册（PDItems 阶段）
+
+在 `PDItems.java` 中使用 `EntityAPI.createSpawnEggItem()` 统一注册刷怪蛋物品，无需手动指定颜色：
+
+```java
+// 所有刷怪蛋颜色由 PDEntities 中的 .spawnEgg() 统一管理
+public static final DeferredItem<Item> SHADOW_GOLEM_SPAWN_EGG =
+    EntityAPI.createSpawnEggItem(ITEMS, "shadow_golem", PDEntities.SHADOW_GOLEM);
+```
+
+**原理**：`createSpawnEggItem()` 会从 PDEntities 中 `.spawnEgg()` 缓存的颜色数组中自动读取，生成 `SpawnEggItem`。
+
+### 3. 刷怪蛋模型自动生成
+
+当 EntityBuilder 的 `.build()` 执行时，如果已配置模型输出目录，会自动在对应路径生成 `{name}_spawn_egg.json` 模型文件（内容固定为 `{"parent": "minecraft:item/template_spawn_egg"}`）。
+
+**配置方式**：在 `PasterDreamMod.java` 构造函数中设置输出目录：
+
+```java
+public PasterDreamMod(IEventBus modEventBus, ModContainer modContainer) {
+    // ... 其他注册器 ...
+
+    // 配置刷怪蛋模型自动生成输出目录
+    EntityAPI.setSpawnEggModelsOutputDir(
+        Path.of("PasterDream", "src", "main", "resources", "assets",
+                PasterDreamMod.MOD_ID, "models", "item"));
+
+    // ... 后续初始化 ...
 }
 ```
+
+### 完整集成示例
+
+```java
+// ====== PDEntities.java ======
+private static final EntityResult<ShadowGolemEntity> SHADOW_GOLEM_RESULT =
+    EntityAPI.createEntity("shadow_golem")
+        .category(MobCategory.MONSTER).size(2.2f, 3.5f)
+        .entityClass(ShadowGolemEntity.class)
+        .attributes(ShadowGolemEntity::createAttributes)
+        .spawnEgg(0x191926, 0xA7A5B1)  // ← 颜色在此配置
+        .build();
+
+// 向后兼容常量
+public static final Supplier<EntityType<ShadowGolemEntity>> SHADOW_GOLEM =
+    SHADOW_GOLEM_RESULT.entityTypeSupplier();
+
+// ====== PDItems.java ======
+public static final DeferredItem<Item> SHADOW_GOLEM_SPAWN_EGG =
+    EntityAPI.createSpawnEggItem(ITEMS, "shadow_golem", PDEntities.SHADOW_GOLEM);
+
+// ====== PasterDreamMod.java ======
+public PasterDreamMod(IEventBus modEventBus, ModContainer modContainer) {
+    // ... 注册器 ...
+    EntityAPI.setSpawnEggModelsOutputDir(
+        Path.of("PasterDream", "src", "main", "resources", "assets",
+                "pasterdream", "models", "item"));
+    // ...
+}
+```
+
+### 检查清单
+
+| 步骤 | 操作 | 位置 |
+|:----:|------|------|
+| 1 | 在 `.spawnEgg()` 中配置颜色 | PDEntities.java |
+| 2 | 用 `EntityAPI.createSpawnEggItem()` 注册刷怪蛋物品 | PDItems.java |
+| 3 | 调用 `EntityAPI.setSpawnEggModelsOutputDir()` 配置输出目录 | PasterDreamMod.java |
+| 4 | 确保实体有向后兼容常量（`public static final Supplier<EntityType<T>>`） | PDEntities.java |
+
+> ⚠️ 若未配置 `.spawnEgg()` 但调用了 `createSpawnEggItem()`，会在运行时抛出 `IllegalStateException`，提示 "未配置生成蛋颜色"。
 
 ## 实体类构造要求
 
@@ -231,7 +309,156 @@ public class ShadowGolemEntity extends Monster {
 
 ## 引用文件
 
-- [EntityAPI.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/entity/EntityAPI.java) — 门面类
-- [EntityBuilder.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/entity/builder/EntityBuilder.java) — 构建器
-- [EntityResult.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/entity/EntityResult.java) — 结果类
-- [EntityAttributesGenerator.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/entity/gen/EntityAttributesGenerator.java) — 属性预设模板
+- [EntityAPI.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/entity/EntityAPI.java) — 门面类
+- [EntityBuilder.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/entity/builder/EntityBuilder.java) — 构建器
+- [EntityResult.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/entity/EntityResult.java) — 结果类
+- [EntityAttributesGenerator.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/entity/gen/EntityAttributesGenerator.java) — 属性预设模板
+
+## 动画系统
+
+Entity API 提供了一套完整的 **procedure 动画播放系统**，用于播放由服务端触发的一次性动画（如技能释放、咆哮、受击等）。
+
+### 架构
+
+```
+服务端                             客户端
+  │                                 │
+  ├─ setAnimation("roar") ──────►  ├─ 同步数据到达
+  │   (更新 entityData.set)        │
+  │                                ├─ ProcedureAnimationHandler.predicate()
+  │                                │    ├─ 检测新动画 → 通过 GeckoLib 播放一次
+  │                                │    ├─ 动画播放中 → 返回 CONTINUE
+  │                                │    └─ 动画播完 → 自动重置为 "empty"
+  │                                │
+  │                                └─ movementPredicate()
+  │                                     ├─ procedure 动画进行中 → STOP
+  │                                     └─ procedure 为空 → 播放 idle/walk/death
+```
+
+### 正确实现步骤
+
+#### 1. 实体类中加入 ProcedureAnimationHandler
+
+```java
+// 在实体类字段中：
+/** 客户端 procedure 动画处理器 */
+private final ProcedureAnimationHandler procAnim = new ProcedureAnimationHandler();
+```
+
+#### 2. 实现 procedurePredicate 回调
+
+```java
+private PlayState procedurePredicate(AnimationState<MyEntity> state) {
+    return procAnim.predicate(state,
+            level().isClientSide(),
+            this::getSyncedAnimation,
+            () -> setAnimation("empty"));
+}
+```
+
+参数说明：
+- `state` — GeckoLib 动画状态（传入原生 AnimationState）
+- `level().isClientSide()` — 是否在客户端侧（服务端不播动画）
+- `this::getSyncedAnimation` — 同步动画数据的 getter
+- `() -> setAnimation("empty")` — 动画播完后重置的回调
+
+#### 3. 实现 movementPredicate（正确检测 procedure）
+
+```java
+private PlayState movementPredicate(AnimationState<MyEntity> state) {
+    // 必须使用 getSyncedAnimation() 而非 this.animationprocedure
+    if (this.getSyncedAnimation().equals("empty")) {
+        if ((state.isMoving() || !(state.getLimbSwingAmount() > -0.15F && state.getLimbSwingAmount() < 0.15F))) {
+            return state.setAndContinue(RawAnimation.begin().thenLoop("walk"));
+        }
+        if (this.isDeadOrDying()) {
+            return state.setAndContinue(RawAnimation.begin().thenPlay("death"));
+        }
+        return state.setAndContinue(RawAnimation.begin().thenLoop("idle"));
+    }
+    return PlayState.STOP;
+}
+```
+
+**关键规则**：`movementPredicate` 必须检查 `getSyncedAnimation()`（同步数据），**不能**检查 `this.animationprocedure`（本地字段）。
+
+#### 4. 注册控制器
+
+```java
+@Override
+public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    controllers.add(new AnimationController<>(this, "movement", 4, this::movementPredicate));
+    controllers.add(new AnimationController<>(this, "procedure", 4, this::procedurePredicate));
+}
+```
+
+注意：procedure 控制器的 transition length 建议与 movement 一致（通常 4 tick）。
+
+#### 5. 服务端触发动画
+
+```java
+// 在 hurt()、技能逻辑、或其他需要触发动画的地方：
+this.setAnimation("roar");  // 服务端同步数据 → 客户端自动播放
+```
+
+### ❌ 常见错误
+
+| 错误模式 | 后果 |
+|---------|------|
+| `movementPredicate` 使用 `this.animationprocedure` 判断 | procedure 动画被 movementPredicate 覆盖，永远播不出 |
+| `procedurePredicate` 不检查 `level().isClientSide()` | 服务端和客户端争抢控制，动画行为不可预测 |
+| `procedurePredicate` 没有 `currentlyPlaying` 追踪 | 每帧重复触发动画，导致卡顿或循环 |
+| 直接在 procedurePredicate 里写完整逻辑 | 每个实体重复同样的代码，容易出错 |
+
+### ProcedureAnimationHandler API
+
+| 方法 | 说明 |
+|------|------|
+| `predicate(state, isClientSide, syncedAnimSupplier, setEmptyAnim)` | 标准 procedure 动画回调 |
+| `reset()` | 重置处理器状态（实体死亡时调用） |
+| `getCurrentlyPlaying()` | 获取当前正在播放的动画名称 |
+
+### 与 EntitySkillManager 集成
+
+`EntitySkillManager` 是更高级的技能管理系统，内置了动画同步机制：
+
+```java
+// 实体类中
+private final EntitySkillManager skillManager = new EntitySkillManager(this);
+
+// 构造方法中注册技能
+public MyEntity(EntityType<? extends Monster> type, Level level) {
+    super(type, level);
+    skillManager.registerSkill(EntitySkill.builder("roar")
+        .animationName("roar")
+        .damage(12.0f).range(5.0f).cooldownTicks(200)
+        .particleName("explosion")
+        .soundId("pasterdream:terrorbeak_roar")
+        .build());
+}
+
+// baseTick 中更新
+@Override
+public void baseTick() {
+    super.baseTick();
+    skillManager.tick();
+}
+
+// 触发技能
+skillManager.tryTriggerSkill("roar", target);
+```
+
+`EntitySkillManager` 会自动处理：
+1. 冷却计时
+2. 动画同步（服务端 → 客户端）
+3. 技能音效播放
+4. 技能粒子效果
+5. 技能伤害范围判定
+6. 动画播完后重置
+
+### 引用文件
+
+- [ProcedureAnimationHandler.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/entity/anim/ProcedureAnimationHandler.java) — 动画处理器
+- [EntitySkillManager.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/entity/skill/EntitySkillManager.java) — 技能管理器
+- [EntitySkill.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/entity/skill/EntitySkill.java) — 技能数据记录
+- [EntitySkillBuilder.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/entity/skill/EntitySkillBuilder.java) — 技能构建器

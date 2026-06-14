@@ -238,5 +238,53 @@
         "stream": false
       }
     ]
+  },
+  "ghost0": {
+    "subtitle": "subtitle.pasterdream.ghost0",
+    "sounds": ["pasterdream:ghost0"]
+  },
+  "beetle_skill": {
+    "subtitle": "subtitle.pasterdream.beetle_skill",
+    "sounds": ["pasterdream:beetle_skill"]
+  },
+  "bone_wing_fire_ball": {
+    "subtitle": "subtitle.pasterdream.bone_wing_fire_ball",
+    "sounds": ["pasterdream:bone_wing_fire_ball"]
+  },
+  "thundercloud_attack": {
+    "subtitle": "subtitle.pasterdream.thundercloud_attack",
+    "sounds": ["pasterdream:thundercloud_attack"]
+  },
+  "terrorbeak_roar": {
+    "subtitle": "subtitle.pasterdream.terrorbeak_roar",
+    "sounds": ["pasterdream:terrorbeak_roar"]
+  },
+  "wind_knight_skill_0": {
+    "subtitle": "subtitle.pasterdream.wind_knight_skill_0",
+    "sounds": ["pasterdream:wind_knight_skill_0"]
+  },
+  "fox_fire": {
+    "subtitle": "subtitle.pasterdream.fox_fire",
+    "sounds": ["pasterdream:fox_fire"]
+  },
+  "shadow0": {
+    "subtitle": "subtitle.pasterdream.shadow0",
+    "sounds": ["pasterdream:shadow0"]
+  },
+  "squeal_wave": {
+    "subtitle": "subtitle.pasterdream.squeal_wave",
+    "sounds": ["pasterdream:squeal_wave"]
+  },
+  "beetle_attack": {
+    "subtitle": "subtitle.pasterdream.beetle_attack",
+    "sounds": ["pasterdream:beetle_attack"]
+  },
+  "stone_break": {
+    "subtitle": "subtitle.pasterdream.stone_break",
+    "sounds": ["pasterdream:stone_break"]
+  },
+  "stone_break_0": {
+    "subtitle": "subtitle.pasterdream.stone_break_0",
+    "sounds": ["pasterdream:stone_break_0"]
   }
 }

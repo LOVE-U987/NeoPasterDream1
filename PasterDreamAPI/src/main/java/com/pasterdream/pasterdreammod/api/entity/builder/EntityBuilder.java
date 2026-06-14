@@ -327,6 +327,8 @@ public class EntityBuilder<T extends Entity> {
         if (spawnEggBackgroundColor != null && spawnEggHighlightColor != null) {
             PasterDreamAPI.LOGGER.debug("[EntityBuilder] 缓存生成蛋颜色: {}", name);
             EntityAPI.cacheSpawnEgg(name, spawnEggBackgroundColor, spawnEggHighlightColor);
+            // 自动生成刷怪蛋模型 JSON 文件（如果已配置输出目录）
+            EntityAPI.writeSpawnEggModel(name);
         } else {
             PasterDreamAPI.LOGGER.debug("[EntityBuilder] 未配置生成蛋颜色，跳过: {}", name);
         }

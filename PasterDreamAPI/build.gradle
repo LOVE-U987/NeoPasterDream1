@@ -34,4 +34,5 @@ repositories {
 
 dependencies {
     compileOnly files(rootProject.file('libs/curios-neoforge-9.5.1+1.21.1.jar'))
+    compileOnly files(rootProject.file('libs/geckolib-neoforge-1.21.1-4.8.4.jar'))
 }

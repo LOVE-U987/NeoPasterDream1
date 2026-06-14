@@ -1,6 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "pasterdream:block/wind_feather_grass_top"
-  }
-}

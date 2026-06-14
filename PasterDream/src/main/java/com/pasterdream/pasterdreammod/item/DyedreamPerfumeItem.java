@@ -5,7 +5,6 @@ import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -21,12 +20,11 @@ public class DyedreamPerfumeItem extends Item {
     /**
      * 构造方法
      *
-     * @param properties 物品属性
+     * @param properties 物品属性，应包含已配置效果的 FoodProperties
      */
     public DyedreamPerfumeItem(Item.Properties properties) {
-        super(properties.stacksTo(64).food(new FoodProperties.Builder()
-                    .nutrition(0).saturationModifier(0f).build()));
-}
+        super(properties);
+    }
 
     /**
      * 返回饮用动画，使玩家使用香水时播放饮用音效

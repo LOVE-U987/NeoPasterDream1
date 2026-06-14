@@ -174,6 +174,7 @@ public class ParticleBuilder {
      * @return {@link ParticleResult} 包含粒子类型的所有引用信息
      * @throws RuntimeException 如果 JSON 文件写入失败
      */
+    @SuppressWarnings("removal")
     public ParticleResult build() {
         PasterDreamAPI.LOGGER.info("[ParticleBuilder] ===== 开始构建粒子: {} =====", name);
         PasterDreamAPI.LOGGER.info("[ParticleBuilder]   配置: alwaysShow={}, texture={}, gravity={}, generateJson={}",

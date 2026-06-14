@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/template_orientable_trapdoor_open",
-  "textures": {
-    "texture": "pasterdream:block/dyedream_planks_trapdoor"
-  },
-  "render_type": "cutout"
-}

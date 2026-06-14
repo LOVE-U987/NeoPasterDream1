@@ -11,6 +11,13 @@
       ],
       "conditions": [
         {
+          "condition": "minecraft:block_state_property",
+          "block": "pasterdream:dyedream_planks_door",
+          "properties": {
+            "half": "lower"
+          }
+        },
+        {
           "condition": "minecraft:survives_explosion"
         }
       ]

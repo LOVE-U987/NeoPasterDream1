@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -118,5 +119,76 @@ public class PDEffects {
                         entity.removeEffect(MobEffects.HUNGER);
                         entity.removeEffect(MobEffects.CONFUSION);
                     })
+                    .build();
+
+    // ==================== 防风效果 ====================
+
+    /**
+     * 防风效果 (windproof_buff)
+     * <p>
+     * 淡蓝色有益效果，水母系列食物提供。
+     * 纯标记效果，无 tick 逻辑，可抵御风系 debuff 或环境风阻（待实装）。
+     */
+    public static final MobEffectResult WINDPROOF_BUFF =
+            MobEffectAPI.createEffect("windproof_buff")
+                    .beneficial()
+                    .color(0xBBBBF6)
+                    .build();
+
+    // ==================== 烹饪增益效果 ====================
+
+    /**
+     * 烹饪增益 (cook_buff)
+     * <p>
+     * 玫红色有益效果，享用美食后获得的饱足感。
+     * 原版效果同时增加 san_variability 属性 +1.2（san 系统尚未移植，暂为纯标记效果）。
+     * 被约 13 种食物携带，持续时间 60 秒。
+     */
+    public static final MobEffectResult COOK_BUFF =
+            MobEffectAPI.createEffect("cook_buff")
+                    .beneficial()
+                    .color(0xEE3373)
+                    .build();
+
+    // ==================== 实体技能相关状态效果 ====================
+
+    /**
+     * 混乱效果 (confusion_buff)
+     * <p>
+     * 深紫色有害效果，由恐怖尖喙咆哮、震动水晶等技能施加。
+     * 每 tick 施加原版反胃（屏幕抖动）和缓慢效果，模拟眩晕/致盲的实战效果。
+     */
+    public static final MobEffectResult CONFUSION_BUFF =
+            MobEffectAPI.createEffect("confusion_buff")
+                    .harmful()
+                    .color(0xFF4A0080)
+                    .onTick((entity, amplifier) -> {
+                        // 施加反胃效果——屏幕抖动（刷新持续防止自然消失）
+                        entity.addEffect(new MobEffectInstance(
+                                MobEffects.CONFUSION, 100, 0, false, false, false));
+                        // 施加缓慢效果——限制移动
+                        entity.addEffect(new MobEffectInstance(
+                                MobEffects.MOVEMENT_SLOWDOWN, 100, 1, false, false, false));
+                    })
+                    .build();
+
+    /**
+     * 暗影沉默效果 (shadow_silence_buff)
+     * 暗紫色有害效果，被沉默的实体无法使用技能。
+     */
+    public static final MobEffectResult SHADOW_SILENCE_BUFF =
+            MobEffectAPI.createEffect("shadow_silence_buff")
+                    .harmful()
+                    .color(0xFF2A0040)
+                    .build();
+
+    /**
+     * 压迫效果 (oppression_buff)
+     * 深红色有害效果，压制目标行动能力。
+     */
+    public static final MobEffectResult OPPRESSION_BUFF =
+            MobEffectAPI.createEffect("oppression_buff")
+                    .harmful()
+                    .color(0xFF800000)
                     .build();
 }

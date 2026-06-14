@@ -1,9 +1,0 @@
-{
-  "parent": "pasterdream:custom/pebble",
-  "textures": {
-    "all": "pasterdream:block/pebble_0_particle",
-    "particle": "pasterdream:block/pebble_0_particle",
-    "0": "pasterdream:block/pebble_0_particle"
-  },
-  "render_type": "cutout"
-}

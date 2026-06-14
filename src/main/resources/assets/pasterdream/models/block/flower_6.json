@@ -1,8 +1,0 @@
-{
-  "parent": "block/cross",
-  "textures": {
-    "cross": "pasterdream:block/blaze_flower",
-    "particle": "pasterdream:block/blaze_flower"
-  },
-  "render_type": "cutout"
-}

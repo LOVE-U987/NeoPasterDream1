@@ -6,14 +6,23 @@ import com.pasterdream.pasterdreammod.api.entity.skill.EntitySkill;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SpawnEggItem;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -308,6 +317,93 @@ public final class EntityAPI {
         int total = SPAWN_EGG_COLORS.size();
         PasterDreamAPI.LOGGER.info("[EntityAPI] 📦 已缓存生成蛋颜色: {} | bg=#{}, hl=#{} | 颜色缓存总数: {}",
                 name, Integer.toHexString(backgroundColor), Integer.toHexString(highlightColor), total);
+    }
+
+    // ======================== 刷怪蛋物品注册 ========================
+
+    /**
+     * 创建并注册刷怪蛋物品
+     * <p>
+     * 使用已缓存的生成蛋颜色自动创建 {@link SpawnEggItem}。
+     * 需先在 {@link EntityBuilder#spawnEgg(int, int)} 中配置颜色。
+     * <p>
+     * 使用示例：
+     * <pre>{@code
+     * public static final DeferredItem<Item> SHADOW_GOLEM_SPAWN_EGG =
+     *     EntityAPI.createSpawnEggItem(ITEMS, "shadow_golem", PDEntities.SHADOW_GOLEM);
+     * }</pre>
+     *
+     * @param registry   物品注册器 {@link DeferredRegister.Items}
+     * @param entityName 实体注册名称（需与 createEntity 传入的名称一致）
+     * @param entityType 实体类型 Supplier（通常为 PDEntities 中的对应常量）
+     * @return 已注册的刷怪蛋 {@link DeferredItem}
+     * @throws IllegalStateException 如果未找到该实体的生成蛋颜色配置
+     */
+    @SuppressWarnings("unchecked")
+    public static DeferredItem<Item> createSpawnEggItem(
+            DeferredRegister.Items registry,
+            String entityName,
+            Supplier<? extends EntityType<? extends Mob>> entityType) {
+        int[] colors = SPAWN_EGG_COLORS.get(entityName);
+        if (colors == null) {
+            throw new IllegalStateException(
+                    "Entity [" + entityName + "] 未配置生成蛋颜色，请在 EntityBuilder 中调用 .spawnEgg()");
+        }
+        PasterDreamAPI.LOGGER.info("[EntityAPI] 🥚 注册刷怪蛋: {}_spawn_egg | bg=#{}, hl=#{}",
+                entityName, Integer.toHexString(colors[0]), Integer.toHexString(colors[1]));
+        return registry.register(entityName + "_spawn_egg", () ->
+                new SpawnEggItem(entityType.get(), colors[0], colors[1], new Item.Properties()));
+    }
+
+    // ======================== 刷怪蛋模型自动生成 ========================
+
+    /** 刷怪蛋模型文件输出目录（开发时使用，为 null 时不自动生成） */
+    private static Path spawnEggModelsOutputDir = null;
+
+    /**
+     * 设置刷怪蛋模型文件输出目录
+     * <p>
+     * 当配置此路径后，{@link EntityBuilder#build()} 会自动在该目录下生成
+     * {@code {entityName}_spawn_egg.json} 模型文件。
+     * <p>
+     * 模型文件内容固定为 {@code {"parent": "minecraft:item/template_spawn_egg"}}，
+     * 刷怪蛋的颜色通过 SpawnEggItem 构造参数动态渲染，无需额外纹理。
+     * <p>
+     * 通常在模组主类构造函数中调用：
+     * <pre>{@code
+     * EntityAPI.setSpawnEggModelsOutputDir(
+     *     Path.of("PasterDream", "src", "main", "resources", "assets",
+     *             PasterDreamMod.MOD_ID, "models", "item"));
+     * }</pre>
+     *
+     * @param outputDir 输出目录绝对或相对路径
+     */
+    public static void setSpawnEggModelsOutputDir(Path outputDir) {
+        spawnEggModelsOutputDir = outputDir;
+        PasterDreamAPI.LOGGER.info("[EntityAPI] 🗂️ 设置刷怪蛋模型输出目录: {}", outputDir.toAbsolutePath());
+    }
+
+    /**
+     * 为指定实体写入刷怪蛋模型文件（如果尚不存在）
+     * <p>
+     * 由 {@link EntityBuilder#build()} 在注册实体时自动调用。
+     *
+     * @param entityName 实体注册名称
+     */
+    public static void writeSpawnEggModel(String entityName) {
+        if (spawnEggModelsOutputDir == null) return;
+        try {
+            Path file = spawnEggModelsOutputDir.resolve(entityName + "_spawn_egg.json");
+            if (Files.notExists(file)) {
+                Files.createDirectories(file.getParent());
+                Files.writeString(file,
+                        "{\n  \"parent\": \"minecraft:item/template_spawn_egg\"\n}\n");
+                PasterDreamAPI.LOGGER.info("[EntityAPI] 🥚 自动生成刷怪蛋模型: {}", file.getFileName());
+            }
+        } catch (IOException e) {
+            PasterDreamAPI.LOGGER.warn("[EntityAPI] ⚠️ 无法生成刷怪蛋模型文件 [{}]: {}",
+                    entityName, e.getMessage());
+        }
     }
 
     /**

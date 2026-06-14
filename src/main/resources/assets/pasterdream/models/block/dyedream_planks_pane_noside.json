@@ -1,7 +1,0 @@
-{
-  "parent": "block/template_glass_pane_noside",
-  "textures": {
-    "pane": "pasterdream:block/dyedream_planks_pane"
-  },
-  "render_type": "cutout"
-}

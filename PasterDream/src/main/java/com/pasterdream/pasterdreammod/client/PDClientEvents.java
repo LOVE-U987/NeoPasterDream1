@@ -27,7 +27,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
  * 同时管理 {@link ModMusicManager} 的 tick 驱动。
  * 通过 {@link EventBusSubscriber} 自动注册到游戏事件总线，仅在客户端生效。
  */
-@EventBusSubscriber(modid = PasterDreamMod.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = PasterDreamMod.MOD_ID, value = Dist.CLIENT)
 public class PDClientEvents {
 
     private static final ResourceKey<Biome> BIOME_DYEDREAM_0 = ResourceKey.create(

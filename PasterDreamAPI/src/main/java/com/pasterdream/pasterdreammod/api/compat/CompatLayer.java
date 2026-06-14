@@ -41,7 +41,7 @@ public final class CompatLayer {
      *             不再需要强转为 DeferredHolder。
      */
     @Deprecated(forRemoval = true, since = "0.0.3.2")
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "removal"})
     public static <T extends Entity> DeferredHolder<EntityType<?>, EntityType<T>> getDeferredHolder(
             EntityResult<T> result) {
         return result.deferredHolder();
@@ -58,6 +58,7 @@ public final class CompatLayer {
      *             不再需要手动缓存。
      */
     @Deprecated(forRemoval = true, since = "0.0.3.2")
+    @SuppressWarnings("removal")
     public static void cacheLegacyParticle(String particleName,
                                            DeferredHolder<?, ?> holder) {
         @SuppressWarnings("unchecked")

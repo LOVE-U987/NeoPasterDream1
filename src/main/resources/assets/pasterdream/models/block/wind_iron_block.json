@@ -1,6 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "pasterdream:block/wind_iron_block"
-  }
-}

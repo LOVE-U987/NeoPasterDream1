@@ -12,6 +12,7 @@ import com.pasterdream.pasterdreammod.registry.PDEntityEvents;
 import com.pasterdream.pasterdreammod.registry.PDFeatures;
 import com.pasterdream.pasterdreammod.registry.PDFluids;
 import com.pasterdream.pasterdreammod.registry.PDFluidsType;
+import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
 import com.pasterdream.pasterdreammod.api.itemmigration.ItemMigrationAPI;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDMenus;
@@ -20,6 +21,7 @@ import com.pasterdream.pasterdreammod.registry.PDRuinsRegistration;
 import com.pasterdream.pasterdreammod.api.ApiCodeGenConfig;
 import com.pasterdream.pasterdreammod.api.ApiSoundRegistry;
 import com.pasterdream.pasterdreammod.api.block.BlockAPI;
+import com.pasterdream.pasterdreammod.api.curio.CurioAPI;
 import com.pasterdream.pasterdreammod.api.effect.MobEffectAPI;
 import com.pasterdream.pasterdreammod.api.ruin.RuinAPI;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
@@ -40,6 +42,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.nio.file.Path;
 
 /**
  * PasterDream 模组主类
@@ -89,7 +92,7 @@ public class PasterDreamMod {
 
         // 注册状态效果（BUFF/DEBUFF）
         // TODO: 过渡期双重注册 —— 下个主版本移除 PDEffects.MOB_EFFECTS，仅保留 MobEffectAPI.REGISTRY
-        @SuppressWarnings("deprecation")
+        @SuppressWarnings({"deprecation", "removal"})
         DeferredRegister<MobEffect> _legacyEffects = PDEffects.MOB_EFFECTS;
         _legacyEffects.register(modEventBus);
         MobEffectAPI.REGISTRY.register(modEventBus);
@@ -107,7 +110,7 @@ public class PasterDreamMod {
 
         // 注册结构类型
         // TODO: 过渡期双重注册 —— 下个主版本移除 PDStructures.STRUCTURE_TYPES，仅保留 RuinAPI.REGISTRY
-        @SuppressWarnings("deprecation")
+        @SuppressWarnings({"deprecation", "removal"})
         DeferredRegister<StructureType<?>> _legacyStructures = PDStructures.STRUCTURE_TYPES;
         _legacyStructures.register(modEventBus);
         RuinAPI.REGISTRY.register(modEventBus);
@@ -122,6 +125,9 @@ public class PasterDreamMod {
         // 注册粒子类型
         PDParticles.PARTICLE_TYPES.register(modEventBus);
 
+        // 注册饰品（CurioAPI）
+        CurioAPI.REGISTRY.register(modEventBus);
+
         // 注册自定义特征（如云朵团块生成器）
         PDFeatures.FEATURES.register(modEventBus);
 
@@ -133,6 +139,12 @@ public class PasterDreamMod {
 
         // 注册流体
         PDFluids.FLUIDS.register(modEventBus);
+
+        // 配置刷怪蛋模型自动生成输出目录
+        // 所有通过 EntityAPI 注册了 .spawnEgg() 的实体，在 build() 时自动生成模型 JSON
+        EntityAPI.setSpawnEggModelsOutputDir(
+                Path.of("PasterDream", "src", "main", "resources", "assets",
+                        PasterDreamMod.MOD_ID, "models", "item"));
 
         // 监听通用设置事件
         modEventBus.addListener(this::commonSetup);

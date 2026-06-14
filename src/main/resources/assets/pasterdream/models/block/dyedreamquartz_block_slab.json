@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/slab",
-  "textures": {
-    "bottom": "pasterdream:block/dyedreamquartz",
-    "top": "pasterdream:block/dyedreamquartz",
-    "side": "pasterdream:block/dyedreamquartz"
-  }
-}

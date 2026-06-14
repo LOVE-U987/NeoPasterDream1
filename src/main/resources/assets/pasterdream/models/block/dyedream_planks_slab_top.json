@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/slab_top",
-  "textures": {
-    "bottom": "pasterdream:block/dyedream_planks",
-    "top": "pasterdream:block/dyedream_planks",
-    "side": "pasterdream:block/dyedream_planks"
-  }
-}

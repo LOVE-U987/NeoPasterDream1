@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/outer_stairs",
-  "textures": {
-    "bottom": "pasterdream:block/calcite_tiles",
-    "top": "pasterdream:block/calcite_tiles",
-    "side": "pasterdream:block/calcite_tiles"
-  }
-}

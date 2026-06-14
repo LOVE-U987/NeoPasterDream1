@@ -1,10 +1,17 @@
 package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.curio.CurioAPI;
+import com.pasterdream.pasterdreammod.api.curio.model.CurioSlot;
+import com.pasterdream.pasterdreammod.api.effect.MobEffectAPI;
+import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
 import com.pasterdream.pasterdreammod.api.itemmigration.ItemMigrationAPI;
 import com.pasterdream.pasterdreammod.api.itemmigration.model.MigrationCategory;
 import com.pasterdream.pasterdreammod.api.itemmigration.model.ToolSpec.ToolType;
 import com.pasterdream.pasterdreammod.item.*;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -167,32 +174,206 @@ public class PDItems {
     public static final DeferredItem<BlockItem> CALCITE_TILES_WALL = ITEMS.registerSimpleBlockItem("calcite_tiles_wall", PDBlocks.CALCITE_TILES_WALL);
     public static final DeferredItem<BlockItem> POLISHED_CALCITE_STAIRS = ITEMS.registerSimpleBlockItem("polished_calcite_stairs", PDBlocks.POLISHED_CALCITE_STAIRS);
 
-    // ==================== 刷怪蛋 ====================
+    // ==================== 刷怪蛋（通过 EntityAPI 统一注册） ====================
 
     /**
      * 暗影魔像刷怪蛋 (shadow_golem_spawn_egg)
-     * 主色: 深灰色 (0x171717), 副色: 暗紫色 (0x7A7A7A)
+     * 颜色配置于 PDEntities.SHADOW_GOLEM_RESULT 的 .spawnEgg()
      */
-    public static final DeferredItem<SpawnEggItem> SHADOW_GOLEM_SPAWN_EGG = ITEMS.register("shadow_golem_spawn_egg",
-            () -> new SpawnEggItem(PDEntities.SHADOW_GOLEM.get(), 0x171717, 0x7A7A7A, new Item.Properties()));
+    public static final DeferredItem<Item> SHADOW_GOLEM_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "shadow_golem", PDEntities.SHADOW_GOLEM);
 
     /**
      * 粉色史莱姆刷怪蛋 (pink_slime_spawn_egg)
-     * 主色: 粉色 (0xFFB6C1), 副色: 深粉色 (0xFF69B4)
+     * 颜色配置于 PDEntities.PINK_SLIME_RESULT 的 .spawnEgg()
      */
-    public static final DeferredItem<SpawnEggItem> PINK_SLIME_SPAWN_EGG = ITEMS.register("pink_slime_spawn_egg",
-            () -> new SpawnEggItem(PDEntities.PINK_SLIME.get(), 0xFFB6C1, 0xFF69B4, new Item.Properties()));
+    public static final DeferredItem<Item> PINK_SLIME_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "pink_slime", PDEntities.PINK_SLIME);
+
+    /**
+     * 粉红鸡刷怪蛋 (pink_chicken_spawn_egg)
+     */
+    public static final DeferredItem<Item> PINK_CHICKEN_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "pink_chicken", PDEntities.PINK_CHICKEN);
+
+    /**
+     * 水母刷怪蛋 (jellyfish_spawn_egg)
+     */
+    public static final DeferredItem<Item> JELLYFISH_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "jellyfish", PDEntities.JELLYFISH);
+
+    /**
+     * 怨魂刷怪蛋 (friendly_ghost_spawn_egg)
+     */
+    public static final DeferredItem<Item> FRIENDLY_GHOST_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "friendly_ghost", PDEntities.FRIENDLY_GHOST);
+
+    /**
+     * 萤火虫刷怪蛋 (firefly_spawn_egg)
+     */
+    public static final DeferredItem<Item> FIREFLY_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "firefly", PDEntities.FIREFLY);
+
+    /**
+     * 金色狐狸刷怪蛋 (golden_fox_spawn_egg)
+     */
+    public static final DeferredItem<Item> GOLDEN_FOX_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "golden_fox", PDEntities.GOLDEN_FOX);
+
+    /**
+     * 融梦水晶刷怪蛋 (meltdream_crystal_spawn_egg)
+     */
+    public static final DeferredItem<Item> MELTDREAM_CRYSTAL_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "meltdream_crystal", PDEntities.MELTDREAM_CRYSTAL);
+
+    // ==================== 阴影系列刷怪蛋 ====================
+
+    /**
+     * 暗影幽灵刷怪蛋 (shadow_ghost_spawn_egg)
+     */
+    public static final DeferredItem<Item> SHADOW_GHOST_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "shadow_ghost", PDEntities.SHADOW_GHOST);
+
+    /**
+     * 暗影尖啸幽灵刷怪蛋 (shadow_squeal_ghost_spawn_egg)
+     */
+    public static final DeferredItem<Item> SHADOW_SQUEAL_GHOST_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "shadow_squeal_ghost", PDEntities.SHADOW_SQUEAL_GHOST);
+
+    /**
+     * 暗影尖啸幽灵0刷怪蛋 (shadow_squeal_ghost_0_spawn_egg)
+     */
+    public static final DeferredItem<Item> SHADOW_SQUEAL_GHOST_0_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "shadow_squeal_ghost_0", PDEntities.SHADOW_SQUEAL_GHOST_0);
+
+    /**
+     * 暗影之手刷怪蛋 (shadow_hand_spawn_egg)
+     */
+    public static final DeferredItem<Item> SHADOW_HAND_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "shadow_hand", PDEntities.SHADOW_HAND);
+
+    // ==================== 雷云系列刷怪蛋 ====================
+
+    /**
+     * 雷云刷怪蛋 (thundercloud_spawn_egg)
+     */
+    public static final DeferredItem<Item> THUNDERCLOUD_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "thundercloud", PDEntities.THUNDERCLOUD);
+
+    /**
+     * 高压雷云刷怪蛋 (highvoltage_spawn_egg)
+     */
+    public static final DeferredItem<Item> HIGHVOLTAGE_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "highvoltage", PDEntities.HIGHVOLTAGE);
+
+    // ==================== 其他敌对生物刷怪蛋 ====================
+
+    /**
+     * 风之骑士刷怪蛋 (wind_knight_spawn_egg)
+     */
+    public static final DeferredItem<Item> WIND_KNIGHT_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "wind_knight", PDEntities.WIND_KNIGHT);
+
+    /**
+     * 震动水晶刷怪蛋 (shaking_crystal_spawn_egg)
+     */
+    public static final DeferredItem<Item> SHAKING_CRYSTAL_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "shaking_crystal", PDEntities.SHAKING_CRYSTAL);
+
+    /**
+     * 暗影调和图腾刷怪蛋 (shadow_tune_totem_spawn_egg)
+     */
+    public static final DeferredItem<Item> SHADOW_TUNE_TOTEM_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "shadow_tune_totem", PDEntities.SHADOW_TUNE_TOTEM);
+
+    /**
+     * 小石灵刷怪蛋 (small_stone_spirit_spawn_egg)
+     */
+    public static final DeferredItem<Item> SMALL_STONE_SPIRIT_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "small_stone_spirit", PDEntities.SMALL_STONE_SPIRIT);
+
+    /**
+     * 黑甲虫刷怪蛋 (black_beetle_spawn_egg)
+     */
+    public static final DeferredItem<Item> BLACK_BEETLE_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "black_beetle", PDEntities.BLACK_BEETLE);
+
+    /**
+     * 黑甲虫母体刷怪蛋 (black_beetle_mother_spawn_egg)
+     */
+    public static final DeferredItem<Item> BLACK_BEETLE_MOTHER_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "black_beetle_mother", PDEntities.BLACK_BEETLE_MOTHER);
+
+    // ==================== 恐怖尖喙系列刷怪蛋 ====================
+
+    /**
+     * 恐怖尖喙刷怪蛋 (terrorbeak_spawn_egg)
+     */
+    public static final DeferredItem<Item> TERRORBEAK_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "terrorbeak", PDEntities.TERRORBEAK);
+
+    /**
+     * 疯狂恐怖尖喙刷怪蛋 (crazy_terrorbeak_spawn_egg)
+     */
+    public static final DeferredItem<Item> CRAZY_TERRORBEAK_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "crazy_terrorbeak", PDEntities.CRAZY_TERRORBEAK);
+
+    /**
+     * 虚弱恐怖尖喙刷怪蛋 (weakeness_terrorbeak_spawn_egg)
+     */
+    public static final DeferredItem<Item> WEAKENESS_TERRORBEAK_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "weakeness_terrorbeak", PDEntities.WEAKENESS_TERRORBEAK);
+
+    // ==================== 骨翼系列刷怪蛋 ====================
+
+    /**
+     * 骨翼刷怪蛋 (bone_wing_spawn_egg)
+     */
+    public static final DeferredItem<Item> BONE_WING_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "bone_wing", PDEntities.BONE_WING);
+
+    /**
+     * 灰烬骨翼刷怪蛋 (ash_bone_wing_spawn_egg)
+     */
+    public static final DeferredItem<Item> ASH_BONE_WING_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "ash_bone_wing", PDEntities.ASH_BONE_WING);
+
+    // ==================== 染梦新生物刷怪蛋 ====================
+
+    /**
+     * 玄武岩蜗牛刷怪蛋 (basalt_snail_spawn_egg)
+     */
+    public static final DeferredItem<Item> BASALT_SNAIL_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "basalt_snail", PDEntities.BASALT_SNAIL);
+
+    /**
+     * 狐火刷怪蛋 (fox_fire_spawn_egg)
+     */
+    public static final DeferredItem<Item> FOX_FIRE_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "fox_fire", PDEntities.FOX_FIRE);
+
+    /**
+     * 暗影 ??? NPC 刷怪蛋 (shadow_npc_0_spawn_egg)
+     */
+    public static final DeferredItem<Item> SHADOW_NPC_0_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "shadow_npc_0", PDEntities.SHADOW_NPC_0);
+
+    /**
+     * 孢子实体刷怪蛋 (spore_entity_spawn_egg)
+     */
+    public static final DeferredItem<Item> SPORE_ENTITY_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "spore_entity", PDEntities.SPORE_ENTITY);
 
     // ==================== 测试材料物品 ====================
 
     /**
      * 钛锭 (titanium_ingot)
      * 基础材料，稀有度为 UNCOMMON
+     * 使用 ITEMS.register() 统一注册，而非 ItemMigrationAPI，
+     * 避免静态初始化阶段 DeferredItem.get() 触发 "unbound value" 错误
      */
-    public static final DeferredItem<Item> TITANIUM_INGOT =
-            ItemMigrationAPI.simpleItem("titanium_ingot")
-                    .rarity(Rarity.UNCOMMON)
-                    .build();
+    public static final DeferredItem<Item> TITANIUM_INGOT = ITEMS.register("titanium_ingot",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
 
     /**
      * 染梦粉 (dyedream_dust)
@@ -390,20 +571,7 @@ public class PDItems {
                     .repairWith(new ItemStack(Items.COPPER_INGOT))
                     .build();
 
-    /**
-     * 幸运四叶草 (fourleaf_clover_curio)
-     * 使用 API CurioItemBuilder 注册
-     * 原模组：stacksTo(1)，COMMON，+1 最大生命值，+6 幸运
-     */
-    public static final DeferredItem<Item> FOURLEAF_CLOVER_CURIO =
-            ItemMigrationAPI.curioItem("fourleaf_clover_curio")
-                    .slot("charm")
-                    .attribute("minecraft:generic.max_health",
-                            "055dac74-49cf-474c-9078-f658a61f7047", 1.0, 0)
-                    .attribute("pasterdream:luck",
-                            "f723cde2-ecbf-45d1-b985-8670b2f00fd2", 6.0, 0)
-                    .tooltip("§a品质：优秀 ★★", "§7§o哪片叶子代表着幸运？")
-                    .build();
+    // 四叶草护符已在下方 Curio 护符合集中使用 CurioAPI 注册
 
     // ==================== 剑类武器 ====================
 
@@ -585,6 +753,52 @@ public class PDItems {
                     .incorrectTag("minecraft:incorrect_for_netherite_tool")
                     .repairWith(new ItemStack(Items.NETHERITE_INGOT))
                     .build();
+
+    /**
+     * 钛斧 (titanium_axe)
+     * 使用 API ToolItemBuilder 注册
+     * 原模组：耐久 1721，速度 9.0，伤害+9，攻速 -3.0
+     */
+    public static final DeferredItem<Item> TITANIUM_AXE =
+            ItemMigrationAPI.toolItem("titanium_axe")
+                    .type(ToolType.AXE)
+                    .durability(1721).miningSpeed(9.0f)
+                    .attackDamage(9.0f).attackSpeed(-3.0f)
+                    .enchantment(17)
+                    .incorrectTag("minecraft:incorrect_for_netherite_tool")
+                    .repairWith(() -> new ItemStack(TITANIUM_INGOT.get()))
+                    .build();
+
+    /**
+     * 钛锹 (titanium_shovel)
+     * 使用 API ToolItemBuilder 注册
+     * 原模组：耐久 1721，速度 9.0，伤害+5.5，攻速 -3.0
+     */
+    public static final DeferredItem<Item> TITANIUM_SHOVEL =
+            ItemMigrationAPI.toolItem("titanium_shovel")
+                    .type(ToolType.SHOVEL)
+                    .durability(1721).miningSpeed(9.0f)
+                    .attackDamage(5.5f).attackSpeed(-3.0f)
+                    .enchantment(17)
+                    .incorrectTag("minecraft:incorrect_for_netherite_tool")
+                    .repairWith(() -> new ItemStack(TITANIUM_INGOT.get()))
+                    .build();
+
+    /**
+     * 钛锄 (titanium_hoe)
+     * 使用 API ToolItemBuilder 注册
+     * 原模组：耐久 1721，速度 9.0，伤害+0.5，攻速 0.0
+     */
+    public static final DeferredItem<Item> TITANIUM_HOE =
+            ItemMigrationAPI.toolItem("titanium_hoe")
+                    .type(ToolType.HOE)
+                    .durability(1721).miningSpeed(9.0f)
+                    .attackDamage(0.5f).attackSpeed(0.0f)
+                    .enchantment(17)
+                    .incorrectTag("minecraft:incorrect_for_netherite_tool")
+                    .repairWith(() -> new ItemStack(TITANIUM_INGOT.get()))
+                    .build();
+
     public static final DeferredItem<Item> TRUE_MOLTENGOLD_PICKAXE =
             ItemMigrationAPI.toolItem("true_moltengold_pickaxe")
                     .type(ToolType.PICKAXE).durability(131).miningSpeed(4.0f)
@@ -598,7 +812,8 @@ public class PDItems {
     public static final DeferredItem<Item> APPLE_JUICE = ITEMS.register("apple_juice",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.2f).alwaysEdible().build()), PDItems.GLASS_CUP::get));
     public static final DeferredItem<Item> BACONE_EGG = ITEMS.registerSimpleItem("bacone_egg",
-            new Item.Properties().food(new FoodProperties.Builder().nutrition(10).saturationModifier(1.2f).build()));
+            new Item.Properties().food(new FoodProperties.Builder().nutrition(10).saturationModifier(1.2f)
+                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF.holder(), 1200, 0), 1.0f).build()));
     public static final DeferredItem<Item> BERRY_BUNCAKE = ITEMS.registerSimpleItem("berry_buncake",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).alwaysEdible().fast().build()));
     public static final DeferredItem<Item> BUBBLE_GUM = ITEMS.registerSimpleItem("bubble_gum",
@@ -616,7 +831,9 @@ public class PDItems {
     public static final DeferredItem<Item> DYEDREAM_FLOWER_TEA = ITEMS.register("dyedream_flower_tea",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build()), PDItems.GLASS_CUP::get));
     public static final DeferredItem<Item> DYEDREAM_FRUIT_BUNCAKE = ITEMS.registerSimpleItem("dyedream_fruit_buncake",
-            new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).alwaysEdible().fast().build()));
+            new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).alwaysEdible().fast()
+                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF.holder(), 1200, 0), 1.0f)
+                    .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 200, 0), 1.0f).build()));
     public static final DeferredItem<Item> DYEDREAM_JUICE = ITEMS.register("dyedream_juice",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationModifier(0.2f).alwaysEdible().build()), PDItems.GLASS_CUP::get));
     public static final DeferredItem<Item> DYEDREAM_POPSICLE = ITEMS.registerSimpleItem("dyedream_popsicle",
@@ -628,19 +845,25 @@ public class PDItems {
     public static final DeferredItem<Item> GLOW_BERRY_BUNCAKE = ITEMS.registerSimpleItem("glow_berry_buncake",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).alwaysEdible().fast().build()));
     public static final DeferredItem<Item> GOLDENROD_TEA = ITEMS.register("goldenrod_tea",
-            () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationModifier(0f).alwaysEdible().build()), PDItems.GLASSJAR::get));
+            () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationModifier(0f).alwaysEdible()
+                    .effect(() -> new MobEffectInstance(PDEffects.GOLDENROD_TEA_BUFF.holder(), 3600, 0), 1.0f)
+                    .build()), PDItems.GLASSJAR::get));
     public static final DeferredItem<Item> HONEY_JUICE = ITEMS.register("honey_juice",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.1f).alwaysEdible().build()), PDItems.GLASS_CUP::get));
     public static final DeferredItem<Item> JELLYFISH_JELLO = ITEMS.registerSimpleItem("jellyfish_jello",
-            new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).alwaysEdible().build()));
+            new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.4f).alwaysEdible()
+                    .effect(() -> new MobEffectInstance(PDEffects.WINDPROOF_BUFF.holder(), 12000, 0), 1.0f).build()));
     public static final DeferredItem<Item> JELLYFISH_MUD = ITEMS.registerSimpleItem("jellyfish_mud",
-            new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationModifier(0f).build()));
+            new Item.Properties().food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.3f).alwaysEdible()
+                    .effect(() -> new MobEffectInstance(PDEffects.WINDPROOF_BUFF.holder(), 1200, 0), 1.0f).build()));
     public static final DeferredItem<Item> LEGEND_DRAGON_HORN_ICE_CREAM = ITEMS.registerSimpleItem("legend_dragon_horn_ice_cream",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(10).saturationModifier(1.2f).alwaysEdible().build()));
     public static final DeferredItem<Item> LIGHT_ORGAN = ITEMS.registerSimpleItem("light_organ",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationModifier(0f).build()));
     public static final DeferredItem<Item> MELON_BUNCAKE = ITEMS.registerSimpleItem("melon_buncake",
-            new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).alwaysEdible().fast().build()));
+            new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).alwaysEdible().fast()
+                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF.holder(), 1200, 0), 1.0f)
+                    .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 400, 0), 1.0f).build()));
     public static final DeferredItem<Item> MELTDREAM_ELIXIR_BOTTLE = ITEMS.register("meltdream_elixir_bottle",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.25f).alwaysEdible().build()), PDItems.ELIXIR_BOTTLE::get));
     public static final DeferredItem<Item> MILK_GLASSJAR = ITEMS.register("milk_glassjar",
@@ -665,11 +888,13 @@ public class PDItems {
     public static final DeferredItem<Item> RICECAKE = ITEMS.registerSimpleItem("ricecake",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.4f).build()));
     public static final DeferredItem<Item> SANDWICH = ITEMS.registerSimpleItem("sandwich",
-            new Item.Properties().food(new FoodProperties.Builder().nutrition(10).saturationModifier(0.9f).build()));
+            new Item.Properties().food(new FoodProperties.Builder().nutrition(10).saturationModifier(0.9f)
+                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF.holder(), 1200, 0), 1.0f).build()));
     public static final DeferredItem<Item> STUFFED_WAFER_COOKIES = ITEMS.registerSimpleItem("stuffed_wafer_cookies",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(7).saturationModifier(1.0f).build()));
     public static final DeferredItem<Item> SWISS_ROLL = ITEMS.registerSimpleItem("swiss_roll",
-            new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.8f).build()));
+            new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.8f)
+                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF.holder(), 1200, 0), 1.0f).build()));
     public static final DeferredItem<Item> UNCOOKED_DYEDREAM_FLOWER_TEA = ITEMS.register("uncooked_dyedream_flower_tea",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build()), PDItems.GLASS_CUP::get));
     public static final DeferredItem<Item> WATER_GLASSJAR = ITEMS.register("water_glassjar",
@@ -710,7 +935,10 @@ public class PDItems {
     public static final DeferredItem<Item> DYEDREAM_TELEPORT_CRYSTAL = ITEMS.register("dyedream_teleport_crystal",
             () -> new DyedreamTeleportCrystal(new Item.Properties().stacksTo(16)));
     public static final DeferredItem<Item> DYEDREAM_PERFUME = ITEMS.register("dyedream_perfume",
-            () -> new DyedreamPerfumeItem(new Item.Properties()));
+            () -> new DyedreamPerfumeItem(new Item.Properties().stacksTo(64)
+                    .food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible()
+                            .effect(() -> new MobEffectInstance(PDEffects.DYEDREAM_PERFUME_BUFF.holder(), 1200, 0), 1.0f)
+                            .build())));
     public static final DeferredItem<Item> ELIXIR_BOTTLE =
             ItemMigrationAPI.simpleItem("elixir_bottle").build();
     public static final DeferredItem<Item> FIG =
@@ -751,250 +979,85 @@ public class PDItems {
             () -> new WaferBiscuitItem(new Item.Properties()));
 
     // ==================== Curio饰品/特殊物品 ====================
+    // 使用 CurioAPI 统一注册，slot() 对应 data/curios/tags/item/ 下的槽位标签文件
 
+    // 非 Curio 的普通物品
     public static final DeferredItem<Item> ANGEL_WING = ITEMS.registerSimpleItem("angel_wing");
-    public static final DeferredItem<CalaisSpiceBottleCurioItem> CALAIS_SPICE_BOTTLE_CURIO = ITEMS.register("calais_spice_bottle_curio",
-            () -> new CalaisSpiceBottleCurioItem());
-    public static final DeferredItem<CarapaxCharmItem> CARAPAX_CHARM = ITEMS.register("carapax_charm",
-            () -> new CarapaxCharmItem());
-    public static final DeferredItem<CeciliacareCharmItem> CECILIACARE_CHARM = ITEMS.register("ceciliacare_charm",
-            () -> new CeciliacareCharmItem());
-    public static final DeferredItem<CounterRingItem> COUNTER_RING = ITEMS.register("counter_ring",
-            () -> new CounterRingItem());
-    public static final DeferredItem<DarkAlllegoryCurioItem> DARK_ALLLEGORY_CURIO = ITEMS.register("dark_alllegory_curio",
-            () -> new DarkAlllegoryCurioItem());
-    public static final DeferredItem<EmbryoBeltItem> EMBRYO_BELT = ITEMS.register("embryo_belt",
-            () -> new EmbryoBeltItem());
-    public static final DeferredItem<EmbryoCharmItem> EMBRYO_CHARM = ITEMS.register("embryo_charm",
-            () -> new EmbryoCharmItem());
-    public static final DeferredItem<EmbryoNecklaceItem> EMBRYO_NECKLACE = ITEMS.register("embryo_necklace",
-            () -> new EmbryoNecklaceItem());
-    public static final DeferredItem<Item> EMBRYO_RING =
-            ItemMigrationAPI.curioItem("embryo_ring").build();
     public static final DeferredItem<Item> FORSAKENS_WING = ITEMS.registerSimpleItem("forsakens_wing");
-    public static final DeferredItem<GhostFaceHeadItem> GHOST_FACE_HEAD = ITEMS.register("ghost_face_head",
-            () -> new GhostFaceHeadItem());
     public static final DeferredItem<Item> GROUND_WING = ITEMS.registerSimpleItem("ground_wing");
-    public static final DeferredItem<Hithard0RingItem> HITHARD_0_RING = ITEMS.register("hithard_0_ring",
-            () -> new Hithard0RingItem());
-    public static final DeferredItem<Hithard1RingItem> HITHARD_1_RING = ITEMS.register("hithard_1_ring",
-            () -> new Hithard1RingItem());
     public static final DeferredItem<Item> MACHINE_WING = ITEMS.registerSimpleItem("machine_wing");
-// ===== 实用工具类物品 =====
-
-    public static final DeferredItem<PaleBoneneedleItem> PALE_BONENEEDLE = ITEMS.register("pale_boneneedle",
-            () -> new PaleBoneneedleItem(new Item.Properties()));
-    public static final DeferredItem<RedDew0RingItem> RED_DEW_0_RING = ITEMS.register("red_dew_0_ring",
-            () -> new RedDew0RingItem());
-    public static final DeferredItem<RedDew1RingItem> RED_DEW_1_RING = ITEMS.register("red_dew_1_ring",
-            () -> new RedDew1RingItem());
-    public static final DeferredItem<RedDew2RingItem> RED_DEW_2_RING = ITEMS.register("red_dew_2_ring",
-            () -> new RedDew2RingItem());
-    public static final DeferredItem<RedDew3RingItem> RED_DEW_3_RING = ITEMS.register("red_dew_3_ring",
-            () -> new RedDew3RingItem());
-    public static final DeferredItem<SeaCharmItem> SEA_CHARM = ITEMS.register("sea_charm",
-            () -> new SeaCharmItem());
-    public static final DeferredItem<WindKnightFlagItem> WIND_KNIGHT_FLAG = ITEMS.register("wind_knight_flag",
-            () -> new WindKnightFlagItem());
     public static final DeferredItem<Item> WINGS_OF_FANG = ITEMS.registerSimpleItem("wings_of_fang");
 
-    // ==================== 补全注册：从item文件夹整理出的未注册物品 ====================
+    // === Curio 戒指 (RING) ===
+    public static final DeferredItem<Item> EMBRYO_RING = CurioAPI.create("embryo_ring").slot(CurioSlot.RING).register();
+    public static final DeferredItem<Item> HITHARD_0_RING = CurioAPI.create("hithard_0_ring").slot(CurioSlot.RING).withItemClass(Hithard0RingItem::new).register();
+    public static final DeferredItem<Item> HITHARD_1_RING = CurioAPI.create("hithard_1_ring").slot(CurioSlot.RING).withItemClass(Hithard1RingItem::new).register();
+    public static final DeferredItem<Item> RED_DEW_0_RING = CurioAPI.create("red_dew_0_ring").slot(CurioSlot.RING).withItemClass(RedDew0RingItem::new).register();
+    public static final DeferredItem<Item> RED_DEW_1_RING = CurioAPI.create("red_dew_1_ring").slot(CurioSlot.RING).withItemClass(RedDew1RingItem::new).register();
+    public static final DeferredItem<Item> RED_DEW_2_RING = CurioAPI.create("red_dew_2_ring").slot(CurioSlot.RING).withItemClass(RedDew2RingItem::new).register();
+    public static final DeferredItem<Item> RED_DEW_3_RING = CurioAPI.create("red_dew_3_ring").slot(CurioSlot.RING).withItemClass(RedDew3RingItem::new).register();
+    public static final DeferredItem<Item> ALLKINDS_RING = CurioAPI.create("allkinds_ring").slot(CurioSlot.RING).withItemClass(AllkindsRingItem::new).register();
+    public static final DeferredItem<Item> COUNTER_RING = CurioAPI.create("counter_ring").slot(CurioSlot.RING).withItemClass(CounterRingItem::new).register();
 
-    /**
-     * 万相之戒 (allkinds_ring)
-     * Curio 戒指饰品，传说品质
-     */
-    public static final DeferredItem<AllkindsRingItem> ALLKINDS_RING = ITEMS.register("allkinds_ring",
-            () -> new AllkindsRingItem());
+    // === Curio 项链 (NECKLACE) ===
+    public static final DeferredItem<Item> EMBRYO_NECKLACE = CurioAPI.create("embryo_necklace").slot(CurioSlot.NECKLACE).withItemClass(EmbryoNecklaceItem::new).register();
+    public static final DeferredItem<Item> CROSS_NECKLACE = CurioAPI.create("cross_necklace").slot(CurioSlot.NECKLACE).withItemClass(CrossNecklaceItem::new).register();
+    public static final DeferredItem<Item> FEATHER_NECKLACE = CurioAPI.create("feather_necklace").slot(CurioSlot.NECKLACE).withItemClass(FeatherNecklaceItem::new).register();
+    public static final DeferredItem<Item> FIRE_0_NECKLACE = CurioAPI.create("fire_0_necklace").slot(CurioSlot.NECKLACE).withItemClass(Fire0NecklaceItem::new).register();
+    public static final DeferredItem<Item> HEALTH_0_NECKLACE = CurioAPI.create("health_0_necklace").slot(CurioSlot.NECKLACE).withItemClass(Health0NecklaceItem::new).register();
+    public static final DeferredItem<Item> RABBIT_0_NECKLACE = CurioAPI.create("rabbit_0_necklace").slot(CurioSlot.NECKLACE).withItemClass(Rabbit0NecklaceItem::new).register();
 
-    /**
-     * 啵啵鸡饰品 (boboji_curio)
-     * Curio 饰品，传说品质，装备鞘翅时增强瞬身术
-     */
-    public static final DeferredItem<BobojiCurioItem> BOBOJI_CURIO = ITEMS.register("boboji_curio",
-            () -> new BobojiCurioItem());
+    // === Curio 腰带 (BELT) ===
+    public static final DeferredItem<Item> EMBRYO_BELT = CurioAPI.create("embryo_belt").slot(CurioSlot.BELT).withItemClass(EmbryoBeltItem::new).register();
+    public static final DeferredItem<Item> DREAM_TRAVELER_BELT = CurioAPI.create("dream_traveler_belt").slot(CurioSlot.BELT).withItemClass(DreamTravelerBeltItem::new).register();
+    public static final DeferredItem<Item> NATURE_BELT = CurioAPI.create("nature_belt").slot(CurioSlot.BELT).withItemClass(NatureBeltItem::new).register();
+    public static final DeferredItem<Item> TRAVELER_BELT = CurioAPI.create("traveler_belt").slot(CurioSlot.BELT).withItemClass(TravelerBeltItem::new).register();
 
-    /**
-     * 光明蝴蝶饰品 (bright_butterfly_curio)
-     * Curio 饰品，上古品质，低亮度获得夜视
-     */
-    public static final DeferredItem<BrightButterflyCurioItem> BRIGHT_BUTTERFLY_CURIO = ITEMS.register("bright_butterfly_curio",
-            () -> new BrightButterflyCurioItem());
+    // === Curio 护符 (CHARM) ===
+    public static final DeferredItem<Item> FOURLEAF_CLOVER_CURIO = CurioAPI.create("fourleaf_clover_curio").slot(CurioSlot.CHARM)
+            .attribute("minecraft:generic.max_health", "055dac74-49cf-474c-9078-f658a61f7047", 1.0, AttributeModifier.Operation.ADD_VALUE)
+            .attribute("pasterdream:luck", "f723cde2-ecbf-45d1-b985-8670b2f00fd2", 6.0, AttributeModifier.Operation.ADD_VALUE)
+            .tooltip("§a品质：优秀 ★★", "§7§o哪片叶子代表着幸运？")
+            .register();
+    public static final DeferredItem<Item> EMBRYO_CHARM = CurioAPI.create("embryo_charm").slot(CurioSlot.CHARM).withItemClass(EmbryoCharmItem::new).register();
+    public static final DeferredItem<Item> CARAPAX_CHARM = CurioAPI.create("carapax_charm").slot(CurioSlot.CHARM).withItemClass(CarapaxCharmItem::new).register();
+    public static final DeferredItem<Item> CECILIACARE_CHARM = CurioAPI.create("ceciliacare_charm").slot(CurioSlot.CHARM).withItemClass(CeciliacareCharmItem::new).register();
+    public static final DeferredItem<Item> ENDEYE_CHARM = CurioAPI.create("endeye_charm").slot(CurioSlot.CHARM).withItemClass(EndeyeCharmItem::new).register();
+    public static final DeferredItem<Item> GOLD_CHARM = CurioAPI.create("gold_charm").slot(CurioSlot.CHARM).withItemClass(GoldCharmItem::new).register();
+    public static final DeferredItem<Item> SEA_CHARM = CurioAPI.create("sea_charm").slot(CurioSlot.CHARM).withItemClass(SeaCharmItem::new).register();
+    public static final DeferredItem<Item> TERRA_CHARM = CurioAPI.create("terra_charm").slot(CurioSlot.CHARM).withItemClass(TerraCharmItem::new).register();
+    public static final DeferredItem<Item> BOBOJI_CURIO = CurioAPI.create("boboji_curio").slot(CurioSlot.CHARM).withItemClass(BobojiCurioItem::new).register();
+    public static final DeferredItem<Item> BRIGHT_BUTTERFLY_CURIO = CurioAPI.create("bright_butterfly_curio").slot(CurioSlot.CHARM).withItemClass(BrightButterflyCurioItem::new).register();
+    public static final DeferredItem<Item> CALAIS_SPICE_BOTTLE_CURIO = CurioAPI.create("calais_spice_bottle_curio").slot(CurioSlot.CHARM).withItemClass(CalaisSpiceBottleCurioItem::new).register();
+    public static final DeferredItem<Item> DARK_ALLLEGORY_CURIO = CurioAPI.create("dark_alllegory_curio").slot(CurioSlot.CHARM).withItemClass(DarkAlllegoryCurioItem::new).register();
+    public static final DeferredItem<Item> DUKE_COIN_CURIO = CurioAPI.create("duke_coin_curio").slot(CurioSlot.CHARM).withItemClass(DukeCoinCurioItem::new).register();
+    public static final DeferredItem<Item> ICESHADOW_CURIO = CurioAPI.create("iceshadow_curio").slot(CurioSlot.CHARM).withItemClass(IceshadowCurioItem::new).register();
+    public static final DeferredItem<Item> LIGHT_BUTTERFLY_CURIO = CurioAPI.create("light_butterfly_curio").slot(CurioSlot.CHARM).withItemClass(LightButterflyCurioItem::new).register();
+    public static final DeferredItem<Item> WORLDTREE_SEEDPOD = CurioAPI.create("worldtree_seedpod").slot(CurioSlot.CHARM).withItemClass(WorldtreeSeedpodItem::new).register();
+    public static final DeferredItem<Item> PAPER_PLANE = CurioAPI.create("paper_plane").slot(CurioSlot.CHARM).withItemClass(PaperPlaneItem::new).register();
 
-    /**
-     * 十字项链 (cross_necklace)
-     * Curio 项链饰品，精良品质，延长瞬身术回避时间
-     */
-    public static final DeferredItem<CrossNecklaceItem> CROSS_NECKLACE = ITEMS.register("cross_necklace",
-            () -> new CrossNecklaceItem());
+    // === Curio 头部 (HEAD) ===
+    public static final DeferredItem<Item> GHOST_FACE_HEAD = CurioAPI.create("ghost_face_head").slot(CurioSlot.HEAD).withItemClass(GhostFaceHeadItem::new).register();
+    public static final DeferredItem<Item> HIYORI_HEAD = CurioAPI.create("hiyori_head").slot(CurioSlot.HEAD).withItemClass(HiyoriHeadItem::new).register();
+    public static final DeferredItem<Item> QYM_HEAD = CurioAPI.create("qym_head").slot(CurioSlot.HEAD).withItemClass(QymHeadItem::new).register();
+    public static final DeferredItem<Item> SNOW_VOW_HEAD = CurioAPI.create("snow_vow_head").slot(CurioSlot.HEAD).withItemClass(SnowVowHeadItem::new).register();
+    public static final DeferredItem<Item> GARLAND = CurioAPI.create("garland").slot(CurioSlot.HEAD).withItemClass(GarlandItem::new).register();
 
-    /**
-     * 堕落之躯 (degenerate_bodys)
-     * Curio 饰品，史诗品质，精神值归零不再损失生命
-     */
-    public static final DeferredItem<DegenerateBodysItem> DEGENERATE_BODYS = ITEMS.register("degenerate_bodys",
-            () -> new DegenerateBodysItem());
+    // === Curio 背部 (BACK) ===
+    public static final DeferredItem<Item> EVASION_CLOAK = CurioAPI.create("evasion_cloak").slot(CurioSlot.BACK).withItemClass(EvasionCloakItem::new).register();
+    public static final DeferredItem<Item> TURNBACK_CLOAK = CurioAPI.create("turnback_cloak").slot(CurioSlot.BACK).withItemClass(TurnbackCloakItem::new).register();
 
-    /**
-     * 梦境旅者腰带 (dream_traveler_belt)
-     * Curio 腰带饰品，精良品质
-     */
-    public static final DeferredItem<DreamTravelerBeltItem> DREAM_TRAVELER_BELT = ITEMS.register("dream_traveler_belt",
-            () -> new DreamTravelerBeltItem());
+    // === Curio 身体 (BODY) ===
+    public static final DeferredItem<Item> DEGENERATE_BODYS = CurioAPI.create("degenerate_bodys").slot(CurioSlot.BODY).withItemClass(DegenerateBodysItem::new).register();
+    public static final DeferredItem<Item> WHITE_FLOWER_BODY = CurioAPI.create("white_flower_body").slot(CurioSlot.BODY).withItemClass(WhiteFlowerBodyItem::new).register();
 
-    /**
-     * 公爵硬币 (duke_coin_curio)
-     * Curio 饰品，优秀品质
-     */
-    public static final DeferredItem<DukeCoinCurioItem> DUKE_COIN_CURIO = ITEMS.register("duke_coin_curio",
-            () -> new DukeCoinCurioItem());
+    // === Curio 通用 (CURIO) ===
+    public static final DeferredItem<Item> WIND_KNIGHT_FLAG = CurioAPI.create("wind_knight_flag").slot(CurioSlot.CURIO).withItemClass(WindKnightFlagItem::new).register();
+    public static final DeferredItem<Item> TEST_CURIO = CurioAPI.create("test_curio").slot(CurioSlot.CURIO).register();
 
-    /**
-     * 末影之眼护符 (endeye_charm)
-     * Curio 护符，使末影人保持中立
-     */
-    public static final DeferredItem<EndeyeCharmItem> ENDEYE_CHARM = ITEMS.register("endeye_charm",
-            () -> new EndeyeCharmItem());
-
-    /**
-     * 闪避斗篷 (evasion_cloak)
-     * Curio 背部饰品，传说品质，延长瞬身术回避时间
-     */
-    public static final DeferredItem<EvasionCloakItem> EVASION_CLOAK = ITEMS.register("evasion_cloak",
-            () -> new EvasionCloakItem());
-
-    /**
-     * 羽毛项链 (feather_necklace)
-     * Curio 项链饰品，优秀品质
-     */
-    public static final DeferredItem<FeatherNecklaceItem> FEATHER_NECKLACE = ITEMS.register("feather_necklace",
-            () -> new FeatherNecklaceItem());
-
-    /**
-     * 烈火项链 (fire_0_necklace)
-     * Curio 项链饰品，行走留下火焰
-     */
-    public static final DeferredItem<Fire0NecklaceItem> FIRE_0_NECKLACE = ITEMS.register("fire_0_necklace",
-            () -> new Fire0NecklaceItem());
-
-    /**
-     * 花环 (garland)
-     * Curio 饰品，随时间缓慢消耗耐久
-     */
-    public static final DeferredItem<GarlandItem> GARLAND = ITEMS.register("garland",
-            () -> new GarlandItem());
-
-    /**
-     * 金护符 (gold_charm)
-     * Curio 护符，使猪灵保持中立
-     */
-    public static final DeferredItem<GoldCharmItem> GOLD_CHARM = ITEMS.register("gold_charm",
-            () -> new GoldCharmItem());
-
-    /**
-     * 生命项链 (health_0_necklace)
-     * Curio 项链饰品，优秀品质
-     */
-    public static final DeferredItem<Health0NecklaceItem> HEALTH_0_NECKLACE = ITEMS.register("health_0_necklace",
-            () -> new Health0NecklaceItem());
-
-    /**
-     * 日和头饰 (hiyori_head)
-     * Curio 头部饰品，史诗品质
-     */
-    public static final DeferredItem<HiyoriHeadItem> HIYORI_HEAD = ITEMS.register("hiyori_head",
-            () -> new HiyoriHeadItem());
-
-    /**
-     * 冰影饰品 (iceshadow_curio)
-     * Curio 饰品，大师品质，冰影战锤额外释放水晶体
-     */
-    public static final DeferredItem<IceshadowCurioItem> ICESHADOW_CURIO = ITEMS.register("iceshadow_curio",
-            () -> new IceshadowCurioItem());
-
-    /**
-     * 光蝶饰品 (light_butterfly_curio)
-     * Curio 饰品，精良品质，低亮度获得夜视（带持续判断）
-     */
-    public static final DeferredItem<LightButterflyCurioItem> LIGHT_BUTTERFLY_CURIO = ITEMS.register("light_butterfly_curio",
-            () -> new LightButterflyCurioItem());
-
-    /**
-     * 自然腰带 (nature_belt)
-     * Curio 腰带饰品，随时间缓慢消耗耐久
-     */
-    public static final DeferredItem<NatureBeltItem> NATURE_BELT = ITEMS.register("nature_belt",
-            () -> new NatureBeltItem());
-
-    /**
-     * 纸飞机 (paper_plane)
-     * Curio 饰品，增大风向影响
-     */
-    public static final DeferredItem<PaperPlaneItem> PAPER_PLANE = ITEMS.register("paper_plane",
-            () -> new PaperPlaneItem());
-
-    /**
-     * Qym 头饰 (qym_head)
-     * Curio 头部饰品，神迹品质，施法无视冷却时间
-     */
-    public static final DeferredItem<QymHeadItem> QYM_HEAD = ITEMS.register("qym_head",
-            () -> new QymHeadItem());
-
-    /**
-     * 兔子项链 (rabbit_0_necklace)
-     * Curio 项链饰品，获得跳跃提升效果
-     */
-    public static final DeferredItem<Rabbit0NecklaceItem> RABBIT_0_NECKLACE = ITEMS.register("rabbit_0_necklace",
-            () -> new Rabbit0NecklaceItem());
-
-    /**
-     * 雪誓头饰 (snow_vow_head)
-     * Curio 头部饰品，精良品质，附近玩家获得幸运加成
-     */
-    public static final DeferredItem<SnowVowHeadItem> SNOW_VOW_HEAD = ITEMS.register("snow_vow_head",
-            () -> new SnowVowHeadItem());
-
-    /**
-     * 大地护符 (terra_charm)
-     * Curio 护符，史诗品质，大地之刃战技冷却缩减
-     */
-    public static final DeferredItem<TerraCharmItem> TERRA_CHARM = ITEMS.register("terra_charm",
-            () -> new TerraCharmItem());
-
-    /**
-     * 测试饰品 (test_curio)
-     * Curio 测试物品
-     */
-    public static final DeferredItem<Item> TEST_CURIO =
-            ItemMigrationAPI.curioItem("test_curio").build();
-
-    /**
-     * 旅者腰带 (traveler_belt)
-     * Curio 腰带饰品
-     */
-    public static final DeferredItem<TravelerBeltItem> TRAVELER_BELT = ITEMS.register("traveler_belt",
-            () -> new TravelerBeltItem());
-
-    /**
-     * 回返斗篷 (turnback_cloak)
-     * Curio 背部饰品，传说品质，自动回避多次伤害
-     */
-    public static final DeferredItem<TurnbackCloakItem> TURNBACK_CLOAK = ITEMS.register("turnback_cloak",
-            () -> new TurnbackCloakItem());
-
-    /**
-     * 白花之躯 (white_flower_body)
-     * Curio 饰品，史诗品质，不再受环境影响 san 值
-     */
-    public static final DeferredItem<WhiteFlowerBodyItem> WHITE_FLOWER_BODY = ITEMS.register("white_flower_body",
-            () -> new WhiteFlowerBodyItem());
-
-    /**
-     * 世界树种荚 (worldtree_seedpod)
-     * Curio 饰品，史诗品质，在染梦世界特定环境下获得融梦能量
-     */
-    public static final DeferredItem<WorldtreeSeedpodItem> WORLDTREE_SEEDPOD = ITEMS.register("worldtree_seedpod",
-            () -> new WorldtreeSeedpodItem());
+    // 非 Curio 实用物品
+    public static final DeferredItem<PaleBoneneedleItem> PALE_BONENEEDLE = ITEMS.register("pale_boneneedle",
+            () -> new PaleBoneneedleItem(new Item.Properties()));
 
     // ==================== 音乐唱片（使用 API registerCustom 注册） ====================
 

@@ -1,8 +1,0 @@
-{
-  "parent": "block/cross",
-  "textures": {
-    "cross": "pasterdream:block/bitter_snowflower",
-    "particle": "pasterdream:block/bitter_snowflower"
-  },
-  "render_type": "cutout"
-}

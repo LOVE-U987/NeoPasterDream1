@@ -23,7 +23,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
  * 使用粉/紫/青渐变色调，夜晚可见度最高。
  * 通过 {@link EventBusSubscriber} 自动注册到游戏事件总线，仅在客户端生效。
  */
-@EventBusSubscriber(modid = PasterDreamMod.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = PasterDreamMod.MOD_ID, value = Dist.CLIENT)
 public class DyeDreamSkyRenderer {
 
     private static final int BAND_COUNT = 5;

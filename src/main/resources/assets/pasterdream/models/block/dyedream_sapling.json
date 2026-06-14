@@ -1,8 +1,0 @@
-{
-  "parent": "block/cross",
-  "textures": {
-    "cross": "pasterdream:block/dyedream_sapling",
-    "particle": "pasterdream:block/dyedream_sapling"
-  },
-  "render_type": "cutout"
-}

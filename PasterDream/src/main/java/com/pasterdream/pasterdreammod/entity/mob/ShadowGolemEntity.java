@@ -37,6 +37,8 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
+
 /**
  * 暗影魔像 (Shadow Golem) — 150 血的精英怪物
  * <p>
@@ -67,10 +69,8 @@ public class ShadowGolemEntity extends Monster implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    /** 当前动画标识（用于 procedure 控制器） */
-    public String animationprocedure = "empty";
-    /** 客户端当前正在播放的procedure动画（用于防止重复设置） */
-    private String currentlyPlaying = "empty";
+    /** Procedure 动画处理器 */
+    private final ProcedureAnimationHandler procAnim = new ProcedureAnimationHandler();
     private boolean swinging;
     private boolean lastloop;
     private long lastSwing;
@@ -129,13 +129,12 @@ public class ShadowGolemEntity extends Monster implements GeoEntity {
     }
 
     /**
-     * 设置同步动画，同时赋值 animationprocedure 以触发 procedure 控制器
+     * 设置同步动画，更新 ANIMATION 同步数据以触发 procedure 控制器
      *
      * @param animation 动画名称
      */
     public void setAnimation(String animation) {
         this.entityData.set(ANIMATION, animation);
-        this.animationprocedure = animation;
         PasterDreamMod.LOGGER.info("setAnimation('{}') called on {} side", 
                 animation, level().isClientSide() ? "CLIENT" : "SERVER");
     }
@@ -342,8 +341,7 @@ public class ShadowGolemEntity extends Monster implements GeoEntity {
     // ==================== GeckoLib 动画 ====================
 
     private PlayState movementPredicate(software.bernie.geckolib.animation.AnimationState<ShadowGolemEntity> state) {
-        String syncedAnim = this.getSyncedAnimation();
-        if (syncedAnim.equals("empty")) {
+        if (this.getSyncedAnimation().equals("empty")) {
             if ((state.isMoving() || !(state.getLimbSwingAmount() > -0.15F && state.getLimbSwingAmount() < 0.15F))
                     && !this.isAggressive()) {
                 return state.setAndContinue(RawAnimation.begin().thenLoop("walk"));
@@ -377,27 +375,10 @@ public class ShadowGolemEntity extends Monster implements GeoEntity {
     }
 
     private PlayState procedurePredicate(software.bernie.geckolib.animation.AnimationState<ShadowGolemEntity> state) {
-        if (!level().isClientSide())
-            return PlayState.STOP;
-
-        String anim = this.getSyncedAnimation();
-        if (!anim.equals("empty") && !anim.equals(currentlyPlaying)) {
-            PasterDreamMod.LOGGER.info("[procedurePredicate] >>> PLAYING animation '{}' on CLIENT (ctrlState={})",
-                    anim, state.getController().getAnimationState());
-            currentlyPlaying = anim;
-            state.getController().setAnimation(RawAnimation.begin().thenPlay(anim));
-            return PlayState.CONTINUE;
-        }
-        if (!currentlyPlaying.equals("empty")) {
-            if (state.getController().getAnimationState() == AnimationController.State.STOPPED) {
-                PasterDreamMod.LOGGER.info("[procedurePredicate] >>> animation '{}' finished on CLIENT", currentlyPlaying);
-                currentlyPlaying = "empty";
-                this.setAnimation("empty");
-                return PlayState.STOP;
-            }
-            return PlayState.CONTINUE;
-        }
-        return PlayState.STOP;
+        return procAnim.predicate(state,
+                level().isClientSide(),
+                this::getSyncedAnimation,
+                () -> setAnimation("empty"));
     }
 
     @Override

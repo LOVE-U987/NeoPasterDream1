@@ -1,8 +1,0 @@
-{
-  "parent": "block/cross",
-  "textures": {
-    "cross": "pasterdream:block/pink_top_mushroom",
-    "particle": "pasterdream:block/pink_top_mushroom"
-  },
-  "render_type": "cutout"
-}
