@@ -4,6 +4,8 @@ import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
 import com.pasterdream.pasterdreammod.api.curio.model.CurioSlot;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.*;
 import java.util.function.Supplier;
@@ -117,6 +119,12 @@ public final class CurioAPI {
      * }</pre>
      */
     public static void registerClientRenderers() {
+        // Side 校验：确保只在客户端环境调用
+        if (FMLEnvironment.dist != Dist.CLIENT) {
+            PasterDreamAPI.LOGGER.warn("[CurioAPI] registerClientRenderers() 只能在客户端调用，当前环境: {}", FMLEnvironment.dist);
+            return;
+        }
+
         // 委托给客户端处理器
         if (clientBridge != null) {
             clientBridge.registerAll();

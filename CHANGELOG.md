@@ -1,3 +1,30 @@
+# v6 — MomoNyako 负责的 CurioAPI side 校验修复
+
+> **修复日期**：2026-06-19  
+> **执行人**：MomoNyako  
+> **对照文档**：[`README.md`](README.md)、[`API_REVIEW_REPORT.md`](API_REVIEW_REPORT.md)
+
+## 修复清单
+
+| 优先级 | 问题 | 修复内容 | 状态 |
+|:------:|------|----------|:----:|
+| P1 | `CurioAPI.registerClientRenderers()` 无 side 校验 | 在方法入口添加 `FMLEnvironment.dist` 检查，确保只在客户端环境执行，防止服务端误调用导致 `NoClassDefFoundError` | 已修复 |
+
+## 关键代码变更
+
+- **`CurioAPI.java`**：新增 `import net.neoforged.api.distmarker.Dist` 和 `import net.neoforged.fml.loading.FMLEnvironment`；在 `registerClientRenderers()` 方法入口添加 side 校验，非客户端环境输出警告日志并安全返回。
+
+## 编译验证
+
+```text
+BUILD SUCCESSFUL in 16s
+2 actionable tasks: 1 executed, 1 up-to-date
+```
+
+无新增警告。
+
+***
+
 # v5 — MomoNyako 负责的 CurioBuilder API 迁移
 
 > **修复日期**：2026-06-18  
