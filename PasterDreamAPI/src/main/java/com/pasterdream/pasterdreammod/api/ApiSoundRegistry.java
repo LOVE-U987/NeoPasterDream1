@@ -45,15 +45,25 @@ public final class ApiSoundRegistry {
      * 注册一个维度背景音乐 SoundEvent。
      * ID 格式为 {@code music.{musicName}}，声音文件对应
      * {@code assets/pasterdream/sounds/music/{musicName}.ogg}。
+     * <p>
+     * 注册前会检查对应 .ogg 文件是否存在于类路径中；若缺失则跳过注册并记录警告。
      *
      * @param musicName 音乐名称（如 "dyedream_world"）
-     * @return 已注册的 SoundEvent Supplier
+     * @return 已注册的 SoundEvent Supplier；若文件缺失则返回 {@code null}
      */
     public static synchronized Supplier<SoundEvent> registerDimensionMusic(String musicName) {
-        Supplier<SoundEvent> cached = DIMENSION_MUSIC_CACHE.get(musicName);
-        if (cached != null) {
-            return cached;
+        if (DIMENSION_MUSIC_CACHE.containsKey(musicName)) {
+            return DIMENSION_MUSIC_CACHE.get(musicName);
         }
+
+        String resourcePath = "/assets/" + PasterDreamAPI.MOD_ID + "/sounds/music/" + musicName + ".ogg";
+        if (ApiSoundRegistry.class.getResource(resourcePath) == null) {
+            PasterDreamAPI.LOGGER.warn("[ApiSoundRegistry] 背景音乐文件缺失: assets/{}/sounds/music/{}.ogg，跳过注册",
+                    PasterDreamAPI.MOD_ID, musicName);
+            DIMENSION_MUSIC_CACHE.put(musicName, null);
+            return null;
+        }
+
         String soundId = "music." + musicName;
         Supplier<SoundEvent> supplier = DIMENSION_SOUNDS.register(soundId,
                 () -> SoundEvent.createVariableRangeEvent(

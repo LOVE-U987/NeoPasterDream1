@@ -280,12 +280,12 @@ public class FoxFireEntity extends PathfinderMob implements GeoEntity {
                 // 消散时：爆发大量狐火粒子 + 播放熄灭音效
                 if (this.level() instanceof ServerLevel serverLevel) {
                     serverLevel.sendParticles(
-                            (SimpleParticleType) PDParticles.FOX_FIRE_0_PARTICLE.get(),
+                            (SimpleParticleType) PDParticles.FOX_FIRE_0_PARTICLE.particleType(),
                             this.getX(), this.getY(), this.getZ(),
                             30, 3.0, 1.0, 3.0, 0.5
                     );
                     serverLevel.sendParticles(
-                            (SimpleParticleType) PDParticles.FOX_FIRE_1_PARTICLE.get(),
+                            (SimpleParticleType) PDParticles.FOX_FIRE_1_PARTICLE.particleType(),
                             this.getX(), this.getY(), this.getZ(),
                             30, 3.0, 1.0, 3.0, 0.5
                     );
@@ -301,12 +301,12 @@ public class FoxFireEntity extends PathfinderMob implements GeoEntity {
             // 每 tick 散发狐火粒子（服务端）
             if (this.level() instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(
-                        (SimpleParticleType) PDParticles.FOX_FIRE_0_PARTICLE.get(),
+                        (SimpleParticleType) PDParticles.FOX_FIRE_0_PARTICLE.particleType(),
                         this.getX(), this.getY(), this.getZ(),
                         5, 5.0, 0.15, 5.0, 1.0
                 );
                 serverLevel.sendParticles(
-                        (SimpleParticleType) PDParticles.FOX_FIRE_1_PARTICLE.get(),
+                        (SimpleParticleType) PDParticles.FOX_FIRE_1_PARTICLE.particleType(),
                         this.getX(), this.getY(), this.getZ(),
                         5, 5.0, 0.15, 5.0, 1.0
                 );

@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.entity.mob;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -194,7 +195,7 @@ public class SporeEntityEntity extends PathfinderMob {
         // 50% 概率产生 3 个孢子粒子
         if (random.nextDouble() <= 0.5) {
             if (level() instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(PDParticles.SPORE_PARTICLE.get(),
+                serverLevel.sendParticles((SimpleParticleType) PDParticles.SPORE_PARTICLE.particleType(),
                         getX(), getY(), getZ(),
                         3, 0.4, 0.4, 0.4, 0.01);
             }
@@ -204,7 +205,7 @@ public class SporeEntityEntity extends PathfinderMob {
         if (random.nextDouble() <= 0.0001) {
             if (level() instanceof ServerLevel serverLevel) {
                 // 自爆时爆发大量孢子粒子
-                serverLevel.sendParticles(PDParticles.SPORE_PARTICLE.get(),
+                serverLevel.sendParticles((SimpleParticleType) PDParticles.SPORE_PARTICLE.particleType(),
                         getX(), getY(), getZ(),
                         20, 1.5, 1.5, 1.5, 0.2);
                 // 掉落丛林孢子

@@ -353,10 +353,10 @@ public class ClientSetup {
         PasterDreamMod.LOGGER.info("[ClientSetup] 开始注册粒子提供器...");
 
         // 直接使用 PDParticles 中的粒子类型注册 Provider
-        event.registerSpriteSet(PDParticles.MELTDREAM_CRYSTAL_PARTICLE.get(), LifeCrystalParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType(), LifeCrystalParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.DREAM_AMBIENT_PARTICLE.particleType(), DreamAmbientParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.LEAVES_PARTICLE.particleType(), LeavesParticle.Provider::new);
-        event.registerSpriteSet(PDParticles.DREAMFERTILITER_PARTICLE.get(), DreamfertiliterFallingParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.DREAMFERTILITER_PARTICLE.particleType(), DreamfertiliterFallingParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.CALLE_PARTICLE.particleType(), CalleParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.SILVER_PARTICLE.particleType(), SilverParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.CRACK_0_PARTICLE.particleType(), CrackParticle.Provider::new);
@@ -365,11 +365,11 @@ public class ClientSetup {
         event.registerSpriteSet((SimpleParticleType) PDParticles.FEATHER_WHITE_PARTICLE.particleType(), FeatherWhiteParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.DYEDREAM_0_PARTICLE.particleType(), DyedreamParticle.Provider::new);
 
-        // 注册缺失的 4 个粒子 Provider（SHADOW_STONE / SPORE / FOX_FIRE_0 / FOX_FIRE_1）
-        event.registerSpriteSet(PDParticles.SHADOW_STONE_PARTICLE.get(), ShadowStoneParticle.Provider::new);
-        event.registerSpriteSet(PDParticles.SPORE_PARTICLE.get(), SporeParticle.Provider::new);
-        event.registerSpriteSet(PDParticles.FOX_FIRE_0_PARTICLE.get(), FoxFire0Particle.Provider::new);
-        event.registerSpriteSet(PDParticles.FOX_FIRE_1_PARTICLE.get(), FoxFire1Particle.Provider::new);
+        // 注册剩余 Builder 粒子 Provider（SHADOW_STONE / SPORE / FOX_FIRE_0 / FOX_FIRE_1）
+        event.registerSpriteSet((SimpleParticleType) PDParticles.SHADOW_STONE_PARTICLE.particleType(), ShadowStoneParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.SPORE_PARTICLE.particleType(), SporeParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.FOX_FIRE_0_PARTICLE.particleType(), FoxFire0Particle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.FOX_FIRE_1_PARTICLE.particleType(), FoxFire1Particle.Provider::new);
 
         PasterDreamMod.LOGGER.info("[ClientSetup] 粒子提供器注册完成，共 15 个粒子类型");
     }

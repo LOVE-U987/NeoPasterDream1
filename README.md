@@ -16,9 +16,9 @@
 | **P1** | `BlockLootAPI` INFO 级别日志泛滥                                      | 注册流程日志统一降为 `debug`，仅异常/摘要使用 `info`                                           | 计划中 MomoNyako负责 |
 | **P1** | 缺少统一注册入口                                                        | 新增 `PasterDreamAPI.registerAll(modEventBus)`                                 |       已修复       |
 | **P1** | 日志过多                                                            | 全部降为 `debug`，仅保留启动 banner 为 `info`                                           |       计划中       |
-| **P1** | 粒子新旧混用                                                          | 迁移剩余 7 个旧式粒子到 ParticleAPI                                                    |   未进行LOVE\_U负责  |
-| **P2** | `ApiSoundRegistry` 硬编码音乐文件                                      | 启动期校验 `.ogg` 文件存在性，或改为从数据包读取                                                 |   未修复LOVE\_U负责  |
-| **P2** | `ApiCodeGenConfig.setDefaultBasePath(null)` 无校验                 | 添加 `Objects.requireNonNull` 前置校验                                             |   未修复LOVE\_U负责  |
+| **P1** | 粒子新旧混用                                                          | 迁移剩余旧式粒子到 ParticleAPI，统一 15 个粒子注册方式                                    |       已修复       |
+| **P2** | `ApiSoundRegistry` 硬编码音乐文件                                      | 启动期校验 `.ogg` 文件存在性，缺失时跳过注册并输出 WARN                                       |       已修复       |
+| **P2** | `ApiCodeGenConfig.setDefaultBasePath(null)` 无校验                 | 添加 `Objects.requireNonNull` 前置校验                                             |       已修复       |
 | **P2** | `CompatLayer` 仍保留在源码                                            | 删除已标记 `@Deprecated(forRemoval=true)` 的兼容层                                    |       未修复       |
 | **P2** | 静态缓存无清理                                                         | 新增 `resetForTesting()` 方法                                                    |       未进行       |
 | **P2** | 查询返回 null                                                       | 改为 `Optional` 或加 `@Nullable`                                                 |       未进行       |

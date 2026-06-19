@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.entity.mob;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -249,15 +250,15 @@ public class ShakingCrystalEntity extends Monster implements GeoEntity {
 
         // tick 7: 暗影石粒子 + 烟雾（地面）
         if (skillTick == 7 && this.level() instanceof ServerLevel sl) {
-            sl.sendParticles(PDParticles.SHADOW_STONE_PARTICLE.get(), x, y, z, 64, 1, 0.2, 1, 0.02);
-            sl.sendParticles(PDParticles.SHADOW_STONE_PARTICLE.get(), x, y, z, 16, 0.5, 0.2, 0.5, 0.02);
+            sl.sendParticles((SimpleParticleType) PDParticles.SHADOW_STONE_PARTICLE.particleType(), x, y, z, 64, 1, 0.2, 1, 0.02);
+            sl.sendParticles((SimpleParticleType) PDParticles.SHADOW_STONE_PARTICLE.particleType(), x, y, z, 16, 0.5, 0.2, 0.5, 0.02);
             sl.sendParticles(ParticleTypes.SMOKE, x, y, z, 64, 1, 0.5, 1, 0.01);
         }
 
         // tick 15: 暗影石粒子 + 烟雾（y+1 高度）
         if (skillTick == 15 && this.level() instanceof ServerLevel sl) {
-            sl.sendParticles(PDParticles.SHADOW_STONE_PARTICLE.get(), x, y + 1, z, 64, 1, 1, 1, 0.02);
-            sl.sendParticles(PDParticles.SHADOW_STONE_PARTICLE.get(), x, y + 1, z, 16, 0.5, 1, 0.5, 0.02);
+            sl.sendParticles((SimpleParticleType) PDParticles.SHADOW_STONE_PARTICLE.particleType(), x, y + 1, z, 64, 1, 1, 1, 0.02);
+            sl.sendParticles((SimpleParticleType) PDParticles.SHADOW_STONE_PARTICLE.particleType(), x, y + 1, z, 16, 0.5, 1, 0.5, 0.02);
             sl.sendParticles(ParticleTypes.SMOKE, x, y + 1, z, 64, 1, 1, 1, 0.01);
 
             // 对 9 格内非特殊实体施加混乱效果

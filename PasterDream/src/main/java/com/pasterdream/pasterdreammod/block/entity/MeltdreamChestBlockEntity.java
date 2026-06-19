@@ -6,6 +6,7 @@ import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -329,7 +330,7 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
         // ======== 粒子效果 ========
         if (be.openingTick % 5 == 0) {
             serverLevel.sendParticles(
-                    PDParticles.MELTDREAM_CRYSTAL_PARTICLE.get(),
+                    (SimpleParticleType) PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType(),
                     pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
                     3,                           // 数量
                     0.3, 0.1, 0.3,               // 扩散范围

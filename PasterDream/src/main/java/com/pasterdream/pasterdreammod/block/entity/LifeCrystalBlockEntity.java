@@ -5,6 +5,7 @@ import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -201,7 +202,7 @@ public class LifeCrystalBlockEntity extends BlockEntity implements GeoBlockEntit
                     pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5,
                     4, 0.3, 0.3, 0.3, 1);
             for (int i = 0; i < 8; i++) {
-                serverLevel.sendParticles(PDParticles.MELTDREAM_CRYSTAL_PARTICLE.get(),
+                serverLevel.sendParticles((SimpleParticleType) PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType(),
                         pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         1, 0, 0, 0, 1);
             }

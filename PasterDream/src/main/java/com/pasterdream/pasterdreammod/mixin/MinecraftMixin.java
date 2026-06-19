@@ -1,7 +1,7 @@
 package com.pasterdream.pasterdreammod.mixin;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
-import com.pasterdream.pasterdreammod.client.audio.ModMusicManager;
+import com.pasterdream.pasterdreammod.client.PDClientEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.sounds.Music;
@@ -15,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * Minecraft 类混合注入
  * <p>
- * 修改背景音乐选择逻辑，与 {@link ModMusicManager} 协同工作：
+ * 修改背景音乐选择逻辑，与 {@link com.pasterdream.pasterdreammod.client.audio.ModMusicManager} 协同工作：
  * <ul>
- *   <li>在自定义维度中 → 直接返回 null，由 ModMusicManager 全权管理 BGM</li>
+ *   <li>在 ModMusicManager 管理的自定义维度中 → 直接返回 null，由 ModMusicManager 全权管理 BGM</li>
  *   <li>在原版维度且玩家处于创造/旁观模式 → 返回群系BGM（当 replace_current_music=true）</li>
  * </ul>
  * <p>
@@ -42,8 +42,8 @@ public class MinecraftMixin {
         LocalPlayer player = self.player;
         if (player == null || player.level() == null) return;
 
-        // 在 ModMusicManager 管理的自定义维度中，返回 null 让 ModMusicManager 全权处理
-        if (ModMusicManager.isCustomDimension(player.level())) {
+        // 在 ModMusicManager 管理的自定义维度中，返回 null 让其全权处理
+        if (PDClientEvents.getBiomeMusicRegistry().isCustomDimension(player.level())) {
             cir.setReturnValue(null);
             return;
         }

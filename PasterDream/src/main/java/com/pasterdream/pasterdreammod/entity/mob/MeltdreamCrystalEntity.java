@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.entity.mob;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -267,8 +268,8 @@ public class MeltdreamCrystalEntity extends PathfinderMob implements GeoEntity {
                 SoundEvents.AMETHYST_BLOCK_BREAK, this.getSoundSource(), 1.0f, 1.0f);
 
         // 生成大量融梦水晶粒子
-        if (PDParticles.MELTDREAM_CRYSTAL_PARTICLE != null && PDParticles.MELTDREAM_CRYSTAL_PARTICLE.get() != null) {
-            serverLevel.sendParticles(PDParticles.MELTDREAM_CRYSTAL_PARTICLE.get(),
+        if (PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType() != null) {
+            serverLevel.sendParticles((SimpleParticleType) PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType(),
                     pos.x, pos.y + 0.9, pos.z,
                     50, 0.5, 0.5, 0.5, 0.1);
         }
@@ -306,8 +307,8 @@ public class MeltdreamCrystalEntity extends PathfinderMob implements GeoEntity {
         // 服务端每 tick 生成融梦水晶粒子
         if (level() instanceof ServerLevel serverLevel) {
             Vec3 pos = this.position();
-            if (PDParticles.MELTDREAM_CRYSTAL_PARTICLE != null && PDParticles.MELTDREAM_CRYSTAL_PARTICLE.get() != null) {
-                serverLevel.sendParticles(PDParticles.MELTDREAM_CRYSTAL_PARTICLE.get(),
+            if (PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType() != null) {
+                serverLevel.sendParticles((SimpleParticleType) PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType(),
                         pos.x, pos.y + 0.7, pos.z,
                         1, 0.1, 0.1, 0.1, 0.01);
             }

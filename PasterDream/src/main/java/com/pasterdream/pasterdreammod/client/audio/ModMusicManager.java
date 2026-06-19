@@ -5,15 +5,25 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
+import java.util.Objects;
+
 /**
  * 模组背景音乐管理器 —— 自定义维度的群系BGM交叉淡化过渡
  * <p>
  * 核心职责：
  * <ul>
  *   <li>检测玩家所在群系变化</li>
- *   <li>在群系切换时执行交叉淡化过渡（旧音乐渐弱 + 新音乐渐强同时进行）</li>
+ *   <li>在群系切换时执行交叉淡化过渡</li>
  *   <li>仅在 DimensionAPI 注册的自定义维度中生效</li>
  * </ul>
+ * <p>
+ * 过渡策略（交叉淡化）：
+ * <ol>
+ *   <li>检测到群系变化且新音乐与当前音乐不同 → 进入切换冷却期</li>
+ *   <li>冷却结束后触发交叉淡化：新音乐立即以 {@link #TARGET_VOLUME} 开始播放，旧音乐继续播放</li>
+ *   <li>两个声音实例同时播放，经过 {@link #CROSSFADE_STEPS} 个游戏 tick 后停止旧音乐</li>
+ *   <li>冷却期间玩家回到原群系则取消切换，进入新群系则重置冷却</li>
+ * </ol>
  * <p>
  * 本类为协调器，实际逻辑委托给以下子系统：
  * <ul>
@@ -25,18 +35,9 @@ import net.minecraft.world.level.Level;
  *   <li>{@link BgmDeduplication} — 去重检测与修复</li>
  * </ul>
  * <p>
- * 过渡策略（交叉淡化）：
- * <ol>
- *   <li>检测到群系变化 → 新音乐的 SoundEvent 与旧音乐不同</li>
- *   <li>进入 FADING 状态：旧音乐音量从 TARGET_VOLUME 逐渐降至 0，
- *       新音乐音量从 0 逐渐升至 TARGET_VOLUME</li>
- *   <li>两个声音实例同时播放，经过 CROSSFADE_STEPS 步后完成过渡</li>
- *   <li>步进间隔为 3 个游戏 tick（~150ms），总过渡时长约 3 秒</li>
- * </ol>
+ * 依赖关系通过构造函数注入，由 {@link MusicSystemFactory} 负责组装。
  */
 public class ModMusicManager {
-
-    private static ModMusicManager instance;
 
     // ==================== 常量 ====================
 
@@ -64,42 +65,49 @@ public class ModMusicManager {
     /** 上一个 tick 的群系 ID */
     private ResourceLocation previousBiomeId;
 
-    // ==================== 静态初始化 ====================
-
-    static {
-        getInstance().biomeMusicRegistry.registerBiomeMusic("biome_dyedream_0", "dyedream_world");
-        getInstance().biomeMusicRegistry.registerBiomeMusic("biome_dyedream_1", "dream_heath");
-        getInstance().biomeMusicRegistry.registerBiomeMusic("biome_dyedream_2", "dream_delta");
-        getInstance().biomeMusicRegistry.registerBiomeMusic("biome_dyedream_3", "dream_taiga");
-        getInstance().biomeMusicRegistry.registerBiomeMusic("biome_dyedream_deep_ocean", "sweetdream_music");
-        getInstance().biomeMusicRegistry.registerBiomeMusic("biome_dyedream_mushroom_plains", "snowfall_dream_music");
+    /**
+     * 构造函数 —— 通过依赖注入接收所有子系统
+     *
+     * @param biomeMusicRegistry    群系音乐注册表
+     * @param soundEventLookup      声音事件查找器
+     * @param playbackController    音乐播放控制器
+     * @param crossfadeManager      交叉淡化管理器
+     * @param cooldownManager       冷却管理器
+     * @param loopRestartManager    循环重播管理器
+     * @param deduplication         BGM 去重检测器
+     */
+    public ModMusicManager(
+            BiomeMusicRegistry biomeMusicRegistry,
+            SoundEventLookup soundEventLookup,
+            MusicPlaybackController playbackController,
+            CrossfadeManager crossfadeManager,
+            CooldownManager cooldownManager,
+            LoopRestartManager loopRestartManager,
+            BgmDeduplication deduplication) {
+        this.biomeMusicRegistry = Objects.requireNonNull(biomeMusicRegistry, "[ModMusicManager] biomeMusicRegistry 不能为空");
+        this.soundEventLookup = Objects.requireNonNull(soundEventLookup, "[ModMusicManager] soundEventLookup 不能为空");
+        this.playbackController = Objects.requireNonNull(playbackController, "[ModMusicManager] playbackController 不能为空");
+        this.crossfadeManager = Objects.requireNonNull(crossfadeManager, "[ModMusicManager] crossfadeManager 不能为空");
+        this.cooldownManager = Objects.requireNonNull(cooldownManager, "[ModMusicManager] cooldownManager 不能为空");
+        this.loopRestartManager = Objects.requireNonNull(loopRestartManager, "[ModMusicManager] loopRestartManager 不能为空");
+        this.deduplication = Objects.requireNonNull(deduplication, "[ModMusicManager] deduplication 不能为空");
     }
 
-    private ModMusicManager() {
-        this.biomeMusicRegistry = new BiomeMusicRegistry();
-        this.soundEventLookup = new SoundEventLookup();
-        this.playbackController = new MusicPlaybackController(soundEventLookup);
-        this.crossfadeManager = new CrossfadeManager(playbackController, soundEventLookup);
-        this.deduplication = new BgmDeduplication(playbackController, crossfadeManager);
-        this.cooldownManager = new CooldownManager(DEFAULT_SWITCH_COOLDOWN_TICKS);
-        this.loopRestartManager = new LoopRestartManager(
-                1200, 1800, 600, 1200
-        );
-    }
+    // ==================== 配置 API（实例方法） ====================
 
     /**
-     * 获取 ModMusicManager 单例
-     *
-     * @return 单例实例
+     * 初始化默认群系音乐映射
+     * <p>
+     * 注册染梦维度的默认群系音乐配置。
      */
-    public static ModMusicManager getInstance() {
-        if (instance == null) {
-            instance = new ModMusicManager();
-        }
-        return instance;
+    public void initializeDefaultBiomeMusic() {
+        registerBiomeMusic("biome_dyedream_0", "dyedream_world");
+        registerBiomeMusic("biome_dyedream_1", "dream_heath");
+        registerBiomeMusic("biome_dyedream_2", "dream_delta");
+        registerBiomeMusic("biome_dyedream_3", "dream_taiga");
+        registerBiomeMusic("biome_dyedream_deep_ocean", "sweetdream_music");
+        registerBiomeMusic("biome_dyedream_mushroom_plains", "snowfall_dream_music");
     }
-
-    // ==================== 配置 API（静态委托） ====================
 
     /**
      * 注册群系音乐映射
@@ -107,8 +115,8 @@ public class ModMusicManager {
      * @param biomeId   群系 ID（相对于模组命名空间）
      * @param musicName 音乐注册名称（如 "dream_meadow"）
      */
-    public static void registerBiomeMusic(String biomeId, String musicName) {
-        getInstance().biomeMusicRegistry.registerBiomeMusic(biomeId, musicName);
+    public void registerBiomeMusic(String biomeId, String musicName) {
+        biomeMusicRegistry.registerBiomeMusic(biomeId, musicName);
     }
 
     /**
@@ -116,18 +124,17 @@ public class ModMusicManager {
      *
      * @param dimensionId 维度 ID
      */
-    public static void registerCustomDimension(ResourceLocation dimensionId) {
-        getInstance().biomeMusicRegistry.registerCustomDimension(dimensionId);
+    public void registerCustomDimension(ResourceLocation dimensionId) {
+        biomeMusicRegistry.registerCustomDimension(dimensionId);
     }
 
     /**
-     * 判断当前维度是否为已注册的自定义维度
+     * 获取群系音乐注册表
      *
-     * @param level 当前维度
-     * @return 如果是自定义维度返回 true
+     * @return BiomeMusicRegistry 实例
      */
-    public static boolean isCustomDimension(Level level) {
-        return getInstance().biomeMusicRegistry.isCustomDimension(level);
+    public BiomeMusicRegistry getBiomeMusicRegistry() {
+        return biomeMusicRegistry;
     }
 
     // ==================== 实例 API ====================

@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.entity.mob;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -282,7 +283,7 @@ public class ShadowTuneTotemEntity extends Monster implements GeoEntity {
 
             // 释放暗影石粒子 + 烟雾
             if (this.level() instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(PDParticles.SHADOW_STONE_PARTICLE.get(),
+                serverLevel.sendParticles((SimpleParticleType) PDParticles.SHADOW_STONE_PARTICLE.particleType(),
                         x, y, z, 128, 1, 4, 1, 0.1);
                 serverLevel.sendParticles(ParticleTypes.SMOKE,
                         x, y, z, 128, 1, 4, 1, 0.1);

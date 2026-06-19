@@ -4,6 +4,7 @@ import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -322,7 +323,7 @@ public class ShadowGolemEntity extends Monster implements GeoEntity {
         serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE,
                 this.getX(), this.getY(), this.getZ(),
                 200, 3, 0.1, 3, 0.2);
-        serverLevel.sendParticles(PDParticles.SHADOW_STONE_PARTICLE.get(),
+        serverLevel.sendParticles((SimpleParticleType) PDParticles.SHADOW_STONE_PARTICLE.particleType(),
                 this.getX(), this.getY(), this.getZ(),
                 200, 3, 0.4, 3, 0.1);
         serverLevel.playSound(null, this.blockPosition(),

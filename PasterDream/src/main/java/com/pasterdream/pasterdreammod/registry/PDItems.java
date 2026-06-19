@@ -929,7 +929,7 @@ public class PDItems {
     public static final DeferredItem<Item> DREAM_COIN_1 =
             ItemMigrationAPI.simpleItem("dream_coin_1").build();
     public static final DeferredItem<DreamFertilizerItem> DREAM_FERTILIZER = ITEMS.register("dream_fertilizer",
-            () -> new DreamFertilizerItem(new Item.Properties(), PDParticles.DREAMFERTILITER_PARTICLE));
+            () -> new DreamFertilizerItem(new Item.Properties(), PDParticles.DREAMFERTILITER_PARTICLE.holder()));
     public static final DeferredItem<Item> DYEDREAM_FRUIT = ITEMS.register("dyedream_fruit",
             () -> new DyedreamFruitItem(new Item.Properties()));
     public static final DeferredItem<Item> DYEDREAM_TELEPORT_CRYSTAL = ITEMS.register("dyedream_teleport_crystal",

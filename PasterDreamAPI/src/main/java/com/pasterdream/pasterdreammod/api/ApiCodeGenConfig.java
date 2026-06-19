@@ -1,5 +1,7 @@
 package com.pasterdream.pasterdreammod.api;
 
+import java.util.Objects;
+
 /**
  * API 代码生成器的全局配置。
  * 主模组在启动时应调用 {@link #setDefaultBasePath(String)} 设置资源根目录。
@@ -22,6 +24,7 @@ public final class ApiCodeGenConfig {
      * 对于主模组开发环境，通常为 {@code "src/main/resources"}。
      */
     public static void setDefaultBasePath(String path) {
+        Objects.requireNonNull(path, "ApiCodeGenConfig: defaultBasePath cannot be null");
         defaultBasePath = path;
     }
 

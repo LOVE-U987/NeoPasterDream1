@@ -62,8 +62,8 @@ public class MeltdreamLiquidBlock extends LiquidBlock {
     @Override
     public void tick(BlockState blockstate, ServerLevel world, BlockPos pos, RandomSource random) {
         super.tick(blockstate, world, pos, random);
-        if (PDParticles.MELTDREAM_CRYSTAL_PARTICLE.isBound() && random.nextFloat() < 0.125f) {
-            SimpleParticleType particle = PDParticles.MELTDREAM_CRYSTAL_PARTICLE.get();
+        if (PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType() != null && random.nextFloat() < 0.125f) {
+            SimpleParticleType particle = (SimpleParticleType) PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType();
             world.sendParticles(particle, pos.getX() + 0.5, pos.getY() + 0.2, pos.getZ() + 0.5,
                     1, 0.15, 0.15, 0.15, 0.05);
         }

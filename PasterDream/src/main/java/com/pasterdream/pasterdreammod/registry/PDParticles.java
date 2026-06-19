@@ -4,8 +4,6 @@ import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.particle.ParticleAPI;
 import com.pasterdream.pasterdreammod.api.particle.ParticleResult;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.particles.SimpleParticleType;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
@@ -14,8 +12,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  * 使用 DeferredRegister 模式注册所有自定义粒子类型。
  * 内部集成 {@link ParticleAPI}，所有注册通过 API 统一管理。
  * <p>
- * 新增粒子推荐使用 {@link ParticleAPI#createParticle(String)} 的 Builder 方式，
- * 已存在的粒子保持向后兼容。
+ * 所有粒子均使用 {@link ParticleAPI#createParticle(String)} 的 Builder 方式注册。
  * <p>
  * 使用示例（新粒子）：
  * <pre>{@code
@@ -42,22 +39,31 @@ public class PDParticles {
      * 融梦水晶粒子（meltdream_crystal_particle）
      * 用于生命水晶的发光粒子效果
      */
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MELTDREAM_CRYSTAL_PARTICLE =
-            PARTICLE_TYPES.register("meltdream_crystal_particle", () -> new SimpleParticleType(false));
+    public static final ParticleResult MELTDREAM_CRYSTAL_PARTICLE = ParticleAPI.createParticle("meltdream_crystal_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:meltdream_crystal_particle")
+            .generateJson(false)
+            .build();
 
     /**
      * 暗影石粒子（shadow_stone_particle）
      * 用于暗影魔像技能爆炸的碎石粒子效果
      */
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SHADOW_STONE_PARTICLE =
-            PARTICLE_TYPES.register("shadow_stone_particle", () -> new SimpleParticleType(false));
+    public static final ParticleResult SHADOW_STONE_PARTICLE = ParticleAPI.createParticle("shadow_stone_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:shadow_stone_particle")
+            .generateJson(false)
+            .build();
 
     /**
      * 衍梦肥泥粒子（dreamfertiliter_particle）
      * 用于衍梦肥泥使用时的绿色魔法粒子效果
      */
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> DREAMFERTILITER_PARTICLE =
-            PARTICLE_TYPES.register("dreamfertiliter_particle", () -> new SimpleParticleType(false));
+    public static final ParticleResult DREAMFERTILITER_PARTICLE = ParticleAPI.createParticle("dreamfertiliter_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:dreamfertiliter_particle")
+            .generateJson(false)
+            .build();
 
     /**
      * 梦境环境粒子（dream_ambient_particle）
@@ -162,34 +168,31 @@ public class PDParticles {
      * 孢子粒子（spore_particle）
      * 4帧绿色孢子粒子，用于孢子实体飞行的孢子粉尘效果。
      */
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SPORE_PARTICLE =
-            PARTICLE_TYPES.register("spore_particle", () -> new SimpleParticleType(false));
+    public static final ParticleResult SPORE_PARTICLE = ParticleAPI.createParticle("spore_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:spore_particle")
+            .generateJson(false)
+            .build();
 
     /**
      * 狐火粒子0（fox_fire_0_particle）
      * 用于狐火实体每 tick 散发的橙色火焰粒子效果。
      */
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FOX_FIRE_0_PARTICLE =
-            PARTICLE_TYPES.register("fox_fire_0_particle", () -> new SimpleParticleType(false));
+    public static final ParticleResult FOX_FIRE_0_PARTICLE = ParticleAPI.createParticle("fox_fire_0_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:fox_fire_0_particle")
+            .generateJson(false)
+            .build();
 
     /**
      * 狐火粒子1（fox_fire_1_particle）
      * 用于狐火实体每 tick 散发的红色火焰粒子效果。
      */
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FOX_FIRE_1_PARTICLE =
-            PARTICLE_TYPES.register("fox_fire_1_particle", () -> new SimpleParticleType(false));
-
-    // 静态初始化：将现有粒子注册到 ParticleAPI 缓存中，方便后续查询和 Provider 注册
-    static {
-        initCache();
-    }
-
-    @SuppressWarnings("removal")
-    private static void initCache() {
-        ParticleAPI.cacheParticle(new ParticleResult("meltdream_crystal_particle", MELTDREAM_CRYSTAL_PARTICLE));
-        ParticleAPI.cacheParticle(new ParticleResult("shadow_stone_particle", SHADOW_STONE_PARTICLE));
-        ParticleAPI.cacheParticle(new ParticleResult("dreamfertiliter_particle", DREAMFERTILITER_PARTICLE));
-    }
+    public static final ParticleResult FOX_FIRE_1_PARTICLE = ParticleAPI.createParticle("fox_fire_1_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:fox_fire_1_particle")
+            .generateJson(false)
+            .build();
 
     /**
      * 执行粒子注册（静态调用入口）

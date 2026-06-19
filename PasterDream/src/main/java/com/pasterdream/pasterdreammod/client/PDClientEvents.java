@@ -1,7 +1,9 @@
 package com.pasterdream.pasterdreammod.client;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.client.audio.BiomeMusicRegistry;
 import com.pasterdream.pasterdreammod.client.audio.ModMusicManager;
+import com.pasterdream.pasterdreammod.client.audio.MusicSystemFactory;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.client.Minecraft;
@@ -67,6 +69,9 @@ public class PDClientEvents {
     private static final double DRIFT_SPEED = 0.0008;
     private static final double DRIFT_RADIUS = 6.0;
 
+    /** 音频系统管理器实例 */
+    private static ModMusicManager musicManager;
+
     /** ModMusicManager 是否已初始化（注册自定义维度等） */
     private static boolean musicManagerInitialized = false;
 
@@ -91,7 +96,9 @@ public class PDClientEvents {
         }
 
         // 驱动 ModMusicManager tick（BGM 切换、淡入淡出、玩家状态检测）
-        ModMusicManager.getInstance().tick();
+        if (musicManager != null) {
+            musicManager.tick();
+        }
 
         // 暂停时不生成环境粒子，避免解冻时一瞬间爆出大量粒子
         if (mc.isPaused()) return;
@@ -123,13 +130,54 @@ public class PDClientEvents {
     }
 
     /**
+     * 获取音频系统管理器实例
+     * <p>
+     * 如果尚未初始化，则先调用 {@link #initMusicManager()} 完成初始化。
+     * 使用双重检查锁定（double-checked locking）保证多线程环境下的单例创建。
+     *
+     * @return ModMusicManager 实例
+     */
+    public static ModMusicManager getMusicManager() {
+        if (musicManager == null) {
+            synchronized (PDClientEvents.class) {
+                if (musicManager == null) {
+                    initMusicManager();
+                }
+            }
+        }
+        return musicManager;
+    }
+
+    /**
+     * 获取群系音乐注册表
+     * <p>
+     * 如果尚未初始化，则先调用 {@link #initMusicManager()} 完成初始化。
+     * 供 {@link com.pasterdream.pasterdreammod.mixin.MinecraftMixin} 等外部类查询
+     * ModMusicManager 管理的自定义维度。
+     *
+     * @return BiomeMusicRegistry 实例
+     */
+    public static BiomeMusicRegistry getBiomeMusicRegistry() {
+        return getMusicManager().getBiomeMusicRegistry();
+    }
+
+    /**
      * 初始化 ModMusicManager
      * <p>
-     * 注册自定义维度，启用 BGM 交叉淡化系统。
+     * 使用工厂创建音频系统实例，注册自定义维度与默认群系音乐映射，
+     * 启用 BGM 交叉淡化系统。
      */
     private static void initMusicManager() {
-        ModMusicManager.registerCustomDimension(
+        // 使用工厂创建音频系统
+        musicManager = MusicSystemFactory.createMusicSystem();
+
+        // 注册自定义维度
+        musicManager.registerCustomDimension(
                 ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dyedream_world"));
+
+        // 注册默认群系音乐映射
+        musicManager.initializeDefaultBiomeMusic();
+
         musicManagerInitialized = true;
         PasterDreamMod.LOGGER.info("[PDClientEvents] ModMusicManager 初始化完成");
     }
@@ -151,7 +199,7 @@ public class PDClientEvents {
         double windX = Math.cos(windAngle) * 0.003;
         double windZ = Math.sin(windAngle) * 0.003;
 
-        SimpleParticleType type = (SimpleParticleType) PDParticles.DREAMFERTILITER_PARTICLE.get();
+        SimpleParticleType type = (SimpleParticleType) PDParticles.DREAMFERTILITER_PARTICLE.particleType();
 
         int count = 1 + random.nextInt(2);
         for (int i = 0; i < count; i++) {
