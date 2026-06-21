@@ -13,7 +13,7 @@
 | **P1** | `CurioBuilder` 使用已弃用 `ICurioItem` API                           | 迁移到 `getAttributeModifiers(SlotContext, ResourceLocation, ItemStack)`，消除编译警告 | 已修复  |
 | **P1** | `CurioAPI.registerClientRenderers()` 无 side 校验                  | 方法入口增加 `FMLEnvironment.dist == Dist.CLIENT` 保护                               | 已修复  |
 | **P1** | `BatchBlockBuilder` / `VariantSetBuilder` 未写入 `BLOCK_SUPPLIERS` | 注册完成后调用 `BlockAPI.putBlock()`，确保 `BlockAPI.getBlock()` 可查询                   | 已修复  |
-| **P1** | `BlockLootAPI` INFO 级别日志泛滥                                      | 注册流程日志统一降为 `debug`，仅异常/摘要使用 `info`                                           | 修复中  |
+| **P1** | `BlockLootAPI` INFO 级别日志泛滥                                      | 注册流程日志统一降为 `debug`，仅异常/摘要使用 `info`                                           | 已修复  |
 | **P1** | 缺少统一注册入口                                                        | 新增 `PasterDreamAPI.registerAll(modEventBus)`                                 | 已修复  |
 | **P1** | 日志过多                                                            | 全部降为 `debug`，仅保留启动 banner 为 `info`                                           | 计划中  |
 | **P1** | 粒子新旧混用                                                          | 迁移剩余旧式粒子到 ParticleAPI，统一 15 个粒子注册方式                                    | 已修复  |

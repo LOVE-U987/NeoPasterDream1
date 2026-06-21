@@ -1,3 +1,36 @@
+# v8 — MomoNyako 负责的 BlockAPI 与日志优化修复
+
+> **修复日期**：2026-06-21\
+> **执行人**：MomoNyako\
+> **对照文档**：[`README.md`](README.md)、[`API_REVIEW_REPORT.md`](API_REVIEW_REPORT.md)
+
+## 修复清单
+
+| 优先级 | 问题                                              | 修复内容                                                                                                                                                |  状态 |
+| :-: | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | :-: |
+|  P1 | `BatchBlockBuilder` / `VariantSetBuilder` 未写入 `BLOCK_SUPPLIERS` | 在 `build()` 方法中注册方块后补充 `BlockAPI.putBlock()` 调用，确保 `BlockAPI.getBlock()` 可查询批量/变体注册方块 | 已修复 |
+|  P1 | `BlockLootAPI` INFO 级别日志泛滥 | 将基础方法（`selfDrop`, `oreDrop`, `silkTouchDrop`, `customDrop`, `multiDrop`）的详细日志从 `info` 降为 `debug`；批量方法保留一条 `info` 摘要日志；移除冗余的 `===== 方法名 =====` 和 `✅ 完成` 格式日志 | 已修复 |
+
+## 关键代码变更
+
+- **`BatchBlockBuilder.java`**：在 `build()` 循环体内，`results.put(...)` 之后添加 `BlockAPI.putBlock(fullName, results.get(fullName))`，与 `SimpleBlockBuilder` 保持一致。
+- **`VariantSetBuilder.java`**：在 9 个变体方块（stairs, slab, wall, fence, fenceGate, door, trapdoor, pressurePlate, button）注册后分别添加 `BlockAPI.putBlock(baseName + "_xxx", xxx)` 调用。
+- **`BlockLootAPI.java`**：
+  - `selfDrop()`, `oreDrop()`, `silkTouchDrop()`, `customDrop()`, `multiDrop()` 的详细日志从 `info` 降为 `debug`，每个方法仅保留一条 `debug` 日志；
+  - `selfDropAll()`, `oreDropAll()`, `variantSetDropAll()`, `batchDropSelf()`, `batchDropSelfRange()` 保留一条 `info` 摘要日志；
+  - `saveToFile()` 移除 `info` 级别调用日志，仅保留 `error` 级别异常日志。
+
+## 编译验证
+
+```text
+BUILD SUCCESSFUL in 12s
+2 actionable tasks: 1 executed, 1 up-to-date
+```
+
+无新增编译警告。
+
+***
+
 # v7 — LOVE\_U 负责的错误修复完成
 
 > **修复日期**：2026-06-20\

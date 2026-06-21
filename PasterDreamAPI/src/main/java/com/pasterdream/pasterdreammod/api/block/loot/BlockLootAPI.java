@@ -56,12 +56,9 @@ public final class BlockLootAPI {
      */
     public static void selfDrop(String blockName) {
         String blockId = MOD_ID + ":" + blockName;
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ===== selfDrop() 被调用 =====");
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 方块名称: {}, 完整ID: {}", blockName, blockId);
+        PasterDreamAPI.LOGGER.debug("[BlockLootAPI] selfDrop() 方块: {}", blockName);
         String json = LootTableGenerator.generateSelfDrop(blockId);
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 即将保存战利品表文件 → {}", blockName);
         saveToFile(blockName, json);
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ✅ selfDrop() 完成: {}", blockName);
     }
 
     /**
@@ -76,12 +73,9 @@ public final class BlockLootAPI {
      */
     public static void oreDrop(String blockName, String dropItemId) {
         String fullId = ensureNamespace(dropItemId);
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ===== oreDrop() 被调用 =====");
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 方块: {}, 掉落物品ID: {}, 完整ID: {}", blockName, dropItemId, fullId);
+        PasterDreamAPI.LOGGER.debug("[BlockLootAPI] oreDrop() 方块: {}, 掉落: {}", blockName, fullId);
         String json = LootTableGenerator.generateOreDrop(fullId, blockName);
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 即将保存战利品表文件 → {}", blockName);
         saveToFile(blockName, json);
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ✅ oreDrop() 完成: {} → {}", blockName, fullId);
     }
 
     /**
@@ -95,12 +89,9 @@ public final class BlockLootAPI {
      */
     public static void silkTouchDrop(String blockName) {
         String blockId = MOD_ID + ":" + blockName;
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ===== silkTouchDrop() 被调用 =====");
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 方块: {}, 完整ID: {}", blockName, blockId);
+        PasterDreamAPI.LOGGER.debug("[BlockLootAPI] silkTouchDrop() 方块: {}", blockName);
         String json = LootTableGenerator.generateSilkTouchDrop(blockId);
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 即将保存战利品表文件 → {}", blockName);
         saveToFile(blockName, json);
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ✅ silkTouchDrop() 完成: {}", blockName);
     }
 
     /**
@@ -119,14 +110,10 @@ public final class BlockLootAPI {
                                   boolean silkTouchOnly, boolean fortuneEnabled,
                                   boolean explosionDecay) {
         String fullId = ensureNamespace(dropItemId);
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ===== customDrop() 被调用 =====");
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 方块: {}, 掉落物品: {}, silkTouchOnly={}, fortuneEnabled={}, explosionDecay={}",
-            blockName, fullId, silkTouchOnly, fortuneEnabled, explosionDecay);
+        PasterDreamAPI.LOGGER.debug("[BlockLootAPI] customDrop() 方块: {}, 掉落: {}", blockName, fullId);
         String json = LootTableGenerator.generateCustomDrop(fullId, blockName,
                 silkTouchOnly, fortuneEnabled, explosionDecay);
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 即将保存战利品表文件 → {}", blockName);
         saveToFile(blockName, json);
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ✅ customDrop() 完成: {}", blockName);
     }
 
     /**
@@ -140,12 +127,9 @@ public final class BlockLootAPI {
      * @throws RuntimeException 如果文件写入失败
      */
     public static void multiDrop(String blockName, List<DropEntry> entries) {
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ===== multiDrop() 被调用 =====");
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 方块: {}, 条目数量: {}", blockName, entries.size());
+        PasterDreamAPI.LOGGER.debug("[BlockLootAPI] multiDrop() 方块: {}, 条目数: {}", blockName, entries.size());
         String json = LootTableGenerator.generateMultiDrop(entries, blockName);
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 即将保存战利品表文件 → {}", blockName);
         saveToFile(blockName, json);
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ✅ multiDrop() 完成: {}", blockName);
     }
 
     // ======================== 模式一：SimpleBlockBuilder 配套 ========================
@@ -160,13 +144,10 @@ public final class BlockLootAPI {
      * @throws RuntimeException 如果有任何文件写入失败
      */
     public static void selfDropAll(String... blockNames) {
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ===== selfDropAll() 被调用 =====");
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 待生成总数: {} 个方块", blockNames.length);
+        PasterDreamAPI.LOGGER.info("[BlockLootAPI] selfDropAll() 生成 {} 个方块战利品表", blockNames.length);
         for (String name : blockNames) {
-            PasterDreamAPI.LOGGER.info("[BlockLootAPI]   → 生成 selfDrop: {}", name);
             selfDrop(name);
         }
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ✅ selfDropAll() 完成, 共 {} 个方块", blockNames.length);
     }
 
     /**
@@ -178,13 +159,10 @@ public final class BlockLootAPI {
      * @throws RuntimeException 如果有任何文件写入失败
      */
     public static void oreDropAll(OreDropPair... drops) {
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ===== oreDropAll() 被调用 =====");
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 待生成总数: {} 个矿石", drops.length);
+        PasterDreamAPI.LOGGER.info("[BlockLootAPI] oreDropAll() 生成 {} 个矿石战利品表", drops.length);
         for (OreDropPair pair : drops) {
-            PasterDreamAPI.LOGGER.info("[BlockLootAPI]   → 生成 oreDrop: {} → {}", pair.blockName(), pair.dropItemId());
             oreDrop(pair.blockName(), pair.dropItemId());
         }
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ✅ oreDropAll() 完成, 共 {} 个矿石", drops.length);
     }
 
     /**
@@ -221,14 +199,12 @@ public final class BlockLootAPI {
      * @throws RuntimeException 如果有任何文件写入失败
      */
     public static void variantSetDropAll(String baseName) {
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ===== variantSetDropAll() 被调用 =====");
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 基础方块: {}, 变体: 默认9种", baseName);
+        PasterDreamAPI.LOGGER.info("[BlockLootAPI] variantSetDropAll() 生成 {} 变体族战利品表", baseName);
         variantSetDropAll(baseName,
                 "_stairs", "_slab", "_wall",
                 "_fence", "_fencegate",
                 "_door", "_trapdoor",
                 "_pressure_plate", "_button");
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ✅ variantSetDropAll() 完成: {}", baseName);
     }
 
     /**
@@ -241,12 +217,10 @@ public final class BlockLootAPI {
      * @throws RuntimeException 如果有任何文件写入失败
      */
     public static void variantSetDropAll(String baseName, String... suffixes) {
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ===== variantSetDropAll(自定义后缀) 被调用 =====");
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 基础方块: {}, 后缀数量: {} >> {}", baseName, suffixes.length, String.join(", ", suffixes));
+        PasterDreamAPI.LOGGER.debug("[BlockLootAPI] variantSetDropAll() 方块: {}, 后缀: {}", baseName, String.join(", ", suffixes));
         for (String suffix : suffixes) {
             selfDrop(baseName + suffix);
         }
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ✅ variantSetDropAll(自定义后缀) 完成: {}", baseName);
     }
 
     // ======================== 模式三：BatchBlockBuilder 配套 ========================
@@ -262,18 +236,10 @@ public final class BlockLootAPI {
      * @throws RuntimeException 如果有任何文件写入失败
      */
     public static void batchDropSelf(String baseName, int... indices) {
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ===== batchDropSelf() 被调用 =====");
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 基础名称: {}, 编号数量: {}", baseName, indices.length);
-        StringBuilder sb = new StringBuilder("编号: ");
-        for (int idx : indices) {
-            if (sb.length() > 4) sb.append(", ");
-            sb.append(idx);
-        }
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] {}", sb);
+        PasterDreamAPI.LOGGER.info("[BlockLootAPI] batchDropSelf() {} 生成 {} 个方块战利品表", baseName, indices.length);
         for (int index : indices) {
             selfDrop(baseName + "_" + index);
         }
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ✅ batchDropSelf() 完成: {}", baseName);
     }
 
     /**
@@ -289,8 +255,7 @@ public final class BlockLootAPI {
      * @throws RuntimeException 如果有任何文件写入失败
      */
     public static void batchDropSelfRange(String baseName, int start, int end, int... excludeIndices) {
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ===== batchDropSelfRange() 被调用 =====");
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] 基础名称: {}, 范围: [{}, {}], 排除数量: {}", baseName, start, end, excludeIndices.length);
+        PasterDreamAPI.LOGGER.debug("[BlockLootAPI] batchDropSelfRange() 方块: {}, 范围: [{}, {}]", baseName, start, end);
         List<Integer> excludes = new ArrayList<>();
         for (int ex : excludeIndices) {
             excludes.add(ex);
@@ -302,7 +267,7 @@ public final class BlockLootAPI {
                 count++;
             }
         }
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] ✅ batchDropSelfRange() 完成: {}, 实际生成: {} 个", baseName, count);
+        PasterDreamAPI.LOGGER.info("[BlockLootAPI] batchDropSelfRange() 完成: {}, 生成 {} 个", baseName, count);
     }
 
     // ======================== 私有辅助 ========================
@@ -328,11 +293,10 @@ public final class BlockLootAPI {
      * @throws RuntimeException 如果文件写入失败
      */
     private static void saveToFile(String blockName, String json) {
-        PasterDreamAPI.LOGGER.info("[BlockLootAPI] → 调用 LootTableGenerator.saveLootTableToFile() 方块={}", blockName);
         try {
             LootTableGenerator.saveLootTableToFile(json, MOD_ID, blockName, BASE_PATH);
         } catch (IOException e) {
-            PasterDreamAPI.LOGGER.error("[BlockLootAPI] ❌ 无法保存战利品表文件 [{}]: {}", blockName, e.getMessage(), e);
+            PasterDreamAPI.LOGGER.error("[BlockLootAPI] 无法保存战利品表文件 [{}]: {}", blockName, e.getMessage(), e);
             throw new RuntimeException("BlockLootAPI: 无法保存战利品表文件 [" + blockName + "]", e);
         }
     }
