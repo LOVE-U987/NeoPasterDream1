@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:shadow_block"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "pasterdream:thick_shadow_block"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:jigsaw",
+  "biomes": [
+    "plains",
+    "pasterdream:biome_dyedream_0",
+    "pasterdream:biome_dyedream_1",
+    "pasterdream:biome_dyedream_2"
+  ],
+  "step": "surface_structures",
+  "terrain_adaptation": "none",
+  "spawn_overrides": {},
+  "start_pool": "pasterdream:picnic_basket_structure",
+  "size": 1,
+  "project_start_to_heightmap": "WORLD_SURFACE_WG",
+  "max_distance_from_center": 64,
+  "use_expansion_hack": false,
+  "start_height": {
+    "absolute": 1
+  }
+}

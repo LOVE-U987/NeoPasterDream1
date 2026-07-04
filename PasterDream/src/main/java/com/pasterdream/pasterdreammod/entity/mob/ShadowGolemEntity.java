@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.entity.damage.ConfigurableImmunityEntity;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.core.BlockPos;
@@ -14,10 +15,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -59,7 +60,7 @@ import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
  * - attacking: 手部挥击动画（触发式播放）
  * - procedure: 由技能系统触发的动画（storage / skill）
  */
-public class ShadowGolemEntity extends Monster implements GeoEntity {
+public class ShadowGolemEntity extends ConfigurableImmunityEntity implements GeoEntity {
 
     private static final EntityDataAccessor<Boolean> SHOOT =
             SynchedEntityData.defineId(ShadowGolemEntity.class, EntityDataSerializers.BOOLEAN);
@@ -89,7 +90,7 @@ public class ShadowGolemEntity extends Monster implements GeoEntity {
      * @param type  实体类型
      * @param level 世界实例
      */
-    public ShadowGolemEntity(EntityType<ShadowGolemEntity> type, Level level) {
+    public ShadowGolemEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
         this.xpReward = 7;
     }
@@ -172,15 +173,12 @@ public class ShadowGolemEntity extends Monster implements GeoEntity {
     }
 
     // ==================== 受伤/免疫 ====================
+    // 伤害免疫逻辑由 ConfigurableImmunityEntity + EntityImmunitySetup 管理
+    // 配置位置: EntityImmunitySetup.setupAllImmunities() -> SHADOW_GOLEM
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (source.is(DamageTypes.ARROW)) return false;
-        if (source.is(DamageTypes.THROWN)) return false;
-        if (source.is(DamageTypes.INDIRECT_MAGIC)) return false;
-        if (source.is(DamageTypes.FALL)) return false;
-        if (source.is(DamageTypes.CACTUS)) return false;
-
+        // 免疫检查由父类 ConfigurableImmunityEntity 统一处理
         boolean result = super.hurt(source, amount);
         if (result && !level().isClientSide()) {
             // 被攻击时加速技能充能（不超过 189，保证最低 11 tick 触发）

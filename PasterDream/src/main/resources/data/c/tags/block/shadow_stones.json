@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:shadow_stone",
+    "pasterdream:shadow_stone_brick",
+    "pasterdream:shadow_stone_bricks",
+    "pasterdream:shadow_stone_tiles",
+    "pasterdream:cracked_shadow_stone_brick",
+    "pasterdream:chiseled_shadow_stone_brick"
+  ]
+}

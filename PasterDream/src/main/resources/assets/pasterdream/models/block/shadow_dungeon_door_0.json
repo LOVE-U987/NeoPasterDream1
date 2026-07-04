@@ -1,0 +1,9 @@
+{
+  "parent": "pasterdream:custom/shadow_dungeon_door",
+  "textures": {
+    "all": "pasterdream:block/shadow_dungeon_door",
+    "particle": "pasterdream:block/xiu_shi_jin_shu_kuai_",
+    "0": "pasterdream:block/shadow_dungeon_door"
+  },
+  "render_type": "cutout"
+}

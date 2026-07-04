@@ -1,0 +1,18 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/structure_debug_crystal_tower"
+  },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [0, 90, -30],
+      "translation": [0, 3, 0],
+      "scale": [0.8, 0.8, 0.8]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [0, 90, 30],
+      "translation": [0, 3, 0],
+      "scale": [0.8, 0.8, 0.8]
+    }
+  }
+}

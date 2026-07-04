@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "pasterdream:dyedream_worldtree_0",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 156,
+    "separation": 87,
+    "salt": 1208134265
+  }
+}

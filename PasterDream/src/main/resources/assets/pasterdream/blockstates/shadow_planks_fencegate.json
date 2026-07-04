@@ -1,0 +1,80 @@
+{
+  "variants": {
+    "facing=south,in_wall=false,open=false": {
+      "model": "pasterdream:block/shadow_planks_fencegate",
+      "uvlock": true
+    },
+    "facing=west,in_wall=false,open=false": {
+      "model": "pasterdream:block/shadow_planks_fencegate",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=north,in_wall=false,open=false": {
+      "model": "pasterdream:block/shadow_planks_fencegate",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=east,in_wall=false,open=false": {
+      "model": "pasterdream:block/shadow_planks_fencegate",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=south,in_wall=false,open=true": {
+      "model": "pasterdream:block/shadow_planks_fencegate_open",
+      "uvlock": true
+    },
+    "facing=west,in_wall=false,open=true": {
+      "model": "pasterdream:block/shadow_planks_fencegate_open",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=north,in_wall=false,open=true": {
+      "model": "pasterdream:block/shadow_planks_fencegate_open",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=east,in_wall=false,open=true": {
+      "model": "pasterdream:block/shadow_planks_fencegate_open",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=south,in_wall=true,open=false": {
+      "model": "pasterdream:block/shadow_planks_fencegate_wall",
+      "uvlock": true
+    },
+    "facing=west,in_wall=true,open=false": {
+      "model": "pasterdream:block/shadow_planks_fencegate_wall",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=north,in_wall=true,open=false": {
+      "model": "pasterdream:block/shadow_planks_fencegate_wall",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=east,in_wall=true,open=false": {
+      "model": "pasterdream:block/shadow_planks_fencegate_wall",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=south,in_wall=true,open=true": {
+      "model": "pasterdream:block/shadow_planks_fencegate_wall_open",
+      "uvlock": true
+    },
+    "facing=west,in_wall=true,open=true": {
+      "model": "pasterdream:block/shadow_planks_fencegate_wall_open",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=north,in_wall=true,open=true": {
+      "model": "pasterdream:block/shadow_planks_fencegate_wall_open",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=east,in_wall=true,open=true": {
+      "model": "pasterdream:block/shadow_planks_fencegate_wall_open",
+      "uvlock": true,
+      "y": 270
+    }
+  }
+}

@@ -81,10 +81,10 @@ public class DecorationBuilder {
     private float irregularity = 0.3f;
 
     /** 门框最小间距 */
-    private int gateMinWidth = 4;
+    private int gateMinWidth = 2;
 
     /** 门框最大间距 */
-    private int gateMaxWidth = 8;
+    private int gateMaxWidth = 6;
 
     /** 门框柱半径 */
     private int pillarRadius = 2;

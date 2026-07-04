@@ -184,7 +184,7 @@ public final class WorldGenUtils {
         int originChunkZ = origin.getZ() >> 4;
         int targetChunkX = target.getX() >> 4;
         int targetChunkZ = target.getZ() >> 4;
-        return Math.abs(targetChunkX - originChunkX) <= 1
-            && Math.abs(targetChunkZ - originChunkZ) <= 1;
+        return targetChunkX == originChunkX
+            && targetChunkZ == originChunkZ;
     }
 }

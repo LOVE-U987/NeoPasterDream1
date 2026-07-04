@@ -6,10 +6,10 @@
   "spawn_overrides": {},
   "step": "surface_structures",
   "terrain_adaptation": "beard_thin",
-  "start_height": {
-    "absolute": 0
-  },
   "project_start_to_heightmap": "WORLD_SURFACE_WG",
   "biomes": "desert",
-  "use_expansion_hack": false
+  "use_expansion_hack": false,
+  "start_height": {
+    "absolute": 0
+  }
 }

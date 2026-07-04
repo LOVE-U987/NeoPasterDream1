@@ -97,6 +97,14 @@ dependencies {
     implementation files(rootProject.file('libs/curios-neoforge-9.5.1+1.21.1.jar'))
 }
 
+tasks.named('jar') {
+    from project(':PasterDreamAPI').sourceSets.main.output
+}
+
+tasks.named('test', Test).configure {
+    failOnNoDiscoveredTests = false
+}
+
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [
             minecraft_version      : minecraft_version,

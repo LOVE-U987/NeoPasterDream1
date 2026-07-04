@@ -39,12 +39,6 @@ public class EntityImmunitySetup {
         config.configurePresets(PDEntities.SHADOW_TUNE_TOTEM.get(),
                 DamageImmunityConfig.Preset.ELEMENTAL_IMMUNITY,
                 DamageImmunityConfig.Preset.WITHER_IMMUNITY);
-        config.configureImmunity(PDEntities.SHADOW_TUNE_TOTEM.get(), Set.of(
-                DamageTypes.IN_FIRE, DamageTypes.ON_FIRE, DamageTypes.LAVA,
-                DamageTypes.FALL,
-                DamageTypes.WITHER, DamageTypes.WITHER_SKULL,
-                DamageTypes.INDIRECT_MAGIC
-        ));
 
         // ==================== 自定义完全免疫（含 PLAYER_EXPLOSION） ====================
         // 融梦水晶 —— 漂浮装饰实体，免疫几乎所有伤害（含玩家爆炸）
@@ -80,6 +74,27 @@ public class EntityImmunitySetup {
         // 1血飞行孢子，免疫摔落和仙人掌，箭矢伤害在原逻辑中单独处理
         config.configureImmunity(PDEntities.SPORE_ENTITY.get(), Set.of(
                 DamageTypes.FALL, DamageTypes.CACTUS
+        ));
+
+        // ==================== 亚伦柯斯左手 BOSS（火焰免疫） ====================
+        // 500HP 飞行 BOSS，免疫火焰伤害
+        config.configureImmunity(PDEntities.AARONCOS_LEFTHAND_0.get(), Set.of(
+                DamageTypes.IN_FIRE, DamageTypes.ON_FIRE, DamageTypes.LAVA
+        ));
+
+        // ==================== 亚伦柯斯右手 BOSS（火焰免疫） ====================
+        // 500HP 飞行 BOSS，免疫火焰伤害
+        config.configureImmunity(PDEntities.AARONCOS_RIGHTHAND_0.get(), Set.of(
+                DamageTypes.IN_FIRE, DamageTypes.ON_FIRE, DamageTypes.LAVA
+        ));
+
+        // ==================== 暗影魔法弹（环境伤害免疫） ====================
+        // 飞行投射物实体，免疫火焰/摔落/仙人掌/溺水/闪电/凋零
+        // 注：药水弹/药水云免疫在实体类中单独处理（基于实体类型判断）
+        config.configureImmunity(PDEntities.SHADOW_MAGICBALL.get(), Set.of(
+                DamageTypes.IN_FIRE, DamageTypes.ON_FIRE, DamageTypes.LAVA,
+                DamageTypes.FALL, DamageTypes.CACTUS, DamageTypes.DROWN,
+                DamageTypes.LIGHTNING_BOLT, DamageTypes.WITHER, DamageTypes.WITHER_SKULL
         ));
     }
 }

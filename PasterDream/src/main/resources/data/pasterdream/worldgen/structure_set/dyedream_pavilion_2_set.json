@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "pasterdream:dyedream_pavilion_2",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 43,
+    "separation": 24,
+    "salt": 1818998559
+  }
+}

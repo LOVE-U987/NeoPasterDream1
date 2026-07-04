@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "pasterdream:dyedream_tavern",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 34,
+    "separation": 16,
+    "salt": 1516864983
+  }
+}

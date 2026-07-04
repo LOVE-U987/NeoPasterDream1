@@ -5,6 +5,7 @@ import com.pasterdream.pasterdreammod.data.PDBlockModelProvider;
 import com.pasterdream.pasterdreammod.data.PDBlockTagProvider;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import com.pasterdream.pasterdreammod.registry.PDArenaEvents;
 import com.pasterdream.pasterdreammod.registry.PDCreativeTabs;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDEntityEvents;
@@ -17,6 +18,7 @@ import com.pasterdream.pasterdreammod.registry.PDMenus;
 import com.pasterdream.pasterdreammod.registry.ModDecorations;
 import com.pasterdream.pasterdreammod.registry.PDRuinsRegistration;
 import com.pasterdream.pasterdreammod.api.ApiCodeGenConfig;
+import com.pasterdream.pasterdreammod.entity.damage.EntityImmunitySetup;
 
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDPotions;
@@ -142,6 +144,9 @@ public class PasterDreamMod {
         // 在游戏总线上注册指令
         NeoForge.EVENT_BUS.addListener(PDCommands::register);
 
+        // 在游戏总线上注册竞技场维度事件（玩家进入竞技场时的初始化逻辑）
+        NeoForge.EVENT_BUS.addListener(PDArenaEvents::onPlayerChangedDimension);
+
         // 客户端 Tick 事件和极光天幕渲染器通过 @EventBusSubscriber(Dist.CLIENT)
         // 在 PDClientEvents 和 DyeDreamSkyRenderer 中自动注册，避免服务端类加载
     }
@@ -176,6 +181,9 @@ public class PasterDreamMod {
 
         // 注册 API 装饰物（冰刺、冰之门等）
         ModDecorations.register();
+
+        // 配置所有实体的伤害免疫规则（替代原先散布在 27 个实体类中的重复 hurt() 逻辑）
+        EntityImmunitySetup.setupAllImmunities();
 
         // 如需同步 JSON 文件，取消注释下行（注意 commonSetup 阶段可能无法编码 BlockPredicate）：
         // ModDecorations.generateJson();

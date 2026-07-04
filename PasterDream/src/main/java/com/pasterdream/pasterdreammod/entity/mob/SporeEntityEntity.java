@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.entity.damage.ConfigurableImmunityEntity;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import net.minecraft.core.BlockPos;
@@ -11,7 +12,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -45,7 +45,7 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * 原模组对照：FixPasterDream 的 {@code SporeEntityEntity}（PathfinderMob，无 GeckoLib）
  */
-public class SporeEntityEntity extends PathfinderMob {
+public class SporeEntityEntity extends ConfigurableImmunityEntity {
 
     /**
      * 构造孢子实体
@@ -118,15 +118,13 @@ public class SporeEntityEntity extends PathfinderMob {
     }
 
     // ======================== 伤害免疫 ========================
+    // 通用伤害类型免疫由 ConfigurableImmunityEntity + EntityImmunitySetup 管理
+    // 配置位置: EntityImmunitySetup.setupAllImmunities() -> SPORE_ENTITY (FALL, CACTUS)
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        // 免疫箭矢伤害
+        // 免疫箭矢伤害（通过实体类型判断，无法在 DamageTypes 配置中处理）
         if (source.getDirectEntity() instanceof AbstractArrow) return false;
-        // 免疫摔落伤害
-        if (source.is(DamageTypes.FALL)) return false;
-        // 免疫仙人掌伤害
-        if (source.is(DamageTypes.CACTUS)) return false;
         return super.hurt(source, amount);
     }
 

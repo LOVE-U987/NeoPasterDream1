@@ -1,0 +1,26 @@
+{
+  "name": "pasterdream:picnic_basket_structure",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "pasterdream:picnic_basket_structure",
+        "projection": "rigid",
+        "processors": {
+          "processors": [
+            {
+              "processor_type": "minecraft:block_ignore",
+              "blocks": [
+                {
+                  "Name": "minecraft:structure_block"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

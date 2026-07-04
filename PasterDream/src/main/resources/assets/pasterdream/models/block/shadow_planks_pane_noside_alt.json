@@ -1,0 +1,7 @@
+{
+  "parent": "block/template_glass_pane_noside_alt",
+  "textures": {
+    "pane": "pasterdream:block/shadow_planks_trapdoor"
+  },
+  "render_type": "cutout"
+}

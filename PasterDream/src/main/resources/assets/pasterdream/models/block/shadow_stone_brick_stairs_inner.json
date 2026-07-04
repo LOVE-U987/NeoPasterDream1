@@ -1,0 +1,9 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "pasterdream:block/shadow_stone_brick",
+    "top": "pasterdream:block/shadow_stone_brick",
+    "side": "pasterdream:block/shadow_stone_brick"
+  },
+  "render_type": "cutout"
+}

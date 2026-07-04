@@ -26,6 +26,15 @@ public class PDDimensions {
     /** 染梦世界 DimensionType Key（向后兼容） */
     public static final ResourceKey<DimensionType> DYEDREAM_WORLD_TYPE_KEY;
 
+    /** 亚伦柯斯竞技场维度 API 结果（包含所有 ResourceKey 引用） */
+    public static final DimensionResult AARONCOS_ARENA_WORLD;
+
+    /** 亚伦柯斯竞技场 Level Key */
+    public static final ResourceKey<Level> AARONCOS_ARENA_WORLD_LEVEL_KEY;
+
+    /** 亚伦柯斯竞技场 DimensionType Key */
+    public static final ResourceKey<DimensionType> AARONCOS_ARENA_WORLD_TYPE_KEY;
+
     static {
         DYEDREAM_WORLD = DimensionAPI.createDimension("dyedream_world")
                 .natural()
@@ -45,6 +54,25 @@ public class PDDimensions {
 
         DYEDREAM_WORLD_LEVEL_KEY = DYEDREAM_WORLD.levelKey();
         DYEDREAM_WORLD_TYPE_KEY = DYEDREAM_WORLD.typeKey();
+
+        // 亚伦柯斯竞技场：无天空光照、非自然、无昼夜、高度 0-128
+        // 使用 .generateJson(false) 因为 JSON 文件需要手动配置复杂噪声路由和表面规则
+        AARONCOS_ARENA_WORLD = DimensionAPI.createDimension("aaroncos_arena_world")
+                .natural(false)
+                .hasSkylight(false)
+                .bedWorks(false)
+                .hasRaids(false)
+                .piglinSafe(true)
+                .withAmbientLight(0.5)
+                .minY(0).height(128)
+                .monsterSpawnLight(0, 7)
+                .withDefaultBlock("minecraft:air")
+                .withDefaultFluid("minecraft:air")
+                .generateJson(false)
+                .build();
+
+        AARONCOS_ARENA_WORLD_LEVEL_KEY = AARONCOS_ARENA_WORLD.levelKey();
+        AARONCOS_ARENA_WORLD_TYPE_KEY = AARONCOS_ARENA_WORLD.typeKey();
     }
 
     /**
@@ -55,6 +83,16 @@ public class PDDimensions {
      */
     public static boolean isDyedreamWorld(Level level) {
         return DYEDREAM_WORLD.isDimension(level);
+    }
+
+    /**
+     * 判断当前维度是否为亚伦柯斯竞技场维度
+     *
+     * @param level 目标维度
+     * @return 如果是竞技场维度返回 true
+     */
+    public static boolean isAaroncosArenaWorld(Level level) {
+        return AARONCOS_ARENA_WORLD.isDimension(level);
     }
 
     /**

@@ -1,0 +1,52 @@
+{
+  "type": "pasterdream:aaroncos_arena_world",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "pasterdream:aaroncos_arena_biome"
+    },
+    "settings": {
+      "name": "pasterdream:aaroncos_arena_world",
+      "sea_level": 0,
+      "legacy_random_source": true,
+      "disable_mob_generation": true,
+      "aquifers_enabled": false,
+      "ore_veins_enabled": false,
+      "default_block": {
+        "Name": "minecraft:air"
+      },
+      "default_fluid": {
+        "Name": "minecraft:air"
+      },
+      "spawn_target": [],
+      "noise": {
+        "min_y": 0,
+        "height": 128,
+        "size_horizontal": 2,
+        "size_vertical": 1
+      },
+      "noise_router": {
+        "barrier": 0.0,
+        "fluid_level_floodedness": 0.0,
+        "fluid_level_spread": 0.0,
+        "lava": 0.0,
+        "temperature": 0.0,
+        "vegetation": 0.0,
+        "continents": 0.0,
+        "erosion": 0.0,
+        "depth": 0.0,
+        "ridges": 0.0,
+        "initial_density_without_jaggedness": 0.0,
+        "final_density": -1000000.0,
+        "vein_toggle": 0.0,
+        "vein_ridged": 0.0,
+        "vein_gap": 0.0
+      },
+      "surface_rule": {
+        "type": "minecraft:sequence",
+        "sequence": []
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "parent": "block/stairs",
+  "textures": {
+    "bottom": "pasterdream:block/shadow_stone_tiles",
+    "top": "pasterdream:block/shadow_stone_tiles",
+    "side": "pasterdream:block/shadow_stone_tiles"
+  },
+  "render_type": "cutout"
+}

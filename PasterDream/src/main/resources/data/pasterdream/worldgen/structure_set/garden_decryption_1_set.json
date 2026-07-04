@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "pasterdream:garden_decryption_1",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 18,
+    "separation": 7,
+    "salt": 1889395022
+  }
+}

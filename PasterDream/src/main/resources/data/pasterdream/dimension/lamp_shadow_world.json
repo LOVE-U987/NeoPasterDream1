@@ -1,0 +1,15 @@
+{
+  "type": "pasterdream:lamp_shadow_world",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "layers": [
+        {
+          "height": 1,
+          "block": "minecraft:bedrock"
+        }
+      ],
+      "biome": "minecraft:the_void"
+    }
+  }
+}

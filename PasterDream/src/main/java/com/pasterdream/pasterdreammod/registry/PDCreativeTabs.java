@@ -61,6 +61,8 @@ public class PDCreativeTabs {
                         output.accept(PDItems.FOX_FIRE_SPAWN_EGG.get());
                         output.accept(PDItems.SHADOW_NPC_0_SPAWN_EGG.get());
                         output.accept(PDItems.SPORE_ENTITY_SPAWN_EGG.get());
+                        output.accept(PDItems.AARONCOS_LEFTHAND_0_SPAWN_EGG.get());
+                        output.accept(PDItems.AARONCOS_RIGHTHAND_0_SPAWN_EGG.get());
                         output.accept(PDItems.PINK_SLIMEBALL.get());
                         output.accept(PDItems.SHADOW_BREATH.get());
                         output.accept(PDItems.BLACK_BEETLE_CARAPACE.get());
@@ -258,6 +260,9 @@ public class PDCreativeTabs {
                         output.accept(PDItems.MELTDREAM_CHEST.get());
                         output.accept(PDItems.MELTDREAM_CHEST_OPEN.get());
 
+                        // 融梦水晶灯
+                        output.accept(PDItems.MELTDREAM_CRYSTAL_LAMP.get());
+
                         // 梦境炼药锅
                         output.accept(PDItems.DREAM_CAULDRON.get());
 
@@ -304,6 +309,82 @@ public class PDCreativeTabs {
                         output.accept(PDItems.SCULK_UPGRADE.get());
                         output.accept(PDItems.NIGHTMARE_FUEL.get());
                         output.accept(PDItems.PURE_HORROR.get());
+                        // 阴影维度基础方块
+                        output.accept(PDItems.SHADOW_BLOCK.get());
+                        output.accept(PDItems.THICK_SHADOW_BLOCK.get());
+                        output.accept(PDItems.SHADOW_STONE.get());
+                        output.accept(PDItems.SHADOW_STONE_BRICK.get());
+                        output.accept(PDItems.SHADOW_STONE_BRICKS.get());
+                        output.accept(PDItems.SHADOW_STONE_TILES.get());
+                        output.accept(PDItems.CHISELED_SHADOW_STONE_BRICK.get());
+                        output.accept(PDItems.CRACKED_SHADOW_STONE_BRICK.get());
+                        output.accept(PDItems.SHADOW_NYLIUM.get());
+                        output.accept(PDItems.SHADOW_SHROOMLIGHT.get());
+                        output.accept(PDItems.SHADOW_WART_BLOCK.get());
+                        output.accept(PDItems.SHADOW_STEM.get());
+                        output.accept(PDItems.SHADOW_HYPHAE.get());
+                        output.accept(PDItems.STRIPPED_SHADOW_STEM.get());
+                        output.accept(PDItems.STRIPPED_SHADOW_HYPHAE.get());
+                        output.accept(PDItems.SHADOW_PLANKS.get());
+                        // 阴影石砖变体
+                        output.accept(PDItems.SHADOW_STONE_BRICK_STAIRS.get());
+                        output.accept(PDItems.SHADOW_STONE_BRICK_SLAB.get());
+                        output.accept(PDItems.SHADOW_STONE_BRICK_WALL.get());
+                        output.accept(PDItems.SHADOW_STONE_BRICKS_STAIRS.get());
+                        output.accept(PDItems.SHADOW_STONE_BRICKS_SLAB.get());
+                        output.accept(PDItems.SHADOW_STONE_BRICKS_WALL.get());
+                        output.accept(PDItems.SHADOW_STONE_TILES_STAIRS.get());
+                        output.accept(PDItems.SHADOW_STONE_TILES_SLAB.get());
+                        output.accept(PDItems.SHADOW_STONE_TILES_WALL.get());
+                        // 阴影木板变体
+                        output.accept(PDItems.SHADOW_PLANKS_STAIRS.get());
+                        output.accept(PDItems.SHADOW_PLANKS_SLAB.get());
+                        output.accept(PDItems.SHADOW_PLANKS_FENCE.get());
+                        output.accept(PDItems.SHADOW_PLANKS_FENCEGATE.get());
+                        output.accept(PDItems.SHADOW_PLANKS_DOOR.get());
+                        output.accept(PDItems.SHADOW_PLANKS_TRAPDOOR.get());
+                        output.accept(PDItems.SHADOW_PLANKS_PRESSURE_PLATE.get());
+                        output.accept(PDItems.SHADOW_PLANKS_BUTTON.get());
+                        output.accept(PDItems.SHADOW_PLANKS_PANE.get());
+                        // 暗影地牢 / 竞技场地砖
+                        output.accept(PDItems.SHADOW_DUNGEON_BLOCK_0.get());
+                        output.accept(PDItems.SHADOW_DUNGEON_BLOCK_1.get());
+                        output.accept(PDItems.SHADOW_DUNGEON_BLOCK_2.get());
+                        output.accept(PDItems.SHADOW_DUNGEON_BLOCK_3.get());
+                        output.accept(PDItems.SHADOW_DUNGEON_BLOCK_4.get());
+                        output.accept(PDItems.SHADOW_DUNGEON_BLOCK_5.get());
+                        output.accept(PDItems.SHADOW_DUNGEON_BLOCK_6.get());
+                        output.accept(PDItems.SHADOW_ARENA_BLOCK_0.get());
+                        // 松动地牢砖
+                        output.accept(PDItems.LOOSE_SHADOW_DUNGEON_BLOCK.get());
+                        // 地牢门系列
+                        output.accept(PDItems.SHADOW_DUNGEON_DOOR_0.get());
+                        output.accept(PDItems.SHADOW_DUNGEON_DOOR_1.get());
+                        output.accept(PDItems.SHADOWDUNGEONDOOR_2.get());
+                        output.accept(PDItems.SHADOWDUNGEONDOOR_3.get());
+                        // 地牢钥匙系列
+                        output.accept(PDItems.SHADOW_DUNGEON_KEY_0.get());
+                        output.accept(PDItems.SHADOW_DUNGEON_KEY_1.get());
+                        // 暗影蜡烛
+                        output.accept(PDItems.SHADOWCANDLE.get());
+                        // 高炉核心
+                        output.accept(PDItems.SHADOW_BLAST_FURNACE_CORE.get());
+                        // 暗影书架系列
+                        output.accept(PDItems.SHADOWSHELF_0.get());
+                        output.accept(PDItems.SHADOWSHELF_1.get());
+                        output.accept(PDItems.SHADOWSHELF_2.get());
+                        output.accept(PDItems.SHADOWSHELF_3.get());
+                        // 暗影裂隙系列
+                        output.accept(PDItems.SHADOW_FISSURE_0.get());
+                        output.accept(PDItems.SHADOW_FISSURE_1.get());
+                        output.accept(PDItems.SHADOW_FISSURE_2.get());
+                        output.accept(PDItems.SHADOW_FISSURE_3.get());
+                        output.accept(PDItems.SHADOW_FISSURE_4.get());
+                        output.accept(PDItems.SHADOW_FISSURE_5.get());
+                        // BOSS 相关方块
+                        output.accept(PDItems.AARONCOS_ARENA_PORTALS.get());
+                        output.accept(PDItems.AARONCOS_HAND_CHEST.get());
+                        output.accept(PDItems.AARONCOSHANDSPAWNBLOCK.get());
                     })
                     .build());
 
@@ -682,6 +763,42 @@ public class PDCreativeTabs {
                         output.accept(PDItems.DEBUG_WAND_LOTUS.get());
                         output.accept(PDItems.DEBUG_WAND_LILY_PAD.get());
                         output.accept(PDItems.DEBUG_WAND_PINKAGARIC.get());
+                        // 竞技场结构调试法杖
+                        output.accept(PDItems.DEBUG_WAND_AARONCOS_ARENA.get());
+                        // P0 移植遗迹调试水晶
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_FLOATING_TEMPLE.get());
+                        output.accept(PDItems.DEBUG_WAND_DREAM_CHURCH_0.get());
+                        output.accept(PDItems.DEBUG_WAND_DREAM_CHURCH_1.get());
+                        output.accept(PDItems.DEBUG_WAND_DREAM_CHURCH_2.get());
+                        output.accept(PDItems.DEBUG_WAND_DREAM_CHURCH_3.get());
+                        output.accept(PDItems.DEBUG_WAND_DREAM_CHURCH_4.get());
+                        output.accept(PDItems.DEBUG_WAND_DREAM_CHURCH_5.get());
+                        output.accept(PDItems.DEBUG_WAND_DREAM_CHURCH_6.get());
+                        output.accept(PDItems.DEBUG_WAND_DREAM_CHURCH_7.get());
+                        output.accept(PDItems.DEBUG_WAND_DESERT_FORTRESS_0.get());
+                        // P1 移植遗迹调试水晶
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TOWER_0.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TOWER_1.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_LABORATORY_0.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TAVERN.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_PAVILION_0.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_PAVILION_1.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_PAVILION_2.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_CAMPSITE_0.get());
+                        output.accept(PDItems.DEBUG_WAND_DREAM_WISHINGTREE_0.get());
+                        output.accept(PDItems.DEBUG_WAND_DREAM_WISHINGTREE_1.get());
+                        output.accept(PDItems.DEBUG_WAND_TRAVELER_HOUSE_0.get());
+                        output.accept(PDItems.DEBUG_WAND_TRAVELER_HOUSE_1.get());
+                        output.accept(PDItems.DEBUG_WAND_TRAVELER_HOUSE_2.get());
+                        output.accept(PDItems.DEBUG_WAND_GARDEN_DECRYPTION_0.get());
+                        output.accept(PDItems.DEBUG_WAND_GARDEN_DECRYPTION_1.get());
+                        output.accept(PDItems.DEBUG_WAND_GARDEN_DECRYPTION_2.get());
+                        output.accept(PDItems.DEBUG_WAND_PICNIC_BASKET.get());
+                        output.accept(PDItems.DEBUG_WAND_LIFECRYSTAL_CAVE_0.get());
+                        output.accept(PDItems.DEBUG_WAND_MELTDREAM_LIQUID_WELL_0.get());
+                        output.accept(PDItems.DEBUG_WAND_MELTDREAM_LIQUID_WELL_1.get());
+                        // BOSS 调试物品
+                        output.accept(PDItems.AARONCOS_ARENA_CREATE.get());
                     })
                     .build());
 

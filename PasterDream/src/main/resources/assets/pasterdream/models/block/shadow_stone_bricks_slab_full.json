@@ -1,0 +1,9 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "bottom": "pasterdream:block/chiseled_shadow_stone_brick",
+    "top": "pasterdream:block/chiseled_shadow_stone_brick",
+    "side": "pasterdream:block/chiseled_shadow_stone_brick"
+  },
+  "render_type": "cutout"
+}

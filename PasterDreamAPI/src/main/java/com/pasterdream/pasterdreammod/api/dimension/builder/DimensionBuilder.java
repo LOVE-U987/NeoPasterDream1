@@ -300,7 +300,10 @@ public class DimensionBuilder {
      *
      * @param musicName 背景音乐名称（如 "dyedream_world"）
      * @return 当前构建器实例
+     * @deprecated 建议在主模组的声音注册类（如 PDSounds）中统一管理音乐注册，
+     *             此方法仅用于开发阶段快速原型验证。
      */
+    @Deprecated
     public DimensionBuilder withMusic(String musicName) {
         return withMusic(musicName, 1.0f);
     }
@@ -315,7 +318,10 @@ public class DimensionBuilder {
      * @param musicName 背景音乐名称（如 "dyedream_world"）
      * @param volume    音量值（0.0 ~ 1.0），推荐 0.3
      * @return 当前构建器实例
+     * @deprecated 建议在主模组的声音注册类（如 PDSounds）中统一管理音乐注册，
+     *             此方法仅用于开发阶段快速原型验证。
      */
+    @Deprecated
     public DimensionBuilder withMusic(String musicName, float volume) {
         this.musicName = musicName;
         this.musicVolume = Math.max(0.0f, Math.min(1.0f, volume));

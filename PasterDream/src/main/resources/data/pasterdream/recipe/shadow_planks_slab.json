@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:shadow_planks"
+    }
+  },
+  "result": {
+    "count": 6,
+    "id": "pasterdream:shadow_planks_slab"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:shadow_planks"
+    }
+  },
+  "result": {
+    "count": 3,
+    "id": "pasterdream:shadow_planks_door"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "pasterdream:dyedream_floating_temple",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 187,
+    "separation": 121,
+    "salt": 1576871481
+  }
+}

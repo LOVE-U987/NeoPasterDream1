@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "pasterdream:block/shadow_hyphae",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "pasterdream:block/shadow_hyphae"
+    },
+    "axis=z": {
+      "model": "pasterdream:block/shadow_hyphae",
+      "x": 90
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/lie_xi_fang_kuai_4",
+    "up": "pasterdream:block/lie_xi_fang_kuai_4",
+    "north": "pasterdream:block/lie_xi_fang_kuai_4",
+    "east": "pasterdream:block/lie_xi_fang_kuai_4",
+    "south": "pasterdream:block/lie_xi_fang_kuai_4",
+    "west": "pasterdream:block/lie_xi_fang_kuai_4",
+    "particle": "pasterdream:block/lie_xi_fang_kuai_4"
+  },
+  "render_type": "solid"
+}

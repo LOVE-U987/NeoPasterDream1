@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.entity.damage.ConfigurableImmunityEntity;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import net.minecraft.core.particles.ParticleTypes;
@@ -15,12 +16,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
@@ -53,7 +54,7 @@ import java.util.List;
  * 注意：Geo 模型文件名为 shadow_rune_totem.geo.json，与注册名不一致，渲染器需自定义模型路径。
  * 渲染：GeckoLib 动画实体
  */
-public class ShadowTuneTotemEntity extends Monster implements GeoEntity {
+public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity implements GeoEntity {
 
     private static final EntityDataAccessor<Boolean> SHOOT =
             SynchedEntityData.defineId(ShadowTuneTotemEntity.class, EntityDataSerializers.BOOLEAN);
@@ -82,7 +83,7 @@ public class ShadowTuneTotemEntity extends Monster implements GeoEntity {
      * @param type  实体类型
      * @param level 世界实例
      */
-    public ShadowTuneTotemEntity(EntityType<? extends Monster> type, Level level) {
+    public ShadowTuneTotemEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
         this.xpReward = 0;
         this.setNoAi(true);
@@ -167,18 +168,8 @@ public class ShadowTuneTotemEntity extends Monster implements GeoEntity {
     }
 
     // ======================== 受伤/免疫 ========================
-
-    @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (source.is(DamageTypes.IN_FIRE)) return false;
-        if (source.is(DamageTypes.ON_FIRE)) return false;
-        if (source.is(DamageTypes.LAVA)) return false;
-        if (source.is(DamageTypes.FALL)) return false;
-        if (source.is(DamageTypes.WITHER)) return false;
-        if (source.is(DamageTypes.WITHER_SKULL)) return false;
-        if (source.is(DamageTypes.INDIRECT_MAGIC)) return false;
-        return super.hurt(source, amount);
-    }
+    // 伤害免疫逻辑已统一由 ConfigurableImmunityEntity + EntityImmunitySetup 管理
+    // 配置位置: EntityImmunitySetup.setupAllImmunities() -> SHADOW_TUNE_TOTEM
 
     // ======================== NBT 持久化 ========================
 

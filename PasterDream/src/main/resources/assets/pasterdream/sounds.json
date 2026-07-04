@@ -286,5 +286,74 @@
   "stone_break_0": {
     "subtitle": "subtitle.pasterdream.stone_break_0",
     "sounds": ["pasterdream:stone_break_0"]
+  },
+  "aaroncos_spawn": {
+    "subtitle": "subtitle.pasterdream.aaroncos_spawn",
+    "sounds": ["pasterdream:aaroncos_spawn"]
+  },
+  "shadow_door": {
+    "subtitle": "subtitle.pasterdream.shadow_door",
+    "category": "block",
+    "sounds": ["pasterdream:shadow_door"]
+  },
+  "shadow_vortex": {
+    "subtitle": "subtitle.pasterdream.shadow_vortex",
+    "category": "hostile",
+    "sounds": ["pasterdream:shadow_vortex"]
+  },
+  "shadow_vortex_book": {
+    "subtitle": "subtitle.pasterdream.shadow_vortex_book",
+    "category": "hostile",
+    "sounds": ["pasterdream:shadow_vortex_book"]
+  },
+  "shadow_sword": {
+    "subtitle": "subtitle.pasterdream.shadow_sword",
+    "category": "hostile",
+    "sounds": ["pasterdream:shadow_sword"]
+  },
+  "shadow_hand_lantern": {
+    "subtitle": "subtitle.pasterdream.shadow_hand_lantern",
+    "category": "hostile",
+    "sounds": ["pasterdream:shadow_hand_lantern"]
+  },
+  "shadow_music_0": {
+    "subtitle": "subtitle.pasterdream.shadow_music_0",
+    "category": "music",
+    "sounds": ["pasterdream:shadow_music_0"]
+  },
+  "shadow_trap_0": {
+    "subtitle": "subtitle.pasterdream.shadow_trap_0",
+    "category": "hostile",
+    "sounds": ["pasterdream:shadow_trap_0"]
+  },
+  "sword_wave": {
+    "subtitle": "subtitle.pasterdream.sword_wave",
+    "category": "hostile",
+    "sounds": ["pasterdream:sword_wave"]
+  },
+  "sword1": {
+    "subtitle": "subtitle.pasterdream.sword1",
+    "category": "hostile",
+    "sounds": ["pasterdream:sword1"]
+  },
+  "white_sword_rain": {
+    "subtitle": "subtitle.pasterdream.white_sword_rain",
+    "category": "hostile",
+    "sounds": ["pasterdream:white_sword_rain"]
+  },
+  "skill0": {
+    "subtitle": "subtitle.pasterdream.skill0",
+    "category": "hostile",
+    "sounds": ["pasterdream:skill0"]
+  },
+  "skill1": {
+    "subtitle": "subtitle.pasterdream.skill1",
+    "category": "hostile",
+    "sounds": ["pasterdream:skill1"]
+  },
+  "skill2": {
+    "subtitle": "subtitle.pasterdream.skill2",
+    "category": "hostile",
+    "sounds": ["pasterdream:skill2"]
   }
 }

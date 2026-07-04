@@ -40,6 +40,14 @@ import java.util.function.Supplier;
  *   <li><b>特殊效果注册</b>：配套的客户端特效注册辅助，直接使用 {@code RegisterDimensionSpecialEffectsEvent}</li>
  * </ul>
  * <p>
+ * <b>⚠️ Minecraft 1.21 维度 JSON 格式要求（反复踩坑警告）：</b>
+ * <ul>
+ *   <li>维度 JSON 必须包含 {@code noise_router} 和 {@code surface_rule} 字段，否则游戏崩溃</li>
+ *   <li>虚空维度推荐使用模板：参考 {@code data/pasterdream/dimension/aaroncos_arena_world.json}</li>
+ *   <li>文件必须放在 {@code data/<modid>/dimension/}，不是 {@code assets/}</li>
+ *   <li>详见 Skill「pasterdream-dimension-api」</li>
+ * </ul>
+ * <p>
  * 注意：此类不包含任何客户端专属类型引用，确保服务端兼容。
  * <p>
  * 使用示例：
@@ -156,8 +164,11 @@ public final class DimensionAPI {
      * @param musicName 背景音乐名称（如 "dyedream_world"）
      * @return 已注册的 {@link SoundEvent} Supplier；若对应 .ogg 文件缺失则可能返回 {@code null}
      * @throws RuntimeException 如果 sounds.json 写入失败
+     * @deprecated 建议直接使用 {@link ApiSoundRegistry#registerDimensionMusic(String)} 并手动配置 sounds.json，
+     *             或在主模组的声音注册类（如 PDSounds）中统一管理。
      */
     @Nullable
+    @Deprecated
     public static Supplier<SoundEvent> registerDimensionMusic(String musicName) {
         return registerDimensionMusic(musicName, 1.0f);
     }
@@ -172,8 +183,11 @@ public final class DimensionAPI {
      * @param volume    音量值（0.0 ~ 1.0），推荐统一设置为 0.3
      * @return 已注册的 {@link SoundEvent} Supplier；若对应 .ogg 文件缺失则可能返回 {@code null}
      * @throws RuntimeException 如果 sounds.json 写入失败
+     * @deprecated 建议直接使用 {@link ApiSoundRegistry#registerDimensionMusic(String)} 并手动配置 sounds.json，
+     *             或在主模组的声音注册类（如 PDSounds）中统一管理。
      */
     @Nullable
+    @Deprecated
     public static Supplier<SoundEvent> registerDimensionMusic(String musicName, float volume) {
         String basePath = "src/main/resources";
 

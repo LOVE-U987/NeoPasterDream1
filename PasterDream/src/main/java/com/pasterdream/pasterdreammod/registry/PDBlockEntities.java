@@ -1,6 +1,8 @@
 package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.api.blockentity.BlockEntityAPI;
+import com.pasterdream.pasterdreammod.block.entity.AaroncosHandChestBlockEntity;
+import com.pasterdream.pasterdreammod.block.entity.AaroncosHandSpawnBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.DreamAccumulatorBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.DreamCauldronBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.DyedreamDeskBlockEntity;
@@ -8,6 +10,7 @@ import com.pasterdream.pasterdreammod.block.entity.LifeCrystalBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.MeltdreamChestBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.MeltdreamChestOpenBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.ShadowChestBlockEntity;
+import com.pasterdream.pasterdreammod.block.entity.ShadowVortexBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.TheEndlessBookOfDreamSeekersBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -18,6 +21,36 @@ import net.neoforged.neoforge.registries.DeferredHolder;
  * 使用 {@link BlockEntityAPI} 统一注册所有 BlockEntityType，避免维护独立的 DeferredRegister。
  */
 public class PDBlockEntities {
+
+    /**
+     * 亚伦柯斯之手生成激活方块实体类型
+     * 用于渲染 GeckoLib 3D 模型和动画
+     */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AaroncosHandSpawnBlockEntity>> AARONCOS_HAND_SPAWN_BLOCK =
+            BlockEntityAPI.<AaroncosHandSpawnBlockEntity>createBlockEntity("aaroncos_hand_spawn_block")
+                    .factory(AaroncosHandSpawnBlockEntity::new)
+                    .validBlock(PDBlocks.AARONCOSHANDSPAWNBLOCK)
+                    .build();
+
+    /**
+     * 亚伦柯斯之触战利品箱方块实体类型
+     * 用于渲染 GeckoLib 3D 模型和动画
+     */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AaroncosHandChestBlockEntity>> AARONCOS_HAND_CHEST =
+            BlockEntityAPI.<AaroncosHandChestBlockEntity>createBlockEntity("aaroncos_hand_chest")
+                    .factory(AaroncosHandChestBlockEntity::new)
+                    .validBlock(PDBlocks.AARONCOS_HAND_CHEST)
+                    .build();
+
+    /**
+     * 暗影漩涡方块实体类型
+     * 用于渲染 GeckoLib 3D 模型和动画
+     */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ShadowVortexBlockEntity>> SHADOW_VORTEX =
+            BlockEntityAPI.<ShadowVortexBlockEntity>createBlockEntity("shadow_vortex")
+                    .factory(ShadowVortexBlockEntity::new)
+                    .validBlock(PDBlocks.SHADOW_VORTEX)
+                    .build();
 
     /**
      * 蓄梦池方块实体类型

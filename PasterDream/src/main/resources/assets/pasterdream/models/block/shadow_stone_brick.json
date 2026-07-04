@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/shadow_stone_brick",
+    "up": "pasterdream:block/shadow_stone_brick",
+    "north": "pasterdream:block/shadow_stone_brick",
+    "east": "pasterdream:block/shadow_stone_brick",
+    "south": "pasterdream:block/shadow_stone_brick",
+    "west": "pasterdream:block/shadow_stone_brick",
+    "particle": "pasterdream:block/shadow_stone_brick"
+  },
+  "render_type": "solid"
+}

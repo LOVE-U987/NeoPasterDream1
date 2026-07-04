@@ -13,13 +13,15 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import javax.annotation.Nullable;
 
 /**
- * API 层的声音事件注册器。
- * 提供维度背景音乐的动态注册能力，供 DimensionBuilder / DimensionAPI 使用。
+ * API 层的声音事件注册器工具类。
+ * 提供维度背景音乐的动态注册能力，供主模组和 DimensionBuilder / DimensionAPI 使用。
  * <p>
  * 主模组需在 {@code PasterDreamMod} 构造器中注册：
  * <pre>{@code
  * ApiSoundRegistry.DIMENSION_SOUNDS.register(modEventBus);
  * }</pre>
+ * <p>
+ * 具体的音乐列表由主模组（如 PDSounds）负责注册，此类仅提供注册工具方法和缓存。
  */
 public final class ApiSoundRegistry {
 
@@ -33,16 +35,6 @@ public final class ApiSoundRegistry {
 
     /** 缓存已注册的维度音乐事件 */
     private static final Map<String, Supplier<SoundEvent>> DIMENSION_MUSIC_CACHE = new HashMap<>();
-
-    static {
-        registerDimensionMusic("dyedream_world");
-        registerDimensionMusic("dream_meadow");
-        registerDimensionMusic("dream_heath");
-        registerDimensionMusic("dream_taiga");
-        registerDimensionMusic("dream_delta");
-        registerDimensionMusic("sweetdream_music");
-        registerDimensionMusic("snowfall_dream_music");
-    }
 
     /**
      * 注册一个维度背景音乐 SoundEvent。

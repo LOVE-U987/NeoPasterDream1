@@ -2,6 +2,8 @@ package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
 import com.pasterdream.pasterdreammod.api.entity.EntityResult;
+import com.pasterdream.pasterdreammod.entity.mob.AaroncosLefthand0Entity;
+import com.pasterdream.pasterdreammod.entity.mob.AaroncosRighthand0Entity;
 import com.pasterdream.pasterdreammod.entity.mob.AshBoneWingEntity;
 import com.pasterdream.pasterdreammod.entity.mob.BasaltSnailEntity;
 import com.pasterdream.pasterdreammod.entity.mob.BlackBeetleEntity;
@@ -32,6 +34,7 @@ import com.pasterdream.pasterdreammod.entity.mob.ThundercloudEntity;
 import com.pasterdream.pasterdreammod.entity.mob.WeakenessTerrorbeakEntity;
 import com.pasterdream.pasterdreammod.entity.mob.WindKnightEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.BoneWingFireBallProjectileEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.ShadowMagicballEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -546,6 +549,44 @@ public class PDEntities {
                     .spawnEgg(0x2E8B57, 0x556B2F)
                     .build();
 
+    // ==================== BOSS 实体 ====================
+
+    /**
+     * 亚伦柯斯之触 - 左 (aaroncos_lefthand_0)
+     * 双体 BOSS 的左手，飞行巨手形态，500HP
+     * 尺寸: 3.5f x 3.5f
+     * 颜色：背景 -15987700 (0x0735D4)，高光 -11246213 (0x53FA7B)
+     */
+    private static final EntityResult<AaroncosLefthand0Entity> AARONCOS_LEFTHAND_0_RESULT =
+            EntityAPI.createEntity("aaroncos_lefthand_0")
+                    .category(MobCategory.MONSTER)
+                    .size(3.5f, 3.5f)
+                    .trackingRange(64)
+                    .updateInterval(3)
+                    .velocityUpdates(true)
+                    .entityClass(AaroncosLefthand0Entity.class)
+                    .attributes(AaroncosLefthand0Entity::createAttributes)
+                    .spawnEgg(-15987700, -11246213)  // 深色系：背景 -15987700，高光 -11246213
+                    .build();
+
+    /**
+     * 亚伦柯斯之触 - 右 (aaroncos_righthand_0)
+     * 双体 BOSS 的右手，飞行巨手形态，500HP
+     * 尺寸: 3.5f x 3.5f
+     * 颜色：背景 -15593198 (0x132F12)，高光 -11189920 (0x559F60)
+     */
+    private static final EntityResult<AaroncosRighthand0Entity> AARONCOS_RIGHTHAND_0_RESULT =
+            EntityAPI.createEntity("aaroncos_righthand_0")
+                    .category(MobCategory.MONSTER)
+                    .size(3.5f, 3.5f)
+                    .trackingRange(64)
+                    .updateInterval(3)
+                    .velocityUpdates(true)
+                    .entityClass(AaroncosRighthand0Entity.class)
+                    .attributes(AaroncosRighthand0Entity::createAttributes)
+                    .spawnEgg(-15593198, -11189920)
+                    .build();
+
     // ======================== 向后兼容常量 ========================
 
     /**
@@ -730,7 +771,34 @@ public class PDEntities {
     public static final Supplier<EntityType<SporeEntityEntity>> SPORE_ENTITY =
             SPORE_ENTITY_RESULT.entityTypeSupplier();
 
+    // ======================== BOSS 实体向后兼容常量 ========================
+
+    /**
+     * 亚伦柯斯之触 - 左 (aaroncos_lefthand_0) — 向后兼容引用
+     */
+    public static final Supplier<EntityType<AaroncosLefthand0Entity>> AARONCOS_LEFTHAND_0 =
+            AARONCOS_LEFTHAND_0_RESULT.entityTypeSupplier();
+
+    /**
+     * 亚伦柯斯之触 - 右 (aaroncos_righthand_0) — 向后兼容引用
+     */
+    public static final Supplier<EntityType<AaroncosRighthand0Entity>> AARONCOS_RIGHTHAND_0 =
+            AARONCOS_RIGHTHAND_0_RESULT.entityTypeSupplier();
+
     // ==================== 弹射物实体注册 ====================
+
+    /**
+     * 暗影魔法弹投射物 (shadow_magicball)
+     * 飞行投射物，追踪玩家并在接触后爆炸造成魔法伤害。
+     * 尺寸: 1.0f x 1.0f
+     */
+    public static final Supplier<EntityType<ShadowMagicballEntity>> SHADOW_MAGICBALL =
+            ENTITY_TYPES.register("shadow_magicball",
+                    () -> EntityType.Builder.<ShadowMagicballEntity>of(ShadowMagicballEntity::new, MobCategory.MISC)
+                            .sized(1.0f, 1.0f)
+                            .clientTrackingRange(64)
+                            .updateInterval(3)
+                            .build("shadow_magicball"));
 
     /**
      * 骨翼火球弹射物 (bone_wing_fire_ball_projectile)

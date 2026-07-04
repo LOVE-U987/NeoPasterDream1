@@ -1,6 +1,8 @@
 package com.pasterdream.pasterdreammod.client;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.client.renderer.item.AaroncosHandChestDisplayItemRenderer;
+import com.pasterdream.pasterdreammod.client.renderer.item.AaroncosHandSpawnBlockDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.DreamAccumulatorDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.DreamCauldronDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.DreamMeterItemRenderer;
@@ -60,6 +62,14 @@ public class PDClientItemExtensions {
 
         registerDisplayItem(event, PDItems.MELTDREAM_LIQUID_BUCKET.get(), new MeltdreamLiquidBucketRenderer());
         PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册物品: meltdream_liquid_bucket → MeltdreamLiquidBucketRenderer（BEWLR 流体覆盖层兼容修复）");
+
+        // ==================== BOSS 系列 ====================
+
+        registerDisplayItem(event, PDItems.AARONCOS_HAND_CHEST.get(), new AaroncosHandChestDisplayItemRenderer());
+        PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: aaroncos_hand_chest → AaroncosHandChestDisplayItemRenderer（GeckoLib 3D）");
+
+        registerDisplayItem(event, PDItems.AARONCOSHANDSPAWNBLOCK.get(), new AaroncosHandSpawnBlockDisplayItemRenderer());
+        PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: aaroncoshandspawnblock → AaroncosHandSpawnBlockDisplayItemRenderer（GeckoLib 3D）");
     }
 
     /**

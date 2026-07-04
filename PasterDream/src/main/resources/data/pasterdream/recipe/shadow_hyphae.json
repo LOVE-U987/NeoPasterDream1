@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:shadow_stem"
+    }
+  },
+  "result": {
+    "count": 3,
+    "id": "pasterdream:shadow_hyphae"
+  }
+}

@@ -4,6 +4,9 @@ import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.block.BlockAPI;
 import com.pasterdream.pasterdreammod.api.block.BlockConfig;
 import com.pasterdream.pasterdreammod.api.block.builder.VariantSetResult;
+import com.pasterdream.pasterdreammod.block.AaroncosArenaPortalsBlock;
+import com.pasterdream.pasterdreammod.block.AaroncosHandChestBlock;
+import com.pasterdream.pasterdreammod.block.AaroncosHandSpawnBlock;
 import com.pasterdream.pasterdreammod.block.DreamAccumulatorBlock;
 import com.pasterdream.pasterdreammod.block.DreamTrainStructureBlock;
 import com.pasterdream.pasterdreammod.block.DyedreamCrackBlock;
@@ -29,6 +32,10 @@ import com.pasterdream.pasterdreammod.block.MeltdreamChestBlock;
 import com.pasterdream.pasterdreammod.block.MeltdreamChestOpenBlock;
 import com.pasterdream.pasterdreammod.block.DreamCauldronBlock;
 import com.pasterdream.pasterdreammod.block.ShadowChestBlock;
+import com.pasterdream.pasterdreammod.block.ShadowDungeonDoorBlock;
+import com.pasterdream.pasterdreammod.block.ShadowDungeonKeyBlock;
+import com.pasterdream.pasterdreammod.block.ShadowVortexBlock;
+import com.pasterdream.pasterdreammod.block.ShadowshelfBlock;
 import com.pasterdream.pasterdreammod.block.ThickCloudBlock;
 import com.pasterdream.pasterdreammod.block.Pebble0Block;
 import com.pasterdream.pasterdreammod.block.ShadowLight0Block;
@@ -400,6 +407,11 @@ public class PDBlocks {
         // ========== 寻梦者的永恒书卷 & 梦境炼药锅 ==========
         BlockAPI.putConfig("the_endless_book_of_dream_seekers", BlockConfig.of().mineable("axe"));
         BlockAPI.putConfig("dream_cauldron", BlockConfig.of().mineable("pickaxe"));
+
+        // ========== BOSS 相关方块 ==========
+        BlockAPI.putConfig("aaroncos_arena_portals", BlockConfig.of().mineable("pickaxe"));
+        BlockAPI.putConfig("aaroncos_hand_chest", BlockConfig.of().mineable("pickaxe"));
+        BlockAPI.putConfig("aaroncoshandspawnblock", BlockConfig.of().mineable("pickaxe"));
     }
 
     // ==================== 玻璃面板和灯笼 ====================
@@ -672,5 +684,507 @@ public class PDBlocks {
      */
     public static final DeferredBlock<MeltdreamLiquidBlock> MELTDREAM_LIQUID = BLOCKS.registerBlock("meltdream_liquid",
             p -> new MeltdreamLiquidBlock());
+
+    // ==================== BOSS 相关方块 ====================
+
+    /**
+     * 亚伦柯斯竞技场传送门方块 (aaroncos_arena_portals)
+     * 位于 BOSS 竞技场入口的不可破坏传送门方块，触碰时传送至竞技场维度
+     * 继承 SlabBlock 实现半砖形状，无碰撞箱，发光等级 15
+     */
+    public static final DeferredBlock<SlabBlock> AARONCOS_ARENA_PORTALS = BLOCKS.registerBlock("aaroncos_arena_portals",
+            p -> new AaroncosArenaPortalsBlock(), BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.GLASS)
+                    .strength(-1, 3600000)
+                    .lightLevel(s -> 15)
+                    .noCollission()
+                    .noOcclusion()
+                    .hasPostProcess((bs, br, bp) -> true)
+                    .emissiveRendering((bs, br, bp) -> true)
+                    .isRedstoneConductor((bs, br, bp) -> false)
+                    .dynamicShape());
+
+    /**
+     * 亚伦柯斯之触战利品箱 (aaroncos_hand_chest)
+     * BOSS 战后的战利品箱，含 GeckoLib 3D 模型和动画
+     */
+    public static final DeferredBlock<AaroncosHandChestBlock> AARONCOS_HAND_CHEST = BLOCKS.registerBlock("aaroncos_hand_chest",
+            AaroncosHandChestBlock::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.GLASS)
+                    .strength(1.0f, 0.5f)
+                    .noOcclusion());
+
+    /**
+     * 暗影漩涡 (shadow_vortex)
+     * BOSS 右手涡流技能生成的临时方块，含 GeckoLib 3D 模型和动画
+     * 无碰撞、无掉落、持续约 5 秒后自动消失
+     */
+    public static final DeferredBlock<ShadowVortexBlock> SHADOW_VORTEX = BLOCKS.registerBlock("shadow_vortex",
+            ShadowVortexBlock::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.GLASS)
+                    .strength(-1, 3600000)
+                    .noCollission()
+                    .noOcclusion()
+                    .isRedstoneConductor((bs, br, bp) -> false));
+
+    /**
+     * 亚伦柯斯之手生成激活方块 (aaroncoshandspawnblock)
+     * 放置后周期性检测并激活 BOSS 战，含 GeckoLib 3D 模型和动画
+     * 不可破坏，发光等级 12
+     */
+    public static final DeferredBlock<AaroncosHandSpawnBlock> AARONCOSHANDSPAWNBLOCK = BLOCKS.registerBlock("aaroncoshandspawnblock",
+            AaroncosHandSpawnBlock::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.GLASS)
+                    .strength(-1, 3600000)
+                    .lightLevel(s -> 12)
+                    .noOcclusion()
+                    .hasPostProcess((bs, br, bp) -> true)
+                    .emissiveRendering((bs, br, bp) -> true)
+                    .isRedstoneConductor((bs, br, bp) -> false));
+
+    // ==================== 阴影维度基础方块 ====================
+
+    /** 阴影方块（下落方块，类似沙子） */
+    public static final DeferredBlock<Block> SHADOW_BLOCK = BLOCKS.registerBlock("shadow_block",
+            Block::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.WOOL)
+                    .strength(0.45f, 0.5f)
+                    .noOcclusion()
+                    .isRedstoneConductor((bs, br, bp) -> false)
+                    .requiresCorrectToolForDrops());
+
+    /** 厚阴影方块（不下落，硬度更高） */
+    public static final DeferredBlock<Block> THICK_SHADOW_BLOCK = BLOCKS.registerBlock("thick_shadow_block",
+            Block::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.WOOL)
+                    .strength(1.0f, 0.75f)
+                    .noOcclusion()
+                    .isRedstoneConductor((bs, br, bp) -> false)
+                    .requiresCorrectToolForDrops());
+
+    /** 阴影石 */
+    public static final DeferredBlock<Block> SHADOW_STONE = BLOCKS.registerBlock("shadow_stone",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.DEEPSLATE)
+                    .strength(1.5f, 1.0f)
+                    .requiresCorrectToolForDrops());
+
+    /** 阴影石砖 */
+    public static final DeferredBlock<Block> SHADOW_STONE_BRICK = BLOCKS.registerBlock("shadow_stone_brick",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.DEEPSLATE)
+                    .strength(1.5f, 1.0f)
+                    .requiresCorrectToolForDrops());
+
+    /** 阴影石砖块（复数形式，纹理不同） */
+    public static final DeferredBlock<Block> SHADOW_STONE_BRICKS = BLOCKS.registerBlock("shadow_stone_bricks",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.DEEPSLATE)
+                    .strength(1.5f, 1.0f)
+                    .requiresCorrectToolForDrops());
+
+    /** 阴影石瓦砖 */
+    public static final DeferredBlock<Block> SHADOW_STONE_TILES = BLOCKS.registerBlock("shadow_stone_tiles",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.DEEPSLATE)
+                    .strength(1.5f, 1.0f)
+                    .requiresCorrectToolForDrops());
+
+    /** 雕凿阴影石砖 */
+    public static final DeferredBlock<Block> CHISELED_SHADOW_STONE_BRICK = BLOCKS.registerBlock("chiseled_shadow_stone_brick",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.DEEPSLATE)
+                    .strength(1.5f, 1.0f)
+                    .requiresCorrectToolForDrops());
+
+    /** 裂纹阴影石砖 */
+    public static final DeferredBlock<Block> CRACKED_SHADOW_STONE_BRICK = BLOCKS.registerBlock("cracked_shadow_stone_brick",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.DEEPSLATE)
+                    .strength(1.5f, 1.0f)
+                    .requiresCorrectToolForDrops());
+
+    /** 阴影菌丝 */
+    public static final DeferredBlock<Block> SHADOW_NYLIUM = BLOCKS.registerBlock("shadow_nylium",
+            Block::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.NYLIUM)
+                    .strength(0.4f)
+                    .requiresCorrectToolForDrops());
+
+    /** 阴影菌光体（发光等级 12） */
+    public static final DeferredBlock<Block> SHADOW_SHROOMLIGHT = BLOCKS.registerBlock("shadow_shroomlight",
+            Block::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.WART_BLOCK)
+                    .strength(1.0f)
+                    .lightLevel(s -> 12)
+                    .requiresCorrectToolForDrops());
+
+    /** 阴影疣块 */
+    public static final DeferredBlock<Block> SHADOW_WART_BLOCK = BLOCKS.registerBlock("shadow_wart_block",
+            Block::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.WART_BLOCK)
+                    .strength(1.0f)
+                    .requiresCorrectToolForDrops());
+
+    /** 阴影菌柄（朝向轴） */
+    public static final DeferredBlock<RotatedPillarBlock> SHADOW_STEM = BLOCKS.registerBlock("shadow_stem",
+            RotatedPillarBlock::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.STEM)
+                    .strength(2.0f, 3.0f)
+                    .requiresCorrectToolForDrops());
+
+    /** 阴影菌核（6 面皮） */
+    public static final DeferredBlock<RotatedPillarBlock> SHADOW_HYPHAE = BLOCKS.registerBlock("shadow_hyphae",
+            RotatedPillarBlock::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.STEM)
+                    .strength(2.0f, 3.0f)
+                    .requiresCorrectToolForDrops());
+
+    /** 去皮阴影菌柄 */
+    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_SHADOW_STEM = BLOCKS.registerBlock("stripped_shadow_stem",
+            RotatedPillarBlock::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.STEM)
+                    .strength(2.0f, 3.0f)
+                    .requiresCorrectToolForDrops());
+
+    /** 去皮阴影菌核 */
+    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_SHADOW_HYPHAE = BLOCKS.registerBlock("stripped_shadow_hyphae",
+            RotatedPillarBlock::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.STEM)
+                    .strength(2.0f, 3.0f)
+                    .requiresCorrectToolForDrops());
+
+    /** 阴影木板 */
+    public static final DeferredBlock<Block> SHADOW_PLANKS = BLOCKS.registerBlock("shadow_planks",
+            Block::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.WOOD)
+                    .strength(2.0f, 3.0f)
+                    .requiresCorrectToolForDrops());
+
+    // ==================== 阴影石砖变体族（API 批量注册） ====================
+
+    private static final VariantSetResult SHADOW_STONE_BRICK_VARIANTS = BlockAPI.createVariantSet("shadow_stone_brick", () -> SHADOW_STONE_BRICK.get())
+            .mineable("pickaxe")
+            .withStairs()
+            .withSlab()
+            .withWall()
+            .build();
+
+    public static final DeferredBlock<StairBlock> SHADOW_STONE_BRICK_STAIRS = SHADOW_STONE_BRICK_VARIANTS.stairs();
+    public static final DeferredBlock<SlabBlock> SHADOW_STONE_BRICK_SLAB = SHADOW_STONE_BRICK_VARIANTS.slab();
+    public static final DeferredBlock<WallBlock> SHADOW_STONE_BRICK_WALL = SHADOW_STONE_BRICK_VARIANTS.wall();
+
+    private static final VariantSetResult SHADOW_STONE_BRICKS_VARIANTS = BlockAPI.createVariantSet("shadow_stone_bricks", () -> SHADOW_STONE_BRICKS.get())
+            .mineable("pickaxe")
+            .withStairs()
+            .withSlab()
+            .withWall()
+            .build();
+
+    public static final DeferredBlock<StairBlock> SHADOW_STONE_BRICKS_STAIRS = SHADOW_STONE_BRICKS_VARIANTS.stairs();
+    public static final DeferredBlock<SlabBlock> SHADOW_STONE_BRICKS_SLAB = SHADOW_STONE_BRICKS_VARIANTS.slab();
+    public static final DeferredBlock<WallBlock> SHADOW_STONE_BRICKS_WALL = SHADOW_STONE_BRICKS_VARIANTS.wall();
+
+    private static final VariantSetResult SHADOW_STONE_TILES_VARIANTS = BlockAPI.createVariantSet("shadow_stone_tiles", () -> SHADOW_STONE_TILES.get())
+            .mineable("pickaxe")
+            .withStairs()
+            .withSlab()
+            .withWall()
+            .build();
+
+    public static final DeferredBlock<StairBlock> SHADOW_STONE_TILES_STAIRS = SHADOW_STONE_TILES_VARIANTS.stairs();
+    public static final DeferredBlock<SlabBlock> SHADOW_STONE_TILES_SLAB = SHADOW_STONE_TILES_VARIANTS.slab();
+    public static final DeferredBlock<WallBlock> SHADOW_STONE_TILES_WALL = SHADOW_STONE_TILES_VARIANTS.wall();
+
+    // ==================== 阴影木板变体族（API 批量注册） ====================
+
+    private static final VariantSetResult SHADOW_PLANKS_VARIANTS = BlockAPI.createVariantSet("shadow_planks", () -> SHADOW_PLANKS.get())
+            .mineable("axe")
+            .withStairs()
+            .withSlab()
+            .withFence()
+            .withFenceGate(WoodType.OAK)
+            .withDoor(BlockSetType.OAK)
+            .withTrapdoor(BlockSetType.OAK)
+            .withPressurePlate(BlockSetType.OAK)
+            .withButton(BlockSetType.OAK, 30)
+            .build();
+
+    public static final DeferredBlock<StairBlock> SHADOW_PLANKS_STAIRS = SHADOW_PLANKS_VARIANTS.stairs();
+    public static final DeferredBlock<SlabBlock> SHADOW_PLANKS_SLAB = SHADOW_PLANKS_VARIANTS.slab();
+    public static final DeferredBlock<FenceBlock> SHADOW_PLANKS_FENCE = SHADOW_PLANKS_VARIANTS.fence();
+    public static final DeferredBlock<FenceGateBlock> SHADOW_PLANKS_FENCEGATE = SHADOW_PLANKS_VARIANTS.fenceGate();
+    public static final DeferredBlock<DoorBlock> SHADOW_PLANKS_DOOR = SHADOW_PLANKS_VARIANTS.door();
+    public static final DeferredBlock<TrapDoorBlock> SHADOW_PLANKS_TRAPDOOR = SHADOW_PLANKS_VARIANTS.trapdoor();
+    public static final DeferredBlock<PressurePlateBlock> SHADOW_PLANKS_PRESSURE_PLATE = SHADOW_PLANKS_VARIANTS.pressurePlate();
+    public static final DeferredBlock<ButtonBlock> SHADOW_PLANKS_BUTTON = SHADOW_PLANKS_VARIANTS.button();
+
+    /** 阴影玻璃板（继承 IronBarsBlock，玻璃板式连接渲染） */
+    public static final DeferredBlock<IronBarsBlock> SHADOW_PLANKS_PANE = BLOCKS.registerBlock("shadow_planks_pane",
+            IronBarsBlock::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.WOOD)
+                    .strength(2.0f, 3.0f));
+
+    // ==================== 暗影地牢方块（BOSS 竞技场场地） ====================
+
+    /** 暗影地牢砖 0 — 基础砖（不可破坏，竞技场墙体） */
+    public static final DeferredBlock<Block> SHADOW_DUNGEON_BLOCK_0 = BLOCKS.registerBlock("shadow_dungeon_block_0",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.STONE)
+                    .strength(-1.0f, 3600000.0f)
+                    .lightLevel((bs) -> 0));
+
+    /** 暗影地牢砖 1 — 带顶底花纹砖（不可破坏，竞技场墙体） */
+    public static final DeferredBlock<Block> SHADOW_DUNGEON_BLOCK_1 = BLOCKS.registerBlock("shadow_dungeon_block_1",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.STONE)
+                    .strength(-1.0f, 3600000.0f));
+
+    /** 暗影地牢砖 2 — 花纹砖（不可破坏，竞技场墙体） */
+    public static final DeferredBlock<Block> SHADOW_DUNGEON_BLOCK_2 = BLOCKS.registerBlock("shadow_dungeon_block_2",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.STONE)
+                    .strength(-1.0f, 3600000.0f));
+
+    /** 暗影地牢砖 3 — 雕刻砖（不可破坏，竞技场墙体） */
+    public static final DeferredBlock<Block> SHADOW_DUNGEON_BLOCK_3 = BLOCKS.registerBlock("shadow_dungeon_block_3",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.STONE)
+                    .strength(-1.0f, 3600000.0f));
+
+    /** 暗影地牢砖 4 — 发光砖（不可破坏，竞技场光源） */
+    public static final DeferredBlock<Block> SHADOW_DUNGEON_BLOCK_4 = BLOCKS.registerBlock("shadow_dungeon_block_4",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.STONE)
+                    .strength(-1.0f, 3600000.0f)
+                    .lightLevel((bs) -> 8));
+
+    /** 暗影地牢砖 5 — 楼梯形态（不可破坏，竞技场楼梯） */
+    public static final DeferredBlock<StairBlock> SHADOW_DUNGEON_BLOCK_5 = BLOCKS.registerBlock("shadow_dungeon_block_5",
+            p -> new StairBlock(SHADOW_DUNGEON_BLOCK_2.get().defaultBlockState(), p),
+            BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.STONE)
+                    .strength(-1.0f, 3600000.0f));
+
+    /** 暗影地牢砖 6 — 台阶形态（不可破坏，竞技场台阶） */
+    public static final DeferredBlock<SlabBlock> SHADOW_DUNGEON_BLOCK_6 = BLOCKS.registerBlock("shadow_dungeon_block_6",
+            SlabBlock::new,
+            BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.STONE)
+                    .strength(-1.0f, 3600000.0f));
+
+    /** 暗影竞技场地面砖 0 — 竞技场地面（不可破坏） */
+    public static final DeferredBlock<Block> SHADOW_ARENA_BLOCK_0 = BLOCKS.registerBlock("shadow_arena_block_0",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.STONE)
+                    .strength(-1.0f, 3600000.0f));
+
+    // ==================== 暗影地牢功能性方块 ====================
+
+    /** 松动暗影地牢砖 — 可破坏版地牢砖（需正确工具） */
+    public static final DeferredBlock<Block> LOOSE_SHADOW_DUNGEON_BLOCK = BLOCKS.registerBlock("loose_shadow_dungeon_block",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.STONE)
+                    .strength(10.0f)
+                    .requiresCorrectToolForDrops());
+
+    /** 暗影地牢门 0 — 水平薄板门（不可破坏，铁链声） */
+    public static final DeferredBlock<ShadowDungeonDoorBlock> SHADOW_DUNGEON_DOOR_0 = BLOCKS.registerBlock("shadow_dungeon_door_0",
+            p -> new ShadowDungeonDoorBlock(p, Block.box(0, 7, 0, 16, 9, 16)),
+            BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.CHAIN)
+                    .strength(-1.0f, 3600000.0f)
+                    .noOcclusion()
+                    .isRedstoneConductor((bs, br, bp) -> false));
+
+    /** 暗影地牢门 1 — 门0的无交互版本 */
+    public static final DeferredBlock<ShadowDungeonDoorBlock> SHADOW_DUNGEON_DOOR_1 = BLOCKS.registerBlock("shadow_dungeon_door_1",
+            p -> new ShadowDungeonDoorBlock(p, Block.box(0, 7, 0, 16, 9, 16)),
+            BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.CHAIN)
+                    .strength(-1.0f, 3600000.0f)
+                    .noOcclusion()
+                    .isRedstoneConductor((bs, br, bp) -> false));
+
+    /** 暗影地牢门 2 — 整高门（不可破坏，石声） */
+    public static final DeferredBlock<ShadowDungeonDoorBlock> SHADOWDUNGEONDOOR_2 = BLOCKS.registerBlock("shadowdungeondoor_2",
+            p -> new ShadowDungeonDoorBlock(p, Block.box(0, 0, 4, 16, 16, 12)),
+            BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.STONE)
+                    .strength(-1.0f, 3600000.0f)
+                    .noOcclusion()
+                    .isRedstoneConductor((bs, br, bp) -> false));
+
+    /** 暗影地牢门 3 — 门2的无交互版本（深板岩声） */
+    public static final DeferredBlock<ShadowDungeonDoorBlock> SHADOWDUNGEONDOOR_3 = BLOCKS.registerBlock("shadowdungeondoor_3",
+            p -> new ShadowDungeonDoorBlock(p, Block.box(0, 0, 4, 16, 16, 12)),
+            BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.DEEPSLATE)
+                    .strength(-1.0f, 3600000.0f)
+                    .noOcclusion()
+                    .isRedstoneConductor((bs, br, bp) -> false));
+
+    /** 暗影地牢钥匙 0 — 墙挂式（可破坏，掉钥匙物品） */
+    public static final DeferredBlock<ShadowDungeonKeyBlock> SHADOW_DUNGEON_KEY_0 = BLOCKS.registerBlock("shadow_dungeon_key_0",
+            p -> new ShadowDungeonKeyBlock(p, true),
+            BlockBehaviour.Properties.of()
+                    .sound(SoundType.CHAIN)
+                    .strength(0.1f, 50.0f)
+                    .noOcclusion()
+                    .isRedstoneConductor((bs, br, bp) -> false));
+
+    /** 暗影地牢钥匙 1 — 地置式（可破坏，掉钥匙物品） */
+    public static final DeferredBlock<ShadowDungeonKeyBlock> SHADOW_DUNGEON_KEY_1 = BLOCKS.registerBlock("shadow_dungeon_key_1",
+            p -> new ShadowDungeonKeyBlock(p, false),
+            BlockBehaviour.Properties.of()
+                    .sound(SoundType.CHAIN)
+                    .strength(0.1f, 50.0f)
+                    .noOcclusion()
+                    .isRedstoneConductor((bs, br, bp) -> false));
+
+    /** 暗影蜡烛 — 发光等级13，易破坏 */
+    public static final DeferredBlock<Block> SHADOWCANDLE = BLOCKS.registerBlock("shadowcandle",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.CANDLE)
+                    .strength(0.1f, 0.0f)
+                    .lightLevel(s -> 13)
+                    .noOcclusion()
+                    .emissiveRendering((bs, br, bp) -> true)
+                    .hasPostProcess((bs, br, bp) -> true)
+                    .isRedstoneConductor((bs, br, bp) -> false));
+
+    /** 暗影高炉核心 — 多方块结构核心（可破坏，金属声） */
+    public static final DeferredBlock<Block> SHADOW_BLAST_FURNACE_CORE = BLOCKS.registerBlock("shadow_blast_furnace_core",
+            Block::new, BlockBehaviour.Properties.of()
+                    .sound(SoundType.METAL)
+                    .strength(3.0f, 1.0f)
+                    .requiresCorrectToolForDrops());
+
+    // ==================== 暗影书架系列（4种样式） ====================
+
+    /** 暗影书架 0 — 朝向方块，可被岩浆点燃 */
+    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF_0 = BLOCKS.registerBlock("shadowshelf_0",
+            ShadowshelfBlock::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASS)
+                    .sound(SoundType.WOOD)
+                    .strength(2.0f, 3.0f)
+                    .ignitedByLava()
+                    .requiresCorrectToolForDrops());
+
+    /** 暗影书架 1 */
+    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF_1 = BLOCKS.registerBlock("shadowshelf_1",
+            ShadowshelfBlock::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASS)
+                    .sound(SoundType.WOOD)
+                    .strength(2.0f, 3.0f)
+                    .ignitedByLava()
+                    .requiresCorrectToolForDrops());
+
+    /** 暗影书架 2 */
+    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF_2 = BLOCKS.registerBlock("shadowshelf_2",
+            ShadowshelfBlock::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASS)
+                    .sound(SoundType.WOOD)
+                    .strength(2.0f, 3.0f)
+                    .ignitedByLava()
+                    .requiresCorrectToolForDrops());
+
+    /** 暗影书架 3 */
+    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF_3 = BLOCKS.registerBlock("shadowshelf_3",
+            ShadowshelfBlock::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASS)
+                    .sound(SoundType.WOOD)
+                    .strength(2.0f, 3.0f)
+                    .ignitedByLava()
+                    .requiresCorrectToolForDrops());
+
+    // ==================== 暗影裂隙系列（6种发光等级） ====================
+
+    /** 暗影裂隙 0 — 发光等级4，完全挡光 */
+    public static final DeferredBlock<Block> SHADOW_FISSURE_0 = BLOCKS.registerBlock("shadow_fissure_0",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.GLASS)
+                    .strength(-1.0f, 3600000.0f)
+                    .lightLevel(s -> 4)
+                    .emissiveRendering((bs, br, bp) -> true)
+                    .hasPostProcess((bs, br, bp) -> true));
+
+    /** 暗影裂隙 1 — 发光等级4，玻璃式透明 */
+    public static final DeferredBlock<Block> SHADOW_FISSURE_1 = BLOCKS.registerBlock("shadow_fissure_1",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.GLASS)
+                    .strength(-1.0f, 3600000.0f)
+                    .lightLevel(s -> 4)
+                    .noOcclusion()
+                    .emissiveRendering((bs, br, bp) -> true)
+                    .hasPostProcess((bs, br, bp) -> true)
+                    .isRedstoneConductor((bs, br, bp) -> false));
+
+    /** 暗影裂隙 2 — 发光等级7，完全挡光 */
+    public static final DeferredBlock<Block> SHADOW_FISSURE_2 = BLOCKS.registerBlock("shadow_fissure_2",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.GLASS)
+                    .strength(-1.0f, 3600000.0f)
+                    .lightLevel(s -> 7)
+                    .emissiveRendering((bs, br, bp) -> true)
+                    .hasPostProcess((bs, br, bp) -> true));
+
+    /** 暗影裂隙 3 — 发光等级7，玻璃式透明 */
+    public static final DeferredBlock<Block> SHADOW_FISSURE_3 = BLOCKS.registerBlock("shadow_fissure_3",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.GLASS)
+                    .strength(-1.0f, 3600000.0f)
+                    .lightLevel(s -> 7)
+                    .noOcclusion()
+                    .emissiveRendering((bs, br, bp) -> true)
+                    .hasPostProcess((bs, br, bp) -> true)
+                    .isRedstoneConductor((bs, br, bp) -> false));
+
+    /** 暗影裂隙 4 — 发光等级10，完全挡光 */
+    public static final DeferredBlock<Block> SHADOW_FISSURE_4 = BLOCKS.registerBlock("shadow_fissure_4",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.GLASS)
+                    .strength(-1.0f, 3600000.0f)
+                    .lightLevel(s -> 10)
+                    .emissiveRendering((bs, br, bp) -> true)
+                    .hasPostProcess((bs, br, bp) -> true));
+
+    /** 暗影裂隙 5 — 发光等级10，玻璃式透明 */
+    public static final DeferredBlock<Block> SHADOW_FISSURE_5 = BLOCKS.registerBlock("shadow_fissure_5",
+            Block::new, BlockBehaviour.Properties.of()
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .sound(SoundType.GLASS)
+                    .strength(-1.0f, 3600000.0f)
+                    .lightLevel(s -> 10)
+                    .noOcclusion()
+                    .emissiveRendering((bs, br, bp) -> true)
+                    .hasPostProcess((bs, br, bp) -> true)
+                    .isRedstoneConductor((bs, br, bp) -> false));
 
 }

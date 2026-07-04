@@ -1,0 +1,9 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "bottom": "pasterdream:block/shadow_planks",
+    "top": "pasterdream:block/shadow_planks",
+    "side": "pasterdream:block/shadow_planks"
+  },
+  "render_type": "cutout"
+}

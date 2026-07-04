@@ -62,6 +62,10 @@ public class PDEntityEvents {
         EntityAPI.registerAttributes(event, "fox_fire");
         EntityAPI.registerAttributes(event, "shadow_npc_0");
         EntityAPI.registerAttributes(event, "spore_entity");
+
+        // BOSS 实体
+        EntityAPI.registerAttributes(event, "aaroncos_lefthand_0");
+        EntityAPI.registerAttributes(event, "aaroncos_righthand_0");
     }
 
     /**
@@ -236,6 +240,22 @@ public class PDEntityEvents {
 
         // 孢子实体：地面生成（飞行实体，初始生成在地面）
         event.register(PDEntities.SPORE_ENTITY.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        // ==================== BOSS 实体 ====================
+
+        // 亚伦柯斯之触 - 左：地面生成（飞行 BOSS，初始生成在地面）
+        event.register(PDEntities.AARONCOS_LEFTHAND_0.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        // 亚伦柯斯之触 - 右：地面生成（飞行 BOSS，初始生成在地面）
+        event.register(PDEntities.AARONCOS_RIGHTHAND_0.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,

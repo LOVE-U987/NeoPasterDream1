@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.entity.damage.ConfigurableImmunityEntity;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
 import net.minecraft.core.BlockPos;
@@ -17,7 +18,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.EntityType;
@@ -59,7 +59,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
  * <p>
  * 渲染：GeckoLib 动画实体，含 idle/movement/procedure 动画
  */
-public class MeltdreamCrystalEntity extends PathfinderMob implements GeoEntity {
+public class MeltdreamCrystalEntity extends ConfigurableImmunityEntity implements GeoEntity {
 
     private static final EntityDataAccessor<Boolean> SHOOT =
             SynchedEntityData.defineId(MeltdreamCrystalEntity.class, EntityDataSerializers.BOOLEAN);
@@ -195,29 +195,8 @@ public class MeltdreamCrystalEntity extends PathfinderMob implements GeoEntity {
     }
 
     // ==================== 受伤/免疫 ====================
-
-    @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (source.is(DamageTypes.IN_FIRE)) return false;
-        if (source.is(DamageTypes.ON_FIRE)) return false;
-        if (source.is(DamageTypes.LAVA)) return false;
-        if (source.is(DamageTypes.ARROW)) return false;
-        if (source.is(DamageTypes.PLAYER_ATTACK)) return false;
-        if (source.is(DamageTypes.INDIRECT_MAGIC)) return false;
-        if (source.is(DamageTypes.FALL)) return false;
-        if (source.is(DamageTypes.CACTUS)) return false;
-        if (source.is(DamageTypes.DROWN)) return false;
-        if (source.is(DamageTypes.LIGHTNING_BOLT)) return false;
-        if (source.is(DamageTypes.EXPLOSION)) return false;
-        if (source.is(DamageTypes.PLAYER_EXPLOSION)) return false;
-        if (source.is(DamageTypes.TRIDENT)) return false;
-        if (source.is(DamageTypes.FALLING_ANVIL)) return false;
-        if (source.is(DamageTypes.DRAGON_BREATH)) return false;
-        if (source.is(DamageTypes.WITHER)) return false;
-        if (source.is(DamageTypes.WITHER_SKULL)) return false;
-
-        return super.hurt(source, amount);
-    }
+    // 伤害免疫逻辑已统一由 ConfigurableImmunityEntity + EntityImmunitySetup 管理
+    // 配置位置: EntityImmunitySetup.setupAllImmunities() -> MELTDREAM_CRYSTAL
 
     @Override
     protected void tickDeath() {

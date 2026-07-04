@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.api.ruin.builder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
 import com.pasterdream.pasterdreammod.api.ruin.RuinResult;
@@ -234,9 +235,12 @@ public RuinResult build() {
     private void saveStructureSetJson() throws IOException {
         JsonObject root = new JsonObject();
 
-        JsonObject structuresObj = new JsonObject();
-        structuresObj.addProperty(modId + ":" + ruinName, 1);
-        root.add("structures", structuresObj);
+        JsonArray structuresArray = new JsonArray();
+        JsonObject structureEntry = new JsonObject();
+        structureEntry.addProperty("structure", modId + ":" + ruinName);
+        structureEntry.addProperty("weight", 1);
+        structuresArray.add(structureEntry);
+        root.add("structures", structuresArray);
 
         JsonObject placement = new JsonObject();
         placement.addProperty("type", placementType);

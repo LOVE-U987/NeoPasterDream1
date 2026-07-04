@@ -3,54 +3,17 @@ package com.pasterdream.pasterdreammod.client;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.client.model.Modelslime;
 import com.pasterdream.pasterdreammod.client.particle.*;
-import com.pasterdream.pasterdreammod.client.renderer.block.DreamAccumulatorBlockRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.block.DreamCauldronBlockRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.block.LifeCrystalBlockRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.block.MeltdreamChestBlockRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.block.ShadowChestBlockRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.block.TheEndlessBookOfDreamSeekersBlockRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.AshBoneWingRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.BasaltSnailRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.BlackBeetleMotherRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.BlackBeetleRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.BoneWingRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.CrazyTerrorbeakRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.FireflyRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.FoxFireRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.FriendlyGhostRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.GoldenFoxRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.HighvoltageThundercloudRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.JellyfishRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.MeltdreamCrystalRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.PinkChickenRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.PinkSlimeRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.ShakingCrystalRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.ShadowGhostRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.ShadowGolemRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.ShadowHandRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.ShadowNpc0Renderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.ShadowSquealGhost0Renderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.ShadowSquealGhostRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.ShadowTuneTotemRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.SmallStoneSpiritRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.SporeEntityRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.TerrorbeakRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.ThundercloudRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.WeakenessTerrorbeakRenderer;
-import com.pasterdream.pasterdreammod.client.renderer.entity.WindKnightRenderer;
+import com.pasterdream.pasterdreammod.client.renderer.RendererRegistry;
 import com.pasterdream.pasterdreammod.client.screen.DreamCauldronScreen;
 import com.pasterdream.pasterdreammod.client.screen.DyedreamDeskScreen;
 import com.pasterdream.pasterdreammod.client.screen.MeltdreamChestScreen;
 import com.pasterdream.pasterdreammod.client.screen.ShadowChestScreen;
 import com.pasterdream.pasterdreammod.client.screen.TheEndlessBookOfDreamSeekersScreen;
-import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
-import com.pasterdream.pasterdreammod.registry.PDEntities;
+import com.pasterdream.pasterdreammod.client.curio.CurioClientHandler;
 import com.pasterdream.pasterdreammod.registry.PDMenus;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDFluidsType;
-import com.pasterdream.pasterdreammod.client.curio.CurioClientHandler;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
-import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -71,230 +34,27 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * 客户端设置类
- * 负责注册客户端特有的渲染器和事件处理
+ * 负责注册客户端特有的渲染器、屏幕、粒子和维度特效
  *
- * 注意：此类仅在客户端加载（Dist.CLIENT）
+ * <p>注意：此类仅在客户端加载（Dist.CLIENT）</p>
+ * <p>渲染器注册已委托给 {@link RendererRegistry}，此类仅保留其他客户端初始化逻辑</p>
  */
 @EventBusSubscriber(modid = PasterDreamMod.MOD_ID, value = Dist.CLIENT)
 public class ClientSetup {
 
     /**
      * 注册渲染器
-     * 在 EntityRenderersEvent.RegisterRenderers 事件时调用
+     * <p>委托给 {@link RendererRegistry#registerAll(EntityRenderersEvent.RegisterRenderers)} 统一处理</p>
      *
      * @param event 渲染器注册事件
      */
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        // 注册蓄梦池方块实体渲染器
-        event.registerBlockEntityRenderer(
-                PDBlockEntities.DREAM_ACCUMULATOR.get(),
-                context -> new DreamAccumulatorBlockRenderer()
-        );
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册方块实体渲染器: dream_accumulator → DreamAccumulatorBlockRenderer");
-
-        // 注册生命水晶方块实体渲染器
-        event.registerBlockEntityRenderer(
-                PDBlockEntities.LIFE_CRYSTAL.get(),
-                LifeCrystalBlockRenderer::new
-        );
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册方块实体渲染器: life_crystal → LifeCrystalBlockRenderer");
-
-        // 注册影之箱方块实体渲染器
-        event.registerBlockEntityRenderer(
-                PDBlockEntities.SHADOW_CHEST.get(),
-                ShadowChestBlockRenderer::new
-        );
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册方块实体渲染器: shadow_chest → ShadowChestBlockRenderer");
-
-        // 注册梦境炼药锅方块实体渲染器
-        event.registerBlockEntityRenderer(
-                PDBlockEntities.DREAM_CAULDRON.get(),
-                DreamCauldronBlockRenderer::new
-        );
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册方块实体渲染器: dream_cauldron → DreamCauldronBlockRenderer");
-
-        // 注册融梦水晶箱方块实体渲染器
-        event.registerBlockEntityRenderer(
-                PDBlockEntities.MELTDREAM_CHEST.get(),
-                MeltdreamChestBlockRenderer::new
-        );
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册方块实体渲染器: meltdream_chest → MeltdreamChestBlockRenderer");
-
-        // 注册寻梦者的永恒书卷方块实体渲染器
-        event.registerBlockEntityRenderer(
-                PDBlockEntities.THE_ENDLESS_BOOK_OF_DREAM_SEEKERS.get(),
-                TheEndlessBookOfDreamSeekersBlockRenderer::new
-        );
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册方块实体渲染器: the_endless_book_of_dream_seekers → TheEndlessBookOfDreamSeekersBlockRenderer");
-
-        // 注册暗影魔像实体渲染器
-        var shadowGolemType = PDEntities.SHADOW_GOLEM.get();
-        event.registerEntityRenderer(shadowGolemType, ShadowGolemRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: shadow_golem → ShadowGolemRenderer （GeckoLib）");
-
-        // 注册粉色史莱姆实体渲染器
-        var pinkSlimeType = PDEntities.PINK_SLIME.get();
-        event.registerEntityRenderer(pinkSlimeType, PinkSlimeRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: pink_slime → PinkSlimeRenderer （原生模型）");
-
-        // ==================== 方案B：染梦世界生物（排除小石灵） ====================
-
-        // 注册粉色鸡实体渲染器（原生 ChickenModel）
-        var pinkChickenType = PDEntities.PINK_CHICKEN.get();
-        event.registerEntityRenderer(pinkChickenType, PinkChickenRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: pink_chicken → PinkChickenRenderer");
-
-        // 注册水母实体渲染器（GeckoLib）
-        var jellyfishType = PDEntities.JELLYFISH.get();
-        event.registerEntityRenderer(jellyfishType, JellyfishRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: jellyfish → JellyfishRenderer （GeckoLib）");
-
-        // 注册友好幽灵实体渲染器（GeckoLib）
-        var friendlyGhostType = PDEntities.FRIENDLY_GHOST.get();
-        event.registerEntityRenderer(friendlyGhostType, FriendlyGhostRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: friendly_ghost → FriendlyGhostRenderer （GeckoLib）");
-
-        // 注册萤火虫实体渲染器（GeckoLib）
-        var fireflyType = PDEntities.FIREFLY.get();
-        event.registerEntityRenderer(fireflyType, FireflyRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: firefly → FireflyRenderer （GeckoLib）");
-
-        // 注册金色狐狸实体渲染器（GeckoLib）
-        var goldenFoxType = PDEntities.GOLDEN_FOX.get();
-        event.registerEntityRenderer(goldenFoxType, GoldenFoxRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: golden_fox → GoldenFoxRenderer （GeckoLib）");
-
-        // 注册融梦水晶实体渲染器（GeckoLib）
-        var meltdreamCrystalType = PDEntities.MELTDREAM_CRYSTAL.get();
-        event.registerEntityRenderer(meltdreamCrystalType, MeltdreamCrystalRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: meltdream_crystal → MeltdreamCrystalRenderer （GeckoLib）");
-
-        // 注册恐怖尖喙实体渲染器（GeckoLib）
-        var terrorbeakType = PDEntities.TERRORBEAK.get();
-        event.registerEntityRenderer(terrorbeakType, TerrorbeakRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: terrorbeak → TerrorbeakRenderer （GeckoLib）");
-
-        // 注册疯狂恐怖尖喙实体渲染器（GeckoLib）
-        var crazyTerrorbeakType = PDEntities.CRAZY_TERRORBEAK.get();
-        event.registerEntityRenderer(crazyTerrorbeakType, CrazyTerrorbeakRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: crazy_terrorbeak → CrazyTerrorbeakRenderer （GeckoLib）");
-
-        // 注册虚弱恐怖尖喙实体渲染器（GeckoLib）
-        var weakenessTerrorbeakType = PDEntities.WEAKENESS_TERRORBEAK.get();
-        event.registerEntityRenderer(weakenessTerrorbeakType, WeakenessTerrorbeakRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: weakeness_terrorbeak → WeakenessTerrorbeakRenderer （GeckoLib）");
-
-        // 注册骨翼实体渲染器（GeckoLib）
-        var boneWingType = PDEntities.BONE_WING.get();
-        event.registerEntityRenderer(boneWingType, BoneWingRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: bone_wing → BoneWingRenderer （GeckoLib）");
-
-        // 注册灰烬骨翼实体渲染器（GeckoLib）
-        var ashBoneWingType = PDEntities.ASH_BONE_WING.get();
-        event.registerEntityRenderer(ashBoneWingType, AshBoneWingRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: ash_bone_wing → AshBoneWingRenderer （GeckoLib）");
-
-        // ==================== 阴影系列 ====================
-
-        // 注册暗影幽灵实体渲染器（GeckoLib）
-        var shadowGhostType = PDEntities.SHADOW_GHOST.get();
-        event.registerEntityRenderer(shadowGhostType, ShadowGhostRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: shadow_ghost → ShadowGhostRenderer （GeckoLib）");
-
-        // 注册暗影尖啸幽灵实体渲染器（GeckoLib）
-        var shadowSquealGhostType = PDEntities.SHADOW_SQUEAL_GHOST.get();
-        event.registerEntityRenderer(shadowSquealGhostType, ShadowSquealGhostRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: shadow_squeal_ghost → ShadowSquealGhostRenderer （GeckoLib）");
-
-        // 注册暗影尖啸幽灵0实体渲染器（GeckoLib）
-        var shadowSquealGhost0Type = PDEntities.SHADOW_SQUEAL_GHOST_0.get();
-        event.registerEntityRenderer(shadowSquealGhost0Type, ShadowSquealGhost0Renderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: shadow_squeal_ghost_0 → ShadowSquealGhost0Renderer （GeckoLib）");
-
-        // 注册暗影之手实体渲染器（GeckoLib）
-        var shadowHandType = PDEntities.SHADOW_HAND.get();
-        event.registerEntityRenderer(shadowHandType, ShadowHandRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: shadow_hand → ShadowHandRenderer （GeckoLib）");
-
-        // ==================== 雷云系列 ====================
-
-        // 注册雷云实体渲染器（GeckoLib）
-        var thundercloudType = PDEntities.THUNDERCLOUD.get();
-        event.registerEntityRenderer(thundercloudType, ThundercloudRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: thundercloud → ThundercloudRenderer （GeckoLib）");
-
-        // 注册高压雷云实体渲染器（GeckoLib）
-        var highvoltageType = PDEntities.HIGHVOLTAGE.get();
-        event.registerEntityRenderer(highvoltageType, HighvoltageThundercloudRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: highvoltage → HighvoltageThundercloudRenderer （GeckoLib）");
-
-        // ==================== 其他敌对生物 ====================
-
-        // 注册风之骑士实体渲染器（GeckoLib）
-        var windKnightType = PDEntities.WIND_KNIGHT.get();
-        event.registerEntityRenderer(windKnightType, WindKnightRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: wind_knight → WindKnightRenderer （GeckoLib）");
-
-        // 注册震动水晶实体渲染器（GeckoLib）
-        var shakingCrystalType = PDEntities.SHAKING_CRYSTAL.get();
-        event.registerEntityRenderer(shakingCrystalType, ShakingCrystalRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: shaking_crystal → ShakingCrystalRenderer （GeckoLib）");
-
-        // 注册暗影调和图腾实体渲染器（GeckoLib）
-        var shadowTuneTotemType = PDEntities.SHADOW_TUNE_TOTEM.get();
-        event.registerEntityRenderer(shadowTuneTotemType, ShadowTuneTotemRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: shadow_tune_totem → ShadowTuneTotemRenderer （GeckoLib）");
-
-        // 注册小石灵实体渲染器（GeckoLib）
-        var smallStoneSpiritType = PDEntities.SMALL_STONE_SPIRIT.get();
-        event.registerEntityRenderer(smallStoneSpiritType, SmallStoneSpiritRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: small_stone_spirit → SmallStoneSpiritRenderer （GeckoLib）");
-
-        // 注册黑甲虫实体渲染器（GeckoLib）
-        var blackBeetleType = PDEntities.BLACK_BEETLE.get();
-        event.registerEntityRenderer(blackBeetleType, BlackBeetleRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: black_beetle → BlackBeetleRenderer （GeckoLib）");
-
-        // 注册黑甲虫母体实体渲染器（GeckoLib）
-        var blackBeetleMotherType = PDEntities.BLACK_BEETLE_MOTHER.get();
-        event.registerEntityRenderer(blackBeetleMotherType, BlackBeetleMotherRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: black_beetle_mother → BlackBeetleMotherRenderer （GeckoLib）");
-
-        // ==================== 染梦新生物渲染器 ====================
-
-        // 注册玄武岩蜗牛实体渲染器（GeckoLib）
-        var basaltSnailType = PDEntities.BASALT_SNAIL.get();
-        event.registerEntityRenderer(basaltSnailType, BasaltSnailRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: basalt_snail → BasaltSnailRenderer （GeckoLib）");
-
-        // 注册狐火实体渲染器（GeckoLib）
-        var foxFireType = PDEntities.FOX_FIRE.get();
-        event.registerEntityRenderer(foxFireType, FoxFireRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: fox_fire → FoxFireRenderer （GeckoLib）");
-
-        // 注册暗影 ??? NPC 实体渲染器（GeckoLib）
-        var shadowNpc0Type = PDEntities.SHADOW_NPC_0.get();
-        event.registerEntityRenderer(shadowNpc0Type, ShadowNpc0Renderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: shadow_npc_0 → ShadowNpc0Renderer （GeckoLib）");
-
-        // 注册孢子实体渲染器（原版 SpiderModel）
-        var sporeEntityType = PDEntities.SPORE_ENTITY.get();
-        event.registerEntityRenderer(sporeEntityType, SporeEntityRenderer::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册实体渲染器: spore_entity → SporeEntityRenderer （原版模型）");
-
-        // 骨翼火球弹射物——使用 ThrownItemRenderer（显示为火焰弹物品）
-        var boneWingFireBallType = PDEntities.BONE_WING_FIRE_BALL_PROJECTILE.get();
-        event.registerEntityRenderer(boneWingFireBallType, (context) -> new ThrownItemRenderer<>(context, 1.0f, false));
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册弹射物渲染器: bone_wing_fire_ball_projectile → ThrownItemRenderer");
+        RendererRegistry.registerAll(event);
     }
 
     /**
      * 客户端初始化 —— 注册饰品身体渲染器
-     * <p>
-     * 在 FMLClientSetupEvent 事件中调用 {@link CurioClientHandler#init()}，
-     * 自动注册所有通过 {@code CurioAPI} 配置了身体渲染的饰品。
-     * </p>
      *
      * @param event 客户端初始化事件
      */
@@ -308,7 +68,6 @@ public class ClientSetup {
 
     /**
      * 注册模型层
-     * 在 EntityRenderersEvent.RegisterLayerDefinitions 事件时调用
      *
      * @param event 模型层注册事件
      */
@@ -320,7 +79,6 @@ public class ClientSetup {
 
     /**
      * 注册 GUI 屏幕
-     * 在 RegisterMenuScreensEvent 事件时调用
      *
      * @param event 菜单屏幕注册事件
      */
@@ -344,7 +102,6 @@ public class ClientSetup {
 
     /**
      * 注册粒子提供器
-     * 在 RegisterParticleProvidersEvent 事件时调用
      *
      * @param event 粒子提供器注册事件
      */
@@ -352,7 +109,6 @@ public class ClientSetup {
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
         PasterDreamMod.LOGGER.debug("[ClientSetup] 开始注册粒子提供器...");
 
-        // 直接使用 PDParticles 中的粒子类型注册 Provider
         event.registerSpriteSet((SimpleParticleType) PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType(), LifeCrystalParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.DREAM_AMBIENT_PARTICLE.particleType(), DreamAmbientParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.LEAVES_PARTICLE.particleType(), LeavesParticle.Provider::new);
@@ -364,8 +120,6 @@ public class ClientSetup {
         event.registerSpriteSet((SimpleParticleType) PDParticles.SNOWFLAKE_0_PARTICLE.particleType(), SnowflakeParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.FEATHER_WHITE_PARTICLE.particleType(), FeatherWhiteParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.DYEDREAM_0_PARTICLE.particleType(), DyedreamParticle.Provider::new);
-
-        // 注册剩余 Builder 粒子 Provider（SHADOW_STONE / SPORE / FOX_FIRE_0 / FOX_FIRE_1）
         event.registerSpriteSet((SimpleParticleType) PDParticles.SHADOW_STONE_PARTICLE.particleType(), ShadowStoneParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.SPORE_PARTICLE.particleType(), SporeParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.FOX_FIRE_0_PARTICLE.particleType(), FoxFire0Particle.Provider::new);
@@ -376,9 +130,6 @@ public class ClientSetup {
 
     /**
      * 注册客户端流体扩展（融梦涌泉纹理）
-     * <p>
-     * 替代已废弃的 {@code FluidType.initializeClient()} 方法。
-     * 通过 RegisterClientExtensionsEvent 在客户端注册流体类型的 still/flowing 纹理。
      *
      * @param event 客户端扩展注册事件
      */
@@ -398,7 +149,7 @@ public class ClientSetup {
         PasterDreamMod.LOGGER.debug("[ClientSetup] 注册融梦涌泉流体类型客户端纹理");
     }
 
-    /** 染梦维度群系的 ResourceKey 常量（与 PDClientEvents 保持一致） */
+    /** 染梦维度群系的 ResourceKey 常量 */
     private static final ResourceKey<Biome> BIOME_DYEDREAM_0 = ResourceKey.create(
             Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_0"));
     private static final ResourceKey<Biome> BIOME_DYEDREAM_1 = ResourceKey.create(
@@ -415,9 +166,9 @@ public class ClientSetup {
     /**
      * 在三色间插值（白天色 → 黄昏色 → 夜色）
      *
-     * @param day      白天雾色
-     * @param sunset   黄昏雾色
-     * @param night    夜晚雾色
+     * @param day       白天雾色
+     * @param sunset    黄昏雾色
+     * @param night     夜晚雾色
      * @param sunHeight 太阳高度（-1 ~ 1），负值=夜晚，0=地平线，正值=白天
      * @return 插值后的雾色
      */
@@ -440,11 +191,18 @@ public class ClientSetup {
     }
 
     /**
-     * 注册染梦世界维度特殊效果（天空、雾色）
-     * 对应 dimension_type JSON 中的 "effects": "pasterdream:dyedream_world"
+     * 注册维度特殊效果（天空、雾色）
      */
     @SubscribeEvent
     public static void registerDimensionSpecialEffects(RegisterDimensionSpecialEffectsEvent event) {
+        registerDyedreamWorldEffects(event);
+        registerAaroncosArenaEffects(event);
+    }
+
+    /**
+     * 注册染梦世界维度特殊效果
+     */
+    private static void registerDyedreamWorldEffects(RegisterDimensionSpecialEffectsEvent event) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dyedream_world");
         event.register(id, new DimensionSpecialEffects(
                         192.0f,
@@ -456,41 +214,33 @@ public class ClientSetup {
                     @Override
                     public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float sunHeight) {
                         ResourceKey<Biome> biome = PDClientEvents.currentBiomeKey;
-
                         Vec3 dayColor, sunsetColor, nightColor;
 
                         if (BIOME_DYEDREAM_0.equals(biome)) {
-                            // 温暖平原 — 梦幻粉雾
                             dayColor = new Vec3(1.0, 0.71, 0.85);
                             sunsetColor = new Vec3(1.0, 0.56, 0.64);
                             nightColor = new Vec3(0.29, 0.10, 0.36);
                         } else if (BIOME_DYEDREAM_1.equals(biome)) {
-                            // 炎热森林 — 翠绿迷雾
                             dayColor = new Vec3(0.66, 0.90, 0.64);
                             sunsetColor = new Vec3(0.83, 0.64, 0.45);
                             nightColor = new Vec3(0.10, 0.23, 0.16);
                         } else if (BIOME_DYEDREAM_2.equals(biome)) {
-                            // 寒冷冰雪 — 冰蓝极雾
                             dayColor = new Vec3(0.71, 0.85, 1.0);
                             sunsetColor = new Vec3(0.64, 0.71, 0.83);
                             nightColor = new Vec3(0.10, 0.16, 0.36);
                         } else if (BIOME_DYEDREAM_3.equals(biome)) {
-                            // 温暖海洋 — 海蓝薄雾
-                        dayColor = new Vec3(0.64, 0.83, 0.90);
-                        sunsetColor = new Vec3(0.83, 0.64, 0.64);
-                        nightColor = new Vec3(0.04, 0.16, 0.23);
-                    } else if (BIOME_DYEDREAM_DEEP_OCEAN.equals(biome)) {
-                        // 晶莹深海 — 紫晶微光
-                        dayColor = new Vec3(0.76, 0.64, 0.90);
-                        sunsetColor = new Vec3(0.83, 0.53, 0.74);
-                        nightColor = new Vec3(0.12, 0.04, 0.28);
-                    } else if (BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(biome)) {
-                        // 蘑菇平原 — 暖金孢子雾
-                        dayColor = new Vec3(1.0, 0.82, 0.64);
-                        sunsetColor = new Vec3(0.90, 0.64, 0.45);
-                        nightColor = new Vec3(0.28, 0.16, 0.04);
-                    } else {
-                            // 后备：温暖平原色
+                            dayColor = new Vec3(0.64, 0.83, 0.90);
+                            sunsetColor = new Vec3(0.83, 0.64, 0.64);
+                            nightColor = new Vec3(0.04, 0.16, 0.23);
+                        } else if (BIOME_DYEDREAM_DEEP_OCEAN.equals(biome)) {
+                            dayColor = new Vec3(0.76, 0.64, 0.90);
+                            sunsetColor = new Vec3(0.83, 0.53, 0.74);
+                            nightColor = new Vec3(0.12, 0.04, 0.28);
+                        } else if (BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(biome)) {
+                            dayColor = new Vec3(1.0, 0.82, 0.64);
+                            sunsetColor = new Vec3(0.90, 0.64, 0.45);
+                            nightColor = new Vec3(0.28, 0.16, 0.04);
+                        } else {
                             dayColor = new Vec3(1.0, 0.71, 0.85);
                             sunsetColor = new Vec3(1.0, 0.56, 0.64);
                             nightColor = new Vec3(0.29, 0.10, 0.36);
@@ -518,5 +268,36 @@ public class ClientSetup {
                 }
         );
     }
-}
 
+    /**
+     * 注册亚伦柯斯竞技场维度特殊效果
+     */
+    private static void registerAaroncosArenaEffects(RegisterDimensionSpecialEffectsEvent event) {
+        ResourceLocation arenaId = ResourceLocation.fromNamespaceAndPath(
+                PasterDreamMod.MOD_ID, "aaroncos_arena_world");
+        event.register(arenaId, new DimensionSpecialEffects(
+                        Float.NaN,
+                        true,
+                        DimensionSpecialEffects.SkyType.NONE,
+                        false,
+                        false
+                ) {
+                    @Override
+                    public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float sunHeight) {
+                        return new Vec3(0.2, 0.2, 0.2);
+                    }
+
+                    @Override
+                    public boolean isFoggyAt(int x, int y) {
+                        return true;
+                    }
+
+                    @Override
+                    @Nullable
+                    public float[] getSunriseColor(float timeOfDay, float partialTick) {
+                        return null;
+                    }
+                }
+        );
+    }
+}

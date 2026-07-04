@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "pasterdream:block/shadow_dungeon_block_6"
+    },
+    "type=top": {
+      "model": "pasterdream:block/shadow_dungeon_block_6_top"
+    },
+    "type=double": {
+      "model": "pasterdream:block/shadow_dungeon_block_6_full"
+    }
+  }
+}

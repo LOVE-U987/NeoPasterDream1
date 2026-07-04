@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.entity.damage.ConfigurableImmunityEntity;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
@@ -13,7 +14,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -54,7 +54,7 @@ import java.util.List;
  * <p>
  * 渲染：GeckoLib 动画实体，默认纹理 "fox_fire"
  */
-public class FoxFireEntity extends PathfinderMob implements GeoEntity {
+public class FoxFireEntity extends ConfigurableImmunityEntity implements GeoEntity {
 
     /** 射击状态同步标记（兼容动画系统） */
     public static final EntityDataAccessor<Boolean> SHOOT =
@@ -83,6 +83,11 @@ public class FoxFireEntity extends PathfinderMob implements GeoEntity {
         super(type, level);
         this.xpReward = 0;
         setNoAi(true);
+    }
+    
+    @Override
+    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
+        return false;
     }
 
     // ======================== 同步数据 ========================
@@ -191,34 +196,8 @@ public class FoxFireEntity extends PathfinderMob implements GeoEntity {
     }
 
     // ======================== 受伤/免疫 ========================
-
-    /**
-     * 狐火免疫几乎所有伤害类型
-     *
-     * @param source 伤害来源
-     * @param amount 伤害量
-     * @return 是否受到伤害
-     */
-    @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (source.is(DamageTypes.IN_FIRE)) return false;
-        if (source.is(DamageTypes.ON_FIRE)) return false;
-        if (source.is(DamageTypes.ARROW)) return false;
-        if (source.is(DamageTypes.PLAYER_ATTACK)) return false;
-        if (source.is(DamageTypes.FALL)) return false;
-        if (source.is(DamageTypes.CACTUS)) return false;
-        if (source.is(DamageTypes.DROWN)) return false;
-        if (source.is(DamageTypes.LIGHTNING_BOLT)) return false;
-        if (source.is(DamageTypes.EXPLOSION)) return false;
-        if (source.is(DamageTypes.TRIDENT)) return false;
-        if (source.is(DamageTypes.FALLING_ANVIL)) return false;
-        if (source.is(DamageTypes.DRAGON_BREATH)) return false;
-        if (source.is(DamageTypes.WITHER)) return false;
-        if (source.is(DamageTypes.WITHER_SKULL)) return false;
-        if (source.is(DamageTypes.THROWN)) return false;
-        if (source.is(DamageTypes.INDIRECT_MAGIC)) return false;
-        return super.hurt(source, amount);
-    }
+    // 伤害免疫逻辑已统一由 ConfigurableImmunityEntity + EntityImmunitySetup 管理
+    // 配置位置: EntityImmunitySetup.setupAllImmunities() -> FOX_FIRE -> FULL_IMMUNITY
 
     @Override
     public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source) {

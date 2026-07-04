@@ -3,6 +3,9 @@
     "pasterdream:dyedream_bud_wall",
     "pasterdream:dyedreamquartz_block_wall",
     "pasterdream:polished_calcite_wall",
-    "pasterdream:calcite_tiles_wall"
+    "pasterdream:calcite_tiles_wall",
+    "pasterdream:shadow_stone_brick_wall",
+    "pasterdream:shadow_stone_bricks_wall",
+    "pasterdream:shadow_stone_tiles_wall"
   ]
 }

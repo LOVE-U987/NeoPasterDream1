@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "pasterdream:block/shadow_stone_brick_slab"
+    },
+    "type=top": {
+      "model": "pasterdream:block/shadow_stone_brick_slab_top"
+    },
+    "type=double": {
+      "model": "pasterdream:block/shadow_stone_brick_slab_full"
+    }
+  }
+}

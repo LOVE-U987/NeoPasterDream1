@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/an_ying_di_lao_qiang_bi_2",
+    "up": "pasterdream:block/an_ying_di_lao_qiang_bi_2",
+    "north": "pasterdream:block/an_ying_di_lao_qiang_bi_1",
+    "east": "pasterdream:block/an_ying_di_lao_qiang_bi_1",
+    "south": "pasterdream:block/an_ying_di_lao_qiang_bi_1",
+    "west": "pasterdream:block/an_ying_di_lao_qiang_bi_1",
+    "particle": "pasterdream:block/an_ying_di_lao_qiang_bi_2"
+  },
+  "render_type": "solid"
+}

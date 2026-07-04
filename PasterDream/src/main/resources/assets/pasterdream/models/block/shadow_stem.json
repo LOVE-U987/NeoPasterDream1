@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/shadow_stem_top",
+    "up": "pasterdream:block/shadow_stem_top",
+    "north": "pasterdream:block/shadow_stem",
+    "east": "pasterdream:block/shadow_stem",
+    "south": "pasterdream:block/shadow_stem",
+    "west": "pasterdream:block/shadow_stem",
+    "particle": "pasterdream:block/shadow_stem_top"
+  },
+  "render_type": "solid"
+}

@@ -1427,6 +1427,143 @@ public class PDItems {
                     () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "patch_dyedream_seagrass"));
 
     /**
+     * 调试法杖 - 亚伦柯斯竞技场
+     * 右键瞄准方块放置 aaroncos_arena 结构，用于测试结构放置
+     */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_AARONCOS_ARENA =
+            ITEMS.register("debug_wand_aaroncos_arena",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "aaroncos_arena"));
+
+    // ======================== P0 移植遗迹调试水晶 ========================
+
+    /**
+     * 调试法杖 - 染梦悬浮寺庙
+     * 右键瞄准方块放置 dyedream_floating_temple 结构
+     */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_FLOATING_TEMPLE =
+            ITEMS.register("debug_wand_dyedream_floating_temple",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_floating_temple"));
+
+    /**
+     * 调试法杖 - 梦想教堂 0~10（11 个变体）
+     * 右键瞄准方块放置对应 dream_church_X 结构
+     */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_CHURCH_0 =
+            ITEMS.register("debug_wand_dream_church_0",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_church_0"));
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_CHURCH_1 =
+            ITEMS.register("debug_wand_dream_church_1",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_church_1"));
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_CHURCH_2 =
+            ITEMS.register("debug_wand_dream_church_2",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_church_2"));
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_CHURCH_3 =
+            ITEMS.register("debug_wand_dream_church_3",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_church_3"));
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_CHURCH_4 =
+            ITEMS.register("debug_wand_dream_church_4",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_church_4"));
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_CHURCH_5 =
+            ITEMS.register("debug_wand_dream_church_5",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_church_5"));
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_CHURCH_6 =
+            ITEMS.register("debug_wand_dream_church_6",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_church_6"));
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_CHURCH_7 =
+            ITEMS.register("debug_wand_dream_church_7",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_church_7"));
+
+    /**
+     * 调试法杖 - 沙漠堡垒
+     * 右键瞄准方块放置 desert_fortress 结构（注意 NBT 文件名为 desert_fortress，无 _0 后缀）
+     */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DESERT_FORTRESS_0 =
+            ITEMS.register("debug_wand_desert_fortress_0",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "desert_fortress"));
+
+    // ======================== P1 移植遗迹调试水晶 ========================
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TOWER_0 =
+            ITEMS.register("debug_wand_dyedream_tower_0",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_tower_0"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TOWER_1 =
+            ITEMS.register("debug_wand_dyedream_tower_1",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_tower_1"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_LABORATORY_0 =
+            ITEMS.register("debug_wand_dyedream_laboratory_0",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_laboratory_0"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TAVERN =
+            ITEMS.register("debug_wand_dyedream_tavern",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_tavern"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_PAVILION_0 =
+            ITEMS.register("debug_wand_dyedream_pavilion_0",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_pavilion_0"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_PAVILION_1 =
+            ITEMS.register("debug_wand_dyedream_pavilion_1",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_pavilion_1"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_PAVILION_2 =
+            ITEMS.register("debug_wand_dyedream_pavilion_2",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_pavilion_2"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_CAMPSITE_0 =
+            ITEMS.register("debug_wand_dyedream_campsite_0",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_campsite_0"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_WISHINGTREE_0 =
+            ITEMS.register("debug_wand_dream_wishingtree_0",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_wishingtree_0"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_WISHINGTREE_1 =
+            ITEMS.register("debug_wand_dream_wishingtree_1",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_wishingtree_1"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_TRAVELER_HOUSE_0 =
+            ITEMS.register("debug_wand_traveler_house_0",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "traveler_house_0"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_TRAVELER_HOUSE_1 =
+            ITEMS.register("debug_wand_traveler_house_1",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "traveler_house_1"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_TRAVELER_HOUSE_2 =
+            ITEMS.register("debug_wand_traveler_house_2",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "traveler_house_2"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_GARDEN_DECRYPTION_0 =
+            ITEMS.register("debug_wand_garden_decryption_0",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "garden_decryption_0"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_GARDEN_DECRYPTION_1 =
+            ITEMS.register("debug_wand_garden_decryption_1",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "garden_decryption_1"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_GARDEN_DECRYPTION_2 =
+            ITEMS.register("debug_wand_garden_decryption_2",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "garden_decryption_2"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_PICNIC_BASKET =
+            ITEMS.register("debug_wand_picnic_basket_structure",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "picnic_basket_structure"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_LIFECRYSTAL_CAVE_0 =
+            ITEMS.register("debug_wand_lifecrystal_cave_0",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "lifecrystal_cave_0"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_MELTDREAM_LIQUID_WELL_0 =
+            ITEMS.register("debug_wand_meltdream_liquid_well_0",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "meltdream_liquid_well_0"));
+
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_MELTDREAM_LIQUID_WELL_1 =
+            ITEMS.register("debug_wand_meltdream_liquid_well_1",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "meltdream_liquid_well"));
+
+    /**
      * 调试法杖 - 染梦草
      */
     public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_GRASS =
@@ -1460,6 +1597,129 @@ public class PDItems {
     public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_PINKAGARIC =
             ITEMS.register("debug_wand_pinkagaric",
                     () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "patch_pinkagaric_0"));
+
+    // ==================== BOSS 相关物品 ====================
+
+    /**
+     * 亚伦柯斯竞技场创建器 (aaroncos_arena_create)
+     * 创造模式调试用物品，右键点击生成/传送至亚伦柯斯 BOSS 竞技场
+     */
+    public static final DeferredItem<Item> AARONCOS_ARENA_CREATE = ITEMS.register("aaroncos_arena_create",
+            () -> new com.pasterdream.pasterdreammod.item.AaroncosArenaCreateItem());
+
+    /**
+     * 亚伦柯斯竞技场传送门 BlockItem (aaroncos_arena_portals)
+     */
+    public static final DeferredItem<BlockItem> AARONCOS_ARENA_PORTALS = ITEMS.registerSimpleBlockItem("aaroncos_arena_portals",
+            PDBlocks.AARONCOS_ARENA_PORTALS);
+
+    /**
+     * 亚伦柯斯之触战利品箱物品 (aaroncos_hand_chest)
+     * 对应 PDBlocks.AARONCOS_HAND_CHEST 方块
+     * 使用 AaroncosHandChestDisplayItem 实现手持 3D 渲染
+     */
+    public static final DeferredItem<AaroncosHandChestDisplayItem> AARONCOS_HAND_CHEST = ITEMS.register("aaroncos_hand_chest",
+            () -> new AaroncosHandChestDisplayItem(new Item.Properties()));
+
+    /**
+     * 亚伦柯斯之手生成激活方块物品 (aaroncoshandspawnblock)
+     * 对应 PDBlocks.AARONCOSHANDSPAWNBLOCK 方块
+     * 使用 AaroncosHandSpawnBlockDisplayItem 实现手持 3D 渲染
+     */
+    public static final DeferredItem<AaroncosHandSpawnBlockDisplayItem> AARONCOSHANDSPAWNBLOCK = ITEMS.register("aaroncoshandspawnblock",
+            () -> new AaroncosHandSpawnBlockDisplayItem(new Item.Properties()));
+
+    // ==================== 阴影维度方块物品 ====================
+
+    public static final DeferredItem<BlockItem> SHADOW_BLOCK = ITEMS.registerSimpleBlockItem("shadow_block", PDBlocks.SHADOW_BLOCK);
+    public static final DeferredItem<BlockItem> THICK_SHADOW_BLOCK = ITEMS.registerSimpleBlockItem("thick_shadow_block", PDBlocks.THICK_SHADOW_BLOCK);
+    public static final DeferredItem<BlockItem> SHADOW_STONE = ITEMS.registerSimpleBlockItem("shadow_stone", PDBlocks.SHADOW_STONE);
+    public static final DeferredItem<BlockItem> SHADOW_STONE_BRICK = ITEMS.registerSimpleBlockItem("shadow_stone_brick", PDBlocks.SHADOW_STONE_BRICK);
+    public static final DeferredItem<BlockItem> SHADOW_STONE_BRICKS = ITEMS.registerSimpleBlockItem("shadow_stone_bricks", PDBlocks.SHADOW_STONE_BRICKS);
+    public static final DeferredItem<BlockItem> SHADOW_STONE_TILES = ITEMS.registerSimpleBlockItem("shadow_stone_tiles", PDBlocks.SHADOW_STONE_TILES);
+    public static final DeferredItem<BlockItem> CHISELED_SHADOW_STONE_BRICK = ITEMS.registerSimpleBlockItem("chiseled_shadow_stone_brick", PDBlocks.CHISELED_SHADOW_STONE_BRICK);
+    public static final DeferredItem<BlockItem> CRACKED_SHADOW_STONE_BRICK = ITEMS.registerSimpleBlockItem("cracked_shadow_stone_brick", PDBlocks.CRACKED_SHADOW_STONE_BRICK);
+    public static final DeferredItem<BlockItem> SHADOW_NYLIUM = ITEMS.registerSimpleBlockItem("shadow_nylium", PDBlocks.SHADOW_NYLIUM);
+    public static final DeferredItem<BlockItem> SHADOW_SHROOMLIGHT = ITEMS.registerSimpleBlockItem("shadow_shroomlight", PDBlocks.SHADOW_SHROOMLIGHT);
+    public static final DeferredItem<BlockItem> SHADOW_WART_BLOCK = ITEMS.registerSimpleBlockItem("shadow_wart_block", PDBlocks.SHADOW_WART_BLOCK);
+    public static final DeferredItem<BlockItem> SHADOW_STEM = ITEMS.registerSimpleBlockItem("shadow_stem", PDBlocks.SHADOW_STEM);
+    public static final DeferredItem<BlockItem> SHADOW_HYPHAE = ITEMS.registerSimpleBlockItem("shadow_hyphae", PDBlocks.SHADOW_HYPHAE);
+    public static final DeferredItem<BlockItem> STRIPPED_SHADOW_STEM = ITEMS.registerSimpleBlockItem("stripped_shadow_stem", PDBlocks.STRIPPED_SHADOW_STEM);
+    public static final DeferredItem<BlockItem> STRIPPED_SHADOW_HYPHAE = ITEMS.registerSimpleBlockItem("stripped_shadow_hyphae", PDBlocks.STRIPPED_SHADOW_HYPHAE);
+    public static final DeferredItem<BlockItem> SHADOW_PLANKS = ITEMS.registerSimpleBlockItem("shadow_planks", PDBlocks.SHADOW_PLANKS);
+
+    // 阴影石砖变体
+    public static final DeferredItem<BlockItem> SHADOW_STONE_BRICK_STAIRS = ITEMS.registerSimpleBlockItem("shadow_stone_brick_stairs", PDBlocks.SHADOW_STONE_BRICK_STAIRS);
+    public static final DeferredItem<BlockItem> SHADOW_STONE_BRICK_SLAB = ITEMS.registerSimpleBlockItem("shadow_stone_brick_slab", PDBlocks.SHADOW_STONE_BRICK_SLAB);
+    public static final DeferredItem<BlockItem> SHADOW_STONE_BRICK_WALL = ITEMS.registerSimpleBlockItem("shadow_stone_brick_wall", PDBlocks.SHADOW_STONE_BRICK_WALL);
+    public static final DeferredItem<BlockItem> SHADOW_STONE_BRICKS_STAIRS = ITEMS.registerSimpleBlockItem("shadow_stone_bricks_stairs", PDBlocks.SHADOW_STONE_BRICKS_STAIRS);
+    public static final DeferredItem<BlockItem> SHADOW_STONE_BRICKS_SLAB = ITEMS.registerSimpleBlockItem("shadow_stone_bricks_slab", PDBlocks.SHADOW_STONE_BRICKS_SLAB);
+    public static final DeferredItem<BlockItem> SHADOW_STONE_BRICKS_WALL = ITEMS.registerSimpleBlockItem("shadow_stone_bricks_wall", PDBlocks.SHADOW_STONE_BRICKS_WALL);
+    public static final DeferredItem<BlockItem> SHADOW_STONE_TILES_STAIRS = ITEMS.registerSimpleBlockItem("shadow_stone_tiles_stairs", PDBlocks.SHADOW_STONE_TILES_STAIRS);
+    public static final DeferredItem<BlockItem> SHADOW_STONE_TILES_SLAB = ITEMS.registerSimpleBlockItem("shadow_stone_tiles_slab", PDBlocks.SHADOW_STONE_TILES_SLAB);
+    public static final DeferredItem<BlockItem> SHADOW_STONE_TILES_WALL = ITEMS.registerSimpleBlockItem("shadow_stone_tiles_wall", PDBlocks.SHADOW_STONE_TILES_WALL);
+
+    // 阴影木板变体
+    public static final DeferredItem<BlockItem> SHADOW_PLANKS_STAIRS = ITEMS.registerSimpleBlockItem("shadow_planks_stairs", PDBlocks.SHADOW_PLANKS_STAIRS);
+    public static final DeferredItem<BlockItem> SHADOW_PLANKS_SLAB = ITEMS.registerSimpleBlockItem("shadow_planks_slab", PDBlocks.SHADOW_PLANKS_SLAB);
+    public static final DeferredItem<BlockItem> SHADOW_PLANKS_FENCE = ITEMS.registerSimpleBlockItem("shadow_planks_fence", PDBlocks.SHADOW_PLANKS_FENCE);
+    public static final DeferredItem<BlockItem> SHADOW_PLANKS_FENCEGATE = ITEMS.registerSimpleBlockItem("shadow_planks_fencegate", PDBlocks.SHADOW_PLANKS_FENCEGATE);
+    public static final DeferredItem<BlockItem> SHADOW_PLANKS_DOOR = ITEMS.registerSimpleBlockItem("shadow_planks_door", PDBlocks.SHADOW_PLANKS_DOOR);
+    public static final DeferredItem<BlockItem> SHADOW_PLANKS_TRAPDOOR = ITEMS.registerSimpleBlockItem("shadow_planks_trapdoor", PDBlocks.SHADOW_PLANKS_TRAPDOOR);
+    public static final DeferredItem<BlockItem> SHADOW_PLANKS_PRESSURE_PLATE = ITEMS.registerSimpleBlockItem("shadow_planks_pressure_plate", PDBlocks.SHADOW_PLANKS_PRESSURE_PLATE);
+    public static final DeferredItem<BlockItem> SHADOW_PLANKS_BUTTON = ITEMS.registerSimpleBlockItem("shadow_planks_button", PDBlocks.SHADOW_PLANKS_BUTTON);
+    public static final DeferredItem<BlockItem> SHADOW_PLANKS_PANE = ITEMS.registerSimpleBlockItem("shadow_planks_pane", PDBlocks.SHADOW_PLANKS_PANE);
+
+    // 暗影地牢 / 竞技场地砖
+    public static final DeferredItem<BlockItem> SHADOW_DUNGEON_BLOCK_0 = ITEMS.registerSimpleBlockItem("shadow_dungeon_block_0", PDBlocks.SHADOW_DUNGEON_BLOCK_0);
+    public static final DeferredItem<BlockItem> SHADOW_DUNGEON_BLOCK_1 = ITEMS.registerSimpleBlockItem("shadow_dungeon_block_1", PDBlocks.SHADOW_DUNGEON_BLOCK_1);
+    public static final DeferredItem<BlockItem> SHADOW_DUNGEON_BLOCK_2 = ITEMS.registerSimpleBlockItem("shadow_dungeon_block_2", PDBlocks.SHADOW_DUNGEON_BLOCK_2);
+    public static final DeferredItem<BlockItem> SHADOW_DUNGEON_BLOCK_3 = ITEMS.registerSimpleBlockItem("shadow_dungeon_block_3", PDBlocks.SHADOW_DUNGEON_BLOCK_3);
+    public static final DeferredItem<BlockItem> SHADOW_DUNGEON_BLOCK_4 = ITEMS.registerSimpleBlockItem("shadow_dungeon_block_4", PDBlocks.SHADOW_DUNGEON_BLOCK_4);
+    public static final DeferredItem<BlockItem> SHADOW_DUNGEON_BLOCK_5 = ITEMS.registerSimpleBlockItem("shadow_dungeon_block_5", PDBlocks.SHADOW_DUNGEON_BLOCK_5);
+    public static final DeferredItem<BlockItem> SHADOW_DUNGEON_BLOCK_6 = ITEMS.registerSimpleBlockItem("shadow_dungeon_block_6", PDBlocks.SHADOW_DUNGEON_BLOCK_6);
+    public static final DeferredItem<BlockItem> SHADOW_ARENA_BLOCK_0 = ITEMS.registerSimpleBlockItem("shadow_arena_block_0", PDBlocks.SHADOW_ARENA_BLOCK_0);
+
+    // 暗影地牢功能性方块
+    public static final DeferredItem<BlockItem> LOOSE_SHADOW_DUNGEON_BLOCK = ITEMS.registerSimpleBlockItem("loose_shadow_dungeon_block", PDBlocks.LOOSE_SHADOW_DUNGEON_BLOCK);
+    public static final DeferredItem<BlockItem> SHADOW_DUNGEON_DOOR_0 = ITEMS.registerSimpleBlockItem("shadow_dungeon_door_0", PDBlocks.SHADOW_DUNGEON_DOOR_0);
+    public static final DeferredItem<BlockItem> SHADOW_DUNGEON_DOOR_1 = ITEMS.registerSimpleBlockItem("shadow_dungeon_door_1", PDBlocks.SHADOW_DUNGEON_DOOR_1);
+    public static final DeferredItem<BlockItem> SHADOWDUNGEONDOOR_2 = ITEMS.registerSimpleBlockItem("shadowdungeondoor_2", PDBlocks.SHADOWDUNGEONDOOR_2);
+    public static final DeferredItem<BlockItem> SHADOWDUNGEONDOOR_3 = ITEMS.registerSimpleBlockItem("shadowdungeondoor_3", PDBlocks.SHADOWDUNGEONDOOR_3);
+    public static final DeferredItem<BlockItem> SHADOW_DUNGEON_KEY_0 = ITEMS.registerSimpleBlockItem("shadow_dungeon_key_0", PDBlocks.SHADOW_DUNGEON_KEY_0);
+    public static final DeferredItem<BlockItem> SHADOW_DUNGEON_KEY_1 = ITEMS.registerSimpleBlockItem("shadow_dungeon_key_1", PDBlocks.SHADOW_DUNGEON_KEY_1);
+    public static final DeferredItem<BlockItem> SHADOWCANDLE = ITEMS.registerSimpleBlockItem("shadowcandle", PDBlocks.SHADOWCANDLE);
+    public static final DeferredItem<BlockItem> SHADOW_BLAST_FURNACE_CORE = ITEMS.registerSimpleBlockItem("shadow_blast_furnace_core", PDBlocks.SHADOW_BLAST_FURNACE_CORE);
+
+    // 暗影书架系列
+    public static final DeferredItem<BlockItem> SHADOWSHELF_0 = ITEMS.registerSimpleBlockItem("shadowshelf_0", PDBlocks.SHADOWSHELF_0);
+    public static final DeferredItem<BlockItem> SHADOWSHELF_1 = ITEMS.registerSimpleBlockItem("shadowshelf_1", PDBlocks.SHADOWSHELF_1);
+    public static final DeferredItem<BlockItem> SHADOWSHELF_2 = ITEMS.registerSimpleBlockItem("shadowshelf_2", PDBlocks.SHADOWSHELF_2);
+    public static final DeferredItem<BlockItem> SHADOWSHELF_3 = ITEMS.registerSimpleBlockItem("shadowshelf_3", PDBlocks.SHADOWSHELF_3);
+
+    // 暗影裂隙系列
+    public static final DeferredItem<BlockItem> SHADOW_FISSURE_0 = ITEMS.registerSimpleBlockItem("shadow_fissure_0", PDBlocks.SHADOW_FISSURE_0);
+    public static final DeferredItem<BlockItem> SHADOW_FISSURE_1 = ITEMS.registerSimpleBlockItem("shadow_fissure_1", PDBlocks.SHADOW_FISSURE_1);
+    public static final DeferredItem<BlockItem> SHADOW_FISSURE_2 = ITEMS.registerSimpleBlockItem("shadow_fissure_2", PDBlocks.SHADOW_FISSURE_2);
+    public static final DeferredItem<BlockItem> SHADOW_FISSURE_3 = ITEMS.registerSimpleBlockItem("shadow_fissure_3", PDBlocks.SHADOW_FISSURE_3);
+    public static final DeferredItem<BlockItem> SHADOW_FISSURE_4 = ITEMS.registerSimpleBlockItem("shadow_fissure_4", PDBlocks.SHADOW_FISSURE_4);
+    public static final DeferredItem<BlockItem> SHADOW_FISSURE_5 = ITEMS.registerSimpleBlockItem("shadow_fissure_5", PDBlocks.SHADOW_FISSURE_5);
+
+    // ==================== BOSS 刷怪蛋 ====================
+
+    /**
+     * 亚伦柯斯之触 - 左刷怪蛋 (aaroncos_lefthand_0_spawn_egg)
+     * 颜色配置于 PDEntities.AARONCOS_LEFTHAND_0_RESULT 的 .spawnEgg()
+     */
+    public static final DeferredItem<Item> AARONCOS_LEFTHAND_0_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "aaroncos_lefthand_0", PDEntities.AARONCOS_LEFTHAND_0);
+
+    /**
+     * 亚伦柯斯之触 - 右刷怪蛋 (aaroncos_righthand_0_spawn_egg)
+     * 颜色配置于 PDEntities.AARONCOS_RIGHTHAND_0_RESULT 的 .spawnEgg()
+     */
+    public static final DeferredItem<Item> AARONCOS_RIGHTHAND_0_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(ITEMS, "aaroncos_righthand_0", PDEntities.AARONCOS_RIGHTHAND_0);
 
     /**
      * 静态初始化块 —— 输出所有物品注册的统计信息

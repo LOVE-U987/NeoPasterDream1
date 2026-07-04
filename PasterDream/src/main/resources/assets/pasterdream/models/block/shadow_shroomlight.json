@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/shadow_shroomlight",
+    "up": "pasterdream:block/shadow_shroomlight",
+    "north": "pasterdream:block/shadow_shroomlight",
+    "east": "pasterdream:block/shadow_shroomlight",
+    "south": "pasterdream:block/shadow_shroomlight",
+    "west": "pasterdream:block/shadow_shroomlight",
+    "particle": "pasterdream:block/shadow_shroomlight"
+  },
+  "render_type": "solid"
+}

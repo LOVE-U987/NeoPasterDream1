@@ -67,7 +67,7 @@ public class DebugStructureWandItem extends Item {
         ServerLevel serverLevel = (ServerLevel) level;
 
         // 通过资源管理器直接加载 NBT 文件（绕开 StructureTemplateManager.get 可能的路径解析问题）
-        ResourceLocation nbtLocation = ResourceLocation.parse("pasterdream:structures/" + structurePath + ".nbt");
+        ResourceLocation nbtLocation = ResourceLocation.parse("pasterdream:structure/" + structurePath + ".nbt");
         Optional<StructureTemplate> templateOpt = loadStructure(serverLevel, nbtLocation);
         if (templateOpt.isEmpty()) {
             player.sendSystemMessage(Component.literal("§c未找到结构: " + ResourceLocation.parse("pasterdream:" + structurePath)));
