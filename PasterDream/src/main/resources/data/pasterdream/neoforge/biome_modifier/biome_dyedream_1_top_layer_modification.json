@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:biome_dyedream_1",
+  "features": [
+    "pasterdream:calcite_crystal_garden",
+    "pasterdream:warm_crystal_spike"
+  ],
+  "step": "top_layer_modification"
+}

@@ -194,6 +194,60 @@ public class PDParticles {
             .generateJson(false)
             .build();
 
+    // ======================== 染梦世界动态环境粒子 ========================
+
+    /**
+     * 梦幻孢子粒子（dream_spore）
+     * <p>
+     * 紫色/粉色渐变发光孢子，用于梦幻平原生物群系的环境效果。
+     * 缓慢旋转飘浮，带有柔和呼吸发光效果，营造梦幻氛围。
+     */
+    public static final ParticleResult DREAM_SPORE = ParticleAPI.createParticle("dream_spore")
+            .alwaysShow(true)
+            .texture("pasterdream:dream_spore")
+            .withGravity(-0.003f)
+            .generateJson(false)
+            .build();
+
+    /**
+     * 水晶雪花粒子（crystal_snowflake）
+     * <p>
+     * 白色半透明冰晶雪花，用于寒冷染梦生物群系的环境效果。
+     * 缓慢旋转飘落，带有微弱的冷光闪烁，营造冰雪仙境氛围。
+     */
+    public static final ParticleResult CRYSTAL_SNOWFLAKE = ParticleAPI.createParticle("crystal_snowflake")
+            .alwaysShow(true)
+            .texture("pasterdream:crystal_snowflake")
+            .withGravity(0.008f)
+            .generateJson(false)
+            .build();
+
+    /**
+     * 极光粒子（aurora_glow）
+     * <p>
+     * 半透明带状极光粒子，用于深海和极地生物群系的环境效果。
+     * 水平缓慢飘动，颜色在青/蓝/紫之间渐变，模拟微缩极光效果。
+     */
+    public static final ParticleResult AURORA_GLOW = ParticleAPI.createParticle("aurora_glow")
+            .alwaysShow(true)
+            .texture("pasterdream:aurora_glow")
+            .withGravity(-0.002f)
+            .generateJson(false)
+            .build();
+
+    /**
+     * 星尘粒子（stardust）
+     * <p>
+     * 微小白点星尘，用于多种染梦生物群系的环境点缀效果。
+     * 旋转飘落，带有随机闪烁，模拟夜空中的星尘飘散。
+     */
+    public static final ParticleResult STARDUST = ParticleAPI.createParticle("stardust")
+            .alwaysShow(true)
+            .texture("pasterdream:stardust")
+            .withGravity(-0.001f)
+            .generateJson(false)
+            .build();
+
     /**
      * 执行粒子注册（静态调用入口）
      * <p>

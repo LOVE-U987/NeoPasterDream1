@@ -25,33 +25,35 @@ import net.minecraft.tags.BlockTags;
 public class OceanDecorations {
 
     /**
-     * 注册珊瑚礁装饰物
+     * 注册珊瑚礁装饰物（合并粉珊瑚变种）
      * <p>
-     * 使用 API 内置的 AQUATIC 类型，在染梦海洋群系的海底生成群落状珊瑚礁。
+     * 使用 API 内置的 AQUATIC 类型，在染梦海洋群系的海底生成群落状珊瑚礁，
+     * 包含普通珊瑚和粉红梦幻珊瑚变种。
      */
     public static void registerCoralReef() {
         SimpleWeightedRandomList<BlockState> coralBodyList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(Blocks.TUBE_CORAL_BLOCK.defaultBlockState(), 1)
-                .add(Blocks.BRAIN_CORAL_BLOCK.defaultBlockState(), 1)
-                .add(Blocks.BUBBLE_CORAL_BLOCK.defaultBlockState(), 1)
+                .add(Blocks.TUBE_CORAL_BLOCK.defaultBlockState(), 2)
+                .add(Blocks.BRAIN_CORAL_BLOCK.defaultBlockState(), 2)
+                .add(Blocks.BUBBLE_CORAL_BLOCK.defaultBlockState(), 2)
                 .add(Blocks.FIRE_CORAL_BLOCK.defaultBlockState(), 1)
                 .add(Blocks.HORN_CORAL_BLOCK.defaultBlockState(), 1)
+                .add(PDBlocks.PINKSLIME_BLOCK.get().defaultBlockState(), 2)
                 .build();
 
         SimpleWeightedRandomList<BlockState> coralFanList = SimpleWeightedRandomList.<BlockState>builder()
                 .add(Blocks.TUBE_CORAL_FAN.defaultBlockState(), 2)
                 .add(Blocks.BRAIN_CORAL_FAN.defaultBlockState(), 2)
                 .add(Blocks.BUBBLE_CORAL_FAN.defaultBlockState(), 2)
-                .add(Blocks.FIRE_CORAL_FAN.defaultBlockState(), 2)
-                .add(Blocks.HORN_CORAL_FAN.defaultBlockState(), 2)
+                .add(PDBlocks.PINKAGARIC_0.get().defaultBlockState(), 2)
+                .add(PDBlocks.PINKAGARIC_1.get().defaultBlockState(), 1)
                 .add(Blocks.SEA_PICKLE.defaultBlockState(), 1)
                 .build();
 
         DecorationBuilder.create()
                 .type(DecorationType.AQUATIC)
                 .body(new WeightedStateProvider(coralBodyList))
-                .crystal(0.2f, new WeightedStateProvider(coralFanList))
-                .debris(new WeightedStateProvider(coralFanList), 12, 5)
+                .crystal(0.25f, new WeightedStateProvider(coralFanList))
+                .debris(new WeightedStateProvider(coralFanList), 10, 4)
                 .height(1, 3)
                 .width(3, 2)
                 .waterRequired(true)
@@ -61,41 +63,6 @@ public class OceanDecorations {
                 .rarity(1)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("patch_coral_reef");
-    }
-
-    /**
-     * 注册粉红梦幻珊瑚丛 —— 小型密集变种
-     * <p>
-     * 使用染梦粉色史莱姆块为主体，搭配粉色蘑菇和珊瑚扇装饰。
-     */
-    public static void registerCoralReefPink() {
-        SimpleWeightedRandomList<BlockState> pinkBodyList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(PDBlocks.PINKSLIME_BLOCK.get().defaultBlockState(), 3)
-                .add(Blocks.TUBE_CORAL_BLOCK.defaultBlockState(), 1)
-                .add(Blocks.BRAIN_CORAL_BLOCK.defaultBlockState(), 1)
-                .build();
-
-        SimpleWeightedRandomList<BlockState> pinkDecorList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(Blocks.BRAIN_CORAL_FAN.defaultBlockState(), 2)
-                .add(PDBlocks.PINKAGARIC_0.get().defaultBlockState(), 2)
-                .add(PDBlocks.PINKAGARIC_1.get().defaultBlockState(), 2)
-                .add(PDBlocks.PINKAGARIC_3.get().defaultBlockState(), 1)
-                .build();
-
-        DecorationBuilder.create()
-                .type(DecorationType.AQUATIC)
-                .body(new WeightedStateProvider(pinkBodyList))
-                .crystal(0.3f, new WeightedStateProvider(pinkDecorList))
-                .debris(new WeightedStateProvider(pinkDecorList), 8, 4)
-                .height(1, 2)
-                .width(2, 1)
-                .waterRequired(true)
-                .checkHang(false)
-                .occupiedCheck(false)
-                .biome("pasterdream:biome_dyedream_3")
-                .rarity(1)
-                .step(GenerationStep.Decoration.VEGETAL_DECORATION)
-                .register("patch_coral_reef_pink");
     }
 
     /**
@@ -240,10 +207,10 @@ public class OceanDecorations {
                 .body(new WeightedStateProvider(pillarBodyList))
                 .top(new WeightedStateProvider(topList))
                 .customGenerator("ice_arch")
-                .height(20, 35)
-                .gateWidth(30, 50)
-                .pillarRadius(4)
-                .beamThickness(4)
+                .height(40, 70)
+                .gateWidth(60, 100)
+                .pillarRadius(8)
+                .beamThickness(8)
                 .decorationChance(0.25f)
                 .regionCheck(true, 0.3f)
                 .replaceable(BlockPredicate.anyOf(
@@ -252,7 +219,7 @@ public class OceanDecorations {
                 ))
                 .checkHang(false)
                 .biome("pasterdream:biome_dyedream_3")
-                .rarity(12)
+                .rarity(36)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("ice_arch");
     }
@@ -274,10 +241,10 @@ public class OceanDecorations {
                 .type(DecorationType.CUSTOM)
                 .body(new WeightedStateProvider(pillarBodyList))
                 .customGenerator("ice_arch_ruined")
-                .height(15, 25)
-                .gateWidth(20, 35)
-                .pillarRadius(3)
-                .beamThickness(3)
+                .height(30, 50)
+                .gateWidth(40, 70)
+                .pillarRadius(6)
+                .beamThickness(6)
                 .decorationChance(0.4f)
                 .regionCheck(true, 0.3f)
                 .replaceable(BlockPredicate.anyOf(
@@ -286,7 +253,7 @@ public class OceanDecorations {
                 ))
                 .checkHang(false)
                 .biome("pasterdream:biome_dyedream_3")
-                .rarity(35)
+                .rarity(105)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("ice_arch_ruined");
     }

@@ -186,5 +186,11 @@ public final class RendererRegistry {
                 context -> new ThrownItemRenderer<>(context, 1.0f, false)
         );
         PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册弹射物渲染器: bone_wing_fire_ball_projectile → ThrownItemRenderer");
+
+        event.registerEntityRenderer(
+                PDEntities.SQUEAL_WAVE_PROJECTILE.get(),
+                context -> new com.pasterdream.pasterdreammod.client.renderer.entity.SquealWaveRenderer(context)
+        );
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册弹射物渲染器: squeal_wave_projectile → SquealWaveRenderer");
     }
 }

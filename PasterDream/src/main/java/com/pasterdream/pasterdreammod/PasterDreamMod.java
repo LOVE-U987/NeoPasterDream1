@@ -23,6 +23,7 @@ import com.pasterdream.pasterdreammod.entity.damage.EntityImmunitySetup;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDPotions;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
+import com.pasterdream.pasterdreammod.registry.PDWorldgenRegistries;
 import com.pasterdream.pasterdreammod.worldgen.decor.DecorationRegistry;
 import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
 import net.minecraft.data.DataGenerator;
@@ -120,6 +121,10 @@ public class PasterDreamMod {
 
         // 注册通用装饰物特征（WorldDecorationAPI）
         DecorationRegistry.FEATURES.register(modEventBus);
+
+        // 注册自定义 ChunkGenerator 和 BiomeSource 类型（供维度 JSON 引用）
+        PDWorldgenRegistries.CHUNK_GENERATORS.register(modEventBus);
+        PDWorldgenRegistries.BIOME_SOURCES.register(modEventBus);
 
         // 注册流体类型
         PDFluidsType.FLUID_TYPES.register(modEventBus);

@@ -34,6 +34,12 @@
       "min_delay": 1200,
       "max_delay": 1800,
       "replace_current_music": true
+    },
+    "particle": {
+      "options": {
+        "type": "minecraft:bubble"
+      },
+      "probability": 0.0015
     }
   },
   "spawners": {

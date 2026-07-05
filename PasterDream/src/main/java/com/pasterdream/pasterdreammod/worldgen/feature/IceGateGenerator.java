@@ -134,7 +134,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                         BlockState beamState = (isSpan && config.topBlock() != null)
                             ? config.topBlock().getState(random, beamPos)
                             : config.bodyBlock().getState(random, beamPos);
-                    if (WorldGenUtils.isWithinGenerationBounds(origin, beamPos)) {
+                    if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, beamPos, 1)) {
                         level.setBlock(beamPos, beamState, 3);
                         placedPositions.add(beamPos);
                         placedAny = true;
@@ -151,7 +151,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
             BlockPos decoPos = new BlockPos(leftX + halfWidth + dx, baseY + dy + 1, centerZ + dz);
             if (hasSupport(level, decoPos, placedPositions)
                     && WorldGenUtils.isReplaceable(level, config.replaceable(), decoPos)
-                    && WorldGenUtils.isWithinGenerationBounds(origin, decoPos)
+                    && WorldGenUtils.isWithinExpandedGenerationBounds(origin, decoPos, 1)
                     && random.nextFloat() < config.decorationChance()) {
                 BlockState state = config.bodyBlock().getState(random, decoPos);
                 level.setBlock(decoPos, state, 3);
@@ -233,7 +233,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                 BlockState state = (isTopSection && config.topBlock() != null)
                         ? config.topBlock().getState(random, pos)
                         : config.bodyBlock().getState(random, pos);
-                if (WorldGenUtils.isWithinGenerationBounds(origin, pos)) {
+                if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
                     level.setBlock(pos, state, 3);
                     placedPositions.add(pos);
                     placed = true;
@@ -281,7 +281,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                     if (y > cutY) continue;
 
                     BlockPos pos = new BlockPos(bx, y, centerZ + dz);
-                    if (WorldGenUtils.isWithinGenerationBounds(origin, pos)) {
+                    if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
                         BlockState state = config.bodyBlock().getState(random, pos);
                         level.setBlock(pos, state, 3);
                         placedPositions.add(pos);
@@ -338,10 +338,10 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                     BlockState state = nearBreakTop
                         ? Blocks.SNOW_BLOCK.defaultBlockState()
                         : config.bodyBlock().getState(random, pos);
-                    if (WorldGenUtils.isWithinGenerationBounds(origin, pos)) {
-                        level.setBlock(pos, state, 3);
-                        placedPositions.add(pos);
-                        placedAny = true;
+                    if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
+                    level.setBlock(pos, state, 3);
+                    placedPositions.add(pos);
+                    placedAny = true;
                     }
                 }
             }
@@ -369,7 +369,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                     BlockPos pos = new BlockPos(centerX + offsetX + dx, placeY, centerZ + dz);
 
                     if (random.nextFloat() < 0.85f) {
-                        if (WorldGenUtils.isWithinGenerationBounds(origin, pos)) {
+                        if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
                             BlockState state = config.bodyBlock().getState(random, pos);
                             level.setBlock(pos, state, 3);
                             placedPositions.add(pos);
@@ -383,7 +383,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                 int scatterX = centerX + offsetX + random.nextInt(3) - 1;
                 int scatterZ = centerZ + random.nextInt(3) - 1;
                 BlockPos scatterPos = new BlockPos(scatterX, placeY, scatterZ);
-                if (WorldGenUtils.isWithinGenerationBounds(origin, scatterPos)) {
+                if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, scatterPos, 1)) {
                     if (random.nextBoolean()) {
                         level.setBlock(scatterPos, Blocks.ICE.defaultBlockState(), 3);
                     } else {
@@ -436,7 +436,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                 BlockPos pos = new BlockPos(x, idealY, z);
 
                 if (progress < 0.45f) {
-                    if (WorldGenUtils.isWithinGenerationBounds(origin, pos)) {
+                    if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
                         BlockState state = config.bodyBlock().getState(random, pos);
                         level.setBlock(pos, state, 3);
                         intactCount++;
@@ -445,7 +445,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                 } else if (progress < 0.7f) {
                     float placeChance = 0.7f - (progress - 0.45f) / 0.25f * 0.4f;
                     if (random.nextFloat() < placeChance) {
-                        if (WorldGenUtils.isWithinGenerationBounds(origin, pos)) {
+                        if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
                             BlockState state = config.bodyBlock().getState(random, pos);
                             level.setBlock(pos, state, 3);
                             intactCount++;
@@ -483,7 +483,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                 } else {
                     scatterState = Blocks.PACKED_ICE.defaultBlockState();
                 }
-                if (WorldGenUtils.isWithinGenerationBounds(origin, sPos)) {
+                if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, sPos, 1)) {
                     level.setBlock(sPos, scatterState, 3);
                     scatterCount++;
                     placedAny = true;
@@ -533,7 +533,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
 
                 if (progress < 0.25f) {
                     if (random.nextFloat() < 0.4f) {
-                        if (WorldGenUtils.isWithinGenerationBounds(origin, pos)) {
+                        if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
                             BlockState state = config.bodyBlock().getState(random, pos);
                             level.setBlock(pos, state, 3);
                             intactCount++;
@@ -543,7 +543,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                 } else if (progress < 0.6f) {
                     float placeChance = 0.85f - (progress - 0.25f) / 0.35f * 0.15f;
                     if (random.nextFloat() < placeChance) {
-                        if (WorldGenUtils.isWithinGenerationBounds(origin, pos)) {
+                        if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
                             BlockState state = config.bodyBlock().getState(random, pos);
                             level.setBlock(pos, state, 3);
                             intactCount++;
@@ -553,7 +553,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                 } else if (progress < 0.8f) {
                     float placeChance = 0.5f - (progress - 0.6f) / 0.2f * 0.3f;
                     if (random.nextFloat() < placeChance) {
-                        if (WorldGenUtils.isWithinGenerationBounds(origin, pos)) {
+                        if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
                             BlockState state = config.bodyBlock().getState(random, pos);
                             level.setBlock(pos, state, 3);
                             intactCount++;
@@ -591,7 +591,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
             } else {
                 scatterState = Blocks.PACKED_ICE.defaultBlockState();
             }
-            if (WorldGenUtils.isWithinGenerationBounds(origin, sPos)) {
+            if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, sPos, 1)) {
                 level.setBlock(sPos, scatterState, 3);
                 scatterCount++;
                 placedAny = true;
@@ -622,7 +622,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
             if (gy <= level.getMinBuildHeight()) continue;
             BlockPos gPos = new BlockPos(gx, gy + 1, gz);
             if (!WorldGenUtils.isReplaceable(level, config.replaceable(), gPos)) continue;
-            if (!WorldGenUtils.isWithinGenerationBounds(origin, gPos)) continue;
+            if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, gPos, 1)) continue;
             level.setBlock(gPos, com.pasterdream.pasterdreammod.registry.PDBlocks.ICE_BUD_0.get().defaultBlockState(), 3);
         }
     }

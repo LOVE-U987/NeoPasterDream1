@@ -32,10 +32,16 @@
     "water_color": 4159204,
     "water_fog_color": 329011,
     "music": {
-      "sound": "pasterdream:music.dream_delta",
+      "sound": "pasterdream:music.dyedream_world",
       "min_delay": 1200,
       "max_delay": 1800,
       "replace_current_music": true
+    },
+    "particle": {
+      "options": {
+        "type": "minecraft:snowflake"
+      },
+      "probability": 0.002
     }
   },
   "spawners": {

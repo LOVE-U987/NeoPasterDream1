@@ -34,6 +34,14 @@
       "min_delay": 1200,
       "max_delay": 1800,
       "replace_current_music": true
+    },
+    "particle": {
+      "options": {
+        "type": "minecraft:dust",
+        "color": [0.8, 0.5, 0.9],
+        "scale": 0.5
+      },
+      "probability": 0.0008
     }
   },
   "spawners": {

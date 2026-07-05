@@ -57,6 +57,19 @@ public class PDClientEvents {
             ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_mushroom_plains")
     );
 
+    private static final ResourceKey<Biome> BIOME_DYEDREAM_SHORE = ResourceKey.create(
+            net.minecraft.core.registries.Registries.BIOME,
+            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_shore")
+    );
+    private static final ResourceKey<Biome> BIOME_DYEDREAM_RIVER = ResourceKey.create(
+            net.minecraft.core.registries.Registries.BIOME,
+            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_river")
+    );
+    private static final ResourceKey<Biome> BIOME_DYEDREAM_DENSE_FOREST = ResourceKey.create(
+            net.minecraft.core.registries.Registries.BIOME,
+            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_dense_forest")
+    );
+
     private static final ResourceLocation DYEDREAM_LEAVES_ID = ResourceLocation.fromNamespaceAndPath(
             PasterDreamMod.MOD_ID, "dyedream_leaves");
 
@@ -124,6 +137,12 @@ public class PDClientEvents {
             spawnDeepOceanBioluminescence(mc);
         } else if (BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(currentBiome)) {
             spawnMushroomSpores(mc);
+        } else if (BIOME_DYEDREAM_SHORE.equals(currentBiome)) {
+            spawnShoreSpray(mc);
+        } else if (BIOME_DYEDREAM_RIVER.equals(currentBiome)) {
+            spawnRiverGlow(mc);
+        } else if (BIOME_DYEDREAM_DENSE_FOREST.equals(currentBiome)) {
+            spawnForestFireflies(mc);
         }
 
         spawnTreeLeaves(mc);
@@ -451,5 +470,110 @@ public class PDClientEvents {
     private static boolean isLeafBlock(BlockState state) {
         ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
         return DYEDREAM_LEAVES_ID.equals(blockId);
+    }
+
+    /**
+     * 生成海岸浪花泡沫粒子（染梦海岸）
+     * <p>
+     * 模拟海浪拍打岸边时溅起的泡沫和盐雾效果，使用白色气泡粒子从水面附近生成，
+     * 向上飘散后逐渐消失。粒子带有轻微的横向漂移，模拟海风效果。
+     */
+    private static void spawnShoreSpray(Minecraft mc) {
+        var random = mc.player.getRandom();
+        if (random.nextFloat() >= 0.08f) return;
+
+        long gameTime = mc.level.getGameTime();
+        double driftX = Math.sin(gameTime * DRIFT_SPEED * 0.6) * DRIFT_RADIUS;
+        double driftZ = Math.cos(gameTime * DRIFT_SPEED * 1.2 + 0.8) * DRIFT_RADIUS;
+
+        SimpleParticleType type = (SimpleParticleType) PDParticles.SNOWFLAKE_0_PARTICLE.holder().get();
+
+        double playerFloorY = mc.player.getY() - 1.0;
+
+        int count = 1 + random.nextInt(2);
+        for (int i = 0; i < count; i++) {
+            double angle = random.nextDouble() * Math.PI * 2;
+            double dist = 2.0 + random.nextDouble() * 12.0;
+
+            mc.level.addParticle(
+                    type,
+                    mc.player.getX() + driftX + Math.cos(angle) * dist,
+                    playerFloorY + 0.2 + random.nextDouble() * 1.0,
+                    mc.player.getZ() + driftZ + Math.sin(angle) * dist,
+                    (random.nextDouble() - 0.5) * 0.008,
+                    0.01 + random.nextDouble() * 0.015,
+                    (random.nextDouble() - 0.5) * 0.008
+            );
+        }
+    }
+
+    /**
+     * 生成河流发光粒子（染梦河流）
+     * <p>
+     * 模拟河流中漂浮的发光生物和花瓣效果，使用白色星光粒子在水面上方缓慢漂浮，
+     * 带有柔和的垂直上下运动，营造梦幻般的河流氛围。
+     */
+    private static void spawnRiverGlow(Minecraft mc) {
+        var random = mc.player.getRandom();
+        if (random.nextFloat() >= 0.07f) return;
+
+        long gameTime = mc.level.getGameTime();
+        double driftX = Math.sin(gameTime * DRIFT_SPEED * 0.4) * DRIFT_RADIUS;
+        double driftZ = Math.cos(gameTime * DRIFT_SPEED * 0.8 + 1.5) * DRIFT_RADIUS;
+
+        SimpleParticleType type = (SimpleParticleType) PDParticles.WHITE_STAR_PARTICLE.holder().get();
+
+        int seaLevel = mc.level.getSeaLevel();
+
+        int count = 1 + random.nextInt(2);
+        for (int i = 0; i < count; i++) {
+            double angle = random.nextDouble() * Math.PI * 2;
+            double dist = 1.5 + random.nextDouble() * 10.0;
+
+            mc.level.addParticle(
+                    type,
+                    mc.player.getX() + driftX + Math.cos(angle) * dist,
+                    seaLevel + 0.3 + random.nextDouble() * 2.0,
+                    mc.player.getZ() + driftZ + Math.sin(angle) * dist,
+                    (random.nextDouble() - 0.5) * 0.003,
+                    (Math.sin(gameTime * 0.01 + angle) * 0.005),
+                    (random.nextDouble() - 0.5) * 0.003
+            );
+        }
+    }
+
+    /**
+     * 生成森林萤火虫粒子（染梦密林）
+     * <p>
+     * 模拟森林中漂浮的萤火虫效果，使用粉色粉尘粒子在地面上方漂浮，
+     * 带有随机闪烁和轻微的上下移动，营造神秘的魔法森林氛围。
+     */
+    private static void spawnForestFireflies(Minecraft mc) {
+        var random = mc.player.getRandom();
+        if (random.nextFloat() >= 0.09f) return;
+
+        long gameTime = mc.level.getGameTime();
+        double driftX = Math.sin(gameTime * DRIFT_SPEED * 0.5) * DRIFT_RADIUS;
+        double driftZ = Math.cos(gameTime * DRIFT_SPEED * 0.7 + 2.0) * DRIFT_RADIUS;
+
+        SimpleParticleType type = (SimpleParticleType) PDParticles.DREAMFERTILITER_PARTICLE.particleType();
+
+        double playerFloorY = mc.player.getY() - 1.0;
+
+        int count = 1 + random.nextInt(3);
+        for (int i = 0; i < count; i++) {
+            double angle = random.nextDouble() * Math.PI * 2;
+            double dist = 1.0 + random.nextDouble() * 14.0;
+
+            mc.level.addParticle(
+                    type,
+                    mc.player.getX() + driftX + Math.cos(angle) * dist,
+                    playerFloorY + 1.0 + random.nextDouble() * 6.0,
+                    mc.player.getZ() + driftZ + Math.sin(angle) * dist,
+                    (random.nextDouble() - 0.5) * 0.004,
+                    (Math.sin(gameTime * 0.015 + angle * 2) * 0.008),
+                    (random.nextDouble() - 0.5) * 0.004
+            );
+        }
     }
 }

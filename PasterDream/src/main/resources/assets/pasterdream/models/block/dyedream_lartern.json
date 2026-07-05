@@ -1,6 +1,7 @@
 {
-  "parent": "minecraft:block/template_lantern",
+  "parent": "minecraft:block/cube_all",
+  "render_type": "translucent",
   "textures": {
-    "lantern": "pasterdream:block/dyedream_lartern"
+    "all": "pasterdream:block/dyedream_lartern"
   }
 }

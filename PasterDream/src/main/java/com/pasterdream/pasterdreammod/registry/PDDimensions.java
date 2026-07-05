@@ -44,7 +44,7 @@ public class PDDimensions {
                 .withAmbientLight(0.5)
                 .minY(-64).height(384)
                 .monsterSpawnLight(0, 7)
-                .withDefaultBlock("minecraft:calcite")
+                .withDefaultBlock("pasterdream:dyedream_block")
                 .withDefaultFluid("minecraft:water")
                 .withNoiseSettings("pasterdream:dyedream_world")
                 .withMusic("dyedream_world")

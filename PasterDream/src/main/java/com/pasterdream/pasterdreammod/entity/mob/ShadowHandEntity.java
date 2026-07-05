@@ -338,9 +338,7 @@ public class ShadowHandEntity extends Monster implements GeoEntity {
         // 正在冲锋，推进冲锋阶段
         if (isCharging) {
             chargeTicks++;
-            // 设置高速度
-            this.setDeltaMovement(this.getDeltaMovement().scale(1.2));
-            // 冲锋持续 10 tick 后结束
+            // 冲锋持续 10 tick 后结束，移除指数加速
             if (chargeTicks >= 10) {
                 isCharging = false;
                 chargeTicks = 0;
@@ -363,11 +361,11 @@ public class ShadowHandEntity extends Monster implements GeoEntity {
                 this.setAnimation("attack");
                 isCharging = true;
                 chargeTicks = 0;
-                // 设置冷却（40 tick = 2秒）
-                chargeCooldown = 40;
-                // 朝目标方向冲刺
+                // 设置冷却（60 tick = 3秒）
+                chargeCooldown = 60;
+                // 朝目标方向冲刺，降低冲锋速度
                 Vec3 dir = this.getTarget().position().subtract(this.position()).normalize();
-                this.setDeltaMovement(dir.x * 1.2, dir.y * 1.2, dir.z * 1.2);
+                this.setDeltaMovement(dir.x * 0.6, dir.y * 0.6, dir.z * 0.6);
                 this.hasImpulse = true;
             }
         }

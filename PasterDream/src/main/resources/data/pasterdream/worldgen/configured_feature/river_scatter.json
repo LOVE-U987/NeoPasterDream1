@@ -1,0 +1,51 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "scatter",
+    "body_block": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 50,
+          "data": {
+            "Name": "pasterdream:pebble_0"
+          }
+        },
+        {
+          "weight": 30,
+          "data": {
+            "Name": "pasterdream:dyedreamquartz_block"
+          }
+        },
+        {
+          "weight": 20,
+          "data": {
+            "Name": "pasterdream:smooth_dyedreamquartz_block"
+          }
+        }
+      ]
+    },
+    "cluster_size": 10,
+    "y_radius": 2,
+    "irregularity": 0.5,
+    "region_check": true,
+    "region_threshold": 0.2,
+    "replaceable": {
+      "type": "minecraft:any_of",
+      "predicates": [
+        {
+          "type": "minecraft:matching_blocks",
+          "blocks": [
+            "minecraft:air",
+            "minecraft:water",
+            "pasterdream:dyedream_sand",
+            "pasterdream:dyedream_dirt"
+          ]
+        },
+        {
+          "type": "minecraft:replaceable"
+        }
+      ]
+    }
+  }
+}

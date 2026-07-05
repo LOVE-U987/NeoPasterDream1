@@ -1,12 +1,11 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
-import com.pasterdream.pasterdreammod.registry.PDSounds;
+import com.pasterdream.pasterdreammod.entity.projectile.SquealWaveProjectileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -93,7 +92,7 @@ public class ShadowSquealGhostEntity extends Monster implements RangedAttackMob,
         super.defineSynchedData(builder);
         builder.define(SHOOT, false);
         builder.define(ANIMATION, "undefined");
-        builder.define(TEXTURE, "shadow_ghost");
+        builder.define(TEXTURE, "shadow_squeal_ghost");
     }
 
     /**
@@ -165,10 +164,15 @@ public class ShadowSquealGhostEntity extends Monster implements RangedAttackMob,
     protected void registerGoals() {
         super.registerGoals();
 
-        // 近战攻击
-        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.2, false));
+        // 远程攻击 Goal（优先于近战）
+        this.goalSelector.addGoal(1, new ShadowSquealGhostEntity.RangedAttackGoal(this, 1.25, 30, 12f) {
+            @Override
+            public boolean canContinueToUse() {
+                return this.canUse();
+            }
+        });
 
-        // 飞行追踪目标 Goal
+        // 飞行追踪目标 Goal（配合远程攻击）
         this.goalSelector.addGoal(2, new Goal() {
             {
                 this.setFlags(EnumSet.of(Goal.Flag.MOVE));
@@ -226,20 +230,15 @@ public class ShadowSquealGhostEntity extends Monster implements RangedAttackMob,
             }
         });
 
+        // 近战攻击（当远程攻击无法使用时）
+        this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2, false));
+
         // 随机张望
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
 
         // 目标选择器：反击 + 主动攻击玩家
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
         this.targetSelector.addGoal(6, new HurtByTargetGoal(this));
-
-        // 远程攻击 Goal
-        this.goalSelector.addGoal(1, new ShadowSquealGhostEntity.RangedAttackGoal(this, 1.25, 30, 12f) {
-            @Override
-            public boolean canContinueToUse() {
-                return this.canUse();
-            }
-        });
     }
 
     /**
@@ -352,11 +351,7 @@ public class ShadowSquealGhostEntity extends Monster implements RangedAttackMob,
      */
     @Override
     public void performRangedAttack(LivingEntity target, float flval) {
-        // 播放暗影尖啸音效
-        this.level().playSound(null, this.blockPosition(),
-                PDSounds.SQUEAL_WAVE.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
-        // 对目标造成直接伤害（音波攻击）作为临时实现
-        target.hurt(this.damageSources().mobAttack(this), 4.0F);
+        SquealWaveProjectileEntity.shoot(this, target);
     }
 
     // ======================== 受伤/免疫 ========================

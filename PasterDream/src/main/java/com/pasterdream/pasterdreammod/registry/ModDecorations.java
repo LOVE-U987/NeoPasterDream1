@@ -101,6 +101,7 @@ public class ModDecorations {
      * 依次调用各分类的注册方法：
      * <ol>
      *   <li>跨群系云团（本文件）</li>
+     *   <li>平原群系装饰物（{@link DyedreamDecorations}）</li>
      *   <li>冰雪群系装饰物（{@link IceDecorations}）</li>
      *   <li>海洋群系装饰物（{@link OceanDecorations}）</li>
      * </ol>
@@ -110,6 +111,14 @@ public class ModDecorations {
         registerCloudfallMoundDense();
         registerCloudfallMoundSparse();
 
+        // 平原群系（biome_0 + biome_1 + mushroom_plains）
+        DyedreamDecorations.registerDyedreamCrystalCluster();
+        DyedreamDecorations.registerMeltdreamCrystalPillar();
+        DyedreamDecorations.registerFloatingCloudIsland();
+        DyedreamDecorations.registerCalciteCrystalGarden();
+        DyedreamDecorations.registerWarmCrystalSpike();
+        DyedreamDecorations.registerPinkagaricForest();
+
         // 冰雪群系（biome_1 + biome_2）
         IceDecorations.registerIceSpike();
         IceDecorations.registerIceGate();
@@ -118,9 +127,8 @@ public class ModDecorations {
         IceDecorations.registerIceCrystalSpike();
         IceDecorations.registerIcePillar();
 
-        // 海洋群系（biome_3）
+        // 海洋群系（biome_3）—— 优化稀有度，避免视觉杂乱
         OceanDecorations.registerCoralReef();
-        OceanDecorations.registerCoralReefPink();
         OceanDecorations.registerUnderwaterIceSpike();
         OceanDecorations.registerSeaIceMound();
         OceanDecorations.registerCloudBubble();

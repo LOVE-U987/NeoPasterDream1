@@ -1,0 +1,59 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "blob",
+    "body_block": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 50,
+          "data": {
+            "Name": "pasterdream:pinkagaric_0"
+          }
+        },
+        {
+          "weight": 30,
+          "data": {
+            "Name": "pasterdream:dyedream_bud_block"
+          }
+        },
+        {
+          "weight": 20,
+          "data": {
+            "Name": "pasterdream:ice_bud_0"
+          }
+        }
+      ]
+    },
+    "top_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:pinkagaric_0"
+      }
+    },
+    "cluster_size": 30,
+    "y_radius": 4,
+    "irregularity": 0.4,
+    "crystal_chance": 0.2,
+    "region_check": true,
+    "region_threshold": 0.3,
+    "replaceable": {
+      "type": "minecraft:any_of",
+      "predicates": [
+        {
+          "type": "minecraft:matching_blocks",
+          "blocks": [
+            "minecraft:air",
+            "pasterdream:dyedream_block",
+            "pasterdream:dyedream_dirt",
+            "pasterdream:dyedream_grass",
+            "pasterdream:dyedream_leaves"
+          ]
+        },
+        {
+          "type": "minecraft:replaceable"
+        }
+      ]
+    }
+  }
+}

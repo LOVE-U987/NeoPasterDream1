@@ -180,6 +180,8 @@ public class DyedreamCrackBlock extends Block implements SimpleWaterloggedBlock 
      * <p>
      * 优先使用玩家重生点（床），若玩家未设置重生点或重生点不在目标维度，
      * 则回退到世界出生点，并从高处向下扫描找到安全地面。
+     * <p>
+     * 注意：只查询已加载的区块，避免因 getBlockState 触发区块生成导致的递归崩溃。
      *
      * @param world  目标世界
      * @param player 传送的玩家
@@ -198,14 +200,15 @@ public class DyedreamCrackBlock extends Block implements SimpleWaterloggedBlock 
         BlockPos.MutableBlockPos checkPos = spawnPos.atY(world.getMaxBuildHeight() - 1).mutable();
 
         // 从最高处向下扫描，找到第一个非空气方块（即地面），然后在其上空 2 格处传送
+        // 注意：使用 isLoaded 检查区块是否已加载，避免触发区块生成
         for (int y = world.getMaxBuildHeight() - 1; y > world.getMinBuildHeight(); y--) {
             checkPos.setY(y);
-            if (!world.getBlockState(checkPos).isAir()) {
+            if (world.isLoaded(checkPos) && !world.getBlockState(checkPos).isAir()) {
                 return checkPos.above(2).immutable();
             }
         }
 
-        // 兜底：使用世界出生点上空 3 格
+        // 若目标区块尚未加载或全是空气，使用世界出生点上空 3 格（也会触发区块生成，但 spawn 区块由世界自动保证）
         return spawnPos.above(3);
     }
 

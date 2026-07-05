@@ -1,0 +1,30 @@
+{
+  "type": "pasterdream:floating_island",
+  "config": {
+    "min_radius": 3,
+    "max_radius": 12,
+    "min_height": 4,
+    "max_height": 10,
+    "density_threshold": 0.55,
+    "block_weights": [
+      {
+        "data": "minecraft:calcite",
+        "weight": 60
+      },
+      {
+        "data": "pasterdream:cloud",
+        "weight": 25
+      },
+      {
+        "data": "pasterdream:dyedreamquartz_block",
+        "weight": 10
+      },
+      {
+        "data": "pasterdream:meltdream_crystal_lamp",
+        "weight": 5
+      }
+    ],
+    "decorate_crystal": true,
+    "decorate_vines": true
+  }
+}

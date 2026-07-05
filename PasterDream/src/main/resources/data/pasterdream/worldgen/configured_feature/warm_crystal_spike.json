@@ -1,0 +1,66 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "spike",
+    "body_block": {
+      "type": "weighted_state_provider",
+      "entries": [
+        {
+          "data": {
+            "Name": "minecraft:calcite"
+          },
+          "weight": 50
+        },
+        {
+          "data": {
+            "Name": "pasterdream:dyedreamquartz_block"
+          },
+          "weight": 35
+        },
+        {
+          "data": {
+            "Name": "pasterdream:smooth_dyedreamquartz_block"
+          },
+          "weight": 15
+        }
+      ]
+    },
+    "top_block": {
+      "type": "simple_state_provider",
+      "state": {
+        "Name": "pasterdream:meltdream_crystal_lamp"
+      }
+    },
+    "min_height": 10,
+    "max_height": 20,
+    "base_radius": 3,
+    "top_radius": 0,
+    "crystal_chance": 0.25,
+    "crystal_block": {
+      "type": "weighted_state_provider",
+      "entries": [
+        {
+          "data": {
+            "Name": "pasterdream:dyedream_bud_0"
+          },
+          "weight": 40
+        },
+        {
+          "data": {
+            "Name": "pasterdream:dyedream_bud_1"
+          },
+          "weight": 30
+        },
+        {
+          "data": {
+            "Name": "pasterdream:pinkagaric_3"
+          },
+          "weight": 30
+        }
+      ]
+    },
+    "region_check": true,
+    "region_threshold": 0.3,
+    "check_hang": true
+  }
+}

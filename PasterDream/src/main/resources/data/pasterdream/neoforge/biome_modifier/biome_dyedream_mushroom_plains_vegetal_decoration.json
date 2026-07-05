@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:biome_dyedream_mushroom_plains",
+  "features": [
+    "pasterdream:pinkagaric_forest"
+  ],
+  "step": "vegetal_decoration"
+}

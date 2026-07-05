@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:biome_dyedream_0",
+  "features": [
+    "pasterdream:dyedream_crystal_cluster",
+    "pasterdream:meltdream_crystal_pillar",
+    "pasterdream:floating_cloud_island"
+  ],
+  "step": "top_layer_modification"
+}

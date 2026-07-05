@@ -1,0 +1,61 @@
+{
+  "has_precipitation": true,
+  "temperature": 0.8,
+  "downfall": 0.5,
+  "carvers": {
+    "air": []
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ],
+  "effects": {
+    "foliage_color": -145678,
+    "grass_color": -145678,
+    "sky_color": 10040115,
+    "fog_color": 13369395,
+    "water_color": 4159204,
+    "water_fog_color": 486011,
+    "music": {
+      "sound": "pasterdream:music.dyedream_world",
+      "min_delay": 1200,
+      "max_delay": 1800,
+      "replace_current_music": true
+    },
+    "particle": {
+      "options": {
+        "type": "minecraft:dust",
+        "color": [0.7, 0.5, 0.9],
+        "scale": 0.35
+      },
+      "probability": 0.0012
+    }
+  },
+  "spawners": {
+    "monster": [],
+    "creature": [
+      {
+        "type": "pasterdream:pink_slime",
+        "weight": 20,
+        "minCount": 1,
+        "maxCount": 3
+      }
+    ],
+    "ambient": [],
+    "axolotls": [],
+    "underground_water_creature": [],
+    "water_creature": [],
+    "water_ambient": [],
+    "misc": []
+  },
+  "spawn_costs": {}
+}

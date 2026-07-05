@@ -2,9 +2,7 @@
   "type": "minecraft:stonecutting",
   "count": 2,
   "ingredient": {
-    "id": "pasterdream:shadow_stone_bricks"
+    "item": "pasterdream:shadow_stone_bricks"
   },
-  "result": {
-    "id": "pasterdream:shadow_stone_bricks_slab"
-  }
+  "result": "pasterdream:shadow_stone_bricks_slab"
 }

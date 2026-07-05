@@ -44,25 +44,33 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
         BlockPos origin = context.origin();
         RandomSource random = context.random();
 
-        int leftX = origin.getX() - config.gateMaxWidth();
-        int rightX = origin.getX() + config.gateMaxWidth();
-        int centerZ = origin.getZ();
+        boolean alongX = random.nextBoolean();
 
-        int leftGroundY = WorldGenUtils.findGroundY(level, config.replaceable(),
-                leftX, origin.getY(), centerZ, 50);
-        int rightGroundY = WorldGenUtils.findGroundY(level, config.replaceable(),
-                rightX, origin.getY(), centerZ, 50);
+        int end1Coord = alongX ? origin.getX() - config.gateMaxWidth() : origin.getZ() - config.gateMaxWidth();
+        int end2Coord = alongX ? origin.getX() + config.gateMaxWidth() : origin.getZ() + config.gateMaxWidth();
+        int centerPerpendicular = alongX ? origin.getZ() : origin.getX();
 
-        boolean leftValid = leftGroundY != Integer.MIN_VALUE
-                && WorldGenUtils.isSolidSurface(level, new BlockPos(leftX, leftGroundY - 1, centerZ));
-        boolean rightValid = rightGroundY != Integer.MIN_VALUE
-                && WorldGenUtils.isSolidSurface(level, new BlockPos(rightX, rightGroundY - 1, centerZ));
+        int end1GroundY = WorldGenUtils.findGroundY(level, config.replaceable(),
+                alongX ? end1Coord : origin.getX(), origin.getY(),
+                alongX ? centerPerpendicular : end1Coord, 50);
+        int end2GroundY = WorldGenUtils.findGroundY(level, config.replaceable(),
+                alongX ? end2Coord : origin.getX(), origin.getY(),
+                alongX ? centerPerpendicular : end2Coord, 50);
 
-        if (!leftValid && !rightValid) return false;
+        boolean end1Valid = end1GroundY != Integer.MIN_VALUE
+                && WorldGenUtils.isSolidSurface(level, new BlockPos(
+                alongX ? end1Coord : origin.getX(), end1GroundY - 1,
+                alongX ? centerPerpendicular : end1Coord));
+        boolean end2Valid = end2GroundY != Integer.MIN_VALUE
+                && WorldGenUtils.isSolidSurface(level, new BlockPos(
+                alongX ? end2Coord : origin.getX(), end2GroundY - 1,
+                alongX ? centerPerpendicular : end2Coord));
 
-        int baseY = leftValid && rightValid
-                ? Math.min(leftGroundY, rightGroundY)
-                : (leftValid ? leftGroundY : rightGroundY);
+        if (!end1Valid && !end2Valid) return false;
+
+        int baseY = end1Valid && end2Valid
+                ? Math.min(end1GroundY, end2GroundY)
+                : (end1Valid ? end1GroundY : end2GroundY);
 
         int seaLevel = level.getSeaLevel();
         int waterDepth = Math.max(0, seaLevel - baseY);
@@ -73,12 +81,12 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
         int aboveWaterHeight = height - waterDepth;
         int minSpan = Math.max(config.gateMinWidth(), aboveWaterHeight * 2);
         int maxSpan = Math.max(config.gateMaxWidth(), aboveWaterHeight * 3);
-        maxSpan = Math.min(maxSpan, 48);
+        maxSpan = Math.min(maxSpan, 80);
         minSpan = Math.min(minSpan, maxSpan);
         int halfWidth = random.nextIntBetweenInclusive(minSpan, maxSpan) / 2;
         if (halfWidth < 2) halfWidth = 2;
 
-        int centerX = origin.getX();
+        int centerAlong = alongX ? origin.getX() : origin.getZ();
         int tubeRadius = Math.max(3, config.beamThickness());
         int baseFlareRadius = tubeRadius + 1;
         boolean placedAny = false;
@@ -86,32 +94,37 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
         int steps = (int) Math.ceil(halfWidth * 2.0f / STEP) + 1;
 
         for (int s = 0; s <= steps; s++) {
-            float dx = -halfWidth + s * STEP;
-            if (dx > halfWidth) dx = halfWidth;
+            float dAlong = -halfWidth + s * STEP;
+            if (dAlong > halfWidth) dAlong = halfWidth;
 
-            float absDx = Math.abs(dx);
-            float xProgress = halfWidth > 0 ? absDx / halfWidth : 1.0f;
-            float archY = baseY + height * (float) Math.cos(xProgress * Math.PI / 2.0);
+            float absD = Math.abs(dAlong);
+            float progress = halfWidth > 0 ? absD / halfWidth : 1.0f;
+            float archY = baseY + height * (float) Math.cos(progress * Math.PI / 2.0);
 
-            int cx = Math.round(centerX + dx);
-            int cy = Math.round(archY);
+            int cAlong = Math.round(centerAlong + dAlong);
+            int cY = Math.round(archY);
 
             float localRadius = tubeRadius;
-            if (xProgress > 0.7f) {
-                float rp = (xProgress - 0.7f) / 0.3f;
+            if (progress > 0.7f) {
+                float rp = (progress - 0.7f) / 0.3f;
                 localRadius = tubeRadius + (baseFlareRadius - tubeRadius) * rp;
             }
 
             int sRad = (int) Math.ceil(localRadius);
 
-            for (int bx = -sRad; bx <= sRad; bx++) {
+            for (int bd = -sRad; bd <= sRad; bd++) {
                 for (int by = -sRad; by <= sRad; by++) {
-                    for (int bz = -sRad; bz <= sRad; bz++) {
-                        float distSq = bx * bx + by * by + bz * bz;
+                    for (int bp = -sRad; bp <= sRad; bp++) {
+                        float distSq = bd * bd + by * by + bp * bp;
                         if (distSq > localRadius * localRadius + 0.5f) continue;
 
-                        BlockPos pos = new BlockPos(cx + bx, cy + by, centerZ + bz);
-                        if (!WorldGenUtils.isWithinGenerationBounds(origin, pos)) continue;
+                        if (random.nextFloat() > 0.333f) continue;
+
+                        BlockPos pos = alongX
+                                ? new BlockPos(cAlong + bd, cY + by, centerPerpendicular + bp)
+                                : new BlockPos(centerPerpendicular + bp, cY + by, cAlong + bd);
+
+                        if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 2)) continue;
                         if (!WorldGenUtils.isReplaceable(level, config.replaceable(), pos)) continue;
 
                         BlockState state = pickBlockForHeight(random, pos.getY(), seaLevel, config, pos);
@@ -122,9 +135,9 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
             }
         }
 
-        addIcicles(level, random, config, origin, centerX, centerZ, baseY, height, halfWidth, tubeRadius);
-        addDebrisScatter(level, random, config, centerX, centerZ, baseY, halfWidth, tubeRadius);
-        addGlowDecorations(level, random, config, origin, centerZ, baseY, halfWidth, tubeRadius, height);
+        addIcicles(level, random, config, origin, centerAlong, centerPerpendicular, baseY, height, halfWidth, tubeRadius, alongX);
+        addDebrisScatter(level, random, config, centerAlong, centerPerpendicular, baseY, halfWidth, tubeRadius, alongX);
+        addGlowDecorations(level, random, config, origin, centerAlong, centerPerpendicular, baseY, halfWidth, tubeRadius, height, alongX);
 
         return placedAny;
     }
@@ -180,15 +193,18 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
      * 在拱门底部周围散落碎冰渣（损坏变种效果）
      */
     private void addDebrisScatter(WorldGenLevel level, RandomSource random, DecorationConfig config,
-                                   int centerX, int centerZ, int baseY,
-                                   int halfWidth, int tubeRadius) {
+                                   int centerAlong, int centerPerpendicular, int baseY,
+                                   int halfWidth, int tubeRadius, boolean alongX) {
         float scatterBaseChance = config.decorationChance() * 1.5f;
         if (random.nextFloat() >= scatterBaseChance) return;
 
         int debrisCount = 5 + random.nextInt(12);
         for (int i = 0; i < debrisCount; i++) {
-            int sx = centerX + random.nextInt(halfWidth * 2 + 1) - halfWidth;
-            int sz = centerZ + random.nextInt(tubeRadius * 4 + 1) - tubeRadius * 2;
+            int sAlong = centerAlong + random.nextInt(halfWidth * 2 + 1) - halfWidth;
+            int sPerp = centerPerpendicular + random.nextInt(tubeRadius * 4 + 1) - tubeRadius * 2;
+
+            int sx = alongX ? sAlong : sPerp;
+            int sz = alongX ? sPerp : sAlong;
 
             int sy = level.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, sx, sz);
             if (sy < baseY - 2) sy = baseY - 2;
@@ -208,33 +224,35 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
      * 冰凌长度 2~5 格，生成概率约 35%，仅出现在拱门内壁底部附近。
      */
     private void addIcicles(WorldGenLevel level, RandomSource random, DecorationConfig config,
-                             BlockPos origin, int centerX, int centerZ, int baseY, int height,
-                             int halfWidth, int tubeRadius) {
+                             BlockPos origin, int centerAlong, int centerPerpendicular, int baseY, int height,
+                             int halfWidth, int tubeRadius, boolean alongX) {
         int steps = (int) Math.ceil(halfWidth * 2.0f / STEP) + 1;
         for (int s = 0; s <= steps; s++) {
-            float dx = -halfWidth + s * STEP;
-            if (dx > halfWidth) dx = halfWidth;
-            float absDx = Math.abs(dx);
-            float xProgress = halfWidth > 0 ? absDx / halfWidth : 1.0f;
-            if (xProgress > 0.6f) continue;
-            float archY = baseY + height * (float) Math.cos(xProgress * Math.PI / 2.0);
-            int cx = Math.round(centerX + dx);
-            int cy = Math.round(archY);
+            float dAlong = -halfWidth + s * STEP;
+            if (dAlong > halfWidth) dAlong = halfWidth;
+            float absD = Math.abs(dAlong);
+            float progress = halfWidth > 0 ? absD / halfWidth : 1.0f;
+            if (progress > 0.6f) continue;
+            float archY = baseY + height * (float) Math.cos(progress * Math.PI / 2.0);
+            int cAlong = Math.round(centerAlong + dAlong);
+            int cY = Math.round(archY);
             float localRadius = tubeRadius;
-            if (xProgress > 0.7f) {
-                float rp = (xProgress - 0.7f) / 0.3f;
+            if (progress > 0.7f) {
+                float rp = (progress - 0.7f) / 0.3f;
                 localRadius = tubeRadius + 1 * rp;
             }
             int sRad = (int) Math.ceil(localRadius);
-            for (int bz = -sRad; bz <= sRad; bz += 2) {
+            for (int bp = -sRad; bp <= sRad; bp += 2) {
                 for (int by = -sRad + 1; by <= 0; by++) {
-                    float distSq = by * by + bz * bz;
+                    float distSq = by * by + bp * bp;
                     if (distSq > localRadius * localRadius + 0.5f) continue;
                     if (random.nextFloat() > 0.08f) continue;
                     int icicleLen = 3 + random.nextInt(5);
                     for (int i = 1; i <= icicleLen; i++) {
-                        BlockPos pos = new BlockPos(cx, cy + by - i, centerZ + bz);
-                        if (!WorldGenUtils.isWithinGenerationBounds(origin, pos)) break;
+                        BlockPos pos = alongX
+                                ? new BlockPos(cAlong, cY + by - i, centerPerpendicular + bp)
+                                : new BlockPos(centerPerpendicular + bp, cY + by - i, cAlong);
+                        if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 2)) break;
                         if (!WorldGenUtils.isReplaceable(level, config.replaceable(), pos)) break;
                         level.setBlock(pos, config.bodyBlock().getState(random, pos), 3);
                     }
@@ -251,18 +269,22 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
      * 仅放置在与拱门底部高度差不超过 5 格且可替换的位置上。
      */
     private void addGlowDecorations(WorldGenLevel level, RandomSource random, DecorationConfig config,
-                                     BlockPos origin, int centerZ, int baseY,
-                                     int halfWidth, int tubeRadius, int height) {
+                                     BlockPos origin, int centerAlong, int centerPerpendicular, int baseY,
+                                     int halfWidth, int tubeRadius, int height, boolean alongX) {
         int glowCount = 1 + random.nextInt(2);
         for (int g = 0; g < glowCount; g++) {
-            int gx = origin.getX() + random.nextInt(halfWidth * 2 + 1) - halfWidth;
-            int gz = centerZ + random.nextInt(tubeRadius * 4 + 1) - tubeRadius * 2;
+            int gAlong = centerAlong + random.nextInt(halfWidth * 2 + 1) - halfWidth;
+            int gPerp = centerPerpendicular + random.nextInt(tubeRadius * 4 + 1) - tubeRadius * 2;
+
+            int gx = alongX ? gAlong : gPerp;
+            int gz = alongX ? gPerp : gAlong;
+
             int gy = level.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, gx, gz);
             if (gy < baseY - 2) gy = baseY - 2;
             if (Math.abs(gy - baseY) > 5) continue;
             BlockPos gPos = new BlockPos(gx, gy + 1, gz);
             if (!WorldGenUtils.isReplaceable(level, config.replaceable(), gPos)) continue;
-            if (!WorldGenUtils.isWithinGenerationBounds(origin, gPos)) continue;
+            if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, gPos, 2)) continue;
             level.setBlock(gPos, PDBlocks.ICE_BUD_0.get().defaultBlockState(), 3);
         }
     }

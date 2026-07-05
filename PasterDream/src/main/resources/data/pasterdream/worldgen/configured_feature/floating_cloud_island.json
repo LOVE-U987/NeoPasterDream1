@@ -1,0 +1,43 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "blob",
+    "body_block": {
+      "type": "weighted_state_provider",
+      "entries": [
+        {
+          "data": {
+            "Name": "pasterdream:cloud"
+          },
+          "weight": 70
+        },
+        {
+          "data": {
+            "Name": "pasterdream:thick_cloud"
+          },
+          "weight": 25
+        },
+        {
+          "data": {
+            "Name": "pasterdream:meltdream_crystal_lamp"
+          },
+          "weight": 5
+        }
+      ]
+    },
+    "top_block": {
+      "type": "simple_state_provider",
+      "state": {
+        "Name": "pasterdream:cloud"
+      }
+    },
+    "cluster_size": 80,
+    "base_radius": 5,
+    "top_radius": 0,
+    "y_radius": 2,
+    "irregularity": 0.25,
+    "fill_hang": false,
+    "region_check": true,
+    "region_threshold": 0.3
+  }
+}

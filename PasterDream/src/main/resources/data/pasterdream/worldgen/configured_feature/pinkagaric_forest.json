@@ -1,0 +1,51 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "scatter",
+    "body_block": {
+      "type": "weighted_state_provider",
+      "entries": [
+        {
+          "data": {
+            "Name": "pasterdream:pinkagaric_0"
+          },
+          "weight": 30
+        },
+        {
+          "data": {
+            "Name": "pasterdream:pinkagaric_1"
+          },
+          "weight": 25
+        },
+        {
+          "data": {
+            "Name": "pasterdream:pinkagaric_2"
+          },
+          "weight": 20
+        },
+        {
+          "data": {
+            "Name": "pasterdream:pinkagaric_3"
+          },
+          "weight": 15
+        },
+        {
+          "data": {
+            "Name": "pasterdream:dyedream_bud_0"
+          },
+          "weight": 10
+        }
+      ]
+    },
+    "top_block": {
+      "type": "simple_state_provider",
+      "state": {
+        "Name": "pasterdream:pinkagaric_0"
+      }
+    },
+    "min_height": 1,
+    "max_height": 1,
+    "cluster_size": 10,
+    "check_hang": true
+  }
+}

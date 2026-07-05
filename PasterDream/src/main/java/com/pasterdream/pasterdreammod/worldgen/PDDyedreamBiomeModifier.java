@@ -36,6 +36,28 @@ public class PDDyedreamBiomeModifier implements BiomeModifier {
     private static final ResourceLocation DYEDREAM_BIOME_TAG =
             ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "is_dyedream");
 
+    /** 过渡群系 ResourceKey */
+    private static final ResourceKey<Biome> BIOME_DYEDREAM_SHORE = ResourceKey.create(
+            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_shore"));
+    private static final ResourceKey<Biome> BIOME_DYEDREAM_RIVER = ResourceKey.create(
+            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_river"));
+    private static final ResourceKey<Biome> BIOME_DYEDREAM_DENSE_FOREST = ResourceKey.create(
+            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_dense_forest"));
+
+    /** 过渡群系装饰物 ResourceKey */
+    private static final ResourceKey<PlacedFeature> SHORE_SPIKE = ResourceKey.create(
+            Registries.PLACED_FEATURE, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "shore_spike"));
+    private static final ResourceKey<PlacedFeature> SHORE_SCATTER = ResourceKey.create(
+            Registries.PLACED_FEATURE, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "shore_scatter"));
+    private static final ResourceKey<PlacedFeature> RIVER_CRYSTAL_CLUSTER = ResourceKey.create(
+            Registries.PLACED_FEATURE, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "river_crystal_cluster"));
+    private static final ResourceKey<PlacedFeature> RIVER_SCATTER = ResourceKey.create(
+            Registries.PLACED_FEATURE, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "river_scatter"));
+    private static final ResourceKey<PlacedFeature> DENSE_FOREST_MUSHROOM = ResourceKey.create(
+            Registries.PLACED_FEATURE, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dense_forest_mushroom"));
+    private static final ResourceKey<PlacedFeature> DENSE_FOREST_CRYSTAL_SPIKE = ResourceKey.create(
+            Registries.PLACED_FEATURE, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dense_forest_crystal_spike"));
+
     /** 空编解码器 —— 该修改器实例无需额外的配置参数 */
     public static final MapCodec<PDDyedreamBiomeModifier> CODEC = MapCodec.unit(new PDDyedreamBiomeModifier());
 
@@ -89,6 +111,22 @@ public class PDDyedreamBiomeModifier implements BiomeModifier {
                 addFeature(builder, GenerationStep.Decoration.VEGETAL_DECORATION, placedFeatureLookup, PDPlacedFeatures.PATCH_DYEDREAM_BUDS);
                 addFeature(builder, GenerationStep.Decoration.VEGETAL_DECORATION, placedFeatureLookup, PDPlacedFeatures.PATCH_PINKAGARIC);
                 addFeature(builder, GenerationStep.Decoration.VEGETAL_DECORATION, placedFeatureLookup, PDPlacedFeatures.PATCH_DYEDREAM_SEAGRASS);
+
+                // ==================== 过渡群系专属装饰物 ====================
+                LOGGER.debug("[modify] --- 开始注入过渡群系装饰物 ---");
+                if (biomeKey.isPresent()) {
+                    ResourceKey<Biome> key = biomeKey.get();
+                    if (BIOME_DYEDREAM_SHORE.equals(key)) {
+                        addFeature(builder, GenerationStep.Decoration.SURFACE_STRUCTURES, placedFeatureLookup, SHORE_SPIKE);
+                        addFeature(builder, GenerationStep.Decoration.SURFACE_STRUCTURES, placedFeatureLookup, SHORE_SCATTER);
+                    } else if (BIOME_DYEDREAM_RIVER.equals(key)) {
+                        addFeature(builder, GenerationStep.Decoration.SURFACE_STRUCTURES, placedFeatureLookup, RIVER_CRYSTAL_CLUSTER);
+                        addFeature(builder, GenerationStep.Decoration.SURFACE_STRUCTURES, placedFeatureLookup, RIVER_SCATTER);
+                    } else if (BIOME_DYEDREAM_DENSE_FOREST.equals(key)) {
+                        addFeature(builder, GenerationStep.Decoration.SURFACE_STRUCTURES, placedFeatureLookup, DENSE_FOREST_MUSHROOM);
+                        addFeature(builder, GenerationStep.Decoration.SURFACE_STRUCTURES, placedFeatureLookup, DENSE_FOREST_CRYSTAL_SPIKE);
+                    }
+                }
 
                 LOGGER.debug("[modify] ✅ 染梦群系特征注入完成！");
             }

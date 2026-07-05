@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/dyedream_deepstone",
+    "up": "pasterdream:block/dyedream_deepstone",
+    "north": "pasterdream:block/dyedream_deepstone",
+    "east": "pasterdream:block/dyedream_deepstone",
+    "south": "pasterdream:block/dyedream_deepstone",
+    "west": "pasterdream:block/dyedream_deepstone",
+    "particle": "pasterdream:block/dyedream_deepstone"
+  },
+  "render_type": "solid"
+}

@@ -1,0 +1,45 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "scatter",
+    "body_block": {
+      "type": "weighted_state_provider",
+      "entries": [
+        {
+          "data": {
+            "Name": "pasterdream:meltdream_crystal_lamp"
+          },
+          "weight": 40
+        },
+        {
+          "data": {
+            "Name": "pasterdream:dyedream_bud_0"
+          },
+          "weight": 30
+        },
+        {
+          "data": {
+            "Name": "pasterdream:dyedream_bud_1"
+          },
+          "weight": 20
+        },
+        {
+          "data": {
+            "Name": "pasterdream:dyedream_bud_2"
+          },
+          "weight": 10
+        }
+      ]
+    },
+    "top_block": {
+      "type": "simple_state_provider",
+      "state": {
+        "Name": "pasterdream:meltdream_crystal_lamp"
+      }
+    },
+    "min_height": 1,
+    "max_height": 1,
+    "cluster_size": 5,
+    "check_hang": true
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "pillar",
+    "body_block": {
+      "type": "simple_state_provider",
+      "state": {
+        "Name": "pasterdream:dyedreamquartz_block"
+      }
+    },
+    "top_block": {
+      "type": "simple_state_provider",
+      "state": {
+        "Name": "pasterdream:meltdream_crystal_lamp"
+      }
+    },
+    "min_height": 6,
+    "max_height": 12,
+    "base_width": 2,
+    "top_width": 1,
+    "crystal_chance": 0.2,
+    "crystal_block": {
+      "type": "simple_state_provider",
+      "state": {
+        "Name": "pasterdream:dyedream_bud_0"
+      }
+    },
+    "debris_block": {
+      "type": "simple_state_provider",
+      "state": {
+        "Name": "pasterdream:dyedreamquartz_block"
+      }
+    },
+    "debris_count": 4,
+    "debris_radius": 2,
+    "region_check": true,
+    "region_threshold": 0.3,
+    "check_hang": true
+  }
+}

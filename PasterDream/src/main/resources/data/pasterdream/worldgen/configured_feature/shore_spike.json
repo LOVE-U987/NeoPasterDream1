@@ -1,0 +1,63 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "spike",
+    "body_block": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 60,
+          "data": {
+            "Name": "pasterdream:dyedream_sandstone"
+          }
+        },
+        {
+          "weight": 30,
+          "data": {
+            "Name": "pasterdream:dyedream_block"
+          }
+        },
+        {
+          "weight": 10,
+          "data": {
+            "Name": "pasterdream:dyedream_deepstone"
+          }
+        }
+      ]
+    },
+    "top_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:dyedream_sandstone"
+      }
+    },
+    "min_height": 3,
+    "max_height": 8,
+    "base_radius": 2,
+    "top_radius": 0,
+    "crystal_chance": 0.0,
+    "check_hang": false,
+    "region_check": true,
+    "region_threshold": 0.2,
+    "replaceable": {
+      "type": "minecraft:any_of",
+      "predicates": [
+        {
+          "type": "minecraft:matching_blocks",
+          "blocks": [
+            "minecraft:air",
+            "minecraft:sand",
+            "pasterdream:dyedream_sand",
+            "pasterdream:dyedream_sandstone",
+            "pasterdream:dyedream_block",
+            "pasterdream:dyedream_dirt",
+            "pasterdream:dyedream_grass"
+          ]
+        },
+        {
+          "type": "minecraft:replaceable"
+        }
+      ]
+    }
+  }
+}

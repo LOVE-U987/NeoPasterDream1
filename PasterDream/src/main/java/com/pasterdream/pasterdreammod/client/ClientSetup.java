@@ -3,6 +3,10 @@ package com.pasterdream.pasterdreammod.client;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.client.model.Modelslime;
 import com.pasterdream.pasterdreammod.client.particle.*;
+import com.pasterdream.pasterdreammod.client.particle.AuroraGlowParticle;
+import com.pasterdream.pasterdreammod.client.particle.CrystalSnowflakeParticle;
+import com.pasterdream.pasterdreammod.client.particle.DreamSporeParticle;
+import com.pasterdream.pasterdreammod.client.particle.StardustParticle;
 import com.pasterdream.pasterdreammod.client.renderer.RendererRegistry;
 import com.pasterdream.pasterdreammod.client.screen.DreamCauldronScreen;
 import com.pasterdream.pasterdreammod.client.screen.DyedreamDeskScreen;
@@ -125,7 +129,13 @@ public class ClientSetup {
         event.registerSpriteSet((SimpleParticleType) PDParticles.FOX_FIRE_0_PARTICLE.particleType(), FoxFire0Particle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.FOX_FIRE_1_PARTICLE.particleType(), FoxFire1Particle.Provider::new);
 
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 粒子提供器注册完成，共 15 个粒子类型");
+        // ===== 4.3 染梦世界动态环境粒子 Provider 注册 =====
+        event.registerSpriteSet((SimpleParticleType) PDParticles.DREAM_SPORE.particleType(), DreamSporeParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.CRYSTAL_SNOWFLAKE.particleType(), CrystalSnowflakeParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.AURORA_GLOW.particleType(), AuroraGlowParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.STARDUST.particleType(), StardustParticle.Provider::new);
+
+        PasterDreamMod.LOGGER.debug("[ClientSetup] 粒子提供器注册完成，共 19 个粒子类型");
     }
 
     /**
@@ -162,6 +172,12 @@ public class ClientSetup {
             Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_deep_ocean"));
     private static final ResourceKey<Biome> BIOME_DYEDREAM_MUSHROOM_PLAINS = ResourceKey.create(
             Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_mushroom_plains"));
+    private static final ResourceKey<Biome> BIOME_DYEDREAM_SHORE = ResourceKey.create(
+            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_shore"));
+    private static final ResourceKey<Biome> BIOME_DYEDREAM_RIVER = ResourceKey.create(
+            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_river"));
+    private static final ResourceKey<Biome> BIOME_DYEDREAM_DENSE_FOREST = ResourceKey.create(
+            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_dense_forest"));
 
     /**
      * 在三色间插值（白天色 → 黄昏色 → 夜色）
@@ -240,6 +256,18 @@ public class ClientSetup {
                             dayColor = new Vec3(1.0, 0.82, 0.64);
                             sunsetColor = new Vec3(0.90, 0.64, 0.45);
                             nightColor = new Vec3(0.28, 0.16, 0.04);
+                        } else if (BIOME_DYEDREAM_SHORE.equals(biome)) {
+                            dayColor = new Vec3(0.71, 0.85, 1.0);
+                            sunsetColor = new Vec3(0.83, 0.71, 0.83);
+                            nightColor = new Vec3(0.16, 0.23, 0.36);
+                        } else if (BIOME_DYEDREAM_RIVER.equals(biome)) {
+                            dayColor = new Vec3(0.64, 0.78, 0.85);
+                            sunsetColor = new Vec3(0.78, 0.64, 0.78);
+                            nightColor = new Vec3(0.10, 0.16, 0.28);
+                        } else if (BIOME_DYEDREAM_DENSE_FOREST.equals(biome)) {
+                            dayColor = new Vec3(0.56, 0.71, 0.56);
+                            sunsetColor = new Vec3(0.71, 0.56, 0.64);
+                            nightColor = new Vec3(0.08, 0.16, 0.10);
                         } else {
                             dayColor = new Vec3(1.0, 0.71, 0.85);
                             sunsetColor = new Vec3(1.0, 0.56, 0.64);

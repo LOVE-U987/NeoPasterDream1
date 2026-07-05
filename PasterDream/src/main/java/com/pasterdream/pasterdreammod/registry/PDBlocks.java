@@ -14,6 +14,7 @@ import com.pasterdream.pasterdreammod.block.DyedreamDeskBlock;
 import com.pasterdream.pasterdreammod.block.DyedreamLilyPadBlock;
 import com.pasterdream.pasterdreammod.block.DyedreamLotusBlock;
 import com.pasterdream.pasterdreammod.block.DyedreamPlanksPaneBlock;
+import com.pasterdream.pasterdreammod.block.DyedreamLarternBlock;
 import com.pasterdream.pasterdreammod.block.DyedreamSaplingBlock;
 import com.pasterdream.pasterdreammod.block.DyedreamSeagrassBlock;
 import com.pasterdream.pasterdreammod.block.CloudBlock;
@@ -201,18 +202,24 @@ public class PDBlocks {
                     BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/icestone"))
             .add("dyedream_worldtree_leaves", Blocks.OAK_LEAVES, BlockConfig.of()
                     .mineable("hoe").model("cube_all").tex("all", "pasterdream:block/dyedream_worldtree"))
-            .add("dyedreamquartz_ore", Blocks.IRON_ORE, BlockConfig.of()
-                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz_ore"))
-            .add("dyedreamdust_ore", Blocks.IRON_ORE, BlockConfig.of()
-                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamdust_ore"))
-            .add("amber_candy_ore", Blocks.IRON_ORE, BlockConfig.of()
-                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/amber_candy_ore"))
-            .add("titanium_ore", Blocks.IRON_ORE, BlockConfig.of()
-                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/titanium_ore"))
-            .add("windrunner_crystal_ore", Blocks.IRON_ORE, BlockConfig.of()
-                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/windrunner_crystal_ore"))
-            .add("congeal_wind_ore", Blocks.IRON_ORE, BlockConfig.of()
-                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/congeal_wind_ore"))
+            .addCustom("dyedreamquartz_ore",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.COAL_ORE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz_ore"))
+            .addCustom("dyedreamdust_ore",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.COAL_ORE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamdust_ore"))
+            .addCustom("amber_candy_ore",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.COAL_ORE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/amber_candy_ore"))
+            .addCustom("titanium_ore",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.DIAMOND_ORE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/titanium_ore"))
+            .addCustom("windrunner_crystal_ore",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/windrunner_crystal_ore"))
+            .addCustom("congeal_wind_ore",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.COAL_ORE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/congeal_wind_ore"))
             .add("carve_dyedream_glass", Blocks.GLASS, BlockConfig.of()
                     .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/carve_dyedream_glass").renderType("translucent").blockFactory(TransparentBlock::new))
             .add("gold_carve_dyedream_glass", Blocks.GLASS, BlockConfig.of()
@@ -223,6 +230,12 @@ public class PDBlocks {
             .addCustom("calcite_tiles",
                     BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE),
                     BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/polished_calcite"))
+            .addCustom("dyedream_deepstone",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_deepstone"))
+            .addCustom("dyedream_sandstone",
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.SANDSTONE).requiresCorrectToolForDrops(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_sandstone"))
             .build();
 
     // ==================== 简单方块公开引用 ====================
@@ -253,6 +266,8 @@ public class PDBlocks {
     public static final DeferredBlock<Block> GOLD_CARVE_DYEDREAM_GLASS = SIMPLE_BLOCKS.get("gold_carve_dyedream_glass");
     public static final DeferredBlock<Block> POLISHED_CALCITE = SIMPLE_BLOCKS.get("polished_calcite");
     public static final DeferredBlock<Block> CALCITE_TILES = SIMPLE_BLOCKS.get("calcite_tiles");
+    public static final DeferredBlock<Block> DYEDREAM_DEEPSTONE = SIMPLE_BLOCKS.get("dyedream_deepstone");
+    public static final DeferredBlock<Block> DYEDREAM_SANDSTONE = SIMPLE_BLOCKS.get("dyedream_sandstone");
 
     // ==================== 特殊方块（保持手动注册） ====================
 
@@ -423,8 +438,8 @@ public class PDBlocks {
     public static final DeferredBlock<IronBarsBlock> GOLD_CARVE_DYEDREAM_GLASSPANE = BLOCKS.registerBlock("gold_carve_dyedream_glasspane",
             IronBarsBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS_PANE));
 
-    public static final DeferredBlock<LanternBlock> DYEDREAM_LARTERN = BLOCKS.registerBlock("dyedream_lartern",
-            LanternBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.LANTERN).lightLevel(s -> 14));
+    public static final DeferredBlock<DyedreamLarternBlock> DYEDREAM_LARTERN = BLOCKS.registerBlock("dyedream_lartern",
+            DyedreamLarternBlock::new, DyedreamLarternBlock.larternProps());
 
     // ==================== 自定义模型方块 ====================
 

@@ -1,0 +1,60 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "spike",
+    "body_block": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 55,
+          "data": {
+            "Name": "pasterdream:dyedreamquartz_block"
+          }
+        },
+        {
+          "weight": 30,
+          "data": {
+            "Name": "pasterdream:smooth_dyedreamquartz_block"
+          }
+        },
+        {
+          "weight": 15,
+          "data": {
+            "Name": "pasterdream:meltdream_crystal_lamp"
+          }
+        }
+      ]
+    },
+    "top_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:meltdream_crystal_lamp"
+      }
+    },
+    "min_height": 2,
+    "max_height": 5,
+    "base_radius": 1,
+    "top_radius": 0,
+    "crystal_chance": 0.4,
+    "check_hang": false,
+    "region_check": true,
+    "region_threshold": 0.25,
+    "replaceable": {
+      "type": "minecraft:any_of",
+      "predicates": [
+        {
+          "type": "minecraft:matching_blocks",
+          "blocks": [
+            "minecraft:air",
+            "pasterdream:dyedream_block",
+            "pasterdream:dyedream_dirt",
+            "pasterdream:dyedream_grass"
+          ]
+        },
+        {
+          "type": "minecraft:replaceable"
+        }
+      ]
+    }
+  }
+}

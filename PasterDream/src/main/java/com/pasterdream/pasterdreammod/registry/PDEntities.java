@@ -35,6 +35,7 @@ import com.pasterdream.pasterdreammod.entity.mob.WeakenessTerrorbeakEntity;
 import com.pasterdream.pasterdreammod.entity.mob.WindKnightEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.BoneWingFireBallProjectileEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.ShadowMagicballEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.SquealWaveProjectileEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -811,4 +812,17 @@ public class PDEntities {
                             .clientTrackingRange(4)
                             .updateInterval(20)
                             .build("bone_wing_fire_ball_projectile"));
+
+    /**
+     * 音波弹射物 (squeal_wave_projectile)
+     * 继承 AbstractArrow，由暗影尖啸幽灵通过 performRangedAttack 发射。
+     * 尺寸: 0.5f x 0.5f
+     */
+    public static final Supplier<EntityType<SquealWaveProjectileEntity>> SQUEAL_WAVE_PROJECTILE =
+            ENTITY_TYPES.register("squeal_wave_projectile",
+                    () -> EntityType.Builder.<SquealWaveProjectileEntity>of(SquealWaveProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("squeal_wave_projectile"));
 }

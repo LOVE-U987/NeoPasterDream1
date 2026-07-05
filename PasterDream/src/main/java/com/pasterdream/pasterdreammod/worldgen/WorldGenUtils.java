@@ -187,4 +187,24 @@ public final class WorldGenUtils {
         return targetChunkX == originChunkX
             && targetChunkZ == originChunkZ;
     }
+
+    /**
+     * 扩展版区块边界检查 —— 允许在相邻区块内放置方块
+     * <p>
+     * 对于大跨度结构（如冰拱门可达 48 格宽），单个区块（16格）限制会导致结构被截断。
+     * 此方法允许指定相邻区块数量，Minecraft 特征生成时通常保证 ±1 区块已加载可用。
+     *
+     * @param origin      特征生成原点
+     * @param target      要放置方块的位置
+     * @param chunkRadius 允许的相邻区块半径（0=仅同区块，1=±1区块共9区块，覆盖48格范围）
+     * @return true 表示目标位置在扩展安全范围内
+     */
+    public static boolean isWithinExpandedGenerationBounds(BlockPos origin, BlockPos target, int chunkRadius) {
+        int originChunkX = origin.getX() >> 4;
+        int originChunkZ = origin.getZ() >> 4;
+        int targetChunkX = target.getX() >> 4;
+        int targetChunkZ = target.getZ() >> 4;
+        return Math.abs(targetChunkX - originChunkX) <= chunkRadius
+            && Math.abs(targetChunkZ - originChunkZ) <= chunkRadius;
+    }
 }
