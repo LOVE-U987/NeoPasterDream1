@@ -263,6 +263,7 @@ public class ModMusicManager {
      * 停止所有音乐并重置所有状态
      */
     private void stopAllMusic() {
+        // TODO: 离开自定义维度时应先执行淡出过渡再停止音乐，当前直接瞬间停止
         playbackController.stop();
         crossfadeManager.stopCrossfade();
         cooldownManager.cancelCooldown();

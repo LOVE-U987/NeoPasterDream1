@@ -75,6 +75,7 @@ public class CrossfadeManager {
         }
 
         // 开始交叉淡化
+        // TODO: 旧音乐应从当前音量开始逐级递减（当前直接以原音量播放后瞬间停止，未实现真正的渐弱效果）
         fadingOutSound = playbackController.getCurrentSound();
         fadingOutMusicName = playbackController.getCurrentMusicName();
 
@@ -100,6 +101,11 @@ public class CrossfadeManager {
     public boolean updateStep() {
         if (fadeState != FadeState.FADING) return false;
 
+        // TODO: 需要按步计算旧音乐音量并调用 fadingOutSound 的 setVolume() 实现渐弱
+        //       当前只做计数器递增，旧音乐音量始终保持不变，到期后直接停止
+        //       参考: float progress = (float) crossfadeStep / CROSSFADE_STEPS;
+        //             float volume = TARGET_VOLUME * (1.0f - progress);
+
         if (crossfadeStep >= ModMusicManager.CROSSFADE_STEPS) {
             stopCrossfade();
             return false;
@@ -112,6 +118,8 @@ public class CrossfadeManager {
      * 停止交叉淡化并清理淡出状态
      */
     public void stopCrossfade() {
+        // TODO: 理想情况下旧音乐应由渐弱自然结束（音量降为0），而非此处直接停止
+        // TODO: 后续应当替换
         if (fadingOutSound != null) {
             Minecraft.getInstance().getSoundManager().stop(fadingOutSound);
         }
