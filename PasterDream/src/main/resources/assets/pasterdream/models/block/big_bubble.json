@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/big_bubble",
+    "up": "pasterdream:block/big_bubble",
+    "north": "pasterdream:block/big_bubble",
+    "east": "pasterdream:block/big_bubble",
+    "south": "pasterdream:block/big_bubble",
+    "west": "pasterdream:block/big_bubble",
+    "particle": "pasterdream:block/big_bubble"
+  },
+  "render_type": "transparent"
+}

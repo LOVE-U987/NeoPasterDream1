@@ -1,16 +1,30 @@
 {
   "variants": {
-    "axis=x": {
+    "facing=up": {
+      "model": "pasterdream:block/dyedream_bud_0"
+    },
+    "facing=down": {
+      "model": "pasterdream:block/dyedream_bud_0",
+      "x": 180
+    },
+    "facing=north": {
+      "model": "pasterdream:block/dyedream_bud_0",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:block/dyedream_bud_0",
+      "x": 90,
+      "y": 180
+    },
+    "facing=east": {
       "model": "pasterdream:block/dyedream_bud_0",
       "x": 90,
       "y": 90
     },
-    "axis=y": {
-      "model": "pasterdream:block/dyedream_bud_0"
-    },
-    "axis=z": {
+    "facing=west": {
       "model": "pasterdream:block/dyedream_bud_0",
-      "x": 90
+      "x": 90,
+      "y": 270
     }
   }
 }

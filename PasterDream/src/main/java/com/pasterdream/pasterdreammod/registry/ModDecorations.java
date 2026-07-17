@@ -43,9 +43,15 @@ public class ModDecorations {
                 .add(PDBlocks.CHISELED_DYEDREAMQUARTZ_BLOCK.get().defaultBlockState(), 5)
                 .build();
 
+        SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
+                .add(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 70)
+                .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 30)
+                .build();
+
         DecorationBuilder.create()
                 .type(DecorationType.BLOB)
                 .body(new WeightedStateProvider(cloudBodyList))
+                .crystal(0.1f, new WeightedStateProvider(crystalList))
                 .clusterSize(90)
                 .radius(6, 0)
                 .yRadius(2)
@@ -74,9 +80,15 @@ public class ModDecorations {
                 .add(PDBlocks.THICK_CLOUD.get().defaultBlockState(), 10)
                 .build();
 
+        SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
+                .add(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 70)
+                .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 30)
+                .build();
+
         DecorationBuilder.create()
                 .type(DecorationType.BLOB)
                 .body(new WeightedStateProvider(cloudBodyList))
+                .crystal(0.08f, new WeightedStateProvider(crystalList))
                 .clusterSize(55)
                 .radius(5, 0)
                 .yRadius(2)

@@ -3,24 +3,28 @@
   "config": {
     "features": [
       {
-        "chance": 0.25,
-        "feature": "pasterdream:dyedream_tree_fancy"
+        "feature": "pasterdream:dyedream_tree",
+        "chance": 0.35
       },
       {
-        "chance": 0.25,
-        "feature": "pasterdream:dyedream_tree_bushy"
+        "feature": "pasterdream:dyedream_tree_large",
+        "chance": 0.20
       },
       {
-        "chance": 0.25,
-        "feature": "pasterdream:dyedream_tree_giant"
+        "feature": "pasterdream:dyedream_tree_weeping",
+        "chance": 0.15
       },
       {
-        "chance": 0.25,
-        "feature": "pasterdream:dyedream_tree_weeping"
+        "feature": "pasterdream:dyedream_tree_bushy",
+        "chance": 0.15
       },
       {
-        "chance": 0.25,
-        "feature": "pasterdream:dyedream_tree_glowing"
+        "feature": "pasterdream:dyedream_tree_fancy",
+        "chance": 0.10
+      },
+      {
+        "feature": "pasterdream:dyedream_tree_glowing",
+        "chance": 0.05
       }
     ],
     "default": "pasterdream:dyedream_tree"

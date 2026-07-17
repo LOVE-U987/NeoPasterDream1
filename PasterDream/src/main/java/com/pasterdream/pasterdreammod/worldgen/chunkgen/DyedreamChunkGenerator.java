@@ -4,13 +4,15 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.BiomeSource;
+import net.minecraft.world.level.biome.Climate;
+import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -254,12 +256,12 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
     /**
      * 在区块中雕刻梦河河流网络
      * <p>
-     * 使用 {@link DyedreamNoises#sampleRiverNoise} 的侵蚀度噪声判定河流位置。
-     * 预计算 16x16 河流遮罩，统一处理河床挖掘和河岸装饰。
+     * 通过检查 BiomeSource 返回的群系是否为河流群系来判定河流位置，
+     * 与新的梯度噪声检测算法保持一致。
      * <p>
      * 河流特征：
      * <ul>
-     *   <li>利用噪声自然形成的宽度 7~15 格变化</li>
+     *   <li>利用梯度噪声检测自然形成的宽度变化</li>
      *   <li>深度：地表高度减去 3~5 格随机深度</li>
      *   <li>河床替换为 {@link PDBlocks#DYEDREAM_SAND} 染梦沙</li>
      *   <li>河岸点缀 {@link PDBlocks#MELTDREAM_CRYSTAL_LAMP} 融梦水晶灯</li>
@@ -279,19 +281,24 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
         Random localRand = new Random(chunkPos.x * 3129871L ^ chunkPos.z * 116129781L);
 
-        // 预计算 16x16 河流遮罩
-        int riverThreshold = 0; // 超过阈值标记为河流
-        // 使用 river noise 生成河流遮罩
-        double[][] riverMask = new double[16][16];
+        // 确认 biomeSource 是 DyedreamBiomeSource（可被强转）
+        if (!(this.biomeSource instanceof DyedreamBiomeSource dyedreamSource)) {
+            return;
+        }
+
+        // 预计算 16x16 河流遮罩（通过噪声检测，不依赖群系）
+        int riverThreshold = 0;
         boolean[][] isRiver = new boolean[16][16];
 
         for (int dx = 0; dx < 16; dx++) {
             for (int dz = 0; dz < 16; dz++) {
                 int worldX = minBlockX + dx;
                 int worldZ = minBlockZ + dz;
-                double riverNoise = DyedreamNoises.sampleRiverNoise(randomState, worldX, worldZ);
-                riverMask[dx][dz] = riverNoise;
-                isRiver[dx][dz] = riverNoise > DyedreamNoises.RIVER_THRESHOLD;
+                // 采样大陆性噪声传入河流检测（河流检测使用大陆性判断海洋/陆地）
+                Climate.TargetPoint target = randomState.sampler().sample(
+                        worldX >> 2, seaLevel >> 2, worldZ >> 2);
+                double continentalness = target.continentalness();
+                isRiver[dx][dz] = dyedreamSource.isRiverAt(worldX, worldZ, continentalness);
                 if (isRiver[dx][dz]) {
                     riverThreshold++;
                 }
@@ -317,13 +324,7 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
                     continue;
                 }
 
-                // 河流宽度掩膜：使用位置哈希和噪声值生成自然宽度变化
-                double widthFactor = (riverMask[dx][dz] - DyedreamNoises.RIVER_THRESHOLD) / (1.0 - DyedreamNoises.RIVER_THRESHOLD);
-                int riverDepth = 3 + localRand.nextInt(3); // 3~5 格深
-                if (widthFactor > 0.5) {
-                    // 噪声值越接近 1，河流越深
-                    riverDepth += localRand.nextInt(2);
-                }
+                int riverDepth = 3 + localRand.nextInt(3);
 
                 // 从地表向下挖掘
                 int bedY = surfaceHeight - riverDepth;
@@ -446,6 +447,9 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
      * <p>
      * surface_rule 可能在河道位置放置了表面方块覆盖水体，
      * 此方法恢复河道中的水，确保河流可见。
+     * <p>
+     * 通过 DyedreamBiomeSource 的噪声检测判定河流位置，
+     * 与地形雕刻阶段的河流检测算法保持一致。
      *
      * @param chunkAccess 区块访问
      * @param chunkPos    区块坐标
@@ -459,10 +463,23 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
                                     RandomState randomState) {
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
 
+        // 确认 biomeSource 是 DyedreamBiomeSource
+        if (!(this.biomeSource instanceof DyedreamBiomeSource dyedreamSource)) {
+            return;
+        }
+
         for (int dx = 0; dx < 16; dx++) {
             for (int dz = 0; dz < 16; dz++) {
                 int worldX = minBlockX + dx;
                 int worldZ = minBlockZ + dz;
+
+                // 通过噪声检测判定是否为河流位置（不依赖群系）
+                Climate.TargetPoint target = randomState.sampler().sample(
+                        worldX >> 2, seaLevel >> 2, worldZ >> 2);
+                double continentalness = target.continentalness();
+                if (!dyedreamSource.isRiverAt(worldX, worldZ, continentalness)) {
+                    continue;
+                }
 
                 // 只有岛屿位置才可能有河流
                 if (!DyedreamNoises.isIsland(randomState, worldX, worldZ)) {
@@ -472,14 +489,7 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
                 int surfaceHeight = DyedreamNoises.computeSurfaceHeight(
                         randomState, worldX, worldZ, seaLevel);
 
-                // 河流噪声采样：只在侵蚀度高的位置雕刻
-                double riverErosion = DyedreamNoises.sampleRiverNoise(randomState, worldX, worldZ);
-                if (riverErosion < 0.15) {
-                    continue; // 侵蚀度不够，不是河流
-                }
-
-                // 河流深度：地表高度往下挖 3~5 格
-                int riverDepth = 3 + (int) (riverErosion * 2.0);
+                int riverDepth = 3 + new Random(chunkPos.x * 3129871L ^ chunkPos.z * 116129781L).nextInt(3);
                 int bedY = surfaceHeight - riverDepth;
 
                 // 从河床往上到地表扫描，填充水体

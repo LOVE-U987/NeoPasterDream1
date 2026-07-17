@@ -1,12 +1,11 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.TickTask;
@@ -18,7 +17,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
@@ -34,15 +32,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
-import software.bernie.geckolib.util.GeckoLibUtil;
-import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
 
 /**
  * 金色狐狸 (Golden Fox) — 实现愿望的神秘金狐
@@ -53,25 +47,9 @@ import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
  * - 几乎所有伤害类型免疫
  * - 右键交互后会消耗物品、播放粒子、延迟掉落回报物品后消失
  * <p>
- * 渲染：GeckoLib 动画实体，含 idle/movement/procedure 动画
+ * 渲染：GeckoLib 动画实体，含 idle/movement 动画
  */
-public class GoldenFoxEntity extends PathfinderMob implements GeoEntity {
-
-    private static final EntityDataAccessor<Boolean> SHOOT =
-            SynchedEntityData.defineId(GoldenFoxEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<String> ANIMATION =
-            SynchedEntityData.defineId(GoldenFoxEntity.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<String> TEXTURE =
-            SynchedEntityData.defineId(GoldenFoxEntity.class, EntityDataSerializers.STRING);
-
-    /** GeckoLib 动画实例缓存 */
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    /** 当前动画标识（用于 procedure 控制器） */
-    public String animationprocedure = "empty";
-
-    /** 客户端 procedure 动画处理器 */
-    private final ProcedureAnimationHandler procAnim = new ProcedureAnimationHandler();
+public class GoldenFoxEntity extends GeckoLibMobEntity {
 
     /**
      * 构造金色狐狸实体
@@ -84,65 +62,19 @@ public class GoldenFoxEntity extends PathfinderMob implements GeoEntity {
         this.setNoAi(true);
     }
 
+    /**
+     * 返回默认纹理名称
+     *
+     * @return 默认纹理 "gloden_fox_light"
+     */
+    @Override
+    protected String getDefaultTexture() {
+        return "gloden_fox_light";
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(SHOOT, false);
-        builder.define(ANIMATION, "undefined");
-        builder.define(TEXTURE, "gloden_fox_light");
-    }
-
-    /**
-     * 设置纹理
-     *
-     * @param texture 纹理名称
-     */
-    public void setTexture(String texture) {
-        this.entityData.set(TEXTURE, texture);
-    }
-
-    /**
-     * 获取纹理名称
-     *
-     * @return 纹理名称
-     */
-    public String getTexture() {
-        return this.entityData.get(TEXTURE);
-    }
-
-    /**
-     * 获取同步的动画名称
-     *
-     * @return 动画名称
-     */
-    public String getSyncedAnimation() {
-        return this.entityData.get(ANIMATION);
-    }
-
-    /**
-     * 设置同步动画，同时赋值 animationprocedure 以触发 procedure 控制器
-     *
-     * @param animation 动画名称
-     */
-    public void setAnimation(String animation) {
-        this.entityData.set(ANIMATION, animation);
-        this.animationprocedure = animation;
-    }
-
-    // ==================== NBT 持久化 ====================
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString("Texture", this.getTexture());
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.contains("Texture")) {
-            this.setTexture(compound.getString("Texture"));
-        }
     }
 
     // ==================== 属性 ====================
@@ -217,6 +149,18 @@ public class GoldenFoxEntity extends PathfinderMob implements GeoEntity {
     @Override
     protected SoundEvent getDeathSound() {
         return SoundEvents.FOX_DEATH;
+    }
+
+    // ==================== NBT 持久化 ====================
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
     }
 
     // ==================== 交互 ====================
@@ -371,21 +315,9 @@ public class GoldenFoxEntity extends PathfinderMob implements GeoEntity {
         return state.setAndContinue(RawAnimation.begin().thenLoop("idle"));
     }
 
-    private PlayState procedurePredicate(AnimationState<GoldenFoxEntity> state) {
-        return procAnim.predicate(state,
-                level().isClientSide(),
-                this::getSyncedAnimation,
-                () -> setAnimation("empty"));
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        super.registerControllers(controllers);
         controllers.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
-        controllers.add(new AnimationController<>(this, "procedure", 0, this::procedurePredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }

@@ -1,6 +1,6 @@
-{
+﻿{
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/xue_xia_de_shi_yan_"
+    "layer0": "pasterdream:item/snow_vow"
   }
 }

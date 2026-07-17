@@ -1,52 +1,58 @@
 package com.pasterdream.pasterdreammod.block;
 
+import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.List;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
 
 /**
- * 染梦花蕾方块 —— 拥有 AXIS（轴向）和 WATERLOGGED（含水）属性。
- * 可根据轴向呈现不同的碰撞箱形状，并支持水下放置。
- * 适用于染梦系列植物的花蕾阶段。
+ * 染梦花蕾方块 —— 拥有 FACING（朝向）和 WATERLOGGED（含水）属性。
+ * 可附着在六个面上，支持水下放置，并能在方解石上自然生长。
+ * 适用于染梦系列植物的花蕾阶段，有三种大小变体（0/1/2）。
  *
  * @author PasterDream
  */
 public class DyedreamBudBlock extends Block implements SimpleWaterloggedBlock {
-    public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.AXIS;
+    public static final DirectionProperty FACING = DirectionalBlock.FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    private static final int MAX_GROWTH_CHAIN = 4;
     private final int budSize;
 
     /**
      * @param props   方块属性
-     * @param budSize 花蕾大小，用于后续可能的大小区分逻辑
+     * @param budSize 花蕾大小，用于区分不同生长阶段的碰撞箱
      */
     public DyedreamBudBlock(Properties props, int budSize) {
-        super(props);
+        super(props.randomTicks());
         this.budSize = budSize;
         this.registerDefaultState(this.stateDefinition.any()
-                .setValue(AXIS, Direction.Axis.Y)
+                .setValue(FACING, Direction.UP)
                 .setValue(WATERLOGGED, false));
     }
 
@@ -67,36 +73,57 @@ public class DyedreamBudBlock extends Block implements SimpleWaterloggedBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(AXIS)) {
-            case X -> box(0, 3, 3, 4, 13, 13);
-            case Y -> box(3, 0, 3, 13, 4, 13);
-            case Z -> box(3, 3, 12, 13, 13, 16);
+        Direction facing = state.getValue(FACING);
+        return switch (budSize) {
+            case 0 -> switch (facing) {
+                case DOWN -> box(3, 12, 3, 13, 16, 13);
+                case UP -> box(3, 0, 3, 13, 4, 13);
+                case NORTH -> box(3, 3, 12, 13, 13, 16);
+                case SOUTH -> box(3, 3, 0, 13, 13, 4);
+                case WEST -> box(12, 3, 3, 16, 13, 13);
+                case EAST -> box(0, 3, 3, 4, 13, 13);
+            };
+            case 1 -> switch (facing) {
+                case DOWN -> box(4, 13, 4, 12, 16, 12);
+                case UP -> box(4, 0, 4, 12, 3, 12);
+                case NORTH -> box(4, 4, 13, 12, 12, 16);
+                case SOUTH -> box(4, 4, 0, 12, 12, 3);
+                case WEST -> box(13, 4, 4, 16, 12, 12);
+                case EAST -> box(0, 4, 4, 3, 12, 12);
+            };
+            case 2 -> switch (facing) {
+                case DOWN -> box(5, 14, 5, 11, 16, 11);
+                case UP -> box(5, 0, 5, 11, 2, 11);
+                case NORTH -> box(5, 5, 14, 11, 11, 16);
+                case SOUTH -> box(5, 5, 0, 11, 11, 2);
+                case WEST -> box(14, 5, 5, 16, 11, 11);
+                case EAST -> box(0, 5, 5, 2, 11, 11);
+            };
+            default -> box(3, 0, 3, 13, 4, 13);
         };
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(AXIS, WATERLOGGED);
+        builder.add(FACING, WATERLOGGED);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         boolean flag = context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER;
         return this.defaultBlockState()
-                .setValue(AXIS, context.getClickedFace().getAxis())
+                .setValue(FACING, context.getClickedFace())
                 .setValue(WATERLOGGED, flag);
     }
 
     @Override
     public BlockState rotate(BlockState state, Rotation rot) {
-        if (rot == Rotation.CLOCKWISE_90 || rot == Rotation.COUNTERCLOCKWISE_90) {
-            if (state.getValue(AXIS) == Direction.Axis.X) {
-                return state.setValue(AXIS, Direction.Axis.Z);
-            } else if (state.getValue(AXIS) == Direction.Axis.Z) {
-                return state.setValue(AXIS, Direction.Axis.X);
-            }
-        }
-        return state;
+        return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    public BlockState mirror(BlockState state, Mirror mirrorIn) {
+        return state.rotate(mirrorIn.getRotation(state.getValue(FACING)));
     }
 
     @Override
@@ -110,7 +137,52 @@ public class DyedreamBudBlock extends Block implements SimpleWaterloggedBlock {
         if (state.getValue(WATERLOGGED)) {
             world.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
-        return super.updateShape(state, facing, facingState, world, currentPos, facingPos);
+        return !state.canSurvive(world, currentPos) ? Blocks.AIR.defaultBlockState()
+                : super.updateShape(state, facing, facingState, world, currentPos, facingPos);
+    }
+
+    @Override
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        Direction facing = state.getValue(FACING);
+        BlockPos attachPos = pos.relative(facing.getOpposite());
+        BlockState attachState = level.getBlockState(attachPos);
+        return attachState.isFaceSturdy(level, attachPos, facing);
+    }
+
+    @Override
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (!level.isAreaLoaded(pos, 1)) return;
+
+        if (random.nextInt(40) != 0) return;
+
+        Direction facing = state.getValue(FACING);
+        BlockPos attachPos = pos.relative(facing.getOpposite());
+        BlockState attachState = level.getBlockState(attachPos);
+
+        if (!isCalciteOrPolishedCalcite(attachState)) return;
+
+        if (getGrowthChainLength(level, pos, facing) >= MAX_GROWTH_CHAIN) return;
+
+        BlockPos growPos = pos.relative(facing);
+        if (!level.isEmptyBlock(growPos)) return;
+
+        level.setBlockAndUpdate(growPos, this.defaultBlockState()
+                .setValue(FACING, facing)
+                .setValue(WATERLOGGED, level.getFluidState(growPos).getType() == Fluids.WATER));
+    }
+
+    private int getGrowthChainLength(LevelReader level, BlockPos startPos, Direction facing) {
+        int length = 0;
+        BlockPos currentPos = startPos;
+        while (level.getBlockState(currentPos).is(this)) {
+            length++;
+            currentPos = currentPos.relative(facing);
+        }
+        return length;
+    }
+
+    private boolean isCalciteOrPolishedCalcite(BlockState state) {
+        return state.is(Blocks.CALCITE);
     }
 
     @Override

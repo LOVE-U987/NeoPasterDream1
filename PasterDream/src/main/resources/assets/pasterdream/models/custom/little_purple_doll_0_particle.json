@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/little_purple_doll_0.item",
+  "textures": {
+    "particle": "pasterdream:block/cloud"
+  }
+}

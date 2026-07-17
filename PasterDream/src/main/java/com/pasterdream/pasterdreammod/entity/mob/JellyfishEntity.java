@@ -1,19 +1,17 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -23,18 +21,16 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
-import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 
 /**
  * 水母 (Jellyfish) — 染梦海洋中闪闪发光的水母
@@ -44,30 +40,12 @@ import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
  * - 悬浮水中，自动上浮
  * - 发出萤光粒子（GLOW）
  * - 受伤时喷墨（GLOW_SQUID_INK 粒子）
- * - 完整的动画状态机（movement + procedure）
+ * - 完整的动画状态机（movement）
  * - 死亡 10 tick 后移除
  * <p>
- * 渲染：GeckoLib 动画实体，支持动态纹理切换
+ * 渲染：GeckoLib 动画实体，默认纹理 "jellyfish"
  */
-public class JellyfishEntity extends Animal implements GeoEntity {
-
-    /** 是否射击状态（Synced Entity Data） */
-    private static final EntityDataAccessor<Boolean> SHOOT =
-            SynchedEntityData.defineId(JellyfishEntity.class, EntityDataSerializers.BOOLEAN);
-    /** 当前动画标识（Synced Entity Data） */
-    private static final EntityDataAccessor<String> ANIMATION =
-            SynchedEntityData.defineId(JellyfishEntity.class, EntityDataSerializers.STRING);
-    /** 当前纹理名称（Synced Entity Data） */
-    private static final EntityDataAccessor<String> TEXTURE =
-            SynchedEntityData.defineId(JellyfishEntity.class, EntityDataSerializers.STRING);
-
-    /** GeckoLib 动画缓存实例 */
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    /** 当前 procedure 动画名称 */
-    public String animationprocedure = "empty";
-    /** 客户端 procedure 动画处理器 */
-    private final ProcedureAnimationHandler procAnim = new ProcedureAnimationHandler();
+public class JellyfishEntity extends GeckoLibMobEntity {
 
     /**
      * 构造水母实体
@@ -75,56 +53,26 @@ public class JellyfishEntity extends Animal implements GeoEntity {
      * @param type  实体类型
      * @param level 世界实例
      */
-    public JellyfishEntity(EntityType<? extends Animal> type, Level level) {
+    public JellyfishEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
         this.moveControl = new FlyingMoveControl(this, 10, true);
         this.setNoGravity(true);
         this.xpReward = 0;
     }
 
+    /**
+     * 返回默认纹理名称
+     *
+     * @return 默认纹理 "jellyfish"
+     */
+    @Override
+    protected String getDefaultTexture() {
+        return "jellyfish";
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(SHOOT, false);
-        builder.define(ANIMATION, "undefined");
-        builder.define(TEXTURE, "jellyfish");
-    }
-
-    /**
-     * 设置纹理
-     *
-     * @param texture 纹理名称
-     */
-    public void setTexture(String texture) {
-        this.entityData.set(TEXTURE, texture);
-    }
-
-    /**
-     * 获取纹理名称
-     *
-     * @return 纹理名称
-     */
-    public String getTexture() {
-        return this.entityData.get(TEXTURE);
-    }
-
-    /**
-     * 获取同步的动画名称
-     *
-     * @return 动画名称
-     */
-    public String getSyncedAnimation() {
-        return this.entityData.get(ANIMATION);
-    }
-
-    /**
-     * 设置同步动画，同时更新 procedure 动画标识
-     *
-     * @param animation 动画名称
-     */
-    public void setAnimation(String animation) {
-        this.entityData.set(ANIMATION, animation);
-        this.animationprocedure = animation;
     }
 
     // ==================== 属性 ====================
@@ -198,33 +146,16 @@ public class JellyfishEntity extends Animal implements GeoEntity {
     protected void checkFallDamage(double y, boolean onGroundIn, BlockState state, BlockPos pos) {
     }
 
-    // ==================== 繁殖 ====================
-
-    @Override
-    public boolean isFood(ItemStack stack) {
-        return stack.is(Blocks.KELP.asItem());
-    }
-
-    @Nullable
-    @Override
-    public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob parent) {
-        return (AgeableMob) this.getType().create(level);
-    }
-
     // ==================== NBT 持久化 ====================
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putString("Texture", this.getTexture());
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        if (compound.contains("Texture")) {
-            this.setTexture(compound.getString("Texture"));
-        }
     }
 
     // ==================== 受伤 ====================
@@ -280,7 +211,7 @@ public class JellyfishEntity extends Animal implements GeoEntity {
 
     // ==================== GeckoLib 动画 ====================
 
-    private PlayState movementPredicate(software.bernie.geckolib.animation.AnimationState<JellyfishEntity> state) {
+    private PlayState movementPredicate(AnimationState<JellyfishEntity> state) {
         if (this.getSyncedAnimation().equals("empty")) {
             if ((state.isMoving() || !(state.getLimbSwingAmount() > -0.15F && state.getLimbSwingAmount() < 0.15F))
                     && this.onGround()) {
@@ -297,21 +228,9 @@ public class JellyfishEntity extends Animal implements GeoEntity {
         return PlayState.STOP;
     }
 
-    private PlayState procedurePredicate(software.bernie.geckolib.animation.AnimationState<JellyfishEntity> state) {
-        return procAnim.predicate(state,
-                level().isClientSide(),
-                this::getSyncedAnimation,
-                () -> setAnimation("empty"));
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        super.registerControllers(controllers);
         controllers.add(new AnimationController<>(this, "movement", 5, this::movementPredicate));
-        controllers.add(new AnimationController<>(this, "procedure", 5, this::procedurePredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }

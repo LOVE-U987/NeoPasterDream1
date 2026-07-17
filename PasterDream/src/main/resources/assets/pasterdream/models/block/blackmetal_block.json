@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "pasterdream:block/blackmetal_block"
+    "all": "pasterdream:block/black_metal_block"
   }
 }

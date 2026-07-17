@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:iron_hoe"
+    },
+    {
+      "item": "pasterdream:meltdream_crystal"
+    },
+    {
+      "item": "pasterdream:meltdream_crystal"
+    },
+    {
+      "item": "pasterdream:blackstick"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:meltdream_hoe",
+    "count": 1
+  }
+}

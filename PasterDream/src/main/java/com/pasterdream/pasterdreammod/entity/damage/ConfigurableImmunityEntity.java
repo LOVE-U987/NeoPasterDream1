@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.entity.damage;
 
+import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
@@ -14,7 +15,7 @@ import net.minecraft.world.level.Level;
  * 免疫规则通过 {@link EntityImmunitySetup#setupAllImmunities()} 集中配置，
  * 使用 {@link DamageImmunityConfig#getInstance()} 获取全局单例配置。
  * <p>
- * 注意：此基类继承 {@link PathfinderMob}，适用于 {@code PathfinderMob} 和 {@code Monster} 两种实体。
+ * 注意：此基类继承 {@link GeckoLibMobEntity}，适用于需要动画能力和伤害免疫的实体。
  * <p>
  * 非 {@link PathfinderMob} 子类（如投射物）无法继承此类，应直接调用
  * {@link DamageImmunityConfig#isImmune(Entity, DamageSource)} 进行免疫检查。
@@ -22,7 +23,7 @@ import net.minecraft.world.level.Level;
  * @see DamageImmunityConfig
  * @see EntityImmunitySetup
  */
-public abstract class ConfigurableImmunityEntity extends PathfinderMob {
+public abstract class ConfigurableImmunityEntity extends GeckoLibMobEntity {
 
     /**
      * 构造可配置免疫实体

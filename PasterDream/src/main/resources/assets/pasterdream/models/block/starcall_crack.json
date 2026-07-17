@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/starcall_crack",
+    "up": "pasterdream:block/starcall_crack",
+    "north": "pasterdream:block/starcall_crack",
+    "east": "pasterdream:block/starcall_crack",
+    "south": "pasterdream:block/starcall_crack",
+    "west": "pasterdream:block/starcall_crack",
+    "particle": "pasterdream:block/starcall_crack"
+  },
+  "render_type": "solid"
+}

@@ -1,6 +1,6 @@
-{
+﻿{
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/chun_jin_hu_shen_fu_"
+    "layer0": "pasterdream:item/pure_gold_charm"
   }
 }

@@ -1,13 +1,8 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
-import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
-import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMonsterEntity;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -16,10 +11,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -31,38 +24,23 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 
 /**
  * 虚弱恐怖尖喙 (Weakeness Terrorbeak) — 较弱的恐怖尖喙变种
  * <p>
  * 30 血、12 攻击力、体型较小（1.5f x 3.0f）、免疫火焰/仙人掌/凋零伤害
  */
-public class WeakenessTerrorbeakEntity extends Monster implements GeoEntity {
-
-    private static final EntityDataAccessor<Boolean> SHOOT =
-            SynchedEntityData.defineId(WeakenessTerrorbeakEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<String> ANIMATION =
-            SynchedEntityData.defineId(WeakenessTerrorbeakEntity.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<String> TEXTURE =
-            SynchedEntityData.defineId(WeakenessTerrorbeakEntity.class, EntityDataSerializers.STRING);
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    /** 当前动画标识（用于 procedure 控制器） */
-    public String animationprocedure = "empty";
+public class WeakenessTerrorbeakEntity extends GeckoLibMonsterEntity {
 
     /** 咆哮技能冷却计时器 */
     private int roarCooldown = 0;
     private boolean swinging;
     private long lastSwing;
-
-    /** 客户端 procedure 动画处理器 */
-    private final ProcedureAnimationHandler procAnim = new ProcedureAnimationHandler();
 
     /**
      * 构造虚弱恐怖尖喙实体
@@ -70,54 +48,19 @@ public class WeakenessTerrorbeakEntity extends Monster implements GeoEntity {
      * @param type  实体类型
      * @param level 世界实例
      */
-    public WeakenessTerrorbeakEntity(EntityType<WeakenessTerrorbeakEntity> type, Level level) {
+    public WeakenessTerrorbeakEntity(EntityType<? extends Monster> type, Level level) {
         super(type, level);
         this.xpReward = 4;
     }
 
-    @Override
-    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(SHOOT, false);
-        builder.define(ANIMATION, "undefined");
-        builder.define(TEXTURE, "weakness_terrorbeak");
-    }
-
     /**
-     * 设置纹理
-     *
-     * @param texture 纹理名称
-     */
-    public void setTexture(String texture) {
-        this.entityData.set(TEXTURE, texture);
-    }
-
-    /**
-     * 获取纹理名称
+     * 获取默认纹理名称
      *
      * @return 纹理名称
      */
-    public String getTexture() {
-        return this.entityData.get(TEXTURE);
-    }
-
-    /**
-     * 获取同步的动画名称
-     *
-     * @return 动画名称
-     */
-    public String getSyncedAnimation() {
-        return this.entityData.get(ANIMATION);
-    }
-
-    /**
-     * 设置同步动画
-     *
-     * @param animation 动画名称
-     */
-    public void setAnimation(String animation) {
-        this.entityData.set(ANIMATION, animation);
-        this.animationprocedure = animation;
+    @Override
+    protected String getDefaultTexture() {
+        return "weakness_terrorbeak";
     }
 
     // ==================== 属性 ====================
@@ -200,22 +143,6 @@ public class WeakenessTerrorbeakEntity extends Monster implements GeoEntity {
         return SoundEvents.GENERIC_DEATH;
     }
 
-    // ==================== NBT 持久化 ====================
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString("Texture", this.getTexture());
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.contains("Texture")) {
-            this.setTexture(compound.getString("Texture"));
-        }
-    }
-
     // ==================== 每 tick ====================
 
     @Override
@@ -235,6 +162,12 @@ public class WeakenessTerrorbeakEntity extends Monster implements GeoEntity {
 
     // ==================== GeckoLib 动画 ====================
 
+    /**
+     * 移动状态动画控制器
+     *
+     * @param state 动画状态
+     * @return 播放状态
+     */
     private PlayState movementPredicate(AnimationState<WeakenessTerrorbeakEntity> state) {
         if (this.getSyncedAnimation().equals("empty")) {
             if ((state.isMoving() || !(state.getLimbSwingAmount() > -0.15F && state.getLimbSwingAmount() < 0.15F))) {
@@ -248,6 +181,12 @@ public class WeakenessTerrorbeakEntity extends Monster implements GeoEntity {
         return PlayState.STOP;
     }
 
+    /**
+     * 攻击动画控制器
+     *
+     * @param state 动画状态
+     * @return 播放状态
+     */
     private PlayState attackingPredicate(AnimationState<WeakenessTerrorbeakEntity> state) {
         double d1 = this.getX() - this.xOld;
         double d0 = this.getZ() - this.zOld;
@@ -266,22 +205,10 @@ public class WeakenessTerrorbeakEntity extends Monster implements GeoEntity {
         return PlayState.CONTINUE;
     }
 
-    private PlayState procedurePredicate(AnimationState<WeakenessTerrorbeakEntity> state) {
-        return procAnim.predicate(state,
-                level().isClientSide(),
-                this::getSyncedAnimation,
-                () -> setAnimation("empty"));
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        super.registerControllers(controllers);
         controllers.add(new AnimationController<>(this, "movement", 4, this::movementPredicate));
         controllers.add(new AnimationController<>(this, "attacking", 4, this::attackingPredicate));
-        controllers.add(new AnimationController<>(this, "procedure", 4, this::procedurePredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }

@@ -1,7 +1,6 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
-import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
 import com.pasterdream.pasterdreammod.entity.damage.ConfigurableImmunityEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.ShadowMagicballEntity;
 import com.pasterdream.pasterdreammod.registry.PDArenaBossManager;
@@ -12,25 +11,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -43,16 +34,14 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -77,29 +66,17 @@ import java.util.List;
  *   <li>procedure: 技能动画（skill_magicball / skill_vortex / skill_tunetotem）</li>
  * </ul>
  */
-public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity implements GeoEntity {
+public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity {
 
     /** 暗影生物标签（用于区分友军/敌军，避免误伤同阵营实体） */
     private static final TagKey<EntityType<?>> SHADOW_MOB_TAG =
             TagKey.create(Registries.ENTITY_TYPE,
                     ResourceLocation.fromNamespaceAndPath("pasterdream", "shadow_mob"));
 
-    private static final EntityDataAccessor<Boolean> SHOOT =
-            SynchedEntityData.defineId(AaroncosRighthand0Entity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<String> ANIMATION =
-            SynchedEntityData.defineId(AaroncosRighthand0Entity.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<String> TEXTURE =
-            SynchedEntityData.defineId(AaroncosRighthand0Entity.class, EntityDataSerializers.STRING);
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private final ProcedureAnimationHandler procAnim = new ProcedureAnimationHandler();
-
     /** 攻击挥动标记（供动画系统使用） */
     private boolean swinging;
     /** 上一次挥动的时间 */
     private long lastSwing;
-    /** 过程动画名称（"empty" 表示无过程动画） */
-    public String animationprocedure = "empty";
 
     // ==================== 延迟任务队列 ====================
 
@@ -125,11 +102,21 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
      * @param type  实体类型
      * @param level 世界实例
      */
-    public AaroncosRighthand0Entity(EntityType<? extends ConfigurableImmunityEntity> type, Level level) {
+    public AaroncosRighthand0Entity(EntityType<? extends Monster> type, Level level) {
         super(type, level);
         this.xpReward = 100;
         this.setPersistenceRequired();
         this.moveControl = new FlyingMoveControl(this, 10, true);
+    }
+
+    /**
+     * 获取默认纹理名称
+     *
+     * @return 纹理名称
+     */
+    @Override
+    protected String getDefaultTexture() {
+        return "aaroncos_righthand_0";
     }
 
     /**
@@ -153,52 +140,6 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
      */
     public boolean isSummoning() {
         return isSummoning;
-    }
-
-    // ======================== 同步数据 ========================
-
-    @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(SHOOT, false);
-        builder.define(ANIMATION, "undefined");
-        builder.define(TEXTURE, "aaroncos_righthand_0");
-    }
-
-    /**
-     * 设置纹理名称
-     *
-     * @param texture 纹理名称
-     */
-    public void setTexture(String texture) {
-        this.entityData.set(TEXTURE, texture);
-    }
-
-    /**
-     * 获取当前纹理名称
-     *
-     * @return 纹理名称
-     */
-    public String getTexture() {
-        return this.entityData.get(TEXTURE);
-    }
-
-    /**
-     * 获取同步的动画名称
-     *
-     * @return 动画名称
-     */
-    public String getSyncedAnimation() {
-        return this.entityData.get(ANIMATION);
-    }
-
-    /**
-     * 设置同步的动画名称
-     *
-     * @param animation 动画名称
-     */
-    public void setAnimation(String animation) {
-        this.entityData.set(ANIMATION, animation);
     }
 
     // ======================== 属性 ========================
@@ -283,7 +224,7 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
                     if (serverLevel.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY)) {
                         PDArenaBossManager.onSpawnAnimationComplete(serverLevel);
                     }
-                    PasterDreamMod.LOGGER.debug("[AaroncosRighthand0] ✨ 召唤动画完成，BOSS 激活");
+                    PasterDreamMod.LOGGER.debug("[AaroncosRighthand0] 召唤动画完成，BOSS 激活");
                 });
             }
         } else {
@@ -308,11 +249,11 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
                 serverLevel.sendParticles(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(),
                         64, 2, 2, 2, 0.5);
 
-                // 🎯 新增：死亡爆炸（威力 4，不破坏方块，由 MOB 交互类型决定破坏行为）
+                // 死亡爆炸（威力 4，不破坏方块，由 MOB 交互类型决定破坏行为）
                 serverLevel.explode(this, this.getX(), this.getY(), this.getZ(),
                         4.0f, Level.ExplosionInteraction.MOB);
 
-                // 🎯 如果死亡在亚伦柯斯竞技场维度，通知战斗管理器
+                // 如果死亡在亚伦柯斯竞技场维度，通知战斗管理器
                 if (serverLevel.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY)) {
                     PDArenaBossManager.onRightHandDeath(serverLevel);
                 }
@@ -327,7 +268,6 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putString("Texture", this.getTexture());
         compound.putBoolean("AaroncosSwitch", this.getPersistentData().getBoolean("AaroncosSwitch"));
         compound.putInt("AaroncosSkill", this.getPersistentData().getInt("AaroncosSkill"));
         compound.putInt("AaroncosMagicball", this.getPersistentData().getInt("AaroncosMagicball"));
@@ -339,9 +279,6 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        if (compound.contains("Texture")) {
-            this.setTexture(compound.getString("Texture"));
-        }
         if (compound.contains("AaroncosSwitch")) {
             this.getPersistentData().putBoolean("AaroncosSwitch", compound.getBoolean("AaroncosSwitch"));
         }
@@ -533,7 +470,7 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
                         8, 0.3, 0.3, 0.3, 0.1);
             }
 
-            // 🎯 实际生成 ShadowMagicballEntity 弹幕实体
+            // 实际生成 ShadowMagicballEntity 弹幕实体
             if (this.level() instanceof ServerLevel sl) {
                 ShadowMagicballEntity magicball = PDEntities.SHADOW_MAGICBALL.get().create(sl);
                 if (magicball != null) {
@@ -647,7 +584,7 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
             this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 1, false, false));
             this.setDeltaMovement(new Vec3(0, -2, 0));
 
-            // 🎯 初始 AoE 混乱效果：15 格内非暗影标签 LivingEntity 施加 CONFUSION 60 tick
+            // 初始 AoE 混乱效果：15 格内非暗影标签 LivingEntity 施加 CONFUSION 60 tick
             List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class,
                     this.getBoundingBox().inflate(15.0),
                     e -> e != this && e.isAlive() && !e.getType().is(SHADOW_MOB_TAG));
@@ -680,7 +617,7 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
 
             // 21t 后召唤调音图腾 + 后跳
             queueTask(21, () -> {
-                // 🎯 召唤 ShadowTuneTotemEntity（前方 2 格）
+                // 召唤 ShadowTuneTotemEntity（前方 2 格）
                 if (this.level() instanceof ServerLevel serverLevel) {
                     ShadowTuneTotemEntity tuneTotem = PDEntities.SHADOW_TUNE_TOTEM.get().create(serverLevel);
                     if (tuneTotem != null) {
@@ -741,7 +678,7 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
 
         // 仅服务端执行实体召唤与玩家减益
         if (this.level() instanceof ServerLevel serverLevel) {
-            // 🎯 召唤 4 个暗影之手（随机散布在 BOSS 周围）
+            // 召唤 4 个暗影之手（随机散布在 BOSS 周围）
             for (int i = 0; i < 4; i++) {
                 ShadowHandEntity shadowHand = PDEntities.SHADOW_HAND.get().create(serverLevel);
                 if (shadowHand != null) {
@@ -760,7 +697,7 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
                         player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 60, 0, false, false));
                         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1, false, false));
                         player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 60, 0, false, false));
-                        // 🎯 禁锢效果：MOVEMENT_SLOWDOWN 255 级（amplifier=254）60 tick
+                        // 禁锢效果：MOVEMENT_SLOWDOWN 255 级（amplifier=254）60 tick
                         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 254, false, false));
                     });
         }
@@ -796,6 +733,9 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
     /**
      * 移动状态动画控制器
      * 根据移动状态切换 idle / walk / fly / death 动画
+     *
+     * @param state 动画状态
+     * @return 播放状态
      */
     private PlayState movementPredicate(AnimationState<AaroncosRighthand0Entity> state) {
         if (this.animationprocedure.equals("empty")) {
@@ -816,6 +756,9 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
     /**
      * 攻击动画控制器
      * 在实体挥动时触发 attack 动画
+     *
+     * @param state 动画状态
+     * @return 播放状态
      */
     private PlayState attackingPredicate(AnimationState<AaroncosRighthand0Entity> state) {
         if (getAttackAnim(state.getPartialTick()) > 0f && !this.swinging) {
@@ -832,26 +775,11 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity impleme
         return PlayState.CONTINUE;
     }
 
-    /**
-     * 过程动画控制器（用于技能动画）
-     */
-    private PlayState procedurePredicate(AnimationState<AaroncosRighthand0Entity> state) {
-        return procAnim.predicate(state,
-                level().isClientSide(),
-                this::getSyncedAnimation,
-                () -> setAnimation("empty"));
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        super.registerControllers(controllers);
         controllers.add(new AnimationController<>(this, "movement", 4, this::movementPredicate));
         controllers.add(new AnimationController<>(this, "attacking", 4, this::attackingPredicate));
-        controllers.add(new AnimationController<>(this, "procedure", 4, this::procedurePredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     // ======================== 飞行追踪 AI ========================

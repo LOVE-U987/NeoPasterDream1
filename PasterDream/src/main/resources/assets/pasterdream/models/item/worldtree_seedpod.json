@@ -1,6 +1,6 @@
-{
+﻿{
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/shi_jie_shu_chong_jia_"
+    "layer0": "pasterdream:item/worldtree_seedpod"
   }
 }

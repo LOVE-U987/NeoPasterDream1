@@ -1,6 +1,6 @@
-{
+﻿{
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/fei_ai_de_hu_die_jie_fa_jia_"
+    "layer0": "pasterdream:item/feiai_butterfly_bow"
   }
 }

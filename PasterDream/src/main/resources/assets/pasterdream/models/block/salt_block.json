@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/salt_block",
+    "up": "pasterdream:block/salt_block",
+    "north": "pasterdream:block/salt_block",
+    "east": "pasterdream:block/salt_block",
+    "south": "pasterdream:block/salt_block",
+    "west": "pasterdream:block/salt_block",
+    "particle": "pasterdream:block/salt_block"
+  },
+  "render_type": "solid"
+}

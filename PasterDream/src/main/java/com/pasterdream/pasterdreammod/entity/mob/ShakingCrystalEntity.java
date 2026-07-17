@@ -5,10 +5,6 @@ import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -29,12 +25,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
 
 import java.util.Comparator;
 import java.util.List;
@@ -49,20 +41,7 @@ import java.util.List;
  * <p>
  * 渲染：GeckoLib 动画实体
  */
-public class ShakingCrystalEntity extends ConfigurableImmunityEntity implements GeoEntity {
-
-    private static final EntityDataAccessor<Boolean> SHOOT =
-            SynchedEntityData.defineId(ShakingCrystalEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<String> ANIMATION =
-            SynchedEntityData.defineId(ShakingCrystalEntity.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<String> TEXTURE =
-            SynchedEntityData.defineId(ShakingCrystalEntity.class, EntityDataSerializers.STRING);
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private final ProcedureAnimationHandler procAnim = new ProcedureAnimationHandler();
-
-    /** 过程动画名称（"empty" 表示无过程动画） */
-    public String animationprocedure = "empty";
+public class ShakingCrystalEntity extends ConfigurableImmunityEntity {
 
     // ==================== 自毁技能 ====================
     /** 技能倒计时 tick */
@@ -82,51 +61,7 @@ public class ShakingCrystalEntity extends ConfigurableImmunityEntity implements 
         this.setNoAi(true);
     }
 
-    // ======================== 同步数据 ========================
 
-    @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(SHOOT, false);
-        builder.define(ANIMATION, "undefined");
-        builder.define(TEXTURE, "shaking_crystal");
-    }
-
-    /**
-     * 设置纹理名称
-     *
-     * @param texture 纹理名称
-     */
-    public void setTexture(String texture) {
-        this.entityData.set(TEXTURE, texture);
-    }
-
-    /**
-     * 获取当前纹理名称
-     *
-     * @return 纹理名称
-     */
-    public String getTexture() {
-        return this.entityData.get(TEXTURE);
-    }
-
-    /**
-     * 获取同步的动画名称
-     *
-     * @return 动画名称
-     */
-    public String getSyncedAnimation() {
-        return this.entityData.get(ANIMATION);
-    }
-
-    /**
-     * 设置同步的动画名称
-     *
-     * @param animation 动画名称
-     */
-    public void setAnimation(String animation) {
-        this.entityData.set(ANIMATION, animation);
-    }
 
     // ======================== 属性 ========================
 
@@ -164,21 +99,6 @@ public class ShakingCrystalEntity extends ConfigurableImmunityEntity implements 
     // 伤害免疫逻辑已统一由 ConfigurableImmunityEntity + EntityImmunitySetup 管理
     // 配置位置: EntityImmunitySetup.setupAllImmunities() -> SHAKING_CRYSTAL
 
-    // ======================== NBT 持久化 ========================
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString("Texture", this.getTexture());
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.contains("Texture")) {
-            this.setTexture(compound.getString("Texture"));
-        }
-    }
 
     // ======================== 每 tick 更新 ========================
 
@@ -293,24 +213,11 @@ public class ShakingCrystalEntity extends ConfigurableImmunityEntity implements 
         return PlayState.STOP;
     }
 
-    /**
-     * 过程动画控制器（用于触发一次性动画）
-     */
-    private PlayState procedurePredicate(AnimationState<ShakingCrystalEntity> state) {
-        return procAnim.predicate(state,
-                level().isClientSide(),
-                this::getSyncedAnimation,
-                () -> setAnimation("empty"));
-    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        super.registerControllers(controllers);
         controllers.add(new AnimationController<>(this, "movement", 4, this::movementPredicate));
-        controllers.add(new AnimationController<>(this, "procedure", 4, this::procedurePredicate));
     }
 
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
 }

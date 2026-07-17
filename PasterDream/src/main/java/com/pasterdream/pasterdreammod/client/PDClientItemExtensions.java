@@ -6,6 +6,9 @@ import com.pasterdream.pasterdreammod.client.renderer.item.AaroncosHandSpawnBloc
 import com.pasterdream.pasterdreammod.client.renderer.item.DreamAccumulatorDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.DreamCauldronDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.DreamMeterItemRenderer;
+import com.pasterdream.pasterdreammod.client.renderer.item.GoldenFoxSculptureDisplayItemRenderer;
+import com.pasterdream.pasterdreammod.client.renderer.item.QymDoll0DisplayItemRenderer;
+import com.pasterdream.pasterdreammod.client.renderer.item.UuzDoll0DisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.LifeCrystalDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.MeltdreamChestDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.MeltdreamChestOpenDisplayItemRenderer;
@@ -41,6 +44,17 @@ public class PDClientItemExtensions {
 
         registerDisplayItem(event, PDItems.LIFE_CRYSTAL.get(), new LifeCrystalDisplayItemRenderer());
         PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: life_crystal → LifeCrystalDisplayItemRenderer（GeckoLib 3D）");
+
+        // ==================== 玩偶/雕像 ====================
+
+        registerDisplayItem(event, PDItems.QIN_DOLL_0.get(), new QymDoll0DisplayItemRenderer());
+        PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: qin_doll_0 → QymDoll0DisplayItemRenderer（GeckoLib 3D）");
+
+        registerDisplayItem(event, PDItems.LITTLE_PURPLE_DOLL_0.get(), new UuzDoll0DisplayItemRenderer());
+        PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: little_purple_doll_0 → UuzDoll0DisplayItemRenderer（GeckoLib 3D）");
+
+        registerDisplayItem(event, PDItems.GOLDEN_FOX_SCULPTURE.get(), new GoldenFoxSculptureDisplayItemRenderer());
+        PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: golden_fox_sculpture → GoldenFoxSculptureDisplayItemRenderer（GeckoLib 3D）");
 
         registerDisplayItem(event, PDItems.SHADOW_CHEST.get(), new ShadowChestDisplayItemRenderer());
         PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: shadow_chest → ShadowChestDisplayItemRenderer（GeckoLib 3D）");

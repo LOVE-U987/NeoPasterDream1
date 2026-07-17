@@ -1,6 +1,6 @@
-{
+﻿{
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/hua_huan_"
+    "layer0": "pasterdream:item/flower_crown"
   }
 }

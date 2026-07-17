@@ -1,6 +1,6 @@
-{
+﻿{
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/xie_yan_hu_shen_fu_"
+    "layer0": "pasterdream:item/evil_eye_charm"
   }
 }

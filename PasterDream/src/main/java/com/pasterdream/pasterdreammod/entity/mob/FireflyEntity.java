@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -22,16 +23,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.util.RandomSource;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
-import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 
 /**
  * 萤火虫 (Firefly) —— 染梦世界飞舞的发光小虫
@@ -46,27 +44,7 @@ import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
  * <p>
  * 渲染：GeckoLib 动画实体，默认纹理 "firefly"
  */
-public class FireflyEntity extends PathfinderMob implements GeoEntity {
-
-    /** 射击状态同步标记（保留以兼容动画系统） */
-    public static final EntityDataAccessor<Boolean> SHOOT = SynchedEntityData.defineId(FireflyEntity.class, EntityDataSerializers.BOOLEAN);
-    /** 当前播放动画名称同步标记 */
-    public static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(FireflyEntity.class, EntityDataSerializers.STRING);
-    /** 纹理名称同步标记（默认 "firefly"） */
-    public static final EntityDataAccessor<String> TEXTURE = SynchedEntityData.defineId(FireflyEntity.class, EntityDataSerializers.STRING);
-
-    /** GeckoLib 动画实例缓存 */
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    /** 攻击挥动标记（供动画系统使用） */
-    private boolean swinging;
-    /** 上一次挥动的时间 */
-    private long lastSwing;
-    /** 过程动画名称（"empty" 表示无过程动画） */
-    public String animationprocedure = "empty";
-
-    /** 客户端 procedure 动画处理器 */
-    private final ProcedureAnimationHandler procAnim = new ProcedureAnimationHandler();
+public class FireflyEntity extends GeckoLibMobEntity {
 
     /**
      * 构造萤火虫实体
@@ -81,51 +59,26 @@ public class FireflyEntity extends PathfinderMob implements GeoEntity {
         this.xpReward = 1;
     }
 
+    /**
+     * 返回默认纹理名称
+     *
+     * @return 默认纹理 "firefly"
+     */
+    @Override
+    protected String getDefaultTexture() {
+        return "firefly";
+    }
+
     // ======================== 同步数据 ========================
 
     /**
      * 定义同步实体数据
+     *
+     * @param builder 同步数据构建器
      */
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(SHOOT, false);
-        builder.define(ANIMATION, "undefined");
-        builder.define(TEXTURE, "firefly");
-    }
-
-    /**
-     * 设置纹理名称
-     *
-     * @param texture 纹理名称
-     */
-    public void setTexture(String texture) {
-        this.entityData.set(TEXTURE, texture);
-    }
-
-    /**
-     * 获取当前纹理名称
-     *
-     * @return 纹理名称
-     */
-    public String getTexture() {
-        return this.entityData.get(TEXTURE);
-    }
-
-    // ======================== NBT 持久化 ========================
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString("Texture", this.getTexture());
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.contains("Texture")) {
-            this.setTexture(compound.getString("Texture"));
-        }
     }
 
     // ======================== 导航 ========================
@@ -266,26 +219,6 @@ public class FireflyEntity extends PathfinderMob implements GeoEntity {
         }
     }
 
-    // ======================== 动画 getter/setter ========================
-
-    /**
-     * 获取同步的动画名称
-     *
-     * @return 动画名称
-     */
-    public String getSyncedAnimation() {
-        return this.entityData.get(ANIMATION);
-    }
-
-    /**
-     * 设置同步的动画名称
-     *
-     * @param animation 动画名称
-     */
-    public void setAnimation(String animation) {
-        this.entityData.set(ANIMATION, animation);
-    }
-
     // ======================== GeckoLib 动画 ========================
 
     /**
@@ -308,27 +241,9 @@ public class FireflyEntity extends PathfinderMob implements GeoEntity {
         return PlayState.STOP;
     }
 
-    /**
-     * 过程动画控制器（用于触发一次性动画）
-     *
-     * @param state 动画状态
-     * @return 播放状态
-     */
-    private PlayState procedurePredicate(AnimationState<FireflyEntity> state) {
-        return procAnim.predicate(state,
-                level().isClientSide(),
-                this::getSyncedAnimation,
-                () -> setAnimation("empty"));
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        super.registerControllers(controllers);
         controllers.add(new AnimationController<>(this, "movement", 4, this::movementPredicate));
-        controllers.add(new AnimationController<>(this, "procedure", 4, this::procedurePredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }

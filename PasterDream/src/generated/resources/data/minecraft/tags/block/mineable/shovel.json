@@ -2,6 +2,11 @@
   "values": [
     "pasterdream:dyedream_grass",
     "pasterdream:dyedream_dirt",
-    "pasterdream:dyedream_sand"
+    "pasterdream:dyedream_sand",
+    "pasterdream:shadow_nylium",
+    "pasterdream:shadow_shroomlight",
+    "pasterdream:shadow_block",
+    "pasterdream:thick_shadow_block",
+    "pasterdream:white_sand"
   ]
 }

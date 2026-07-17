@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/shadow_vortex.item",
+  "textures": {
+    "particle": "pasterdream:block/thick_shadow"
+  }
+}

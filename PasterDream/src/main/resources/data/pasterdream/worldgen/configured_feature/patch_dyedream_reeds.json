@@ -1,0 +1,51 @@
+{
+  "type": "minecraft:random_patch",
+  "config": {
+    "tries": 4,
+    "xz_spread": 4,
+    "y_spread": 1,
+    "feature": {
+      "feature": {
+        "type": "minecraft:simple_block",
+        "config": {
+          "to_place": {
+            "type": "minecraft:simple_state_provider",
+            "state": {
+              "Name": "minecraft:sugar_cane"
+            }
+          }
+        }
+      },
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:all_of",
+            "predicates": [
+              {
+                "type": "minecraft:matching_blocks",
+                "blocks": "minecraft:air"
+              },
+              {
+                "type": "minecraft:matching_blocks",
+                "offset": [0, -1, 0],
+                "blocks": [
+                  "pasterdream:dyedream_dirt",
+                  "pasterdream:dyedream_sand",
+                  "pasterdream:dyedream_block",
+                  "minecraft:dirt",
+                  "minecraft:sand"
+                ]
+              },
+              {
+                "type": "minecraft:matching_blocks",
+                "offset": [0, -1, 1],
+                "blocks": "minecraft:water"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/cyan_moss_stone",
+    "up": "pasterdream:block/cyan_moss_stone",
+    "north": "pasterdream:block/cyan_moss_stone",
+    "east": "pasterdream:block/cyan_moss_stone",
+    "south": "pasterdream:block/cyan_moss_stone",
+    "west": "pasterdream:block/cyan_moss_stone",
+    "particle": "pasterdream:block/cyan_moss_stone"
+  },
+  "render_type": "solid"
+}

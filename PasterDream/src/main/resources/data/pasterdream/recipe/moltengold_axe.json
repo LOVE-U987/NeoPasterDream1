@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:stone_axe"
+    },
+    {
+      "item": "pasterdream:moltengold_ingot"
+    },
+    {
+      "item": "pasterdream:moltengold_ingot"
+    },
+    {
+      "item": "pasterdream:blackstick"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:moltengold_axe",
+    "count": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "pasterdream:biome_dyedream_0"
+  ],
+  "features": [
+    "pasterdream:dyedream_trees_sparse"
+  ],
+  "step": "vegetal_decoration"
+}

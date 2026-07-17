@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:diamond_boots"
+    },
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:blackstick"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:titanium_armor_boots",
+    "count": 1
+  }
+}

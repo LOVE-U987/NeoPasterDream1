@@ -1,6 +1,6 @@
-{
+﻿{
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/ye_ming_die_"
+    "layer0": "pasterdream:item/night_butterfly"
   }
 }

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:diamond_axe"
+    },
+    {
+      "item": "pasterdream:dyedream_ingot"
+    },
+    {
+      "item": "pasterdream:dyedream_ingot"
+    },
+    {
+      "item": "pasterdream:blackstick"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:dyedream_axe",
+    "count": 1
+  }
+}

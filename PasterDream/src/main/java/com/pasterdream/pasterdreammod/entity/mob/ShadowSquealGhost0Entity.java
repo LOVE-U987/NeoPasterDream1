@@ -1,15 +1,19 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMonsterEntity;
+import com.pasterdream.pasterdreammod.entity.mob.ShadowGhostEntity;
+import com.pasterdream.pasterdreammod.entity.mob.ShadowSquealGhostEntity;
+import com.pasterdream.pasterdreammod.registry.PDEntities;
+import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -28,16 +32,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
-import com.pasterdream.pasterdreammod.entity.mob.ShadowGhostEntity;
-import com.pasterdream.pasterdreammod.entity.mob.ShadowSquealGhostEntity;
-import com.pasterdream.pasterdreammod.registry.PDEntities;
-import com.pasterdream.pasterdreammod.registry.PDSounds;
-import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 
 import java.util.EnumSet;
 
@@ -53,36 +52,19 @@ import java.util.EnumSet;
  *   <li>免疫火焰、摔落、仙人掌、溺水、药水伤害</li>
  * </ul>
  * <p>
- * 动画：movement(idle/walk) | attacking(attack) | procedure(触发式)
+ * 动画：movement(idle/walk) | attacking(attack) | procedure(触发式，由基类统一处理)
  */
-public class ShadowSquealGhost0Entity extends Monster implements RangedAttackMob, GeoEntity {
-
-    /** 射击状态同步标记 */
-    public static final EntityDataAccessor<Boolean> SHOOT = SynchedEntityData.defineId(ShadowSquealGhost0Entity.class, EntityDataSerializers.BOOLEAN);
-    /** 当前播放动画名称同步标记 */
-    public static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(ShadowSquealGhost0Entity.class, EntityDataSerializers.STRING);
-    /** 纹理名称同步标记（默认 "shadow_squeal_wave_0"） */
-    public static final EntityDataAccessor<String> TEXTURE = SynchedEntityData.defineId(ShadowSquealGhost0Entity.class, EntityDataSerializers.STRING);
-
-    /** GeckoLib 动画实例缓存 */
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class ShadowSquealGhost0Entity extends GeckoLibMonsterEntity implements RangedAttackMob {
 
     /** 攻击挥动标记 */
     private boolean swinging;
     /** 上一次挥动的时间 */
     private long lastSwing;
-    /** 过程动画名称（"empty" 表示无过程动画） */
-    public String animationprocedure = "empty";
-
-    /** 客户端 procedure 动画处理器 */
-    private final ProcedureAnimationHandler procAnim = new ProcedureAnimationHandler();
 
     /** 召唤技能冷却计时器（0表示可释放技能） */
     private int summonCooldown = 0;
-
     /** 召唤阶段计时器（用于多阶段召唤） */
     private int summonPhase = 0;
-
     /** 是否正在施放技能 */
     private boolean isCastingSkill = false;
 
@@ -99,48 +81,21 @@ public class ShadowSquealGhost0Entity extends Monster implements RangedAttackMob
         this.xpReward = 2;
     }
 
+    /**
+     * 返回默认纹理名称
+     *
+     * @return 默认纹理名
+     */
+    @Override
+    protected String getDefaultTexture() {
+        return "shadow_squeal_wave_0";
+    }
+
     // ======================== 同步数据 ========================
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(SHOOT, false);
-        builder.define(ANIMATION, "undefined");
-        builder.define(TEXTURE, "shadow_squeal_wave_0");
-    }
-
-    /**
-     * 设置纹理名称
-     *
-     * @param texture 纹理名称
-     */
-    public void setTexture(String texture) {
-        this.entityData.set(TEXTURE, texture);
-    }
-
-    /**
-     * 获取当前纹理名称
-     *
-     * @return 纹理名称
-     */
-    public String getTexture() {
-        return this.entityData.get(TEXTURE);
-    }
-
-    // ======================== NBT 持久化 ========================
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString("Texture", this.getTexture());
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.contains("Texture")) {
-            this.setTexture(compound.getString("Texture"));
-        }
     }
 
     // ======================== 导航 ========================
@@ -309,7 +264,7 @@ public class ShadowSquealGhost0Entity extends Monster implements RangedAttackMob
             this.target = null;
             this.seeTime = 0;
             this.attackTime = -1;
-            ((ShadowSquealGhost0Entity) rangedAttackMob).entityData.set(SHOOT, false);
+            ((ShadowSquealGhost0Entity) rangedAttackMob).setShooting(false);
         }
 
         @Override
@@ -327,6 +282,7 @@ public class ShadowSquealGhost0Entity extends Monster implements RangedAttackMob
             } else {
                 this.seeTime = 0;
             }
+            ShadowSquealGhost0Entity ghost = (ShadowSquealGhost0Entity) this.rangedAttackMob;
             if (!(distanceSq > (double) this.attackRadiusSqr) && this.seeTime >= 5) {
                 this.mob.getNavigation().stop();
             } else {
@@ -335,10 +291,10 @@ public class ShadowSquealGhost0Entity extends Monster implements RangedAttackMob
             this.mob.getLookControl().setLookAt(this.target, 30.0F, 30.0F);
             if (--this.attackTime == 0) {
                 if (!hasLineOfSight) {
-                    ((ShadowSquealGhost0Entity) rangedAttackMob).entityData.set(SHOOT, false);
+                    ghost.setShooting(false);
                     return;
                 }
-                ((ShadowSquealGhost0Entity) rangedAttackMob).entityData.set(SHOOT, true);
+                ghost.setShooting(true);
                 float f = (float) Math.sqrt(distanceSq) / this.attackRadius;
                 float f1 = Mth.clamp(f, 0.1F, 1.0F);
                 this.rangedAttackMob.performRangedAttack(this.target, f1);
@@ -346,7 +302,7 @@ public class ShadowSquealGhost0Entity extends Monster implements RangedAttackMob
             } else if (this.attackTime < 0) {
                 this.attackTime = Mth.floor(Mth.lerp(Math.sqrt(distanceSq) / (double) this.attackRadius, (double) this.attackIntervalMin, (double) this.attackIntervalMax));
             } else {
-                ((ShadowSquealGhost0Entity) rangedAttackMob).entityData.set(SHOOT, false);
+                ghost.setShooting(false);
             }
         }
     }
@@ -512,26 +468,6 @@ public class ShadowSquealGhost0Entity extends Monster implements RangedAttackMob
         }
     }
 
-    // ======================== 动画 getter/setter ========================
-
-    /**
-     * 获取同步的动画名称
-     *
-     * @return 动画名称
-     */
-    public String getSyncedAnimation() {
-        return this.entityData.get(ANIMATION);
-    }
-
-    /**
-     * 设置同步的动画名称
-     *
-     * @param animation 动画名称
-     */
-    public void setAnimation(String animation) {
-        this.entityData.set(ANIMATION, animation);
-    }
-
     // ======================== GeckoLib 动画 ========================
 
     /**
@@ -540,7 +476,7 @@ public class ShadowSquealGhost0Entity extends Monster implements RangedAttackMob
      * @param state 动画状态
      * @return 播放状态
      */
-    private PlayState movementPredicate(software.bernie.geckolib.animation.AnimationState<ShadowSquealGhost0Entity> state) {
+    private PlayState movementPredicate(AnimationState<ShadowSquealGhost0Entity> state) {
         if (this.getSyncedAnimation().equals("empty")) {
             if (state.isMoving() || !(state.getLimbSwingAmount() > -0.15F && state.getLimbSwingAmount() < 0.15F)) {
                 return state.setAndContinue(RawAnimation.begin().thenLoop("walk"));
@@ -556,7 +492,7 @@ public class ShadowSquealGhost0Entity extends Monster implements RangedAttackMob
      * @param state 动画状态
      * @return 播放状态
      */
-    private PlayState attackingPredicate(software.bernie.geckolib.animation.AnimationState<ShadowSquealGhost0Entity> state) {
+    private PlayState attackingPredicate(AnimationState<ShadowSquealGhost0Entity> state) {
         double d1 = this.getX() - this.xOld;
         double d0 = this.getZ() - this.zOld;
         float velocity = (float) Math.sqrt(d1 * d1 + d0 * d0);
@@ -567,35 +503,17 @@ public class ShadowSquealGhost0Entity extends Monster implements RangedAttackMob
         if (this.swinging && this.lastSwing + 7L <= level().getGameTime()) {
             this.swinging = false;
         }
-        if ((this.swinging || this.entityData.get(SHOOT)) && state.getController().getAnimationState() == AnimationController.State.STOPPED) {
+        if ((this.swinging || this.isShooting()) && state.getController().getAnimationState() == AnimationController.State.STOPPED) {
             state.getController().forceAnimationReset();
             return state.setAndContinue(RawAnimation.begin().thenPlay("attack"));
         }
         return PlayState.CONTINUE;
     }
 
-    /**
-     * 过程动画控制器（用于触发一次性动画）
-     *
-     * @param state 动画状态
-     * @return 播放状态
-     */
-    private PlayState procedurePredicate(software.bernie.geckolib.animation.AnimationState<ShadowSquealGhost0Entity> state) {
-        return procAnim.predicate(state,
-                level().isClientSide(),
-                this::getSyncedAnimation,
-                () -> setAnimation("empty"));
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        super.registerControllers(controllers);
         controllers.add(new AnimationController<>(this, "movement", 4, this::movementPredicate));
         controllers.add(new AnimationController<>(this, "attacking", 4, this::attackingPredicate));
-        controllers.add(new AnimationController<>(this, "procedure", 4, this::procedurePredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }
