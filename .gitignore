@@ -42,3 +42,4 @@ repo/
 ### AI tools ###
 .claude
 .claude/**
+memory
