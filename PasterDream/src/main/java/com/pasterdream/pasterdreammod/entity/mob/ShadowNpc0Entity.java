@@ -1,11 +1,9 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -23,18 +21,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
-import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 /**
  * ???（无名NPC）—— 徘徊在暗影地牢中的神秘 NPC
  * <p>
  * 行为特点：
  * <ul>
- *   <li>被动 NPC，继承 {@link PathfinderMob}，实现 {@link GeoEntity}</li>
+ *   <li>被动 NPC，继承 {@link GeckoLibMobEntity}</li>
  *   <li>只有随机张望 AI（{@link RandomLookAroundGoal}）</li>
  *   <li>免疫火焰伤害和玩家直接伤害</li>
  *   <li>右键交互：播放 "say" 动画、显示对话、给予金块、提示进度解锁</li>
@@ -42,26 +36,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
  * <p>
  * 渲染：GeckoLib 动画实体，默认纹理 "shadow_npc_0"
  */
-public class ShadowNpc0Entity extends PathfinderMob implements GeoEntity {
-
-    /** 射击状态同步标记（保留以兼容动画系统） */
-    public static final EntityDataAccessor<Boolean> SHOOT =
-            SynchedEntityData.defineId(ShadowNpc0Entity.class, EntityDataSerializers.BOOLEAN);
-    /** 当前播放动画名称同步标记 */
-    public static final EntityDataAccessor<String> ANIMATION =
-            SynchedEntityData.defineId(ShadowNpc0Entity.class, EntityDataSerializers.STRING);
-    /** 纹理名称同步标记（默认 "shadow_npc_0"） */
-    public static final EntityDataAccessor<String> TEXTURE =
-            SynchedEntityData.defineId(ShadowNpc0Entity.class, EntityDataSerializers.STRING);
-
-    /** GeckoLib 动画实例缓存 */
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    /** 过程动画名称（"empty" 表示无过程动画） */
-    public String animationprocedure = "empty";
-
-    /** 客户端 procedure 动画处理器 */
-    private final ProcedureAnimationHandler procAnim = new ProcedureAnimationHandler();
+public class ShadowNpc0Entity extends GeckoLibMobEntity {
 
     /** 是否已经交互过的标记（防止重复触发对话） */
     private boolean hasInteracted = false;
@@ -77,32 +52,14 @@ public class ShadowNpc0Entity extends PathfinderMob implements GeoEntity {
         this.xpReward = 0;
     }
 
-    // ======================== 同步数据 ========================
-
+    /**
+     * 返回默认纹理名称
+     *
+     * @return 默认纹理名
+     */
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(SHOOT, false);
-        builder.define(ANIMATION, "undefined");
-        builder.define(TEXTURE, "shadow_npc_0");
-    }
-
-    /**
-     * 设置纹理名称
-     *
-     * @param texture 纹理名称
-     */
-    public void setTexture(String texture) {
-        this.entityData.set(TEXTURE, texture);
-    }
-
-    /**
-     * 获取当前纹理名称
-     *
-     * @return 纹理名称
-     */
-    public String getTexture() {
-        return this.entityData.get(TEXTURE);
+    protected String getDefaultTexture() {
+        return "shadow_npc_0";
     }
 
     // ======================== NBT 持久化 ========================
@@ -110,16 +67,12 @@ public class ShadowNpc0Entity extends PathfinderMob implements GeoEntity {
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putString("Texture", this.getTexture());
         compound.putBoolean("HasInteracted", this.hasInteracted);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        if (compound.contains("Texture")) {
-            this.setTexture(compound.getString("Texture"));
-        }
         if (compound.contains("HasInteracted")) {
             this.hasInteracted = compound.getBoolean("HasInteracted");
         }
@@ -244,25 +197,6 @@ public class ShadowNpc0Entity extends PathfinderMob implements GeoEntity {
         return InteractionResult.SUCCESS;
     }
 
-    /**
-     * 获取同步的动画名称
-     *
-     * @return 动画名称
-     */
-    public String getSyncedAnimation() {
-        return this.entityData.get(ANIMATION);
-    }
-
-    /**
-     * 设置同步的动画名称，同时触发 procedure 控制器
-     *
-     * @param animation 动画名称
-     */
-    public void setAnimation(String animation) {
-        this.entityData.set(ANIMATION, animation);
-        this.animationprocedure = animation;
-    }
-
     // ======================== 尺寸刷新 ========================
 
     @Override
@@ -299,27 +233,9 @@ public class ShadowNpc0Entity extends PathfinderMob implements GeoEntity {
         return PlayState.STOP;
     }
 
-    /**
-     * 过程动画控制器（用于触发一次性动画如 "say"）
-     *
-     * @param state 动画状态
-     * @return 播放状态
-     */
-    private PlayState procedurePredicate(AnimationState<ShadowNpc0Entity> state) {
-        return procAnim.predicate(state,
-                level().isClientSide(),
-                this::getSyncedAnimation,
-                () -> setAnimation("empty"));
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        super.registerControllers(controllers);
         controllers.add(new AnimationController<>(this, "movement", 4, this::movementPredicate));
-        controllers.add(new AnimationController<>(this, "procedure", 4, this::procedurePredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }

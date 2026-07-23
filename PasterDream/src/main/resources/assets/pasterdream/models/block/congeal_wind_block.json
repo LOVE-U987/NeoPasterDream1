@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/congeal_wind_block",
+    "up": "pasterdream:block/congeal_wind_block",
+    "north": "pasterdream:block/congeal_wind_block",
+    "east": "pasterdream:block/congeal_wind_block",
+    "south": "pasterdream:block/congeal_wind_block",
+    "west": "pasterdream:block/congeal_wind_block",
+    "particle": "pasterdream:block/congeal_wind_block"
+  },
+  "render_type": "transparent"
+}

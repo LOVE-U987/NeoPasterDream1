@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:diamond_boots"
+    },
+    {
+      "item": "pasterdream:qym_head"
+    },
+    {
+      "item": "pasterdream:qym_head"
+    },
+    {
+      "item": "pasterdream:blackstick"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:qin_armor_boots",
+    "count": 1
+  }
+}

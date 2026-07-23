@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/clarity_glass",
+    "up": "pasterdream:block/clarity_glass",
+    "north": "pasterdream:block/clarity_glass",
+    "east": "pasterdream:block/clarity_glass",
+    "south": "pasterdream:block/clarity_glass",
+    "west": "pasterdream:block/clarity_glass",
+    "particle": "pasterdream:block/clarity_glass"
+  },
+  "render_type": "transparent"
+}

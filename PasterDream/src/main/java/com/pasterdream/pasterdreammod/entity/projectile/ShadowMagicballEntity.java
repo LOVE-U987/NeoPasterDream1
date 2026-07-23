@@ -1,11 +1,9 @@
 package com.pasterdream.pasterdreammod.entity.projectile;
 
+import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibProjectileEntity;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import com.pasterdream.pasterdreammod.entity.damage.DamageImmunityConfig;
 import net.minecraft.world.damagesource.DamageSource;
@@ -18,37 +16,41 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
 
-public class ShadowMagicballEntity extends Projectile implements GeoEntity {
+/**
+ * 暗影魔法球 (Shadow Magicball) —— 追踪玩家的爆炸弹射物
+ * <p>
+ * 行为要点：
+ * <ul>
+ *   <li>生成后 35 tick 内自动追踪最近玩家</li>
+ *   <li>命中实体或方块时触发爆炸</li>
+ *   <li>生成暗影石粒子与烟雾尾迹</li>
+ * </ul>
+ * <p>
+ * 渲染：GeckoLib 动画实体，默认纹理 "shadow_magicball"，循环播放 "fly" 动画
+ */
+public class ShadowMagicballEntity extends GeckoLibProjectileEntity {
 
-    public static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(ShadowMagicballEntity.class, EntityDataSerializers.STRING);
-    public static final EntityDataAccessor<String> TEXTURE = SynchedEntityData.defineId(ShadowMagicballEntity.class, EntityDataSerializers.STRING);
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private boolean hasExploded = false;
     private int lifespanTicks = 0;
     private static final int MAX_LIFESPAN = 35;
 
-    public ShadowMagicballEntity(EntityType<? extends ShadowMagicballEntity> type, Level level) {
+    public ShadowMagicballEntity(EntityType<? extends Projectile> type, Level level) {
         super(type, level);
         this.setNoGravity(true);
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(ANIMATION, "empty");
-        builder.define(TEXTURE, "shadow_magicball");
+    protected String getDefaultTexture() {
+        return "shadow_magicball";
     }
-
-    public String getTexture() { return this.entityData.get(TEXTURE); }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putString("Texture", this.getTexture());
         compound.putBoolean("HasExploded", this.hasExploded);
     }
 
@@ -120,11 +122,9 @@ public class ShadowMagicballEntity extends Projectile implements GeoEntity {
     }
 
     @Override
-    public void registerControllers(software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new software.bernie.geckolib.animation.AnimationController<>(this, "movement", 4, state ->
-                state.setAndContinue(software.bernie.geckolib.animation.RawAnimation.begin().thenLoop("fly"))));
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        super.registerControllers(controllers);
+        controllers.add(new AnimationController<>(this, "movement", 4, state ->
+                state.setAndContinue(RawAnimation.begin().thenLoop("fly"))));
     }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() { return this.cache; }
 }

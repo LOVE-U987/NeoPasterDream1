@@ -5,28 +5,78 @@
       "rolls": 1,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "pasterdream:dyedream_leaves"
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:match_tool",
-          "predicate": {
-            "enchantments": [
-              {
-                "enchantment": "minecraft:silk_touch",
-                "levels": {
-                  "min": 1
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "id": "pasterdream:dyedream_leaves",
+              "conditions": [
+                {
+                  "condition": "minecraft:any_of",
+                  "terms": [
+                    {
+                      "condition": "minecraft:match_tool",
+                      "predicate": {
+                        "items": "minecraft:shears"
+                      }
+                    },
+                    {
+                      "condition": "minecraft:match_tool",
+                      "predicate": {
+                        "enchantments": [
+                          {
+                            "enchantment": "minecraft:silk_touch",
+                            "levels": {
+                              "min": 1
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
                 }
-              }
-            ]
-          }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "id": "minecraft:stick",
+              "weight": 2,
+              "conditions": [
+                {
+                  "condition": "minecraft:table_bonus",
+                  "enchantment": "minecraft:fortune",
+                  "chances": [0.02, 0.022, 0.025, 0.03, 0.04]
+                }
+              ]
+            }
+          ]
         },
         {
-          "condition": "minecraft:survives_explosion"
+          "type": "minecraft:item",
+          "id": "pasterdream:dyedream_sapling",
+          "weight": 1,
+          "conditions": [
+            {
+              "condition": "minecraft:table_bonus",
+              "enchantment": "minecraft:fortune",
+              "chances": [0.05, 0.0625, 0.0833, 0.1, 0.2]
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "id": "pasterdream:dyedream_fruit",
+          "weight": 2,
+          "conditions": [
+            {
+              "condition": "minecraft:table_bonus",
+              "enchantment": "minecraft:fortune",
+              "chances": [0.005, 0.0067, 0.0083, 0.0111, 0.02]
+            }
+          ]
         }
       ]
     }
-  ]
+  ],
+  "random_sequence": "pasterdream:blocks/dyedream_leaves"
 }

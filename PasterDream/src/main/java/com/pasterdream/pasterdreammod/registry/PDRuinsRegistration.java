@@ -35,7 +35,6 @@ import java.util.Map;
  *   <li>{@code traveler_house_0~2} — 3 种旅人小屋，Y=-13</li>
  *   <li>{@code garden_decryption_0~2} — 3 种花园解密，Y=32</li>
  *   <li>{@code picnic_basket_structure} — 野餐篮，Y=32</li>
- *   <li>{@code lifecrystal_cave_0} — 生命水晶洞穴，Y=-32</li>
  *   <li>{@code meltdream_liquid_well_0~1} — 2 种融梦液体井，Y=-33</li>
  * </ul>
  *
@@ -80,7 +79,6 @@ public class PDRuinsRegistration {
         registerGardenDecryption1();
         registerGardenDecryption2();
         registerPicnicBasketStructure();
-        registerLifecrystalCave0();
         registerMeltdreamLiquidWell0();
         registerMeltdreamLiquidWell1();
 
@@ -379,11 +377,6 @@ public class PDRuinsRegistration {
     private static void registerPicnicBasketStructure() {
         buildRuin("picnic_basket_structure", 32);
         buildSet("picnic_basket_structure", "picnic_basket_structure_set", 20, 10, 1295591192);
-    }
-
-    private static void registerLifecrystalCave0() {
-        buildRuin("lifecrystal_cave_0", -32);
-        buildSet("lifecrystal_cave_0", "lifecrystal_cave_0_set", 51, 25, 833118091);
     }
 
     private static void registerMeltdreamLiquidWell0() {

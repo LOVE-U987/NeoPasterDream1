@@ -6,12 +6,15 @@ import com.pasterdream.pasterdreammod.block.entity.AaroncosHandSpawnBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.DreamAccumulatorBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.DreamCauldronBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.DyedreamDeskBlockEntity;
+import com.pasterdream.pasterdreammod.block.entity.GoldenFoxSculptureBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.LifeCrystalBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.MeltdreamChestBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.MeltdreamChestOpenBlockEntity;
+import com.pasterdream.pasterdreammod.block.entity.QymDoll0BlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.ShadowChestBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.ShadowVortexBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.TheEndlessBookOfDreamSeekersBlockEntity;
+import com.pasterdream.pasterdreammod.block.entity.UuzDoll0BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
@@ -70,6 +73,36 @@ public class PDBlockEntities {
             BlockEntityAPI.<LifeCrystalBlockEntity>createBlockEntity("life_crystal")
                     .factory(LifeCrystalBlockEntity::new)
                     .validBlock(PDBlocks.LIFE_CRYSTAL)
+                    .build();
+
+    /**
+     * 娇小琴雨梦玩偶方块实体类型
+     * 用于渲染 GeckoLib 3D 模型
+     */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QymDoll0BlockEntity>> QIN_DOLL_0 =
+            BlockEntityAPI.<QymDoll0BlockEntity>createBlockEntity("qin_doll_0")
+                    .factory(QymDoll0BlockEntity::new)
+                    .validBlock(PDBlocks.QIN_DOLL_0)
+                    .build();
+
+    /**
+     * 娇小幼幼紫玩偶方块实体类型
+     * 用于渲染 GeckoLib 3D 模型
+     */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<UuzDoll0BlockEntity>> LITTLE_PURPLE_DOLL_0 =
+            BlockEntityAPI.<UuzDoll0BlockEntity>createBlockEntity("little_purple_doll_0")
+                    .factory(UuzDoll0BlockEntity::new)
+                    .validBlock(PDBlocks.LITTLE_PURPLE_DOLL_0)
+                    .build();
+
+    /**
+     * 狐狸雕像方块实体类型
+     * 用于渲染 GeckoLib 3D 模型
+     */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GoldenFoxSculptureBlockEntity>> GOLDEN_FOX_SCULPTURE =
+            BlockEntityAPI.<GoldenFoxSculptureBlockEntity>createBlockEntity("golden_fox_sculpture")
+                    .factory(GoldenFoxSculptureBlockEntity::new)
+                    .validBlock(PDBlocks.GOLDEN_FOX_SCULPTURE)
                     .build();
 
     /**

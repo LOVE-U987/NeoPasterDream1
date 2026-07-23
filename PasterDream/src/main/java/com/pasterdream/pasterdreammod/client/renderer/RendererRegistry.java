@@ -61,6 +61,18 @@ public final class RendererRegistry {
         PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: life_crystal");
         count++;
 
+        event.registerBlockEntityRenderer(PDBlockEntities.QIN_DOLL_0.get(), QymDoll0BlockRenderer::new);
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: qin_doll_0");
+        count++;
+
+        event.registerBlockEntityRenderer(PDBlockEntities.LITTLE_PURPLE_DOLL_0.get(), UuzDoll0BlockRenderer::new);
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: little_purple_doll_0");
+        count++;
+
+        event.registerBlockEntityRenderer(PDBlockEntities.GOLDEN_FOX_SCULPTURE.get(), GoldenFoxSculptureBlockRenderer::new);
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: golden_fox_sculpture");
+        count++;
+
         event.registerBlockEntityRenderer(PDBlockEntities.SHADOW_CHEST.get(), ShadowChestBlockRenderer::new);
         PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: shadow_chest");
         count++;

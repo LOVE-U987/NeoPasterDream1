@@ -2,7 +2,6 @@ package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.worldgen.feature.CaveGlowMushroomFeature;
-import com.pasterdream.pasterdreammod.worldgen.feature.CrystalCaveFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.FloatingIslandFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.MegaCalcitePillarFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.MegaMushroomFeature;
@@ -42,10 +41,6 @@ public class PDFeatures {
             FEATURES.register("floating_island", FloatingIslandFeature::new);
 
     // ==================== 地下生态特征 ====================
-
-    /** 水晶洞穴特征 —— 在 Y=-32~0 生成椭球体水晶洞穴，壁面嵌入水晶，地面铺发光方块 */
-    public static final DeferredHolder<Feature<?>, CrystalCaveFeature> CRYSTAL_CAVE =
-            FEATURES.register("crystal_cave", CrystalCaveFeature::new);
 
     /** 悬浮水晶核心特征 —— 在大空腔中生成中央主水晶柱 + 环绕小水晶 */
     public static final DeferredHolder<Feature<?>, SuspendedCrystalFeature> SUSPENDED_CRYSTAL =

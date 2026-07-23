@@ -1,6 +1,6 @@
-{
+﻿{
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/shi_zi_zhang_xiang_lian_"
+    "layer0": "pasterdream:item/cross_necklace"
   }
 }

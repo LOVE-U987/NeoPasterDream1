@@ -1,26 +1,20 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
-import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.BoneWingFireBallProjectileEntity;
-import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -30,7 +24,6 @@ import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -38,11 +31,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.*;
-import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 
 import java.util.EnumSet;
 
@@ -52,24 +45,12 @@ import java.util.EnumSet;
  * 使用远程攻击（射出火球），免疫摔落伤害
  * 在天空中自由飞行巡逻
  */
-public class BoneWingEntity extends Monster implements RangedAttackMob, GeoEntity {
+public class BoneWingEntity extends GeckoLibMobEntity implements RangedAttackMob {
 
-    private static final EntityDataAccessor<Boolean> SHOOT =
-            SynchedEntityData.defineId(BoneWingEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<String> ANIMATION =
-            SynchedEntityData.defineId(BoneWingEntity.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<String> TEXTURE =
-            SynchedEntityData.defineId(BoneWingEntity.class, EntityDataSerializers.STRING);
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    /** 当前动画标识（用于 procedure 控制器） */
-    public String animationprocedure = "empty";
-
-    /** 客户端 procedure 动画处理器 */
-    private final ProcedureAnimationHandler procAnim = new ProcedureAnimationHandler();
+    /** 攻击挥动标记（供动画系统使用） */
     private boolean swinging;
     private boolean lastloop;
+    /** 上一次挥动的时间 */
     private long lastSwing;
 
     /**
@@ -78,55 +59,25 @@ public class BoneWingEntity extends Monster implements RangedAttackMob, GeoEntit
      * @param type  实体类型
      * @param level 世界实例
      */
-    public BoneWingEntity(EntityType<BoneWingEntity> type, Level level) {
+    public BoneWingEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
         this.xpReward = 12;
         this.moveControl = new FlyingMoveControl(this, 10, true);
     }
 
+    /**
+     * 返回默认纹理名称
+     *
+     * @return 默认纹理 "bone_wing"
+     */
+    @Override
+    protected String getDefaultTexture() {
+        return "bone_wing";
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(SHOOT, false);
-        builder.define(ANIMATION, "undefined");
-        builder.define(TEXTURE, "bone_wing");
-    }
-
-    /**
-     * 设置纹理
-     *
-     * @param texture 纹理名称
-     */
-    public void setTexture(String texture) {
-        this.entityData.set(TEXTURE, texture);
-    }
-
-    /**
-     * 获取纹理名称
-     *
-     * @return 纹理名称
-     */
-    public String getTexture() {
-        return this.entityData.get(TEXTURE);
-    }
-
-    /**
-     * 获取同步的动画名称
-     *
-     * @return 动画名称
-     */
-    public String getSyncedAnimation() {
-        return this.entityData.get(ANIMATION);
-    }
-
-    /**
-     * 设置同步动画
-     *
-     * @param animation 动画名称
-     */
-    public void setAnimation(String animation) {
-        this.entityData.set(ANIMATION, animation);
-        this.animationprocedure = animation;
     }
 
     // ==================== 导航/移动 ====================
@@ -156,7 +107,7 @@ public class BoneWingEntity extends Monster implements RangedAttackMob, GeoEntit
      * @return 属性构造器
      */
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes()
+        return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 20)
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 3)
@@ -323,15 +274,11 @@ public class BoneWingEntity extends Monster implements RangedAttackMob, GeoEntit
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putString("Texture", this.getTexture());
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        if (compound.contains("Texture")) {
-            this.setTexture(compound.getString("Texture"));
-        }
     }
 
     // ==================== 远程攻击实现 ====================
@@ -339,7 +286,7 @@ public class BoneWingEntity extends Monster implements RangedAttackMob, GeoEntit
     /**
      * 执行远程攻击（发射骨翼火球）
      * <p>
-     * 火球弹射物自带发射音效 {@link PDSounds#BONE_WING_FIRE_BALL}。
+     * 火球弹射物自带发射音效。
      *
      * @param target   攻击目标
      * @param velocity 速度修正系数
@@ -419,22 +366,10 @@ public class BoneWingEntity extends Monster implements RangedAttackMob, GeoEntit
         return PlayState.CONTINUE;
     }
 
-    private PlayState procedurePredicate(AnimationState<BoneWingEntity> state) {
-        return procAnim.predicate(state,
-                level().isClientSide(),
-                this::getSyncedAnimation,
-                () -> setAnimation("empty"));
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        super.registerControllers(controllers);
         controllers.add(new AnimationController<>(this, "movement", 4, this::movementPredicate));
         controllers.add(new AnimationController<>(this, "attacking", 4, this::attackingPredicate));
-        controllers.add(new AnimationController<>(this, "procedure", 4, this::procedurePredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }

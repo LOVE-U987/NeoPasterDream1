@@ -44,8 +44,6 @@ public class PDPlacedFeatures {
     public static final ResourceKey<PlacedFeature> DYEDREAM_TREES = createKey("dyedream_trees");
 
     // ==================== 地下生态特征 ====================
-    /** 水晶洞穴 */
-    public static final ResourceKey<PlacedFeature> CRYSTAL_CAVE = createKey("crystal_cave");
     /** 悬浮水晶核心 */
     public static final ResourceKey<PlacedFeature> SUSPENDED_CRYSTAL = createKey("suspended_crystal");
     /** 发光菌体 */

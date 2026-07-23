@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "pasterdream:block/moltengold_block"
+    "all": "pasterdream:block/luminous_gold"
   }
 }

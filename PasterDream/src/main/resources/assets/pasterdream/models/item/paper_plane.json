@@ -1,6 +1,6 @@
-{
+﻿{
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/zhi_fei_ji_"
+    "layer0": "pasterdream:item/paper_airplane"
   }
 }

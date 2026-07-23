@@ -2,7 +2,7 @@
   "parent": "pasterdream:custom/shadow_candle",
   "textures": {
     "all": "pasterdream:block/shadow_candle",
-    "particle": "pasterdream:block/hou_zhong_yin_ying_",
+    "particle": "pasterdream:block/thick_shadow",
     "stub": "pasterdream:block/shadow_candlestub"
   },
   "render_type": "cutout"

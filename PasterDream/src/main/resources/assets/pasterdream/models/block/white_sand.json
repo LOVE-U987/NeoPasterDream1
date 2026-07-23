@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/white_sand",
+    "up": "pasterdream:block/white_sand",
+    "north": "pasterdream:block/white_sand",
+    "east": "pasterdream:block/white_sand",
+    "south": "pasterdream:block/white_sand",
+    "west": "pasterdream:block/white_sand",
+    "particle": "pasterdream:block/white_sand"
+  },
+  "render_type": "solid"
+}

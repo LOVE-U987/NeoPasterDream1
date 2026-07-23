@@ -14,6 +14,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Items;
@@ -58,6 +59,29 @@ public class PDItems {
      */
     public static final DeferredItem<LifeCrystalDisplayItem> LIFE_CRYSTAL = ITEMS.register("life_crystal",
             () -> new LifeCrystalDisplayItem(new Item.Properties()));
+
+    // ==================== 玩偶/雕像物品 ====================
+
+    /**
+     * 娇小琴雨梦玩偶物品 (qin_doll_0)
+     * 使用 QymDoll0DisplayItem 实现手持 3D 渲染
+     */
+    public static final DeferredItem<QymDoll0DisplayItem> QIN_DOLL_0 = ITEMS.register("qin_doll_0",
+            () -> new QymDoll0DisplayItem(new Item.Properties()));
+
+    /**
+     * 娇小幼幼紫玩偶物品 (little_purple_doll_0)
+     * 使用 UuzDoll0DisplayItem 实现手持 3D 渲染
+     */
+    public static final DeferredItem<UuzDoll0DisplayItem> LITTLE_PURPLE_DOLL_0 = ITEMS.register("little_purple_doll_0",
+            () -> new UuzDoll0DisplayItem(new Item.Properties()));
+
+    /**
+     * 狐狸雕像物品 (golden_fox_sculpture)
+     * 使用 GoldenFoxSculptureDisplayItem 实现手持 3D 渲染
+     */
+    public static final DeferredItem<GoldenFoxSculptureDisplayItem> GOLDEN_FOX_SCULPTURE = ITEMS.register("golden_fox_sculpture",
+            () -> new GoldenFoxSculptureDisplayItem(new Item.Properties()));
 
     /**
      * 影之箱子物品 (shadow_chest)
@@ -807,6 +831,98 @@ public class PDItems {
                     .repairWith(new ItemStack(Items.COBBLESTONE))
                     .build();
 
+    // === Dyedream 工具 ===
+    public static final DeferredItem<Item> DYEDREAM_AXE =
+            ItemAPI.toolItem("dyedream_axe")
+                    .type(ToolType.AXE).durability(1314).miningSpeed(9.0f)
+                    .attackDamage(9.0f).attackSpeed(-3.0f)
+                    .incorrectTag("minecraft:incorrect_for_netherite_tool")
+                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .build();
+    public static final DeferredItem<Item> DYEDREAM_SHOVEL =
+            ItemAPI.toolItem("dyedream_shovel")
+                    .type(ToolType.SHOVEL).durability(1314).miningSpeed(9.0f)
+                    .attackDamage(5.5f).attackSpeed(-3.0f)
+                    .incorrectTag("minecraft:incorrect_for_netherite_tool")
+                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .build();
+    public static final DeferredItem<Item> DYEDREAM_HOE =
+            ItemAPI.toolItem("dyedream_hoe")
+                    .type(ToolType.HOE).durability(1314).miningSpeed(9.0f)
+                    .attackDamage(0.5f).attackSpeed(0.0f)
+                    .incorrectTag("minecraft:incorrect_for_netherite_tool")
+                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .build();
+
+    // === Moltengold 工具 ===
+    public static final DeferredItem<Item> MOLTENGOLD_AXE =
+            ItemAPI.toolItem("moltengold_axe")
+                    .type(ToolType.AXE).durability(131).miningSpeed(4.0f)
+                    .attackDamage(6.0f).attackSpeed(-3.1f)
+                    .incorrectTag("minecraft:incorrect_for_stone_tool")
+                    .repairWith(new ItemStack(Items.COBBLESTONE))
+                    .build();
+    public static final DeferredItem<Item> MOLTENGOLD_SHOVEL =
+            ItemAPI.toolItem("moltengold_shovel")
+                    .type(ToolType.SHOVEL).durability(131).miningSpeed(4.0f)
+                    .attackDamage(3.0f).attackSpeed(-3.0f)
+                    .incorrectTag("minecraft:incorrect_for_stone_tool")
+                    .repairWith(new ItemStack(Items.COBBLESTONE))
+                    .build();
+    public static final DeferredItem<Item> MOLTENGOLD_HOE =
+            ItemAPI.toolItem("moltengold_hoe")
+                    .type(ToolType.HOE).durability(131).miningSpeed(4.0f)
+                    .attackDamage(-1.0f).attackSpeed(0.0f)
+                    .incorrectTag("minecraft:incorrect_for_stone_tool")
+                    .repairWith(new ItemStack(Items.COBBLESTONE))
+                    .build();
+
+    // === Meltdream 工具 ===
+    public static final DeferredItem<Item> MELTDREAM_AXE =
+            ItemAPI.toolItem("meltdream_axe")
+                    .type(ToolType.AXE).durability(250).miningSpeed(6.0f)
+                    .attackDamage(7.0f).attackSpeed(-3.0f)
+                    .incorrectTag("minecraft:incorrect_for_iron_tool")
+                    .repairWith(new ItemStack(Items.IRON_INGOT))
+                    .build();
+    public static final DeferredItem<Item> MELTDREAM_SHOVEL =
+            ItemAPI.toolItem("meltdream_shovel")
+                    .type(ToolType.SHOVEL).durability(250).miningSpeed(6.0f)
+                    .attackDamage(4.0f).attackSpeed(-3.0f)
+                    .incorrectTag("minecraft:incorrect_for_iron_tool")
+                    .repairWith(new ItemStack(Items.IRON_INGOT))
+                    .build();
+    public static final DeferredItem<Item> MELTDREAM_HOE =
+            ItemAPI.toolItem("meltdream_hoe")
+                    .type(ToolType.HOE).durability(250).miningSpeed(6.0f)
+                    .attackDamage(0.0f).attackSpeed(0.0f)
+                    .incorrectTag("minecraft:incorrect_for_iron_tool")
+                    .repairWith(new ItemStack(Items.IRON_INGOT))
+                    .build();
+
+    // === Shadow Erosion 工具 ===
+    public static final DeferredItem<Item> SHADOW_EROSION_AXE =
+            ItemAPI.toolItem("shadow_erosion_axe")
+                    .type(ToolType.AXE).durability(1725).miningSpeed(9.0f)
+                    .attackDamage(9.0f).attackSpeed(-3.0f)
+                    .incorrectTag("minecraft:incorrect_for_netherite_tool")
+                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .build();
+    public static final DeferredItem<Item> SHADOW_EROSION_SHOVEL =
+            ItemAPI.toolItem("shadow_erosion_shovel")
+                    .type(ToolType.SHOVEL).durability(1725).miningSpeed(9.0f)
+                    .attackDamage(5.5f).attackSpeed(-3.0f)
+                    .incorrectTag("minecraft:incorrect_for_netherite_tool")
+                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .build();
+    public static final DeferredItem<Item> SHADOW_EROSION_HOE =
+            ItemAPI.toolItem("shadow_erosion_hoe")
+                    .type(ToolType.HOE).durability(1725).miningSpeed(9.0f)
+                    .attackDamage(0.5f).attackSpeed(0.0f)
+                    .incorrectTag("minecraft:incorrect_for_netherite_tool")
+                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .build();
+
     // ==================== 食物类物品 ====================
 
     public static final DeferredItem<Item> APPLE_JUICE = ITEMS.register("apple_juice",
@@ -961,6 +1077,15 @@ public class PDItems {
             () -> new MeltdreamCrystal0Item(new Item.Properties()));
     public static final DeferredItem<Item> MEMENTO_ITEM_01 = ITEMS.register("memento_item_01",
             () -> new MementoItem01Item(new Item.Properties()));
+    public static final DeferredItem<Item> MEMENTO_ITEM_02 = ITEMS.registerSimpleItem("memento_item_02");
+    public static final DeferredItem<Item> MEMENTO_ITEM_03 = ITEMS.registerSimpleItem("memento_item_03");
+    public static final DeferredItem<Item> MEMENTO_ITEM_04 = ITEMS.registerSimpleItem("memento_item_04");
+    public static final DeferredItem<Item> MEMENTO_ITEM_05 = ITEMS.registerSimpleItem("memento_item_05");
+    public static final DeferredItem<Item> MEMENTO_ITEM_06 = ITEMS.registerSimpleItem("memento_item_06");
+    public static final DeferredItem<Item> MEMENTO_ITEM_07 = ITEMS.registerSimpleItem("memento_item_07");
+    public static final DeferredItem<Item> MEMENTO_ITEM_08 = ITEMS.registerSimpleItem("memento_item_08");
+    public static final DeferredItem<Item> MEMENTO_ITEM_09 = ITEMS.registerSimpleItem("memento_item_09");
+    public static final DeferredItem<Item> MEMENTO_ITEM_10 = ITEMS.registerSimpleItem("memento_item_10");
     public static final DeferredItem<Item> MEMORY_GEM_0 = ITEMS.register("memory_gem_0",
             () -> new MemoryGem0Item(new Item.Properties()));
     public static final DeferredItem<Item> MOSS_PHANTOM_MEMBRANE = ITEMS.register("moss_phantom_membrane",
@@ -1026,7 +1151,7 @@ public class PDItems {
     public static final DeferredItem<Item> GOLD_CHARM = CurioAPI.create("gold_charm").slot(CurioSlot.CHARM).withItemClass(GoldCharmItem::new).register();
     public static final DeferredItem<Item> SEA_CHARM = CurioAPI.create("sea_charm").slot(CurioSlot.CHARM).withItemClass(SeaCharmItem::new).register();
     public static final DeferredItem<Item> TERRA_CHARM = CurioAPI.create("terra_charm").slot(CurioSlot.CHARM).withItemClass(TerraCharmItem::new).register();
-    public static final DeferredItem<Item> BOBOJI_CURIO = CurioAPI.create("boboji_curio").slot(CurioSlot.CHARM).withItemClass(BobojiCurioItem::new).register();
+    public static final DeferredItem<Item> BOBO_PLUME = CurioAPI.create("bobo_plume").slot(CurioSlot.CHARM).withItemClass(BobojiCurioItem::new).register();
     public static final DeferredItem<Item> BRIGHT_BUTTERFLY_CURIO = CurioAPI.create("bright_butterfly_curio").slot(CurioSlot.CHARM).withItemClass(BrightButterflyCurioItem::new).register();
     public static final DeferredItem<Item> CALAIS_SPICE_BOTTLE_CURIO = CurioAPI.create("calais_spice_bottle_curio").slot(CurioSlot.CHARM).withItemClass(CalaisSpiceBottleCurioItem::new).register();
     public static final DeferredItem<Item> DARK_ALLLEGORY_CURIO = CurioAPI.create("dark_alllegory_curio").slot(CurioSlot.CHARM).withItemClass(DarkAlllegoryCurioItem::new).register();
@@ -1551,10 +1676,6 @@ public class PDItems {
             ITEMS.register("debug_wand_picnic_basket_structure",
                     () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "picnic_basket_structure"));
 
-    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_LIFECRYSTAL_CAVE_0 =
-            ITEMS.register("debug_wand_lifecrystal_cave_0",
-                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "lifecrystal_cave_0"));
-
     public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_MELTDREAM_LIQUID_WELL_0 =
             ITEMS.register("debug_wand_meltdream_liquid_well_0",
                     () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "meltdream_liquid_well_0"));
@@ -1597,6 +1718,101 @@ public class PDItems {
     public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_PINKAGARIC =
             ITEMS.register("debug_wand_pinkagaric",
                     () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "patch_pinkagaric_0"));
+
+    // ==================== 染梦世界装饰物调试水晶 ====================
+
+    /**
+     * 调试水晶 - 染梦水晶簇
+     */
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_DYEDREAM_CRYSTAL_CLUSTER =
+            ITEMS.register("debug_wand_dyedream_crystal_cluster",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "dyedream_crystal_cluster"));
+
+    /**
+     * 调试水晶 - 融梦水晶灯柱
+     */
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_MELTDREAM_CRYSTAL_PILLAR =
+            ITEMS.register("debug_wand_meltdream_crystal_pillar",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "meltdream_crystal_pillar"));
+
+    /**
+     * 调试水晶 - 浮空云岛
+     */
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_FLOATING_CLOUD_ISLAND =
+            ITEMS.register("debug_wand_floating_cloud_island",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "floating_cloud_island"));
+
+    /**
+     * 调试水晶 - 方解石水晶花园
+     */
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_CALCITE_CRYSTAL_GARDEN =
+            ITEMS.register("debug_wand_calcite_crystal_garden",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "calcite_crystal_garden"));
+
+    /**
+     * 调试水晶 - 暖水晶山脉
+     */
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_WARM_CRYSTAL_SPIKE =
+            ITEMS.register("debug_wand_warm_crystal_spike",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "warm_crystal_spike"));
+
+    /**
+     * 调试水晶 - 粉丁菇森林
+     */
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_PINKAGARIC_FOREST =
+            ITEMS.register("debug_wand_pinkagaric_forest",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "pinkagaric_forest"));
+
+    // ==================== 染梦世界树木调试水晶 ====================
+
+    /**
+     * 调试水晶 - 染梦树
+     */
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_DYEDREAM_TREE =
+            ITEMS.register("debug_wand_dyedream_tree",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "dyedream_tree"));
+
+    /**
+     * 调试水晶 - 大型染梦树
+     */
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_DYEDREAM_TREE_LARGE =
+            ITEMS.register("debug_wand_dyedream_tree_large",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "dyedream_tree_large"));
+
+    /**
+     * 调试水晶 - 垂枝染梦树
+     */
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_DYEDREAM_TREE_WEEPING =
+            ITEMS.register("debug_wand_dyedream_tree_weeping",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "dyedream_tree_weeping"));
+
+    /**
+     * 调试水晶 - 丛生染梦树
+     */
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_DYEDREAM_TREE_BUSHY =
+            ITEMS.register("debug_wand_dyedream_tree_bushy",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "dyedream_tree_bushy"));
+
+    /**
+     * 调试水晶 - 华丽染梦树
+     */
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_DYEDREAM_TREE_FANCY =
+            ITEMS.register("debug_wand_dyedream_tree_fancy",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "dyedream_tree_fancy"));
+
+    /**
+     * 调试水晶 - 发光染梦树
+     */
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_DYEDREAM_TREE_GLOWING =
+            ITEMS.register("debug_wand_dyedream_tree_glowing",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "dyedream_tree_glowing"));
+
+    /**
+     * 调试水晶 - 冰雪染梦树
+     */
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_DYEDREAM_TREE_ICY =
+            ITEMS.register("debug_wand_dyedream_tree_icy",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "dyedream_tree_icy"));
 
     // ==================== BOSS 相关物品 ====================
 
@@ -1720,6 +1936,58 @@ public class PDItems {
      */
     public static final DeferredItem<Item> AARONCOS_RIGHTHAND_0_SPAWN_EGG =
             EntityAPI.createSpawnEggItem(ITEMS, "aaroncos_righthand_0", PDEntities.AARONCOS_RIGHTHAND_0);
+
+    // ==================== 盔甲套装 ====================
+
+    // === Copper Armor (铜盔甲) ===
+    public static final DeferredItem<Item> COPPER_ARMOR_HELMET = ITEMS.register("copper_armor_helmet",
+            () -> new com.pasterdream.pasterdreammod.item.CopperArmorItem(ArmorItem.Type.HELMET));
+    public static final DeferredItem<Item> COPPER_ARMOR_CHESTPLATE = ITEMS.register("copper_armor_chestplate",
+            () -> new com.pasterdream.pasterdreammod.item.CopperArmorItem(ArmorItem.Type.CHESTPLATE));
+    public static final DeferredItem<Item> COPPER_ARMOR_LEGGINGS = ITEMS.register("copper_armor_leggings",
+            () -> new com.pasterdream.pasterdreammod.item.CopperArmorItem(ArmorItem.Type.LEGGINGS));
+    public static final DeferredItem<Item> COPPER_ARMOR_BOOTS = ITEMS.register("copper_armor_boots",
+            () -> new com.pasterdream.pasterdreammod.item.CopperArmorItem(ArmorItem.Type.BOOTS));
+
+    // === Titanium Armor (钛盔甲) ===
+    public static final DeferredItem<Item> TITANIUM_ARMOR_HELMET = ITEMS.register("titanium_armor_helmet",
+            () -> new com.pasterdream.pasterdreammod.item.TitaniumArmorItem(ArmorItem.Type.HELMET));
+    public static final DeferredItem<Item> TITANIUM_ARMOR_CHESTPLATE = ITEMS.register("titanium_armor_chestplate",
+            () -> new com.pasterdream.pasterdreammod.item.TitaniumArmorItem(ArmorItem.Type.CHESTPLATE));
+    public static final DeferredItem<Item> TITANIUM_ARMOR_LEGGINGS = ITEMS.register("titanium_armor_leggings",
+            () -> new com.pasterdream.pasterdreammod.item.TitaniumArmorItem(ArmorItem.Type.LEGGINGS));
+    public static final DeferredItem<Item> TITANIUM_ARMOR_BOOTS = ITEMS.register("titanium_armor_boots",
+            () -> new com.pasterdream.pasterdreammod.item.TitaniumArmorItem(ArmorItem.Type.BOOTS));
+
+    // === Sculk Armor (潜声盔甲) ===
+    public static final DeferredItem<Item> SCULK_ARMOR_HELMET = ITEMS.register("sculk_armor_helmet",
+            () -> new com.pasterdream.pasterdreammod.item.SculkArmorItem(ArmorItem.Type.HELMET));
+    public static final DeferredItem<Item> SCULK_ARMOR_CHESTPLATE = ITEMS.register("sculk_armor_chestplate",
+            () -> new com.pasterdream.pasterdreammod.item.SculkArmorItem(ArmorItem.Type.CHESTPLATE));
+    public static final DeferredItem<Item> SCULK_ARMOR_LEGGINGS = ITEMS.register("sculk_armor_leggings",
+            () -> new com.pasterdream.pasterdreammod.item.SculkArmorItem(ArmorItem.Type.LEGGINGS));
+    public static final DeferredItem<Item> SCULK_ARMOR_BOOTS = ITEMS.register("sculk_armor_boots",
+            () -> new com.pasterdream.pasterdreammod.item.SculkArmorItem(ArmorItem.Type.BOOTS));
+
+    // === Dyedream Armor (染梦盔甲) ===
+    public static final DeferredItem<Item> DYEDREAM_ARMOR_HELMET = ITEMS.register("dyedream_armor_helmet",
+            () -> new com.pasterdream.pasterdreammod.item.DyedreamArmorItem(ArmorItem.Type.HELMET));
+    public static final DeferredItem<Item> DYEDREAM_ARMOR_CHESTPLATE = ITEMS.register("dyedream_armor_chestplate",
+            () -> new com.pasterdream.pasterdreammod.item.DyedreamArmorItem(ArmorItem.Type.CHESTPLATE));
+    public static final DeferredItem<Item> DYEDREAM_ARMOR_LEGGINGS = ITEMS.register("dyedream_armor_leggings",
+            () -> new com.pasterdream.pasterdreammod.item.DyedreamArmorItem(ArmorItem.Type.LEGGINGS));
+    public static final DeferredItem<Item> DYEDREAM_ARMOR_BOOTS = ITEMS.register("dyedream_armor_boots",
+            () -> new com.pasterdream.pasterdreammod.item.DyedreamArmorItem(ArmorItem.Type.BOOTS));
+
+    // === Qin Armor (Qin盔甲) ===
+    public static final DeferredItem<Item> QIN_ARMOR_HELMET = ITEMS.register("qin_armor_helmet",
+            () -> new com.pasterdream.pasterdreammod.item.QymArmorItem(ArmorItem.Type.HELMET));
+    public static final DeferredItem<Item> QIN_ARMOR_CHESTPLATE = ITEMS.register("qin_armor_chestplate",
+            () -> new com.pasterdream.pasterdreammod.item.QymArmorItem(ArmorItem.Type.CHESTPLATE));
+    public static final DeferredItem<Item> QIN_ARMOR_LEGGINGS = ITEMS.register("qin_armor_leggings",
+            () -> new com.pasterdream.pasterdreammod.item.QymArmorItem(ArmorItem.Type.LEGGINGS));
+    public static final DeferredItem<Item> QIN_ARMOR_BOOTS = ITEMS.register("qin_armor_boots",
+            () -> new com.pasterdream.pasterdreammod.item.QymArmorItem(ArmorItem.Type.BOOTS));
 
     /**
      * 静态初始化块 —— 输出所有物品注册的统计信息

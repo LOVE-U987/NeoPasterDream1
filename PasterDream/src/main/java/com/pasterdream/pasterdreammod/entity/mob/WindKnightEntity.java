@@ -1,12 +1,11 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -19,23 +18,22 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
-import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
 
 /**
  * 风之骑士 (Wind Knight) — 地面敌对生物
@@ -48,28 +46,13 @@ import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
  * 动画：
  * - movement: idle / walk
  * - attacking: 触发式攻击动画
- * - procedure: 过程动画
  */
-public class WindKnightEntity extends Monster implements GeoEntity {
-
-    private static final EntityDataAccessor<Boolean> SHOOT =
-            SynchedEntityData.defineId(WindKnightEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<String> ANIMATION =
-            SynchedEntityData.defineId(WindKnightEntity.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<String> TEXTURE =
-            SynchedEntityData.defineId(WindKnightEntity.class, EntityDataSerializers.STRING);
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class WindKnightEntity extends GeckoLibMobEntity {
 
     /** 攻击挥动标记（供动画系统使用） */
     private boolean swinging;
     /** 上一次挥动的时间 */
     private long lastSwing;
-    /** 过程动画名称（"empty" 表示无过程动画） */
-    public String animationprocedure = "empty";
-
-    /** 客户端 procedure 动画处理器 */
-    private final ProcedureAnimationHandler procAnim = new ProcedureAnimationHandler();
 
     /** AOE爆炸技能冷却计时器 */
     private int aoeCooldown = 0;
@@ -80,9 +63,19 @@ public class WindKnightEntity extends Monster implements GeoEntity {
      * @param type  实体类型
      * @param level 世界实例
      */
-    public WindKnightEntity(EntityType<? extends Monster> type, Level level) {
+    public WindKnightEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
         this.xpReward = 32;
+    }
+
+    /**
+     * 返回默认纹理名称
+     *
+     * @return 默认纹理 "wind_knight"
+     */
+    @Override
+    protected String getDefaultTexture() {
+        return "wind_knight";
     }
 
     // ======================== 同步数据 ========================
@@ -90,45 +83,6 @@ public class WindKnightEntity extends Monster implements GeoEntity {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(SHOOT, false);
-        builder.define(ANIMATION, "undefined");
-        builder.define(TEXTURE, "wind_knight");
-    }
-
-    /**
-     * 设置纹理名称
-     *
-     * @param texture 纹理名称
-     */
-    public void setTexture(String texture) {
-        this.entityData.set(TEXTURE, texture);
-    }
-
-    /**
-     * 获取当前纹理名称
-     *
-     * @return 纹理名称
-     */
-    public String getTexture() {
-        return this.entityData.get(TEXTURE);
-    }
-
-    /**
-     * 获取同步的动画名称
-     *
-     * @return 动画名称
-     */
-    public String getSyncedAnimation() {
-        return this.entityData.get(ANIMATION);
-    }
-
-    /**
-     * 设置同步的动画名称
-     *
-     * @param animation 动画名称
-     */
-    public void setAnimation(String animation) {
-        this.entityData.set(ANIMATION, animation);
     }
 
     // ======================== 属性 ========================
@@ -139,7 +93,7 @@ public class WindKnightEntity extends Monster implements GeoEntity {
      * @return 属性构造器
      */
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes()
+        return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 150)
                 .add(Attributes.ARMOR, 10)
                 .add(Attributes.ATTACK_DAMAGE, 20)
@@ -193,15 +147,11 @@ public class WindKnightEntity extends Monster implements GeoEntity {
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putString("Texture", this.getTexture());
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        if (compound.contains("Texture")) {
-            this.setTexture(compound.getString("Texture"));
-        }
     }
 
     // ======================== 每 tick 更新 ========================
@@ -298,25 +248,10 @@ public class WindKnightEntity extends Monster implements GeoEntity {
         return PlayState.CONTINUE;
     }
 
-    /**
-     * 过程动画控制器（用于触发一次性动画）
-     */
-    private PlayState procedurePredicate(AnimationState<WindKnightEntity> state) {
-        return procAnim.predicate(state,
-                level().isClientSide(),
-                this::getSyncedAnimation,
-                () -> setAnimation("empty"));
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        super.registerControllers(controllers);
         controllers.add(new AnimationController<>(this, "movement", 4, this::movementPredicate));
         controllers.add(new AnimationController<>(this, "attacking", 4, this::attackingPredicate));
-        controllers.add(new AnimationController<>(this, "procedure", 4, this::procedurePredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }

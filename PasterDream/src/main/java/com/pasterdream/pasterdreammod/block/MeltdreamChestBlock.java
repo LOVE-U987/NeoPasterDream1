@@ -249,11 +249,17 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
      */
     private static void fillItems(ItemStackHandler handler, LootEntry[] pool, RandomSource random, Player player, int quality) {
         if (quality == 3) {
-            // 传说品质：只掉落 1 个融梦水晶碎片，其他格为空
+            // 传说品质：第 9 格固定 1 个融梦水晶碎片，前 8 格掉落传说稀有度物品
             for (int i = 0; i < 8; i++) {
                 handler.setStackInSlot(i, ItemStack.EMPTY);
             }
             handler.setStackInSlot(8, new ItemStack(PDItems.MELTDREAM_CRYSTAL_0.get()));
+            // 额外：尝试在随机前 8 格中掉落一个玩偶（优先玩家未拥有的）
+            ItemStack doll = rollDoll(player, random);
+            if (!doll.isEmpty()) {
+                int slot = random.nextInt(8);
+                handler.setStackInSlot(slot, doll);
+            }
         } else if (quality == 1) {
             // 普通品质：8 个随机食物，不放融梦水晶碎片
             for (int i = 0; i < 8; i++) {
@@ -297,6 +303,30 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
                 .toList();
         List<Item> pool2 = unowned.isEmpty() ? allDiscs : unowned;
         return new ItemStack(pool2.get(random.nextInt(pool2.size())));
+    }
+
+    /**
+     * 从三个玩偶/雕像中随机选取一个 —— 优先选玩家尚未拥有的，
+     * 若全部拥有则不额外掉落
+     *
+     * @param player 打开宝箱的玩家
+     * @param random 随机数源
+     * @return 选中的玩偶 ItemStack，若已全部拥有则返回空
+     */
+    private static ItemStack rollDoll(Player player, net.minecraft.util.RandomSource random) {
+        List<Item> allDolls = List.of(
+                PDItems.QIN_DOLL_0.get(),
+                PDItems.LITTLE_PURPLE_DOLL_0.get(),
+                PDItems.GOLDEN_FOX_SCULPTURE.get()
+        );
+        // 筛选玩家背包中未拥有的玩偶
+        List<Item> unowned = allDolls.stream()
+                .filter(doll -> player.getInventory().countItem(doll) <= 0)
+                .toList();
+        if (unowned.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        return new ItemStack(unowned.get(random.nextInt(unowned.size())));
     }
 
     // ==================== 刻调度（已移除 — 由 BlockEntity.serverTick 接管） ====================
@@ -385,7 +415,7 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
                     new LootEntry(new ItemStack(PDItems.MELTDREAM_CRYSTAL_0.get(), 1), 20),
                     new LootEntry(new ItemStack(PDItems.SHADOW_EROSION_SWORD.get(), 1), 18),
                     new LootEntry(new ItemStack(PDItems.ALLKINDS_RING.get(), 1), 15),
-                    new LootEntry(new ItemStack(PDItems.BOBOJI_CURIO.get(), 1), 15),
+                    new LootEntry(new ItemStack(PDItems.BOBO_PLUME.get(), 1), 15),
                     new LootEntry(new ItemStack(PDItems.DYEDREAM_UPGRADE.get(), 1), 12),
                     new LootEntry(new ItemStack(PDItems.TITANIUM_UPGRADE.get(), 1), 12),
                     new LootEntry(new ItemStack(PDItems.SCULK_UPGRADE.get(), 1), 10),

@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/yin_ying_shu_jia__top",
-    "up": "pasterdream:block/yin_ying_shu_jia__top",
-    "north": "pasterdream:block/yin_ying_shu_jia_2",
-    "east": "pasterdream:block/yin_ying_shu_jia_2",
-    "south": "pasterdream:block/yin_ying_shu_jia_2",
-    "west": "pasterdream:block/yin_ying_shu_jia_2",
-    "particle": "pasterdream:block/yin_ying_shu_jia__top"
+    "down": "pasterdream:block/shadow_shelf_top",
+    "up": "pasterdream:block/shadow_shelf_top",
+    "north": "pasterdream:block/shadow_shelf_2",
+    "east": "pasterdream:block/shadow_shelf_2",
+    "south": "pasterdream:block/shadow_shelf_2",
+    "west": "pasterdream:block/shadow_shelf_2",
+    "particle": "pasterdream:block/shadow_shelf_top"
   },
   "render_type": "solid"
 }

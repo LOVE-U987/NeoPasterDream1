@@ -436,6 +436,15 @@ public class PDCreativeTabs {
                         output.accept(PDItems.BLUE_DEW.get());
                         output.accept(PDItems.RED_DEW_0.get());
                         output.accept(PDItems.MEMENTO_ITEM_01.get());
+                        output.accept(PDItems.MEMENTO_ITEM_02.get());
+                        output.accept(PDItems.MEMENTO_ITEM_03.get());
+                        output.accept(PDItems.MEMENTO_ITEM_04.get());
+                        output.accept(PDItems.MEMENTO_ITEM_05.get());
+                        output.accept(PDItems.MEMENTO_ITEM_06.get());
+                        output.accept(PDItems.MEMENTO_ITEM_07.get());
+                        output.accept(PDItems.MEMENTO_ITEM_08.get());
+                        output.accept(PDItems.MEMENTO_ITEM_09.get());
+                        output.accept(PDItems.MEMENTO_ITEM_10.get());
                         output.accept(PDItems.MEMORY_GEM_0.get());
                         output.accept(PDItems.BROKENNOTES_0.get());
                         output.accept(PDItems.UNKNOWNNOTES_0.get());
@@ -444,10 +453,54 @@ public class PDCreativeTabs {
                         output.accept(PDItems.GUIDING_DRUG.get());
                         output.accept(PDItems.WHITE_COROLLA.get());
                         output.accept(PDItems.PALE_BONENEEDLE.get());
+                        // 玩偶/雕像
+                        output.accept(PDItems.QIN_DOLL_0.get());
+                        output.accept(PDItems.LITTLE_PURPLE_DOLL_0.get());
+                        output.accept(PDItems.GOLDEN_FOX_SCULPTURE.get());
                     })
                     .build());
 
-    // ==================== 6. 武器工具 ====================
+    // ==================== 6. 盔甲装备 ====================
+
+    /**
+     * 盔甲装备标签页
+     * 包含所有盔甲套装及装备配件
+     */
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ARMOR_TAB = TABS.register("armor_tab",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.pasterdream.armor_tab"))
+                    .icon(() -> new ItemStack(PDItems.DYEDREAM_ARMOR_CHESTPLATE.get()))
+                    .withTabsBefore(SOUVENIR_TAB.getKey())
+                    .displayItems((parameters, output) -> {
+                        // 铜盔甲套装
+                        output.accept(PDItems.COPPER_ARMOR_HELMET.get());
+                        output.accept(PDItems.COPPER_ARMOR_CHESTPLATE.get());
+                        output.accept(PDItems.COPPER_ARMOR_LEGGINGS.get());
+                        output.accept(PDItems.COPPER_ARMOR_BOOTS.get());
+                        // 钛盔甲套装
+                        output.accept(PDItems.TITANIUM_ARMOR_HELMET.get());
+                        output.accept(PDItems.TITANIUM_ARMOR_CHESTPLATE.get());
+                        output.accept(PDItems.TITANIUM_ARMOR_LEGGINGS.get());
+                        output.accept(PDItems.TITANIUM_ARMOR_BOOTS.get());
+                        // 潜声盔甲套装
+                        output.accept(PDItems.SCULK_ARMOR_HELMET.get());
+                        output.accept(PDItems.SCULK_ARMOR_CHESTPLATE.get());
+                        output.accept(PDItems.SCULK_ARMOR_LEGGINGS.get());
+                        output.accept(PDItems.SCULK_ARMOR_BOOTS.get());
+                        // 染梦盔甲套装
+                        output.accept(PDItems.DYEDREAM_ARMOR_HELMET.get());
+                        output.accept(PDItems.DYEDREAM_ARMOR_CHESTPLATE.get());
+                        output.accept(PDItems.DYEDREAM_ARMOR_LEGGINGS.get());
+                        output.accept(PDItems.DYEDREAM_ARMOR_BOOTS.get());
+                        // QYM盔甲套装
+                        output.accept(PDItems.QIN_ARMOR_HELMET.get());
+                        output.accept(PDItems.QIN_ARMOR_CHESTPLATE.get());
+                        output.accept(PDItems.QIN_ARMOR_LEGGINGS.get());
+                        output.accept(PDItems.QIN_ARMOR_BOOTS.get());
+                    })
+                    .build());
+
+    // ==================== 7. 武器工具 ====================
 
     /**
      * 武器工具标签页
@@ -457,7 +510,7 @@ public class PDCreativeTabs {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.pasterdream.weapon_tab"))
                     .icon(() -> new ItemStack(PDItems.MOLTENGOLD_SWORD.get()))
-                    .withTabsBefore(SOUVENIR_TAB.getKey())
+                    .withTabsBefore(ARMOR_TAB.getKey())
                     .displayItems((parameters, output) -> {
                         // 基础材料
                         output.accept(PDItems.TITANIUM_INGOT.get());
@@ -538,6 +591,22 @@ public class PDCreativeTabs {
                         output.accept(PDItems.TITANIUM_AXE.get());
                         output.accept(PDItems.TITANIUM_SHOVEL.get());
                         output.accept(PDItems.TITANIUM_HOE.get());
+                        // 染梦工具
+                        output.accept(PDItems.DYEDREAM_AXE.get());
+                        output.accept(PDItems.DYEDREAM_SHOVEL.get());
+                        output.accept(PDItems.DYEDREAM_HOE.get());
+                        // 熔金工具
+                        output.accept(PDItems.MOLTENGOLD_AXE.get());
+                        output.accept(PDItems.MOLTENGOLD_SHOVEL.get());
+                        output.accept(PDItems.MOLTENGOLD_HOE.get());
+                        // 融梦工具
+                        output.accept(PDItems.MELTDREAM_AXE.get());
+                        output.accept(PDItems.MELTDREAM_SHOVEL.get());
+                        output.accept(PDItems.MELTDREAM_HOE.get());
+                        // 蚀影工具
+                        output.accept(PDItems.SHADOW_EROSION_AXE.get());
+                        output.accept(PDItems.SHADOW_EROSION_SHOVEL.get());
+                        output.accept(PDItems.SHADOW_EROSION_HOE.get());
                         output.accept(PDItems.GLASS_CUP.get());
                         output.accept(PDItems.DOUGH.get());
                         output.accept(PDItems.RYESEED.get());
@@ -562,7 +631,7 @@ public class PDCreativeTabs {
                     })
                     .build());
 
-    // ==================== 7. 食物饮品 ====================
+    // ==================== 8. 食物饮品 ====================
 
     /**
      * 食物饮品标签页
@@ -631,7 +700,7 @@ public class PDCreativeTabs {
                     })
                     .build());
 
-    // ==================== 8. 饰品装备 ====================
+    // ==================== 9. 饰品装备 ====================
 
     /**
      * 饰品装备标签页
@@ -675,7 +744,7 @@ public class PDCreativeTabs {
                         output.accept(PDItems.GARLAND.get());
                         output.accept(PDItems.PAPER_PLANE.get());
                         output.accept(PDItems.DUKE_COIN_CURIO.get());
-                        output.accept(PDItems.BOBOJI_CURIO.get());
+                        output.accept(PDItems.BOBO_PLUME.get());
                         output.accept(PDItems.BRIGHT_BUTTERFLY_CURIO.get());
                         output.accept(PDItems.LIGHT_BUTTERFLY_CURIO.get());
                         output.accept(PDItems.ICESHADOW_CURIO.get());
@@ -763,6 +832,21 @@ public class PDCreativeTabs {
                         output.accept(PDItems.DEBUG_WAND_LOTUS.get());
                         output.accept(PDItems.DEBUG_WAND_LILY_PAD.get());
                         output.accept(PDItems.DEBUG_WAND_PINKAGARIC.get());
+                        // 染梦世界装饰物调试水晶
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_CRYSTAL_CLUSTER.get());
+                        output.accept(PDItems.DEBUG_WAND_MELTDREAM_CRYSTAL_PILLAR.get());
+                        output.accept(PDItems.DEBUG_WAND_FLOATING_CLOUD_ISLAND.get());
+                        output.accept(PDItems.DEBUG_WAND_CALCITE_CRYSTAL_GARDEN.get());
+                        output.accept(PDItems.DEBUG_WAND_WARM_CRYSTAL_SPIKE.get());
+                        output.accept(PDItems.DEBUG_WAND_PINKAGARIC_FOREST.get());
+                        // 染梦世界树木调试水晶
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_LARGE.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_WEEPING.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_BUSHY.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_FANCY.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_GLOWING.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_ICY.get());
                         // 竞技场结构调试法杖
                         output.accept(PDItems.DEBUG_WAND_AARONCOS_ARENA.get());
                         // P0 移植遗迹调试水晶
@@ -794,7 +878,7 @@ public class PDCreativeTabs {
                         output.accept(PDItems.DEBUG_WAND_GARDEN_DECRYPTION_1.get());
                         output.accept(PDItems.DEBUG_WAND_GARDEN_DECRYPTION_2.get());
                         output.accept(PDItems.DEBUG_WAND_PICNIC_BASKET.get());
-                        output.accept(PDItems.DEBUG_WAND_LIFECRYSTAL_CAVE_0.get());
+                        // output.accept(PDItems.DEBUG_WAND_LIFECRYSTAL_CAVE_0.get()); // 未注册
                         output.accept(PDItems.DEBUG_WAND_MELTDREAM_LIQUID_WELL_0.get());
                         output.accept(PDItems.DEBUG_WAND_MELTDREAM_LIQUID_WELL_1.get());
                         // BOSS 调试物品

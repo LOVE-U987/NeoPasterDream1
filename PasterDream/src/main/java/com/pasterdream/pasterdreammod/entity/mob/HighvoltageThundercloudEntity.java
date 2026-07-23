@@ -1,10 +1,8 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMonsterEntity;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -12,7 +10,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -22,19 +19,12 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.SpectralArrow;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
-
-import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
 
 /**
  * 高压雷云 (Highvoltage Thundercloud) — 飞行敌对生物
@@ -46,22 +36,7 @@ import com.pasterdream.pasterdreammod.api.entity.anim.ProcedureAnimationHandler;
  * <p>
  * 渲染：GeckoLib 动画实体，始终播放 idle 动画
  */
-public class HighvoltageThundercloudEntity extends Monster implements GeoEntity {
-
-    private static final EntityDataAccessor<Boolean> SHOOT =
-            SynchedEntityData.defineId(HighvoltageThundercloudEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<String> ANIMATION =
-            SynchedEntityData.defineId(HighvoltageThundercloudEntity.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<String> TEXTURE =
-            SynchedEntityData.defineId(HighvoltageThundercloudEntity.class, EntityDataSerializers.STRING);
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    /** 客户端 procedure 动画处理器 */
-    private final ProcedureAnimationHandler procAnim = new ProcedureAnimationHandler();
-
-    /** 过程动画名称（"empty" 表示无过程动画） */
-    public String animationprocedure = "empty";
+public class HighvoltageThundercloudEntity extends GeckoLibMonsterEntity {
 
     /** 射击冷却计时器 */
     private int shootCooldown = 0;
@@ -79,50 +54,21 @@ public class HighvoltageThundercloudEntity extends Monster implements GeoEntity 
         this.setNoGravity(true);
     }
 
+    /**
+     * 返回默认纹理名称
+     *
+     * @return 默认纹理名
+     */
+    @Override
+    protected String getDefaultTexture() {
+        return "highvoltage_thundercloud";
+    }
+
     // ======================== 同步数据 ========================
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(SHOOT, false);
-        builder.define(ANIMATION, "undefined");
-        builder.define(TEXTURE, "highvoltage_thundercloud");
-    }
-
-    /**
-     * 设置纹理名称
-     *
-     * @param texture 纹理名称
-     */
-    public void setTexture(String texture) {
-        this.entityData.set(TEXTURE, texture);
-    }
-
-    /**
-     * 获取当前纹理名称
-     *
-     * @return 纹理名称
-     */
-    public String getTexture() {
-        return this.entityData.get(TEXTURE);
-    }
-
-    /**
-     * 获取同步的动画名称
-     *
-     * @return 动画名称
-     */
-    public String getSyncedAnimation() {
-        return this.entityData.get(ANIMATION);
-    }
-
-    /**
-     * 设置同步的动画名称
-     *
-     * @param animation 动画名称
-     */
-    public void setAnimation(String animation) {
-        this.entityData.set(ANIMATION, animation);
     }
 
     // ======================== 导航 ========================
@@ -212,22 +158,6 @@ public class HighvoltageThundercloudEntity extends Monster implements GeoEntity 
         return super.hurt(source, amount);
     }
 
-    // ======================== NBT 持久化 ========================
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString("Texture", this.getTexture());
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.contains("Texture")) {
-            this.setTexture(compound.getString("Texture"));
-        }
-    }
-
     // ======================== 飞行行为 ========================
 
     @Override
@@ -302,6 +232,9 @@ public class HighvoltageThundercloudEntity extends Monster implements GeoEntity 
     /**
      * 移动状态动画控制器
      * 高压雷云始终播放 idle 循环动画
+     *
+     * @param state 动画状态
+     * @return 播放状态
      */
     private PlayState movementPredicate(AnimationState<HighvoltageThundercloudEntity> state) {
         if (this.getSyncedAnimation().equals("empty")) {
@@ -310,24 +243,9 @@ public class HighvoltageThundercloudEntity extends Monster implements GeoEntity 
         return PlayState.STOP;
     }
 
-    /**
-     * 过程动画控制器（用于触发一次性动画）
-     */
-    private PlayState procedurePredicate(AnimationState<HighvoltageThundercloudEntity> state) {
-        return procAnim.predicate(state,
-                level().isClientSide(),
-                this::getSyncedAnimation,
-                () -> setAnimation("empty"));
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        super.registerControllers(controllers);
         controllers.add(new AnimationController<>(this, "movement", 4, this::movementPredicate));
-        controllers.add(new AnimationController<>(this, "procedure", 4, this::procedurePredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }

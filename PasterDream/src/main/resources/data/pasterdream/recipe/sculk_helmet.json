@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:diamond_helmet"
+    },
+    {
+      "item": "pasterdream:sculk_heart"
+    },
+    {
+      "item": "pasterdream:sculk_heart"
+    },
+    {
+      "item": "pasterdream:blackstick"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:sculk_armor_helmet",
+    "count": 1
+  }
+}

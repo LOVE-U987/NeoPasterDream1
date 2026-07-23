@@ -1,6 +1,6 @@
-{
+﻿{
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/xue_tu_jiao_xiang_lian_"
+    "layer0": "pasterdream:item/blood_rabbit_necklace"
   }
 }

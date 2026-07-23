@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/an_ying_gao_lu_he_xin__top",
-    "up": "pasterdream:block/an_ying_gao_lu_he_xin__top",
-    "north": "pasterdream:block/an_ying_gao_lu_he_xin_",
-    "east": "pasterdream:block/an_ying_gao_lu_he_xin_",
-    "south": "pasterdream:block/an_ying_gao_lu_he_xin_",
-    "west": "pasterdream:block/an_ying_gao_lu_he_xin_",
-    "particle": "pasterdream:block/an_ying_gao_lu_he_xin__top"
+    "down": "pasterdream:block/shadow_blast_furnace_core_top",
+    "up": "pasterdream:block/shadow_blast_furnace_core_top",
+    "north": "pasterdream:block/shadow_blast_furnace_core",
+    "east": "pasterdream:block/shadow_blast_furnace_core",
+    "south": "pasterdream:block/shadow_blast_furnace_core",
+    "west": "pasterdream:block/shadow_blast_furnace_core",
+    "particle": "pasterdream:block/shadow_blast_furnace_core_top"
   },
   "render_type": "solid"
 }

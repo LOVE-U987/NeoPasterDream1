@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:iron_axe"
+    },
+    {
+      "item": "pasterdream:meltdream_crystal"
+    },
+    {
+      "item": "pasterdream:meltdream_crystal"
+    },
+    {
+      "item": "pasterdream:blackstick"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:meltdream_axe",
+    "count": 1
+  }
+}

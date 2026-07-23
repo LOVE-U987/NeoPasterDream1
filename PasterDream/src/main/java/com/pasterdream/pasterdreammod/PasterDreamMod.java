@@ -14,6 +14,7 @@ import com.pasterdream.pasterdreammod.registry.PDFluids;
 import com.pasterdream.pasterdreammod.registry.PDFluidsType;
 import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
 import com.pasterdream.pasterdreammod.registry.PDItems;
+import com.pasterdream.pasterdreammod.registry.PDArmorMaterials;
 import com.pasterdream.pasterdreammod.registry.PDMenus;
 import com.pasterdream.pasterdreammod.registry.ModDecorations;
 import com.pasterdream.pasterdreammod.registry.PDRuinsRegistration;
@@ -76,6 +77,9 @@ public class PasterDreamMod {
 
         // 注册主模块物品
         PDItems.ITEMS.register(modEventBus);
+
+        // 注册盔甲材料
+        PDArmorMaterials.ARMOR_MATERIALS.register(modEventBus);
 
         // 触发 PDBlockEntities 类加载，确保方块实体静态字段填充到 BlockEntityAPI.REGISTRY
         // BlockEntityAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册

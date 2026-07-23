@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:diamond_boots"
+    },
+    {
+      "item": "pasterdream:dyedream_ingot"
+    },
+    {
+      "item": "pasterdream:dyedream_ingot"
+    },
+    {
+      "item": "pasterdream:blackstick"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:dyedream_armor_boots",
+    "count": 1
+  }
+}

@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/song_dong_an_ying_di_lao_qiang_bi_",
-    "up": "pasterdream:block/song_dong_an_ying_di_lao_qiang_bi_",
-    "north": "pasterdream:block/song_dong_an_ying_di_lao_qiang_bi_",
-    "east": "pasterdream:block/song_dong_an_ying_di_lao_qiang_bi_",
-    "south": "pasterdream:block/song_dong_an_ying_di_lao_qiang_bi_",
-    "west": "pasterdream:block/song_dong_an_ying_di_lao_qiang_bi_",
-    "particle": "pasterdream:block/song_dong_an_ying_di_lao_qiang_bi_"
+    "down": "pasterdream:block/loose_shadow_dungeon_wall",
+    "up": "pasterdream:block/loose_shadow_dungeon_wall",
+    "north": "pasterdream:block/loose_shadow_dungeon_wall",
+    "east": "pasterdream:block/loose_shadow_dungeon_wall",
+    "south": "pasterdream:block/loose_shadow_dungeon_wall",
+    "west": "pasterdream:block/loose_shadow_dungeon_wall",
+    "particle": "pasterdream:block/loose_shadow_dungeon_wall"
   },
   "render_type": "solid"
 }

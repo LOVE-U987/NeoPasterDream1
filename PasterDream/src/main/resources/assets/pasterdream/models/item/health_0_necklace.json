@@ -1,6 +1,6 @@
-{
+﻿{
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/sheng_ming_xiang_lian_"
+    "layer0": "pasterdream:item/life_necklace"
   }
 }

@@ -122,9 +122,16 @@ public class DyedreamDecorations {
                 .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 5)
                 .build();
 
+        SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
+                .add(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 60)
+                .add(PDBlocks.DYEDREAM_BUD_1.get().defaultBlockState(), 25)
+                .add(PDBlocks.DYEDREAM_BUD_2.get().defaultBlockState(), 15)
+                .build();
+
         DecorationBuilder.create()
                 .type(DecorationType.SCATTER)
                 .body(new WeightedStateProvider(gardenBodyList))
+                .crystal(0.15f, new WeightedStateProvider(crystalList))
                 .clusterSize(8)
                 .checkHang(true)
                 .replaceable(BlockPredicate.anyOf(
@@ -190,9 +197,16 @@ public class DyedreamDecorations {
                 .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 10)
                 .build();
 
+        SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
+                .add(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 50)
+                .add(PDBlocks.DYEDREAM_BUD_1.get().defaultBlockState(), 30)
+                .add(PDBlocks.DYEDREAM_BUD_2.get().defaultBlockState(), 20)
+                .build();
+
         DecorationBuilder.create()
                 .type(DecorationType.SCATTER)
                 .body(new WeightedStateProvider(mushroomBodyList))
+                .crystal(0.12f, new WeightedStateProvider(crystalList))
                 .clusterSize(10)
                 .checkHang(true)
                 .replaceable(BlockPredicate.anyOf(

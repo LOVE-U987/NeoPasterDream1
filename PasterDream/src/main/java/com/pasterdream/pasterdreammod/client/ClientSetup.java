@@ -9,6 +9,7 @@ import com.pasterdream.pasterdreammod.client.particle.DreamSporeParticle;
 import com.pasterdream.pasterdreammod.client.particle.StardustParticle;
 import com.pasterdream.pasterdreammod.client.renderer.RendererRegistry;
 import com.pasterdream.pasterdreammod.client.screen.DreamCauldronScreen;
+import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.client.screen.DyedreamDeskScreen;
 import com.pasterdream.pasterdreammod.client.screen.MeltdreamChestScreen;
 import com.pasterdream.pasterdreammod.client.screen.ShadowChestScreen;
@@ -22,12 +23,15 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -79,6 +83,25 @@ public class ClientSetup {
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(Modelslime.LAYER_LOCATION, Modelslime::createBodyLayer);
         PasterDreamMod.LOGGER.debug("[ClientSetup] 注册模型层: {}", Modelslime.LAYER_LOCATION);
+    }
+
+    /**
+     * 注册树叶颜色提供者，使树叶根据群系显示不同颜色
+     *
+     * @param event 颜色处理器注册事件
+     */
+    @SubscribeEvent
+    public static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
+        event.register((state, level, pos, tintIndex) -> {
+            if (level == null || pos == null) {
+                return -145678;
+            }
+            if (level instanceof Level) {
+                return ((Level) level).getBiome(pos).value().getFoliageColor();
+            }
+            return -145678;
+        }, PDBlocks.DYEDREAM_LEAVES.get());
+        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册树叶颜色提供者: dyedream_leaves");
     }
 
     /**

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:simple_block",
+  "config": {
+    "to_place": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "data": {
+            "Name": "pasterdream:dyedream_bud_0"
+          },
+          "weight": 33
+        },
+        {
+          "data": {
+            "Name": "pasterdream:dyedream_bud_1"
+          },
+          "weight": 33
+        },
+        {
+          "data": {
+            "Name": "pasterdream:dyedream_bud_2"
+          },
+          "weight": 34
+        }
+      ]
+    }
+  }
+}

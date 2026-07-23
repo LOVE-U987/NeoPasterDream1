@@ -146,6 +146,7 @@ public class OceanDecorations {
         DecorationBuilder.create()
                 .type(DecorationType.CUSTOM)
                 .body(new WeightedStateProvider(cloudBodyList))
+                .top(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get())
                 .customGenerator("cloud_bubble")
                 .regionCheck(true, 0.3f)
                 .replaceable(BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.CAVE_AIR, Blocks.WATER))
@@ -302,9 +303,16 @@ public class OceanDecorations {
                 .add(PDBlocks.DYEDREAM_PACKED_ICE.get().defaultBlockState(), 25)
                 .build();
 
+        SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
+                .add(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 50)
+                .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 30)
+                .add(PDBlocks.DYEDREAM_BUD_1.get().defaultBlockState(), 20)
+                .build();
+
         DecorationBuilder.create()
                 .type(DecorationType.SCATTER)
                 .body(new WeightedStateProvider(crystalBodyList))
+                .crystal(0.15f, new WeightedStateProvider(crystalList))
                 .clusterSize(6)
                 .regionCheck(true, 0.3f)
                 .replaceable(BlockPredicate.anyOf(

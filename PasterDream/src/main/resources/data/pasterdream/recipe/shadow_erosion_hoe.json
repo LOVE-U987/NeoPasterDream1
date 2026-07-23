@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:diamond_hoe"
+    },
+    {
+      "item": "pasterdream:shadow_erosion_sword_embryo"
+    },
+    {
+      "item": "pasterdream:shadow_erosion_sword_embryo"
+    },
+    {
+      "item": "pasterdream:blackstick"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:shadow_erosion_hoe",
+    "count": 1
+  }
+}

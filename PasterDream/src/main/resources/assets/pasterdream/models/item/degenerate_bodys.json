@@ -1,6 +1,6 @@
-{
+﻿{
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/duo_luo_zhe_zhi_yin_"
+    "layer0": "pasterdream:item/degenerate_guidance"
   }
 }

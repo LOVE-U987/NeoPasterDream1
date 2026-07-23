@@ -1,4 +1,4 @@
-{
+﻿{
   "parent": "block/cube",
   "textures": {
     "down": "pasterdream:block/air",
@@ -7,7 +7,7 @@
     "east": "pasterdream:block/air",
     "south": "pasterdream:block/air",
     "west": "pasterdream:block/air",
-    "particle": "pasterdream:block/yin_ying_shi_wa_"
+    "particle": "pasterdream:block/shadow_stone_tile"
   },
   "render_type": "cutout"
 }

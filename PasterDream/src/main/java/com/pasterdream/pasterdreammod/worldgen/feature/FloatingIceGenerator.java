@@ -55,7 +55,8 @@ public class FloatingIceGenerator implements ICustomDecorationGenerator {
                 for (int dy = -localBelow; dy <= localAbove; dy++) {
                     BlockPos pos = new BlockPos(centerX + dx, seaLevel + dy, centerZ + dz);
                     if (pos.getY() < level.getMinBuildHeight()) continue;
-                    if (!WorldGenUtils.isWithinGenerationBounds(origin, pos)) continue;
+                    // 使用扩展版边界检查（允许±1区块），避免靠近区块边界时冰盘被截断
+                    if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) continue;
                     if (!WorldGenUtils.isReplaceable(level, config.replaceable(), pos)) continue;
 
                     if (dy > -localBelow) {
@@ -87,7 +88,7 @@ public class FloatingIceGenerator implements ICustomDecorationGenerator {
             BlockPos cPos = new BlockPos(cx, seaLevel + thicknessAbove + 1, cz);
             if (!WorldGenUtils.isReplaceable(level, config.replaceable(), cPos)) continue;
             if (!WorldGenUtils.isSolidSurface(level, cPos.below())) continue;
-            if (!WorldGenUtils.isWithinGenerationBounds(origin, cPos)) continue;
+            if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, cPos, 1)) continue;
             level.setBlock(cPos, PDBlocks.ICE_BUD_0.get().defaultBlockState(), 3);
         }
 
@@ -117,7 +118,7 @@ public class FloatingIceGenerator implements ICustomDecorationGenerator {
             BlockPos gPos = new BlockPos(gx, gy + 1, gz);
             BlockState existing = level.getBlockState(gPos);
             if (!existing.isAir() && !existing.liquid()) continue;
-            if (!WorldGenUtils.isWithinGenerationBounds(origin, gPos)) continue;
+            if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, gPos, 1)) continue;
             level.setBlock(gPos, PDBlocks.ICE_BUD_0.get().defaultBlockState(), 3);
         }
     }

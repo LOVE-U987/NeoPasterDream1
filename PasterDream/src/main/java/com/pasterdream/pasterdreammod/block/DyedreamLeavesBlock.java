@@ -26,6 +26,9 @@ public class DyedreamLeavesBlock extends LeavesBlock {
 
     /**
      * 使用染梦树叶默认属性
+     * <p>
+     * 通过覆写 {@link #getTintColor(BlockState, BlockGetter, BlockPos, int)} 方法实现群系颜色变化，
+     * 使树叶在不同群系中呈现不同颜色。颜色由生物群系的 {@code foliage_color} 属性决定。
      */
     public DyedreamLeavesBlock() {
         super(BlockBehaviour.Properties.of()
