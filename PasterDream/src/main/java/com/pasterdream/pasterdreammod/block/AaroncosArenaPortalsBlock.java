@@ -112,7 +112,7 @@ public class AaroncosArenaPortalsBlock extends SlabBlock {
                 for (int dy = -1; dy <= 0; dy++) {
                     BlockPos targetPos = centerPos.offset(dx, dy, dz);
                     if (random.nextFloat() < 0.3f && canInfect(level, targetPos)) {
-                        infectBlock(level, targetPos);
+                        infectBlock(level, targetPos, random);
                     }
                 }
             }
@@ -142,14 +142,18 @@ public class AaroncosArenaPortalsBlock extends SlabBlock {
 
     /**
      * 感染单个方块，转化为阴影风格方块
+     *
+     * @param level  服务端世界
+     * @param pos    目标位置
+     * @param random 随机源
      */
-    private void infectBlock(ServerLevel level, BlockPos pos) {
+    private void infectBlock(ServerLevel level, BlockPos pos, RandomSource random) {
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
         BlockState replacementState;
 
         if (block == net.minecraft.world.level.block.Blocks.GRASS_BLOCK || block == net.minecraft.world.level.block.Blocks.DIRT) {
-            replacementState = RandomSource.create().nextBoolean()
+            replacementState = random.nextBoolean()
                     ? PDBlocks.SHADOW_BLOCK.get().defaultBlockState()
                     : PDBlocks.THICK_SHADOW_BLOCK.get().defaultBlockState();
         } else if (block == net.minecraft.world.level.block.Blocks.STONE) {

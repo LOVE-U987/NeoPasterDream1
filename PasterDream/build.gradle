@@ -149,6 +149,20 @@ tasks.named('runServer', JavaExec).configure {
 
 // ======================== 自定义任务 ========================
 
+tasks.register('checkLang', Exec) {
+    description = '检查 zh_cn.json 是否包含所有 PDItems/PDBlocks 注册项的翻译键'
+    group = 'verification'
+    workingDir = rootProject.projectDir
+    commandLine 'python', '.trae/tools/check_lang.py'
+    // 仅当脚本返回非 0 时让构建失败，便于 CI 拦截缺失翻译
+    ignoreExitValue = false
+}
+
+// 在资源处理阶段之前自动校验语言文件完整性
+tasks.named('processResources', ProcessResources).configure {
+    dependsOn 'checkLang'
+}
+
 tasks.register('runRecipeDemo', JavaExec) {
     description = '运行 RecipeAPIDemo，生成示例配方 JSON 到 resources 目录'
     group = 'PasterDream'

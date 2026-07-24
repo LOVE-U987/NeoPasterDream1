@@ -47,7 +47,6 @@ public class PDDimensions {
                 .withDefaultBlock("pasterdream:dyedream_block")
                 .withDefaultFluid("minecraft:water")
                 .withNoiseSettings("pasterdream:dyedream_world")
-                .withMusic("dyedream_world")
                 // 注意：此处不重新生成 JSON 文件（已存在手动编写的 JSON）
                 .generateJson(false)
                 .build();

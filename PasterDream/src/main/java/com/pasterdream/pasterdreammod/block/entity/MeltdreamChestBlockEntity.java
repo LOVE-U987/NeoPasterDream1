@@ -130,6 +130,8 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
 
     /**
      * 检查玩家是否可以打开此宝箱（冷却是否已过）
+     * <p>
+     * 若冷却已过期，会同步从映射表中移除该条目，防止长期积累。
      *
      * @param player 玩家
      * @return true 可打开，false 冷却中
@@ -138,7 +140,26 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
         Long cooldownEnd = playerCooldowns.get(player.getUUID());
         if (cooldownEnd == null) return true;
         if (level == null) return true;
-        return level.getGameTime() >= cooldownEnd;
+        if (level.getGameTime() >= cooldownEnd) {
+            playerCooldowns.remove(player.getUUID());
+            setChanged();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 清理所有已过期的玩家冷却条目。
+     * <p>
+     * 建议在 tick 中周期性调用，避免长期运行的服务器中映射表缓慢增长。
+     */
+    private void cleanupExpiredCooldowns() {
+        if (level == null) return;
+        long now = level.getGameTime();
+        boolean changed = playerCooldowns.entrySet().removeIf(entry -> now >= entry.getValue());
+        if (changed) {
+            setChanged();
+        }
     }
 
     /**
@@ -326,6 +347,11 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
         if (anim == 0) return;
 
         be.openingTick++;
+
+        // 每 20 tick 清理一次过期冷却，防止长期积累
+        if (be.openingTick % 20 == 0) {
+            be.cleanupExpiredCooldowns();
+        }
 
         // ======== 粒子效果 ========
         if (be.openingTick % 5 == 0) {

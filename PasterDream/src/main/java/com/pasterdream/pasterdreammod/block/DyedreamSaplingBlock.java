@@ -1,7 +1,7 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
-import com.pasterdream.pasterdreammod.worldgen.decor.TreeRegistry;
+import com.pasterdream.pasterdreammod.api.worldgen.decor.TreeRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;

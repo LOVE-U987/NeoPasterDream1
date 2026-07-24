@@ -6,6 +6,8 @@ import com.pasterdream.pasterdreammod.block.entity.AaroncosHandSpawnBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.DreamAccumulatorBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.DreamCauldronBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.DyedreamDeskBlockEntity;
+import com.pasterdream.pasterdreammod.block.entity.EoulDollBlockEntity;
+import com.pasterdream.pasterdreammod.block.entity.LoveUDollBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.GoldenFoxSculptureBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.LifeCrystalBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.MeltdreamChestBlockEntity;
@@ -103,6 +105,26 @@ public class PDBlockEntities {
             BlockEntityAPI.<GoldenFoxSculptureBlockEntity>createBlockEntity("golden_fox_sculpture")
                     .factory(GoldenFoxSculptureBlockEntity::new)
                     .validBlock(PDBlocks.GOLDEN_FOX_SCULPTURE)
+                    .build();
+
+    /**
+     * 琴雨梦纪念玩偶方块实体类型
+     * 用于渲染 GeckoLib 3D 模型与抱物状态
+     */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LoveUDollBlockEntity>> LOVE_U_DOLL =
+            BlockEntityAPI.<LoveUDollBlockEntity>createBlockEntity("love_u_doll")
+                    .factory(LoveUDollBlockEntity::new)
+                    .validBlock(PDBlocks.LOVE_U_DOLL)
+                    .build();
+
+    /**
+     * 幼幼紫纪念玩偶方块实体类型
+     * 用于渲染 GeckoLib 3D 模型与抱物状态
+     */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EoulDollBlockEntity>> EOUL_DOLL =
+            BlockEntityAPI.<EoulDollBlockEntity>createBlockEntity("eoul_doll")
+                    .factory(EoulDollBlockEntity::new)
+                    .validBlock(PDBlocks.EOUL_DOLL)
                     .build();
 
     /**

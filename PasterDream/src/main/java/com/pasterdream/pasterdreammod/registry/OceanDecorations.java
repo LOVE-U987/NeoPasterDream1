@@ -1,8 +1,8 @@
 package com.pasterdream.pasterdreammod.registry;
 
-import com.pasterdream.pasterdreammod.worldgen.decor.DecorationBuilder;
-import com.pasterdream.pasterdreammod.worldgen.decor.DecorationRegistry;
-import com.pasterdream.pasterdreammod.worldgen.decor.DecorationType;
+import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationBuilder;
+import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationRegistry;
+import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationType;
 import com.pasterdream.pasterdreammod.worldgen.feature.IceArchGenerator;
 import com.pasterdream.pasterdreammod.worldgen.feature.CloudBubbleGenerator;
 import com.pasterdream.pasterdreammod.worldgen.feature.FloatingIceGenerator;

@@ -6,7 +6,9 @@ import com.pasterdream.pasterdreammod.client.renderer.item.AaroncosHandSpawnBloc
 import com.pasterdream.pasterdreammod.client.renderer.item.DreamAccumulatorDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.DreamCauldronDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.DreamMeterItemRenderer;
+import com.pasterdream.pasterdreammod.client.renderer.item.EoulDollDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.GoldenFoxSculptureDisplayItemRenderer;
+import com.pasterdream.pasterdreammod.client.renderer.item.LoveUDollDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.QymDoll0DisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.UuzDoll0DisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.LifeCrystalDisplayItemRenderer;
@@ -73,6 +75,12 @@ public class PDClientItemExtensions {
 
         registerDisplayItem(event, PDItems.DREAM_METER.get(), new DreamMeterItemRenderer());
         PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: dream_meter → DreamMeterItemRenderer（GeckoLib 3D）");
+
+        registerDisplayItem(event, PDItems.LOVE_U_DOLL.get(), new LoveUDollDisplayItemRenderer());
+        PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: love_u_doll → LoveUDollDisplayItemRenderer（GeckoLib 3D）");
+
+        registerDisplayItem(event, PDItems.EOUL_DOLL.get(), new EoulDollDisplayItemRenderer());
+        PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: eoul_doll → EoulDollDisplayItemRenderer（GeckoLib 3D）");
 
         registerDisplayItem(event, PDItems.MELTDREAM_LIQUID_BUCKET.get(), new MeltdreamLiquidBucketRenderer());
         PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册物品: meltdream_liquid_bucket → MeltdreamLiquidBucketRenderer（BEWLR 流体覆盖层兼容修复）");

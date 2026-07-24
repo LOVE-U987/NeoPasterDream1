@@ -73,6 +73,14 @@ public final class RendererRegistry {
         PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: golden_fox_sculpture");
         count++;
 
+        event.registerBlockEntityRenderer(PDBlockEntities.LOVE_U_DOLL.get(), LoveUDollBlockRenderer::new);
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: love_u_doll");
+        count++;
+
+        event.registerBlockEntityRenderer(PDBlockEntities.EOUL_DOLL.get(), EoulDollBlockRenderer::new);
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: eoul_doll");
+        count++;
+
         event.registerBlockEntityRenderer(PDBlockEntities.SHADOW_CHEST.get(), ShadowChestBlockRenderer::new);
         PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: shadow_chest");
         count++;

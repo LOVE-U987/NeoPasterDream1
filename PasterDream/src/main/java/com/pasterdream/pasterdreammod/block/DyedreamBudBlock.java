@@ -181,8 +181,14 @@ public class DyedreamBudBlock extends Block implements SimpleWaterloggedBlock {
         return length;
     }
 
+    /**
+     * 判断给定方块是否为方解石或磨制方解石。
+     *
+     * @param state 待检测方块状态
+     * @return 是否为方解石或磨制方解石
+     */
     private boolean isCalciteOrPolishedCalcite(BlockState state) {
-        return state.is(Blocks.CALCITE);
+        return state.is(Blocks.CALCITE) || state.is(PDBlocks.POLISHED_CALCITE.get());
     }
 
     @Override

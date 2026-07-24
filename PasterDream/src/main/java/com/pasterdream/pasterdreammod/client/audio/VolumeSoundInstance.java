@@ -18,6 +18,12 @@ import net.minecraft.util.RandomSource;
  */
 public class VolumeSoundInstance extends AbstractSoundInstance {
 
+    /**
+     * 共享随机源 —— 避免每次创建声音实例都分配新的 RandomSource。
+     * 仅用于 AbstractSoundInstance 内部音高/音量随机偏移，不涉及世界种子一致性。
+     */
+    private static final RandomSource SHARED_RANDOM = RandomSource.create();
+
     /** 当前实际音量（可运行时修改） */
     private float currentVolume;
 
@@ -34,7 +40,7 @@ public class VolumeSoundInstance extends AbstractSoundInstance {
     public VolumeSoundInstance(SoundEvent event, SoundSource source,
                                 float volume, float pitch,
                                 boolean looping, boolean relative) {
-        super(event, source, RandomSource.create());
+        super(event, source, SHARED_RANDOM);
         this.currentVolume = volume;
         this.volume = volume;
         this.pitch = pitch;

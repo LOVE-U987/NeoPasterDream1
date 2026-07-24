@@ -1,7 +1,7 @@
 package com.pasterdream.pasterdreammod.worldgen.feature;
 
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
-import com.pasterdream.pasterdreammod.worldgen.WorldGenUtils;
+import com.pasterdream.pasterdreammod.api.worldgen.WorldGenUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;

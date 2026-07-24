@@ -163,13 +163,14 @@ public final class ParticleAPI {
     // ======================== 内部方法 ========================
 
     /**
-     * 缓存粒子注册结果（内部使用）
+     * 缓存粒子注册结果（内部使用）。
+     * <p>
+     * 仅供 {@link com.pasterdream.pasterdreammod.api.particle.builder.ParticleBuilder} 在 build() 时调用，
+     * 将新注册的粒子同步到 API 内部缓存，便于后续通过 {@link #getRegisteredParticles()} 查询。
+     * 外部代码不应直接调用此方法，请使用 {@link #createParticle(String)}.build() 注册新粒子。
      *
      * @param result 粒子注册结果
-     * @deprecated 此方法仅为向后兼容保留，用于同步旧式直接注册的粒子到 API 缓存，
-     *             将在下个主版本移除。新粒子请使用 {@link #createParticle(String)}.build()。
      */
-    @Deprecated(forRemoval = true, since = "0.0.3.2")
     public static void cacheParticle(ParticleResult result) {
         REGISTERED_PARTICLES.put(result.name(), result);
         int total = REGISTERED_PARTICLES.size();

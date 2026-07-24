@@ -383,7 +383,7 @@ public final class EntityAPI {
      * <pre>{@code
      * EntityAPI.setSpawnEggModelsOutputDir(
      *     Path.of("PasterDream", "src", "main", "resources", "assets",
-     *             PasterDreamMod.MOD_ID, "models", "item"));
+     *             PasterDreamAPI.MOD_ID, "models", "item"));
      * }</pre>
      *
      * @param outputDir 输出目录绝对或相对路径

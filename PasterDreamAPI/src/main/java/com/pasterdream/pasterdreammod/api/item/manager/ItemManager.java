@@ -170,7 +170,8 @@ public class ItemManager {
                 registered.add(item);
                 markMigrated(MigrationCategory.MATERIAL, spec.registryName());
                 PasterDreamAPI.LOGGER.debug("[ItemManager] 已注册简单物品: {}", spec.registryName());
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
+                // 批量注册兜底：单条失败不应影响后续物品注册
                 warnings.add("注册物品失败: " + spec.registryName() + " - " + e.getMessage());
                 PasterDreamAPI.LOGGER.error("[ItemManager] 注册物品失败: {}", spec.registryName(), e);
             }
@@ -209,7 +210,8 @@ public class ItemManager {
                 registered.add(item);
                 markMigrated(MigrationCategory.FOOD, name);
                 PasterDreamAPI.LOGGER.debug("[ItemManager] 已注册食物物品: {}", name);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
+                // 批量注册兜底：单条失败不应影响后续食物注册
                 warnings.add("注册食物物品失败: " + name + " - " + e.getMessage());
                 PasterDreamAPI.LOGGER.error("[ItemManager] 注册食物物品失败: {}", name, e);
             }

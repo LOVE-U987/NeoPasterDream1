@@ -1,51 +1,31 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
-import com.pasterdream.pasterdreammod.entity.damage.ConfigurableImmunityEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.ShadowMagicballEntity;
 import com.pasterdream.pasterdreammod.registry.PDArenaBossManager;
+import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.control.FlyingMoveControl;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
-import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.AnimationState;
-import software.bernie.geckolib.animation.PlayState;
-import software.bernie.geckolib.animation.RawAnimation;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -65,36 +45,10 @@ import java.util.List;
  *   <li>attacking: 触发式攻击动画</li>
  *   <li>procedure: 技能动画（skill_magicball / skill_vortex / skill_tunetotem）</li>
  * </ul>
+ *
+ * @see AaroncosHandEntity
  */
-public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity {
-
-    /** 暗影生物标签（用于区分友军/敌军，避免误伤同阵营实体） */
-    private static final TagKey<EntityType<?>> SHADOW_MOB_TAG =
-            TagKey.create(Registries.ENTITY_TYPE,
-                    ResourceLocation.fromNamespaceAndPath("pasterdream", "shadow_mob"));
-
-    /** 攻击挥动标记（供动画系统使用） */
-    private boolean swinging;
-    /** 上一次挥动的时间 */
-    private long lastSwing;
-
-    // ==================== 延迟任务队列 ====================
-
-    /**
-     * 延迟任务 —— 替代原 Forge queueServerWork，纯 Java 实现
-     */
-    private static record DelayedTask(int triggerTick, Runnable action) {}
-
-    /** 挂起的延迟任务列表 */
-    private final List<DelayedTask> pendingTasks = new ArrayList<>();
-    /** 服务端全局 tick 计数器（用于任务调度） */
-    private int serverTickCounter = 0;
-
-    /** 技能系统初始化标记 */
-    private boolean skillSwitchInitialized = false;
-
-    /** 是否处于召唤动画状态（spawn 动画期间禁用 AI 和技能） */
-    private boolean isSummoning = false;
+public class AaroncosRighthand0Entity extends AaroncosHandEntity {
 
     /**
      * 构造亚伦柯斯右手实体
@@ -102,11 +56,8 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity {
      * @param type  实体类型
      * @param level 世界实例
      */
-    public AaroncosRighthand0Entity(EntityType<? extends Monster> type, Level level) {
+    public AaroncosRighthand0Entity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
-        this.xpReward = 100;
-        this.setPersistenceRequired();
-        this.moveControl = new FlyingMoveControl(this, 10, true);
     }
 
     /**
@@ -119,27 +70,101 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity {
         return "aaroncos_righthand_0";
     }
 
+    // ======================== 子类差异实现 ========================
+
     /**
-     * 设置是否处于召唤状态
-     * <p>
-     * 召唤状态下 BOSS 播放 spawn 动画，AI 和技能被禁用。
+     * 获取手名称，用于日志输出。
      *
-     * @param summoning 是否处于召唤状态
+     * @return 手名称
      */
-    public void setSummoning(boolean summoning) {
-        this.isSummoning = summoning;
-        if (summoning) {
-            this.setAnimation("spawn");
+    @Override
+    protected String getHandName() {
+        return "AaroncosRighthand0";
+    }
+
+    /**
+     * 获取召唤动画持续 tick 数。
+     *
+     * @return 召唤动画时长
+     */
+    @Override
+    protected int getSpawnAnimationTicks() {
+        return 40;
+    }
+
+    /**
+     * 召唤动画完成后的回调。
+     *
+     * @param serverLevel 当前服务端世界
+     */
+    @Override
+    protected void onSpawnAnimationComplete(ServerLevel serverLevel) {
+        if (serverLevel.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY)) {
+            PDArenaBossManager.onSpawnAnimationComplete(serverLevel);
+        }
+        PasterDreamMod.LOGGER.debug("[AaroncosRighthand0] 召唤动画完成，BOSS 激活");
+    }
+
+    /**
+     * 死亡时的维度相关回调。
+     *
+     * @param serverLevel 当前服务端世界
+     */
+    @Override
+    protected void onHandDeath(ServerLevel serverLevel) {
+        if (serverLevel.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY)) {
+            PDArenaBossManager.onRightHandDeath(serverLevel);
         }
     }
 
     /**
-     * 检查是否处于召唤状态
-     *
-     * @return 是否处于召唤状态
+     * 受击时触发的技能。
      */
-    public boolean isSummoning() {
-        return isSummoning;
+    @Override
+    protected void onHurtTriggerSkill() {
+        triggerTuneTotemSkill();
+    }
+
+    /**
+     * 保存右手专属 NBT 数据。
+     *
+     * @param compound 待写入的 CompoundTag
+     */
+    @Override
+    protected void saveHandSpecificData(CompoundTag compound) {
+        CompoundTag data = this.getPersistentData();
+        compound.putInt("AaroncosMagicball", data.getInt("AaroncosMagicball"));
+        compound.putInt("AaroncosVortex", data.getInt("AaroncosVortex"));
+        compound.putInt("AaroncosTuneTotem", data.getInt("AaroncosTuneTotem"));
+    }
+
+    /**
+     * 读取右手专属 NBT 数据。
+     *
+     * @param compound 待读取的 CompoundTag
+     */
+    @Override
+    protected void readHandSpecificData(CompoundTag compound) {
+        CompoundTag data = this.getPersistentData();
+        if (compound.contains("AaroncosMagicball")) {
+            data.putInt("AaroncosMagicball", compound.getInt("AaroncosMagicball"));
+        }
+        if (compound.contains("AaroncosVortex")) {
+            data.putInt("AaroncosVortex", compound.getInt("AaroncosVortex"));
+        }
+        if (compound.contains("AaroncosTuneTotem")) {
+            data.putInt("AaroncosTuneTotem", compound.getInt("AaroncosTuneTotem"));
+        }
+    }
+
+    /**
+     * 获取近战 AI 移动速度倍率。
+     *
+     * @return 速度倍率
+     */
+    @Override
+    protected double getMeleeAttackSpeed() {
+        return 1.0;
     }
 
     // ======================== 属性 ========================
@@ -160,219 +185,6 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity {
                 .add(Attributes.FLYING_SPEED, 0.4);
     }
 
-    // ======================== AI 目标 ========================
-
-    @Override
-    protected void registerGoals() {
-        // 近战攻击
-        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.0, true));
-        // 飞行追踪目标
-        this.goalSelector.addGoal(2, new FlyingPursuitGoal());
-        // 攻击目标
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
-        // 随机飞行
-        this.goalSelector.addGoal(4, new RandomStrollGoal(this, 0.8, 20) {
-            @Override
-            protected Vec3 getPosition() {
-                Vec3 pos = AaroncosRighthand0Entity.this.position();
-                double dx = pos.x + (AaroncosRighthand0Entity.this.getRandom().nextFloat() * 2 - 1) * 16;
-                double dy = pos.y + (AaroncosRighthand0Entity.this.getRandom().nextFloat() * 2 - 1) * 16;
-                double dz = pos.z + (AaroncosRighthand0Entity.this.getRandom().nextFloat() * 2 - 1) * 16;
-                return new Vec3(dx, dy, dz);
-            }
-        });
-    }
-
-    // ======================== 免疫 ========================
-
-    @Override
-    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
-        return false;
-    }
-
-    @Override
-    public boolean causeFallDamage(float l, float d, DamageSource source) {
-        return false;
-    }
-
-    @Override
-    public boolean hurt(DamageSource source, float amount) {
-        // 召唤状态下无敌，不受伤害
-        if (isSummoning) {
-            return false;
-        }
-        // 受击触发调音图腾技能（服务端且存活时）
-        if (!this.level().isClientSide() && !this.isDeadOrDying()) {
-            triggerTuneTotemSkill();
-        }
-        // 伤害免疫由 ConfigurableImmunityEntity + EntityImmunitySetup 统一管理
-        return super.hurt(source, amount);
-    }
-
-    // ======================== 生成 & 死亡 ========================
-
-    @Override
-    public void onAddedToLevel() {
-        super.onAddedToLevel();
-        // 如果处于召唤状态，不播放默认生成效果，由召唤动画控制
-        if (this.isSummoning) {
-            // 召唤动画持续 2 秒（40 tick），结束后激活 AI 和技能
-            if (this.level() instanceof ServerLevel serverLevel) {
-                queueTask(40, () -> {
-                    this.isSummoning = false;
-                    // 通知战斗管理器召唤完成
-                    if (serverLevel.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY)) {
-                        PDArenaBossManager.onSpawnAnimationComplete(serverLevel);
-                    }
-                    PasterDreamMod.LOGGER.debug("[AaroncosRighthand0] 召唤动画完成，BOSS 激活");
-                });
-            }
-        } else {
-            // 非召唤状态生成（调试或其他方式），播放默认生成效果
-            if (this.level() instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(),
-                        16, 1, 1, 1, 0.2);
-                serverLevel.playSound(null, this.getX(), this.getY(), this.getZ(),
-                        PDSounds.AARONCOS_SPAWN.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
-            }
-        }
-    }
-
-    @Override
-    protected void tickDeath() {
-        ++this.deathTime;
-        if (this.deathTime == 40) {
-            // 死亡爆炸 + 烟雾粒子
-            if (this.level() instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(),
-                        32, 2, 2, 2, 0.3);
-                serverLevel.sendParticles(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(),
-                        64, 2, 2, 2, 0.5);
-
-                // 死亡爆炸（威力 4，不破坏方块，由 MOB 交互类型决定破坏行为）
-                serverLevel.explode(this, this.getX(), this.getY(), this.getZ(),
-                        4.0f, Level.ExplosionInteraction.MOB);
-
-                // 如果死亡在亚伦柯斯竞技场维度，通知战斗管理器
-                if (serverLevel.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY)) {
-                    PDArenaBossManager.onRightHandDeath(serverLevel);
-                }
-            }
-            this.remove(RemovalReason.KILLED);
-            // dropExperience 由 Entity 基类在死亡时自动处理
-        }
-    }
-
-    // ======================== NBT 持久化 ========================
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putBoolean("AaroncosSwitch", this.getPersistentData().getBoolean("AaroncosSwitch"));
-        compound.putInt("AaroncosSkill", this.getPersistentData().getInt("AaroncosSkill"));
-        compound.putInt("AaroncosMagicball", this.getPersistentData().getInt("AaroncosMagicball"));
-        compound.putInt("AaroncosVortex", this.getPersistentData().getInt("AaroncosVortex"));
-        compound.putInt("AaroncosTuneTotem", this.getPersistentData().getInt("AaroncosTuneTotem"));
-        compound.putBoolean("AaroncosBloodLock", this.getPersistentData().getBoolean("AaroncosBloodLock"));
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.contains("AaroncosSwitch")) {
-            this.getPersistentData().putBoolean("AaroncosSwitch", compound.getBoolean("AaroncosSwitch"));
-        }
-        if (compound.contains("AaroncosSkill")) {
-            this.getPersistentData().putInt("AaroncosSkill", compound.getInt("AaroncosSkill"));
-        }
-        if (compound.contains("AaroncosMagicball")) {
-            this.getPersistentData().putInt("AaroncosMagicball", compound.getInt("AaroncosMagicball"));
-        }
-        if (compound.contains("AaroncosVortex")) {
-            this.getPersistentData().putInt("AaroncosVortex", compound.getInt("AaroncosVortex"));
-        }
-        if (compound.contains("AaroncosTuneTotem")) {
-            this.getPersistentData().putInt("AaroncosTuneTotem", compound.getInt("AaroncosTuneTotem"));
-        }
-        if (compound.contains("AaroncosBloodLock")) {
-            this.getPersistentData().putBoolean("AaroncosBloodLock", compound.getBoolean("AaroncosBloodLock"));
-        }
-    }
-
-    // ======================== 每 tick 更新 ========================
-
-    @Override
-    public void baseTick() {
-        super.baseTick();
-        this.refreshDimensions();
-        if (!this.level().isClientSide()) {
-            serverTickCounter++;
-
-            // 首次 tick 初始化技能开关
-            if (!skillSwitchInitialized) {
-                this.getPersistentData().putBoolean("AaroncosSwitch", true);
-                skillSwitchInitialized = true;
-            }
-
-            // 处理延迟任务队列
-            processPendingTasks();
-
-            // 技能循环
-            tickSkillCycle();
-
-            // 鲜血锁链检测
-            tryBloodLock();
-        }
-    }
-
-    @Override
-    public void aiStep() {
-        // 召唤状态下禁用 AI（清除目标、停止移动）
-        if (isSummoning) {
-            this.setNoGravity(true);
-            this.setTarget(null);
-            this.setDeltaMovement(Vec3.ZERO);
-            return;
-        }
-        super.aiStep();
-        this.setNoGravity(true);
-        this.updateSwingTime();
-    }
-
-    // ======================== 延迟任务队列 ========================
-
-    /**
-     * 添加一个延迟任务，在指定 tick 数后执行
-     *
-     * @param delay  延迟 tick 数
-     * @param action 要执行的操作
-     */
-    private void queueTask(int delay, Runnable action) {
-        this.pendingTasks.add(new DelayedTask(serverTickCounter + delay, action));
-    }
-
-    /**
-     * 处理所有到期的延迟任务
-     * <p>
-     * 先收集到期任务并从列表移除，再统一执行。
-     * 避免任务内部调用 queueTask 时触发 ConcurrentModificationException。
-     */
-    private void processPendingTasks() {
-        List<DelayedTask> toExecute = new ArrayList<>();
-        Iterator<DelayedTask> it = pendingTasks.iterator();
-        while (it.hasNext()) {
-            DelayedTask task = it.next();
-            if (serverTickCounter >= task.triggerTick()) {
-                toExecute.add(task);
-                it.remove();
-            }
-        }
-        // 遍历结束后再执行，任务内部的 queueTask 不会触发并发修改
-        for (DelayedTask task : toExecute) {
-            task.action().run();
-        }
-    }
-
     // ======================== 技能系统 ========================
 
     /**
@@ -387,9 +199,10 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity {
      * <p>
      * 召唤状态下技能系统被禁用。
      */
-    private void tickSkillCycle() {
+    @Override
+    protected void tickSkillCycle() {
         // 召唤状态下禁用技能
-        if (isSummoning) return;
+        if (isSummoning()) return;
 
         CompoundTag data = this.getPersistentData();
         boolean sw = data.getBoolean("AaroncosSwitch");
@@ -525,7 +338,7 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity {
 
                 // 在 BOSS 位置生成暗影漩涡方块
                 BlockPos bossPos = BlockPos.containing(this.getX(), this.getY(), this.getZ());
-                sl.setBlockAndUpdate(bossPos, com.pasterdream.pasterdreammod.registry.PDBlocks.SHADOW_VORTEX.get().defaultBlockState());
+                sl.setBlockAndUpdate(bossPos, PDBlocks.SHADOW_VORTEX.get().defaultBlockState());
             }
 
             // 64 格内玩家受到涡流影响
@@ -540,7 +353,7 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity {
                         // 在玩家位置生成暗影漩涡方块
                         if (this.level() instanceof ServerLevel sl) {
                             BlockPos playerPos = BlockPos.containing(p.getX(), p.getY(), p.getZ());
-                            sl.setBlockAndUpdate(playerPos, com.pasterdream.pasterdreammod.registry.PDBlocks.SHADOW_VORTEX.get().defaultBlockState());
+                            sl.setBlockAndUpdate(playerPos, PDBlocks.SHADOW_VORTEX.get().defaultBlockState());
                         }
                     });
 
@@ -637,191 +450,6 @@ public class AaroncosRighthand0Entity extends ConfigurableImmunityEntity {
             queueTask(120, () -> data.putInt("AaroncosSkill", 0));
             // 600 tick 后重置调音图腾冷却
             queueTask(600, () -> data.putInt("AaroncosTuneTotem", 0));
-        }
-    }
-
-    // ======================== 范围伤害辅助 ========================
-
-    /**
-     * 对附近玩家造成伤害
-     *
-     * @param range  范围半径
-     * @param damage 伤害量
-     */
-    private void hurtNearbyPlayers(double range, float damage) {
-        AABB box = this.getBoundingBox().inflate(range);
-        this.level().getEntitiesOfClass(Player.class, box, Entity::isAlive)
-                .forEach(p -> p.hurt(this.damageSources().mobAttack(this), damage));
-    }
-
-    // ======================== 鲜血锁链系统 ========================
-
-    /**
-     * 检测并触发鲜血锁链 —— 当 HP < 100 且未锁定时触发
-     * <p>
-     * 触发效果（原 AaroncosHandBloodlockProcedure）：
-     * <ul>
-     *   <li>抗性提升 V</li>
-     *   <li>召唤 4 个 ShadowHandEntity 暗影之手</li>
-     *   <li>80 格内玩家获得暗影/失明/缓慢(255级)禁锢效果</li>
-     *   <li>播放 aaroncos_spawn 音效</li>
-     * </ul>
-     */
-    private void tryBloodLock() {
-        CompoundTag data = this.getPersistentData();
-        if (data.getBoolean("AaroncosBloodLock") || this.getHealth() > 100) return;
-
-        data.putBoolean("AaroncosBloodLock", true);
-
-        // 抗性提升 V（60秒）
-        this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1200, 3, false, false));
-
-        // 仅服务端执行实体召唤与玩家减益
-        if (this.level() instanceof ServerLevel serverLevel) {
-            // 召唤 4 个暗影之手（随机散布在 BOSS 周围）
-            for (int i = 0; i < 4; i++) {
-                ShadowHandEntity shadowHand = PDEntities.SHADOW_HAND.get().create(serverLevel);
-                if (shadowHand != null) {
-                    double offsetX = (this.getRandom().nextDouble() - 0.5) * 6;
-                    double offsetY = this.getRandom().nextDouble() * 2;
-                    double offsetZ = (this.getRandom().nextDouble() - 0.5) * 6;
-                    shadowHand.moveTo(this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ);
-                    serverLevel.addFreshEntity(shadowHand);
-                }
-            }
-
-            // 80 格内玩家获得减益效果（暗影 + 失明 + 缓慢 + 禁锢）
-            AABB box = this.getBoundingBox().inflate(80.0);
-            this.level().getEntitiesOfClass(Player.class, box, Entity::isAlive)
-                    .forEach(player -> {
-                        player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 60, 0, false, false));
-                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1, false, false));
-                        player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 60, 0, false, false));
-                        // 禁锢效果：MOVEMENT_SLOWDOWN 255 级（amplifier=254）60 tick
-                        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 254, false, false));
-                    });
-        }
-
-        // 播放鲜血锁链音效
-        this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
-                PDSounds.AARONCOS_SPAWN.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
-    }
-
-    // ======================== 物理 ========================
-
-    @Override
-    protected PathNavigation createNavigation(Level world) {
-        return new FlyingPathNavigation(this, world);
-    }
-
-    @Override
-    protected void checkFallDamage(double y, boolean onGroundIn, BlockState state, BlockPos pos) {
-    }
-
-    @Override
-    public void setNoGravity(boolean ignored) {
-        super.setNoGravity(true);
-    }
-
-    @Override
-    public boolean isPersistenceRequired() {
-        return true;
-    }
-
-    // ======================== GeckoLib 动画 ========================
-
-    /**
-     * 移动状态动画控制器
-     * 根据移动状态切换 idle / walk / fly / death 动画
-     *
-     * @param state 动画状态
-     * @return 播放状态
-     */
-    private PlayState movementPredicate(AnimationState<AaroncosRighthand0Entity> state) {
-        if (this.animationprocedure.equals("empty")) {
-            if ((state.isMoving() || !(state.getLimbSwingAmount() > -0.15F && state.getLimbSwingAmount() < 0.15F)) && this.onGround()) {
-                return state.setAndContinue(RawAnimation.begin().thenLoop("walk"));
-            }
-            if (this.isDeadOrDying()) {
-                return state.setAndContinue(RawAnimation.begin().thenPlay("death"));
-            }
-            if (!this.onGround()) {
-                return state.setAndContinue(RawAnimation.begin().thenLoop("fly"));
-            }
-            return state.setAndContinue(RawAnimation.begin().thenLoop("idle"));
-        }
-        return PlayState.STOP;
-    }
-
-    /**
-     * 攻击动画控制器
-     * 在实体挥动时触发 attack 动画
-     *
-     * @param state 动画状态
-     * @return 播放状态
-     */
-    private PlayState attackingPredicate(AnimationState<AaroncosRighthand0Entity> state) {
-        if (getAttackAnim(state.getPartialTick()) > 0f && !this.swinging) {
-            this.swinging = true;
-            this.lastSwing = level().getGameTime();
-        }
-        if (this.swinging && this.lastSwing + 7L <= level().getGameTime()) {
-            this.swinging = false;
-        }
-        if (this.swinging && state.getController().getAnimationState() == AnimationController.State.STOPPED) {
-            state.getController().forceAnimationReset();
-            return state.setAndContinue(RawAnimation.begin().thenPlay("attack"));
-        }
-        return PlayState.CONTINUE;
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        super.registerControllers(controllers);
-        controllers.add(new AnimationController<>(this, "movement", 4, this::movementPredicate));
-        controllers.add(new AnimationController<>(this, "attacking", 4, this::attackingPredicate));
-    }
-
-    // ======================== 飞行追踪 AI ========================
-
-    /**
-     * 飞行追踪目标的 AI 目标 —— 使 BOSS 持续向目标移动并在碰撞箱相交时攻击
-     */
-    private class FlyingPursuitGoal extends Goal {
-        public FlyingPursuitGoal() {
-            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
-        }
-
-        @Override
-        public boolean canUse() {
-            return getTarget() != null && !getMoveControl().hasWanted();
-        }
-
-        @Override
-        public boolean canContinueToUse() {
-            return getMoveControl().hasWanted() && getTarget() != null && getTarget().isAlive();
-        }
-
-        @Override
-        public void start() {
-            LivingEntity target = getTarget();
-            if (target != null) {
-                Vec3 pos = target.getEyePosition(1);
-                moveControl.setWantedPosition(pos.x, pos.y, pos.z, 1.0);
-            }
-        }
-
-        @Override
-        public void tick() {
-            LivingEntity target = getTarget();
-            if (target == null) return;
-
-            if (getBoundingBox().intersects(target.getBoundingBox())) {
-                doHurtTarget(target);
-            } else if (distanceToSqr(target) < 16) {
-                Vec3 pos = target.getEyePosition(1);
-                moveControl.setWantedPosition(pos.x, pos.y, pos.z, 1.0);
-            }
         }
     }
 }

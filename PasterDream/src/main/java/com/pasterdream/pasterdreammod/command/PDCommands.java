@@ -28,6 +28,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletionException;
 
 /**
  * 模组指令注册 —— 提供维度刷新等调试/测试功能
@@ -154,9 +155,14 @@ public class PDCommands {
                 }
 
                 return 1;
-            } catch (Exception e) {
+            } catch (IOException | CompletionException e) {
                 source.sendFailure(Component.literal("§c重置维度时出错: " + e.getMessage()));
-                e.printStackTrace();
+                PasterDreamMod.LOGGER.error("[PDCommands] 重置维度 {} 时发生 IO/执行异常", dimLocation, e);
+                return 0;
+            } catch (Exception e) {
+                // 兜底：捕获未预期异常，防止命令执行中断影响服务端稳定性
+                source.sendFailure(Component.literal("§c重置维度时出错: " + e.getMessage()));
+                PasterDreamMod.LOGGER.error("[PDCommands] 重置维度 {} 时发生未预期异常", dimLocation, e);
                 return 0;
             }
         } else {

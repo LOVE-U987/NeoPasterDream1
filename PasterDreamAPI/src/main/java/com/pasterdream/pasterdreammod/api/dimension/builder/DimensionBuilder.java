@@ -52,40 +52,73 @@ public class DimensionBuilder {
     private final String dimensionName;
 
     // ======================== DimensionType 配置 ========================
+    /** 是否为超热维度（如下界），影响一些游戏机制 */
     private boolean ultraWarm;
+    /** 是否为自然维度，影响天气、床爆炸等 */
     private boolean natural = true;
+    /** 猪灵在此维度是否安全 */
     private boolean piglinSafe;
+    /** 重生锚是否可用 */
     private boolean respawnAnchorWorks;
+    /** 床是否可用 */
     private boolean bedWorks = true;
+    /** 是否生成袭击事件 */
     private boolean hasRaids = true;
+    /** 是否有天空光照 */
     private boolean hasSkylight = true;
+    /** 是否有天花板（如下界基岩顶层） */
     private boolean hasCeiling;
+    /** 坐标缩放比例 */
     private double coordinateScale = 1.0;
+    /** 环境光照强度（0.0 ~ 1.0） */
     private double ambientLight = 0.5;
+    /** 逻辑高度 */
     private int logicalHeight = 384;
+    /** 无限燃烧方块标签 */
     private String infiniburn = "#minecraft:infiniburn_overworld";
+    /** 世界最低 Y 坐标 */
     private int minY = -64;
+    /** 世界总高度 */
     private int height = 384;
+    /** 怪物生成光照最小值 */
     private int monsterSpawnLightMin = 0;
+    /** 怪物生成光照最大值 */
     private int monsterSpawnLightMax = 7;
+    /** 怪物生成方块光照上限 */
     private int monsterSpawnBlockLightLimit = 0;
+    /** 维度效果 ID */
     private String effectsId;
 
     // ======================== Dimension 配置 ========================
+    /** 维度类型 ID */
     private String dimensionTypeId;
+    /** 噪声设置 ID */
     private String noiseSettings;
+    /** 海平面高度 */
     private int seaLevel = 63;
+    /** 是否禁用怪物生成 */
     private boolean disableMobGeneration;
+    /** 是否启用含水层 */
     private boolean aquifersEnabled = true;
+    /** 是否启用矿脉 */
     private boolean oreVeinsEnabled;
+    /** 是否使用旧版随机源 */
     private boolean legacyRandomSource;
+    /** 维度默认方块 ID */
     private String defaultBlock = "minecraft:stone";
+    /** 维度默认流体 ID */
     private String defaultFluid = "minecraft:water";
+    /** 噪声水平大小 */
     private int sizeHorizontal = 1;
+    /** 噪声垂直大小 */
     private int sizeVertical = 2;
+    /** 生物群系源类型 */
     private String biomeSourceType = "minecraft:multi_noise";
+    /** 多噪声生物群系列表 */
     private JsonArray biomes;
+    /** 固定生物群系 ID（固定生物群系源时使用） */
     private String fixedBiome;
+    /** 棋盘生物群系源缩放 */
     private int checkerboardScale = 2;
 
     /** 是否自动生成 JSON 资源文件，默认为 true */
@@ -112,41 +145,193 @@ public class DimensionBuilder {
 
     // ======================== DimensionType 配置 ========================
 
+    /**
+     * 设置是否为超热维度。
+     *
+     * @param value true 表示超热
+     * @return 当前构建器
+     */
     public DimensionBuilder ultraWarm(boolean value) { this.ultraWarm = value; return this; }
-    /** 便捷方法：默认 true */
+
+    /**
+     * 便捷方法：设置为超热维度（true）。
+     *
+     * @return 当前构建器
+     */
     public DimensionBuilder ultraWarm() { return ultraWarm(true); }
+
+    /**
+     * 设置是否为自然维度。
+     *
+     * @param value true 表示自然维度
+     * @return 当前构建器
+     */
     public DimensionBuilder natural(boolean value) { this.natural = value; return this; }
-    /** 便捷方法：默认 true */
+
+    /**
+     * 便捷方法：设置为自然维度（true）。
+     *
+     * @return 当前构建器
+     */
     public DimensionBuilder natural() { return natural(true); }
+
+    /**
+     * 设置猪灵是否安全。
+     *
+     * @param value true 表示安全
+     * @return 当前构建器
+     */
     public DimensionBuilder piglinSafe(boolean value) { this.piglinSafe = value; return this; }
-    /** 便捷方法：默认 true */
+
+    /**
+     * 便捷方法：设置猪灵安全（true）。
+     *
+     * @return 当前构建器
+     */
     public DimensionBuilder piglinSafe() { return piglinSafe(true); }
+
+    /**
+     * 设置重生锚是否可用。
+     *
+     * @param value true 表示可用
+     * @return 当前构建器
+     */
     public DimensionBuilder respawnAnchorWorks(boolean value) { this.respawnAnchorWorks = value; return this; }
-    /** 便捷方法：默认 true */
+
+    /**
+     * 便捷方法：设置重生锚可用（true）。
+     *
+     * @return 当前构建器
+     */
     public DimensionBuilder respawnAnchorWorks() { return respawnAnchorWorks(true); }
+
+    /**
+     * 设置床是否可用。
+     *
+     * @param value true 表示可用
+     * @return 当前构建器
+     */
     public DimensionBuilder bedWorks(boolean value) { this.bedWorks = value; return this; }
-    /** 便捷方法：默认 true */
+
+    /**
+     * 便捷方法：设置床可用（true）。
+     *
+     * @return 当前构建器
+     */
     public DimensionBuilder bedWorks() { return bedWorks(true); }
+
+    /**
+     * 设置是否生成袭击事件。
+     *
+     * @param value true 表示生成袭击
+     * @return 当前构建器
+     */
     public DimensionBuilder hasRaids(boolean value) { this.hasRaids = value; return this; }
-    /** 便捷方法：默认 true */
+
+    /**
+     * 便捷方法：设置生成袭击（true）。
+     *
+     * @return 当前构建器
+     */
     public DimensionBuilder hasRaids() { return hasRaids(true); }
+
+    /**
+     * 设置是否有天空光照。
+     *
+     * @param value true 表示有天空光照
+     * @return 当前构建器
+     */
     public DimensionBuilder hasSkylight(boolean value) { this.hasSkylight = value; return this; }
-    /** 便捷方法：默认 true */
+
+    /**
+     * 便捷方法：设置有天空光照（true）。
+     *
+     * @return 当前构建器
+     */
     public DimensionBuilder hasSkylight() { return hasSkylight(true); }
+
+    /**
+     * 设置是否有天花板。
+     *
+     * @param value true 表示有天花板
+     * @return 当前构建器
+     */
     public DimensionBuilder hasCeiling(boolean value) { this.hasCeiling = value; return this; }
-    /** 便捷方法：默认 true */
+
+    /**
+     * 便捷方法：设置有天花板（true）。
+     *
+     * @return 当前构建器
+     */
     public DimensionBuilder hasCeiling() { return hasCeiling(true); }
+
+    /**
+     * 设置坐标缩放比例。
+     *
+     * @param value 缩放比例
+     * @return 当前构建器
+     */
     public DimensionBuilder coordinateScale(double value) { this.coordinateScale = value; return this; }
+
+    /**
+     * 设置环境光照强度。
+     *
+     * @param value 光照强度（0.0 ~ 1.0）
+     * @return 当前构建器
+     */
     public DimensionBuilder withAmbientLight(double value) { this.ambientLight = value; return this; }
+
+    /**
+     * 设置逻辑高度。
+     *
+     * @param value 逻辑高度
+     * @return 当前构建器
+     */
     public DimensionBuilder logicalHeight(int value) { this.logicalHeight = value; return this; }
+
+    /**
+     * 设置无限燃烧方块标签。
+     *
+     * @param value 方块标签
+     * @return 当前构建器
+     */
     public DimensionBuilder infiniburn(String value) { this.infiniburn = value; return this; }
+
+    /**
+     * 设置世界最低 Y 坐标。
+     *
+     * @param value 最低 Y
+     * @return 当前构建器
+     */
     public DimensionBuilder minY(int value) { this.minY = value; return this; }
+
+    /**
+     * 设置世界总高度。
+     *
+     * @param value 总高度
+     * @return 当前构建器
+     */
     public DimensionBuilder height(int value) { this.height = value; return this; }
+
+    /**
+     * 设置怪物生成光照范围。
+     *
+     * @param min 最小光照
+     * @param max 最大光照
+     * @return 当前构建器
+     */
     public DimensionBuilder monsterSpawnLight(int min, int max) {
         this.monsterSpawnLightMin = min;
         this.monsterSpawnLightMax = max;
         return this;
     }
+
+    /**
+     * 设置怪物生成方块光照上限。
+     *
+     * @param value 方块光照上限
+     * @return 当前构建器
+     */
     public DimensionBuilder monsterSpawnBlockLightLimit(int value) {
         this.monsterSpawnBlockLightLimit = value;
         return this;
@@ -176,10 +361,44 @@ public class DimensionBuilder {
         return this;
     }
 
+    /**
+     * 设置海平面高度。
+     *
+     * @param seaLevel 海平面 Y 坐标
+     * @return 当前构建器
+     */
     public DimensionBuilder seaLevel(int seaLevel) { this.seaLevel = seaLevel; return this; }
+
+    /**
+     * 设置是否禁用怪物生成。
+     *
+     * @param value true 表示禁用
+     * @return 当前构建器
+     */
     public DimensionBuilder disableMobGeneration(boolean value) { this.disableMobGeneration = value; return this; }
+
+    /**
+     * 设置是否启用含水层。
+     *
+     * @param value true 表示启用
+     * @return 当前构建器
+     */
     public DimensionBuilder aquifersEnabled(boolean value) { this.aquifersEnabled = value; return this; }
+
+    /**
+     * 设置是否启用矿脉生成。
+     *
+     * @param value true 表示启用
+     * @return 当前构建器
+     */
     public DimensionBuilder oreVeinsEnabled(boolean value) { this.oreVeinsEnabled = value; return this; }
+
+    /**
+     * 设置是否使用旧版随机源。
+     *
+     * @param value true 表示使用旧版随机源
+     * @return 当前构建器
+     */
     public DimensionBuilder legacyRandomSource(boolean value) { this.legacyRandomSource = value; return this; }
 
     /**

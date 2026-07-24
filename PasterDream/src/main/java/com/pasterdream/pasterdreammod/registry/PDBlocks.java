@@ -62,6 +62,8 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import com.pasterdream.pasterdreammod.registry.blocks.*;
+
 import java.util.Map;
 
 /**
@@ -75,312 +77,6 @@ public class PDBlocks {
      */
     public static final DeferredRegister.Blocks BLOCKS = BlockAPI.REGISTRY;
 
-    // ==================== 自定义方块（保持手动注册） ====================
-
-    public static final DeferredBlock<DreamAccumulatorBlock> DREAM_ACCUMULATOR = BLOCKS.register("dream_accumulator",
-            () -> new DreamAccumulatorBlock(BlockBehaviour.Properties.of()
-                    .sound(SoundType.CALCITE)
-                    .strength(1.0f)
-                    .requiresCorrectToolForDrops()
-                    .noOcclusion()));
-
-    public static final DeferredBlock<DyedreamDeskBlock> DYEDREAM_DESK = BLOCKS.register("dyedream_desk",
-            () -> new DyedreamDeskBlock(BlockBehaviour.Properties.of()
-                    .sound(SoundType.WOOD)
-                    .strength(1.0f)
-                    .requiresCorrectToolForDrops()
-                    .noOcclusion()));
-
-    /**
-     * 梦境列车结构方块 (dream_train_structure)
-     * 装饰性方块，右键点击时发送列车到站提示消息
-     */
-    public static final DeferredBlock<DreamTrainStructureBlock> DREAM_TRAIN_STRUCTURE = BLOCKS.register("dream_train_structure",
-            () -> new DreamTrainStructureBlock(BlockBehaviour.Properties.of()
-                    .sound(SoundType.METAL)
-                    .strength(2.0f)
-                    .requiresCorrectToolForDrops()
-                    .noOcclusion()));
-
-    public static final DeferredBlock<LifeCrystalBlock> LIFE_CRYSTAL = BLOCKS.register("life_crystal",
-            () -> new LifeCrystalBlock(BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(1.0f)
-                    .lightLevel(state -> 12)
-                    .noOcclusion()));
-
-    // ==================== 玩偶/雕像方块 ====================
-
-    /**
-     * 娇小琴雨梦玩偶方块 (qin_doll_0)
-     * GeckoLib 3D 静态装饰玩偶
-     */
-    public static final DeferredBlock<QymDoll0Block> QIN_DOLL_0 = BLOCKS.register("qin_doll_0",
-            () -> new QymDoll0Block(BlockBehaviour.Properties.of()
-                    .sound(SoundType.DECORATED_POT)
-                    .strength(1.0f)
-                    .noOcclusion()));
-
-    /**
-     * 娇小幼幼紫玩偶方块 (little_purple_doll_0)
-     * GeckoLib 3D 静态装饰玩偶
-     */
-    public static final DeferredBlock<UuzDoll0Block> LITTLE_PURPLE_DOLL_0 = BLOCKS.register("little_purple_doll_0",
-            () -> new UuzDoll0Block(BlockBehaviour.Properties.of()
-                    .sound(SoundType.DECORATED_POT)
-                    .strength(1.0f)
-                    .noOcclusion()));
-
-    /**
-     * 狐狸雕像方块 (golden_fox_sculpture)
-     * GeckoLib 3D 静态装饰雕像
-     */
-    public static final DeferredBlock<GoldenFoxSculptureBlock> GOLDEN_FOX_SCULPTURE = BLOCKS.register("golden_fox_sculpture",
-            () -> new GoldenFoxSculptureBlock(BlockBehaviour.Properties.of()
-                    .sound(SoundType.DECORATED_POT)
-                    .strength(1.0f)
-                    .noOcclusion()));
-
-    public static final DeferredBlock<ShadowChestBlock> SHADOW_CHEST = BLOCKS.register("shadow_chest",
-            () -> new ShadowChestBlock(BlockBehaviour.Properties.of()
-                    .sound(SoundType.DEEPSLATE_TILES)
-                    .strength(1.0f, 0.5f)
-                    .noOcclusion()));
-
-    // ==================== 寻梦者的永恒书卷 ====================
-
-    /**
-     * 寻梦者的永恒书卷 (the_endless_book_of_dream_seekers)
-     * GeckoLib 3D 书籍模型，1 格库存，支持 GUI 交互
-     */
-    public static final DeferredBlock<TheEndlessBookOfDreamSeekersBlock> THE_ENDLESS_BOOK_OF_DREAM_SEEKERS = BLOCKS.register("the_endless_book_of_dream_seekers",
-            () -> new TheEndlessBookOfDreamSeekersBlock(BlockBehaviour.Properties.of()
-                    .sound(SoundType.WOOD)
-                    .strength(1.0f)
-                    .requiresCorrectToolForDrops()
-                    .noOcclusion()
-                    .lightLevel(state -> 8)));
-
-    // ==================== 梦境炼药锅（Dream Factory/Cauldron） ====================
-
-    /**
-     * 梦境炼药锅 (dream_cauldron)
-     * GeckoLib 3D 模型，支持方向放置、GUI 交互、水浸属性
-     * 3 输入槽 + 1 输出槽，右键打开炼药界面
-     */
-    public static final DeferredBlock<DreamCauldronBlock> DREAM_CAULDRON = BLOCKS.register("dream_cauldron",
-            () -> new DreamCauldronBlock(BlockBehaviour.Properties.of()
-                    .sound(SoundType.STONE)
-                    .strength(1.0f, 0.5f)
-                    .noOcclusion()));
-
-    // ==================== 融梦水晶箱（GeckoLib 动画） ====================
-
-    /**
-     * 融梦水晶箱（关闭状态）- 使用 GeckoLib 动画的三级随机宝藏箱
-     * animation 属性 0-3：闲置/普通/稀有/传说
-     */
-    public static final DeferredBlock<MeltdreamChestBlock> MELTDREAM_CHEST = BLOCKS.register("meltdream_chest",
-            () -> new MeltdreamChestBlock(BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(1.0f, 0.5f)
-                    .noOcclusion()
-                    .lightLevel(state -> state.getValue(MeltdreamChestBlock.ANIMATION) > 0 ? 8 : 0)));
-
-    /**
-     * 融梦水晶箱（打开状态）- 无动画，右键可打开 GUI
-     */
-    public static final DeferredBlock<MeltdreamChestOpenBlock> MELTDREAM_CHEST_OPEN = BLOCKS.register("meltdream_chest_open",
-            () -> new MeltdreamChestOpenBlock(BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(1.0f, 0.5f)
-                    .noOcclusion()
-                    .lightLevel(state -> 8)));
-
-    // ==================== 简单换皮方块（API 批量注册） ====================
-
-    private static final Map<String, DeferredBlock<Block>> SIMPLE_BLOCKS = BlockAPI.registerSimpleBlocks()
-            .add("dyedream_dirt", Blocks.DIRT, BlockConfig.of()
-                    .mineable("shovel").model("cube_all").tex("all", "pasterdream:block/dyedream_dirt"))
-            .add("dyedream_sand", Blocks.SAND, BlockConfig.of()
-                    .mineable("shovel").model("cube_all").tex("all", "pasterdream:block/dyedream_sand"))
-            .add("dyedream_planks", Blocks.OAK_PLANKS, BlockConfig.of()
-                    .mineable("axe").model("cube_all").tex("all", "pasterdream:block/dyedream_planks"))
-            .add("dyedream_glass", Blocks.GLASS, BlockConfig.of()
-                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_glass").renderType("translucent").blockFactory(TransparentBlock::new))
-            .add("dyedream_ice", Blocks.ICE, BlockConfig.of()
-                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_ice"))
-            .add("dyedream_packed_ice", Blocks.PACKED_ICE, BlockConfig.of()
-                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_packed_ice"))
-            .add("pinkslime_block", Blocks.SLIME_BLOCK, BlockConfig.of()
-                    .model("cube_all").tex("all", "pasterdream:block/pinkslime_block"))
-            .addCustom("dyedream_block",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_block"))
-            .addCustom("dyedreamquartz_block",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz"))
-            .addCustom("smooth_dyedreamquartz_block",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz"))
-            .addCustom("bricks_dyedreamquartz_block",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz_brick"))
-            .addCustom("meltdream_crystal_lamp",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).lightLevel(s -> 15).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/meltdream_crystal_lamp").renderType("translucent"))
-            .add("chiseled_dyedreamquartz_block", Blocks.STONE, BlockConfig.of()
-                    .mineable("pickaxe").model("cube_column").tex("end", "pasterdream:block/dyedreamquartz_chiseled_top").tex("side", "pasterdream:block/dyedreamquartz_chiseled_side"))
-            .addCustom("dyedream_bud_block",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_bud"))
-            .addCustom("icestone",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/icestone"))
-            .add("dyedream_worldtree_leaves", Blocks.OAK_LEAVES, BlockConfig.of()
-                    .mineable("hoe").model("cube_all").tex("all", "pasterdream:block/dyedream_worldtree"))
-            .addCustom("dyedreamquartz_ore",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.COAL_ORE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz_ore"))
-            .addCustom("dyedreamdust_ore",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.COAL_ORE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamdust_ore"))
-            .addCustom("amber_candy_ore",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.COAL_ORE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/amber_candy_ore"))
-            .addCustom("titanium_ore",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.DIAMOND_ORE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/titanium_ore"))
-            .addCustom("windrunner_crystal_ore",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/windrunner_crystal_ore"))
-            .addCustom("congeal_wind_ore",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.COAL_ORE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/congeal_wind_ore"))
-            .add("carve_dyedream_glass", Blocks.GLASS, BlockConfig.of()
-                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/carve_dyedream_glass").renderType("translucent").blockFactory(TransparentBlock::new))
-            .add("gold_carve_dyedream_glass", Blocks.GLASS, BlockConfig.of()
-                    .mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/gold_carve_dyedream_glass").renderType("translucent").blockFactory(TransparentBlock::new))
-            .addCustom("polished_calcite",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/polished_calcite"))
-            .addCustom("calcite_tiles",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/polished_calcite"))
-            .addCustom("dyedream_deepstone",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_deepstone"))
-            .addCustom("dyedream_sandstone",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.SANDSTONE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_sandstone"))
-            .build();
-
-    // ==================== 简单方块公开引用 ====================
-
-    public static final DeferredBlock<Block> DYEDREAM_BLOCK = SIMPLE_BLOCKS.get("dyedream_block");
-    public static final DeferredBlock<Block> DYEDREAM_DIRT = SIMPLE_BLOCKS.get("dyedream_dirt");
-    public static final DeferredBlock<Block> DYEDREAM_SAND = SIMPLE_BLOCKS.get("dyedream_sand");
-    public static final DeferredBlock<Block> DYEDREAM_PLANKS = SIMPLE_BLOCKS.get("dyedream_planks");
-    public static final DeferredBlock<Block> DYEDREAM_GLASS = SIMPLE_BLOCKS.get("dyedream_glass");
-    public static final DeferredBlock<Block> DYEDREAM_ICE = SIMPLE_BLOCKS.get("dyedream_ice");
-    public static final DeferredBlock<Block> DYEDREAM_PACKED_ICE = SIMPLE_BLOCKS.get("dyedream_packed_ice");
-    public static final DeferredBlock<Block> DYEDREAMQUARTZ_BLOCK = SIMPLE_BLOCKS.get("dyedreamquartz_block");
-    public static final DeferredBlock<Block> SMOOTH_DYEDREAMQUARTZ_BLOCK = SIMPLE_BLOCKS.get("smooth_dyedreamquartz_block");
-    public static final DeferredBlock<Block> BRICKS_DYEDREAMQUARTZ_BLOCK = SIMPLE_BLOCKS.get("bricks_dyedreamquartz_block");
-    public static final DeferredBlock<Block> MELTDREAM_CRYSTAL_LAMP = SIMPLE_BLOCKS.get("meltdream_crystal_lamp");
-    public static final DeferredBlock<Block> CHISELED_DYEDREAMQUARTZ_BLOCK = SIMPLE_BLOCKS.get("chiseled_dyedreamquartz_block");
-    public static final DeferredBlock<Block> DYEDREAM_BUD_BLOCK = SIMPLE_BLOCKS.get("dyedream_bud_block");
-    public static final DeferredBlock<Block> PINKSLIME_BLOCK = SIMPLE_BLOCKS.get("pinkslime_block");
-    public static final DeferredBlock<Block> ICESTONE = SIMPLE_BLOCKS.get("icestone");
-    public static final DeferredBlock<Block> DYEDREAM_WORLDTREE_LEAVES = SIMPLE_BLOCKS.get("dyedream_worldtree_leaves");
-    public static final DeferredBlock<Block> DYEDREAMQUARTZ_ORE = SIMPLE_BLOCKS.get("dyedreamquartz_ore");
-    public static final DeferredBlock<Block> DYEDREAMDUST_ORE = SIMPLE_BLOCKS.get("dyedreamdust_ore");
-    public static final DeferredBlock<Block> AMBER_CANDY_ORE = SIMPLE_BLOCKS.get("amber_candy_ore");
-    public static final DeferredBlock<Block> TITANIUM_ORE = SIMPLE_BLOCKS.get("titanium_ore");
-    public static final DeferredBlock<Block> WINDRUNNER_CRYSTAL_ORE = SIMPLE_BLOCKS.get("windrunner_crystal_ore");
-    public static final DeferredBlock<Block> CONGEAL_WIND_ORE = SIMPLE_BLOCKS.get("congeal_wind_ore");
-    public static final DeferredBlock<Block> CARVE_DYEDREAM_GLASS = SIMPLE_BLOCKS.get("carve_dyedream_glass");
-    public static final DeferredBlock<Block> GOLD_CARVE_DYEDREAM_GLASS = SIMPLE_BLOCKS.get("gold_carve_dyedream_glass");
-    public static final DeferredBlock<Block> POLISHED_CALCITE = SIMPLE_BLOCKS.get("polished_calcite");
-    public static final DeferredBlock<Block> CALCITE_TILES = SIMPLE_BLOCKS.get("calcite_tiles");
-    public static final DeferredBlock<Block> DYEDREAM_DEEPSTONE = SIMPLE_BLOCKS.get("dyedream_deepstone");
-    public static final DeferredBlock<Block> DYEDREAM_SANDSTONE = SIMPLE_BLOCKS.get("dyedream_sandstone");
-
-    // ==================== 特殊方块（保持手动注册） ====================
-
-    public static final DeferredBlock<DyedreamLeavesBlock> DYEDREAM_LEAVES = BLOCKS.registerBlock("dyedream_leaves",
-            DyedreamLeavesBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES));
-    public static final DeferredBlock<DyedreamGrassBlock> DYEDREAM_GRASS = BLOCKS.registerBlock("dyedream_grass",
-            DyedreamGrassBlock::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.GRASS_BLOCK));
-
-    public static final DeferredBlock<DyedreamLogBlock> DYEDREAM_LOG = BLOCKS.registerBlock("dyedream_log",
-            DyedreamLogBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG));
-    public static final DeferredBlock<DyedreamLogBlock> DYEDREAM_WOOD = BLOCKS.registerBlock("dyedream_wood",
-            DyedreamLogBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG));
-    public static final DeferredBlock<RotatedPillarBlock> PILLAR_DYEDREAMQUARTZ_BLOCK = BLOCKS.registerBlock("pillar_dyedreamquartz_block",
-            RotatedPillarBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops());
-
-    // ==================== 建筑变体族（API 批量注册） ====================
-
-    private static final VariantSetResult PLANKS_VARIANTS = BlockAPI.createVariantSet("dyedream_planks", () -> DYEDREAM_PLANKS.get())
-            .mineable("axe")
-            .withStairs()
-            .withSlab()
-            .withFence()
-            .withFenceGate(WoodType.OAK)
-            .withDoor(BlockSetType.OAK)
-            .withTrapdoor(BlockSetType.OAK)
-            .withPressurePlate(BlockSetType.OAK)
-            .withButton(BlockSetType.OAK, 30)
-            .build();
-
-    public static final DeferredBlock<StairBlock> DYEDREAM_PLANKS_STAIRS = PLANKS_VARIANTS.stairs();
-    public static final DeferredBlock<SlabBlock> DYEDREAM_PLANKS_SLAB = PLANKS_VARIANTS.slab();
-    public static final DeferredBlock<FenceBlock> DYEDREAM_PLANKS_FENCE = PLANKS_VARIANTS.fence();
-    public static final DeferredBlock<FenceGateBlock> DYEDREAM_PLANKS_FENCEGATE = PLANKS_VARIANTS.fenceGate();
-    public static final DeferredBlock<DoorBlock> DYEDREAM_PLANKS_DOOR = PLANKS_VARIANTS.door();
-    public static final DeferredBlock<TrapDoorBlock> DYEDREAM_PLANKS_TRAPDOOR = PLANKS_VARIANTS.trapdoor();
-    public static final DeferredBlock<PressurePlateBlock> DYEDREAM_PLANKS_PRESSURE_PLATE = PLANKS_VARIANTS.pressurePlate();
-    public static final DeferredBlock<ButtonBlock> DYEDREAM_PLANKS_BUTTON = PLANKS_VARIANTS.button();
-
-    // ==================== 其他变体（手动注册） ====================
-
-    public static final DeferredBlock<StairBlock> DYEDREAM_BUD_STAIRS = BLOCKS.registerBlock("dyedream_bud_stairs",
-            p -> new StairBlock(DYEDREAM_BUD_BLOCK.get().defaultBlockState(), p),
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_STAIRS));
-    public static final DeferredBlock<StairBlock> DYEDREAMQUARTZ_BLOCK_STAIRS = BLOCKS.registerBlock("dyedreamquartz_block_stairs",
-            p -> new StairBlock(DYEDREAMQUARTZ_BLOCK.get().defaultBlockState(), p),
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_STAIRS));
-
-    public static final DeferredBlock<SlabBlock> DYEDREAM_BUD_SLAB = BLOCKS.registerBlock("dyedream_bud_slab",
-            SlabBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_SLAB));
-    public static final DeferredBlock<SlabBlock> DYEDREAMQUARTZ_BLOCK_SLAB = BLOCKS.registerBlock("dyedreamquartz_block_slab",
-            SlabBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_SLAB));
-
-    public static final DeferredBlock<WallBlock> DYEDREAM_BUD_WALL = BLOCKS.registerBlock("dyedream_bud_wall",
-            WallBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.COBBLESTONE_WALL));
-    public static final DeferredBlock<WallBlock> DYEDREAMQUARTZ_BLOCK_WALL = BLOCKS.registerBlock("dyedreamquartz_block_wall",
-            WallBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.COBBLESTONE_WALL));
-
-    // ==================== 钙华变体系列（缺失方块补全） ====================
-
-    public static final DeferredBlock<StairBlock> CALCITE_TILES_STAIRS = BLOCKS.registerBlock("calcite_tiles_stairs",
-            p -> new StairBlock(POLISHED_CALCITE.get().defaultBlockState(), p),
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_STAIRS));
-    public static final DeferredBlock<SlabBlock> CALCITE_TILES_SLAB = BLOCKS.registerBlock("calcite_tiles_slab",
-            SlabBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_SLAB));
-    public static final DeferredBlock<SlabBlock> POLISHED_CALCITE_SLAB = BLOCKS.registerBlock("polished_calcite_slab",
-            SlabBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_SLAB));
-    public static final DeferredBlock<WallBlock> POLISHED_CALCITE_WALL = BLOCKS.registerBlock("polished_calcite_wall",
-            WallBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.COBBLESTONE_WALL));
-    public static final DeferredBlock<WallBlock> CALCITE_TILES_WALL = BLOCKS.registerBlock("calcite_tiles_wall",
-            WallBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.COBBLESTONE_WALL));
-    public static final DeferredBlock<StairBlock> POLISHED_CALCITE_STAIRS = BLOCKS.registerBlock("polished_calcite_stairs",
-            p -> new StairBlock(POLISHED_CALCITE.get().defaultBlockState(), p),
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_STAIRS));
-
-    // ==================== 手动注册方块的 BlockConfig 初始化 ====================
     static {
         BlockAPI.putConfig("dyedream_log", BlockConfig.of()
                 .mineable("axe").model("cube_column")
@@ -471,966 +167,259 @@ public class PDBlocks {
         BlockAPI.putConfig("golden_fox_sculpture", BlockConfig.of());
     }
 
-    // ==================== 玻璃面板和灯笼 ====================
-
-    public static final DeferredBlock<IronBarsBlock> DYEDREAM_GLASSPANE = BLOCKS.registerBlock("dyedream_glasspane",
-            IronBarsBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS_PANE));
-    public static final DeferredBlock<IronBarsBlock> CARVE_DYEDREAM_GLASSPANE = BLOCKS.registerBlock("carve_dyedream_glasspane",
-            IronBarsBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS_PANE));
-    public static final DeferredBlock<IronBarsBlock> GOLD_CARVE_DYEDREAM_GLASSPANE = BLOCKS.registerBlock("gold_carve_dyedream_glasspane",
-            IronBarsBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS_PANE));
-
-    public static final DeferredBlock<DyedreamLarternBlock> DYEDREAM_LARTERN = BLOCKS.registerBlock("dyedream_lartern",
-            DyedreamLarternBlock::new, DyedreamLarternBlock.larternProps());
-
-    // ==================== 自定义模型方块 ====================
-
-    /**
-     * 木板屏风 (dyedream_planks_pane)
-     * 继承 IronBarsBlock，类似玻璃板的连接逻辑，木质纹理
-     */
-    public static final DeferredBlock<DyedreamPlanksPaneBlock> DYEDREAM_PLANKS_PANE = BLOCKS.registerBlock("dyedream_planks_pane",
-            p -> new DyedreamPlanksPaneBlock());
-
-    /**
-     * 粉丁菇 0~3 号变种 (pinkagaric_0/1/2/3)
-     * 粉色蘑菇，不同变种有不同的发光等级
-     */
-    public static final DeferredBlock<Block> PINKAGARIC_0 = BLOCKS.registerBlock("pinkagaric_0",
-            p -> new PinkagaricBlock(p, () -> 0), pinkagaricProps());
-    public static final DeferredBlock<Block> PINKAGARIC_1 = BLOCKS.registerBlock("pinkagaric_1",
-            p -> new PinkagaricBlock(p, () -> 8), pinkagaricProps());
-    public static final DeferredBlock<Block> PINKAGARIC_2 = BLOCKS.registerBlock("pinkagaric_2",
-            p -> new PinkagaricBlock(p.noOcclusion(), () -> 0), pinkagaricProps());
-    public static final DeferredBlock<Block> PINKAGARIC_3 = BLOCKS.registerBlock("pinkagaric_3",
-            p -> new PinkagaricBlock(p.lightLevel(s -> 15), () -> 15), pinkagaricProps());
-
-    private static BlockBehaviour.Properties pinkagaricProps() {
-        return BlockBehaviour.Properties.of()
-                .ignitedByLava()
-                .instrument(NoteBlockInstrument.BASS)
-                .sound(SoundType.WART_BLOCK)
-                .strength(0.3f, 0.1f)
-                .jumpFactor(1.2f);
-    }
-
-    /**
-     * 花蕾 0~2 号变种 (dyedream_bud_0/1/2)
-     * SimpleWaterloggedBlock，AXIS 轴向旋转，发光等级10
-     */
-    public static final DeferredBlock<DyedreamBudBlock> DYEDREAM_BUD_0 = BLOCKS.registerBlock("dyedream_bud_0",
-            p -> new DyedreamBudBlock(p, 0), budProps());
-    public static final DeferredBlock<DyedreamBudBlock> DYEDREAM_BUD_1 = BLOCKS.registerBlock("dyedream_bud_1",
-            p -> new DyedreamBudBlock(p, 1), budProps());
-    public static final DeferredBlock<DyedreamBudBlock> DYEDREAM_BUD_2 = BLOCKS.registerBlock("dyedream_bud_2",
-            p -> new DyedreamBudBlock(p, 2), budProps());
-
-    private static BlockBehaviour.Properties budProps() {
-        return BlockBehaviour.Properties.of()
-                .sound(SoundType.AMETHYST_CLUSTER)
-                .strength(1f, 0f)
-                .lightLevel(s -> 6)
-                .requiresCorrectToolForDrops()
-                .noOcclusion()
-                .hasPostProcess((bs, br, bp) -> true)
-                .emissiveRendering((bs, br, bp) -> true)
-                .isRedstoneConductor((bs, br, bp) -> false);
-    }
-
-    /**
-     * 冰蕾 (ice_bud_0)
-     * SimpleWaterloggedBlock，FACING 六面朝向，发光等级9
-     */
-    public static final DeferredBlock<IceBudBlock> ICE_BUD_0 = BLOCKS.registerBlock("ice_bud_0",
-            IceBudBlock::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.AMETHYST_CLUSTER)
-                    .strength(1f, 0f)
-                    .lightLevel(s -> 5)
-                    .requiresCorrectToolForDrops()
-                    .noOcclusion()
-                    .hasPostProcess((bs, br, bp) -> true)
-                    .emissiveRendering((bs, br, bp) -> true)
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    /**
-     * 染梦荷叶 (dyedream_lily_pad)
-     * 水面植物，继承 FlowerBlock，只能放在水上
-     */
-    public static final DeferredBlock<DyedreamLilyPadBlock> DYEDREAM_LILY_PAD = BLOCKS.registerBlock("dyedream_lily_pad",
-            p -> new DyedreamLilyPadBlock());
-
-    /**
-     * 染梦莲花 (dyedream_lotus)
-     * 水面植物，继承 FlowerBlock，只能放在水上
-     */
-    public static final DeferredBlock<DyedreamLotusBlock> DYEDREAM_LOTUS = BLOCKS.registerBlock("dyedream_lotus",
-            p -> new DyedreamLotusBlock());
-
-    /**
-     * 染梦海草 (dyedream_seagrass)
-     * SimpleWaterloggedBlock，水下植物，XZ 偏移
-     */
-    public static final DeferredBlock<DyedreamSeagrassBlock> DYEDREAM_SEAGRASS = BLOCKS.registerBlock("dyedream_seagrass",
-            p -> new DyedreamSeagrassBlock());
-
-    /**
-     * 染梦树苗 (dyedream_sapling)
-     * 简化版，继承 FlowerBlock，无 EntityBlock
-     */
-    public static final DeferredBlock<DyedreamSaplingBlock> DYEDREAM_SAPLING = BLOCKS.registerBlock("dyedream_sapling",
-            p -> new DyedreamSaplingBlock());
-
-    /**
-     * 染梦裂纹 (dyedream_crack)
-     * 简化版，保留 FACING+WATERLOGGED 属性，发光等级14，无 EntityBlock
-     */
-    public static final DeferredBlock<DyedreamCrackBlock> DYEDREAM_CRACK = BLOCKS.registerBlock("dyedream_crack",
-            p -> new DyedreamCrackBlock());
-
-    // ==================== 云朵方块 ====================
-    public static final DeferredBlock<CloudBlock> CLOUD = BLOCKS.registerBlock("cloud", p -> new CloudBlock());
-    public static final DeferredBlock<DarkCloudBlock> DARK_CLOUD = BLOCKS.registerBlock("dark_cloud", p -> new DarkCloudBlock());
-    public static final DeferredBlock<ThickCloudBlock> THICK_CLOUD = BLOCKS.registerBlock("thick_cloud", p -> new ThickCloudBlock());
-
-    // ==================== 染梦花草（移植自原版模组） ====================
-
-    private static BlockBehaviour.Properties flowerProps() {
-        return BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION);
-    }
-
-    private static BlockBehaviour.Properties doublePlantProps() {
-        return BlockBehaviour.Properties.ofFullCopy(Blocks.SUNFLOWER);
-    }
-
-    // ========== API 批量注册：花（单格 + 双层） ==========
-
-    private static final Map<String, DeferredBlock<Block>> FLOWERS_SINGLE = BlockAPI.batchRegister("flower")
-            .indexList(1, 2, 3, 5, 6, 8, 9, 13, 14, 15, 16, 17)
-            .factory((index, props) -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, props))
-            .withProperties(flowerProps())
-            .build();
-
-    private static final Map<String, DeferredBlock<Block>> FLOWERS_DOUBLE = BlockAPI.batchRegister("flower")
-            .indexList(7, 10, 11, 12, 18)
-            .factory((index, props) -> new DyedreamDoublePlantBlock())
-            .withProperties(doublePlantProps())
-            .build();
-
-    public static final DeferredBlock<Block> FLOWER_1 = FLOWERS_SINGLE.get("flower_1");
-    public static final DeferredBlock<Block> FLOWER_2 = FLOWERS_SINGLE.get("flower_2");
-    public static final DeferredBlock<Block> FLOWER_3 = FLOWERS_SINGLE.get("flower_3");
-    public static final DeferredBlock<Block> FLOWER_5 = FLOWERS_SINGLE.get("flower_5");
-    public static final DeferredBlock<Block> FLOWER_6 = FLOWERS_SINGLE.get("flower_6");
-    public static final DeferredBlock<Block> FLOWER_7 = FLOWERS_DOUBLE.get("flower_7");
-    public static final DeferredBlock<Block> FLOWER_8 = FLOWERS_SINGLE.get("flower_8");
-    public static final DeferredBlock<Block> FLOWER_9 = FLOWERS_SINGLE.get("flower_9");
-    public static final DeferredBlock<Block> FLOWER_10 = FLOWERS_DOUBLE.get("flower_10");
-    public static final DeferredBlock<Block> FLOWER_11 = FLOWERS_DOUBLE.get("flower_11");
-    public static final DeferredBlock<Block> FLOWER_12 = FLOWERS_DOUBLE.get("flower_12");
-    public static final DeferredBlock<Block> FLOWER_13 = FLOWERS_SINGLE.get("flower_13");
-    public static final DeferredBlock<Block> FLOWER_14 = FLOWERS_SINGLE.get("flower_14");
-    public static final DeferredBlock<Block> FLOWER_15 = FLOWERS_SINGLE.get("flower_15");
-    public static final DeferredBlock<Block> FLOWER_16 = FLOWERS_SINGLE.get("flower_16");
-    public static final DeferredBlock<Block> FLOWER_17 = FLOWERS_SINGLE.get("flower_17");
-    public static final DeferredBlock<Block> FLOWER_18 = FLOWERS_DOUBLE.get("flower_18");
-
-    // ========== API 批量注册：草（单格 + 双层） ==========
-
-    private static final Map<String, DeferredBlock<Block>> GRASSES_SINGLE = BlockAPI.batchRegister("grass")
-            .indexList(1, 2, 3, 5, 6, 7, 8, 9, 11, 12, 13, 14)
-            .factory((index, props) -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, props))
-            .withProperties(flowerProps())
-            .build();
-
-    private static final Map<String, DeferredBlock<Block>> GRASSES_DOUBLE = BlockAPI.batchRegister("grass")
-            .indexList(4, 10, 15)
-            .factory((index, props) -> new DyedreamDoublePlantBlock())
-            .withProperties(doublePlantProps())
-            .build();
-
-    public static final DeferredBlock<Block> GRASS_1 = GRASSES_SINGLE.get("grass_1");
-    public static final DeferredBlock<Block> GRASS_2 = GRASSES_SINGLE.get("grass_2");
-    public static final DeferredBlock<Block> GRASS_3 = GRASSES_SINGLE.get("grass_3");
-    public static final DeferredBlock<Block> GRASS_4 = GRASSES_DOUBLE.get("grass_4");
-    public static final DeferredBlock<Block> GRASS_5 = GRASSES_SINGLE.get("grass_5");
-    public static final DeferredBlock<Block> GRASS_6 = GRASSES_SINGLE.get("grass_6");
-    public static final DeferredBlock<Block> GRASS_7 = GRASSES_SINGLE.get("grass_7");
-    public static final DeferredBlock<Block> GRASS_8 = GRASSES_SINGLE.get("grass_8");
-    public static final DeferredBlock<Block> GRASS_9 = GRASSES_SINGLE.get("grass_9");
-    public static final DeferredBlock<Block> GRASS_10 = GRASSES_DOUBLE.get("grass_10");
-    public static final DeferredBlock<Block> GRASS_11 = GRASSES_SINGLE.get("grass_11");
-    public static final DeferredBlock<Block> GRASS_12 = GRASSES_SINGLE.get("grass_12");
-    public static final DeferredBlock<Block> GRASS_13 = GRASSES_SINGLE.get("grass_13");
-    public static final DeferredBlock<Block> GRASS_14 = GRASSES_SINGLE.get("grass_14");
-    public static final DeferredBlock<Block> GRASS_15 = GRASSES_DOUBLE.get("grass_15");
-
-    // ==================== Phase 1: 移植物块材料 ====================
-
-    // ========== 存储方块 ==========
-
-    public static final DeferredBlock<Block> TITANIUM_BLOCK = BLOCKS.registerBlock("titanium_block", Block::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK));
-
-    public static final DeferredBlock<Block> RAW_TITANIUM_BLOCK = BLOCKS.registerBlock("raw_titanium_block", Block::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.RAW_IRON_BLOCK));
-
-    public static final DeferredBlock<Block> MOLTENGOLD_BLOCK = BLOCKS.registerBlock("moltengold_block", Block::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).lightLevel(s -> 15));
-
-    public static final DeferredBlock<Block> BLACKMETAL_BLOCK = BLOCKS.registerBlock("blackmetal_block", Block::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK));
-
-    public static final DeferredBlock<Block> CHARGED_AMETHYST_BLOCK = BLOCKS.registerBlock("charged_amethyst_block", Block::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK));
-
-    public static final DeferredBlock<Block> WIND_IRON_BLOCK = BLOCKS.registerBlock("wind_iron_block", Block::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK));
-
-    // ========== 矿石方块 ==========
-
-    public static final DeferredBlock<Block> DEEPSLATE_TITANIUM_ORE = BLOCKS.registerBlock("deepslate_titanium_ore", Block::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_IRON_ORE));
-
-    public static final DeferredBlock<Block> MOLTENGOLD_ORE = BLOCKS.registerBlock("moltengold_ore", Block::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.NETHER_GOLD_ORE));
-
-    public static final DeferredBlock<Block> SOUL_ORE = BLOCKS.registerBlock("soul_ore", Block::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.SOUL_SAND).strength(3f, 3f).requiresCorrectToolForDrops());
-
-    // ========== 装饰/植物方块（自定义类） ==========
-
-    public static final DeferredBlock<Pebble0Block> PEBBLE_0 = BLOCKS.registerBlock("pebble_0", Pebble0Block::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).noOcclusion()
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    public static final DeferredBlock<ShadowLight0Block> SHADOW_LIGHT_0 = BLOCKS.registerBlock("shadow_light_0", ShadowLight0Block::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).lightLevel(s -> 15)
-                    .requiresCorrectToolForDrops()
-                    .hasPostProcess((bs, br, bp) -> true)
-                    .emissiveRendering((bs, br, bp) -> true));
-
-    public static final DeferredBlock<Vine0Block> VINE_0 = BLOCKS.registerBlock("vine_0", Vine0Block::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.VINE).noCollission().lightLevel(s -> 14));
-
-    public static final DeferredBlock<GoldenrodBlock> GOLDENROD = BLOCKS.registerBlock("goldenrod",
-            GoldenrodBlock::new, flowerProps());
-
-    public static final DeferredBlock<Crop0ABlock> CROP_0A = BLOCKS.registerBlock("crop_0a",
-            Crop0ABlock::new, flowerProps());
-
-    public static final DeferredBlock<Crop1ABlock> CROP_1A = BLOCKS.registerBlock("crop_1a",
-            Crop1ABlock::new, flowerProps());
-
-    public static final DeferredBlock<Crop3ABlock> CROP_3A = BLOCKS.registerBlock("crop_3a",
-            Crop3ABlock::new, flowerProps());
-
-    public static final DeferredBlock<Crop4ABlock> CROP_4A = BLOCKS.registerBlock("crop_4a",
-            Crop4ABlock::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.SWEET_BERRY_BUSH).noCollission());
-
-    // ========== 作物系列补全 ==========
-
-    public static final DeferredBlock<Crop2ABlock> CROP_2A = BLOCKS.registerBlock("crop_2a",
-            Crop2ABlock::new, flowerProps());
-
-    // ==================== 流体方块 ====================
-
-    /**
-     * 融梦涌泉流体方块 (meltdream_liquid)
-     * 使用 MeltdreamLiquidBlock 自定义实现，含粒子效果和发光渲染
-     */
-    public static final DeferredBlock<MeltdreamLiquidBlock> MELTDREAM_LIQUID = BLOCKS.registerBlock("meltdream_liquid",
-            p -> new MeltdreamLiquidBlock());
-
-    // ==================== BOSS 相关方块 ====================
-
-    /**
-     * 亚伦柯斯竞技场传送门方块 (aaroncos_arena_portals)
-     * 位于 BOSS 竞技场入口的不可破坏传送门方块，触碰时传送至竞技场维度
-     * 继承 SlabBlock 实现半砖形状，无碰撞箱，发光等级 15
-     */
-    public static final DeferredBlock<SlabBlock> AARONCOS_ARENA_PORTALS = BLOCKS.registerBlock("aaroncos_arena_portals",
-            p -> new AaroncosArenaPortalsBlock(), BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.GLASS)
-                    .strength(-1, 3600000)
-                    .lightLevel(s -> 15)
-                    .noCollission()
-                    .noOcclusion()
-                    .hasPostProcess((bs, br, bp) -> true)
-                    .emissiveRendering((bs, br, bp) -> true)
-                    .isRedstoneConductor((bs, br, bp) -> false)
-                    .dynamicShape());
-
-    /**
-     * 亚伦柯斯之触战利品箱 (aaroncos_hand_chest)
-     * BOSS 战后的战利品箱，含 GeckoLib 3D 模型和动画
-     */
-    public static final DeferredBlock<AaroncosHandChestBlock> AARONCOS_HAND_CHEST = BLOCKS.registerBlock("aaroncos_hand_chest",
-            AaroncosHandChestBlock::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(1.0f, 0.5f)
-                    .noOcclusion());
-
-    /**
-     * 暗影漩涡 (shadow_vortex)
-     * BOSS 右手涡流技能生成的临时方块，含 GeckoLib 3D 模型和动画
-     * 无碰撞、无掉落、持续约 5 秒后自动消失
-     */
-    public static final DeferredBlock<ShadowVortexBlock> SHADOW_VORTEX = BLOCKS.registerBlock("shadow_vortex",
-            ShadowVortexBlock::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(-1, 3600000)
-                    .noCollission()
-                    .noOcclusion()
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    /**
-     * 亚伦柯斯之手生成激活方块 (aaroncoshandspawnblock)
-     * 放置后周期性检测并激活 BOSS 战，含 GeckoLib 3D 模型和动画
-     * 不可破坏，发光等级 12
-     */
-    public static final DeferredBlock<AaroncosHandSpawnBlock> AARONCOSHANDSPAWNBLOCK = BLOCKS.registerBlock("aaroncoshandspawnblock",
-            AaroncosHandSpawnBlock::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(-1, 3600000)
-                    .lightLevel(s -> 12)
-                    .noOcclusion()
-                    .hasPostProcess((bs, br, bp) -> true)
-                    .emissiveRendering((bs, br, bp) -> true)
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    // ==================== 阴影维度基础方块 ====================
-
-    /** 阴影方块（下落方块，类似沙子） */
-    public static final DeferredBlock<Block> SHADOW_BLOCK = BLOCKS.registerBlock("shadow_block",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.WOOL)
-                    .strength(0.45f, 0.5f)
-                    .noOcclusion()
-                    .isRedstoneConductor((bs, br, bp) -> false)
-                    .requiresCorrectToolForDrops());
-
-    /** 厚阴影方块（不下落，硬度更高） */
-    public static final DeferredBlock<Block> THICK_SHADOW_BLOCK = BLOCKS.registerBlock("thick_shadow_block",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.WOOL)
-                    .strength(1.0f, 0.75f)
-                    .noOcclusion()
-                    .isRedstoneConductor((bs, br, bp) -> false)
-                    .requiresCorrectToolForDrops());
-
-    /** 阴影石 */
-    public static final DeferredBlock<Block> SHADOW_STONE = BLOCKS.registerBlock("shadow_stone",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.DEEPSLATE)
-                    .strength(1.5f, 1.0f)
-                    .requiresCorrectToolForDrops());
-
-    /** 阴影石砖 */
-    public static final DeferredBlock<Block> SHADOW_STONE_BRICK = BLOCKS.registerBlock("shadow_stone_brick",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.DEEPSLATE)
-                    .strength(1.5f, 1.0f)
-                    .requiresCorrectToolForDrops());
-
-    /** 阴影石砖块（复数形式，纹理不同） */
-    public static final DeferredBlock<Block> SHADOW_STONE_BRICKS = BLOCKS.registerBlock("shadow_stone_bricks",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.DEEPSLATE)
-                    .strength(1.5f, 1.0f)
-                    .requiresCorrectToolForDrops());
-
-    /** 阴影石瓦砖 */
-    public static final DeferredBlock<Block> SHADOW_STONE_TILES = BLOCKS.registerBlock("shadow_stone_tiles",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.DEEPSLATE)
-                    .strength(1.5f, 1.0f)
-                    .requiresCorrectToolForDrops());
-
-    /** 雕凿阴影石砖 */
-    public static final DeferredBlock<Block> CHISELED_SHADOW_STONE_BRICK = BLOCKS.registerBlock("chiseled_shadow_stone_brick",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.DEEPSLATE)
-                    .strength(1.5f, 1.0f)
-                    .requiresCorrectToolForDrops());
-
-    /** 裂纹阴影石砖 */
-    public static final DeferredBlock<Block> CRACKED_SHADOW_STONE_BRICK = BLOCKS.registerBlock("cracked_shadow_stone_brick",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.DEEPSLATE)
-                    .strength(1.5f, 1.0f)
-                    .requiresCorrectToolForDrops());
-
-    /** 阴影菌丝 */
-    public static final DeferredBlock<Block> SHADOW_NYLIUM = BLOCKS.registerBlock("shadow_nylium",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.NYLIUM)
-                    .strength(0.4f)
-                    .requiresCorrectToolForDrops());
-
-    /** 阴影菌光体（发光等级 12） */
-    public static final DeferredBlock<Block> SHADOW_SHROOMLIGHT = BLOCKS.registerBlock("shadow_shroomlight",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.WART_BLOCK)
-                    .strength(1.0f)
-                    .lightLevel(s -> 12)
-                    .requiresCorrectToolForDrops());
-
-    /** 阴影疣块 */
-    public static final DeferredBlock<Block> SHADOW_WART_BLOCK = BLOCKS.registerBlock("shadow_wart_block",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.WART_BLOCK)
-                    .strength(1.0f)
-                    .requiresCorrectToolForDrops());
-
-    /** 阴影菌柄（朝向轴） */
-    public static final DeferredBlock<RotatedPillarBlock> SHADOW_STEM = BLOCKS.registerBlock("shadow_stem",
-            RotatedPillarBlock::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.STEM)
-                    .strength(2.0f, 3.0f)
-                    .requiresCorrectToolForDrops());
-
-    /** 阴影菌核（6 面皮） */
-    public static final DeferredBlock<RotatedPillarBlock> SHADOW_HYPHAE = BLOCKS.registerBlock("shadow_hyphae",
-            RotatedPillarBlock::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.STEM)
-                    .strength(2.0f, 3.0f)
-                    .requiresCorrectToolForDrops());
-
-    /** 去皮阴影菌柄 */
-    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_SHADOW_STEM = BLOCKS.registerBlock("stripped_shadow_stem",
-            RotatedPillarBlock::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.STEM)
-                    .strength(2.0f, 3.0f)
-                    .requiresCorrectToolForDrops());
-
-    /** 去皮阴影菌核 */
-    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_SHADOW_HYPHAE = BLOCKS.registerBlock("stripped_shadow_hyphae",
-            RotatedPillarBlock::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.STEM)
-                    .strength(2.0f, 3.0f)
-                    .requiresCorrectToolForDrops());
-
-    /** 阴影木板 */
-    public static final DeferredBlock<Block> SHADOW_PLANKS = BLOCKS.registerBlock("shadow_planks",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.WOOD)
-                    .strength(2.0f, 3.0f)
-                    .requiresCorrectToolForDrops());
-
-    // ==================== 阴影石砖变体族（API 批量注册） ====================
-
-    private static final VariantSetResult SHADOW_STONE_BRICK_VARIANTS = BlockAPI.createVariantSet("shadow_stone_brick", () -> SHADOW_STONE_BRICK.get())
-            .mineable("pickaxe")
-            .withStairs()
-            .withSlab()
-            .withWall()
-            .build();
-
-    public static final DeferredBlock<StairBlock> SHADOW_STONE_BRICK_STAIRS = SHADOW_STONE_BRICK_VARIANTS.stairs();
-    public static final DeferredBlock<SlabBlock> SHADOW_STONE_BRICK_SLAB = SHADOW_STONE_BRICK_VARIANTS.slab();
-    public static final DeferredBlock<WallBlock> SHADOW_STONE_BRICK_WALL = SHADOW_STONE_BRICK_VARIANTS.wall();
-
-    private static final VariantSetResult SHADOW_STONE_BRICKS_VARIANTS = BlockAPI.createVariantSet("shadow_stone_bricks", () -> SHADOW_STONE_BRICKS.get())
-            .mineable("pickaxe")
-            .withStairs()
-            .withSlab()
-            .withWall()
-            .build();
-
-    public static final DeferredBlock<StairBlock> SHADOW_STONE_BRICKS_STAIRS = SHADOW_STONE_BRICKS_VARIANTS.stairs();
-    public static final DeferredBlock<SlabBlock> SHADOW_STONE_BRICKS_SLAB = SHADOW_STONE_BRICKS_VARIANTS.slab();
-    public static final DeferredBlock<WallBlock> SHADOW_STONE_BRICKS_WALL = SHADOW_STONE_BRICKS_VARIANTS.wall();
-
-    private static final VariantSetResult SHADOW_STONE_TILES_VARIANTS = BlockAPI.createVariantSet("shadow_stone_tiles", () -> SHADOW_STONE_TILES.get())
-            .mineable("pickaxe")
-            .withStairs()
-            .withSlab()
-            .withWall()
-            .build();
-
-    public static final DeferredBlock<StairBlock> SHADOW_STONE_TILES_STAIRS = SHADOW_STONE_TILES_VARIANTS.stairs();
-    public static final DeferredBlock<SlabBlock> SHADOW_STONE_TILES_SLAB = SHADOW_STONE_TILES_VARIANTS.slab();
-    public static final DeferredBlock<WallBlock> SHADOW_STONE_TILES_WALL = SHADOW_STONE_TILES_VARIANTS.wall();
-
-    // ==================== 阴影木板变体族（API 批量注册） ====================
-
-    private static final VariantSetResult SHADOW_PLANKS_VARIANTS = BlockAPI.createVariantSet("shadow_planks", () -> SHADOW_PLANKS.get())
-            .mineable("axe")
-            .withStairs()
-            .withSlab()
-            .withFence()
-            .withFenceGate(WoodType.OAK)
-            .withDoor(BlockSetType.OAK)
-            .withTrapdoor(BlockSetType.OAK)
-            .withPressurePlate(BlockSetType.OAK)
-            .withButton(BlockSetType.OAK, 30)
-            .build();
-
-    public static final DeferredBlock<StairBlock> SHADOW_PLANKS_STAIRS = SHADOW_PLANKS_VARIANTS.stairs();
-    public static final DeferredBlock<SlabBlock> SHADOW_PLANKS_SLAB = SHADOW_PLANKS_VARIANTS.slab();
-    public static final DeferredBlock<FenceBlock> SHADOW_PLANKS_FENCE = SHADOW_PLANKS_VARIANTS.fence();
-    public static final DeferredBlock<FenceGateBlock> SHADOW_PLANKS_FENCEGATE = SHADOW_PLANKS_VARIANTS.fenceGate();
-    public static final DeferredBlock<DoorBlock> SHADOW_PLANKS_DOOR = SHADOW_PLANKS_VARIANTS.door();
-    public static final DeferredBlock<TrapDoorBlock> SHADOW_PLANKS_TRAPDOOR = SHADOW_PLANKS_VARIANTS.trapdoor();
-    public static final DeferredBlock<PressurePlateBlock> SHADOW_PLANKS_PRESSURE_PLATE = SHADOW_PLANKS_VARIANTS.pressurePlate();
-    public static final DeferredBlock<ButtonBlock> SHADOW_PLANKS_BUTTON = SHADOW_PLANKS_VARIANTS.button();
-
-    /** 阴影玻璃板（继承 IronBarsBlock，玻璃板式连接渲染） */
-    public static final DeferredBlock<IronBarsBlock> SHADOW_PLANKS_PANE = BLOCKS.registerBlock("shadow_planks_pane",
-            IronBarsBlock::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.WOOD)
-                    .strength(2.0f, 3.0f));
-
-    // ==================== 暗影地牢方块（BOSS 竞技场场地） ====================
-
-    /** 暗影地牢砖 0 — 基础砖（不可破坏，竞技场墙体） */
-    public static final DeferredBlock<Block> SHADOW_DUNGEON_BLOCK_0 = BLOCKS.registerBlock("shadow_dungeon_block_0",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(-1.0f, 3600000.0f)
-                    .lightLevel((bs) -> 0));
-
-    /** 暗影地牢砖 1 — 带顶底花纹砖（不可破坏，竞技场墙体） */
-    public static final DeferredBlock<Block> SHADOW_DUNGEON_BLOCK_1 = BLOCKS.registerBlock("shadow_dungeon_block_1",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(-1.0f, 3600000.0f));
-
-    /** 暗影地牢砖 2 — 花纹砖（不可破坏，竞技场墙体） */
-    public static final DeferredBlock<Block> SHADOW_DUNGEON_BLOCK_2 = BLOCKS.registerBlock("shadow_dungeon_block_2",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(-1.0f, 3600000.0f));
-
-    /** 暗影地牢砖 3 — 雕刻砖（不可破坏，竞技场墙体） */
-    public static final DeferredBlock<Block> SHADOW_DUNGEON_BLOCK_3 = BLOCKS.registerBlock("shadow_dungeon_block_3",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(-1.0f, 3600000.0f));
-
-    /** 暗影地牢砖 4 — 发光砖（不可破坏，竞技场光源） */
-    public static final DeferredBlock<Block> SHADOW_DUNGEON_BLOCK_4 = BLOCKS.registerBlock("shadow_dungeon_block_4",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(-1.0f, 3600000.0f)
-                    .lightLevel((bs) -> 8));
-
-    /** 暗影地牢砖 5 — 楼梯形态（不可破坏，竞技场楼梯） */
-    public static final DeferredBlock<StairBlock> SHADOW_DUNGEON_BLOCK_5 = BLOCKS.registerBlock("shadow_dungeon_block_5",
-            p -> new StairBlock(SHADOW_DUNGEON_BLOCK_2.get().defaultBlockState(), p),
-            BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(-1.0f, 3600000.0f));
-
-    /** 暗影地牢砖 6 — 台阶形态（不可破坏，竞技场台阶） */
-    public static final DeferredBlock<SlabBlock> SHADOW_DUNGEON_BLOCK_6 = BLOCKS.registerBlock("shadow_dungeon_block_6",
-            SlabBlock::new,
-            BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(-1.0f, 3600000.0f));
-
-    /** 暗影竞技场地面砖 0 — 竞技场地面（不可破坏） */
-    public static final DeferredBlock<Block> SHADOW_ARENA_BLOCK_0 = BLOCKS.registerBlock("shadow_arena_block_0",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(-1.0f, 3600000.0f));
-
-    // ==================== 暗影地牢功能性方块 ====================
-
-    /** 松动暗影地牢砖 — 可破坏版地牢砖（需正确工具） */
-    public static final DeferredBlock<Block> LOOSE_SHADOW_DUNGEON_BLOCK = BLOCKS.registerBlock("loose_shadow_dungeon_block",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(10.0f)
-                    .requiresCorrectToolForDrops());
-
-    /** 暗影地牢门 0 — 水平薄板门（不可破坏，铁链声） */
-    public static final DeferredBlock<ShadowDungeonDoorBlock> SHADOW_DUNGEON_DOOR_0 = BLOCKS.registerBlock("shadow_dungeon_door_0",
-            p -> new ShadowDungeonDoorBlock(p, Block.box(0, 7, 0, 16, 9, 16)),
-            BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.CHAIN)
-                    .strength(-1.0f, 3600000.0f)
-                    .noOcclusion()
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    /** 暗影地牢门 1 — 门0的无交互版本 */
-    public static final DeferredBlock<ShadowDungeonDoorBlock> SHADOW_DUNGEON_DOOR_1 = BLOCKS.registerBlock("shadow_dungeon_door_1",
-            p -> new ShadowDungeonDoorBlock(p, Block.box(0, 7, 0, 16, 9, 16)),
-            BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.CHAIN)
-                    .strength(-1.0f, 3600000.0f)
-                    .noOcclusion()
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    /** 暗影地牢门 2 — 整高门（不可破坏，石声） */
-    public static final DeferredBlock<ShadowDungeonDoorBlock> SHADOWDUNGEONDOOR_2 = BLOCKS.registerBlock("shadowdungeondoor_2",
-            p -> new ShadowDungeonDoorBlock(p, Block.box(0, 0, 4, 16, 16, 12)),
-            BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(-1.0f, 3600000.0f)
-                    .noOcclusion()
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    /** 暗影地牢门 3 — 门2的无交互版本（深板岩声） */
-    public static final DeferredBlock<ShadowDungeonDoorBlock> SHADOWDUNGEONDOOR_3 = BLOCKS.registerBlock("shadowdungeondoor_3",
-            p -> new ShadowDungeonDoorBlock(p, Block.box(0, 0, 4, 16, 16, 12)),
-            BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.DEEPSLATE)
-                    .strength(-1.0f, 3600000.0f)
-                    .noOcclusion()
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    /** 暗影地牢钥匙 0 — 墙挂式（可破坏，掉钥匙物品） */
-    public static final DeferredBlock<ShadowDungeonKeyBlock> SHADOW_DUNGEON_KEY_0 = BLOCKS.registerBlock("shadow_dungeon_key_0",
-            p -> new ShadowDungeonKeyBlock(p, true),
-            BlockBehaviour.Properties.of()
-                    .sound(SoundType.CHAIN)
-                    .strength(0.1f, 50.0f)
-                    .noOcclusion()
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    /** 暗影地牢钥匙 1 — 地置式（可破坏，掉钥匙物品） */
-    public static final DeferredBlock<ShadowDungeonKeyBlock> SHADOW_DUNGEON_KEY_1 = BLOCKS.registerBlock("shadow_dungeon_key_1",
-            p -> new ShadowDungeonKeyBlock(p, false),
-            BlockBehaviour.Properties.of()
-                    .sound(SoundType.CHAIN)
-                    .strength(0.1f, 50.0f)
-                    .noOcclusion()
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    /** 暗影蜡烛 — 发光等级13，易破坏 */
-    public static final DeferredBlock<Block> SHADOWCANDLE = BLOCKS.registerBlock("shadowcandle",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.CANDLE)
-                    .strength(0.1f, 0.0f)
-                    .lightLevel(s -> 13)
-                    .noOcclusion()
-                    .emissiveRendering((bs, br, bp) -> true)
-                    .hasPostProcess((bs, br, bp) -> true)
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    /** 暗影高炉核心 — 多方块结构核心（可破坏，金属声） */
-    public static final DeferredBlock<Block> SHADOW_BLAST_FURNACE_CORE = BLOCKS.registerBlock("shadow_blast_furnace_core",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.METAL)
-                    .strength(3.0f, 1.0f)
-                    .requiresCorrectToolForDrops());
-
-    // ==================== 暗影书架系列（4种样式） ====================
-
-    /** 暗影书架 0 — 朝向方块，可被岩浆点燃 */
-    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF_0 = BLOCKS.registerBlock("shadowshelf_0",
-            ShadowshelfBlock::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASS)
-                    .sound(SoundType.WOOD)
-                    .strength(2.0f, 3.0f)
-                    .ignitedByLava()
-                    .requiresCorrectToolForDrops());
-
-    /** 暗影书架 1 */
-    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF_1 = BLOCKS.registerBlock("shadowshelf_1",
-            ShadowshelfBlock::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASS)
-                    .sound(SoundType.WOOD)
-                    .strength(2.0f, 3.0f)
-                    .ignitedByLava()
-                    .requiresCorrectToolForDrops());
-
-    /** 暗影书架 2 */
-    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF_2 = BLOCKS.registerBlock("shadowshelf_2",
-            ShadowshelfBlock::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASS)
-                    .sound(SoundType.WOOD)
-                    .strength(2.0f, 3.0f)
-                    .ignitedByLava()
-                    .requiresCorrectToolForDrops());
-
-    /** 暗影书架 3 */
-    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF_3 = BLOCKS.registerBlock("shadowshelf_3",
-            ShadowshelfBlock::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASS)
-                    .sound(SoundType.WOOD)
-                    .strength(2.0f, 3.0f)
-                    .ignitedByLava()
-                    .requiresCorrectToolForDrops());
-
-    // ==================== 暗影裂隙系列（6种发光等级） ====================
-
-    /** 暗影裂隙 0 — 发光等级4，完全挡光 */
-    public static final DeferredBlock<Block> SHADOW_FISSURE_0 = BLOCKS.registerBlock("shadow_fissure_0",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.GLASS)
-                    .strength(-1.0f, 3600000.0f)
-                    .lightLevel(s -> 4)
-                    .emissiveRendering((bs, br, bp) -> true)
-                    .hasPostProcess((bs, br, bp) -> true));
-
-    /** 暗影裂隙 1 — 发光等级4，玻璃式透明 */
-    public static final DeferredBlock<Block> SHADOW_FISSURE_1 = BLOCKS.registerBlock("shadow_fissure_1",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.GLASS)
-                    .strength(-1.0f, 3600000.0f)
-                    .lightLevel(s -> 4)
-                    .noOcclusion()
-                    .emissiveRendering((bs, br, bp) -> true)
-                    .hasPostProcess((bs, br, bp) -> true)
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    /** 暗影裂隙 2 — 发光等级7，完全挡光 */
-    public static final DeferredBlock<Block> SHADOW_FISSURE_2 = BLOCKS.registerBlock("shadow_fissure_2",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.GLASS)
-                    .strength(-1.0f, 3600000.0f)
-                    .lightLevel(s -> 7)
-                    .emissiveRendering((bs, br, bp) -> true)
-                    .hasPostProcess((bs, br, bp) -> true));
-
-    /** 暗影裂隙 3 — 发光等级7，玻璃式透明 */
-    public static final DeferredBlock<Block> SHADOW_FISSURE_3 = BLOCKS.registerBlock("shadow_fissure_3",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.GLASS)
-                    .strength(-1.0f, 3600000.0f)
-                    .lightLevel(s -> 7)
-                    .noOcclusion()
-                    .emissiveRendering((bs, br, bp) -> true)
-                    .hasPostProcess((bs, br, bp) -> true)
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    /** 暗影裂隙 4 — 发光等级10，完全挡光 */
-    public static final DeferredBlock<Block> SHADOW_FISSURE_4 = BLOCKS.registerBlock("shadow_fissure_4",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.GLASS)
-                    .strength(-1.0f, 3600000.0f)
-                    .lightLevel(s -> 10)
-                    .emissiveRendering((bs, br, bp) -> true)
-                    .hasPostProcess((bs, br, bp) -> true));
-
-    /** 暗影裂隙 5 — 发光等级10，玻璃式透明 */
-    public static final DeferredBlock<Block> SHADOW_FISSURE_5 = BLOCKS.registerBlock("shadow_fissure_5",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.GLASS)
-                    .strength(-1.0f, 3600000.0f)
-                    .lightLevel(s -> 10)
-                    .noOcclusion()
-                    .emissiveRendering((bs, br, bp) -> true)
-                    .hasPostProcess((bs, br, bp) -> true)
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    // ==================== 染梦维度剩余方块（Phase 2） ====================
-
-    /** 大气泡方块 */
-    public static final DeferredBlock<Block> BIG_BUBBLE = BLOCKS.registerBlock("big_bubble",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.WET_GRASS)
-                    .strength(0.1f)
-                    .noOcclusion()
-                    .isRedstoneConductor((bs, br, bp) -> false));
-
-    /** 风行者水晶方块 */
-    public static final DeferredBlock<Block> WINDRUNNER_CRYSTAL_BLOCK = BLOCKS.registerBlock("windrunner_crystal_block",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(1.5f)
-                    .lightLevel(s -> 10)
-                    .requiresCorrectToolForDrops());
-
-    /** 凝结风方块 */
-    public static final DeferredBlock<Block> CONGEAL_WIND_BLOCK = BLOCKS.registerBlock("congeal_wind_block",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(0.5f)
-                    .noOcclusion());
-
-    /** 星呼方块 */
-    public static final DeferredBlock<Block> STARCALL_BLOCK = BLOCKS.registerBlock("starcall_block",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(1.5f)
-                    .lightLevel(s -> 15)
-                    .requiresCorrectToolForDrops());
-
-    /** 星呼裂纹 */
-    public static final DeferredBlock<Block> STARCALL_CRACK = BLOCKS.registerBlock("starcall_crack",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(-1.0f, 3600000.0f)
-                    .lightLevel(s -> 15)
-                    .noOcclusion()
-                    .emissiveRendering((bs, br, bp) -> true)
-                    .hasPostProcess((bs, br, bp) -> true));
-
-    /** 青色石头 */
-    public static final DeferredBlock<Block> CYAN_STONE = BLOCKS.registerBlock("cyan_stone",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(1.5f)
-                    .requiresCorrectToolForDrops());
-
-    /** 青色苔藓石头 */
-    public static final DeferredBlock<Block> CYAN_MOSS_STONE = BLOCKS.registerBlock("cyan_moss_stone",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(1.0f)
-                    .requiresCorrectToolForDrops());
-
-    /** 白砂 */
-    public static final DeferredBlock<Block> WHITE_SAND = BLOCKS.registerBlock("white_sand",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.SAND)
-                    .strength(0.5f));
-
-    /** 盐块 */
-    public static final DeferredBlock<Block> SALT_BLOCK = BLOCKS.registerBlock("salt_block",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.SAND)
-                    .strength(0.5f));
-
-    /** 透明玻璃 */
-    public static final DeferredBlock<Block> CLARITY_GLASS = BLOCKS.registerBlock("clarity_glass",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(0.3f)
-                    .noOcclusion());
-
-    /** 雕刻透明玻璃 */
-    public static final DeferredBlock<Block> CARVE_CLARITY_GLASS = BLOCKS.registerBlock("carve_clarity_glass",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(0.3f)
-                    .noOcclusion());
-
-    /** 边框透明玻璃 */
-    public static final DeferredBlock<Block> FRAME_CLARITY_GLASS = BLOCKS.registerBlock("frame_clarity_glass",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(0.3f)
-                    .noOcclusion());
-
-    /** 透明玻璃板 */
-    public static final DeferredBlock<IronBarsBlock> CLARITY_GLASSPANE = BLOCKS.registerBlock("clarity_glasspane",
-            IronBarsBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS_PANE));
-
-    /** 雕刻透明玻璃板 */
-    public static final DeferredBlock<IronBarsBlock> CARVE_CLARITY_GLASSPANE = BLOCKS.registerBlock("carve_clarity_glasspane",
-            IronBarsBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS_PANE));
-
-    /** 边框透明玻璃板 */
-    public static final DeferredBlock<IronBarsBlock> FRAME_CLARITY_GLASSPANE = BLOCKS.registerBlock("frame_clarity_glasspane",
-            IronBarsBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS_PANE));
-
-    /** 破风幕 */
-    public static final DeferredBlock<Block> BREAKWIND_CURTAIN = BLOCKS.registerBlock("breakwind_curtain",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.WOOL)
-                    .strength(0.1f)
-                    .noOcclusion()
-                    .noCollission());
-
-    /** 风铁栏杆 */
-    public static final DeferredBlock<IronBarsBlock> WINDIRON_BARS = BLOCKS.registerBlock("windiron_bars",
-            IronBarsBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BARS));
-
-    /** 青色石头砖 */
-    public static final DeferredBlock<Block> CYAN_STONE_BRICKS = BLOCKS.registerBlock("cyan_stone_bricks",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(1.5f)
-                    .requiresCorrectToolForDrops());
-
-    /** 青色石头砖楼梯 */
-    public static final DeferredBlock<StairBlock> CYAN_STONE_BRICK_STAIRS = BLOCKS.registerBlock("cyan_stone_brick_stairs",
-            p -> new StairBlock(CYAN_STONE_BRICKS.get().defaultBlockState(), p),
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_STAIRS));
-
-    /** 青色石头砖台阶 */
-    public static final DeferredBlock<SlabBlock> CYAN_STONE_BRICK_SLAB = BLOCKS.registerBlock("cyan_stone_brick_slab",
-            SlabBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_SLAB));
-
-    /** 青色石头砖墙 */
-    public static final DeferredBlock<WallBlock> CYAN_STONE_BRICK_WALL = BLOCKS.registerBlock("cyan_stone_brick_wall",
-            WallBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.COBBLESTONE_WALL));
-
-    /** 苔藓青色石头砖 */
-    public static final DeferredBlock<Block> MOSSY_CYAN_STONE_BRICKS = BLOCKS.registerBlock("mossy_cyan_stone_bricks",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(1.5f)
-                    .requiresCorrectToolForDrops());
-
-    /** 苔藓青色石头砖楼梯 */
-    public static final DeferredBlock<StairBlock> MOSSY_CYAN_STONE_BRICK_STAIRS = BLOCKS.registerBlock("mossy_cyan_stone_brick_stairs",
-            p -> new StairBlock(MOSSY_CYAN_STONE_BRICKS.get().defaultBlockState(), p),
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_STAIRS));
-
-    /** 苔藓青色石头砖台阶 */
-    public static final DeferredBlock<SlabBlock> MOSSY_CYAN_STONE_BRICK_SLAB = BLOCKS.registerBlock("mossy_cyan_stone_brick_slab",
-            SlabBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_SLAB));
-
-    /** 苔藓青色石头砖墙 */
-    public static final DeferredBlock<WallBlock> MOSSY_CYAN_STONE_BRICK_WALL = BLOCKS.registerBlock("mossy_cyan_stone_brick_wall",
-            WallBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.COBBLESTONE_WALL));
-
-    /** 雕凿青色石头砖 */
-    public static final DeferredBlock<Block> CHISELED_CYAN_STONE_BRICKS = BLOCKS.registerBlock("chiseled_cyan_stone_bricks",
-            Block::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(1.5f)
-                    .requiresCorrectToolForDrops());
-
-    /** 青色石头柱 */
-    public static final DeferredBlock<RotatedPillarBlock> CYAN_STONE_PILLAR = BLOCKS.registerBlock("cyan_stone_pillar",
-            RotatedPillarBlock::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASEDRUM)
-                    .sound(SoundType.STONE)
-                    .strength(1.5f)
-                    .requiresCorrectToolForDrops());
-
-    /** 青色石头压力板 */
-    public static final DeferredBlock<PressurePlateBlock> CYAN_STONE_PRESSURE_PLATE = BLOCKS.registerBlock("cyan_stone_pressure_plate",
-            p -> new PressurePlateBlock(BlockSetType.STONE, p), BlockBehaviour.Properties.of()
-                    .sound(SoundType.STONE)
-                    .strength(0.5f)
-                    .noOcclusion());
-
-    /** 青色石头按钮 */
-    public static final DeferredBlock<ButtonBlock> CYAN_STONE_BUTTON = BLOCKS.registerBlock("cyan_stone_button",
-            p -> new ButtonBlock(BlockSetType.STONE, 20, p),
-            BlockBehaviour.Properties.of()
-                    .sound(SoundType.STONE)
-                    .strength(0.5f)
-                    .noOcclusion());
+    // ==================== 子文件聚合引用 ====================
+
+    // --- PDBlocksCustom ---
+    public static final DeferredBlock<?> DREAM_ACCUMULATOR = PDBlocksCustom.DREAM_ACCUMULATOR;
+    public static final DeferredBlock<?> DYEDREAM_DESK = PDBlocksCustom.DYEDREAM_DESK;
+    public static final DeferredBlock<?> DREAM_TRAIN_STRUCTURE = PDBlocksCustom.DREAM_TRAIN_STRUCTURE;
+    public static final DeferredBlock<?> LIFE_CRYSTAL = PDBlocksCustom.LIFE_CRYSTAL;
+
+    // --- PDBlocksDolls ---
+    public static final DeferredBlock<?> QIN_DOLL_0 = PDBlocksDolls.QIN_DOLL_0;
+    public static final DeferredBlock<?> LITTLE_PURPLE_DOLL_0 = PDBlocksDolls.LITTLE_PURPLE_DOLL_0;
+    public static final DeferredBlock<?> GOLDEN_FOX_SCULPTURE = PDBlocksDolls.GOLDEN_FOX_SCULPTURE;
+    public static final DeferredBlock<?> LOVE_U_DOLL = PDBlocksDolls.LOVE_U_DOLL;
+    public static final DeferredBlock<?> EOUL_DOLL = PDBlocksDolls.EOUL_DOLL;
+    public static final DeferredBlock<?> SHADOW_CHEST = PDBlocksDolls.SHADOW_CHEST;
+
+    // --- PDBlocksFunctional ---
+    public static final DeferredBlock<?> THE_ENDLESS_BOOK_OF_DREAM_SEEKERS = PDBlocksFunctional.THE_ENDLESS_BOOK_OF_DREAM_SEEKERS;
+    public static final DeferredBlock<?> DREAM_CAULDRON = PDBlocksFunctional.DREAM_CAULDRON;
+    public static final DeferredBlock<?> MELTDREAM_CHEST = PDBlocksFunctional.MELTDREAM_CHEST;
+    public static final DeferredBlock<?> MELTDREAM_CHEST_OPEN = PDBlocksFunctional.MELTDREAM_CHEST_OPEN;
+
+    // --- PDBlocksSimple ---
+    public static final DeferredBlock<?> DYEDREAM_BLOCK = PDBlocksSimple.DYEDREAM_BLOCK;
+    public static final DeferredBlock<?> DYEDREAM_DIRT = PDBlocksSimple.DYEDREAM_DIRT;
+    public static final DeferredBlock<?> DYEDREAM_SAND = PDBlocksSimple.DYEDREAM_SAND;
+    public static final DeferredBlock<?> DYEDREAM_PLANKS = PDBlocksSimple.DYEDREAM_PLANKS;
+    public static final DeferredBlock<?> DYEDREAM_GLASS = PDBlocksSimple.DYEDREAM_GLASS;
+    public static final DeferredBlock<?> DYEDREAM_ICE = PDBlocksSimple.DYEDREAM_ICE;
+    public static final DeferredBlock<?> DYEDREAM_PACKED_ICE = PDBlocksSimple.DYEDREAM_PACKED_ICE;
+    public static final DeferredBlock<?> DYEDREAMQUARTZ_BLOCK = PDBlocksSimple.DYEDREAMQUARTZ_BLOCK;
+    public static final DeferredBlock<?> SMOOTH_DYEDREAMQUARTZ_BLOCK = PDBlocksSimple.SMOOTH_DYEDREAMQUARTZ_BLOCK;
+    public static final DeferredBlock<?> BRICKS_DYEDREAMQUARTZ_BLOCK = PDBlocksSimple.BRICKS_DYEDREAMQUARTZ_BLOCK;
+    public static final DeferredBlock<?> MELTDREAM_CRYSTAL_LAMP = PDBlocksSimple.MELTDREAM_CRYSTAL_LAMP;
+    public static final DeferredBlock<?> CHISELED_DYEDREAMQUARTZ_BLOCK = PDBlocksSimple.CHISELED_DYEDREAMQUARTZ_BLOCK;
+    public static final DeferredBlock<?> DYEDREAM_BUD_BLOCK = PDBlocksSimple.DYEDREAM_BUD_BLOCK;
+    public static final DeferredBlock<?> PINKSLIME_BLOCK = PDBlocksSimple.PINKSLIME_BLOCK;
+    public static final DeferredBlock<?> ICESTONE = PDBlocksSimple.ICESTONE;
+    public static final DeferredBlock<?> DYEDREAM_WORLDTREE_LEAVES = PDBlocksSimple.DYEDREAM_WORLDTREE_LEAVES;
+    public static final DeferredBlock<?> DYEDREAMQUARTZ_ORE = PDBlocksSimple.DYEDREAMQUARTZ_ORE;
+    public static final DeferredBlock<?> DYEDREAMDUST_ORE = PDBlocksSimple.DYEDREAMDUST_ORE;
+    public static final DeferredBlock<?> AMBER_CANDY_ORE = PDBlocksSimple.AMBER_CANDY_ORE;
+    public static final DeferredBlock<?> TITANIUM_ORE = PDBlocksSimple.TITANIUM_ORE;
+    public static final DeferredBlock<?> WINDRUNNER_CRYSTAL_ORE = PDBlocksSimple.WINDRUNNER_CRYSTAL_ORE;
+    public static final DeferredBlock<?> CONGEAL_WIND_ORE = PDBlocksSimple.CONGEAL_WIND_ORE;
+    public static final DeferredBlock<?> CARVE_DYEDREAM_GLASS = PDBlocksSimple.CARVE_DYEDREAM_GLASS;
+    public static final DeferredBlock<?> GOLD_CARVE_DYEDREAM_GLASS = PDBlocksSimple.GOLD_CARVE_DYEDREAM_GLASS;
+    public static final DeferredBlock<?> POLISHED_CALCITE = PDBlocksSimple.POLISHED_CALCITE;
+    public static final DeferredBlock<?> CALCITE_TILES = PDBlocksSimple.CALCITE_TILES;
+    public static final DeferredBlock<?> DYEDREAM_DEEPSTONE = PDBlocksSimple.DYEDREAM_DEEPSTONE;
+    public static final DeferredBlock<?> DYEDREAM_SANDSTONE = PDBlocksSimple.DYEDREAM_SANDSTONE;
+    public static final DeferredBlock<?> DYEDREAM_LEAVES = PDBlocksSimple.DYEDREAM_LEAVES;
+    public static final DeferredBlock<?> DYEDREAM_GRASS = PDBlocksSimple.DYEDREAM_GRASS;
+    public static final DeferredBlock<?> DYEDREAM_LOG = PDBlocksSimple.DYEDREAM_LOG;
+    public static final DeferredBlock<?> DYEDREAM_WOOD = PDBlocksSimple.DYEDREAM_WOOD;
+    public static final DeferredBlock<?> PILLAR_DYEDREAMQUARTZ_BLOCK = PDBlocksSimple.PILLAR_DYEDREAMQUARTZ_BLOCK;
+    public static final DeferredBlock<?> DYEDREAM_PLANKS_STAIRS = PDBlocksSimple.DYEDREAM_PLANKS_STAIRS;
+    public static final DeferredBlock<?> DYEDREAM_PLANKS_SLAB = PDBlocksSimple.DYEDREAM_PLANKS_SLAB;
+    public static final DeferredBlock<?> DYEDREAM_PLANKS_FENCE = PDBlocksSimple.DYEDREAM_PLANKS_FENCE;
+    public static final DeferredBlock<?> DYEDREAM_PLANKS_FENCEGATE = PDBlocksSimple.DYEDREAM_PLANKS_FENCEGATE;
+    public static final DeferredBlock<?> DYEDREAM_PLANKS_DOOR = PDBlocksSimple.DYEDREAM_PLANKS_DOOR;
+    public static final DeferredBlock<?> DYEDREAM_PLANKS_TRAPDOOR = PDBlocksSimple.DYEDREAM_PLANKS_TRAPDOOR;
+    public static final DeferredBlock<?> DYEDREAM_PLANKS_PRESSURE_PLATE = PDBlocksSimple.DYEDREAM_PLANKS_PRESSURE_PLATE;
+    public static final DeferredBlock<?> DYEDREAM_PLANKS_BUTTON = PDBlocksSimple.DYEDREAM_PLANKS_BUTTON;
+    public static final DeferredBlock<?> DYEDREAM_BUD_STAIRS = PDBlocksSimple.DYEDREAM_BUD_STAIRS;
+    public static final DeferredBlock<?> DYEDREAMQUARTZ_BLOCK_STAIRS = PDBlocksSimple.DYEDREAMQUARTZ_BLOCK_STAIRS;
+    public static final DeferredBlock<?> DYEDREAM_BUD_SLAB = PDBlocksSimple.DYEDREAM_BUD_SLAB;
+    public static final DeferredBlock<?> DYEDREAMQUARTZ_BLOCK_SLAB = PDBlocksSimple.DYEDREAMQUARTZ_BLOCK_SLAB;
+    public static final DeferredBlock<?> DYEDREAM_BUD_WALL = PDBlocksSimple.DYEDREAM_BUD_WALL;
+    public static final DeferredBlock<?> DYEDREAMQUARTZ_BLOCK_WALL = PDBlocksSimple.DYEDREAMQUARTZ_BLOCK_WALL;
+    public static final DeferredBlock<?> CALCITE_TILES_STAIRS = PDBlocksSimple.CALCITE_TILES_STAIRS;
+    public static final DeferredBlock<?> CALCITE_TILES_SLAB = PDBlocksSimple.CALCITE_TILES_SLAB;
+    public static final DeferredBlock<?> POLISHED_CALCITE_SLAB = PDBlocksSimple.POLISHED_CALCITE_SLAB;
+    public static final DeferredBlock<?> POLISHED_CALCITE_WALL = PDBlocksSimple.POLISHED_CALCITE_WALL;
+    public static final DeferredBlock<?> CALCITE_TILES_WALL = PDBlocksSimple.CALCITE_TILES_WALL;
+    public static final DeferredBlock<?> POLISHED_CALCITE_STAIRS = PDBlocksSimple.POLISHED_CALCITE_STAIRS;
+    public static final DeferredBlock<?> DYEDREAM_GLASSPANE = PDBlocksSimple.DYEDREAM_GLASSPANE;
+    public static final DeferredBlock<?> CARVE_DYEDREAM_GLASSPANE = PDBlocksSimple.CARVE_DYEDREAM_GLASSPANE;
+    public static final DeferredBlock<?> GOLD_CARVE_DYEDREAM_GLASSPANE = PDBlocksSimple.GOLD_CARVE_DYEDREAM_GLASSPANE;
+    public static final DeferredBlock<?> DYEDREAM_LARTERN = PDBlocksSimple.DYEDREAM_LARTERN;
+
+    // --- PDBlocksVegetation ---
+    public static final DeferredBlock<?> DYEDREAM_PLANKS_PANE = PDBlocksVegetation.DYEDREAM_PLANKS_PANE;
+    public static final DeferredBlock<?> PINKAGARIC_0 = PDBlocksVegetation.PINKAGARIC_0;
+    public static final DeferredBlock<?> PINKAGARIC_1 = PDBlocksVegetation.PINKAGARIC_1;
+    public static final DeferredBlock<?> PINKAGARIC_2 = PDBlocksVegetation.PINKAGARIC_2;
+    public static final DeferredBlock<?> PINKAGARIC_3 = PDBlocksVegetation.PINKAGARIC_3;
+    public static final DeferredBlock<?> DYEDREAM_BUD_0 = PDBlocksVegetation.DYEDREAM_BUD_0;
+    public static final DeferredBlock<?> DYEDREAM_BUD_1 = PDBlocksVegetation.DYEDREAM_BUD_1;
+    public static final DeferredBlock<?> DYEDREAM_BUD_2 = PDBlocksVegetation.DYEDREAM_BUD_2;
+    public static final DeferredBlock<?> ICE_BUD_0 = PDBlocksVegetation.ICE_BUD_0;
+    public static final DeferredBlock<?> DYEDREAM_LILY_PAD = PDBlocksVegetation.DYEDREAM_LILY_PAD;
+    public static final DeferredBlock<?> DYEDREAM_LOTUS = PDBlocksVegetation.DYEDREAM_LOTUS;
+    public static final DeferredBlock<?> DYEDREAM_SEAGRASS = PDBlocksVegetation.DYEDREAM_SEAGRASS;
+    public static final DeferredBlock<?> DYEDREAM_SAPLING = PDBlocksVegetation.DYEDREAM_SAPLING;
+    public static final DeferredBlock<?> DYEDREAM_CRACK = PDBlocksVegetation.DYEDREAM_CRACK;
+    public static final DeferredBlock<?> CLOUD = PDBlocksVegetation.CLOUD;
+    public static final DeferredBlock<?> DARK_CLOUD = PDBlocksVegetation.DARK_CLOUD;
+    public static final DeferredBlock<?> THICK_CLOUD = PDBlocksVegetation.THICK_CLOUD;
+    public static final DeferredBlock<?> FLOWER_1 = PDBlocksVegetation.FLOWER_1;
+    public static final DeferredBlock<?> FLOWER_2 = PDBlocksVegetation.FLOWER_2;
+    public static final DeferredBlock<?> FLOWER_3 = PDBlocksVegetation.FLOWER_3;
+    public static final DeferredBlock<?> FLOWER_5 = PDBlocksVegetation.FLOWER_5;
+    public static final DeferredBlock<?> FLOWER_6 = PDBlocksVegetation.FLOWER_6;
+    public static final DeferredBlock<?> FLOWER_7 = PDBlocksVegetation.FLOWER_7;
+    public static final DeferredBlock<?> FLOWER_8 = PDBlocksVegetation.FLOWER_8;
+    public static final DeferredBlock<?> FLOWER_9 = PDBlocksVegetation.FLOWER_9;
+    public static final DeferredBlock<?> FLOWER_10 = PDBlocksVegetation.FLOWER_10;
+    public static final DeferredBlock<?> FLOWER_11 = PDBlocksVegetation.FLOWER_11;
+    public static final DeferredBlock<?> FLOWER_12 = PDBlocksVegetation.FLOWER_12;
+    public static final DeferredBlock<?> FLOWER_13 = PDBlocksVegetation.FLOWER_13;
+    public static final DeferredBlock<?> FLOWER_14 = PDBlocksVegetation.FLOWER_14;
+    public static final DeferredBlock<?> FLOWER_15 = PDBlocksVegetation.FLOWER_15;
+    public static final DeferredBlock<?> FLOWER_16 = PDBlocksVegetation.FLOWER_16;
+    public static final DeferredBlock<?> FLOWER_17 = PDBlocksVegetation.FLOWER_17;
+    public static final DeferredBlock<?> FLOWER_18 = PDBlocksVegetation.FLOWER_18;
+    public static final DeferredBlock<?> GRASS_1 = PDBlocksVegetation.GRASS_1;
+    public static final DeferredBlock<?> GRASS_2 = PDBlocksVegetation.GRASS_2;
+    public static final DeferredBlock<?> GRASS_3 = PDBlocksVegetation.GRASS_3;
+    public static final DeferredBlock<?> GRASS_4 = PDBlocksVegetation.GRASS_4;
+    public static final DeferredBlock<?> GRASS_5 = PDBlocksVegetation.GRASS_5;
+    public static final DeferredBlock<?> GRASS_6 = PDBlocksVegetation.GRASS_6;
+    public static final DeferredBlock<?> GRASS_7 = PDBlocksVegetation.GRASS_7;
+    public static final DeferredBlock<?> GRASS_8 = PDBlocksVegetation.GRASS_8;
+    public static final DeferredBlock<?> GRASS_9 = PDBlocksVegetation.GRASS_9;
+    public static final DeferredBlock<?> GRASS_10 = PDBlocksVegetation.GRASS_10;
+    public static final DeferredBlock<?> GRASS_11 = PDBlocksVegetation.GRASS_11;
+    public static final DeferredBlock<?> GRASS_12 = PDBlocksVegetation.GRASS_12;
+    public static final DeferredBlock<?> GRASS_13 = PDBlocksVegetation.GRASS_13;
+    public static final DeferredBlock<?> GRASS_14 = PDBlocksVegetation.GRASS_14;
+    public static final DeferredBlock<?> GRASS_15 = PDBlocksVegetation.GRASS_15;
+    public static final DeferredBlock<?> TITANIUM_BLOCK = PDBlocksVegetation.TITANIUM_BLOCK;
+    public static final DeferredBlock<?> RAW_TITANIUM_BLOCK = PDBlocksVegetation.RAW_TITANIUM_BLOCK;
+    public static final DeferredBlock<?> MOLTENGOLD_BLOCK = PDBlocksVegetation.MOLTENGOLD_BLOCK;
+    public static final DeferredBlock<?> BLACKMETAL_BLOCK = PDBlocksVegetation.BLACKMETAL_BLOCK;
+    public static final DeferredBlock<?> CHARGED_AMETHYST_BLOCK = PDBlocksVegetation.CHARGED_AMETHYST_BLOCK;
+    public static final DeferredBlock<?> WIND_IRON_BLOCK = PDBlocksVegetation.WIND_IRON_BLOCK;
+    public static final DeferredBlock<?> DEEPSLATE_TITANIUM_ORE = PDBlocksVegetation.DEEPSLATE_TITANIUM_ORE;
+    public static final DeferredBlock<?> MOLTENGOLD_ORE = PDBlocksVegetation.MOLTENGOLD_ORE;
+    public static final DeferredBlock<?> SOUL_ORE = PDBlocksVegetation.SOUL_ORE;
+    public static final DeferredBlock<?> PEBBLE_0 = PDBlocksVegetation.PEBBLE_0;
+    public static final DeferredBlock<?> SHADOW_LIGHT_0 = PDBlocksVegetation.SHADOW_LIGHT_0;
+    public static final DeferredBlock<?> VINE_0 = PDBlocksVegetation.VINE_0;
+    public static final DeferredBlock<?> GOLDENROD = PDBlocksVegetation.GOLDENROD;
+    public static final DeferredBlock<?> CROP_0A = PDBlocksVegetation.CROP_0A;
+    public static final DeferredBlock<?> CROP_1A = PDBlocksVegetation.CROP_1A;
+    public static final DeferredBlock<?> CROP_3A = PDBlocksVegetation.CROP_3A;
+    public static final DeferredBlock<?> CROP_4A = PDBlocksVegetation.CROP_4A;
+    public static final DeferredBlock<?> CROP_2A = PDBlocksVegetation.CROP_2A;
+
+    // --- PDBlocksMaterials ---
+    public static final DeferredBlock<?> MELTDREAM_LIQUID = PDBlocksMaterials.MELTDREAM_LIQUID;
+
+    // --- PDBlocksBoss ---
+    public static final DeferredBlock<?> AARONCOS_ARENA_PORTALS = PDBlocksBoss.AARONCOS_ARENA_PORTALS;
+    public static final DeferredBlock<?> AARONCOS_HAND_CHEST = PDBlocksBoss.AARONCOS_HAND_CHEST;
+    public static final DeferredBlock<?> SHADOW_VORTEX = PDBlocksBoss.SHADOW_VORTEX;
+    public static final DeferredBlock<?> AARONCOSHANDSPAWNBLOCK = PDBlocksBoss.AARONCOSHANDSPAWNBLOCK;
+
+    // --- PDBlocksShadow ---
+    public static final DeferredBlock<?> SHADOW_BLOCK = PDBlocksShadow.SHADOW_BLOCK;
+    public static final DeferredBlock<?> THICK_SHADOW_BLOCK = PDBlocksShadow.THICK_SHADOW_BLOCK;
+    public static final DeferredBlock<?> SHADOW_STONE = PDBlocksShadow.SHADOW_STONE;
+    public static final DeferredBlock<?> SHADOW_STONE_BRICK = PDBlocksShadow.SHADOW_STONE_BRICK;
+    public static final DeferredBlock<?> SHADOW_STONE_BRICKS = PDBlocksShadow.SHADOW_STONE_BRICKS;
+    public static final DeferredBlock<?> SHADOW_STONE_TILES = PDBlocksShadow.SHADOW_STONE_TILES;
+    public static final DeferredBlock<?> CHISELED_SHADOW_STONE_BRICK = PDBlocksShadow.CHISELED_SHADOW_STONE_BRICK;
+    public static final DeferredBlock<?> CRACKED_SHADOW_STONE_BRICK = PDBlocksShadow.CRACKED_SHADOW_STONE_BRICK;
+    public static final DeferredBlock<?> SHADOW_NYLIUM = PDBlocksShadow.SHADOW_NYLIUM;
+    public static final DeferredBlock<?> SHADOW_SHROOMLIGHT = PDBlocksShadow.SHADOW_SHROOMLIGHT;
+    public static final DeferredBlock<?> SHADOW_WART_BLOCK = PDBlocksShadow.SHADOW_WART_BLOCK;
+    public static final DeferredBlock<?> SHADOW_STEM = PDBlocksShadow.SHADOW_STEM;
+    public static final DeferredBlock<?> SHADOW_HYPHAE = PDBlocksShadow.SHADOW_HYPHAE;
+    public static final DeferredBlock<?> STRIPPED_SHADOW_STEM = PDBlocksShadow.STRIPPED_SHADOW_STEM;
+    public static final DeferredBlock<?> STRIPPED_SHADOW_HYPHAE = PDBlocksShadow.STRIPPED_SHADOW_HYPHAE;
+    public static final DeferredBlock<?> SHADOW_PLANKS = PDBlocksShadow.SHADOW_PLANKS;
+    public static final DeferredBlock<?> SHADOW_STONE_BRICK_STAIRS = PDBlocksShadow.SHADOW_STONE_BRICK_STAIRS;
+    public static final DeferredBlock<?> SHADOW_STONE_BRICK_SLAB = PDBlocksShadow.SHADOW_STONE_BRICK_SLAB;
+    public static final DeferredBlock<?> SHADOW_STONE_BRICK_WALL = PDBlocksShadow.SHADOW_STONE_BRICK_WALL;
+    public static final DeferredBlock<?> SHADOW_STONE_BRICKS_STAIRS = PDBlocksShadow.SHADOW_STONE_BRICKS_STAIRS;
+    public static final DeferredBlock<?> SHADOW_STONE_BRICKS_SLAB = PDBlocksShadow.SHADOW_STONE_BRICKS_SLAB;
+    public static final DeferredBlock<?> SHADOW_STONE_BRICKS_WALL = PDBlocksShadow.SHADOW_STONE_BRICKS_WALL;
+    public static final DeferredBlock<?> SHADOW_STONE_TILES_STAIRS = PDBlocksShadow.SHADOW_STONE_TILES_STAIRS;
+    public static final DeferredBlock<?> SHADOW_STONE_TILES_SLAB = PDBlocksShadow.SHADOW_STONE_TILES_SLAB;
+    public static final DeferredBlock<?> SHADOW_STONE_TILES_WALL = PDBlocksShadow.SHADOW_STONE_TILES_WALL;
+    public static final DeferredBlock<?> SHADOW_PLANKS_STAIRS = PDBlocksShadow.SHADOW_PLANKS_STAIRS;
+    public static final DeferredBlock<?> SHADOW_PLANKS_SLAB = PDBlocksShadow.SHADOW_PLANKS_SLAB;
+    public static final DeferredBlock<?> SHADOW_PLANKS_FENCE = PDBlocksShadow.SHADOW_PLANKS_FENCE;
+    public static final DeferredBlock<?> SHADOW_PLANKS_FENCEGATE = PDBlocksShadow.SHADOW_PLANKS_FENCEGATE;
+    public static final DeferredBlock<?> SHADOW_PLANKS_DOOR = PDBlocksShadow.SHADOW_PLANKS_DOOR;
+    public static final DeferredBlock<?> SHADOW_PLANKS_TRAPDOOR = PDBlocksShadow.SHADOW_PLANKS_TRAPDOOR;
+    public static final DeferredBlock<?> SHADOW_PLANKS_PRESSURE_PLATE = PDBlocksShadow.SHADOW_PLANKS_PRESSURE_PLATE;
+    public static final DeferredBlock<?> SHADOW_PLANKS_BUTTON = PDBlocksShadow.SHADOW_PLANKS_BUTTON;
+    public static final DeferredBlock<?> SHADOW_PLANKS_PANE = PDBlocksShadow.SHADOW_PLANKS_PANE;
+
+    // --- PDBlocksDungeon ---
+    public static final DeferredBlock<?> SHADOW_DUNGEON_BLOCK_0 = PDBlocksDungeon.SHADOW_DUNGEON_BLOCK_0;
+    public static final DeferredBlock<?> SHADOW_DUNGEON_BLOCK_1 = PDBlocksDungeon.SHADOW_DUNGEON_BLOCK_1;
+    public static final DeferredBlock<?> SHADOW_DUNGEON_BLOCK_2 = PDBlocksDungeon.SHADOW_DUNGEON_BLOCK_2;
+    public static final DeferredBlock<?> SHADOW_DUNGEON_BLOCK_3 = PDBlocksDungeon.SHADOW_DUNGEON_BLOCK_3;
+    public static final DeferredBlock<?> SHADOW_DUNGEON_BLOCK_4 = PDBlocksDungeon.SHADOW_DUNGEON_BLOCK_4;
+    public static final DeferredBlock<?> SHADOW_DUNGEON_BLOCK_5 = PDBlocksDungeon.SHADOW_DUNGEON_BLOCK_5;
+    public static final DeferredBlock<?> SHADOW_DUNGEON_BLOCK_6 = PDBlocksDungeon.SHADOW_DUNGEON_BLOCK_6;
+    public static final DeferredBlock<?> SHADOW_ARENA_BLOCK_0 = PDBlocksDungeon.SHADOW_ARENA_BLOCK_0;
+    public static final DeferredBlock<?> LOOSE_SHADOW_DUNGEON_BLOCK = PDBlocksDungeon.LOOSE_SHADOW_DUNGEON_BLOCK;
+    public static final DeferredBlock<?> SHADOW_DUNGEON_DOOR_0 = PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0;
+    public static final DeferredBlock<?> SHADOW_DUNGEON_DOOR_1 = PDBlocksDungeon.SHADOW_DUNGEON_DOOR_1;
+    public static final DeferredBlock<?> SHADOWDUNGEONDOOR_2 = PDBlocksDungeon.SHADOWDUNGEONDOOR_2;
+    public static final DeferredBlock<?> SHADOWDUNGEONDOOR_3 = PDBlocksDungeon.SHADOWDUNGEONDOOR_3;
+    public static final DeferredBlock<?> SHADOW_DUNGEON_KEY_0 = PDBlocksDungeon.SHADOW_DUNGEON_KEY_0;
+    public static final DeferredBlock<?> SHADOW_DUNGEON_KEY_1 = PDBlocksDungeon.SHADOW_DUNGEON_KEY_1;
+    public static final DeferredBlock<?> SHADOWCANDLE = PDBlocksDungeon.SHADOWCANDLE;
+    public static final DeferredBlock<?> SHADOW_BLAST_FURNACE_CORE = PDBlocksDungeon.SHADOW_BLAST_FURNACE_CORE;
+    public static final DeferredBlock<?> SHADOWSHELF_0 = PDBlocksDungeon.SHADOWSHELF_0;
+    public static final DeferredBlock<?> SHADOWSHELF_1 = PDBlocksDungeon.SHADOWSHELF_1;
+    public static final DeferredBlock<?> SHADOWSHELF_2 = PDBlocksDungeon.SHADOWSHELF_2;
+    public static final DeferredBlock<?> SHADOWSHELF_3 = PDBlocksDungeon.SHADOWSHELF_3;
+    public static final DeferredBlock<?> SHADOW_FISSURE_0 = PDBlocksDungeon.SHADOW_FISSURE_0;
+    public static final DeferredBlock<?> SHADOW_FISSURE_1 = PDBlocksDungeon.SHADOW_FISSURE_1;
+    public static final DeferredBlock<?> SHADOW_FISSURE_2 = PDBlocksDungeon.SHADOW_FISSURE_2;
+    public static final DeferredBlock<?> SHADOW_FISSURE_3 = PDBlocksDungeon.SHADOW_FISSURE_3;
+    public static final DeferredBlock<?> SHADOW_FISSURE_4 = PDBlocksDungeon.SHADOW_FISSURE_4;
+    public static final DeferredBlock<?> SHADOW_FISSURE_5 = PDBlocksDungeon.SHADOW_FISSURE_5;
+
+    // --- PDBlocksDyedreamPhase2 ---
+    public static final DeferredBlock<?> BIG_BUBBLE = PDBlocksDyedreamPhase2.BIG_BUBBLE;
+    public static final DeferredBlock<?> WINDRUNNER_CRYSTAL_BLOCK = PDBlocksDyedreamPhase2.WINDRUNNER_CRYSTAL_BLOCK;
+    public static final DeferredBlock<?> CONGEAL_WIND_BLOCK = PDBlocksDyedreamPhase2.CONGEAL_WIND_BLOCK;
+    public static final DeferredBlock<?> STARCALL_BLOCK = PDBlocksDyedreamPhase2.STARCALL_BLOCK;
+    public static final DeferredBlock<?> STARCALL_CRACK = PDBlocksDyedreamPhase2.STARCALL_CRACK;
+    public static final DeferredBlock<?> CYAN_STONE = PDBlocksDyedreamPhase2.CYAN_STONE;
+    public static final DeferredBlock<?> CYAN_MOSS_STONE = PDBlocksDyedreamPhase2.CYAN_MOSS_STONE;
+    public static final DeferredBlock<?> WHITE_SAND = PDBlocksDyedreamPhase2.WHITE_SAND;
+    public static final DeferredBlock<?> SALT_BLOCK = PDBlocksDyedreamPhase2.SALT_BLOCK;
+    public static final DeferredBlock<?> CLARITY_GLASS = PDBlocksDyedreamPhase2.CLARITY_GLASS;
+    public static final DeferredBlock<?> CARVE_CLARITY_GLASS = PDBlocksDyedreamPhase2.CARVE_CLARITY_GLASS;
+    public static final DeferredBlock<?> FRAME_CLARITY_GLASS = PDBlocksDyedreamPhase2.FRAME_CLARITY_GLASS;
+    public static final DeferredBlock<?> CLARITY_GLASSPANE = PDBlocksDyedreamPhase2.CLARITY_GLASSPANE;
+    public static final DeferredBlock<?> CARVE_CLARITY_GLASSPANE = PDBlocksDyedreamPhase2.CARVE_CLARITY_GLASSPANE;
+    public static final DeferredBlock<?> FRAME_CLARITY_GLASSPANE = PDBlocksDyedreamPhase2.FRAME_CLARITY_GLASSPANE;
+    public static final DeferredBlock<?> BREAKWIND_CURTAIN = PDBlocksDyedreamPhase2.BREAKWIND_CURTAIN;
+    public static final DeferredBlock<?> WINDIRON_BARS = PDBlocksDyedreamPhase2.WINDIRON_BARS;
+    public static final DeferredBlock<?> CYAN_STONE_BRICKS = PDBlocksDyedreamPhase2.CYAN_STONE_BRICKS;
+    public static final DeferredBlock<?> CYAN_STONE_BRICK_STAIRS = PDBlocksDyedreamPhase2.CYAN_STONE_BRICK_STAIRS;
+    public static final DeferredBlock<?> CYAN_STONE_BRICK_SLAB = PDBlocksDyedreamPhase2.CYAN_STONE_BRICK_SLAB;
+    public static final DeferredBlock<?> CYAN_STONE_BRICK_WALL = PDBlocksDyedreamPhase2.CYAN_STONE_BRICK_WALL;
+    public static final DeferredBlock<?> MOSSY_CYAN_STONE_BRICKS = PDBlocksDyedreamPhase2.MOSSY_CYAN_STONE_BRICKS;
+    public static final DeferredBlock<?> MOSSY_CYAN_STONE_BRICK_STAIRS = PDBlocksDyedreamPhase2.MOSSY_CYAN_STONE_BRICK_STAIRS;
+    public static final DeferredBlock<?> MOSSY_CYAN_STONE_BRICK_SLAB = PDBlocksDyedreamPhase2.MOSSY_CYAN_STONE_BRICK_SLAB;
+    public static final DeferredBlock<?> MOSSY_CYAN_STONE_BRICK_WALL = PDBlocksDyedreamPhase2.MOSSY_CYAN_STONE_BRICK_WALL;
+    public static final DeferredBlock<?> CHISELED_CYAN_STONE_BRICKS = PDBlocksDyedreamPhase2.CHISELED_CYAN_STONE_BRICKS;
+    public static final DeferredBlock<?> CYAN_STONE_PILLAR = PDBlocksDyedreamPhase2.CYAN_STONE_PILLAR;
+    public static final DeferredBlock<?> CYAN_STONE_PRESSURE_PLATE = PDBlocksDyedreamPhase2.CYAN_STONE_PRESSURE_PLATE;
+    public static final DeferredBlock<?> CYAN_STONE_BUTTON = PDBlocksDyedreamPhase2.CYAN_STONE_BUTTON;
 
 }

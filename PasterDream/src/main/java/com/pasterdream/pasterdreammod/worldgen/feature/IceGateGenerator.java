@@ -1,8 +1,8 @@
 package com.pasterdream.pasterdreammod.worldgen.feature;
 
-import com.pasterdream.pasterdreammod.worldgen.WorldGenUtils;
-import com.pasterdream.pasterdreammod.worldgen.decor.DecorationConfig;
-import com.pasterdream.pasterdreammod.worldgen.decor.ICustomDecorationGenerator;
+import com.pasterdream.pasterdreammod.api.worldgen.WorldGenUtils;
+import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationConfig;
+import com.pasterdream.pasterdreammod.api.worldgen.decor.ICustomDecorationGenerator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;

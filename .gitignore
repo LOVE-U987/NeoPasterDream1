@@ -42,3 +42,6 @@ repo/
 ### AI tools ###
 .claude
 .claude/**
+
+### Source assets (Blockbench / raw textures) ###
+assets-src/

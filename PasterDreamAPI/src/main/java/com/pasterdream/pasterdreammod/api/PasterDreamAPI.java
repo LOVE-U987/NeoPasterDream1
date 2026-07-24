@@ -10,6 +10,7 @@ import com.pasterdream.pasterdreammod.api.item.ItemAPI;
 import com.pasterdream.pasterdreammod.api.menu.MenuAPI;
 import com.pasterdream.pasterdreammod.api.particle.ParticleAPI;
 import com.pasterdream.pasterdreammod.api.ruin.RuinAPI;
+import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationRegistry;
 import net.neoforged.bus.api.IEventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,8 @@ public final class PasterDreamAPI {
         MenuAPI.REGISTRY.register(modEventBus);
         FluidAPI.REGISTRY.register(modEventBus);
         ApiSoundRegistry.DIMENSION_SOUNDS.register(modEventBus);
+        DecorationRegistry.FEATURES.register(modEventBus);
 
-        LOGGER.debug("[PasterDreamAPI] 已统一注册 11 个 API 注册器到事件总线");
+        LOGGER.debug("[PasterDreamAPI] 已统一注册 12 个 API 注册器到事件总线");
     }
 }

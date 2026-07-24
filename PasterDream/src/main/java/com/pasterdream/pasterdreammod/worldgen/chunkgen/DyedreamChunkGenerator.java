@@ -23,9 +23,9 @@ import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
+import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -279,7 +279,7 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
                               int minBlockX, int minBlockZ, int minY,
                               int[][] surfaceHeights, RandomState randomState) {
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
-        Random localRand = new Random(chunkPos.x * 3129871L ^ chunkPos.z * 116129781L);
+        RandomSource localRand = RandomSource.create(chunkPos.x * 3129871L ^ chunkPos.z * 116129781L);
 
         // 确认 biomeSource 是 DyedreamBiomeSource（可被强转）
         if (!(this.biomeSource instanceof DyedreamBiomeSource dyedreamSource)) {
@@ -462,6 +462,7 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
                                     int minBlockX, int minBlockZ, int minY,
                                     RandomState randomState) {
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+        RandomSource localRand = RandomSource.create(chunkPos.x * 3129871L ^ chunkPos.z * 116129781L);
 
         // 确认 biomeSource 是 DyedreamBiomeSource
         if (!(this.biomeSource instanceof DyedreamBiomeSource dyedreamSource)) {
@@ -489,7 +490,7 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
                 int surfaceHeight = DyedreamNoises.computeSurfaceHeight(
                         randomState, worldX, worldZ, seaLevel);
 
-                int riverDepth = 3 + new Random(chunkPos.x * 3129871L ^ chunkPos.z * 116129781L).nextInt(3);
+                int riverDepth = 3 + localRand.nextInt(3);
                 int bedY = surfaceHeight - riverDepth;
 
                 // 从河床往上到地表扫描，填充水体

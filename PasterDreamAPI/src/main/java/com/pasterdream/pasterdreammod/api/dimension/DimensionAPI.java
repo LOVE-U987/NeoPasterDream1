@@ -147,66 +147,8 @@ public final class DimensionAPI {
         REGISTERED_DIMENSIONS.put(result.dimensionName(), result);
     }
 
-    // ======================== 背景音乐注册 ========================
-
     /**
-     * 为维度注册背景音乐（默认音量 1.0）
-     * <p>
-     * 自动完成：
-     * <ol>
-     *   <li>注册 {@link SoundEvent}（ID: {@code music.{musicName}}）</li>
-     *   <li>生成 {@code sounds.json} 条目（音量 1.0）</li>
-     * </ol>
-     * <p>
-     * 你需要在 {@code assets/{modId}/sounds/music/{musicName}.ogg}
-     * 放置实际的音频文件。
-     *
-     * @param musicName 背景音乐名称（如 "dyedream_world"）
-     * @return 已注册的 {@link SoundEvent} Supplier；若对应 .ogg 文件缺失则可能返回 {@code null}
-     * @throws RuntimeException 如果 sounds.json 写入失败
-     * @deprecated 建议直接使用 {@link ApiSoundRegistry#registerDimensionMusic(String)} 并手动配置 sounds.json，
-     *             或在主模组的声音注册类（如 PDSounds）中统一管理。
-     */
-    @Nullable
-    @Deprecated
-    public static Supplier<SoundEvent> registerDimensionMusic(String musicName) {
-        return registerDimensionMusic(musicName, 1.0f);
-    }
-
-    /**
-     * 为维度注册背景音乐（自定义音量）
-     * <p>
-     * 在 {@link #registerDimensionMusic(String)} 的基础上增加音量参数。
-     * 音量值会写入 {@code sounds.json} 的 sounds 数组条目中。
-     *
-     * @param musicName 背景音乐名称（如 "dyedream_world"）
-     * @param volume    音量值（0.0 ~ 1.0），推荐统一设置为 0.3
-     * @return 已注册的 {@link SoundEvent} Supplier；若对应 .ogg 文件缺失则可能返回 {@code null}
-     * @throws RuntimeException 如果 sounds.json 写入失败
-     * @deprecated 建议直接使用 {@link ApiSoundRegistry#registerDimensionMusic(String)} 并手动配置 sounds.json，
-     *             或在主模组的声音注册类（如 PDSounds）中统一管理。
-     */
-    @Nullable
-    @Deprecated
-    public static Supplier<SoundEvent> registerDimensionMusic(String musicName, float volume) {
-        String basePath = "src/main/resources";
-
-        // 1. 注册 SoundEvent
-        Supplier<SoundEvent> supplier = ApiSoundRegistry.registerDimensionMusic(musicName);
-
-        // 2. 生成 sounds.json（传入音量参数）
-        try {
-            saveDimensionMusicSoundJson(musicName, volume, basePath);
-        } catch (IOException e) {
-            PasterDreamAPI.LOGGER.error("[DimensionAPI] ❌ 无法生成 sounds.json: {}", e.getMessage(), e);
-            throw new RuntimeException("DimensionAPI: 无法生成 sounds.json", e);
-        }
-
-        return supplier;
-    }
-
-    /**
-     * 获取已注册的维度背景音乐事件
+     * 获取已注册的维度背景音乐事件。
      *
      * @param musicName 音乐名称
      * @return 包含 SoundEvent Supplier 的 {@link Optional}，未注册时返回空 Optional
@@ -254,64 +196,4 @@ public final class DimensionAPI {
         PasterDreamAPI.LOGGER.debug("[DimensionAPI] 🏗️ 已启用维度的大型结构支持: {}", dimensionId);
     }
 
-    /**
-     * 生成并保存维度背景音乐的 sounds.json 条目
-     * <p>
-     * 目标路径：{@code {basePath}/assets/{modId}/sounds.json}
-     *
-     * @param musicName 音乐名称（如 "dyedream_world"）
-     * @param volume    音量值（0.0 ~ 1.0）
-     * @param basePath  资源根目录
-     * @throws IOException 如果文件读写失败
-     */
-    private static void saveDimensionMusicSoundJson(String musicName, float volume, String basePath) throws IOException {
-        String modId = PasterDreamAPI.MOD_ID;
-        String soundKey = "music." + musicName;
-        String soundPath = modId + ":music/" + musicName;
-
-        JsonObject entry = new JsonObject();
-        entry.addProperty("category", "music");
-        entry.addProperty("subtitle", "subtitle." + modId + "." + soundKey);
-
-        JsonArray sounds = new JsonArray();
-        JsonObject soundObj = new JsonObject();
-        soundObj.addProperty("name", soundPath);
-        soundObj.addProperty("stream", true);
-        soundObj.addProperty("volume", volume);
-        sounds.add(soundObj);
-        entry.add("sounds", sounds);
-
-        JsonObject merged = loadExistingSoundsJson(basePath, modId);
-        merged.add(soundKey, entry);
-
-        Path outputFile = Paths.get(basePath, "assets", modId, "sounds.json");
-        Files.createDirectories(outputFile.getParent());
-        try (FileWriter writer = new FileWriter(outputFile.toFile())) {
-            GSON.toJson(merged, writer);
-        }
-
-        PasterDreamAPI.LOGGER.debug("[DimensionAPI] ✅ 已更新 sounds.json → {}", outputFile);
-    }
-
-    /**
-     * 加载已有的 sounds.json 文件
-     *
-     * @param basePath 资源根目录
-     * @param modId    模组 ID
-     * @return 已有的 sounds.json 对象，不存在时返回空对象
-     */
-    private static JsonObject loadExistingSoundsJson(String basePath, String modId) {
-        Path existingFile = Paths.get(basePath, "assets", modId, "sounds.json");
-        if (Files.exists(existingFile)) {
-            try (FileReader reader = new FileReader(existingFile.toFile())) {
-                JsonElement parsed = JsonParser.parseReader(reader);
-                if (parsed != null && parsed.isJsonObject()) {
-                    return parsed.getAsJsonObject();
-                }
-            } catch (IOException e) {
-                PasterDreamAPI.LOGGER.warn("[DimensionAPI] 读取已有 sounds.json 失败: {}", e.getMessage());
-            }
-        }
-        return new JsonObject();
-    }
 }

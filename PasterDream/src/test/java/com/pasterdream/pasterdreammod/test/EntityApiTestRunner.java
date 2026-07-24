@@ -70,14 +70,12 @@ public class EntityApiTestRunner {
             // 验证 Record 组件方法存在
             boolean hasName = false;
             boolean hasEntityTypeSupplier = false;
-            boolean hasDeferredHolder = false;
             boolean hasEntityType = false;
             boolean hasEntityClass = false;
             for (var method : EntityResult.class.getDeclaredMethods()) {
                 String m = method.getName();
                 if (m.equals("name")) hasName = true;
                 if (m.equals("entityTypeSupplier")) hasEntityTypeSupplier = true;
-                if (m.equals("deferredHolder")) hasDeferredHolder = true;
                 if (m.equals("entityType")) hasEntityType = true;
                 if (m.equals("entityClass")) hasEntityClass = true;
             }
@@ -85,13 +83,12 @@ public class EntityApiTestRunner {
             int recordMethods = 0;
             if (hasName) recordMethods++;
             if (hasEntityTypeSupplier) recordMethods++;
-            if (hasDeferredHolder) recordMethods++;
             if (hasEntityType) recordMethods++;
             if (hasEntityClass) recordMethods++;
 
             if (recordMethods >= 3) {
                 passed++;
-                printPass("EntityResult 组件方法验证通过: 存在 " + recordMethods + " 个组件方法 (name/entityTypeSupplier/entityType/entityClass/deferredHolder)");
+                printPass("EntityResult 组件方法验证通过: 存在 " + recordMethods + " 个组件方法 (name/entityTypeSupplier/entityType/entityClass)");
             } else {
                 failed++;
                 printFail("EntityResult 组件方法不足, 仅找到 " + recordMethods + " 个");

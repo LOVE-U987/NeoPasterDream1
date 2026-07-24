@@ -165,7 +165,7 @@ public class BoneWingFireBallProjectileEntity extends AbstractArrow implements I
         entity.level().addFreshEntity(entityarrow);
         entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
                 PDSounds.BONE_WING_FIRE_BALL.get(), SoundSource.PLAYERS, 1,
-                1f / (RandomSource.create().nextFloat() * 0.5f + 1));
+                1f / (entity.getRandom().nextFloat() * 0.5f + 1));
         return entityarrow;
     }
 }

@@ -151,19 +151,8 @@ public class FireflyEntity extends GeckoLibMobEntity {
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
 
-        // TODO: 待 ecology_glass_jar 和 light_firefly_glass_jar 物品移植完成后，
-        //  启用以下玻璃罐捕捉逻辑：
-        //  if (itemStack.is(PDItems.ECOLOGY_GLASS_JAR.get())) {
-        //      if (!player.level().isClientSide()) {
-        //          itemStack.shrink(1);
-        //          ItemStack result = new ItemStack(PDItems.LIGHT_FIREFLY_GLASS_JAR.get());
-        //          if (!player.getInventory().add(result)) {
-        //              player.drop(result, false);
-        //          }
-        //          this.discard();
-        //      }
-        //      return InteractionResult.sidedSuccess(player.level().isClientSide());
-        //  }
+        // TODO: ecology_glass_jar / light_firefly_glass_jar 物品尚未移植，
+        // 完整捕捉逻辑待物品注册后在此实现。
 
         return super.mobInteract(player, hand);
     }

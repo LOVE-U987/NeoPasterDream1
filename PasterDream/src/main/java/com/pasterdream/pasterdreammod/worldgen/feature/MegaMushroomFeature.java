@@ -2,7 +2,7 @@ package com.pasterdream.pasterdreammod.worldgen.feature;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.pasterdream.pasterdreammod.worldgen.WorldGenUtils;
+import com.pasterdream.pasterdreammod.api.worldgen.WorldGenUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
