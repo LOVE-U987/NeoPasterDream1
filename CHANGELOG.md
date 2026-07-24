@@ -1,3 +1,51 @@
+﻿# Ver.1 — 新Bug审计问题核实报告
+
+> **核实日期**：2026-07-25\
+> **核实人**：MomoNyako\
+> **对照文档**：[`审计状态_代码核实报告.md`](审计状态_代码核实报告.md)
+
+## 审计概述
+
+对项目进行的新一轮分析，目前已审查报告出18个问题，已确认18个
+
+## 问题清单
+
+| P级 | 问题 | 文件位置 | 状态 |
+| :---: | --- | --- | :---: |
+| P0 | **NaN速度导致崩溃** | `EntitySkillManager.java:260-261` | 已确认 |
+| P1 | **`canContinueToUse()` 错误委托** | `ShadowSquealGhostEntity.java:91-95`<br>`ShadowSquealGhost0Entity.java:141-144` | 已确认 |
+| P1 | **吼叫冷却永不自然衰减** | `TerrorbeakEntity.java:126` | 已确认 |
+| P1 | **`isPlaying()` 永久为true** | `MusicPlaybackController.java:84-86` | 已确认 |
+| P1 | **强制类型转换风险** | `LifeCrystalBlockEntity.java:205` | 已确认 |
+| P1 | **跨生物群系时音乐切换滞后3秒** | `ModMusicManager.java:199-201` | 已确认 |
+| P2 | **冗余 `instanceof` 检查** | `FoxFireEntity.java:165-166` | 已确认 |
+| P2 | **`setSwitchCooldownTicks()` 为空操作** | `ModMusicManager.java:162` | 已确认 |
+| P2 | **静默物品丢失** | `MeltdreamChestBlockEntity.java:256-266` | 已确认 |
+| P2 | **每秒tick做 `instanceof` 检查** | `ShadowVortexBlock.java:66-74` | 已确认 |
+| P2 | **着火时间过长** | `BoneWingFireBallProjectileEntity.java:139` | 已确认 |
+| P2 | **文档与实际不符** | `MeltdreamChestBlock.java:47-48` | 已确认 |
+| P2 | **羽毛粒子尺寸无限增长** | `FeatherWhiteParticle.java:87` | 已确认 |
+| P2 | **银色粒子尺寸无文档化收缩** | `SilverParticle.java:67` | 已确认 |
+| P3 | **每次技能触发重复创建数组** | `AaroncosLefthand0Entity.java:411` | 已确认 |
+| P3 | **双端空ticker浪费CPU** | `DreamAccumulatorBlock.java:109-117` | 已确认 |
+| P3 | **每tick创建临时对象** | `MinecraftMixin.java:46` | 已确认 |
+| P3 | **影子NPC动画延迟** | `ShadowNpc0Entity.java:139-148` | 已确认 |
+
+## 统计摘要
+
+| P级 | 报告数 | 确认数 | 占比 |
+|-----|--------|--------|------|
+| P0 | 1 | 1 | 5.6% |
+| P1 | 5 | 5 | 27.8% |
+| P2 | 8 | 8 | 44.4% |
+| P3 | 4 | 4 | 22.2% |
+| **总计** | **18** | **18** | **100%** |
+
+## 其他更改
+`#9` `#10`问题已同步更新至`#10` `#11`
+
+---
+
 # Ver.0 — 代码审计问题核实报告
 
 > **核实日期**：2026-07-23\
@@ -57,12 +105,12 @@
 
 ## 统计摘要
 
-| 优先级 | 报告数 | 确认数 | 占比 |
-|--------|--------|--------|------|
-| 严重 | 3 | 3 | 7.1% |
-| 高 | 8 | 8 | 19% |
-| 中 | 14 | 14 | 33.3% |
-| 低 | 17 | 17 | 40.6% |
+| P级 | 报告数 | 确认数 | 占比 |
+|-----|--------|--------|------|
+| P0 | 3 | 3 | 7.1% |
+| P1 | 8 | 8 | 19% |
+| P2 | 14 | 14 | 33.3% |
+| P3 | 17 | 17 | 40.6% |
 | **总计** | **42** | **42** | **100%** |
 
 **已知问题**：#9（无淡出停止音乐）和 #10（假交叉淡入淡出）在代码中已有 TODO 标注，为已标记未实现项。
