@@ -3,7 +3,6 @@ package com.pasterdream.pasterdreammod.registry;
 import com.pasterdream.pasterdreammod.api.effect.MobEffectAPI;
 import com.pasterdream.pasterdreammod.api.effect.MobEffectResult;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -29,6 +28,11 @@ import net.minecraft.world.effect.MobEffects;
  * @see com.pasterdream.pasterdreammod.api.effect.base.PasterDreamEffect
  */
 public class PDEffects {
+
+    /** 经验提升效果触发概率（每 tick） */
+    private static final int EXPUP_CHANCE = 10;
+    /** 经验提升效果随机范围上限 */
+    private static final int EXPUP_DENOMINATOR = 1000;
 
     // ==================== 染梦维度核心效果 ====================
 
@@ -81,8 +85,8 @@ public class PDEffects {
                     .beneficial()
                     .color(0xFFABABD5)
                     .onTick((entity, amplifier) -> {
-                        // 每 tick 1/1000 概率给 1 点经验（原版逻辑）
-                        if (Mth.nextInt(RandomSource.create(), 1, 1000) <= 10) {
+                        // 每 tick 概率给 1 点经验（使用实体自身随机源保证世界种子一致性）
+                        if (Mth.nextInt(entity.getRandom(), 1, EXPUP_DENOMINATOR) <= EXPUP_CHANCE) {
                             if (entity instanceof net.minecraft.world.entity.player.Player player) {
                                 player.giveExperiencePoints(1);
                             }

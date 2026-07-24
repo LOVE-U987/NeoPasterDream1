@@ -378,7 +378,7 @@ public class EntityBuilder<T extends Entity> {
     private T createEntity(EntityType<T> type, Level level) {
         try {
             return entityClass.getConstructor(EntityType.class, Level.class).newInstance(type, level);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             PasterDreamAPI.LOGGER.error("[EntityBuilder] ❌ 无法创建实体实例 [{}]: {}", name, e.getMessage(), e);
             throw new RuntimeException("EntityBuilder: 无法创建实体实例 [" + name + "]", e);
         }

@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/eoul_doll.item",
+  "textures": {
+    "particle": "pasterdream:block/cloud"
+  }
+}

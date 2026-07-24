@@ -136,6 +136,7 @@ public class PDArenaEvents {
                 PasterDreamMod.LOGGER.warn("[PDArenaEvents] ⚠️ 结构放置返回 false，可能没有方块被放置");
             }
         } catch (Exception e) {
+            // 边界层兜底：结构加载/放置涉及外部资源，单点失败不应导致竞技场初始化流程崩溃
             PasterDreamMod.LOGGER.error("[PDArenaEvents] ❌ 加载或放置竞技场结构时发生异常", e);
         }
     }

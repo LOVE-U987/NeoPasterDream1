@@ -7,6 +7,7 @@ import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDArenaEvents;
 import com.pasterdream.pasterdreammod.registry.PDCreativeTabs;
+import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDEntityEvents;
 import com.pasterdream.pasterdreammod.registry.PDFeatures;
@@ -25,7 +26,7 @@ import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDPotions;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import com.pasterdream.pasterdreammod.registry.PDWorldgenRegistries;
-import com.pasterdream.pasterdreammod.worldgen.decor.DecorationRegistry;
+import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationRegistry;
 import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
 import net.minecraft.data.DataGenerator;
 import net.neoforged.bus.api.IEventBus;
@@ -57,7 +58,7 @@ public class PasterDreamMod {
     public static final Logger LOGGER = LoggerFactory.getLogger(PasterDreamMod.class);
 
     static {
-        ApiCodeGenConfig.setDefaultBasePath("src/main/resources");
+        ApiCodeGenConfig.setDefaultBasePath(ApiCodeGenConfig.DEFAULT_BASE_PATH);
     }
 
     /**
@@ -70,10 +71,13 @@ public class PasterDreamMod {
         // 统一注册 PasterDreamAPI 模块下所有 DeferredRegister
         PasterDreamAPI.registerAll(modEventBus);
 
-        // 触发 PDBlocks 类加载，确保方块静态字段填充到 BlockAPI.REGISTRY
+        // 显式引用 DecorationRegistry 以触发类初始化，确保 generic_decor 特征在注册事件前填充到 FEATURES
+        // DecorationRegistry.FEATURES 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
+        Object unusedDecorationRegistry = DecorationRegistry.FEATURES;
+
+        // 显式引用 PDBlocks 的静态字段以触发类初始化，确保方块静态字段填充到 BlockAPI.REGISTRY
         // BlockAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
-        try { Class.forName(PDBlocks.class.getName()); }
-        catch (ClassNotFoundException ignored) {}
+        Object unusedBlocks = PDBlocks.BLOCKS;
 
         // 注册主模块物品
         PDItems.ITEMS.register(modEventBus);
@@ -81,23 +85,20 @@ public class PasterDreamMod {
         // 注册盔甲材料
         PDArmorMaterials.ARMOR_MATERIALS.register(modEventBus);
 
-        // 触发 PDBlockEntities 类加载，确保方块实体静态字段填充到 BlockEntityAPI.REGISTRY
+        // 显式引用 PDBlockEntities 的静态字段以触发类初始化，确保方块实体静态字段填充到 BlockEntityAPI.REGISTRY
         // BlockEntityAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
-        try { Class.forName(PDBlockEntities.class.getName()); }
-        catch (ClassNotFoundException e) { LOGGER.debug("Failed to load class: {}", PDBlockEntities.class.getName(), e); }
+        Object unusedBlockEntity = PDBlockEntities.AARONCOS_HAND_SPAWN_BLOCK;
 
-        // 触发 PDEntities 类加载，确保实体静态字段填充到 EntityAPI.REGISTRY
+        // 显式引用 PDEntities 的静态字段以触发类初始化，确保实体静态字段填充到 EntityAPI.REGISTRY
         // EntityAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
-        try { Class.forName(PDEntities.class.getName()); }
-        catch (ClassNotFoundException ignored) {}
+        Object unusedEntityTypes = PDEntities.ENTITY_TYPES;
 
         // 注册创造模式物品栏
         PDCreativeTabs.TABS.register(modEventBus);
 
-        // 强制加载 PDEffects 类，确保所有效果在 RegisterEvent 触发前完成注册
+        // 显式引用 PDEffects 的静态字段以触发类初始化，确保所有效果在 RegisterEvent 触发前完成注册
         // PDPotions 的静态字段会引用 PDEffects 的效果，需要提前初始化
-        try { Class.forName("com.pasterdream.pasterdreammod.registry.PDEffects"); }
-        catch (ClassNotFoundException ignored) {}
+        Object unusedDreamwishBuff = PDEffects.DREAMWISH_BUFF;
 
         // 注册药水（可酿造）
         PDPotions.POTIONS.register(modEventBus);
@@ -111,10 +112,9 @@ public class PasterDreamMod {
         // 必须在构造器中注册，因为 RuinBuilder.build() 会向 DeferredRegister 添加新条目
         PDRuinsRegistration.register();
 
-        // 触发 PDMenus 类加载，确保菜单静态字段填充到 MenuAPI.REGISTRY
+        // 显式引用 PDMenus 的静态字段以触发类初始化，确保菜单静态字段填充到 MenuAPI.REGISTRY
         // MenuAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
-        try { Class.forName(PDMenus.class.getName()); }
-        catch (ClassNotFoundException e) { LOGGER.debug("Failed to load class: {}", PDMenus.class.getName(), e); }
+        Object unusedShadowChest = PDMenus.SHADOW_CHEST;
 
         // 触发 PDParticles 类加载，确保粒子类型静态字段填充到 ParticleAPI.REGISTRY
         // ParticleAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
@@ -123,9 +123,6 @@ public class PasterDreamMod {
         // 注册自定义特征（如云朵团块生成器）
         PDFeatures.FEATURES.register(modEventBus);
 
-        // 注册通用装饰物特征（WorldDecorationAPI）
-        DecorationRegistry.FEATURES.register(modEventBus);
-
         // 注册自定义 ChunkGenerator 和 BiomeSource 类型（供维度 JSON 引用）
         PDWorldgenRegistries.CHUNK_GENERATORS.register(modEventBus);
         PDWorldgenRegistries.BIOME_SOURCES.register(modEventBus);
@@ -133,10 +130,9 @@ public class PasterDreamMod {
         // 注册流体类型
         PDFluidsType.FLUID_TYPES.register(modEventBus);
 
-        // 触发 PDFluids 类加载，确保流体静态字段填充到 FluidAPI.REGISTRY
+        // 显式引用 PDFluids 的静态字段以触发类初始化，确保流体静态字段填充到 FluidAPI.REGISTRY
         // FluidAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
-        try { Class.forName(PDFluids.class.getName()); }
-        catch (ClassNotFoundException e) { LOGGER.debug("Failed to load class: {}", PDFluids.class.getName(), e); }
+        Object unusedMeltdreamLiquid = PDFluids.MELTDREAM_LIQUID;
 
         // 配置刷怪蛋模型自动生成输出目录
         // 所有通过 EntityAPI 注册了 .spawnEgg() 的实体，在 build() 时自动生成模型 JSON
@@ -194,8 +190,8 @@ public class PasterDreamMod {
         // 配置所有实体的伤害免疫规则（替代原先散布在 27 个实体类中的重复 hurt() 逻辑）
         EntityImmunitySetup.setupAllImmunities();
 
-        // 如需同步 JSON 文件，取消注释下行（注意 commonSetup 阶段可能无法编码 BlockPredicate）：
-        // ModDecorations.generateJson();
+        // 注意：commonSetup 阶段调用 ModDecorations.generateJson() 可能无法正确编码 BlockPredicate，
+        // 如需同步 JSON 文件请在 data 生成阶段或独立任务中执行。
 
         // 输出预期的 BiomeModifier JSON 配置文件列表（用于测试时确认文件是否被正确加载）
         LOGGER.debug("预期的 BiomeModifier JSON 文件列表:");

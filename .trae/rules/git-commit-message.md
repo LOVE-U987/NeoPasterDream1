@@ -1,8 +1,8 @@
 ---
-alwaysApply: true
+alwaysApply: false
+description: 
 scene: git_message
 ---
-
 1. 语言准确，避免使用特殊字符，确保使用的语言为英文
 2. 提交信息简洁明了，避免使用复杂的语言
 3. 提交信息中包含相关代码的行号和文件名，方便定位问题

@@ -3,7 +3,7 @@ package com.pasterdream.pasterdreammod.worldgen.chunkgen;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.pasterdream.pasterdreammod.util.FastNoise;
+import com.pasterdream.pasterdreammod.thirdparty.noise.FastNoise;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;

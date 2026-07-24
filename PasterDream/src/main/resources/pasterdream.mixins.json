@@ -6,5 +6,6 @@
   "refmap": "pasterdream.refmap.json",
   "client": [
     "MinecraftMixin"
-  ]
+  ],
+  "mixins": []
 }
