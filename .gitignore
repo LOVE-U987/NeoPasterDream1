@@ -43,3 +43,6 @@ repo/
 .claude
 .claude/**
 memory
+blueprint_*_staging.*
+dreamnotes_*_staging.*
+javac.*.args
