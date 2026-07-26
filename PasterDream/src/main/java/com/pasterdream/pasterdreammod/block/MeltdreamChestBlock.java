@@ -44,7 +44,7 @@ import java.util.List;
  * 融梦水晶箱方块 - 使用 GeckoLib 动画的三级随机宝藏箱
  *
  * animation 属性说明：
- * - 0：闲置循环动画（盖子闭合）
+ * - 0：未激活/可交互状态（盖子闭合，此状态下才响应右键开箱）
  * - 1：普通品质开启动画
  * - 2：稀有品质开启动画
  * - 3：传说品质开启动画
@@ -152,9 +152,9 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        // 客户端无 tick 逻辑（动画由 GeckoLib 驱动），不注册 ticker
         if (level.isClientSide()) {
-            return createTickerHelper(type, PDBlockEntities.MELTDREAM_CHEST.get(),
-                    (lvl, pos, st, be) -> {});
+            return null;
         }
         return createTickerHelper(type, PDBlockEntities.MELTDREAM_CHEST.get(),
                 MeltdreamChestBlockEntity::serverTick);
@@ -166,7 +166,7 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
      * 右键点击融梦水晶箱时的完整流程：
      * <ol>
      *   <li>检查玩家冷却（每人独立）</li>
-     *   <li>随机决定品质（普通70%/稀有22%/传说8%）</li>
+     *   <li>随机决定品质（普通50%/稀有30%/传说20%）</li>
      *   <li>向箱子填入 8 个随机战利品 + 最后 1 个融梦水晶</li>
      *   <li>播放对应品质的音效</li>
      *   <li>设置方块 animation 属性 → GeckoLib 播放开启动画</li>

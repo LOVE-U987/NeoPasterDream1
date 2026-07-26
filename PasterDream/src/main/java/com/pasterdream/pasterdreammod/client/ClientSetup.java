@@ -8,19 +8,27 @@ import com.pasterdream.pasterdreammod.client.particle.CrystalSnowflakeParticle;
 import com.pasterdream.pasterdreammod.client.particle.DreamSporeParticle;
 import com.pasterdream.pasterdreammod.client.particle.StardustParticle;
 import com.pasterdream.pasterdreammod.client.renderer.RendererRegistry;
+import com.pasterdream.pasterdreammod.client.screen.DreamAccumulatorScreen;
 import com.pasterdream.pasterdreammod.client.screen.DreamCauldronScreen;
+import com.pasterdream.pasterdreammod.client.screen.ResearchTableScreen;
+import com.pasterdream.pasterdreammod.client.screen.ShadowBlastFurnaceScreen;
+import com.pasterdream.pasterdreammod.client.screen.ShadowSelectEndScreen;
+import com.pasterdream.pasterdreammod.client.screen.StorageBagScreen;
+import com.pasterdream.pasterdreammod.registry.PDBiomes;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.client.screen.DyedreamDeskScreen;
 import com.pasterdream.pasterdreammod.client.screen.MeltdreamChestScreen;
 import com.pasterdream.pasterdreammod.client.screen.ShadowChestScreen;
 import com.pasterdream.pasterdreammod.client.screen.TheEndlessBookOfDreamSeekersScreen;
+import com.pasterdream.pasterdreammod.client.screen.WeaponWorkshopScreen;
+import com.pasterdream.pasterdreammod.client.screen.WorkshopAnvilScreen;
+import com.pasterdream.pasterdreammod.client.screen.WorkshopBlastScreen;
 import com.pasterdream.pasterdreammod.client.curio.CurioClientHandler;
 import com.pasterdream.pasterdreammod.registry.PDMenus;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDFluidsType;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
@@ -125,6 +133,35 @@ public class ClientSetup {
 
         event.register(PDMenus.THE_ENDLESS_BOOK_OF_DREAM_SEEKERS.get(), TheEndlessBookOfDreamSeekersScreen::new);
         PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: the_endless_book_of_dream_seekers → TheEndlessBookOfDreamSeekersScreen");
+
+        // ==================== [分区W] 武器工坊群 ====================
+
+        event.register(PDMenus.WEAPON_WORKSHOP.get(), WeaponWorkshopScreen::new);
+        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: weapon_workshop → WeaponWorkshopScreen");
+
+        event.register(PDMenus.WORKSHOP_ANVIL.get(), WorkshopAnvilScreen::new);
+        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: workshop_anvil → WorkshopAnvilScreen");
+
+        event.register(PDMenus.WORKSHOP_BLAST.get(), WorkshopBlastScreen::new);
+        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: workshop_blast → WorkshopBlastScreen");
+
+        // ==================== [分区R] 研究台组 ====================
+
+        event.register(PDMenus.RESEARCH_TABLE.get(), ResearchTableScreen::new);
+        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: research_table → ResearchTableScreen");
+
+        event.register(PDMenus.SHADOW_BLAST_FURNACE.get(), ShadowBlastFurnaceScreen::new);
+        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: shadow_blast_furnace → ShadowBlastFurnaceScreen");
+
+        event.register(PDMenus.DREAM_ACCUMULATOR.get(), DreamAccumulatorScreen::new);
+        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: dream_accumulator → DreamAccumulatorScreen");
+
+        event.register(PDMenus.SHADOW_SELECT_END.get(), ShadowSelectEndScreen::new);
+        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: shadow_select_end → ShadowSelectEndScreen");
+
+        event.register(PDMenus.STORAGE_BAG.get(), StorageBagScreen::new);
+        event.register(PDMenus.STORAGE_BAG_0.get(), StorageBagScreen::new);
+        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: storage_bag / storage_bag_0 → StorageBagScreen");
     }
 
     /**
@@ -151,6 +188,8 @@ public class ClientSetup {
         event.registerSpriteSet((SimpleParticleType) PDParticles.SPORE_PARTICLE.particleType(), SporeParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.FOX_FIRE_0_PARTICLE.particleType(), FoxFire0Particle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.FOX_FIRE_1_PARTICLE.particleType(), FoxFire1Particle.Provider::new);
+        // 萤火虫粒子（wind_journey_biome_0 环境粒子，10 帧全亮度萤光）
+        event.registerSpriteSet((SimpleParticleType) PDParticles.FIREFLY_PARTICLE.particleType(), FireflyParticle.Provider::new);
 
         // ===== 4.3 染梦世界动态环境粒子 Provider 注册 =====
         event.registerSpriteSet((SimpleParticleType) PDParticles.DREAM_SPORE.particleType(), DreamSporeParticle.Provider::new);
@@ -158,7 +197,32 @@ public class ClientSetup {
         event.registerSpriteSet((SimpleParticleType) PDParticles.AURORA_GLOW.particleType(), AuroraGlowParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.STARDUST.particleType(), StardustParticle.Provider::new);
 
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 粒子提供器注册完成，共 19 个粒子类型");
+        // ===== 4.4 梦境炼药锅炼制粒子 =====
+        event.registerSpriteSet((SimpleParticleType) PDParticles.DUST_0_PARTICLE.particleType(), Dust0Particle.Provider::new);
+
+        // ===== 4.5 法术粒子（还原自原版法术模块） =====
+        event.registerSpriteSet((SimpleParticleType) PDParticles.POISON_GAS_PARTICLE.particleType(), PoisonGasParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.POISON_SOUL_PARTICLE.particleType(), PoisonSoulParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.FURY_SPELL_PARTICLE.particleType(), FurySpellParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.HEALING_SPELL_PARTICLE.particleType(), HealingSpellParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.YELLOW_SMOKE_PARTICLE.particleType(), YellowSmokeParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.SNOWFLAKE_1_PARTICLE.particleType(), Snowflake1Particle.Provider::new);
+
+        // ===== 4.6 法杖武器与战斗粒子（W2-D，还原自原版法杖战斗模块） =====
+        event.registerSpriteSet((SimpleParticleType) PDParticles.ATTACK_0_PARTICLE.particleType(), Attack0Particle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.BUFF_0_PARTICLE.particleType(), Buff0Particle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.FIREFLY_GLASS_JAR_PARTICLE.particleType(), FireflyGlassJarParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.GOLDEN_PARTICLE.particleType(), GoldenParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.LIGHT_FIREFLY_GLASS_JAR_PARTICLE.particleType(), LightFireflyGlassJarParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.LIGHTNING_PARTICLE.particleType(), LightningParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.MELTDREAM_CRYSTAL_BIG_PARTICLE.particleType(), MeltdreamCrystalBigParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.SCULK_PARTICLE.particleType(), SculkParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.SOUL_PARTICLE.particleType(), SoulParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.SQUEAL_WAVE_PARTICLE.particleType(), SquealWaveParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.STARCALL_PARTICLE.particleType(), StarcallParticle.Provider::new);
+        event.registerSpriteSet((SimpleParticleType) PDParticles.TERRASWORD_WAVE_PARTICLE.particleType(), TerraswordWaveParticle.Provider::new);
+
+        PasterDreamMod.LOGGER.debug("[ClientSetup] 粒子提供器注册完成，共 39 个粒子类型");
     }
 
     /**
@@ -180,27 +244,21 @@ public class ClientSetup {
             }
         }, PDFluidsType.MELTDREAM_LIQUID_TYPE.get());
         PasterDreamMod.LOGGER.debug("[ClientSetup] 注册融梦涌泉流体类型客户端纹理");
-    }
 
-    /** 染梦维度群系的 ResourceKey 常量 */
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_0 = ResourceKey.create(
-            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_0"));
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_1 = ResourceKey.create(
-            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_1"));
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_2 = ResourceKey.create(
-            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_2"));
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_3 = ResourceKey.create(
-            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_3"));
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_DEEP_OCEAN = ResourceKey.create(
-            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_deep_ocean"));
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_MUSHROOM_PLAINS = ResourceKey.create(
-            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_mushroom_plains"));
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_SHORE = ResourceKey.create(
-            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_shore"));
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_RIVER = ResourceKey.create(
-            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_river"));
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_DENSE_FOREST = ResourceKey.create(
-            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_dense_forest"));
+        // ===== 熔融阴影流体纹理（波次C） =====
+        event.registerFluidType(new IClientFluidTypeExtensions() {
+            @Override
+            public ResourceLocation getStillTexture() {
+                return ResourceLocation.fromNamespaceAndPath("pasterdream", "block/shadow_liquid_still");
+            }
+
+            @Override
+            public ResourceLocation getFlowingTexture() {
+                return ResourceLocation.fromNamespaceAndPath("pasterdream", "block/shadow_liquid_flowing");
+            }
+        }, PDFluidsType.SHADOW_LIQUID_TYPE.get());
+        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册熔融阴影流体类型客户端纹理");
+    }
 
     /**
      * 在三色间插值（白天色 → 黄昏色 → 夜色）
@@ -255,39 +313,39 @@ public class ClientSetup {
                         ResourceKey<Biome> biome = PDClientEvents.currentBiomeKey;
                         Vec3 dayColor, sunsetColor, nightColor;
 
-                        if (BIOME_DYEDREAM_0.equals(biome)) {
+                        if (PDBiomes.BIOME_DYEDREAM_0.equals(biome)) {
                             dayColor = new Vec3(1.0, 0.71, 0.85);
                             sunsetColor = new Vec3(1.0, 0.56, 0.64);
                             nightColor = new Vec3(0.29, 0.10, 0.36);
-                        } else if (BIOME_DYEDREAM_1.equals(biome)) {
+                        } else if (PDBiomes.BIOME_DYEDREAM_1.equals(biome)) {
                             dayColor = new Vec3(0.66, 0.90, 0.64);
                             sunsetColor = new Vec3(0.83, 0.64, 0.45);
                             nightColor = new Vec3(0.10, 0.23, 0.16);
-                        } else if (BIOME_DYEDREAM_2.equals(biome)) {
+                        } else if (PDBiomes.BIOME_DYEDREAM_2.equals(biome)) {
                             dayColor = new Vec3(0.71, 0.85, 1.0);
                             sunsetColor = new Vec3(0.64, 0.71, 0.83);
                             nightColor = new Vec3(0.10, 0.16, 0.36);
-                        } else if (BIOME_DYEDREAM_3.equals(biome)) {
+                        } else if (PDBiomes.BIOME_DYEDREAM_3.equals(biome)) {
                             dayColor = new Vec3(0.64, 0.83, 0.90);
                             sunsetColor = new Vec3(0.83, 0.64, 0.64);
                             nightColor = new Vec3(0.04, 0.16, 0.23);
-                        } else if (BIOME_DYEDREAM_DEEP_OCEAN.equals(biome)) {
+                        } else if (PDBiomes.BIOME_DYEDREAM_DEEP_OCEAN.equals(biome)) {
                             dayColor = new Vec3(0.76, 0.64, 0.90);
                             sunsetColor = new Vec3(0.83, 0.53, 0.74);
                             nightColor = new Vec3(0.12, 0.04, 0.28);
-                        } else if (BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(biome)) {
+                        } else if (PDBiomes.BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(biome)) {
                             dayColor = new Vec3(1.0, 0.82, 0.64);
                             sunsetColor = new Vec3(0.90, 0.64, 0.45);
                             nightColor = new Vec3(0.28, 0.16, 0.04);
-                        } else if (BIOME_DYEDREAM_SHORE.equals(biome)) {
+                        } else if (PDBiomes.BIOME_DYEDREAM_SHORE.equals(biome)) {
                             dayColor = new Vec3(0.71, 0.85, 1.0);
                             sunsetColor = new Vec3(0.83, 0.71, 0.83);
                             nightColor = new Vec3(0.16, 0.23, 0.36);
-                        } else if (BIOME_DYEDREAM_RIVER.equals(biome)) {
+                        } else if (PDBiomes.BIOME_DYEDREAM_RIVER.equals(biome)) {
                             dayColor = new Vec3(0.64, 0.78, 0.85);
                             sunsetColor = new Vec3(0.78, 0.64, 0.78);
                             nightColor = new Vec3(0.10, 0.16, 0.28);
-                        } else if (BIOME_DYEDREAM_DENSE_FOREST.equals(biome)) {
+                        } else if (PDBiomes.BIOME_DYEDREAM_DENSE_FOREST.equals(biome)) {
                             dayColor = new Vec3(0.56, 0.71, 0.56);
                             sunsetColor = new Vec3(0.71, 0.56, 0.64);
                             nightColor = new Vec3(0.08, 0.16, 0.10);

@@ -18,7 +18,8 @@ import net.minecraft.resources.ResourceLocation;
  */
 public class CooldownManager {
 
-    private final int switchCooldownTicks;
+    /** 冷却 tick 数（非 final，支持运行时动态修改） */
+    private int switchCooldownTicks;
 
     /** 是否处于切换冷却期 */
     private boolean isInCooldown = false;
@@ -37,6 +38,17 @@ public class CooldownManager {
      */
     public CooldownManager(int switchCooldownTicks) {
         this.switchCooldownTicks = Math.max(1, switchCooldownTicks);
+    }
+
+    /**
+     * 动态修改冷却时长
+     * <p>
+     * 对下一次冷却计时判断即刻生效（正在进行中的冷却也按新时长判断结束）。
+     *
+     * @param ticks 冷却 tick 数（20 tick ≈ 1 秒），至少 1 tick
+     */
+    public void setSwitchCooldownTicks(int ticks) {
+        this.switchCooldownTicks = Math.max(1, ticks);
     }
 
     /**
@@ -70,6 +82,12 @@ public class CooldownManager {
      */
     public boolean updateCooldown(ResourceLocation currentBiomeId, ResourceLocation previousBiomeId, long currentTick) {
         if (!isInCooldown) return false;
+
+        // 防御：pendingBiomeId 异常为空时无法进行群系比对，直接取消冷却避免空指针
+        if (pendingBiomeId == null) {
+            cancelCooldown();
+            return false;
+        }
 
         if (currentBiomeId.equals(pendingBiomeId)) {
             // 仍在目标群系中 → 检查冷却是否结束

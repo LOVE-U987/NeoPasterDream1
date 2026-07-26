@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.util.ServerScheduler;
 import com.pasterdream.pasterdreammod.entity.mob.AaroncosLefthand0Entity;
 import com.pasterdream.pasterdreammod.entity.mob.AaroncosRighthand0Entity;
 import com.pasterdream.pasterdreammod.entity.mob.TerrorbeakEntity;
@@ -8,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -255,11 +255,10 @@ public class PDArenaEvents {
      */
     private static void spawnTerrorbeakReinforcements(ServerLevel serverLevel) {
         for (int delay : new int[]{50, 100, 150}) {
-            serverLevel.getServer().tell(new TickTask(
-                    serverLevel.getServer().getTickCount() + delay, () -> {
+            ServerScheduler.schedule(delay, () -> {
                         spawnTerrorbeakAt(serverLevel, 0, 70, 12);
                         spawnTerrorbeakAt(serverLevel, 0, 70, -12);
-                    }));
+                    });
         }
         PasterDreamMod.LOGGER.debug("[PDArenaEvents] 🦅 已调度 Terrorbeak 增援：50/100/150 tick 后各召唤 2 只");
     }

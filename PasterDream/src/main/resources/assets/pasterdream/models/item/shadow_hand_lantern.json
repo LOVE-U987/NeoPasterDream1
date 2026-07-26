@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/shadow_hand_lantern.geo.item",
+  "textures": {
+    "layer0": "pasterdream:item/shadow_hand_lantern"
+  }
+}

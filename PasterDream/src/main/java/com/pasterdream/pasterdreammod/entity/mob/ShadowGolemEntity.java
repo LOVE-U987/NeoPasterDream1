@@ -62,7 +62,19 @@ public class ShadowGolemEntity extends ConfigurableImmunityEntity {
     private boolean lastloop;
     private long lastSwing;
 
-    private double skillTime = 0;
+    /** 技能充能触发阈值：充能值每 tick +1，达到该值（约 10 秒）后检测附近玩家并释放技能 */
+    private static final int SKILL_CHARGE_THRESHOLD = 200;
+    /** 每次受击额外增加的技能充能值（加速技能释放） */
+    private static final int HURT_CHARGE_BONUS = 10;
+    /**
+     * 受击加速充能的上限（= 200 - 10 - 1 = 189）：充能值低于该值时才吃受击加成，
+     * 保证加成后最多到 198，不会因受击直接跨过触发阈值（仍需自然 tick 到 200 才触发）。
+     * 数值沿用原版 mod ShadowGolemPr1Procedure（time < 189 时 +10）。
+     */
+    private static final int HURT_CHARGE_CAP = SKILL_CHARGE_THRESHOLD - HURT_CHARGE_BONUS - 1;
+
+    /** 技能充能值（每 tick +1，受击额外增加；只参与整数比较，用 int 存储） */
+    private int skillTime = 0;
     private int skillTimer = 0;
 
     private static final ResourceLocation ROAR_SOUND = ResourceLocation.fromNamespaceAndPath("pasterdream", "roar0");
@@ -102,8 +114,8 @@ public class ShadowGolemEntity extends ConfigurableImmunityEntity {
     public boolean hurt(DamageSource source, float amount) {
         boolean result = super.hurt(source, amount);
         if (result && !level().isClientSide()) {
-            if (skillTimer == 0 && skillTime < 189) {
-                skillTime += 10;
+            if (skillTimer == 0 && skillTime < HURT_CHARGE_CAP) {
+                skillTime += HURT_CHARGE_BONUS;
             }
         }
         return result;
@@ -129,14 +141,15 @@ public class ShadowGolemEntity extends ConfigurableImmunityEntity {
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putDouble("SkillTime", this.skillTime);
+        compound.putInt("SkillTime", this.skillTime);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("SkillTime")) {
-            this.skillTime = compound.getDouble("SkillTime");
+            // getInt 对任意数字类型 NBT 均可读取，兼容旧存档中以 double 保存的数值
+            this.skillTime = compound.getInt("SkillTime");
         }
     }
 
@@ -176,7 +189,7 @@ public class ShadowGolemEntity extends ConfigurableImmunityEntity {
             }
         } else {
             skillTime++;
-            if (skillTime >= 200) {
+            if (skillTime >= SKILL_CHARGE_THRESHOLD) {
                 Player nearest = level().getNearestPlayer(this, 10);
                 if (nearest != null) {
                     skillTimer = 1;

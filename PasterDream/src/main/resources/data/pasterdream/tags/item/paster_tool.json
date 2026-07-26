@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:dream_wand_embryo",
+    {
+      "id": "pasterdream:dream_wand",
+      "required": false
+    },
+    {
+      "id": "pasterdream:mana_wand",
+      "required": false
+    },
+    "pasterdream:shadow_erosion_pickaxe_embryo",
+    "pasterdream:shadow_erosion_hoe_embryo",
+    "pasterdream:shadow_erosion_shovel_embryo"
+  ]
+}

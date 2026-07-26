@@ -2,9 +2,9 @@ package com.pasterdream.pasterdreammod.block.entity;
 
 import com.pasterdream.pasterdreammod.block.MeltdreamChestBlock;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
-import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
@@ -14,6 +14,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -43,8 +44,8 @@ import java.util.UUID;
  * - animation = 2：稀有品质开启动画
  * - animation = 3：传说品质开启动画
  * <p>
- * 物品弹出机制：动画播放完毕后，逐 tick 将容器内物品弹出为 ItemEntity，
- * 最后一个槽位（下标 8）若为 meltdream_crystal_0 则生成水晶实体而非弹出。
+ * 物品弹出机制：动画播放完毕后，逐 tick 将容器内物品弹出为 ItemEntity；
+ * 最后一个槽位（下标 8）若为 meltdream_crystal_0 则生成水晶实体，否则以掉落物弹出。
  */
 public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEntity {
 
@@ -253,12 +254,9 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
             return true;
         }
 
-        if (slot == 8 && stack.is(PDItems.MELTDREAM_CRYSTAL_0.get())) {
-            // 第 9 格（下标 8）是融梦水晶 → 生成水晶实体
-            if (level.getServer() != null) {
-                // 暂时回退为掉落物（水晶实体未移植）
-                spawnItemEntity(level, pos, stack);
-            }
+        // 第 9 格（下标 8）若为 meltdream_crystal_0，生成水晶实体（原版 MeltdreamChestPr4）；否则物品掉落
+        if (slot == 8 && stack.is(com.pasterdream.pasterdreammod.registry.PDItems.MELTDREAM_CRYSTAL_0.get())) {
+            spawnCrystalEntity(level, pos);
         } else {
             spawnItemEntity(level, pos, stack);
         }
@@ -274,6 +272,9 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
 
     /**
      * 生成物品实体（带弹跳效果）
+     * <p>
+     * 默认从箱顶（Y+0.8）弹出；上方被方块阻挡时改从箱子正面弹出，
+     * 正面也被阻挡则在箱内原地生成（物品实体会被自动挤出方块）。
      *
      * @param level 服务端世界
      * @param pos   方块位置
@@ -283,9 +284,39 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
         double x = pos.getX() + 0.5;
         double y = pos.getY() + 0.8;
         double z = pos.getZ() + 0.5;
+        // 检查上方是否可通行（碰撞形状为空即视为可通行）
+        BlockPos above = pos.above();
+        if (!level.getBlockState(above).getCollisionShape(level, above).isEmpty()) {
+            BlockState chestState = level.getBlockState(pos);
+            Direction facing = chestState.hasProperty(MeltdreamChestBlock.FACING)
+                    ? chestState.getValue(MeltdreamChestBlock.FACING)
+                    : Direction.NORTH;
+            BlockPos front = pos.relative(facing);
+            if (level.getBlockState(front).getCollisionShape(level, front).isEmpty()) {
+                // 上方被挡 → 从箱子正面弹出
+                x = front.getX() + 0.5;
+                y = front.getY() + 0.5;
+                z = front.getZ() + 0.5;
+            } else {
+                // 正面也被挡 → 原地生成
+                y = pos.getY() + 0.5;
+            }
+        }
         ItemEntity entity = new ItemEntity(level, x, y, z, stack.copy());
         entity.setPickUpDelay(20);
         level.addFreshEntity(entity);
+    }
+
+    /**
+     * 第 9 格为融梦水晶时生成水晶实体（原版 MeltdreamChestPr4Procedure）。
+     */
+    private void spawnCrystalEntity(ServerLevel level, BlockPos pos) {
+        Entity crystal = com.pasterdream.pasterdreammod.registry.PDEntities.MELTDREAM_CRYSTAL.get()
+                .spawn(level, BlockPos.containing(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5),
+                        net.minecraft.world.entity.MobSpawnType.MOB_SUMMONED);
+        if (crystal != null) {
+            crystal.setYRot(level.getRandom().nextFloat() * 360F);
+        }
     }
 
     /**

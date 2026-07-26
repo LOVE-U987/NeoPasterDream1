@@ -1,0 +1,8 @@
+{
+  "parent": "block/template_wall_side",
+  "textures": {
+    "wall": "pasterdream:block/armor_wreck",
+    "particle": "pasterdream:block/armor_wreck"
+  },
+  "render_type": "cutout"
+}

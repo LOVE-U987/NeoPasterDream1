@@ -10,42 +10,41 @@ import net.minecraft.world.entity.player.Inventory;
 
 /**
  * 梦境炼药锅 GUI 屏幕 (Dream Cauldron Screen)
- * 渲染炼药锅界面纹理 + 合成/清空按钮
+ * 布局完全还原原版 PasterDream：196×196 背景纹理 + 合成按钮 + 液体量文本
  *
  * 纹理资源：
- * - dream_cauldron_gui.png：背景纹理（176×182）
- * - dream_cauldron_gui_button0.png：按钮默认纹理
- * - dream_cauldron_gui_button1.png：按钮悬停纹理
+ * - dream_cauldron_gui.png：背景纹理（196×196，原版素材）
+ * - atlas/imagebutton_dream_cauldron_gui_button0.png：合成按钮图集（38×30，上半默认/下半悬停）
  *
- * 按钮区域（相对于 GUI 纹理左上角）：
- * - 合成按钮：位置 (115, 47)，尺寸 (16, 16)
- * - 清空按钮：位置 (133, 47)，尺寸 (16, 16)
+ * 界面元素（相对于 GUI 纹理左上角，与原版一致）：
+ * - 合成按钮：位置 (78, 71)，尺寸 (38, 15)
+ * - 液体量文本：位置 (170, 43)，显示储罐中融梦液体毫桶数
+ *
+ * 点击合成按钮通过 vanilla 的 {@code handleInventoryButtonClick} 通道发送到服务端，
+ * 由 {@link DreamCauldronMenu#clickMenuButton} 校验配方并启动炼制。
  */
 public class DreamCauldronScreen extends AbstractContainerScreen<DreamCauldronMenu> {
 
-    /** GUI 背景纹理 */
+    /** GUI 背景纹理（原版 196×196） */
     private static final ResourceLocation GUI_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID,
                     "textures/screens/dream_cauldron_gui.png");
 
-    /** 按钮默认纹理 */
-    private static final ResourceLocation BUTTON_0_TEXTURE =
+    /** 合成按钮图集纹理（38×30：v=0 默认帧，v=15 悬停帧） */
+    private static final ResourceLocation CRAFT_BUTTON_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID,
-                    "textures/screens/dream_cauldron_gui_button0.png");
+                    "textures/screens/atlas/imagebutton_dream_cauldron_gui_button0.png");
 
-    /** 按钮悬停纹理 */
-    private static final ResourceLocation BUTTON_1_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID,
-                    "textures/screens/dream_cauldron_gui_button1.png");
+    /** 合成按钮区域（相对于 GUI 纹理，原版坐标） */
+    private static final int CRAFT_BUTTON_X = 78;
+    private static final int CRAFT_BUTTON_Y = 71;
+    private static final int CRAFT_BUTTON_WIDTH = 38;
+    private static final int CRAFT_BUTTON_HEIGHT = 15;
 
-    /** 合成按钮区域（相对于 GUI 纹理） */
-    private static final int CRAFT_BUTTON_X = 115;
-    private static final int CRAFT_BUTTON_Y = 47;
-    private static final int BUTTON_SIZE = 16;
-
-    /** 清空按钮区域 */
-    private static final int CLEAR_BUTTON_X = 133;
-    private static final int CLEAR_BUTTON_Y = 47;
+    /** 液体量文本位置与颜色（原版值） */
+    private static final int FLUID_TEXT_X = 170;
+    private static final int FLUID_TEXT_Y = 43;
+    private static final int FLUID_TEXT_COLOR = -26887;
 
     /**
      * 构造梦境炼药锅 GUI 屏幕
@@ -56,34 +55,27 @@ public class DreamCauldronScreen extends AbstractContainerScreen<DreamCauldronMe
      */
     public DreamCauldronScreen(DreamCauldronMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
-        this.imageWidth = 176;
-        this.imageHeight = 182;
+        this.imageWidth = 196;
+        this.imageHeight = 196;
     }
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
-        // 绘制背景纹理，纹理尺寸 176×182
+        // 绘制背景纹理，纹理尺寸 196×196
         guiGraphics.blit(GUI_TEXTURE,
                 this.leftPos, this.topPos,
                 0, 0,
                 this.imageWidth, this.imageHeight,
                 this.imageWidth, this.imageHeight);
 
-        // 绘制合成按钮
-        boolean hoverCraft = isHovering(CRAFT_BUTTON_X, CRAFT_BUTTON_Y, BUTTON_SIZE, BUTTON_SIZE, mouseX, mouseY);
-        guiGraphics.blit(hoverCraft ? BUTTON_1_TEXTURE : BUTTON_0_TEXTURE,
+        // 绘制合成按钮：悬停时使用图集下半帧（v=15）
+        boolean hover = isHovering(CRAFT_BUTTON_X, CRAFT_BUTTON_Y,
+                CRAFT_BUTTON_WIDTH, CRAFT_BUTTON_HEIGHT, mouseX, mouseY);
+        guiGraphics.blit(CRAFT_BUTTON_TEXTURE,
                 this.leftPos + CRAFT_BUTTON_X, this.topPos + CRAFT_BUTTON_Y,
-                0, 0,
-                BUTTON_SIZE, BUTTON_SIZE,
-                BUTTON_SIZE, BUTTON_SIZE);
-
-        // 绘制清空按钮
-        boolean hoverClear = isHovering(CLEAR_BUTTON_X, CLEAR_BUTTON_Y, BUTTON_SIZE, BUTTON_SIZE, mouseX, mouseY);
-        guiGraphics.blit(hoverClear ? BUTTON_1_TEXTURE : BUTTON_0_TEXTURE,
-                this.leftPos + CLEAR_BUTTON_X, this.topPos + CLEAR_BUTTON_Y,
-                0, 0,
-                BUTTON_SIZE, BUTTON_SIZE,
-                BUTTON_SIZE, BUTTON_SIZE);
+                0, hover ? CRAFT_BUTTON_HEIGHT : 0,
+                CRAFT_BUTTON_WIDTH, CRAFT_BUTTON_HEIGHT,
+                CRAFT_BUTTON_WIDTH, CRAFT_BUTTON_HEIGHT * 2);
     }
 
     @Override
@@ -94,44 +86,24 @@ public class DreamCauldronScreen extends AbstractContainerScreen<DreamCauldronMe
 
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        // 绘制玩家背包标签，位置相对于 GUI 纹理左上角
-        guiGraphics.drawString(this.font, this.playerInventoryTitle,
-                this.inventoryLabelX, this.inventoryLabelY, 0x404040, false);
+        // 与原版一致：不绘制标题/背包标签，仅绘制储罐液体量文本
+        guiGraphics.drawString(this.font,
+                this.menu.getFluidAmount() + "mb",
+                FLUID_TEXT_X, FLUID_TEXT_Y, FLUID_TEXT_COLOR, false);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0) {
-            // 检查合成按钮点击
-            if (isHovering(CRAFT_BUTTON_X, CRAFT_BUTTON_Y, BUTTON_SIZE, BUTTON_SIZE, (int) mouseX, (int) mouseY)) {
-                handleCraftButton();
-                return true;
+        if (button == 0 && isHovering(CRAFT_BUTTON_X, CRAFT_BUTTON_Y,
+                CRAFT_BUTTON_WIDTH, CRAFT_BUTTON_HEIGHT, (int) mouseX, (int) mouseY)) {
+            // 通过 vanilla 按钮包通知服务端启动炼制（服务端二次校验配方与液体量）
+            if (this.minecraft != null && this.minecraft.gameMode != null) {
+                this.minecraft.gameMode.handleInventoryButtonClick(
+                        this.menu.containerId, DreamCauldronMenu.BUTTON_CRAFT);
             }
-            // 检查清空按钮点击
-            if (isHovering(CLEAR_BUTTON_X, CLEAR_BUTTON_Y, BUTTON_SIZE, BUTTON_SIZE, (int) mouseX, (int) mouseY)) {
-                handleClearButton();
-                return true;
-            }
+            return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    /**
-     * 处理合成按钮点击
-     * 发送自定义数据包到服务端（目前为占位实现，仅记录日志）
-     */
-    private void handleCraftButton() {
-        PasterDreamMod.LOGGER.debug("[DreamCauldronScreen] 合成按钮点击 - 槽位: {}", 
-                menu.getBlockEntity().getBlockPos());
-    }
-
-    /**
-     * 处理清空按钮点击
-     * 发送自定义数据包到服务端（目前为占位实现，仅记录日志）
-     */
-    private void handleClearButton() {
-        PasterDreamMod.LOGGER.debug("[DreamCauldronScreen] 清空按钮点击 - 槽位: {}",
-                menu.getBlockEntity().getBlockPos());
     }
 
     /**

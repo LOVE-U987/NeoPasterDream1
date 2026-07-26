@@ -78,12 +78,11 @@ public class BoneWingFireBallProjectileEntity extends AbstractArrow implements I
     public void onHitEntity(EntityHitResult entityHitResult) {
         super.onHitEntity(entityHitResult);
         // 命中时播放龙息爆炸音效（替代原模组 MoltengoldWandPr3Procedure）
+        // 仅在服务端 playSound（玩家参数传 null 时会向附近所有玩家广播），
+        // 不再额外调用客户端 playLocalSound，避免双重播放
         if (!this.level().isClientSide()) {
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
                     SoundEvents.DRAGON_FIREBALL_EXPLODE, SoundSource.NEUTRAL, 0.6f, 1.0f);
-        } else {
-            this.level().playLocalSound(this.getX(), this.getY(), this.getZ(),
-                    SoundEvents.DRAGON_FIREBALL_EXPLODE, SoundSource.NEUTRAL, 0.6f, 1.0f, false);
         }
     }
 
@@ -136,6 +135,7 @@ public class BoneWingFireBallProjectileEntity extends AbstractArrow implements I
         entityarrow.setSilent(true);
         entityarrow.setCritArrow(false);
         entityarrow.setBaseDamage(damage);
+        // 着火 100 秒（2000 tick）：与原模组 setSecondsOnFire(100) 的数值保持一致
         entityarrow.setRemainingFireTicks(100 * 20);
         level.addFreshEntity(entityarrow);
         level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
@@ -161,6 +161,7 @@ public class BoneWingFireBallProjectileEntity extends AbstractArrow implements I
         entityarrow.setSilent(true);
         entityarrow.setBaseDamage(9);
         entityarrow.setCritArrow(false);
+        // 着火 100 秒（2000 tick）：与原模组 setSecondsOnFire(100) 的数值保持一致
         entityarrow.setRemainingFireTicks(100 * 20);
         entity.level().addFreshEntity(entityarrow);
         entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),

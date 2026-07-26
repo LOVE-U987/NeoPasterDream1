@@ -113,6 +113,36 @@ public class PDCreativeTabsDebug {
                         // output.accept(PDItems.DEBUG_WAND_LIFECRYSTAL_CAVE_0.get()); // 未注册
                         output.accept(PDItems.DEBUG_WAND_MELTDREAM_LIQUID_WELL_0.get());
                         output.accept(PDItems.DEBUG_WAND_MELTDREAM_LIQUID_WELL_1.get());
+                        // W4：结构生成方块与调试机关
+                        output.accept(PDItems.STRUCTURE_BLOCK_0.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_1.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_2.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_3.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_4.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_5.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_6.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_7.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_8.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_9.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_10.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_11.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_12.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_13.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_14.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_15.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_16.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_17.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_18.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_19.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_20.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_21.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_22.get());
+                        output.accept(PDItems.STRUCTURE_BLOCK_23.get());
+                        output.accept(PDItems.GUARD_BLOCK.get());
+                        output.accept(PDItems.RESTRAINMOVE_BLOCK.get());
+                        output.accept(PDItems.LOST_SWORD_BLOCK.get());
+                        output.accept(PDItems.CLAYPAN_1.get());
+                        output.accept(PDItems.PASTER_BLOCK_RESET_TOOL.get());
                         // BOSS 调试物品
                         output.accept(PDItems.AARONCOS_ARENA_CREATE.get());
                     })

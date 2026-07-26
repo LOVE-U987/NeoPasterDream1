@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:block/ku_wei_ran_meng_cha_hua_"
+  }
+}

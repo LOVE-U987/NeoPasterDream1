@@ -1,6 +1,5 @@
 package com.pasterdream.pasterdreammod.client.audio;
 
-import com.pasterdream.pasterdreammod.PasterDreamMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -20,8 +19,9 @@ import java.util.Objects;
  * 过渡策略（交叉淡化）：
  * <ol>
  *   <li>检测到群系变化且新音乐与当前音乐不同 → 进入切换冷却期</li>
- *   <li>冷却结束后触发交叉淡化：新音乐立即以 {@link #TARGET_VOLUME} 开始播放，旧音乐继续播放</li>
- *   <li>两个声音实例同时播放，经过 {@link #CROSSFADE_STEPS} 个游戏 tick 后停止旧音乐</li>
+ *   <li>冷却结束后触发交叉淡化：新音乐从零音量开始逐 tick 渐强至 {@link #TARGET_VOLUME}，
+ *       旧音乐同步逐 tick 渐弱，静音后自动停止，全程约 {@link #CROSSFADE_STEPS} 个游戏 tick</li>
+ *   <li>交叉淡化期间继续检测群系变化，必要时重定向淡入目标，避免切换滞后</li>
  *   <li>冷却期间玩家回到原群系则取消切换，进入新群系则重置冷却</li>
  * </ol>
  * <p>
@@ -157,9 +157,8 @@ public class ModMusicManager {
      * @param ticks 冷却 tick 数（20 tick ≈ 1 秒），至少 1 tick
      */
     public void setSwitchCooldownTicks(int ticks) {
-        // CooldownManager 的冷却时间在构造时固定，此处无法动态修改
-        // 如需支持动态修改需扩展 CooldownManager
-        PasterDreamMod.LOGGER.warn("[ModMusicManager] setSwitchCooldownTicks 暂不支持动态修改");
+        // 传递给 CooldownManager 真正生效
+        cooldownManager.setSwitchCooldownTicks(ticks);
     }
 
     // ==================== 核心 Tick 逻辑 ====================
@@ -170,7 +169,7 @@ public class ModMusicManager {
      * 执行流程：
      * <ol>
      *   <li>检查玩家和世界状态，判断是否在自定义维度中</li>
-     *   <li>如果正在进行交叉淡化 → 执行一步淡化</li>
+     *   <li>如果正在进行过渡 → 步进过渡，并继续检测群系变化，必要时重定向淡入目标</li>
      *   <li>执行 BGM 去重检测</li>
      *   <li>如果处于切换冷却期 → 更新冷却状态</li>
      *   <li>如果群系变化且未在冷却中 → 进入冷却期</li>
@@ -182,9 +181,11 @@ public class ModMusicManager {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
 
-        // 不在自定义维度中 → 停止所有音乐
+        // 不在自定义维度中 → 淡出并停止所有音乐（含播完待重播的残留状态）
         if (!biomeMusicRegistry.isCustomDimension(mc.player.level())) {
-            if (playbackController.isPlaying() || crossfadeManager.isCrossfading()) {
+            if (playbackController.getCurrentSound() != null
+                    || playbackController.getCurrentMusicName() != null
+                    || crossfadeManager.isCrossfading()) {
                 stopAllMusic();
             }
             return;
@@ -195,24 +196,45 @@ public class ModMusicManager {
         if (biomeKeyOptional.isEmpty()) return;
         ResourceLocation currentBiomeId = biomeKeyOptional.get().location();
 
-        // 处理已经在进行中的交叉淡化步进
+        String musicName = biomeMusicRegistry.getMusicForBiome(currentBiomeId);
+        long gameTick = mc.level.getGameTime();
+
+        // 处理已经在进行中的过渡步进
+        // 过渡期间不再跳过群系变化检测，避免跨群系切换滞后整个淡化周期
         if (crossfadeManager.isCrossfading()) {
-            crossfadeManager.updateStep();
+            boolean stillFading = crossfadeManager.updateStep();
+
+            boolean biomeChangedDuringFade = previousBiomeId != null && !currentBiomeId.equals(previousBiomeId);
+            previousBiomeId = currentBiomeId;
+            if (biomeChangedDuringFade) {
+                loopRestartManager.markBiomeChanged();
+                // 新群系无音乐映射时保持原过渡目标，不做重定向
+                if (musicName != null) {
+                    if (stillFading) {
+                        // 过渡尚未结束 → 直接重定向淡入目标
+                        crossfadeManager.redirectCrossfade(musicName);
+                    } else if (!musicName.equals(playbackController.getCurrentMusicName())) {
+                        // 本 tick 恰好过渡结束 → 按常规流程进入切换冷却
+                        cooldownManager.enterCooldown(currentBiomeId, musicName, gameTick);
+                    }
+                }
+            }
             return;
         }
 
         // 执行 BGM 去重检测
         deduplication.deduplicate();
 
-        String musicName = biomeMusicRegistry.getMusicForBiome(currentBiomeId);
-        long gameTick = mc.level.getGameTime();
-
         // ==================== 切换冷却期逻辑 ====================
         if (cooldownManager.isInCooldown()) {
             cooldownManager.setPendingMusicName(musicName);
             if (cooldownManager.updateCooldown(currentBiomeId, previousBiomeId, gameTick)) {
                 // 冷却结束 → 开始交叉淡化
-                crossfadeManager.startCrossfade(cooldownManager.getPendingMusicName());
+                // 目标音乐为 null（群系无映射）时不触发切换，保持当前 BGM 继续播放
+                String pendingMusicName = cooldownManager.getPendingMusicName();
+                if (pendingMusicName != null) {
+                    crossfadeManager.startCrossfade(pendingMusicName);
+                }
             }
             previousBiomeId = currentBiomeId;
             return;
@@ -224,8 +246,9 @@ public class ModMusicManager {
 
         if (biomeChanged) {
             String currentMusicName = playbackController.getCurrentMusicName();
-            if (musicName != null && musicName.equals(currentMusicName)) {
-                // 音乐相同 → 不切换也不进入冷却，但标记群系已变化
+            // 新群系无音乐映射（musicName == null）→ 不进入冷却/停止，继续当前 BGM；
+            // 音乐相同 → 同样不切换也不进入冷却；两种情况都只标记群系已变化
+            if (musicName == null || musicName.equals(currentMusicName)) {
                 loopRestartManager.markBiomeChanged();
                 return;
             }
@@ -235,18 +258,21 @@ public class ModMusicManager {
             return;
         }
 
-        // 空闲状态但没有播放音乐 → 直接播放（首次进入维度时触发）
-        if (!playbackController.isPlaying()
+        // 空闲状态且当前没有任何 BGM → 直接播放（首次进入维度时触发）
+        // 以 currentSound/currentMusicName 判空而非 isPlaying()，
+        // 避免非循环 BGM 播完后绕过循环重播间隔立即重播
+        if (playbackController.getCurrentSound() == null
+                && playbackController.getCurrentMusicName() == null
                 && !crossfadeManager.isCrossfading()
                 && musicName != null) {
             playbackController.play(musicName);
         }
 
         // ==================== 循环重播检测 ====================
-        if (playbackController.isPlaying()
-                && playbackController.getCurrentSound() != null
+        if (playbackController.getCurrentSound() != null
                 && !cooldownManager.isInCooldown()) {
-            boolean isMusicActive = Minecraft.getInstance().getSoundManager()
+            // 复用方法顶部的 mc 局部变量，避免重复调用 Minecraft.getInstance()
+            boolean isMusicActive = mc.getSoundManager()
                     .isActive(playbackController.getCurrentSound());
             if (loopRestartManager.update(isMusicActive, gameTick)) {
                 // 去重检测：已在播放中 → 跳过
@@ -260,12 +286,15 @@ public class ModMusicManager {
     // ==================== 内部工具 ====================
 
     /**
-     * 停止所有音乐并重置所有状态
+     * 停止所有音乐并重置所有状态（带淡出过渡）
+     * <p>
+     * 首次调用触发全体淡出（{@link FadeState#FADING_OUT}），
+     * 之后每 tick 重复调用推进淡出，音量归零后由声音实例自行停止，
+     * 全部结束后状态机自动回到空闲。
      */
     private void stopAllMusic() {
-        // TODO: 离开自定义维度时应先执行淡出过渡再停止音乐，当前直接瞬间停止
-        playbackController.stop();
-        crossfadeManager.stopCrossfade();
+        crossfadeManager.beginFadeOutAll(); // 幂等：已在全体淡出中则无操作
+        crossfadeManager.updateStep();      // 推进淡出，检测是否全部结束
         cooldownManager.cancelCooldown();
         loopRestartManager.reset();
     }

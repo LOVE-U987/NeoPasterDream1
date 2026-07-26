@@ -5,13 +5,12 @@ import com.pasterdream.pasterdreammod.client.particle.AuroraGlowParticle;
 import com.pasterdream.pasterdreammod.client.particle.CrystalSnowflakeParticle;
 import com.pasterdream.pasterdreammod.client.particle.DreamSporeParticle;
 import com.pasterdream.pasterdreammod.client.particle.StardustParticle;
+import com.pasterdream.pasterdreammod.registry.PDBiomes;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -61,45 +60,6 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 @EventBusSubscriber(modid = PasterDreamMod.MOD_ID, value = Dist.CLIENT)
 public class DyedreamEnvironmentRenderer {
 
-    // ======================== 群系 ResourceKey ========================
-
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_0 = ResourceKey.create(
-            Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_0")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_1 = ResourceKey.create(
-            Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_1")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_2 = ResourceKey.create(
-            Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_2")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_3 = ResourceKey.create(
-            Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_3")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_DEEP_OCEAN = ResourceKey.create(
-            Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_deep_ocean")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_MUSHROOM_PLAINS = ResourceKey.create(
-            Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_mushroom_plains")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_SHORE = ResourceKey.create(
-            Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_shore")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_RIVER = ResourceKey.create(
-            Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_river")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_DENSE_FOREST = ResourceKey.create(
-            Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_dense_forest")
-    );
-
     // ======================== 漂移常量 ========================
 
     /** 水平漂移速度系数 */
@@ -132,26 +92,26 @@ public class DyedreamEnvironmentRenderer {
         ResourceKey<Biome> currentBiome = biomeKey.get();
 
         // ===== 按群系分发粒子效果 =====
-        if (BIOME_DYEDREAM_0.equals(currentBiome)) {
+        if (PDBiomes.BIOME_DYEDREAM_0.equals(currentBiome)) {
             spawnDreamSpore(mc, 0.003f);
-        } else if (BIOME_DYEDREAM_1.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_1.equals(currentBiome)) {
             spawnStardust(mc, 0.004f);
-        } else if (BIOME_DYEDREAM_2.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_2.equals(currentBiome)) {
             spawnCrystalSnowflake(mc, 0.005f);
-        } else if (BIOME_DYEDREAM_3.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_3.equals(currentBiome)) {
             spawnAuroraGlow(mc, 0.003f);
-        } else if (BIOME_DYEDREAM_DEEP_OCEAN.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_DEEP_OCEAN.equals(currentBiome)) {
             spawnAuroraGlow(mc, 0.004f);
-        } else if (BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(currentBiome)) {
             // 蘑菇平原：梦幻孢子（绿色/蓝色变体），用自定义颜色速度
             spawnMushroomSporeVariant(mc, 0.004f);
-        } else if (BIOME_DYEDREAM_SHORE.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_SHORE.equals(currentBiome)) {
             // 海岸：梦幻孢子 + 星尘组合
             spawnDreamSpore(mc, 0.003f);
             spawnStardust(mc, 0.003f);
-        } else if (BIOME_DYEDREAM_RIVER.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_RIVER.equals(currentBiome)) {
             spawnStardust(mc, 0.005f);
-        } else if (BIOME_DYEDREAM_DENSE_FOREST.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_DENSE_FOREST.equals(currentBiome)) {
             // 密林：梦幻孢子 + 星尘组合
             spawnDreamSpore(mc, 0.002f);
             spawnStardust(mc, 0.002f);

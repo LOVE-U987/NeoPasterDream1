@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:deepslate_titanium_ore",
+    "pasterdream:dyedreamdust_ore",
+    "pasterdream:dyedreamquartz_ore",
+    "pasterdream:amber_candy_ore",
+    "pasterdream:moltengold_ore",
+    "pasterdream:soul_ore",
+    "pasterdream:windrunner_crystal_ore"
+  ]
+}

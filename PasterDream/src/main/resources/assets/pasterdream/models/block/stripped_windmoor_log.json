@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/qu_pi_feng_bo_mu__top",
+    "up": "pasterdream:block/qu_pi_feng_bo_mu__top",
+    "north": "pasterdream:block/qu_pi_feng_bo_mu_",
+    "east": "pasterdream:block/qu_pi_feng_bo_mu_",
+    "south": "pasterdream:block/qu_pi_feng_bo_mu_",
+    "west": "pasterdream:block/qu_pi_feng_bo_mu_",
+    "particle": "pasterdream:block/qu_pi_feng_bo_mu__top"
+  },
+  "render_type": "solid"
+}

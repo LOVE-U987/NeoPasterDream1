@@ -1,0 +1,8 @@
+{
+  "parent": "block/template_wall_post",
+  "textures": {
+    "wall": "pasterdream:block/cang_qing_yan_zhuan_",
+    "particle": "pasterdream:block/cang_qing_yan_zhuan_"
+  },
+  "render_type": "cutout"
+}

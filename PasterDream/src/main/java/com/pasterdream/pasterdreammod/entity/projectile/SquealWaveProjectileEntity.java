@@ -45,7 +45,9 @@ public class SquealWaveProjectileEntity extends Projectile {
     @Override
     public void tick() {
         super.tick();
-        // ⚡ 移动逻辑：客户端+服务端都执行，确保能看到飞行轨迹
+        // 移动逻辑：客户端+服务端都执行，确保能看到飞行轨迹
+        // 注意：Projectile 基类的 tick() 不处理位移（位移由具体子类各自实现），
+        // 因此这里的手动位移是本投射物唯一的移动来源，并非重复移动
         Vec3 motion = this.getDeltaMovement();
         this.setPos(this.getX() + motion.x, this.getY() + motion.y, this.getZ() + motion.z);
 

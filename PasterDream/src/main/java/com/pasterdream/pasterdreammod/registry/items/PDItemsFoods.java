@@ -44,7 +44,7 @@ public class PDItemsFoods {
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.2f).alwaysEdible().build()), PDItems.GLASS_CUP::get));
     public static final DeferredItem<Item> BACONE_EGG = PDItems.ITEMS.registerSimpleItem("bacone_egg",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(10).saturationModifier(1.2f)
-                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF.holder(), 1200, 0), 1.0f).build()));
+                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF, 1200, 0), 1.0f).build()));
     public static final DeferredItem<Item> BERRY_BUNCAKE = PDItems.ITEMS.registerSimpleItem("berry_buncake",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).alwaysEdible().fast().build()));
     public static final DeferredItem<Item> BUBBLE_GUM = PDItems.ITEMS.registerSimpleItem("bubble_gum",
@@ -59,11 +59,16 @@ public class PDItemsFoods {
             new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).alwaysEdible().fast().build()));
     public static final DeferredItem<Item> DREAM_COTTON_CANDY = PDItems.ITEMS.registerSimpleItem("dream_cotton_candy",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.625f).alwaysEdible().build()));
+    public static final DeferredItem<Item> YINHUL_COTTON_CANDY = PDItems.ITEMS.register("yinhul_cotton_candy",
+            () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.75f).alwaysEdible()
+                    .effect(() -> new MobEffectInstance(PDEffects.SAN_INCREASE, 1, 9), 1.0f)
+                    .effect(() -> new MobEffectInstance(PDEffects.MELT_DREAM_ENERGY_INCREASE, 1, 19), 1.0f)
+                    .build())));
     public static final DeferredItem<Item> DYEDREAM_FLOWER_TEA = PDItems.ITEMS.register("dyedream_flower_tea",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build()), PDItems.GLASS_CUP::get));
     public static final DeferredItem<Item> DYEDREAM_FRUIT_BUNCAKE = PDItems.ITEMS.registerSimpleItem("dyedream_fruit_buncake",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).alwaysEdible().fast()
-                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF.holder(), 1200, 0), 1.0f)
+                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF, 1200, 0), 1.0f)
                     .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 200, 0), 1.0f).build()));
     public static final DeferredItem<Item> DYEDREAM_JUICE = PDItems.ITEMS.register("dyedream_juice",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationModifier(0.2f).alwaysEdible().build()), PDItems.GLASS_CUP::get));
@@ -93,7 +98,7 @@ public class PDItemsFoods {
             new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationModifier(0f).build()));
     public static final DeferredItem<Item> MELON_BUNCAKE = PDItems.ITEMS.registerSimpleItem("melon_buncake",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).alwaysEdible().fast()
-                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF.holder(), 1200, 0), 1.0f)
+                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF, 1200, 0), 1.0f)
                     .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 400, 0), 1.0f).build()));
     public static final DeferredItem<Item> MELTDREAM_ELIXIR_BOTTLE = PDItems.ITEMS.register("meltdream_elixir_bottle",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.25f).alwaysEdible().build()), PDItems.ELIXIR_BOTTLE::get));
@@ -120,12 +125,12 @@ public class PDItemsFoods {
             new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.4f).build()));
     public static final DeferredItem<Item> SANDWICH = PDItems.ITEMS.registerSimpleItem("sandwich",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(10).saturationModifier(0.9f)
-                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF.holder(), 1200, 0), 1.0f).build()));
+                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF, 1200, 0), 1.0f).build()));
     public static final DeferredItem<Item> STUFFED_WAFER_COOKIES = PDItems.ITEMS.registerSimpleItem("stuffed_wafer_cookies",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(7).saturationModifier(1.0f).build()));
     public static final DeferredItem<Item> SWISS_ROLL = PDItems.ITEMS.registerSimpleItem("swiss_roll",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.8f)
-                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF.holder(), 1200, 0), 1.0f).build()));
+                    .effect(() -> new MobEffectInstance(PDEffects.COOK_BUFF, 1200, 0), 1.0f).build()));
     public static final DeferredItem<Item> UNCOOKED_DYEDREAM_FLOWER_TEA = PDItems.ITEMS.register("uncooked_dyedream_flower_tea",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build()), PDItems.GLASS_CUP::get));
     public static final DeferredItem<Item> WATER_GLASSJAR = PDItems.ITEMS.register("water_glassjar",

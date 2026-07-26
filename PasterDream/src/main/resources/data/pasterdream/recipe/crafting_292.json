@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:windmoor_log"
+    }
+  },
+  "result": {
+    "count": 3,
+    "id": "pasterdream:windmoor_wood"
+  }
+}

@@ -88,12 +88,9 @@ public class ShadowSquealGhostEntity extends GeckoLibMonsterEntity implements Ra
     protected void registerGoals() {
         super.registerGoals();
 
-        this.goalSelector.addGoal(1, new ShadowSquealGhostEntity.RangedAttackGoal(this, 1.25, 30, 12f) {
-            @Override
-            public boolean canContinueToUse() {
-                return this.canUse();
-            }
-        });
+        // 远程攻击：直接使用类内 canContinueToUse（vanilla 语义：目标存活或寻路未完成时继续）。
+        // 原先匿名子类将其错误委托给 canUse()，导致目标短暂丢失时 Goal 反复停止/重启，攻击冷却被异常重置
+        this.goalSelector.addGoal(1, new ShadowSquealGhostEntity.RangedAttackGoal(this, 1.25, 30, 12f));
 
         this.goalSelector.addGoal(2, new Goal() {
             {
@@ -140,7 +137,9 @@ public class ShadowSquealGhostEntity extends GeckoLibMonsterEntity implements Ra
             }
         });
 
-        this.goalSelector.addGoal(3, new RandomStrollGoal(this, 0.8, 20) {
+        // 随机闲逛（优先级 4，低于近战攻击 —— 原先与 MeleeAttackGoal 同为 3，
+        // 同优先级竞争 MOVE 标志会导致闲逛进行中无法被攻击打断）
+        this.goalSelector.addGoal(4, new RandomStrollGoal(this, 0.8, 20) {
             @Override
             protected Vec3 getPosition() {
                 RandomSource random = ShadowSquealGhostEntity.this.getRandom();
@@ -151,8 +150,10 @@ public class ShadowSquealGhostEntity extends GeckoLibMonsterEntity implements Ra
             }
         });
 
+        // 近战攻击（优先级 3，攻击优先于闲逛）
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2, false));
-        this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
+        // 随机张望（顺延至 5，避免与闲逛同优先级竞争 MOVE 标志）
+        this.goalSelector.addGoal(5, new RandomLookAroundGoal(this));
 
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
         this.targetSelector.addGoal(6, new HurtByTargetGoal(this));

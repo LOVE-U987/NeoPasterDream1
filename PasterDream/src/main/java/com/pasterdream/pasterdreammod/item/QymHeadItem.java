@@ -1,12 +1,6 @@
 package com.pasterdream.pasterdreammod.item;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
-import top.theillusivec4.curios.api.SlotContext;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,8 +15,9 @@ import java.util.List;
 public class QymHeadItem extends Item implements ICurioItem {
 
     public QymHeadItem() {
-        super(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON));
-}
+        // 与原版一致：神迹品质饰品，防火
+        super(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.COMMON));
+    }
 
     @Override
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {

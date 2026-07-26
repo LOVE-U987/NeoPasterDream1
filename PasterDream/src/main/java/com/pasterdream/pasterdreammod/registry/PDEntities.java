@@ -33,9 +33,22 @@ import com.pasterdream.pasterdreammod.entity.mob.TerrorbeakEntity;
 import com.pasterdream.pasterdreammod.entity.mob.ThundercloudEntity;
 import com.pasterdream.pasterdreammod.entity.mob.WeakenessTerrorbeakEntity;
 import com.pasterdream.pasterdreammod.entity.mob.WindKnightEntity;
+import com.pasterdream.pasterdreammod.entity.mob.FurySpellFieldEntity;
+import com.pasterdream.pasterdreammod.entity.mob.HealingSpellFieldEntity;
+import com.pasterdream.pasterdreammod.entity.mob.TerraswordWaveEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.BoneWingFireBallProjectileEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.LightningProjectileEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.MoltengoldWandProjectileEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.PinkeggProjectileEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.ShadowVortexBookProjectileEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.SpellProjectileEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.ShadowMagicballEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.SquealWaveProjectileEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.SquealWaveWandProjectileEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.StrawberryHeartProjectileEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.TrueMoltengoldWandProjectileEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.TruestMoltengoldWandProjectileEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.WhiteSwordRainProjectileEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -825,4 +838,228 @@ public class PDEntities {
                             .clientTrackingRange(4)
                             .updateInterval(20)
                             .build("squeal_wave_projectile"));
+
+    // ==================== 法术投射物与立场（还原自原版法术战斗模块） ====================
+
+    /**
+     * 闪电法术投射物 (lightning_spell_projectile)
+     * 由闪电法术物品蓄力施放，命中后在 5*5 区域生成 4 次随机落雷。
+     */
+    public static final Supplier<EntityType<SpellProjectileEntity>> LIGHTNING_SPELL_PROJECTILE =
+            ENTITY_TYPES.register("lightning_spell_projectile",
+                    () -> EntityType.Builder.<SpellProjectileEntity>of(SpellProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("lightning_spell_projectile"));
+
+    /**
+     * 剧毒法术投射物 (poison_spell_projectile)
+     * 命中后对 7*7 区域发动三波剧毒攻势。
+     */
+    public static final Supplier<EntityType<SpellProjectileEntity>> POISON_SPELL_PROJECTILE =
+            ENTITY_TYPES.register("poison_spell_projectile",
+                    () -> EntityType.Builder.<SpellProjectileEntity>of(SpellProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("poison_spell_projectile"));
+
+    /**
+     * 治疗法术投射物 (healing_spell_projectile)
+     * 命中后生成治疗立场实体。
+     */
+    public static final Supplier<EntityType<SpellProjectileEntity>> HEALING_SPELL_PROJECTILE =
+            ENTITY_TYPES.register("healing_spell_projectile",
+                    () -> EntityType.Builder.<SpellProjectileEntity>of(SpellProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("healing_spell_projectile"));
+
+    /**
+     * 狂暴法术投射物 (fury_spell_projectile)
+     * 命中后生成狂暴立场实体。
+     */
+    public static final Supplier<EntityType<SpellProjectileEntity>> FURY_SPELL_PROJECTILE =
+            ENTITY_TYPES.register("fury_spell_projectile",
+                    () -> EntityType.Builder.<SpellProjectileEntity>of(SpellProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("fury_spell_projectile"));
+
+    /**
+     * 冰冻法术投射物 (ice_spell_projectile)
+     * 命中后对 7*7 区域发动 5 波冻结。
+     */
+    public static final Supplier<EntityType<SpellProjectileEntity>> ICE_SPELL_PROJECTILE =
+            ENTITY_TYPES.register("ice_spell_projectile",
+                    () -> EntityType.Builder.<SpellProjectileEntity>of(SpellProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("ice_spell_projectile"));
+
+    /**
+     * 狂暴法术立场 (fury_spell_entity)
+     * 纯展示立场实体，90 tick 后消散。注册名与原版一致。
+     * 尺寸/防火与原版一致：2f x 0.1f，fireImmune
+     */
+    public static final Supplier<EntityType<FurySpellFieldEntity>> FURY_SPELL_ENTITY =
+            ENTITY_TYPES.register("fury_spell_entity",
+                    () -> EntityType.Builder.<FurySpellFieldEntity>of(FurySpellFieldEntity::new, MobCategory.MISC)
+                            .sized(2f, 0.1f)
+                            .fireImmune()
+                            .clientTrackingRange(64 / 16)
+                            .updateInterval(3)
+                            .build("fury_spell_entity"));
+
+    /**
+     * 治疗法术立场 (healing_spell_entity)
+     * 可受击的治疗立场生物，400 tick 内每 tick 治疗 5*5 范围。注册名与原版一致。
+     * 尺寸/防火与原版一致：0.1f x 0.1f，fireImmune
+     */
+    public static final Supplier<EntityType<HealingSpellFieldEntity>> HEALING_SPELL_ENTITY =
+            ENTITY_TYPES.register("healing_spell_entity",
+                    () -> EntityType.Builder.<HealingSpellFieldEntity>of(HealingSpellFieldEntity::new, MobCategory.MONSTER)
+                            .sized(0.1f, 0.1f)
+                            .fireImmune()
+                            .clientTrackingRange(64 / 16)
+                            .updateInterval(3)
+                            .build("healing_spell_entity"));
+
+    // ==================== 法杖武器投射物（W2-D 还原自原版法杖战斗模块） ====================
+    // 注册名与 pd_porting_manifest.json 的 renames 一致（去 projectile_ 前缀的新版惯例）
+
+    /**
+     * 闪电投射物 (lightning_projectile)
+     * 雷云/高压雷云的天罚落雷，飞行时带闪电+电火花拖尾。
+     */
+    public static final Supplier<EntityType<LightningProjectileEntity>> LIGHTNING_PROJECTILE =
+            ENTITY_TYPES.register("lightning_projectile",
+                    () -> EntityType.Builder.<LightningProjectileEntity>of(LightningProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("lightning_projectile"));
+
+    /**
+     * 炙焰金杖法球 (moltengold_wand_projectile)
+     * 熔岩拖尾，命中方块点火。
+     */
+    public static final Supplier<EntityType<MoltengoldWandProjectileEntity>> MOLTENGOLD_WAND_PROJECTILE =
+            ENTITY_TYPES.register("moltengold_wand_projectile",
+                    () -> EntityType.Builder.<MoltengoldWandProjectileEntity>of(MoltengoldWandProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("moltengold_wand_projectile"));
+
+    /**
+     * 唤星者法杖法球 (true_moltengold_wand_projectile)
+     * 命中后释放唤星照明，露天 20% 概率召唤唤星裂隙。
+     */
+    public static final Supplier<EntityType<TrueMoltengoldWandProjectileEntity>> TRUE_MOLTENGOLD_WAND_PROJECTILE =
+            ENTITY_TYPES.register("true_moltengold_wand_projectile",
+                    () -> EntityType.Builder.<TrueMoltengoldWandProjectileEntity>of(TrueMoltengoldWandProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("true_moltengold_wand_projectile"));
+
+    /**
+     * 『亚勒兹』唤星法球 (truest_moltengold_wand_projectile)
+     * 命中后 50% 概率召唤唤星裂隙，法术强度足够时向四周散射炙焰法球。
+     */
+    public static final Supplier<EntityType<TruestMoltengoldWandProjectileEntity>> TRUEST_MOLTENGOLD_WAND_PROJECTILE =
+            ENTITY_TYPES.register("truest_moltengold_wand_projectile",
+                    () -> EntityType.Builder.<TruestMoltengoldWandProjectileEntity>of(TruestMoltengoldWandProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("truest_moltengold_wand_projectile"));
+
+    /**
+     * 魂啸法杖音波 (squeal_wave_wand_projectile)
+     * 魂啸粒子拖尾，命中后按法术强度造成范围魔法伤害。
+     */
+    public static final Supplier<EntityType<SquealWaveWandProjectileEntity>> SQUEAL_WAVE_WAND_PROJECTILE =
+            ENTITY_TYPES.register("squeal_wave_wand_projectile",
+                    () -> EntityType.Builder.<SquealWaveWandProjectileEntity>of(SquealWaveWandProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("squeal_wave_wand_projectile"));
+
+    /**
+     * 暗影旋涡法球 (shadow_vortex_book_projectile)
+     * 烟雾拖尾，潜行命中实体时展开友方暗影旋涡。
+     */
+    public static final Supplier<EntityType<ShadowVortexBookProjectileEntity>> SHADOW_VORTEX_BOOK_PROJECTILE =
+            ENTITY_TYPES.register("shadow_vortex_book_projectile",
+                    () -> EntityType.Builder.<ShadowVortexBookProjectileEntity>of(ShadowVortexBookProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("shadow_vortex_book_projectile"));
+
+    /**
+     * 粉红蛋投掷物 (pinkegg_projectile)
+     * 命中方块 1/5 概率孵出粉色鸡。
+     */
+    public static final Supplier<EntityType<PinkeggProjectileEntity>> PINKEGG_PROJECTILE =
+            ENTITY_TYPES.register("pinkegg_projectile",
+                    () -> EntityType.Builder.<PinkeggProjectileEntity>of(PinkeggProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("pinkegg_projectile"));
+
+    /**
+     * 草莓甜心音符弹 (strawberry_heart_projectile)
+     * 爱心+尘埃拖尾（原版注册名 projectile_strawberry_heart_project 的 renames 映射）。
+     */
+    public static final Supplier<EntityType<StrawberryHeartProjectileEntity>> STRAWBERRY_HEART_PROJECTILE =
+            ENTITY_TYPES.register("strawberry_heart_projectile",
+                    () -> EntityType.Builder.<StrawberryHeartProjectileEntity>of(StrawberryHeartProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("strawberry_heart_projectile"));
+
+    /**
+     * 白厄剑雨光剑 (white_sword_rain_projectile)
+     * 末地烛拖尾，命中暗影生物概率施加暗影沉默并附加束缚。
+     */
+    public static final Supplier<EntityType<WhiteSwordRainProjectileEntity>> WHITE_SWORD_RAIN_PROJECTILE =
+            ENTITY_TYPES.register("white_sword_rain_projectile",
+                    () -> EntityType.Builder.<WhiteSwordRainProjectileEntity>of(WhiteSwordRainProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .build("white_sword_rain_projectile"));
+
+    /**
+     * 大地之刃剑气实体注册结果 (terrasword_wave)
+     * GeckoLib 飞行剑气（原版为 PathfinderMob 而非弹射物），由大地之刃战技挥出。
+     * 尺寸: 0.1f x 0.1f；刷怪蛋颜色沿用原版 -7157493 / -15616972。
+     */
+    private static final EntityResult<TerraswordWaveEntity> TERRASWORD_WAVE_RESULT =
+            EntityAPI.createEntity("terrasword_wave")
+                    .category(MobCategory.MONSTER)
+                    .size(0.1f, 0.1f)
+                    .trackingRange(64)
+                    .updateInterval(3)
+                    .velocityUpdates(true)
+                    .entityClass(TerraswordWaveEntity.class)
+                    .attributes(TerraswordWaveEntity::createAttributes)
+                    .spawnEgg(-7157493, -15616972)
+                    .build();
+
+    /**
+     * 大地之刃剑气实体 (terrasword_wave) — 供战技与渲染注册引用
+     */
+    public static final Supplier<EntityType<TerraswordWaveEntity>> TERRASWORD_WAVE =
+            TERRASWORD_WAVE_RESULT.entityTypeSupplier();
 }

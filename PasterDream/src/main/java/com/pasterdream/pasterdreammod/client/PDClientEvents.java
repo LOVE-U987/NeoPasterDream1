@@ -4,6 +4,7 @@ import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.client.audio.BiomeMusicRegistry;
 import com.pasterdream.pasterdreammod.client.audio.ModMusicManager;
 import com.pasterdream.pasterdreammod.client.audio.MusicSystemFactory;
+import com.pasterdream.pasterdreammod.registry.PDBiomes;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.client.Minecraft;
@@ -32,44 +33,6 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 @EventBusSubscriber(modid = PasterDreamMod.MOD_ID, value = Dist.CLIENT)
 public class PDClientEvents {
 
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_0 = ResourceKey.create(
-            net.minecraft.core.registries.Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_0")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_1 = ResourceKey.create(
-            net.minecraft.core.registries.Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_1")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_2 = ResourceKey.create(
-            net.minecraft.core.registries.Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_2")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_3 = ResourceKey.create(
-            net.minecraft.core.registries.Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_3")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_DEEP_OCEAN = ResourceKey.create(
-            net.minecraft.core.registries.Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_deep_ocean")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_MUSHROOM_PLAINS = ResourceKey.create(
-            net.minecraft.core.registries.Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_mushroom_plains")
-    );
-
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_SHORE = ResourceKey.create(
-            net.minecraft.core.registries.Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_shore")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_RIVER = ResourceKey.create(
-            net.minecraft.core.registries.Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_river")
-    );
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_DENSE_FOREST = ResourceKey.create(
-            net.minecraft.core.registries.Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_dense_forest")
-    );
-
     private static final ResourceLocation DYEDREAM_LEAVES_ID = ResourceLocation.fromNamespaceAndPath(
             PasterDreamMod.MOD_ID, "dyedream_leaves");
 
@@ -82,11 +45,14 @@ public class PDClientEvents {
     private static final double DRIFT_SPEED = 0.0008;
     private static final double DRIFT_RADIUS = 6.0;
 
-    /** 音频系统管理器实例 */
-    private static ModMusicManager musicManager;
+    /**
+     * 音频系统管理器实例。
+     * volatile 保证双重检查锁定下的安全发布，避免其他线程读到部分构造的对象。
+     */
+    private static volatile ModMusicManager musicManager;
 
-    /** ModMusicManager 是否已初始化（注册自定义维度等） */
-    private static boolean musicManagerInitialized = false;
+    /** ModMusicManager 是否已初始化（注册自定义维度等），volatile 保证跨线程可见性 */
+    private static volatile boolean musicManagerInitialized = false;
 
     /**
      * 客户端 Tick 后处理
@@ -125,23 +91,23 @@ public class PDClientEvents {
         currentBiomeKey = biomeKey.get();
         ResourceKey<Biome> currentBiome = currentBiomeKey;
 
-        if (BIOME_DYEDREAM_0.equals(currentBiome)) {
+        if (PDBiomes.BIOME_DYEDREAM_0.equals(currentBiome)) {
             spawnDreamfertiliter(mc);
-        } else if (BIOME_DYEDREAM_1.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_1.equals(currentBiome)) {
             spawnWhiteStar(mc);
-        } else if (BIOME_DYEDREAM_2.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_2.equals(currentBiome)) {
             spawnSilver(mc);
-        } else if (BIOME_DYEDREAM_3.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_3.equals(currentBiome)) {
             spawnSnowflakeGround(mc);
-        } else if (BIOME_DYEDREAM_DEEP_OCEAN.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_DEEP_OCEAN.equals(currentBiome)) {
             spawnDeepOceanBioluminescence(mc);
-        } else if (BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(currentBiome)) {
             spawnMushroomSpores(mc);
-        } else if (BIOME_DYEDREAM_SHORE.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_SHORE.equals(currentBiome)) {
             spawnShoreSpray(mc);
-        } else if (BIOME_DYEDREAM_RIVER.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_RIVER.equals(currentBiome)) {
             spawnRiverGlow(mc);
-        } else if (BIOME_DYEDREAM_DENSE_FOREST.equals(currentBiome)) {
+        } else if (PDBiomes.BIOME_DYEDREAM_DENSE_FOREST.equals(currentBiome)) {
             spawnForestFireflies(mc);
         }
 
@@ -185,18 +151,28 @@ public class PDClientEvents {
      * <p>
      * 使用工厂创建音频系统实例，注册自定义维度与默认群系音乐映射，
      * 启用 BGM 交叉淡化系统。
+     * <p>
+     * 方法级 synchronized（与 {@link #getMusicManager()} 的双重检查锁定共用类锁）
+     * 加内部初始化标记防护，保证并发调用下只初始化一次；
+     * 先在局部变量上完成全部配置、最后才发布到 volatile 字段，
+     * 确保其他线程拿到的一定是完整初始化的实例。
      */
-    private static void initMusicManager() {
-        // 使用工厂创建音频系统
-        musicManager = MusicSystemFactory.createMusicSystem();
+    private static synchronized void initMusicManager() {
+        // 并发/重复调用防护：已初始化则直接返回
+        if (musicManagerInitialized) return;
+
+        // 使用工厂创建音频系统（先在局部变量上配置，避免发布部分构造对象）
+        ModMusicManager manager = MusicSystemFactory.createMusicSystem();
 
         // 注册自定义维度
-        musicManager.registerCustomDimension(
+        manager.registerCustomDimension(
                 ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dyedream_world"));
 
         // 注册默认群系音乐映射
-        musicManager.initializeDefaultBiomeMusic();
+        manager.initializeDefaultBiomeMusic();
 
+        // 配置完成后再发布
+        musicManager = manager;
         musicManagerInitialized = true;
         PasterDreamMod.LOGGER.info("[PDClientEvents] ModMusicManager 初始化完成");
     }

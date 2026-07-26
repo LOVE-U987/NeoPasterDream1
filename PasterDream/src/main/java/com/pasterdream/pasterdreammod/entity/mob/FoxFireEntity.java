@@ -159,13 +159,13 @@ public class FoxFireEntity extends ConfigurableImmunityEntity {
 
             Vec3 center = new Vec3(this.getX(), this.getY(), this.getZ());
             AABB aabb = new AABB(center, center).inflate(6.0 / 2.0);
-            List<Entity> entities = this.level().getEntitiesOfClass(Entity.class, aabb, e -> true);
+            // 排除自身：狐火本身也是 Mob，否则会给自己施加缓慢效果
+            List<Entity> entities = this.level().getEntitiesOfClass(Entity.class, aabb, e -> e != this);
 
             for (Entity entity : entities) {
                 if (entity instanceof Mob mob) {
-                    if (mob instanceof LivingEntity living) {
-                        living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 0));
-                    }
+                    // Mob 本身就是 LivingEntity，直接施加缓慢效果
+                    mob.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 0));
                 } else if (entity instanceof Player player) {
                     player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 0));
                 }

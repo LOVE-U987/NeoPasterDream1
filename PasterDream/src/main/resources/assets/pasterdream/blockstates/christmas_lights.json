@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:block/christmas_lights"
+    },
+    "facing=east": {
+      "model": "pasterdream:block/christmas_lights",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:block/christmas_lights",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:block/christmas_lights",
+      "y": 270
+    }
+  }
+}

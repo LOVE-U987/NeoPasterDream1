@@ -1,14 +1,23 @@
 package com.pasterdream.pasterdreammod;
 
+import com.pasterdream.pasterdreammod.attachment.PDAttachments;
+import com.pasterdream.pasterdreammod.attachment.PlayerDataEvents;
 import com.pasterdream.pasterdreammod.command.PDCommands;
+import com.pasterdream.pasterdreammod.config.PDClientConfig;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.data.PDBlockModelProvider;
 import com.pasterdream.pasterdreammod.data.PDBlockTagProvider;
+import com.pasterdream.pasterdreammod.network.PDNetwork;
+import com.pasterdream.pasterdreammod.registry.PDAttributes;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
+import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
+import com.pasterdream.pasterdreammod.registry.PDGameRules;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDArenaEvents;
 import com.pasterdream.pasterdreammod.registry.PDCreativeTabs;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
+import com.pasterdream.pasterdreammod.registry.PDRecipeTypes;
 import com.pasterdream.pasterdreammod.registry.PDEntityEvents;
 import com.pasterdream.pasterdreammod.registry.PDFeatures;
 import com.pasterdream.pasterdreammod.registry.PDFluids;
@@ -17,6 +26,7 @@ import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDArmorMaterials;
 import com.pasterdream.pasterdreammod.registry.PDMenus;
+import com.pasterdream.pasterdreammod.registry.PDMenusFurniture;
 import com.pasterdream.pasterdreammod.registry.ModDecorations;
 import com.pasterdream.pasterdreammod.registry.PDRuinsRegistration;
 import com.pasterdream.pasterdreammod.api.ApiCodeGenConfig;
@@ -25,6 +35,7 @@ import com.pasterdream.pasterdreammod.entity.damage.EntityImmunitySetup;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDPotions;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
+import com.pasterdream.pasterdreammod.registry.PDTreeDecorators;
 import com.pasterdream.pasterdreammod.registry.PDWorldgenRegistries;
 import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationRegistry;
 import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
@@ -32,6 +43,7 @@ import net.minecraft.data.DataGenerator;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -79,7 +91,10 @@ public class PasterDreamMod {
         // BlockAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
         Object unusedBlocks = PDBlocks.BLOCKS;
 
-        // 注册主模块物品
+        // 注册主模块物品（笔记分区须先填充同一 DeferredRegister）
+        com.pasterdream.pasterdreammod.registry.items.PDItemsDreamnotes.bootstrap();
+        com.pasterdream.pasterdreammod.registry.PDMenusDreamnotes.bootstrap();
+        com.pasterdream.pasterdreammod.data.BluePrintLoader.bootstrap();
         PDItems.ITEMS.register(modEventBus);
 
         // 注册盔甲材料
@@ -88,6 +103,8 @@ public class PasterDreamMod {
         // 显式引用 PDBlockEntities 的静态字段以触发类初始化，确保方块实体静态字段填充到 BlockEntityAPI.REGISTRY
         // BlockEntityAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
         Object unusedBlockEntity = PDBlockEntities.AARONCOS_HAND_SPAWN_BLOCK;
+        // [分区F] 触发 W4 家具/结构方块实体类型在注册事件前完成填充
+        Object unusedFurnitureBe = PDBlockEntitiesFurniture.PICNIC_BASKET;
 
         // 显式引用 PDEntities 的静态字段以触发类初始化，确保实体静态字段填充到 EntityAPI.REGISTRY
         // EntityAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
@@ -115,6 +132,8 @@ public class PasterDreamMod {
         // 显式引用 PDMenus 的静态字段以触发类初始化，确保菜单静态字段填充到 MenuAPI.REGISTRY
         // MenuAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
         Object unusedShadowChest = PDMenus.SHADOW_CHEST;
+        // [分区F] 触发野餐篮/阴影书桌/风泊板条筐菜单注册
+        Object unusedFurnitureMenu = PDMenusFurniture.PICNIC_BASKET;
 
         // 触发 PDParticles 类加载，确保粒子类型静态字段填充到 ParticleAPI.REGISTRY
         // ParticleAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
@@ -122,6 +141,10 @@ public class PasterDreamMod {
 
         // 注册自定义特征（如云朵团块生成器）
         PDFeatures.FEATURES.register(modEventBus);
+
+        // 注册树装饰器类型（染梦树 0/1/2 的树干/树叶装饰器，供 biome_dyedream_*_tree.json 引用）
+        // 缺失会导致数据包 registry 加载失败、无法创建世界（P0）
+        PDTreeDecorators.TREE_DECORATOR_TYPES.register(modEventBus);
 
         // 注册自定义 ChunkGenerator 和 BiomeSource 类型（供维度 JSON 引用）
         PDWorldgenRegistries.CHUNK_GENERATORS.register(modEventBus);
@@ -139,6 +162,35 @@ public class PasterDreamMod {
         EntityAPI.setSpawnEggModelsOutputDir(
                 Path.of("PasterDream", "src", "main", "resources", "assets",
                         PasterDreamMod.MOD_ID, "models", "item"));
+
+        // ==================== 玩家数据层（属性 / 变量 / 网络 / 规则 / 配置） ====================
+
+        // 注册自定义玩家属性（战技冷却、瞬身术系列、理智光环等 10 项，还原自原版 PasterdreamModAttributes）
+        PDAttributes.ATTRIBUTES.register(modEventBus);
+        // 将玩家属性挂接到 EntityType.PLAYER（MOD 总线 EntityAttributeModificationEvent）
+        modEventBus.addListener(PDAttributes::addPlayerAttributes);
+
+        // 注册玩家数据附件（San 理智值 / 融梦能量），以 AttachmentType 替代原版 Forge Capability
+        PDAttachments.ATTACHMENT_TYPES.register(modEventBus);
+
+        // 注册网络包（玩家变量 S2C 同步 + 瞬身术/斗篷按键 C2S 消息）
+        modEventBus.addListener(PDNetwork::registerPayloads);
+
+        // 注册自定义游戏规则（randomCoordX/Z、调试模式、风向、San 系列，共 7 项）
+        PDGameRules.register();
+
+        // [分区R] 注册自定义配方类型与序列化器（暗影高炉 shadow_blasting 数据包配方）
+        PDRecipeTypes.register(modEventBus);
+
+        // 注册配置文件（文件名与原版一致：PasterDream-Client.toml / PasterDream-Common.toml）
+        modContainer.registerConfig(ModConfig.Type.CLIENT, PDClientConfig.SPEC, "PasterDream-Client.toml");
+        modContainer.registerConfig(ModConfig.Type.COMMON, PDCommonConfig.SPEC, "PasterDream-Common.toml");
+
+        // 游戏总线：玩家登录/重生/跨维度/克隆时维护并全量同步玩家数据（对照原版 Capability 生命周期）
+        NeoForge.EVENT_BUS.addListener(PlayerDataEvents::onPlayerLoggedIn);
+        NeoForge.EVENT_BUS.addListener(PlayerDataEvents::onPlayerRespawn);
+        NeoForge.EVENT_BUS.addListener(PlayerDataEvents::onPlayerChangedDimension);
+        NeoForge.EVENT_BUS.addListener(PlayerDataEvents::onPlayerClone);
 
         // 监听通用设置事件
         modEventBus.addListener(this::commonSetup);

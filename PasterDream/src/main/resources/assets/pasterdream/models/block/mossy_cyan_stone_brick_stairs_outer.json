@@ -1,0 +1,9 @@
+{
+  "parent": "block/outer_stairs",
+  "textures": {
+    "bottom": "pasterdream:block/tai_cang_qing_yan_zhuan_",
+    "top": "pasterdream:block/tai_cang_qing_yan_zhuan_",
+    "side": "pasterdream:block/tai_cang_qing_yan_zhuan_"
+  },
+  "render_type": "cutout"
+}

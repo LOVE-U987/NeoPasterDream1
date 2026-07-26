@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:clarity_glass"
+    }
+  },
+  "result": {
+    "count": 16,
+    "id": "pasterdream:clarity_glasspane"
+  }
+}

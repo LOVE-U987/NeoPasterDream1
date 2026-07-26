@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/armor_wreck",
+    "up": "pasterdream:block/armor_wreck",
+    "north": "pasterdream:block/armor_wreck",
+    "east": "pasterdream:block/armor_wreck",
+    "south": "pasterdream:block/armor_wreck",
+    "west": "pasterdream:block/armor_wreck",
+    "particle": "pasterdream:block/armor_wreck"
+  },
+  "render_type": "solid"
+}

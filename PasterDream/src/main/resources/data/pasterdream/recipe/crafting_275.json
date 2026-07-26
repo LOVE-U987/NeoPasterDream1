@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "bcb",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:snowball"
+    },
+    "b": {
+      "item": "pasterdream:dyedream_nugget"
+    },
+    "c": {
+      "item": "pasterdream:soul_essence"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "pasterdream:snowfalldream_disc"
+  }
+}

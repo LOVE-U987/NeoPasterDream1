@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "pasterdream:block/cyan_stone_pillar"
+    },
+    "axis=x": {
+      "model": "pasterdream:block/cyan_stone_pillar",
+      "x": 90,
+      "y": 90
+    },
+    "axis=z": {
+      "model": "pasterdream:block/cyan_stone_pillar",
+      "x": 90
+    }
+  }
+}

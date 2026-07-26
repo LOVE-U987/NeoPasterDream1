@@ -256,10 +256,18 @@ public class EntitySkillManager {
 
         for (LivingEntity target : targets) {
             target.hurt(entity.damageSources().mobAttack(entity), skill.damage());
-            // 击飞效果
-            Vec3 knockback = target.position().subtract(entity.position()).normalize()
-                    .scale(1.5).add(0, 0.5, 0);
-            target.setDeltaMovement(knockback);
+            // 击飞效果：
+            // 1. 先校验方向向量长度，两实体位置重合时 normalize() 会得到 Vec3(NaN,NaN,NaN)，
+            //    传入 setDeltaMovement 会导致实体卡死甚至崩溃，此时退化为仅垂直击飞
+            // 2. 击退叠加到目标现有速度上（参考原版 knockback 语义：水平叠加、垂直取较大值），
+            //    而不是直接覆盖目标当前速度
+            Vec3 diff = target.position().subtract(entity.position());
+            Vec3 push = diff.lengthSqr() < 1.0E-8 ? Vec3.ZERO : diff.normalize().scale(1.5);
+            Vec3 current = target.getDeltaMovement();
+            target.setDeltaMovement(
+                    current.x + push.x,
+                    Math.max(current.y, push.y + 0.5),
+                    current.z + push.z);
             target.hurtMarked = true;
         }
 

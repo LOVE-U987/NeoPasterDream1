@@ -1,4 +1,5 @@
 package com.pasterdream.pasterdreammod.entity.mob;
+import com.pasterdream.pasterdreammod.registry.PDItems;
 
 import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
 import net.minecraft.core.BlockPos;
@@ -140,8 +141,7 @@ public class FireflyEntity extends GeckoLibMobEntity {
     /**
      * 玩家右键交互逻辑
      * <p>
-     * TODO: ecology_glass_jar 和 light_firefly_glass_jar 物品尚未移植，
-     * 当前交互逻辑保留框架，待物品注册后启用完整捕捉流程。
+     * 原版 FireflyPr0：生态玻璃罐右键捕捉为荧光罐。
      *
      * @param player 交互的玩家
      * @param hand   交互的手
@@ -150,10 +150,20 @@ public class FireflyEntity extends GeckoLibMobEntity {
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
-
-        // TODO: ecology_glass_jar / light_firefly_glass_jar 物品尚未移植，
-        // 完整捕捉逻辑待物品注册后在此实现。
-
+        // 原版 FireflyPr0：空手生态玻璃罐捕捉 → 换成荧光罐并 discard 自身
+        if (itemStack.is(PDItems.ECOLOGY_GLASS_JAR.get())) {
+            if (!player.level().isClientSide()) {
+                if (!player.getAbilities().instabuild) {
+                    itemStack.shrink(1);
+                }
+                ItemStack lit = new ItemStack(PDItems.LIGHT_FIREFLY_GLASS_JAR.get());
+                if (!player.getInventory().add(lit)) {
+                    player.drop(lit, false);
+                }
+                this.discard();
+            }
+            return InteractionResult.sidedSuccess(player.level().isClientSide());
+        }
         return super.mobInteract(player, hand);
     }
 

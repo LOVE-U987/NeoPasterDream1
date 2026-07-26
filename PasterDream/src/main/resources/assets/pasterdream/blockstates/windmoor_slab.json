@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "pasterdream:block/windmoor_slab"
+    },
+    "type=top": {
+      "model": "pasterdream:block/windmoor_slab_top"
+    },
+    "type=double": {
+      "model": "pasterdream:block/windmoor_slab_full"
+    }
+  }
+}

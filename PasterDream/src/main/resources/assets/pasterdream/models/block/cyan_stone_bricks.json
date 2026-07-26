@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/cang_qing_yan_zhuan_",
+    "up": "pasterdream:block/cang_qing_yan_zhuan_",
+    "north": "pasterdream:block/cang_qing_yan_zhuan_",
+    "east": "pasterdream:block/cang_qing_yan_zhuan_",
+    "south": "pasterdream:block/cang_qing_yan_zhuan_",
+    "west": "pasterdream:block/cang_qing_yan_zhuan_",
+    "particle": "pasterdream:block/cang_qing_yan_zhuan_"
+  },
+  "render_type": "solid"
+}

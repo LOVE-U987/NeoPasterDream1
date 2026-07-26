@@ -10,7 +10,7 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "function": "set_count",
               "count": {
                 "min": 1,
                 "max": 2
@@ -29,7 +29,7 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "function": "set_count",
               "count": {
                 "min": 1,
                 "max": 1
@@ -43,7 +43,7 @@
           "weight": 4,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "function": "set_count",
               "count": {
                 "min": 1,
                 "max": 1
@@ -57,7 +57,7 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "function": "set_count",
               "count": {
                 "min": 1,
                 "max": 1
@@ -71,7 +71,7 @@
           "weight": 2,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "function": "set_count",
               "count": {
                 "min": 3,
                 "max": 5
@@ -85,7 +85,7 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "function": "set_count",
               "count": {
                 "min": 1,
                 "max": 1
@@ -99,7 +99,7 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "function": "set_count",
               "count": {
                 "min": 1,
                 "max": 1
@@ -113,7 +113,7 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "function": "set_count",
               "count": {
                 "min": 1,
                 "max": 1
@@ -127,7 +127,7 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "function": "set_count",
               "count": {
                 "min": 1,
                 "max": 1
@@ -141,7 +141,7 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "function": "set_count",
               "count": {
                 "min": 1,
                 "max": 1
@@ -160,14 +160,14 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "function": "set_count",
               "count": {
                 "min": 1,
                 "max": 1
               }
             },
             {
-              "function": "minecraft:enchant_with_levels",
+              "function": "enchant_with_levels",
               "treasure": true,
               "levels": {
                 "min": 20,

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:huge_fungus",
+  "config": {
+    "valid_base_block": {
+      "Name": "pasterdream:shadow_nylium"
+    },
+    "stem_state": {
+      "Name": "pasterdream:shadow_stem",
+      "Properties": {
+        "axis": "y"
+      }
+    },
+    "hat_state": {
+      "Name": "pasterdream:shadow_wart_block"
+    },
+    "decor_state": {
+      "Name": "pasterdream:shadow_shroomlight"
+    },
+    "replaceable_blocks": {
+      "type": "minecraft:matching_blocks",
+      "blocks": "#replaceable_by_trees"
+    }
+  }
+}

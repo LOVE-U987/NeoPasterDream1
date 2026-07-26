@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.fluid.types.MeltdreamLiquidFluidType;
+import com.pasterdream.pasterdreammod.fluid.types.ShadowLiquidFluidType;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -25,4 +26,11 @@ public class PDFluidsType {
      */
     public static final DeferredHolder<FluidType, MeltdreamLiquidFluidType> MELTDREAM_LIQUID_TYPE =
             FLUID_TYPES.register("meltdream_liquid", MeltdreamLiquidFluidType::new);
+
+    /**
+     * 熔融阴影流体类型
+     * 摔落缓冲、可灭火、可行船、可湿润、温度100（对照原版 ShadowLiquidFluidType）
+     */
+    public static final DeferredHolder<FluidType, ShadowLiquidFluidType> SHADOW_LIQUID_TYPE =
+            FLUID_TYPES.register("shadow_liquid", ShadowLiquidFluidType::new);
 }

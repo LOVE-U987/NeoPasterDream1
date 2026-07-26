@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "pasterdream:pasterdream_draw",
+      "required": false
+    },
+    {
+      "id": "pasterdream:pasterdream_draw_0",
+      "required": false
+    }
+  ]
+}

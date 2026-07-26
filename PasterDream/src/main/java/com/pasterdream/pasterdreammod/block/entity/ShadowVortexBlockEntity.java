@@ -3,7 +3,9 @@ package com.pasterdream.pasterdreammod.block.entity;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
@@ -67,8 +69,8 @@ public class ShadowVortexBlockEntity extends BlockEntity implements GeoBlockEnti
     }
 
     /**
-     * 客户端 tick —— 用于动画和计时
-     * 服务端 tick —— 处理伤害逻辑和生命周期
+     * 服务端 tick —— 处理伤害逻辑、粒子效果和生命周期
+     *（客户端不注册 ticker，动画由 GeckoLib 自行驱动）
      */
     public void tick() {
         if (level == null) return;
@@ -90,6 +92,29 @@ public class ShadowVortexBlockEntity extends BlockEntity implements GeoBlockEnti
                 serverLevel.removeBlock(worldPosition, false);
             }
         }
+    }
+
+    // ==================== NBT 持久化 ====================
+
+    /** age 字段的 NBT 键名 */
+    private static final String TAG_AGE = "age";
+
+    /**
+     * 保存已存活 tick 数，防止区块卸载/重载后计时归零、漩涡变相延长存活时间
+     */
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.putInt(TAG_AGE, age);
+    }
+
+    /**
+     * 读取已存活 tick 数
+     */
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        age = tag.getInt(TAG_AGE);
     }
 
     /**

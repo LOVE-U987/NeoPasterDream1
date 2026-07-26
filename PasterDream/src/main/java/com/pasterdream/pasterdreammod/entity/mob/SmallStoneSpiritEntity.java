@@ -1,6 +1,8 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
+import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import com.pasterdream.pasterdreammod.util.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -21,6 +23,7 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -54,6 +57,12 @@ public class SmallStoneSpiritEntity extends GeckoLibMobEntity {
     private long lastSwing;
 
     // ==================== 群体增益技能 ====================
+    /**
+     * size 成长上限：对应 HEALTH_BOOST 增益的封顶等级 255（25.6 * 10 - 1 = 255）。
+     * 原版 mod（SmallStoneSpiritPr0Procedure）没有上限，这里取增益已封顶的数值作为明确上限，
+     * 防止 size 无意义地无限增长。
+     */
+    private static final double MAX_SIZE = 25.6;
     /** 累积的尺寸数值（受附近小石灵数量影响） */
     private double size = 0;
     /** 群体增益检测间隔 counter（每 20 tick 检测一次） */
@@ -154,11 +163,18 @@ public class SmallStoneSpiritEntity extends GeckoLibMobEntity {
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
+        // 保存群体增益累积的 size，防止实体重载后归零
+        compound.putDouble("SpiritSize", this.size);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
+        if (compound.contains("SpiritSize")) {
+            // size 仅参与周期性群体增益计算（决定 HEALTH_BOOST 等级），不影响属性/包围盒，
+            // 恢复数值后下一次增益检测（至多 20 tick 后）会自动重新应用效果
+            this.size = compound.getDouble("SpiritSize");
+        }
     }
 
     // ======================== 每 tick 更新 ========================
@@ -196,8 +212,8 @@ public class SmallStoneSpiritEntity extends GeckoLibMobEntity {
                 SmallStoneSpiritEntity.class, aabb, e -> e != this && e.isAlive());
 
         for (SmallStoneSpiritEntity spirit : nearbySpirits) {
-            // 增加对方 size
-            spirit.size += 0.1;
+            // 增加对方 size（封顶 MAX_SIZE，防止无限增长）
+            spirit.size = Math.min(spirit.size + 0.1, MAX_SIZE);
         }
 
         // 如果有附近小石灵，自身获得增益效果
@@ -215,9 +231,7 @@ public class SmallStoneSpiritEntity extends GeckoLibMobEntity {
             }
         }
 
-        // 如果当前位置是空气且下方不是空气（悬浮状态），50% 概率保持不动
-        // 注意：SmallStoneSpiritBlock 尚未移植，跳过放置方块逻辑
-    }
+        }
 
     @Override
     public void aiStep() {
@@ -226,6 +240,29 @@ public class SmallStoneSpiritEntity extends GeckoLibMobEntity {
     }
 
     // ======================== 死亡处理 ========================
+
+    /**
+     * 死亡时：若尸体位置为空气且脚下非空，50% 概率 22 tick 后放回小石灵方块
+     * （原版 SmallStoneSpiritPr0Procedure 在 die 中调用的后半段）。
+     */
+    @Override
+    public void die(DamageSource source) {
+        super.die(source);
+        if (this.level().isClientSide()) {
+            return;
+        }
+        BlockPos pos = BlockPos.containing(this.getX(), this.getY(), this.getZ());
+        if (this.level().getBlockState(pos).is(Blocks.AIR)
+                && !this.level().getBlockState(pos.below()).is(Blocks.AIR)
+                && this.level().getRandom().nextDouble() > 0.5) {
+            ServerScheduler.schedule(22, () -> {
+                if (this.level().getBlockState(pos).is(Blocks.AIR)
+                        && !this.level().getBlockState(pos.below()).is(Blocks.AIR)) {
+                    this.level().setBlock(pos, PDBlocks.SMALL_STONE_SPIRIT_BLOCK.get().defaultBlockState(), 3);
+                }
+            });
+        }
+    }
 
     @Override
     protected void tickDeath() {

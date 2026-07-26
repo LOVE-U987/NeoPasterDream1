@@ -5,7 +5,6 @@ import com.pasterdream.pasterdreammod.block.entity.ShadowChestBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -133,8 +132,9 @@ public class ShadowChestBlock extends BaseEntityBlock implements SimpleWaterlogg
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        // 服务端 ticker 驱动"延迟打开 GUI"的计时（见 useWithoutItem），客户端无需 ticker
         return level.isClientSide() ? null : createTickerHelper(type, PDBlockEntities.SHADOW_CHEST.get(),
-                (lvl, pos, st, be) -> {});
+                ShadowChestBlockEntity::serverTick);
     }
 
     // ==================== 右键交互 ====================
@@ -149,12 +149,9 @@ public class ShadowChestBlock extends BaseEntityBlock implements SimpleWaterlogg
             level.setBlock(pos, state.setValue(ANIMATION, 1), 3);
             // 播放开盖音效
             level.playSound(null, pos, SoundEvents.DEEPSLATE_TILES_STEP, SoundSource.BLOCKS, 1.0f, 1.0f);
-            // 延迟打开 GUI（给动画播放时间）
-            level.scheduleTick(pos, this, 16);
-            // 打开 GUI
-            if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.openMenu(chest, pos);
-            }
+            // 延迟 16 tick 后再打开 GUI，为开盖动画预留播放时间
+            //（对应原模组 ShadowChestPr0Procedure 的 queueServerWork(16)，由方块实体的服务端 ticker 计时触发）
+            chest.scheduleOpen(player, 16);
         }
         return InteractionResult.CONSUME;
     }

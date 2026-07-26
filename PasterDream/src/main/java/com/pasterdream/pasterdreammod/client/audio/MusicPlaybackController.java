@@ -77,12 +77,17 @@ public class MusicPlaybackController {
     }
 
     /**
-     * 当前是否有音乐正在播放
+     * 当前是否有音乐正在实际播放
+     * <p>
+     * 通过 {@link net.minecraft.client.sounds.SoundManager#isActive} 确认声音引擎中的真实状态，
+     * 非循环 BGM 自然播完后不再误报 true。
+     * currentSound 引用保留给循环重播逻辑判断"已加载过 BGM"，不在此处清除。
      *
-     * @return 如果有音乐正在播放返回 true
+     * @return 如果有音乐正在实际播放返回 true
      */
     public boolean isPlaying() {
-        return currentSound != null;
+        return currentSound != null
+                && Minecraft.getInstance().getSoundManager().isActive(currentSound);
     }
 
     /**

@@ -7,10 +7,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -20,6 +22,8 @@ import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import java.util.UUID;
 
 /**
  * 影之箱方块实体 (Shadow Chest Block Entity)
@@ -156,6 +160,50 @@ public class ShadowChestBlockEntity extends BlockEntity implements GeoBlockEntit
         BlockState state = level.getBlockState(worldPosition);
         if (state.getBlock().getStateDefinition().getProperty(ANIM_PROPERTY) instanceof IntegerProperty prop) {
             level.setBlock(worldPosition, state.setValue(prop, 0), 3);
+        }
+    }
+
+    // ==================== 延迟打开 GUI ====================
+
+    /** 待打开 GUI 的玩家 UUID（仅运行期有效，不持久化，等效原模组 queueServerWork 的瞬态延迟） */
+    @Nullable
+    private UUID pendingOpenPlayerUUID = null;
+
+    /** 距打开 GUI 剩余的 tick 数 */
+    private int openDelayTicks = 0;
+
+    /**
+     * 调度延迟打开 GUI，为开盖动画预留播放时间
+     *
+     * @param player 右键交互的玩家
+     * @param delay  延迟 tick 数
+     */
+    public void scheduleOpen(Player player, int delay) {
+        this.pendingOpenPlayerUUID = player.getUUID();
+        this.openDelayTicks = delay;
+    }
+
+    /**
+     * 服务端 tick：延迟计时结束后为玩家打开 GUI；
+     * 计时期间玩家下线则放弃本次打开
+     *
+     * @param level 世界实例
+     * @param pos   方块位置
+     * @param state 方块状态
+     * @param chest 影之箱方块实体
+     */
+    public static void serverTick(Level level, BlockPos pos, BlockState state, ShadowChestBlockEntity chest) {
+        if (chest.pendingOpenPlayerUUID == null) {
+            return;
+        }
+        if (--chest.openDelayTicks > 0) {
+            return;
+        }
+        Player player = level.getPlayerByUUID(chest.pendingOpenPlayerUUID);
+        chest.pendingOpenPlayerUUID = null;
+        chest.openDelayTicks = 0;
+        if (player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(chest, pos);
         }
     }
 

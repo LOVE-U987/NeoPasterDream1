@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
  * 成就（Advancement）引用常量类
  * 定义所有自定义成就的 ResourceLocation，便于在代码中引用
  * <p>
- * 实际的成就数据定义在 data/pasterdream/advancements/ 下的 JSON 文件中
+ * 实际的成就数据定义在 data/pasterdream/advancement/ 下的 JSON 文件中（1.21.1 起为单数目录名）
  * 参考 STORYLINE.md 中的成就链设计
  * <p>
  * 成就链概览（后续完善）：

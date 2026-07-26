@@ -3,10 +3,13 @@ package com.pasterdream.pasterdreammod.client.audio;
 /**
  * 淡入淡出状态枚举 —— 定义 ModMusicManager 的过渡生命周期
  * <p>
- * 仅保留两个状态：
+ * 状态说明：
  * <ul>
  *   <li>{@link #IDLE} — 空闲，无过渡进行中，音乐正常播放</li>
- *   <li>{@link #FADING} — 交叉淡化过渡中，旧音乐逐级降低音量，新音乐逐级升高音量</li>
+ *   <li>{@link #CROSSFADE} — 交叉淡化过渡中，旧音乐逐 tick 渐弱、新音乐逐 tick 渐强，
+ *       期间淡入目标可被重定向（群系再次变化时）</li>
+ *   <li>{@link #FADING_OUT} — 全体淡出中，所有音乐渐弱至静音后停止
+ *       （离开自定义维度、停止播放时使用）</li>
  * </ul>
  */
 public enum FadeState {
@@ -14,6 +17,9 @@ public enum FadeState {
     /** 空闲，无过渡进行中 */
     IDLE,
 
-    /** 交叉淡化过渡中，旧音乐渐弱 + 新音乐渐强同时进行 */
-    FADING
+    /** 交叉淡化过渡中：旧音乐渐弱 + 新音乐渐强同时进行，淡入目标可重定向 */
+    CROSSFADE,
+
+    /** 全体淡出中：所有音乐渐弱至静音后停止 */
+    FADING_OUT
 }

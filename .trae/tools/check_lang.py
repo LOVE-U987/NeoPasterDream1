@@ -14,12 +14,14 @@ PD_ITEMS_SUBDIR = PD_ITEMS_DIR / "items"
 PD_BLOCKS_SUBDIR = PD_ITEMS_DIR / "blocks"
 LANG_FILE = ROOT / "PasterDream/src/main/resources/assets/pasterdream/lang/zh_cn.json"
 
+# 只匹配字面量完整注册名；排除 "foo_" + i 这类拼接前缀（否则会误报 structure_block_/dreamnotes_）
 REGISTER_PATTERNS = [
-    re.compile(r'\bregister\s*\(\s*"([a-z0-9_]+)"'),
-    re.compile(r'\bregisterSimple(?:Item|BlockItem)\s*\(\s*"([a-z0-9_]+)"'),
-    re.compile(r'\bregisterItem\s*\(\s*"([a-z0-9_]+)"'),
-    re.compile(r'\bCurioAPI\.create\s*\(\s*"([a-z0-9_]+)"'),
-    re.compile(r'\bregisterCustom\s*\(\s*"([a-z0-9_]+)"'),
+    re.compile(r'\bregister\s*\(\s*"([a-z0-9_]+)"\s*[,)]'),
+    re.compile(r'\bregisterSimple(?:Item|BlockItem)\s*\(\s*"([a-z0-9_]+)"\s*[,)]'),
+    re.compile(r'\bregisterItem\s*\(\s*"([a-z0-9_]+)"\s*[,)]'),
+    re.compile(r'\bregisterBlock\s*\(\s*"([a-z0-9_]+)"\s*[,)]'),
+    re.compile(r'\bCurioAPI\.create\s*\(\s*"([a-z0-9_]+)"\s*[,)]'),
+    re.compile(r'\bregisterCustom\s*\(\s*"([a-z0-9_]+)"\s*[,)]'),
 ]
 
 
@@ -95,15 +97,17 @@ def main():
 
     item_names = collect_names_from_files(item_files)
     block_names = collect_names_from_files(block_files)
-    block_item_names = block_names.copy()
+    # BlockItem（registerSimpleBlockItem 等注册的方块物品）在运行时通过
+    # block.pasterdream.* 键取显示名（BlockItem.getDescriptionId 委托方块），
+    # 不需要 item.pasterdream.* 键——物品侧检查需排除方块名，避免误报。
+    item_names -= block_names
 
     with LANG_FILE.open("r", encoding="utf-8") as f:
         lang_keys = set(json.load(f).keys())
 
     missing_blocks = sorted(n for n in block_names if f"block.pasterdream.{n}" not in lang_keys)
     missing_items = sorted(n for n in item_names if f"item.pasterdream.{n}" not in lang_keys)
-    missing_block_items = sorted(n for n in block_item_names if f"item.pasterdream.{n}" not in lang_keys)
-    has_missing = missing_blocks or missing_items or missing_block_items
+    has_missing = missing_blocks or missing_items
 
     print("=" * 60)
     print("语言文件完整性检查结果")
@@ -121,11 +125,6 @@ def main():
     if missing_items:
         print(f"\n[缺失] item.pasterdream.* 翻译键（PDItems 直接注册，共 {len(missing_items)} 个）:")
         for name in missing_items:
-            print(f"  - item.pasterdream.{name}")
-
-    if missing_block_items:
-        print(f"\n[缺失] item.pasterdream.* 翻译键（BlockItem 形态，共 {len(missing_block_items)} 个）:")
-        for name in missing_block_items:
             print(f"  - item.pasterdream.{name}")
 
     if not has_missing:

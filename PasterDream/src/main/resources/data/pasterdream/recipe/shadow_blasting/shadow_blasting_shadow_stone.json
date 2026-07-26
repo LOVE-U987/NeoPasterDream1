@@ -1,0 +1,10 @@
+{
+  "type": "pasterdream:shadow_blasting",
+  "input_ingredient": {
+    "tag": "c:stones"
+  },
+  "result": {
+    "id": "pasterdream:shadow_stone"
+  },
+  "spend_fuel": 0
+}

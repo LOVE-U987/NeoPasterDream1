@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:item/chuang_zao_lan__lian_dong__"
+  }
+}

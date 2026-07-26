@@ -165,6 +165,12 @@ public class PDBlocks {
         BlockAPI.putConfig("qin_doll_0", BlockConfig.of());
         BlockAPI.putConfig("little_purple_doll_0", BlockConfig.of());
         BlockAPI.putConfig("golden_fox_sculpture", BlockConfig.of());
+
+        // ========== [分区R] 研究台组 ==========
+        BlockAPI.putConfig("research_table", BlockConfig.of().mineable("axe"));
+        BlockAPI.putConfig("shadow_blast_furnace", BlockConfig.of().mineable("pickaxe"));
+        BlockAPI.putConfig("forced_tower", BlockConfig.of().mineable("pickaxe"));
+        BlockAPI.putConfig("dream_spawner_0", BlockConfig.of().mineable("pickaxe"));
     }
 
     // ==================== 子文件聚合引用 ====================
@@ -421,5 +427,135 @@ public class PDBlocks {
     public static final DeferredBlock<?> CYAN_STONE_PILLAR = PDBlocksDyedreamPhase2.CYAN_STONE_PILLAR;
     public static final DeferredBlock<?> CYAN_STONE_PRESSURE_PLATE = PDBlocksDyedreamPhase2.CYAN_STONE_PRESSURE_PLATE;
     public static final DeferredBlock<?> CYAN_STONE_BUTTON = PDBlocksDyedreamPhase2.CYAN_STONE_BUTTON;
+
+    // ==================== 暗影方块族补全（波次C：阴影植被/流体 + 风之旅残余 + 杂项） ====================
+
+    // --- PDBlocksShadow（续）：阴影植被与流体 ---
+    public static final DeferredBlock<?> SHADOW_FUNGUS = PDBlocksShadow.SHADOW_FUNGUS;
+    public static final DeferredBlock<?> SHADOW_LIQUID = PDBlocksShadow.SHADOW_LIQUID;
+
+    // --- PDBlocksWindJourney：风泊木族 ---
+    public static final DeferredBlock<?> WINDMOOR_LOG = PDBlocksWindJourney.WINDMOOR_LOG;
+    public static final DeferredBlock<?> WINDMOOR_WOOD = PDBlocksWindJourney.WINDMOOR_WOOD;
+    public static final DeferredBlock<?> STRIPPED_WINDMOOR_LOG = PDBlocksWindJourney.STRIPPED_WINDMOOR_LOG;
+    public static final DeferredBlock<?> STRIPPED_WINDMOOR_WOOD = PDBlocksWindJourney.STRIPPED_WINDMOOR_WOOD;
+    public static final DeferredBlock<?> WINDMOOR_PLANKS = PDBlocksWindJourney.WINDMOOR_PLANKS;
+    public static final DeferredBlock<?> WINDMOOR_STAIRS = PDBlocksWindJourney.WINDMOOR_STAIRS;
+    public static final DeferredBlock<?> WINDMOOR_SLAB = PDBlocksWindJourney.WINDMOOR_SLAB;
+    public static final DeferredBlock<?> WINDMOOR_FENCE = PDBlocksWindJourney.WINDMOOR_FENCE;
+    public static final DeferredBlock<?> WINDMOOR_FENCE_GATE = PDBlocksWindJourney.WINDMOOR_FENCE_GATE;
+    public static final DeferredBlock<?> WINDMOOR_DOOR = PDBlocksWindJourney.WINDMOOR_DOOR;
+    public static final DeferredBlock<?> WINDMOOR_TRAPDOOR = PDBlocksWindJourney.WINDMOOR_TRAPDOOR;
+    public static final DeferredBlock<?> WINDMOOR_PRESSURE_PLATE = PDBlocksWindJourney.WINDMOOR_PRESSURE_PLATE;
+    public static final DeferredBlock<?> WINDMOOR_BUTTON = PDBlocksWindJourney.WINDMOOR_BUTTON;
+    public static final DeferredBlock<?> WINDMOOR_LEAVES_0 = PDBlocksWindJourney.WINDMOOR_LEAVES_0;
+    public static final DeferredBlock<?> WINDMOOR_LEAVES_1 = PDBlocksWindJourney.WINDMOOR_LEAVES_1;
+    public static final DeferredBlock<?> WINDMOOR_LEAVES_2 = PDBlocksWindJourney.WINDMOOR_LEAVES_2;
+
+    // --- PDBlocksWindJourney：锈黑金属族 / 甲胄残骸族 / 弹射装置 / 地表装饰 ---
+    public static final DeferredBlock<?> RUST_BLACK_METAL_BLOCK = PDBlocksWindJourney.RUST_BLACK_METAL_BLOCK;
+    public static final DeferredBlock<?> RUST_BLACK_METAL_BLOCK_WALL = PDBlocksWindJourney.RUST_BLACK_METAL_BLOCK_WALL;
+    public static final DeferredBlock<?> RUST_BLACK_METAL_BLOCK_BARS = PDBlocksWindJourney.RUST_BLACK_METAL_BLOCK_BARS;
+    public static final DeferredBlock<?> ARMOR_WRECK_BLOCK_0 = PDBlocksWindJourney.ARMOR_WRECK_BLOCK_0;
+    public static final DeferredBlock<?> ARMOR_WRECK_BLOCK_1 = PDBlocksWindJourney.ARMOR_WRECK_BLOCK_1;
+    public static final DeferredBlock<?> ARMOR_WRECK_BLOCK_2 = PDBlocksWindJourney.ARMOR_WRECK_BLOCK_2;
+    public static final DeferredBlock<?> ARMOR_WRECK_BLOCK_3 = PDBlocksWindJourney.ARMOR_WRECK_BLOCK_3;
+    public static final DeferredBlock<?> ARMOR_WRECK_BLOCK_4 = PDBlocksWindJourney.ARMOR_WRECK_BLOCK_4;
+    public static final DeferredBlock<?> EJECTION_PRESSURE_BLOCK = PDBlocksWindJourney.EJECTION_PRESSURE_BLOCK;
+    public static final DeferredBlock<?> EJECTION_PRESSURE_PLATE = PDBlocksWindJourney.EJECTION_PRESSURE_PLATE;
+    public static final DeferredBlock<?> ANGEL_BLOCK = PDBlocksWindJourney.ANGEL_BLOCK;
+    public static final DeferredBlock<?> FIREFLY_NEST = PDBlocksWindJourney.FIREFLY_NEST;
+    public static final DeferredBlock<?> SMALL_STONE_SPIRIT_BLOCK = PDBlocksWindJourney.SMALL_STONE_SPIRIT_BLOCK;
+
+    // --- PDBlocksMisc：杂项补全 ---
+    public static final DeferredBlock<?> LIGHTBALL = PDBlocksMisc.LIGHTBALL;
+    public static final DeferredBlock<?> CLAY_POT_0 = PDBlocksMisc.CLAY_POT_0;
+    public static final DeferredBlock<?> CLAYPAN_0 = PDBlocksMisc.CLAYPAN_0;
+    public static final DeferredBlock<?> CLAYPAN_2 = PDBlocksMisc.CLAYPAN_2;
+    public static final DeferredBlock<?> CALLE_CARD_BLOCK = PDBlocksMisc.CALLE_CARD_BLOCK;
+    public static final DeferredBlock<?> CHRISTMAS_LIGHTS = PDBlocksMisc.CHRISTMAS_LIGHTS;
+    public static final DeferredBlock<?> DREAM_SPAWNER_1 = PDBlocksMisc.DREAM_SPAWNER_1;
+    public static final DeferredBlock<?> CROP_0B = PDBlocksMisc.CROP_0B;
+    public static final DeferredBlock<?> CROP_1B = PDBlocksMisc.CROP_1B;
+    public static final DeferredBlock<?> CROP_2B = PDBlocksMisc.CROP_2B;
+    public static final DeferredBlock<?> CROP_3B = PDBlocksMisc.CROP_3B;
+    public static final DeferredBlock<?> CROP_4B = PDBlocksMisc.CROP_4B;
+    public static final DeferredBlock<?> JUNGLE_SPORE_PLANT = PDBlocksMisc.JUNGLE_SPORE_PLANT;
+    public static final DeferredBlock<?> FOURLEAF_CLOVER = PDBlocksMisc.FOURLEAF_CLOVER;
+    public static final DeferredBlock<?> FIG_VINE = PDBlocksMisc.FIG_VINE;
+    public static final DeferredBlock<?> MEMENTO_ITEM_11 = PDBlocksMisc.MEMENTO_ITEM_11;
+
+    // ==================== [分区W] 武器工坊群 re-export（在此分区内追加） ====================
+
+    // --- PDBlocksWorkshop：激活核心 / 锻造核心 / 四座卫星工位 ---
+    public static final DeferredBlock<?> WEAPON_TABLE = PDBlocksWorkshop.WEAPON_TABLE;
+    public static final DeferredBlock<?> WEAPON_WORKSHOP = PDBlocksWorkshop.WEAPON_WORKSHOP;
+    public static final DeferredBlock<?> WORKSHOP_CAULDEON = PDBlocksWorkshop.WORKSHOP_CAULDEON;
+    public static final DeferredBlock<?> WORKSHOP_BLAST = PDBlocksWorkshop.WORKSHOP_BLAST;
+    public static final DeferredBlock<?> WORKSHOP_ANVIL = PDBlocksWorkshop.WORKSHOP_ANVIL;
+    public static final DeferredBlock<?> WORKSHOP_GRIND = PDBlocksWorkshop.WORKSHOP_GRIND;
+
+    // ==================== [分区R] 研究台组 re-export（在此分区内追加） ====================
+
+    // --- PDBlocksResearch：研究台 / 暗影高炉 / 强征传送塔 / 构梦刷怪笼 ---
+    public static final DeferredBlock<?> RESEARCH_TABLE = PDBlocksResearch.RESEARCH_TABLE;
+    public static final DeferredBlock<?> SHADOW_BLAST_FURNACE = PDBlocksResearch.SHADOW_BLAST_FURNACE;
+    public static final DeferredBlock<?> FORCED_TOWER = PDBlocksResearch.FORCED_TOWER;
+    public static final DeferredBlock<?> DREAM_SPAWNER_0 = PDBlocksResearch.DREAM_SPAWNER_0;
+
+    // ==================== [分区F] 容器/家具/杂项（W4） re-export ====================
+
+    // --- PDBlocksStructure：structure_block_0..23 ---
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_0 = PDBlocksStructure.STRUCTURE_BLOCK_0;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_1 = PDBlocksStructure.STRUCTURE_BLOCK_1;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_2 = PDBlocksStructure.STRUCTURE_BLOCK_2;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_3 = PDBlocksStructure.STRUCTURE_BLOCK_3;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_4 = PDBlocksStructure.STRUCTURE_BLOCK_4;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_5 = PDBlocksStructure.STRUCTURE_BLOCK_5;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_6 = PDBlocksStructure.STRUCTURE_BLOCK_6;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_7 = PDBlocksStructure.STRUCTURE_BLOCK_7;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_8 = PDBlocksStructure.STRUCTURE_BLOCK_8;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_9 = PDBlocksStructure.STRUCTURE_BLOCK_9;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_10 = PDBlocksStructure.STRUCTURE_BLOCK_10;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_11 = PDBlocksStructure.STRUCTURE_BLOCK_11;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_12 = PDBlocksStructure.STRUCTURE_BLOCK_12;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_13 = PDBlocksStructure.STRUCTURE_BLOCK_13;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_14 = PDBlocksStructure.STRUCTURE_BLOCK_14;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_15 = PDBlocksStructure.STRUCTURE_BLOCK_15;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_16 = PDBlocksStructure.STRUCTURE_BLOCK_16;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_17 = PDBlocksStructure.STRUCTURE_BLOCK_17;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_18 = PDBlocksStructure.STRUCTURE_BLOCK_18;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_19 = PDBlocksStructure.STRUCTURE_BLOCK_19;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_20 = PDBlocksStructure.STRUCTURE_BLOCK_20;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_21 = PDBlocksStructure.STRUCTURE_BLOCK_21;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_22 = PDBlocksStructure.STRUCTURE_BLOCK_22;
+    public static final DeferredBlock<?> STRUCTURE_BLOCK_23 = PDBlocksStructure.STRUCTURE_BLOCK_23;
+
+    // --- PDBlocksFurniture：风骑士台 / 玻璃罐 / 容器床 / 杂项功能方块 ---
+    public static final DeferredBlock<?> WIND_KNIGHT_SPAWNBLOCK_0 = PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0;
+    public static final DeferredBlock<?> WIND_KNIGHT_SPAWNBLOCK_1 = PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_1;
+    public static final DeferredBlock<?> WIND_KNIGHT_SPAWNBLOCK_2 = PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_2;
+    public static final DeferredBlock<?> WIND_KNIGHT_SPAWNBLOCK_3 = PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_3;
+    public static final DeferredBlock<?> WIND_KNIGHT_SPAWNBLOCK_4 = PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4;
+    public static final DeferredBlock<?> ECOLOGY_GLASS_JAR = PDBlocksFurniture.ECOLOGY_GLASS_JAR;
+    public static final DeferredBlock<?> FIREFLY_GLASS_JAR = PDBlocksFurniture.FIREFLY_GLASS_JAR;
+    public static final DeferredBlock<?> LIGHT_FIREFLY_GLASS_JAR = PDBlocksFurniture.LIGHT_FIREFLY_GLASS_JAR;
+    public static final DeferredBlock<?> PICNIC_BASKET = PDBlocksFurniture.PICNIC_BASKET;
+    public static final DeferredBlock<?> SHADOW_DESK = PDBlocksFurniture.SHADOW_DESK;
+    public static final DeferredBlock<?> WINDMOOR_CRATE = PDBlocksFurniture.WINDMOOR_CRATE;
+    public static final DeferredBlock<?> SHADOW_BED = PDBlocksFurniture.SHADOW_BED;
+    public static final DeferredBlock<?> TRUE_SHADOW_BED = PDBlocksFurniture.TRUE_SHADOW_BED;
+    public static final DeferredBlock<?> BIRDS_NEST = PDBlocksFurniture.BIRDS_NEST;
+    public static final DeferredBlock<?> BROKEN_SHADOW_DUNGEON_PROTAL = PDBlocksFurniture.BROKEN_SHADOW_DUNGEON_PROTAL;
+    public static final DeferredBlock<?> CLAYPAN_1 = PDBlocksFurniture.CLAYPAN_1;
+    public static final DeferredBlock<?> DESERT_HERO_TOMB = PDBlocksFurniture.DESERT_HERO_TOMB;
+    public static final DeferredBlock<?> GUARD_BLOCK = PDBlocksFurniture.GUARD_BLOCK;
+    public static final DeferredBlock<?> RESTRAINMOVE_BLOCK = PDBlocksFurniture.RESTRAINMOVE_BLOCK;
+    public static final DeferredBlock<?> GUARD_CRYSTAL = PDBlocksFurniture.GUARD_CRYSTAL;
+    public static final DeferredBlock<?> LOST_SWORD_BLOCK = PDBlocksFurniture.LOST_SWORD_BLOCK;
+    public static final DeferredBlock<?> SHADOW_BRAZIER = PDBlocksFurniture.SHADOW_BRAZIER;
+    public static final DeferredBlock<?> SHADOW_DUNGEON_PORTAL = PDBlocksFurniture.SHADOW_DUNGEON_PORTAL;
+    public static final DeferredBlock<?> SHADOW_TRAP_0 = PDBlocksFurniture.SHADOW_TRAP_0;
+    public static final DeferredBlock<?> TWILIGHT_LANTERN = PDBlocksFurniture.TWILIGHT_LANTERN;
 
 }

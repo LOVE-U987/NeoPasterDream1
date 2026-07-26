@@ -1,0 +1,10 @@
+{
+  "parent": "pasterdream:custom/shadow_desk",
+  "textures": {
+    "all": "pasterdream:block/shadow_desk",
+    "particle": "pasterdream:block/zan_zhi_yin_ying_shi_zhuan_",
+    "0": "pasterdream:block/shadow_desk",
+    "missing": "pasterdream:block/shadow_desk"
+  },
+  "render_type": "cutout"
+}

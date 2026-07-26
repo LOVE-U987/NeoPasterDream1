@@ -19,6 +19,12 @@ public class FeatherWhiteParticle extends TextureSheetParticle {
     private float angularVelocity;
     private static final int FADE_IN_TICKS = 20;
     private static final int FADE_OUT_TICKS = 40;
+    /** quadSize 相对初始尺寸的最大放大倍数，防止粒子每 tick 放大导致尺寸无上限增长 */
+    private static final float MAX_SIZE_MULTIPLIER = 1.5f;
+    /** 最大上浮速度（格/tick），防止负重力加速度每 tick 无阻尼累积 */
+    private static final double MAX_RISE_SPEED = 0.03;
+    /** 本粒子的 quadSize 增长上限（初始尺寸 × {@link #MAX_SIZE_MULTIPLIER}） */
+    private final float maxQuadSize;
 
     /**
      * 构造荧光羽毛粒子
@@ -38,6 +44,7 @@ public class FeatherWhiteParticle extends TextureSheetParticle {
         this.sprites = spriteSet;
         this.setSize(0.2f, 0.2f);
         this.quadSize = 0.3f + this.random.nextFloat() * 0.35f;
+        this.maxQuadSize = this.quadSize * MAX_SIZE_MULTIPLIER;
         this.lifetime = 120 + this.random.nextInt(80);
         this.gravity = -0.004f;
         this.hasPhysics = false;
@@ -73,7 +80,8 @@ public class FeatherWhiteParticle extends TextureSheetParticle {
             this.alpha = 1.0f;
         }
 
-        this.yd -= 0.04 * this.gravity;
+        // 负重力提供缓慢上浮加速度；限制最大上浮速度，避免速度每 tick 无阻尼累积导致越飘越快
+        this.yd = Math.min(this.yd - 0.04 * this.gravity, MAX_RISE_SPEED);
 
         double swayAngle = this.age * 0.04;
         this.xd += Math.sin(swayAngle) * 0.002;
@@ -84,7 +92,8 @@ public class FeatherWhiteParticle extends TextureSheetParticle {
         this.oRoll = this.roll;
         this.roll += this.angularVelocity;
 
-        this.quadSize *= 1.001f;
+        // 缓慢放大，并以初始尺寸的 MAX_SIZE_MULTIPLIER 倍为上限，防止尺寸无上限增长
+        this.quadSize = Math.min(this.quadSize * 1.001f, this.maxQuadSize);
 
         this.move(this.xd, this.yd, this.zd);
 

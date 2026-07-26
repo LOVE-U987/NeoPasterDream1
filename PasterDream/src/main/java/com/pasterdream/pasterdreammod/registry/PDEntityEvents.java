@@ -66,6 +66,10 @@ public class PDEntityEvents {
         // BOSS 实体
         EntityAPI.registerAttributes(event, "aaroncos_lefthand_0");
         EntityAPI.registerAttributes(event, "aaroncos_righthand_0");
+
+        // 法术立场实体（直接注册，非 EntityAPI 管理）
+        event.put(PDEntities.HEALING_SPELL_ENTITY.get(),
+                com.pasterdream.pasterdreammod.entity.mob.HealingSpellFieldEntity.createAttributes().build());
     }
 
     /**
@@ -120,6 +124,26 @@ public class PDEntityEvents {
 
         // 融梦水晶：在地面生成（静止漂浮，生成在靠近地面的位置）
         event.register(PDEntities.MELTDREAM_CRYSTAL.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        // 悦灵：染梦群系刷怪表引用了 vanilla 悦灵，但 vanilla 未注册其生成规则
+        // （原版仅经结构生成），缺失会在生成尝试时告警——补地面生成规则
+        event.register(net.minecraft.world.entity.EntityType.ALLAY,
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        // 骨翼/灰烬骨翼：地面生成（飞行远程生物，群系刷怪表已引用，缺放置规则会告警）
+        event.register(PDEntities.BONE_WING.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(PDEntities.ASH_BONE_WING.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,

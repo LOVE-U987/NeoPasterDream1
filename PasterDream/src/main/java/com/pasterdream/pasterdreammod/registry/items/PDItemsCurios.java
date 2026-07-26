@@ -8,10 +8,21 @@ import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
 import com.pasterdream.pasterdreammod.api.item.ItemAPI;
 import com.pasterdream.pasterdreammod.api.item.model.MigrationCategory;
 import com.pasterdream.pasterdreammod.api.item.model.ToolSpec.ToolType;
+import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.item.*;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.type.capability.ICurioItem;
+
+import java.util.List;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -57,6 +68,7 @@ public class PDItemsCurios {
     public static final DeferredItem<Item> RED_DEW_3_RING = CurioAPI.create("red_dew_3_ring").slot(CurioSlot.RING).withItemClass(RedDew3RingItem::new).register();
     public static final DeferredItem<Item> ALLKINDS_RING = CurioAPI.create("allkinds_ring").slot(CurioSlot.RING).withItemClass(AllkindsRingItem::new).register();
     public static final DeferredItem<Item> COUNTER_RING = CurioAPI.create("counter_ring").slot(CurioSlot.RING).withItemClass(CounterRingItem::new).register();
+    public static final DeferredItem<Item> MELTDREAM_ENERGY_0_RING = CurioAPI.create("meltdream_energy_0_ring").slot(CurioSlot.RING).withItemClass(MeltdreamEnergy0RingItem::new).register();
 
     // === Curio 项链 (NECKLACE) ===
     public static final DeferredItem<Item> EMBRYO_NECKLACE = CurioAPI.create("embryo_necklace").slot(CurioSlot.NECKLACE).withItemClass(EmbryoNecklaceItem::new).register();
@@ -117,5 +129,44 @@ public class PDItemsCurios {
     // 非 Curio 实用物品
     public static final DeferredItem<PaleBoneneedleItem> PALE_BONENEEDLE = PDItems.ITEMS.register("pale_boneneedle",
             () -> new PaleBoneneedleItem(new Item.Properties()));
+
+    // ==================== 内部饰品物品类 ====================
+
+    /**
+     * 融梦光环戒指（对应原版 item/MeltdreamEnergy0RingItem.java，行为逐项一致）
+     * <p>
+     * 佩戴期间每 20 tick（1 秒）判定一次：玩家身处梦境维度
+     * （染梦世界 dyedream_world 或 灯影世界 lamp_shadow_world）时
+     * 融梦能量 +0.0025/秒（即原版工具提示所述 +0.15/分钟）。
+     * 能量增减经 {@link PDAttachments#addPlayerMeltDreamEnergy}（仅服务端生效并自动同步）。
+     * <p>
+     * 原版无 canEquip 去重限制（可同时佩戴两枚），此处保持一致；
+     * D 波因能量系统未就绪跳过本物品，能量 Attachment API 落地后在此补录。
+     */
+    public static class MeltdreamEnergy0RingItem extends Item implements ICurioItem {
+
+        public MeltdreamEnergy0RingItem() {
+            super(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON));
+        }
+
+        @Override
+        public void appendHoverText(ItemStack itemstack, Item.TooltipContext context,
+                                    List<Component> list, TooltipFlag flag) {
+            super.appendHoverText(itemstack, context, list, flag);
+            list.add(Component.literal("品质：§b精良 ★★★"));
+            list.add(Component.literal("§7▪ §9身处梦境时 融梦能量+0.15/min"));
+        }
+
+        @Override
+        public void curioTick(SlotContext slotContext, ItemStack stack) {
+            if (slotContext.entity() instanceof Player pl && pl.tickCount % 20 == 0) {
+                ResourceKey<Level> dimension = pl.level().dimension();
+                if (dimension.equals(PDDimensions.DYEDREAM_WORLD_LEVEL_KEY)
+                        || dimension.equals(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY)) {
+                    PDAttachments.addPlayerMeltDreamEnergy(pl, 0.0025);
+                }
+            }
+        }
+    }
 
 }

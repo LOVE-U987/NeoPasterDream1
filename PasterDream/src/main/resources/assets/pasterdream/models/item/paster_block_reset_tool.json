@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "pasterdream:item/pa_si_te_fang_kuai_chong_zhi_gong_ju_"
+  }
+}

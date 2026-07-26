@@ -106,6 +106,39 @@ public class PDBlockTagProvider extends BlockTagsProvider {
                 PDBlocks.WHITE_SAND.get()
         );
         // shadow_fissure_0~5 为裂隙装饰方块，不应被工具挖掘（徒手破坏）
+
+        // ---- 波次C：镐挖掘 - 锈黑金属 / 甲胄残骸 / 弹射装置 / 陶盘等（均 requiresCorrectToolForDrops） ----
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
+                PDBlocks.RUST_BLACK_METAL_BLOCK.get(),
+                PDBlocks.RUST_BLACK_METAL_BLOCK_WALL.get(),
+                PDBlocks.RUST_BLACK_METAL_BLOCK_BARS.get(),
+                PDBlocks.ARMOR_WRECK_BLOCK_0.get(),
+                PDBlocks.ARMOR_WRECK_BLOCK_1.get(),
+                PDBlocks.ARMOR_WRECK_BLOCK_2.get(),
+                PDBlocks.ARMOR_WRECK_BLOCK_3.get(),
+                PDBlocks.ARMOR_WRECK_BLOCK_4.get(),
+                PDBlocks.EJECTION_PRESSURE_BLOCK.get(),
+                PDBlocks.EJECTION_PRESSURE_PLATE.get(),
+                PDBlocks.CLAYPAN_0.get(),
+                PDBlocks.CLAYPAN_2.get(),
+                PDBlocks.SMALL_STONE_SPIRIT_BLOCK.get(),
+                PDBlocks.DREAM_SPAWNER_1.get()
+        );
+
+        // ---- 波次C：斧挖掘 - 风泊木族 ----
+        tag(BlockTags.MINEABLE_WITH_AXE).add(
+                PDBlocks.WINDMOOR_LOG.get(),
+                PDBlocks.WINDMOOR_WOOD.get(),
+                PDBlocks.STRIPPED_WINDMOOR_LOG.get(),
+                PDBlocks.STRIPPED_WINDMOOR_WOOD.get(),
+                PDBlocks.WINDMOOR_PLANKS.get(),
+                PDBlocks.WINDMOOR_STAIRS.get(),
+                PDBlocks.WINDMOOR_SLAB.get(),
+                PDBlocks.WINDMOOR_FENCE.get(),
+                PDBlocks.WINDMOOR_FENCE_GATE.get(),
+                PDBlocks.WINDMOOR_DOOR.get(),
+                PDBlocks.WINDMOOR_TRAPDOOR.get()
+        );
     }
 
     @Override

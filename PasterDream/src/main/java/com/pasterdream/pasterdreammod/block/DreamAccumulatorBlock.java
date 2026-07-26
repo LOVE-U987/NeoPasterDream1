@@ -2,9 +2,17 @@ package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.block.entity.DreamAccumulatorBlockEntity;
-import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
+import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -14,13 +22,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -34,6 +42,10 @@ import java.util.List;
  * - 使用 GeckoLib 渲染动画
  * - 方向性方块（根据玩家朝向放置）
  * - 自定义碰撞箱（扁平形状）
+ * <p>
+ * 本波次补全原版功能语义：右键打开 2 槽 GUI（产物/吸附剂），
+ * 每 40 tick 执行蓄梦逻辑（原版 DreamAccumulatorPr0），
+ * 放置/交互伴随 dream1 音效（原版 Pr1/GuiPr2），破坏时掉落库存并输出比较器信号。
  */
 public class DreamAccumulatorBlock extends BaseEntityBlock {
 
@@ -95,25 +107,92 @@ public class DreamAccumulatorBlock extends BaseEntityBlock {
         return new DreamAccumulatorBlockEntity(pos, state);
     }
 
-    /**
-     * 获取方块实体Ticker
-     * 用于客户端动画更新
-     *
-     * @param level 世界实例
-     * @param state 方块状态
-     * @param blockEntityType 方块实体类型
-     * @return BlockEntityTicker 实例
-     */
-    @Nullable
+    // 说明：GeckoLib 动画由渲染器自行驱动；蓄梦逻辑走方块计划刻
+    // （原版即 scheduleTick(40) 周期，语义一致，无需 BE ticker）
+
+    // ==================== 周期蓄梦（原版 DreamAccumulatorPr0，每 40 tick） ====================
+
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return createTickerHelper(blockEntityType, PDBlockEntities.DREAM_ACCUMULATOR.get(),
-                (lvl, pos, blockState, blockEntity) -> {
-                    // 客户端动画更新
-                    if (lvl.isClientSide) {
-                        // GeckoLib 动画自动处理
-                    }
-                });
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onPlace(state, level, pos, oldState, isMoving);
+        level.scheduleTick(pos, this, 40);
+        // 原版 DreamAccumulatorGuiPr2：放置伴随 dream1 音效
+        if (!level.isClientSide()) {
+            level.playSound(null, pos, PDSounds.DREAM1.get(), SoundSource.NEUTRAL, 0.8f, 1);
+        }
+    }
+
+    @Override
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        super.tick(state, level, pos, random);
+        if (level.getBlockEntity(pos) instanceof DreamAccumulatorBlockEntity accumulator) {
+            accumulator.accumulateTick();
+        }
+        level.scheduleTick(pos, this, 40);
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, entity, stack);
+        // 原版 DreamAccumulatorPr1：放置时蓄梦计时归零 + dream1 音效
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof DreamAccumulatorBlockEntity accumulator) {
+            accumulator.resetTime();
+        }
+    }
+
+    // ==================== 右键交互 ====================
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
+                                               Player player, BlockHitResult hitResult) {
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+        if (level.getBlockEntity(pos) instanceof DreamAccumulatorBlockEntity accumulator
+                && player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(accumulator, pos);
+            // 原版 DreamAccumulatorGuiPr0：初见馈赠寻梦者笔记（可能立即关闭界面）
+            accumulator.giveIntroNotes(serverPlayer);
+        }
+        // 原版 DreamAccumulatorGuiPr2：交互伴随 dream1 音效
+        level.playSound(null, pos, PDSounds.DREAM1.get(), SoundSource.NEUTRAL, 0.8f, 1);
+        return InteractionResult.CONSUME;
+    }
+
+    @Override
+    public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int eventID, int eventParam) {
+        super.triggerEvent(state, level, pos, eventID, eventParam);
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        return blockEntity != null && blockEntity.triggerEvent(eventID, eventParam);
+    }
+
+    // ==================== 移除掉落与比较器 ====================
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            if (level.getBlockEntity(pos) instanceof DreamAccumulatorBlockEntity accumulator) {
+                ItemStackHandler handler = accumulator.getItemHandler();
+                for (int i = 0; i < handler.getSlots(); i++) {
+                    Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), handler.getStackInSlot(i));
+                }
+                level.updateNeighbourForOutputSignal(pos, this);
+            }
+            super.onRemove(state, level, pos, newState, isMoving);
+        }
+    }
+
+    @Override
+    public boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+        if (level.getBlockEntity(pos) instanceof DreamAccumulatorBlockEntity accumulator) {
+            return WeaponWorkshopBlock.calcRedstoneFromItemHandler(accumulator.getItemHandler());
+        }
+        return 0;
     }
 
     /**

@@ -267,4 +267,131 @@ public class PDItemsBlocks {
     public static final DeferredItem<BlockItem> SHADOW_FISSURE_4 = PDItems.ITEMS.registerSimpleBlockItem("shadow_fissure_4", PDBlocks.SHADOW_FISSURE_4);
     public static final DeferredItem<BlockItem> SHADOW_FISSURE_5 = PDItems.ITEMS.registerSimpleBlockItem("shadow_fissure_5", PDBlocks.SHADOW_FISSURE_5);
 
+
+    // ==================== 染梦维度 Phase2 方块物品 ====================
+
+    public static final DeferredItem<BlockItem> BIG_BUBBLE = PDItems.ITEMS.registerSimpleBlockItem("big_bubble", PDBlocks.BIG_BUBBLE);
+    public static final DeferredItem<BlockItem> WINDRUNNER_CRYSTAL_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("windrunner_crystal_block", PDBlocks.WINDRUNNER_CRYSTAL_BLOCK);
+    public static final DeferredItem<BlockItem> CONGEAL_WIND_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("congeal_wind_block", PDBlocks.CONGEAL_WIND_BLOCK);
+    public static final DeferredItem<BlockItem> STARCALL_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("starcall_block", PDBlocks.STARCALL_BLOCK);
+    public static final DeferredItem<BlockItem> STARCALL_CRACK = PDItems.ITEMS.registerSimpleBlockItem("starcall_crack", PDBlocks.STARCALL_CRACK);
+    public static final DeferredItem<BlockItem> CYAN_STONE = PDItems.ITEMS.registerSimpleBlockItem("cyan_stone", PDBlocks.CYAN_STONE);
+    public static final DeferredItem<BlockItem> CYAN_MOSS_STONE = PDItems.ITEMS.registerSimpleBlockItem("cyan_moss_stone", PDBlocks.CYAN_MOSS_STONE);
+    public static final DeferredItem<BlockItem> WHITE_SAND = PDItems.ITEMS.registerSimpleBlockItem("white_sand", PDBlocks.WHITE_SAND);
+    public static final DeferredItem<BlockItem> SALT_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("salt_block", PDBlocks.SALT_BLOCK);
+    public static final DeferredItem<BlockItem> CLARITY_GLASS = PDItems.ITEMS.registerSimpleBlockItem("clarity_glass", PDBlocks.CLARITY_GLASS);
+    public static final DeferredItem<BlockItem> CARVE_CLARITY_GLASS = PDItems.ITEMS.registerSimpleBlockItem("carve_clarity_glass", PDBlocks.CARVE_CLARITY_GLASS);
+    public static final DeferredItem<BlockItem> FRAME_CLARITY_GLASS = PDItems.ITEMS.registerSimpleBlockItem("frame_clarity_glass", PDBlocks.FRAME_CLARITY_GLASS);
+    public static final DeferredItem<BlockItem> CLARITY_GLASSPANE = PDItems.ITEMS.registerSimpleBlockItem("clarity_glasspane", PDBlocks.CLARITY_GLASSPANE);
+    public static final DeferredItem<BlockItem> CARVE_CLARITY_GLASSPANE = PDItems.ITEMS.registerSimpleBlockItem("carve_clarity_glasspane", PDBlocks.CARVE_CLARITY_GLASSPANE);
+    public static final DeferredItem<BlockItem> FRAME_CLARITY_GLASSPANE = PDItems.ITEMS.registerSimpleBlockItem("frame_clarity_glasspane", PDBlocks.FRAME_CLARITY_GLASSPANE);
+    public static final DeferredItem<BlockItem> BREAKWIND_CURTAIN = PDItems.ITEMS.registerSimpleBlockItem("breakwind_curtain", PDBlocks.BREAKWIND_CURTAIN);
+    public static final DeferredItem<BlockItem> WINDIRON_BARS = PDItems.ITEMS.registerSimpleBlockItem("windiron_bars", PDBlocks.WINDIRON_BARS);
+    public static final DeferredItem<BlockItem> CYAN_STONE_BRICKS = PDItems.ITEMS.registerSimpleBlockItem("cyan_stone_bricks", PDBlocks.CYAN_STONE_BRICKS);
+    public static final DeferredItem<BlockItem> CYAN_STONE_BRICK_STAIRS = PDItems.ITEMS.registerSimpleBlockItem("cyan_stone_brick_stairs", PDBlocks.CYAN_STONE_BRICK_STAIRS);
+    public static final DeferredItem<BlockItem> CYAN_STONE_BRICK_SLAB = PDItems.ITEMS.registerSimpleBlockItem("cyan_stone_brick_slab", PDBlocks.CYAN_STONE_BRICK_SLAB);
+    public static final DeferredItem<BlockItem> CYAN_STONE_BRICK_WALL = PDItems.ITEMS.registerSimpleBlockItem("cyan_stone_brick_wall", PDBlocks.CYAN_STONE_BRICK_WALL);
+    public static final DeferredItem<BlockItem> MOSSY_CYAN_STONE_BRICKS = PDItems.ITEMS.registerSimpleBlockItem("mossy_cyan_stone_bricks", PDBlocks.MOSSY_CYAN_STONE_BRICKS);
+    public static final DeferredItem<BlockItem> MOSSY_CYAN_STONE_BRICK_STAIRS = PDItems.ITEMS.registerSimpleBlockItem("mossy_cyan_stone_brick_stairs", PDBlocks.MOSSY_CYAN_STONE_BRICK_STAIRS);
+    public static final DeferredItem<BlockItem> MOSSY_CYAN_STONE_BRICK_SLAB = PDItems.ITEMS.registerSimpleBlockItem("mossy_cyan_stone_brick_slab", PDBlocks.MOSSY_CYAN_STONE_BRICK_SLAB);
+    public static final DeferredItem<BlockItem> MOSSY_CYAN_STONE_BRICK_WALL = PDItems.ITEMS.registerSimpleBlockItem("mossy_cyan_stone_brick_wall", PDBlocks.MOSSY_CYAN_STONE_BRICK_WALL);
+    public static final DeferredItem<BlockItem> CHISELED_CYAN_STONE_BRICKS = PDItems.ITEMS.registerSimpleBlockItem("chiseled_cyan_stone_bricks", PDBlocks.CHISELED_CYAN_STONE_BRICKS);
+    public static final DeferredItem<BlockItem> CYAN_STONE_PILLAR = PDItems.ITEMS.registerSimpleBlockItem("cyan_stone_pillar", PDBlocks.CYAN_STONE_PILLAR);
+    public static final DeferredItem<BlockItem> CYAN_STONE_PRESSURE_PLATE = PDItems.ITEMS.registerSimpleBlockItem("cyan_stone_pressure_plate", PDBlocks.CYAN_STONE_PRESSURE_PLATE);
+    public static final DeferredItem<BlockItem> CYAN_STONE_BUTTON = PDItems.ITEMS.registerSimpleBlockItem("cyan_stone_button", PDBlocks.CYAN_STONE_BUTTON);
+
+
+    // ==================== 波次C：阴影植被/流体 + 风之旅残余 + 杂项方块物品 ====================
+
+    // --- 阴影植被 ---
+    public static final DeferredItem<BlockItem> SHADOW_FUNGUS = PDItems.ITEMS.registerSimpleBlockItem("shadow_fungus", PDBlocks.SHADOW_FUNGUS);
+
+    /** 熔融阴影桶（流体方块本体不注册物品，桶为对应的拾取/放置物品） */
+    public static final DeferredItem<ShadowLiquidItem> SHADOW_LIQUID_BUCKET = PDItems.ITEMS.registerItem("shadow_liquid_bucket",
+            ShadowLiquidItem::new, ShadowLiquidItem.createProperties());
+
+    // --- 风泊木族 ---
+    public static final DeferredItem<BlockItem> WINDMOOR_LOG = PDItems.ITEMS.registerSimpleBlockItem("windmoor_log", PDBlocks.WINDMOOR_LOG);
+    public static final DeferredItem<BlockItem> WINDMOOR_WOOD = PDItems.ITEMS.registerSimpleBlockItem("windmoor_wood", PDBlocks.WINDMOOR_WOOD);
+    public static final DeferredItem<BlockItem> STRIPPED_WINDMOOR_LOG = PDItems.ITEMS.registerSimpleBlockItem("stripped_windmoor_log", PDBlocks.STRIPPED_WINDMOOR_LOG);
+    public static final DeferredItem<BlockItem> STRIPPED_WINDMOOR_WOOD = PDItems.ITEMS.registerSimpleBlockItem("stripped_windmoor_wood", PDBlocks.STRIPPED_WINDMOOR_WOOD);
+    public static final DeferredItem<BlockItem> WINDMOOR_PLANKS = PDItems.ITEMS.registerSimpleBlockItem("windmoor_planks", PDBlocks.WINDMOOR_PLANKS);
+    public static final DeferredItem<BlockItem> WINDMOOR_STAIRS = PDItems.ITEMS.registerSimpleBlockItem("windmoor_stairs", PDBlocks.WINDMOOR_STAIRS);
+    public static final DeferredItem<BlockItem> WINDMOOR_SLAB = PDItems.ITEMS.registerSimpleBlockItem("windmoor_slab", PDBlocks.WINDMOOR_SLAB);
+    public static final DeferredItem<BlockItem> WINDMOOR_FENCE = PDItems.ITEMS.registerSimpleBlockItem("windmoor_fence", PDBlocks.WINDMOOR_FENCE);
+    public static final DeferredItem<BlockItem> WINDMOOR_FENCE_GATE = PDItems.ITEMS.registerSimpleBlockItem("windmoor_fence_gate", PDBlocks.WINDMOOR_FENCE_GATE);
+    public static final DeferredItem<BlockItem> WINDMOOR_DOOR = PDItems.ITEMS.registerSimpleBlockItem("windmoor_door", PDBlocks.WINDMOOR_DOOR);
+    public static final DeferredItem<BlockItem> WINDMOOR_TRAPDOOR = PDItems.ITEMS.registerSimpleBlockItem("windmoor_trapdoor", PDBlocks.WINDMOOR_TRAPDOOR);
+    public static final DeferredItem<BlockItem> WINDMOOR_PRESSURE_PLATE = PDItems.ITEMS.registerSimpleBlockItem("windmoor_pressure_plate", PDBlocks.WINDMOOR_PRESSURE_PLATE);
+    public static final DeferredItem<BlockItem> WINDMOOR_BUTTON = PDItems.ITEMS.registerSimpleBlockItem("windmoor_button", PDBlocks.WINDMOOR_BUTTON);
+    public static final DeferredItem<BlockItem> WINDMOOR_LEAVES_0 = PDItems.ITEMS.registerSimpleBlockItem("windmoor_leaves_0", PDBlocks.WINDMOOR_LEAVES_0);
+    public static final DeferredItem<BlockItem> WINDMOOR_LEAVES_1 = PDItems.ITEMS.registerSimpleBlockItem("windmoor_leaves_1", PDBlocks.WINDMOOR_LEAVES_1);
+    public static final DeferredItem<BlockItem> WINDMOOR_LEAVES_2 = PDItems.ITEMS.registerSimpleBlockItem("windmoor_leaves_2", PDBlocks.WINDMOOR_LEAVES_2);
+
+    // --- 锈黑金属族 / 甲胄残骸族 / 弹射装置 / 风之旅地表 ---
+    public static final DeferredItem<BlockItem> RUST_BLACK_METAL_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("rust_black_metal_block", PDBlocks.RUST_BLACK_METAL_BLOCK);
+    public static final DeferredItem<BlockItem> RUST_BLACK_METAL_BLOCK_WALL = PDItems.ITEMS.registerSimpleBlockItem("rust_black_metal_block_wall", PDBlocks.RUST_BLACK_METAL_BLOCK_WALL);
+    public static final DeferredItem<BlockItem> RUST_BLACK_METAL_BLOCK_BARS = PDItems.ITEMS.registerSimpleBlockItem("rust_black_metal_block_bars", PDBlocks.RUST_BLACK_METAL_BLOCK_BARS);
+    public static final DeferredItem<BlockItem> ARMOR_WRECK_BLOCK_0 = PDItems.ITEMS.registerSimpleBlockItem("armor_wreck_block_0", PDBlocks.ARMOR_WRECK_BLOCK_0);
+    public static final DeferredItem<BlockItem> ARMOR_WRECK_BLOCK_1 = PDItems.ITEMS.registerSimpleBlockItem("armor_wreck_block_1", PDBlocks.ARMOR_WRECK_BLOCK_1);
+    public static final DeferredItem<BlockItem> ARMOR_WRECK_BLOCK_2 = PDItems.ITEMS.registerSimpleBlockItem("armor_wreck_block_2", PDBlocks.ARMOR_WRECK_BLOCK_2);
+    public static final DeferredItem<BlockItem> ARMOR_WRECK_BLOCK_3 = PDItems.ITEMS.registerSimpleBlockItem("armor_wreck_block_3", PDBlocks.ARMOR_WRECK_BLOCK_3);
+    public static final DeferredItem<BlockItem> ARMOR_WRECK_BLOCK_4 = PDItems.ITEMS.registerSimpleBlockItem("armor_wreck_block_4", PDBlocks.ARMOR_WRECK_BLOCK_4);
+    public static final DeferredItem<BlockItem> EJECTION_PRESSURE_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("ejection_pressure_block", PDBlocks.EJECTION_PRESSURE_BLOCK);
+    public static final DeferredItem<BlockItem> EJECTION_PRESSURE_PLATE = PDItems.ITEMS.registerSimpleBlockItem("ejection_pressure_plate", PDBlocks.EJECTION_PRESSURE_PLATE);
+    public static final DeferredItem<BlockItem> ANGEL_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("angel_block", PDBlocks.ANGEL_BLOCK);
+    public static final DeferredItem<BlockItem> FIREFLY_NEST = PDItems.ITEMS.registerSimpleBlockItem("firefly_nest", PDBlocks.FIREFLY_NEST);
+    public static final DeferredItem<BlockItem> SMALL_STONE_SPIRIT_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("small_stone_spirit_block", PDBlocks.SMALL_STONE_SPIRIT_BLOCK);
+
+    // --- 杂项补全 ---
+    public static final DeferredItem<BlockItem> LIGHTBALL = PDItems.ITEMS.registerSimpleBlockItem("lightball", PDBlocks.LIGHTBALL);
+    public static final DeferredItem<BlockItem> CLAY_POT_0 = PDItems.ITEMS.registerSimpleBlockItem("clay_pot_0", PDBlocks.CLAY_POT_0);
+    public static final DeferredItem<BlockItem> CLAYPAN_0 = PDItems.ITEMS.registerSimpleBlockItem("claypan_0", PDBlocks.CLAYPAN_0);
+    public static final DeferredItem<BlockItem> CLAYPAN_2 = PDItems.ITEMS.registerSimpleBlockItem("claypan_2", PDBlocks.CLAYPAN_2);
+    public static final DeferredItem<BlockItem> CALLE_CARD_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("calle_card_block", PDBlocks.CALLE_CARD_BLOCK);
+    public static final DeferredItem<BlockItem> CHRISTMAS_LIGHTS = PDItems.ITEMS.registerSimpleBlockItem("christmas_lights", PDBlocks.CHRISTMAS_LIGHTS);
+    public static final DeferredItem<BlockItem> DREAM_SPAWNER_1 = PDItems.ITEMS.registerSimpleBlockItem("dream_spawner_1", PDBlocks.DREAM_SPAWNER_1);
+    public static final DeferredItem<BlockItem> CROP_0B = PDItems.ITEMS.registerSimpleBlockItem("crop_0b", PDBlocks.CROP_0B);
+    public static final DeferredItem<BlockItem> CROP_1B = PDItems.ITEMS.registerSimpleBlockItem("crop_1b", PDBlocks.CROP_1B);
+    public static final DeferredItem<BlockItem> CROP_2B = PDItems.ITEMS.registerSimpleBlockItem("crop_2b", PDBlocks.CROP_2B);
+    public static final DeferredItem<BlockItem> CROP_3B = PDItems.ITEMS.registerSimpleBlockItem("crop_3b", PDBlocks.CROP_3B);
+    public static final DeferredItem<BlockItem> CROP_4B = PDItems.ITEMS.registerSimpleBlockItem("crop_4b", PDBlocks.CROP_4B);
+    public static final DeferredItem<BlockItem> JUNGLE_SPORE_PLANT = PDItems.ITEMS.registerSimpleBlockItem("jungle_spore_plant", PDBlocks.JUNGLE_SPORE_PLANT);
+    public static final DeferredItem<BlockItem> FOURLEAF_CLOVER = PDItems.ITEMS.registerSimpleBlockItem("fourleaf_clover", PDBlocks.FOURLEAF_CLOVER);
+    public static final DeferredItem<BlockItem> FIG_VINE = PDItems.ITEMS.registerSimpleBlockItem("fig_vine", PDBlocks.FIG_VINE);
+    public static final DeferredItem<BlockItem> MEMENTO_ITEM_11 = PDItems.ITEMS.registerSimpleBlockItem("memento_item_11", PDBlocks.MEMENTO_ITEM_11);
+
+    // ==================== [分区W] 武器工坊群 BlockItem ====================
+
+    /**
+     * 精铸工作台/精铸工坊物品：GeckoLib 3D 手持渲染
+     * （原版 item model 走 displaysettings 的 builtin/entity 路线）
+     */
+    public static final DeferredItem<BlockItem> WEAPON_TABLE = PDItems.ITEMS.register("weapon_table",
+            () -> new WeaponTableDisplayItem(new Item.Properties()));
+    public static final DeferredItem<BlockItem> WEAPON_WORKSHOP = PDItems.ITEMS.register("weapon_workshop",
+            () -> new WeaponWorkshopDisplayItem(new Item.Properties()));
+
+    /** 四座卫星工位物品（贴图物品，仅创造模式取用） */
+    public static final DeferredItem<BlockItem> WORKSHOP_CAULDEON = PDItems.ITEMS.registerSimpleBlockItem("workshop_cauldeon", PDBlocks.WORKSHOP_CAULDEON);
+    public static final DeferredItem<BlockItem> WORKSHOP_BLAST = PDItems.ITEMS.registerSimpleBlockItem("workshop_blast", PDBlocks.WORKSHOP_BLAST);
+    public static final DeferredItem<BlockItem> WORKSHOP_ANVIL = PDItems.ITEMS.registerSimpleBlockItem("workshop_anvil", PDBlocks.WORKSHOP_ANVIL);
+    public static final DeferredItem<BlockItem> WORKSHOP_GRIND = PDItems.ITEMS.registerSimpleBlockItem("workshop_grind", PDBlocks.WORKSHOP_GRIND);
+
+    // ==================== [分区R] 研究台组 BlockItem ====================
+
+    /**
+     * 研究台/暗影高炉/强征传送塔物品：GeckoLib 3D 手持渲染
+     * （原版 item model 走 displaysettings 的 builtin/entity 路线）
+     */
+    public static final DeferredItem<BlockItem> RESEARCH_TABLE = PDItems.ITEMS.register("research_table",
+            () -> new ResearchTableDisplayItem(new Item.Properties()));
+    public static final DeferredItem<BlockItem> SHADOW_BLAST_FURNACE = PDItems.ITEMS.register("shadow_blast_furnace",
+            () -> new ShadowBlastFurnaceDisplayItem(new Item.Properties()));
+    public static final DeferredItem<BlockItem> FORCED_TOWER = PDItems.ITEMS.register("forced_tower",
+            () -> new ForcedTowerDisplayItem(new Item.Properties()));
+
+    /** 构梦刷怪笼物品（贴图方块物品） */
+    public static final DeferredItem<BlockItem> DREAM_SPAWNER_0 = PDItems.ITEMS.registerSimpleBlockItem("dream_spawner_0", PDBlocks.DREAM_SPAWNER_0);
+
 }

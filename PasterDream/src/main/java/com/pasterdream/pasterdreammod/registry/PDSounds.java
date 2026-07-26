@@ -367,4 +367,224 @@ public class PDSounds {
     public static final Supplier<SoundEvent> SKILL2 = SOUND_EVENTS.register("skill2",
             () -> SoundEvent.createVariableRangeEvent(
                     ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "skill2")));
+
+    // ==================== 法术音效 SoundEvent（还原自原版法术模块） ====================
+
+    /**
+     * 闪电法术命中音效 (lightning_spell)
+     */
+    public static final Supplier<SoundEvent> LIGHTNING_SPELL = SOUND_EVENTS.register("lightning_spell",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "lightning_spell")));
+
+    /**
+     * 狂暴法术命中音效 (fury_spell_0)
+     */
+    public static final Supplier<SoundEvent> FURY_SPELL_0 = SOUND_EVENTS.register("fury_spell_0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "fury_spell_0")));
+
+    /**
+     * 治疗法术命中音效 (healing_spell)
+     */
+    public static final Supplier<SoundEvent> HEALING_SPELL = SOUND_EVENTS.register("healing_spell",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "healing_spell")));
+
+    /**
+     * 冰冻法术命中音效 (ice_spell)
+     */
+    public static final Supplier<SoundEvent> ICE_SPELL = SOUND_EVENTS.register("ice_spell",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "ice_spell")));
+
+    // ==================== 玩家动作音效（还原自原版状态效果模块） ====================
+
+    /**
+     * 闪避音效 (evasion)
+     * 回避效果成功闪避伤害时播放（PDEffectEvents 回避演出使用）。
+     */
+    public static final Supplier<SoundEvent> EVASION = SOUND_EVENTS.register("evasion",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "evasion")));
+
+    // ==================== 唱片音效（并行任务 D：sounds_staging_D.json 合并注册） ====================
+
+    /**
+     * 卡牌音效 (card0)
+     * 卡勒卡牌翻动音效，兼作唱片音源（jukebox_song 数据文件引用需要注册的 SoundEvent）。
+     */
+    public static final Supplier<SoundEvent> CARD0 = SOUND_EVENTS.register("card0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "card0")));
+
+    /**
+     * 梦境音效 0 (dream0)
+     * 梦境低语音效，兼作唱片音源。
+     */
+    public static final Supplier<SoundEvent> DREAM0 = SOUND_EVENTS.register("dream0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dream0")));
+
+    /**
+     * 梦境音效 1 (dream1)
+     * 梦境回响音效，兼作唱片音源。
+     */
+    public static final Supplier<SoundEvent> DREAM1 = SOUND_EVENTS.register("dream1",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dream1")));
+
+    // ==================== 数据包/程序引用音效批量注册 ====================
+    // 说明：sounds.json 中的键若被生物群系 JSON（additions_sound/music）或代码引用，
+    // 必须存在对应的 SoundEvent 注册表项，否则数据包 registry 加载失败、无法创建世界。
+
+    /** 批量补注册：breeze_wind */
+    public static final Supplier<SoundEvent> BREEZE_WIND = SOUND_EVENTS.register("breeze_wind",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "breeze_wind")));
+
+    /** 批量补注册：cloak */
+    public static final Supplier<SoundEvent> CLOAK = SOUND_EVENTS.register("cloak",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "cloak")));
+
+    /** 批量补注册：coin0 */
+    public static final Supplier<SoundEvent> COIN0 = SOUND_EVENTS.register("coin0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "coin0")));
+
+    /** 批量补注册：coin1 */
+    public static final Supplier<SoundEvent> COIN1 = SOUND_EVENTS.register("coin1",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "coin1")));
+
+    /** 批量补注册：crack */
+    public static final Supplier<SoundEvent> CRACK = SOUND_EVENTS.register("crack",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "crack")));
+
+    /** 批量补注册：ding_0 */
+    public static final Supplier<SoundEvent> DING_0 = SOUND_EVENTS.register("ding_0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "ding_0")));
+
+    /** 批量补注册：doll */
+    public static final Supplier<SoundEvent> DOLL = SOUND_EVENTS.register("doll",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "doll")));
+
+    /** 批量补注册：dream2 */
+    public static final Supplier<SoundEvent> DREAM2 = SOUND_EVENTS.register("dream2",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dream2")));
+
+    /** 批量补注册：dreamharp_of_wanderer */
+    public static final Supplier<SoundEvent> DREAMHARP_OF_WANDERER = SOUND_EVENTS.register("dreamharp_of_wanderer",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dreamharp_of_wanderer")));
+
+    /** 批量补注册：dyedream_world_music */
+    public static final Supplier<SoundEvent> DYEDREAM_WORLD_MUSIC = SOUND_EVENTS.register("dyedream_world_music",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dyedream_world_music")));
+
+    /** 批量补注册：fury_spell */
+    public static final Supplier<SoundEvent> FURY_SPELL = SOUND_EVENTS.register("fury_spell",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "fury_spell")));
+
+    /** 批量补注册：gale_wind */
+    public static final Supplier<SoundEvent> GALE_WIND = SOUND_EVENTS.register("gale_wind",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "gale_wind")));
+
+    /** 批量补注册：life_crystal */
+    public static final Supplier<SoundEvent> LIFE_CRYSTAL = SOUND_EVENTS.register("life_crystal",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "life_crystal")));
+
+    /** 批量补注册：losemind0 */
+    public static final Supplier<SoundEvent> LOSEMIND0 = SOUND_EVENTS.register("losemind0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "losemind0")));
+
+    /** 批量补注册：machine0 */
+    public static final Supplier<SoundEvent> MACHINE0 = SOUND_EVENTS.register("machine0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "machine0")));
+
+    /** 批量补注册：machine1 */
+    public static final Supplier<SoundEvent> MACHINE1 = SOUND_EVENTS.register("machine1",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "machine1")));
+
+    /** 批量补注册：machine2 */
+    public static final Supplier<SoundEvent> MACHINE2 = SOUND_EVENTS.register("machine2",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "machine2")));
+
+    /** 批量补注册：machine3 */
+    public static final Supplier<SoundEvent> MACHINE3 = SOUND_EVENTS.register("machine3",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "machine3")));
+
+    /** 批量补注册：notes */
+    public static final Supplier<SoundEvent> NOTES = SOUND_EVENTS.register("notes",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "notes")));
+
+    /** 批量补注册：pliers0 */
+    public static final Supplier<SoundEvent> PLIERS0 = SOUND_EVENTS.register("pliers0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "pliers0")));
+
+    /** 批量补注册：poison_spell */
+    public static final Supplier<SoundEvent> POISON_SPELL = SOUND_EVENTS.register("poison_spell",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "poison_spell")));
+
+    /** 批量补注册：portal */
+    public static final Supplier<SoundEvent> PORTAL = SOUND_EVENTS.register("portal",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "portal")));
+
+    /** 批量补注册：roar0 */
+    public static final Supplier<SoundEvent> ROAR0 = SOUND_EVENTS.register("roar0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "roar0")));
+
+    /** 批量补注册：shadow_biome_0 */
+    public static final Supplier<SoundEvent> SHADOW_BIOME_0 = SOUND_EVENTS.register("shadow_biome_0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "shadow_biome_0")));
+
+    /** 批量补注册：starcall_crack */
+    public static final Supplier<SoundEvent> STARCALL_CRACK = SOUND_EVENTS.register("starcall_crack",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "starcall_crack")));
+
+    /** 批量补注册：sword0 */
+    public static final Supplier<SoundEvent> SWORD0 = SOUND_EVENTS.register("sword0",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "sword0")));
+
+    /** 批量补注册：thermal_dagger */
+    public static final Supplier<SoundEvent> THERMAL_DAGGER = SOUND_EVENTS.register("thermal_dagger",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "thermal_dagger")));
+
+    /** 批量补注册：wind_chime */
+    public static final Supplier<SoundEvent> WIND_CHIME = SOUND_EVENTS.register("wind_chime",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "wind_chime")));
+
+    /** 批量补注册：wind_journey1 */
+    public static final Supplier<SoundEvent> WIND_JOURNEY1 = SOUND_EVENTS.register("wind_journey1",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "wind_journey1")));
+
+    /** 批量补注册：zipper */
+    public static final Supplier<SoundEvent> ZIPPER = SOUND_EVENTS.register("zipper",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "zipper")));
 }

@@ -15,6 +15,10 @@ public class CrackParticle extends TextureSheetParticle {
 
     private static final int FADE_IN_TICKS = 10;
     private static final int FADE_OUT_TICKS = 30;
+    /** quadSize 相对初始尺寸的最大放大倍数，防止气泡每 tick 膨胀导致尺寸无上限增长 */
+    private static final float MAX_SIZE_MULTIPLIER = 1.5f;
+    /** 本粒子的 quadSize 增长上限（初始尺寸 × {@link #MAX_SIZE_MULTIPLIER}） */
+    private final float maxQuadSize;
 
     /**
      * 构造裂纹粒子
@@ -25,6 +29,7 @@ public class CrackParticle extends TextureSheetParticle {
         this.setSprite(spriteSet.get(this.random));
         this.setSize(0.2f, 0.2f);
         this.quadSize = 0.3f + this.random.nextFloat() * 0.3f;
+        this.maxQuadSize = this.quadSize * MAX_SIZE_MULTIPLIER;
         this.lifetime = 80 + this.random.nextInt(60);
         this.gravity = -0.006f;
         this.hasPhysics = false;
@@ -63,7 +68,8 @@ public class CrackParticle extends TextureSheetParticle {
         this.xd += Math.sin(wobbleAngle) * 0.002;
         this.zd += Math.cos(wobbleAngle * 0.5 + 1.0) * 0.002;
 
-        this.quadSize *= 1.002f;
+        // 气泡上浮过程中缓慢膨胀，并以初始尺寸的 MAX_SIZE_MULTIPLIER 倍为上限，防止尺寸无上限增长
+        this.quadSize = Math.min(this.quadSize * 1.002f, this.maxQuadSize);
 
         this.move(this.xd, this.yd, this.zd);
 

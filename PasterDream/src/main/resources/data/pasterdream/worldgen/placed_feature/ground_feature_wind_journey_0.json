@@ -1,0 +1,24 @@
+{
+  "feature": "pasterdream:ground_feature_wind_journey_0",
+  "placement": [
+    {
+      "type": "minecraft:rarity_filter",
+      "chance": 4
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:height_range",
+      "height": {
+        "type": "minecraft:uniform",
+        "min_inclusive": {
+          "absolute": 100
+        },
+        "max_inclusive": {
+          "absolute": 220
+        }
+      }
+    }
+  ]
+}

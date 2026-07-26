@@ -1,0 +1,8 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "pasterdream:block/wu_hua_guo_teng_",
+    "particle": "pasterdream:block/wu_hua_guo_teng_"
+  },
+  "render_type": "cutout"
+}

@@ -1,0 +1,41 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "pasterdream:structure_block_0",
+      "required": false
+    },
+    {
+      "id": "pasterdream:structure_block_1",
+      "required": false
+    },
+    {
+      "id": "pasterdream:structure_block_2",
+      "required": false
+    },
+    {
+      "id": "pasterdream:structure_block_3",
+      "required": false
+    },
+    {
+      "id": "pasterdream:structure_block_4",
+      "required": false
+    },
+    {
+      "id": "pasterdream:structure_block_5",
+      "required": false
+    },
+    {
+      "id": "pasterdream:structure_block_6",
+      "required": false
+    },
+    {
+      "id": "pasterdream:structure_block_7",
+      "required": false
+    },
+    {
+      "id": "pasterdream:structure_block_8",
+      "required": false
+    }
+  ]
+}

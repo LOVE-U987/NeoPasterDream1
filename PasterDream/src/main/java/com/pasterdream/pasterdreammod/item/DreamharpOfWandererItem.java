@@ -1,0 +1,58 @@
+package com.pasterdream.pasterdreammod.item;
+
+import com.pasterdream.pasterdreammod.attachment.PDAttachments;
+import com.pasterdream.pasterdreammod.registry.PDEffects;
+import com.pasterdream.pasterdreammod.registry.PDSounds;
+import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+
+import java.util.List;
+
+/** 漂泊旅者的染梦竖琴 (dreamharp_of_wanderer) */
+public class DreamharpOfWandererItem extends Item {
+    public DreamharpOfWandererItem() {
+        super(new Item.Properties().stacksTo(1));
+    }
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tip, TooltipFlag flag) {
+        super.appendHoverText(stack, ctx, tip, flag);
+        tip.add(Component.literal("§7演奏后为半径10格内的玩家提供效果(1:00)："));
+        tip.add(Component.literal("§7▪ §9最大生命值+4 且恢复4点生命 移动速度+10%"));
+        tip.add(Component.literal("§7▪ §9精神值恢复+2.4/min"));
+        tip.add(Component.literal("§7▪ §9冷却时间：10秒"));
+        tip.add(Component.literal("§7▪ §4融梦能量消耗：2"));
+    }
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (level.isClientSide()) return InteractionResultHolder.success(stack);
+        if (!PDAttachments.consumePlayerMeltDreamEnergy(player, 2)) {
+            player.displayClientMessage(Component.literal("融梦能量不足"), true);
+            return InteractionResultHolder.fail(stack);
+        }
+        ServerLevel server = (ServerLevel) level;
+        double x=player.getX(), y=player.getY(), z=player.getZ();
+        server.sendParticles(ParticleTypes.HEART, x, y, z, 7, 0.45, 0.8, 0.45, 0.5);
+        ServerScheduler.schedule(5, () -> server.sendParticles(ParticleTypes.HEART, x, y, z, 7, 0.45, 0.8, 0.45, 0.5));
+        ServerScheduler.schedule(10, () -> server.sendParticles(ParticleTypes.HEART, x, y, z, 7, 0.45, 0.8, 0.45, 0.5));
+        server.playSound(null, player.blockPosition(), PDSounds.DREAMHARP_OF_WANDERER.get(), SoundSource.PLAYERS, 0.7f, 1f);
+        player.getCooldowns().addCooldown(this, 200);
+        for (Player p : level.getEntitiesOfClass(Player.class, new AABB(x,y,z,x,y,z).inflate(5))) {
+            p.addEffect(new MobEffectInstance(PDEffects.DREAMHARP_OF_WANDERER_BUFF, 1200, 0));
+            p.heal(4f);
+        }
+        return InteractionResultHolder.sidedSuccess(stack, false);
+    }
+}

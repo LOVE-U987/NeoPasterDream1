@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "pasterdream:bone_wing",
+      "required": false
+    },
+    {
+      "id": "pasterdream:ash_bone_wing",
+      "required": false
+    }
+  ]
+}

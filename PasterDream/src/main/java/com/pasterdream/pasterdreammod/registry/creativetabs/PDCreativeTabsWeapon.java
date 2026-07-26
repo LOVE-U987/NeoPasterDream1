@@ -73,6 +73,8 @@ public class PDCreativeTabsWeapon {
                         output.accept(PDItems.WHITE_SWORD_EMBRYO.get());
                         output.accept(PDItems.TERRASWORD_EMBRYO.get());
                         output.accept(PDItems.STAR_WISH_ROD_EMBRYO.get());
+                        // 杂项补全：聚梦法杖原胚（原版物品栏 tab_0）
+                        output.accept(PDItems.DREAM_WAND_EMBRYO.get());
 
                         // 剑类武器
                         output.accept(PDItems.BROKEN_HERO_SWORD.get());
@@ -125,6 +127,8 @@ public class PDCreativeTabsWeapon {
                         output.accept(PDItems.SHADOW_EROSION_AXE.get());
                         output.accept(PDItems.SHADOW_EROSION_SHOVEL.get());
                         output.accept(PDItems.SHADOW_EROSION_HOE.get());
+                        // 杂项补全：挖掘机3000!（调试用挖掘工具，原版调试栏 tab_8）
+                        output.accept(PDItems.EXCAVATOR.get());
                         output.accept(PDItems.GLASS_CUP.get());
                         output.accept(PDItems.DOUGH.get());
                         output.accept(PDItems.RYESEED.get());
@@ -146,6 +150,29 @@ public class PDCreativeTabsWeapon {
                         output.accept(PDItems.MELTDREAM_LIQUID_BUCKET.get());
                         output.accept(PDItems.PINKEGG.get());
                         output.accept(PDItems.PLIERS.get());
+
+                        // ==================== [分区W] 武器工坊群 ====================
+                        // 核心与卫星工位（原版 tab_5 / tab_8）
+                        output.accept(PDItems.WEAPON_TABLE.get());
+                        output.accept(PDItems.WEAPON_WORKSHOP.get());
+                        output.accept(PDItems.WORKSHOP_CAULDEON.get());
+                        output.accept(PDItems.WORKSHOP_BLAST.get());
+                        output.accept(PDItems.WORKSHOP_ANVIL.get());
+                        output.accept(PDItems.WORKSHOP_GRIND.get());
+                        // 蓝图（原版 tab_6）
+                        output.accept(PDItems.BLUEPRINT_0.get());
+                        output.accept(PDItems.BLUEPRINT_1.get());
+
+                        // 法杖武器（W2-D）
+                        output.accept(PDItems.DREAM_WAND.get());
+                        output.accept(PDItems.MANA_WAND.get());
+                        output.accept(PDItems.MOLTENGOLD_WAND.get());
+                        output.accept(PDItems.TRUE_MOLTENGOLD_WAND.get());
+                        output.accept(PDItems.TRUEST_MOLTENGOLD_WAND.get());
+                        output.accept(PDItems.SQUEAL_WAVE_WAND.get());
+                        output.accept(PDItems.STAR_WISH_ROD.get());
+                        output.accept(PDItems.SHADOW_VORTEX_BOOK.get());
+                        output.accept(PDItems.WHITE_SWORD_RAIN.get());
                     })
                     .build());
 }

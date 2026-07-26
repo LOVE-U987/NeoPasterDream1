@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:block/ning_feng_tie_lan_gan_"
+  },
+  "render_type": "cutout_mipped"
+}

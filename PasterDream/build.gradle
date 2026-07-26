@@ -22,10 +22,22 @@ tasks.named('processResources', ProcessResources).configure {
 
 repositories {
     maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    // JEI（Just Enough Items）官方发布仓库
+    maven {
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com'
+        content {
+            // 限定该仓库只解析 JEI 组，避免拖慢其他依赖解析
+            includeGroup 'mezz.jei'
+        }
+    }
     flatDir {
         dirs rootProject.file('libs')
     }
 }
+
+// JEI 版本（1.21.1 NeoForge 最新稳定版，坐标已经 curl 探测 maven.blamejared.com 确认）
+def jei_version = '19.39.0.372'
 
 base {
     archivesName = mod_id
@@ -95,6 +107,15 @@ dependencies {
     implementation files(rootProject.file('libs/geckolib-neoforge-1.21.1-4.8.4.jar'))
     implementation files(rootProject.file('libs/player-animation-lib-forge-2.0.4+1.21.1.jar'))
     implementation files(rootProject.file('libs/curios-neoforge-9.5.1+1.21.1.jar'))
+
+    // ======================== JEI 集成（可选依赖） ========================
+    // 编译期只依赖 API（common + neoforge 两部分），不会被打进发布 jar；
+    // 运行期通过 localRuntime 挂载完整 JEI（localRuntime 不进入发布元数据，
+    // 见上方 configurations { runtimeClasspath.extendsFrom localRuntime }），
+    // 因此发布 jar 不携带 JEI，玩家未装 JEI 时 @JeiPlugin 插件不会被加载，mod 正常运行。
+    compileOnly "mezz.jei:jei-1.21.1-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-1.21.1-neoforge-api:${jei_version}"
+    localRuntime "mezz.jei:jei-1.21.1-neoforge:${jei_version}"
 }
 
 tasks.named('jar') {

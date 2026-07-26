@@ -70,6 +70,30 @@ public class PDClientItemExtensions {
         registerDisplayItem(event, PDItems.DREAM_CAULDRON.get(), new DreamCauldronDisplayItemRenderer());
         PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: dream_cauldron → DreamCauldronDisplayItemRenderer（GeckoLib 3D）");
 
+        // ==================== [分区W] 武器工坊群 ====================
+
+        registerDisplayItem(event, PDItems.WEAPON_TABLE.get(),
+                new com.pasterdream.pasterdreammod.client.renderer.item.WeaponTableDisplayItemRenderer());
+        PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: weapon_table → WeaponTableDisplayItemRenderer（GeckoLib 3D）");
+
+        registerDisplayItem(event, PDItems.WEAPON_WORKSHOP.get(),
+                new com.pasterdream.pasterdreammod.client.renderer.item.WeaponWorkshopDisplayItemRenderer());
+        PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: weapon_workshop → WeaponWorkshopDisplayItemRenderer（GeckoLib 3D）");
+
+        // ==================== [分区R] 研究台组 ====================
+
+        registerDisplayItem(event, PDItems.RESEARCH_TABLE.get(),
+                new com.pasterdream.pasterdreammod.client.renderer.item.ResearchTableDisplayItemRenderer());
+        PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: research_table → ResearchTableDisplayItemRenderer（GeckoLib 3D）");
+
+        registerDisplayItem(event, PDItems.SHADOW_BLAST_FURNACE.get(),
+                new com.pasterdream.pasterdreammod.client.renderer.item.ShadowBlastFurnaceDisplayItemRenderer());
+        PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: shadow_blast_furnace → ShadowBlastFurnaceDisplayItemRenderer（GeckoLib 3D）");
+
+        registerDisplayItem(event, PDItems.FORCED_TOWER.get(),
+                new com.pasterdream.pasterdreammod.client.renderer.item.ForcedTowerDisplayItemRenderer());
+        PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: forced_tower → ForcedTowerDisplayItemRenderer（GeckoLib 3D）");
+
         registerDisplayItem(event, PDItems.THE_ENDLESS_BOOK_OF_DREAM_SEEKERS.get(), new TheEndlessBookOfDreamSeekersDisplayItemRenderer());
         PasterDreamMod.LOGGER.debug("[PDClientItemExtensions] 注册显示物品: the_endless_book_of_dream_seekers → TheEndlessBookOfDreamSeekersDisplayItemRenderer（GeckoLib 3D）");
 

@@ -97,6 +97,30 @@ public final class RendererRegistry {
         PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: the_endless_book_of_dream_seekers");
         count++;
 
+        // ==================== [分区W] 武器工坊群 ====================
+
+        event.registerBlockEntityRenderer(PDBlockEntities.WEAPON_TABLE.get(), WeaponTableBlockRenderer::new);
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: weapon_table");
+        count++;
+
+        event.registerBlockEntityRenderer(PDBlockEntities.WEAPON_WORKSHOP.get(), WeaponWorkshopBlockRenderer::new);
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: weapon_workshop");
+        count++;
+
+        // ==================== [分区R] 研究台组 ====================
+
+        event.registerBlockEntityRenderer(PDBlockEntities.RESEARCH_TABLE.get(), ResearchTableBlockRenderer::new);
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: research_table");
+        count++;
+
+        event.registerBlockEntityRenderer(PDBlockEntities.SHADOW_BLAST_FURNACE.get(), ShadowBlastFurnaceBlockRenderer::new);
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: shadow_blast_furnace");
+        count++;
+
+        event.registerBlockEntityRenderer(PDBlockEntities.FORCED_TOWER.get(), ForcedTowerBlockRenderer::new);
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册方块实体渲染器: forced_tower");
+        count++;
+
         PasterDreamMod.LOGGER.debug("[RendererRegistry] 方块实体渲染器注册完成，共 {} 个", count);
     }
 
@@ -212,5 +236,50 @@ public final class RendererRegistry {
                 context -> new com.pasterdream.pasterdreammod.client.renderer.entity.SquealWaveRenderer(context)
         );
         PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册弹射物渲染器: squeal_wave_projectile → SquealWaveRenderer");
+
+        // 法术投射物：以飞行中的法术物品贴图渲染（实体实现 ItemSupplier）
+        event.registerEntityRenderer(PDEntities.LIGHTNING_SPELL_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        event.registerEntityRenderer(PDEntities.POISON_SPELL_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        event.registerEntityRenderer(PDEntities.HEALING_SPELL_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        event.registerEntityRenderer(PDEntities.FURY_SPELL_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        event.registerEntityRenderer(PDEntities.ICE_SPELL_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册弹射物渲染器: 5 个法术投射物 → ThrownItemRenderer");
+
+        // 法术立场实体（GeckoLib 半透明渲染）
+        event.registerEntityRenderer(PDEntities.FURY_SPELL_ENTITY.get(), FurySpellFieldRenderer::new);
+        event.registerEntityRenderer(PDEntities.HEALING_SPELL_ENTITY.get(), HealingSpellFieldRenderer::new);
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册法术立场渲染器: fury_spell_entity / healing_spell_entity");
+
+        // ==================== 法杖武器投射物（W2-D） ====================
+        // 全部实现 ItemSupplier，以飞行中的物品贴图渲染（与原版 ThrownItemRenderer 方案一致）
+        event.registerEntityRenderer(PDEntities.LIGHTNING_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        event.registerEntityRenderer(PDEntities.MOLTENGOLD_WAND_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        event.registerEntityRenderer(PDEntities.TRUE_MOLTENGOLD_WAND_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        event.registerEntityRenderer(PDEntities.TRUEST_MOLTENGOLD_WAND_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        event.registerEntityRenderer(PDEntities.SQUEAL_WAVE_WAND_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        event.registerEntityRenderer(PDEntities.SHADOW_VORTEX_BOOK_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        event.registerEntityRenderer(PDEntities.PINKEGG_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        event.registerEntityRenderer(PDEntities.STRAWBERRY_HEART_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        event.registerEntityRenderer(PDEntities.WHITE_SWORD_RAIN_PROJECTILE.get(),
+                context -> new ThrownItemRenderer<>(context, 1.0f, false));
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册弹射物渲染器: 9 个法杖投射物 → ThrownItemRenderer");
+
+        // 大地之刃剑气（GeckoLib 半透明剑气实体）
+        event.registerEntityRenderer(PDEntities.TERRASWORD_WAVE.get(),
+                com.pasterdream.pasterdreammod.client.renderer.entity.TerraswordWaveRenderer::new);
+        PasterDreamMod.LOGGER.debug("[RendererRegistry] 注册实体渲染器: terrasword_wave （GeckoLib 剑气）");
     }
 }

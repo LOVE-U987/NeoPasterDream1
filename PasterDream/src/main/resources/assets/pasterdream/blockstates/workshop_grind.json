@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "pasterdream:block/workshop_grind"
+    },
+    "facing=east": {
+      "model": "pasterdream:block/workshop_grind",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "pasterdream:block/workshop_grind",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pasterdream:block/workshop_grind",
+      "y": 270
+    }
+  }
+}

@@ -4,8 +4,9 @@ import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -201,37 +202,46 @@ public class LifeCrystalBlockEntity extends BlockEntity implements GeoBlockEntit
             serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,
                     pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5,
                     4, 0.3, 0.3, 0.3, 1);
+            // 通过 holder() 直接取得 SimpleParticleType 引用，类型安全，无需强制转换
             for (int i = 0; i < 8; i++) {
-                serverLevel.sendParticles((SimpleParticleType) PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType(),
+                serverLevel.sendParticles(PDParticles.MELTDREAM_CRYSTAL_PARTICLE.holder().get(),
                         pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                         1, 0, 0, 0, 1);
             }
         }
 
-        // 第 40 tick：摧毁方块 + 应用属性修改器
+        // 第 40 tick：结算 —— 先确认激活玩家在场，再摧毁方块 + 应用属性修改器
         if (useTicks >= 40) {
+            // 先取激活玩家：玩家已下线/不存在时仅重置吸收状态并保留水晶，
+            // 避免效果无人领取的同时方块被白白销毁
+            Player player = activatingPlayerUUID != null ? level.getPlayerByUUID(activatingPlayerUUID) : null;
+            if (player == null) {
+                useActive = false;
+                useTicks = 0;
+                activatingPlayerUUID = null;
+                resetAnimationProperty();
+                setChanged();
+                return;
+            }
             BlockState currentState = level.getBlockState(pos);
             if (currentState.getBlock() == state.getBlock()) {
                 // 应用最大生命值永久 +2
-                if (activatingPlayerUUID != null) {
-                    Player player = level.getPlayerByUUID(activatingPlayerUUID);
-                    if (player instanceof LivingEntity livingEntity) {
-                        AttributeInstance attr = livingEntity.getAttribute(Attributes.MAX_HEALTH);
-                        if (attr != null && !attr.hasModifier(MODIFIER_ID)) {
-                            attr.addPermanentModifier(
-                                    new AttributeModifier(MODIFIER_ID, 2,
-                                            AttributeModifier.Operation.ADD_VALUE));
-                        }
-                        // 播放破碎音效
-                        level.playSound(null, pos, SoundEvent.createVariableRangeEvent(
-                                ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "life_crystal")),
-                                SoundSource.BLOCKS, 1.0f, 0.5f);
-                        // 发送消息
-                        player.displayClientMessage(
-                                net.minecraft.network.chat.Component.literal(
-                                        "生命水晶破碎并涌入你的体内 §a最大生命值+2"),
-                                false);
+                if (player instanceof LivingEntity livingEntity) {
+                    AttributeInstance attr = livingEntity.getAttribute(Attributes.MAX_HEALTH);
+                    if (attr != null && !attr.hasModifier(MODIFIER_ID)) {
+                        attr.addPermanentModifier(
+                                new AttributeModifier(MODIFIER_ID, 2,
+                                        AttributeModifier.Operation.ADD_VALUE));
                     }
+                    // 播放破碎音效
+                    level.playSound(null, pos, SoundEvent.createVariableRangeEvent(
+                            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "life_crystal")),
+                            SoundSource.BLOCKS, 1.0f, 0.5f);
+                    // 发送消息
+                    player.displayClientMessage(
+                            net.minecraft.network.chat.Component.literal(
+                                    "生命水晶破碎并涌入你的体内 §a最大生命值+2"),
+                            false);
                 }
                 // 清除方块
                 level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
@@ -239,6 +249,38 @@ public class LifeCrystalBlockEntity extends BlockEntity implements GeoBlockEntit
             useActive = false;
             useTicks = 0;
             activatingPlayerUUID = null;
+            setChanged();
         }
+    }
+
+    // ==================== NBT 持久化 ====================
+
+    private static final String TAG_USE_ACTIVE = "useActive";
+    private static final String TAG_USE_TICKS = "useTicks";
+    private static final String TAG_ACTIVATING_PLAYER = "activatingPlayer";
+
+    /**
+     * 保存吸收流程状态（useActive / useTicks / 激活玩家 UUID），
+     * 防止区块卸载或存档重载后计时中断、激活玩家信息丢失
+     */
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.putBoolean(TAG_USE_ACTIVE, useActive);
+        tag.putInt(TAG_USE_TICKS, useTicks);
+        if (activatingPlayerUUID != null) {
+            tag.putUUID(TAG_ACTIVATING_PLAYER, activatingPlayerUUID);
+        }
+    }
+
+    /**
+     * 读取吸收流程状态
+     */
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        useActive = tag.getBoolean(TAG_USE_ACTIVE);
+        useTicks = tag.getInt(TAG_USE_TICKS);
+        activatingPlayerUUID = tag.hasUUID(TAG_ACTIVATING_PLAYER) ? tag.getUUID(TAG_ACTIVATING_PLAYER) : null;
     }
 }

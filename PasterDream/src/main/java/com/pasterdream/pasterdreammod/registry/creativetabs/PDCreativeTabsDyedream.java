@@ -66,6 +66,22 @@ public class PDCreativeTabsDyedream {
                         output.accept(PDBlocks.CALCITE_TILES_SLAB.get());
                         output.accept(PDBlocks.CALCITE_TILES_WALL.get());
 
+                        // 苍青岩系列（染梦维度 Phase2）
+                        output.accept(PDBlocks.CYAN_STONE.get());
+                        output.accept(PDBlocks.CYAN_MOSS_STONE.get());
+                        output.accept(PDBlocks.CYAN_STONE_BRICKS.get());
+                        output.accept(PDBlocks.CYAN_STONE_BRICK_STAIRS.get());
+                        output.accept(PDBlocks.CYAN_STONE_BRICK_SLAB.get());
+                        output.accept(PDBlocks.CYAN_STONE_BRICK_WALL.get());
+                        output.accept(PDBlocks.MOSSY_CYAN_STONE_BRICKS.get());
+                        output.accept(PDBlocks.MOSSY_CYAN_STONE_BRICK_STAIRS.get());
+                        output.accept(PDBlocks.MOSSY_CYAN_STONE_BRICK_SLAB.get());
+                        output.accept(PDBlocks.MOSSY_CYAN_STONE_BRICK_WALL.get());
+                        output.accept(PDBlocks.CHISELED_CYAN_STONE_BRICKS.get());
+                        output.accept(PDBlocks.CYAN_STONE_PILLAR.get());
+                        output.accept(PDBlocks.CYAN_STONE_PRESSURE_PLATE.get());
+                        output.accept(PDBlocks.CYAN_STONE_BUTTON.get());
+
                         // 树木与木板
                         output.accept(PDBlocks.DYEDREAM_LOG.get());
                         output.accept(PDBlocks.DYEDREAM_WOOD.get());
@@ -174,6 +190,8 @@ public class PDCreativeTabsDyedream {
                         output.accept(PDItems.MELTDREAM_PICKAXE.get());
                         output.accept(PDItems.DYEDREAM_FRUIT.get());
                         output.accept(PDItems.DYEDREAM_JUICE.get());
+                        // 杂项补全：梦境果汁（原版装备栏 tab_3，饮用后获得梦愿效果）
+                        output.accept(PDItems.DREAMJUICE.get());
                         output.accept(PDItems.DYEDREAM_FLOWER_TEA.get());
                         output.accept(PDItems.UNCOOKED_DYEDREAM_FLOWER_TEA.get());
                         output.accept(PDItems.DYEDREAM_POPSICLE.get());

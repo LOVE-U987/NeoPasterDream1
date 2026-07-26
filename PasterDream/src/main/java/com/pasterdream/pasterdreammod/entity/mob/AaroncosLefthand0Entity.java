@@ -45,6 +45,9 @@ import java.util.List;
  */
 public class AaroncosLefthand0Entity extends AaroncosHandEntity {
 
+    /** 剑雨技能各段攻击的触发时刻（tick，相对技能开始），提取为常量避免每次触发重复创建数组 */
+    private static final int[] SWORD_RAIN_HIT_TICKS = {57, 70, 83, 88, 95, 105, 112};
+
     /**
      * 构造亚伦柯斯左手实体
      *
@@ -408,7 +411,7 @@ public class AaroncosLefthand0Entity extends AaroncosHandEntity {
             });
 
             // 57 tick 后开始多段剑雨 —— 粒子 + 16 格 AoE 8 点伤害 + 音效
-            for (int t : new int[]{57, 70, 83, 88, 95, 105, 112}) {
+            for (int t : SWORD_RAIN_HIT_TICKS) {
                 queueTask(t, () -> {
                     if (this.level() instanceof ServerLevel sl) {
                         double px = this.getX() + (this.getRandom().nextFloat() - 0.5) * 6;

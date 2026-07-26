@@ -1,0 +1,72 @@
+{
+  "has_precipitation": true,
+  "temperature": 0.8,
+  "downfall": 0.2,
+  "effects": {
+    "additions_sound": {
+      "sound": "pasterdream:shadow_biome_0",
+      "tick_chance": 0.0111
+    },
+    "music": {
+      "sound": "pasterdream:shadow_biome_0",
+      "min_delay": 12000,
+      "max_delay": 24000,
+      "replace_current_music": true
+    },
+    "foliage_color": -13684945,
+    "grass_color": -13684945,
+    "sky_color": -13684945,
+    "fog_color": -13684945,
+    "water_color": -13684945,
+    "water_fog_color": -13684945
+  },
+  "spawners": {
+    "monster": [
+      {
+        "type": "pasterdream:black_beetle",
+        "weight": 20,
+        "minCount": 5,
+        "maxCount": 7
+      }
+    ],
+    "creature": [],
+    "ambient": [],
+    "axolotls": [],
+    "underground_water_creature": [],
+    "water_creature": [],
+    "water_ambient": [],
+    "misc": []
+  },
+  "spawn_costs": {},
+  "carvers": {},
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "minecraft:ore_coal_upper",
+      "minecraft:ore_coal_lower",
+      "minecraft:ore_iron_upper",
+      "minecraft:ore_iron_middle",
+      "minecraft:ore_iron_small",
+      "minecraft:ore_gold",
+      "minecraft:ore_gold_lower",
+      "minecraft:ore_redstone",
+      "minecraft:ore_redstone_lower",
+      "minecraft:ore_diamond",
+      "minecraft:ore_diamond_large",
+      "minecraft:ore_diamond_buried",
+      "minecraft:ore_lapis",
+      "minecraft:ore_lapis_buried",
+      "minecraft:ore_copper",
+      "minecraft:underwater_magma"
+    ],
+    [],
+    [],
+    [],
+    []
+  ]
+}

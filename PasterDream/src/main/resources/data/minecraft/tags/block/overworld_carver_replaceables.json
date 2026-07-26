@@ -1,0 +1,19 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:calcite",
+    "pasterdream:dyedream_grass",
+    "pasterdream:dyedream_dirt",
+    "minecraft:powder_snow",
+    "minecraft:packed_ice",
+    "pasterdream:shadow_stone",
+    "pasterdream:shadow_block",
+    "pasterdream:shadow_nylium",
+    "pasterdream:shadow_stone_tiles",
+    "minecraft:air",
+    "pasterdream:thick_cloud",
+    "pasterdream:cyan_moss_stone",
+    "pasterdream:cyan_stone",
+    "pasterdream:white_sand"
+  ]
+}

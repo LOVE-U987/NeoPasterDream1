@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/gou_meng_shua_guai_long_",
+    "up": "pasterdream:block/gou_meng_shua_guai_long_",
+    "north": "pasterdream:block/gou_meng_shua_guai_long_",
+    "east": "pasterdream:block/gou_meng_shua_guai_long_",
+    "south": "pasterdream:block/gou_meng_shua_guai_long_",
+    "west": "pasterdream:block/gou_meng_shua_guai_long_",
+    "particle": "pasterdream:block/gou_meng_shua_guai_long_"
+  },
+  "render_type": "cutout"
+}

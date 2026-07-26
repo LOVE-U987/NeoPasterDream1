@@ -1,0 +1,27 @@
+{
+  "criteria": {
+    "achievement_hide_2": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pasterdream:white_corolla"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 0,
+    "loot": [
+      "pasterdream:gameplay/achievement_hide_2"
+    ]
+  },
+  "parent": "pasterdream:achievement_start"
+}

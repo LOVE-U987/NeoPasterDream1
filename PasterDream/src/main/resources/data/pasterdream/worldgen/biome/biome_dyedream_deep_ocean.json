@@ -54,14 +54,15 @@
     ],
     "ambient": [],
     "axolotls": [],
-    "underground_water_creature": [],
-    "water_creature": [
+    "underground_water_creature": [
       {
         "type": "minecraft:glow_squid",
         "weight": 15,
         "minCount": 2,
         "maxCount": 4
-      },
+      }
+    ],
+    "water_creature": [
       {
         "type": "minecraft:dolphin",
         "weight": 10,

@@ -194,6 +194,19 @@ public class PDParticles {
             .generateJson(false)
             .build();
 
+    /**
+     * 萤火虫粒子（firefly_particle）
+     * <p>
+     * 还原自原版 PasterdreamModParticleTypes 的 SimpleParticleType(false)。
+     * 10 帧全亮度萤光光点，用于风之旅途生物群系（wind_journey_biome_0）的
+     * ambient particle 环境效果及萤火虫相关方块/实体。
+     */
+    public static final ParticleResult FIREFLY_PARTICLE = ParticleAPI.createParticle("firefly_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:firefly_particle_1")
+            .generateJson(false)
+            .build();
+
     // ======================== 染梦世界动态环境粒子 ========================
 
     /**
@@ -245,6 +258,201 @@ public class PDParticles {
             .alwaysShow(true)
             .texture("pasterdream:stardust")
             .withGravity(-0.001f)
+            .generateJson(false)
+            .build();
+
+    /**
+     * 尘埃粒子 0（dust_0_particle）
+     * <p>
+     * 还原自原版 PasterDream，用于梦境炼药锅炼制过程的尘雾效果。
+     */
+    public static final ParticleResult DUST_0_PARTICLE = ParticleAPI.createParticle("dust_0_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:dust_0_particle")
+            .generateJson(false)
+            .build();
+
+    // ==================== 法术粒子（还原自原版法术模块） ====================
+
+    /**
+     * 毒气粒子（poison_gas_particle）
+     * 剧毒法术的大团毒雾（4 帧动画，半透明大尺寸）。
+     */
+    public static final ParticleResult POISON_GAS_PARTICLE = ParticleAPI.createParticle("poison_gas_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:poison_gas_particle_1")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 毒魂粒子（poison_soul_particle）
+     * 剧毒法术上升的毒魂点缀（随机单帧，缓慢上飘）。
+     */
+    public static final ParticleResult POISON_SOUL_PARTICLE = ParticleAPI.createParticle("poison_soul_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:poison_soul_particle")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 狂暴法术粒子（fury_spell_particle）
+     * 狂暴立场的能量符文（10 帧动画）。
+     */
+    public static final ParticleResult FURY_SPELL_PARTICLE = ParticleAPI.createParticle("fury_spell_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:fury_spell_particle_1")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 治疗法术粒子（healing_spell_particle）
+     * 治疗立场的十字光点（8 帧动画，缓慢上升）。
+     */
+    public static final ParticleResult HEALING_SPELL_PARTICLE = ParticleAPI.createParticle("healing_spell_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:healing_spell_particle_1")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 黄色烟雾粒子（yellow_smoke_particle）
+     * 治疗立场的暖黄烟雾（4 帧动画，缓缓下沉）。
+     */
+    public static final ParticleResult YELLOW_SMOKE_PARTICLE = ParticleAPI.createParticle("yellow_smoke_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:yellow_smoke_particle_1")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 雪花粒子 1（snowflake_1_particle）
+     * 冰冻法术的第二种雪花（4 帧动画，下落）。
+     */
+    public static final ParticleResult SNOWFLAKE_1_PARTICLE = ParticleAPI.createParticle("snowflake_1_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:snowflake_1_particle_1")
+            .generateJson(false)
+            .build();
+
+    // ==================== 法杖武器与战斗粒子（W2-D，还原自原版 PasterdreamModParticleTypes） ====================
+
+    /**
+     * 攻击粒子 0（attack_0_particle）
+     * 单帧全亮度攻击特效点缀（原版近战/战技命中演出用）。
+     */
+    public static final ParticleResult ATTACK_0_PARTICLE = ParticleAPI.createParticle("attack_0_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:attack_0_particle")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 增益粒子 0（buff_0_particle）
+     * 单帧全亮度增益特效，负重力缓缓上升（原版增益/祝福演出用）。
+     */
+    public static final ParticleResult BUFF_0_PARTICLE = ParticleAPI.createParticle("buff_0_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:buff_0_particle")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 萤火虫玻璃罐粒子（firefly_glass_jar_particle）
+     * 10 帧半透明萤光，用于萤火虫玻璃罐方块的罐内萤光效果。
+     */
+    public static final ParticleResult FIREFLY_GLASS_JAR_PARTICLE = ParticleAPI.createParticle("firefly_glass_jar_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:firefly_glass_jar_particle_1")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 金辉粒子（golden_particle）
+     * 3 帧全亮度旋转金光，用于转身衣装（turnback_cloak_buff）的激活演出。
+     */
+    public static final ParticleResult GOLDEN_PARTICLE = ParticleAPI.createParticle("golden_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:golden_particle_1")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 亮萤火虫玻璃罐粒子（light_firefly_glass_jar_particle）
+     * 10 帧全亮度萤光，用于亮萤火虫玻璃罐方块的罐内萤光效果。
+     */
+    public static final ParticleResult LIGHT_FIREFLY_GLASS_JAR_PARTICLE = ParticleAPI.createParticle("light_firefly_glass_jar_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:light_firefly_glass_jar_particle_1")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 闪电粒子（lightning_particle）
+     * 4 帧全亮度电弧（原版 overrideLimiter=true 强制渲染），用于闪电投射物拖尾。
+     */
+    public static final ParticleResult LIGHTNING_PARTICLE = ParticleAPI.createParticle("lightning_particle")
+            .alwaysShow(true)
+            .texture("pasterdream:lightning_particle_1")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 融梦水晶大粒子（meltdream_crystal_big_particle）
+     * 4 帧半透明大尺寸水晶光（原版 overrideLimiter=true 强制渲染），用于融梦水晶演出。
+     */
+    public static final ParticleResult MELTDREAM_CRYSTAL_BIG_PARTICLE = ParticleAPI.createParticle("meltdream_crystal_big_particle")
+            .alwaysShow(true)
+            .texture("pasterdream:meltdream_crystal_big_particle_1")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 幽匿粒子（sculk_particle）
+     * 单帧不透明幽匿碎屑（原版幽匿系武器/生物演出用）。
+     */
+    public static final ParticleResult SCULK_PARTICLE = ParticleAPI.createParticle("sculk_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:sculk_particle")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 灵魂粒子（soul_particle）
+     * 单帧不透明魂焰，负重力上升，用于魂啸法杖命中的灵魂爆发。
+     */
+    public static final ParticleResult SOUL_PARTICLE = ParticleAPI.createParticle("soul_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:soul_particle")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 魂啸粒子（squeal_wave_particle）
+     * 3 帧全亮度音波，用于魂啸法杖音波投射物的飞行拖尾。
+     */
+    public static final ParticleResult SQUEAL_WAVE_PARTICLE = ParticleAPI.createParticle("squeal_wave_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:squeal_wave_particle_1")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 唤星粒子（starcall_particle）
+     * 单帧全亮度星光，用于唤星者法杖系的唤星裂隙演出。
+     */
+    public static final ParticleResult STARCALL_PARTICLE = ParticleAPI.createParticle("starcall_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:starcall_particle")
+            .generateJson(false)
+            .build();
+
+    /**
+     * 大地之刃剑气粒子（terrasword_wave_particle）
+     * 4 帧全亮度剑气残光，用于大地之刃剑气实体的飞行拖尾。
+     */
+    public static final ParticleResult TERRASWORD_WAVE_PARTICLE = ParticleAPI.createParticle("terrasword_wave_particle")
+            .alwaysShow(false)
+            .texture("pasterdream:terrasword_wave_particle_1")
             .generateJson(false)
             .build();
 

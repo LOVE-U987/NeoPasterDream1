@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:block/carve_clarity_glass"
+  },
+  "render_type": "translucent"
+}

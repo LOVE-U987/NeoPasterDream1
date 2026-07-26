@@ -1,0 +1,9 @@
+{
+  "parent": "block/outer_stairs",
+  "textures": {
+    "bottom": "pasterdream:block/armor_wreck",
+    "top": "pasterdream:block/armor_wreck",
+    "side": "pasterdream:block/armor_wreck"
+  },
+  "render_type": "cutout"
+}

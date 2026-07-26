@@ -21,7 +21,9 @@
     [],
     [],
     [],
-    ["minecraft:freeze_top_layer"]
+    [
+      "minecraft:freeze_top_layer"
+    ]
   ],
   "effects": {
     "foliage_color": -145678,
@@ -39,7 +41,11 @@
     "particle": {
       "options": {
         "type": "minecraft:dust",
-        "color": [0.9, 0.6, 1.0],
+        "color": [
+          0.9,
+          0.6,
+          1.0
+        ],
         "scale": 0.6
       },
       "probability": 0.001
@@ -63,21 +69,21 @@
     ],
     "ambient": [],
     "axolotls": [],
-    "underground_water_creature": [],
-    "water_creature": [
-      {
-        "type": "minecraft:tropical_fish",
-        "weight": 10,
-        "minCount": 2,
-        "maxCount": 6
-      }
-    ],
-    "water_ambient": [
+    "underground_water_creature": [
       {
         "type": "minecraft:glow_squid",
         "weight": 5,
         "minCount": 1,
         "maxCount": 2
+      }
+    ],
+    "water_creature": [],
+    "water_ambient": [
+      {
+        "type": "minecraft:tropical_fish",
+        "weight": 10,
+        "minCount": 2,
+        "maxCount": 6
       }
     ],
     "misc": []

@@ -40,9 +40,9 @@ public class PinkChickenEntity extends Animal {
     private static final Item DYEDREAM_FRUIT = BuiltInRegistries.ITEM.get(
             ResourceLocation.parse("pasterdream:dyedream_fruit"));
 
-    /** 粉蛋物品（用于掉落逻辑，暂为留空引用） */
+    /** 粉蛋物品（注册名 pinkegg，与原版一致） */
     private static final Item PINK_EGG = BuiltInRegistries.ITEM.get(
-            ResourceLocation.parse("pasterdream:pink_egg"));
+            ResourceLocation.parse("pasterdream:pinkegg"));
 
     /**
      * 构造粉色鸡实体

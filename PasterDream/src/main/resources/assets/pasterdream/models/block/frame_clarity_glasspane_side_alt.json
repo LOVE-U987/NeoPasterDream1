@@ -1,0 +1,8 @@
+{
+  "parent": "block/template_glass_pane_side_alt",
+  "textures": {
+    "edge": "pasterdream:block/frame_clarity_glass",
+    "pane": "pasterdream:block/frame_clarity_glass"
+  },
+  "render_type": "translucent"
+}

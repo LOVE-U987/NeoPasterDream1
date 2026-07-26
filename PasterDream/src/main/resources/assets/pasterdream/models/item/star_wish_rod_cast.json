@@ -1,0 +1,6 @@
+{
+    "parent": "item/handheld_rod",
+    "textures": {
+      "layer0": "pasterdream:item/star_wish_rod_cast"
+    }
+}

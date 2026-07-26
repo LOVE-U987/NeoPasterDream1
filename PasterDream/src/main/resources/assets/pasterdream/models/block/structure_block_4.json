@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/jie_gou_sheng_cheng_kuai_",
+    "up": "pasterdream:block/jie_gou_sheng_cheng_kuai_",
+    "north": "pasterdream:block/jie_gou_sheng_cheng_kuai_",
+    "east": "pasterdream:block/jie_gou_sheng_cheng_kuai_",
+    "south": "pasterdream:block/jie_gou_sheng_cheng_kuai_",
+    "west": "pasterdream:block/jie_gou_sheng_cheng_kuai_",
+    "particle": "pasterdream:block/jie_gou_sheng_cheng_kuai_"
+  },
+  "render_type": "translucent"
+}

@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:dyedream_log",
+    "pasterdream:dyedream_wood",
+    "pasterdream:shadow_stem",
+    "pasterdream:shadow_hyphae",
+    "pasterdream:windmoor_log",
+    "pasterdream:windmoor_wood"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:titanium_ingot"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "pasterdream:titanium_block"
+  }
+}

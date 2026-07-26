@@ -15,15 +15,21 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 
 /**
  * 寻梦者的永恒书卷 GUI 容器菜单 (The Endless Book of Dream Seekers Menu)
- * 1 格物品展示槽 + 玩家背包（27 格）+ 快捷栏（9 格）
- * 简化版本：仅含物品展示，无导入功能
- *
- * 槽位分布：
- * - 索引 0：书卷展示槽（位置 80, 35）
- * - 索引 1-27：玩家背包（3×9，偏移 y=84）
- * - 索引 28-36：玩家快捷栏（1×9，偏移 y=142）
+ * 布局对照原版 TheEndlessBookOfDreamSeekersGuiMenu：
+ * <ul>
+ *   <li>索引 0：展示槽（115, 26）——仅可取出；</li>
+ *   <li>索引 1：导入槽（43, 26）；</li>
+ *   <li>索引 2-28：玩家背包（3×9，起始 (8, 84)）；</li>
+ *   <li>索引 29-37：玩家快捷栏（1×9，起始 (8, 142)）。</li>
+ * </ul>
+ * "导入"按钮经 vanilla {@code clickMenuButton} 触发
+ * {@link TheEndlessBookOfDreamSeekersBlockEntity#importFromSlot}
+ * （等价原版 GuiButtonMessage → Pr5）。
  */
 public class TheEndlessBookOfDreamSeekersMenu extends AbstractContainerMenu {
+
+    /** "导入"按钮 ID（原版 buttonID == 0 → Pr5） */
+    public static final int BUTTON_IMPORT = 0;
 
     private final TheEndlessBookOfDreamSeekersBlockEntity blockEntity;
     private final Level level;
@@ -53,8 +59,15 @@ public class TheEndlessBookOfDreamSeekersMenu extends AbstractContainerMenu {
 
         IItemHandler handler = this.blockEntity.getItemHandler();
 
-        // 书卷展示槽位：1 格，位置 (80, 35)
-        this.addSlot(new SlotItemHandler(handler, 0, 80, 35));
+        // 展示槽：原版 (115, 26)，仅可取出
+        this.addSlot(new SlotItemHandler(handler, TheEndlessBookOfDreamSeekersBlockEntity.SLOT_DISPLAY, 115, 26) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
+        // 导入槽：原版 (43, 26)
+        this.addSlot(new SlotItemHandler(handler, TheEndlessBookOfDreamSeekersBlockEntity.SLOT_IMPORT, 43, 26));
 
         // 玩家背包：3×9 网格，起始 (8, 84)
         for (int row = 0; row < 3; row++) {
@@ -79,6 +92,24 @@ public class TheEndlessBookOfDreamSeekersMenu extends AbstractContainerMenu {
         return blockEntity;
     }
 
+    /**
+     * 处理 GUI 按钮点击（服务端调用）
+     *
+     * @param player 点击按钮的玩家
+     * @param id     按钮 ID（{@link #BUTTON_IMPORT}）
+     * @return 是否处理了该按钮
+     */
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (id == BUTTON_IMPORT) {
+            if (!player.level().isClientSide()) {
+                this.blockEntity.importFromSlot();
+            }
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
@@ -87,12 +118,13 @@ public class TheEndlessBookOfDreamSeekersMenu extends AbstractContainerMenu {
             ItemStack stackInSlot = slot.getItem();
             itemstack = stackInSlot.copy();
 
-            if (index < 1) {
-                if (!this.moveItemStackTo(stackInSlot, 1, 37, true)) {
+            // 0-1 书卷槽 → 玩家；玩家 → 书卷（展示槽 mayPlace=false，只会进导入槽）
+            if (index < 2) {
+                if (!this.moveItemStackTo(stackInSlot, 2, 38, true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                if (!this.moveItemStackTo(stackInSlot, 0, 1, false)) {
+                if (!this.moveItemStackTo(stackInSlot, 0, 2, false)) {
                     return ItemStack.EMPTY;
                 }
             }

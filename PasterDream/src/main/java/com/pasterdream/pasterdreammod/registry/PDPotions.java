@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.registry;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.alchemy.Potion;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -48,4 +49,26 @@ public class PDPotions {
             POTIONS.register("expup_potion",
                     () -> new Potion(new MobEffectInstance(
                             PDEffects.EXPUP_BUFF.holder(), 3600, 0, false, true)));
+
+    /**
+     * 玄武药水 (basalt)
+     * <p>
+     * 缓慢 3 分钟 + 抗火 1 分钟 + 抗性提升 2 分钟（组合与时长与原版一致）。
+     */
+    public static final DeferredHolder<Potion, Potion> BASALT =
+            POTIONS.register("basalt",
+                    () -> new Potion(
+                            new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 3600, 0, false, true),
+                            new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 1200, 0, false, true),
+                            new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 2400, 0, false, true)));
+
+    /**
+     * 幻想乡药水 (fondillusion_potion)
+     * <p>
+     * 提供 3 分钟（3600 ticks）的幻想乡效果（高空云雾中触发风之旅途传送）。
+     */
+    public static final DeferredHolder<Potion, Potion> FONDILLUSION_POTION =
+            POTIONS.register("fondillusion_potion",
+                    () -> new Potion(new MobEffectInstance(
+                            PDEffects.FONDILLUSION_BUFF.holder(), 3600, 0, false, true)));
 }

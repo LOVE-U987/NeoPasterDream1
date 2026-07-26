@@ -98,6 +98,12 @@ public class TerrorbeakEntity extends GeckoLibMonsterEntity {
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
+        // 免疫判定优先：免疫的伤害类型（火焰/仙人掌/凋灵）不应触发咆哮技能
+        if (source.is(DamageTypes.IN_FIRE)) return false;
+        if (source.is(DamageTypes.CACTUS)) return false;
+        if (source.is(DamageTypes.WITHER)) return false;
+        if (source.is(DamageTypes.WITHER_SKULL)) return false;
+
         // 咆哮技能：受伤时触发
         if (!this.level().isClientSide() && this.isAlive()) {
             // 不处于沉默状态且冷却已过
@@ -121,14 +127,7 @@ public class TerrorbeakEntity extends GeckoLibMonsterEntity {
                 // 设置冷却（游戏内约10秒）
                 roarCooldown = 200;
             }
-
-            // 递减冷却
-            if (roarCooldown > 0) roarCooldown--;
         }
-        if (source.is(DamageTypes.IN_FIRE)) return false;
-        if (source.is(DamageTypes.CACTUS)) return false;
-        if (source.is(DamageTypes.WITHER)) return false;
-        if (source.is(DamageTypes.WITHER_SKULL)) return false;
         return super.hurt(source, amount);
     }
 
@@ -150,6 +149,10 @@ public class TerrorbeakEntity extends GeckoLibMonsterEntity {
     public void baseTick() {
         super.baseTick();
         this.refreshDimensions();
+        // 咆哮冷却每 tick 递减（服务端）—— 原先仅在 hurt() 内递减，长时间不受伤会导致冷却永不恢复
+        if (!this.level().isClientSide() && roarCooldown > 0) {
+            roarCooldown--;
+        }
     }
 
     @Override

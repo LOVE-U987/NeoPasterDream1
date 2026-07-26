@@ -1,4 +1,4 @@
-﻿{
+{
   "parent": "pasterdream:custom/shadow_dungeon_door",
   "textures": {
     "all": "pasterdream:block/shadow_dungeon_door",

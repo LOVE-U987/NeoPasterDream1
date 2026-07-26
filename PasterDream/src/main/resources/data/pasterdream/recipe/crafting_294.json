@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "pasterdream:windmoor_planks"
+    }
+  },
+  "result": {
+    "count": 6,
+    "id": "pasterdream:windmoor_slab"
+  }
+}

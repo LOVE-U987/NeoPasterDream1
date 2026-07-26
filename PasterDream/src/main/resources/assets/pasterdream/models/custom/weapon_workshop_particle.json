@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/weapon_workshop.item",
+  "textures": {
+    "particle": "pasterdream:block/weapon_workshop"
+  }
+}

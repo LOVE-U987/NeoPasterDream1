@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
+import com.pasterdream.pasterdreammod.util.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -8,7 +9,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -256,9 +256,7 @@ public class GoldenFoxEntity extends GeckoLibMobEntity {
      * @param dropPos     掉落物生成位置
      */
     private void scheduleDelayedReward(ServerLevel serverLevel, SacrificeType sacrifice, BlockPos pos, Vec3 dropPos) {
-        serverLevel.getServer().tell(new TickTask(
-                serverLevel.getServer().getTickCount() + 15,
-                () -> {
+        ServerScheduler.schedule(15, () -> {
                     switch (sacrifice) {
                         case GOLDEN_APPLE -> {
                             ItemStack reward = new ItemStack(Items.ENCHANTED_GOLDEN_APPLE);
@@ -290,8 +288,7 @@ public class GoldenFoxEntity extends GeckoLibMobEntity {
                     serverLevel.players().forEach(p ->
                             p.sendSystemMessage(Component.literal(
                                     "金色狐狸在完成了你许下的愿望之后消失了...")));
-                }
-        ));
+                });
     }
 
     /**

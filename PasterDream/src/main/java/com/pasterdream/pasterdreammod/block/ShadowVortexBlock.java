@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.block.entity.ShadowVortexBlockEntity;
+import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -66,11 +67,11 @@ public class ShadowVortexBlock extends BaseEntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(net.minecraft.world.level.Level level,
                                                                    BlockState state,
                                                                    BlockEntityType<T> blockEntityType) {
-        return (lvl, pos, st, blockEntity) -> {
-            if (blockEntity instanceof ShadowVortexBlockEntity vortexBlockEntity) {
-                vortexBlockEntity.tick();
-            }
-        };
+        // 漩涡 tick 均为服务端逻辑（伤害/粒子/生命周期），客户端不注册 ticker；
+        // createTickerHelper 在注册时完成一次类型匹配，避免每 tick 做 instanceof 判断
+        return level.isClientSide() ? null
+                : createTickerHelper(blockEntityType, PDBlockEntities.SHADOW_VORTEX.get(),
+                        (lvl, pos, st, vortex) -> vortex.tick());
     }
 
     @Override

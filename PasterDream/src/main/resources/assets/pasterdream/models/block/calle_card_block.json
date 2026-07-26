@@ -1,0 +1,9 @@
+{
+  "parent": "pasterdream:custom/calle_card_block",
+  "textures": {
+    "all": "pasterdream:block/calle_card_block",
+    "particle": "pasterdream:block/calle_card_block",
+    "0": "pasterdream:block/calle_card_block"
+  },
+  "render_type": "cutout"
+}

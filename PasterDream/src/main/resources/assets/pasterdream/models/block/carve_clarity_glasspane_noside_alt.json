@@ -1,0 +1,7 @@
+{
+  "parent": "block/template_glass_pane_noside_alt",
+  "textures": {
+    "pane": "pasterdream:block/carve_clarity_glass"
+  },
+  "render_type": "translucent"
+}

@@ -2,7 +2,6 @@ package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.block.entity.TheEndlessBookOfDreamSeekersBlockEntity;
-import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,8 +13,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -30,8 +27,8 @@ import java.util.List;
 
 /**
  * 寻梦者的永恒书卷方块 (The Endless Book of Dream Seekers)
- * 使用 GeckoLib 动画的展示方块，1 格库存，右键打开 GUI
- * 简化版本：无网络消息和导入按钮功能
+ * 使用 GeckoLib 动画的展示方块，2 格库存（展示+导入），右键打开 GUI；
+ * 导入经菜单 clickMenuButton，无自定义网络包。
  */
 public class TheEndlessBookOfDreamSeekersBlock extends BaseEntityBlock {
 
@@ -94,12 +91,8 @@ public class TheEndlessBookOfDreamSeekersBlock extends BaseEntityBlock {
         return new TheEndlessBookOfDreamSeekersBlockEntity(pos, state);
     }
 
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide() ? null : createTickerHelper(type, PDBlockEntities.THE_ENDLESS_BOOK_OF_DREAM_SEEKERS.get(),
-                (lvl, pos, st, be) -> {});
-    }
+    // 说明：本方块无逐 tick 逻辑（GeckoLib 动画由渲染器自行驱动），
+    // 因此不覆写 getTicker（默认返回 null，即不注册 ticker），避免注册空 ticker 浪费开销
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {

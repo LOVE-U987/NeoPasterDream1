@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pasterdream:block/feng_bo_mu_ban_",
+    "up": "pasterdream:block/feng_bo_mu_ban_",
+    "north": "pasterdream:block/feng_bo_mu_ban_",
+    "east": "pasterdream:block/feng_bo_mu_ban_",
+    "south": "pasterdream:block/feng_bo_mu_ban_",
+    "west": "pasterdream:block/feng_bo_mu_ban_",
+    "particle": "pasterdream:block/feng_bo_mu_ban_"
+  },
+  "render_type": "solid"
+}

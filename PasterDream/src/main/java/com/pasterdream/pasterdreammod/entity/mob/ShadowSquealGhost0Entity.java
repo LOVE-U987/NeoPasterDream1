@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.entity.mob;
 import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMonsterEntity;
 import com.pasterdream.pasterdreammod.entity.mob.ShadowGhostEntity;
 import com.pasterdream.pasterdreammod.entity.mob.ShadowSquealGhostEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.SquealWaveProjectileEntity;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
@@ -133,16 +134,14 @@ public class ShadowSquealGhost0Entity extends GeckoLibMonsterEntity implements R
     protected void registerGoals() {
         super.registerGoals();
 
-        // 近战攻击
-        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.2, false));
+        // 近战攻击（优先级 3，作为兜底手段 —— 原先与远程攻击同为 1，
+        // 同优先级竞争 MOVE/LOOK 标志会导致先启动的一方无法被另一方打断）
+        this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2, false));
 
-        // 远程攻击 Goal（冷却更短，5 tick 间隔）
-        this.goalSelector.addGoal(1, new ShadowSquealGhost0Entity.RangedAttackGoal(this, 1.25, 5, 16f) {
-            @Override
-            public boolean canContinueToUse() {
-                return this.canUse();
-            }
-        });
+        // 远程攻击 Goal（冷却更短，5 tick 间隔；优先级 1，远程是该实体的主要攻击方式）。
+        // 直接使用类内 canContinueToUse（vanilla 语义：目标存活或寻路未完成时继续），
+        // 原先匿名子类将其错误委托给 canUse()，导致目标短暂丢失时 Goal 反复停止/重启，攻击冷却被异常重置
+        this.goalSelector.addGoal(1, new ShadowSquealGhost0Entity.RangedAttackGoal(this, 1.25, 5, 16f));
 
         // 飞行追踪目标 Goal
         this.goalSelector.addGoal(2, new Goal() {
@@ -190,8 +189,8 @@ public class ShadowSquealGhost0Entity extends GeckoLibMonsterEntity implements R
             }
         });
 
-        // 三维随机飞行
-        this.goalSelector.addGoal(3, new RandomStrollGoal(this, 0.8, 20) {
+        // 三维随机飞行（优先级 4，低于近战攻击，攻击优先于闲逛）
+        this.goalSelector.addGoal(4, new RandomStrollGoal(this, 0.8, 20) {
             @Override
             protected Vec3 getPosition() {
                 RandomSource random = ShadowSquealGhost0Entity.this.getRandom();
@@ -202,8 +201,8 @@ public class ShadowSquealGhost0Entity extends GeckoLibMonsterEntity implements R
             }
         });
 
-        // 随机张望
-        this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
+        // 随机张望（顺延至 5，避免与随机飞行同优先级竞争 MOVE 标志）
+        this.goalSelector.addGoal(5, new RandomLookAroundGoal(this));
 
         // 目标选择器：反击 + 主动攻击玩家
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
@@ -312,17 +311,17 @@ public class ShadowSquealGhost0Entity extends GeckoLibMonsterEntity implements R
     /**
      * 执行远程攻击（发射音波弹）
      * <p>
-     * 注意：此方法需要 {@code SquealWaveProjectileEntity} 配合使用，
-     * 当前使用占位实现。实际 projectile 注册完成后请替换为：
-     * {@code SquealWaveProjectileEntity.shoot(this, target);}
+     * 与原版 mod ShadowSquealGhost0Entity#performRangedAttack 行为一致：
+     * 朝目标发射一枚声波弹（带弧线弹道，命中造成 0.5 点伤害，发射时播放 squeal_wave 音效），
+     * 与 {@link ShadowSquealGhostEntity} 使用同一发射逻辑。
      *
      * @param target 攻击目标
      * @param flval  速度修正系数
      */
     @Override
     public void performRangedAttack(LivingEntity target, float flval) {
-        // TODO: 替换为 SquealWaveProjectileEntity.shoot(this, target)
-        // 原模组引用 net.pasterdream.entity.SquealWaveProjectileEntity
+        // 发射声波弹（弹道/伤害/音效由 SquealWaveProjectileEntity.shoot 统一处理）
+        SquealWaveProjectileEntity.shoot(this, target);
     }
 
     // ======================== 受伤/免疫 ========================

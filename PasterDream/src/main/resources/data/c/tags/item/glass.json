@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:dyedream_glass",
+    "pasterdream:carve_dyedream_glass",
+    "pasterdream:gold_carve_dyedream_glass",
+    "pasterdream:clarity_glass",
+    "pasterdream:carve_clarity_glass",
+    "pasterdream:frame_clarity_glass"
+  ]
+}

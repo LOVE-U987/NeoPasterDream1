@@ -1,0 +1,26 @@
+{
+  "criteria": {
+    "achievement_hide_1": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pasterdream:crop_1a"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 0,
+    "loot": [
+      "pasterdream:gameplay/achievement_hide_1"
+    ]
+  }
+}

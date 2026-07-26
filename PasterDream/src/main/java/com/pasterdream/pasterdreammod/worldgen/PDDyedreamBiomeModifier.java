@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.worldgen;
 
 import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.registry.PDBiomes;
 import com.pasterdream.pasterdreammod.registry.PDPlacedFeatures;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -35,12 +36,6 @@ public class PDDyedreamBiomeModifier implements BiomeModifier {
     /** 染梦生物群系标签 ID —— 对应 data/pasterdream/tags/worldgen/biome/is_dyedream.json */
     private static final ResourceLocation DYEDREAM_BIOME_TAG =
             ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "is_dyedream");
-
-    /** 过渡群系 ResourceKey */
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_SHORE = ResourceKey.create(
-            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_shore"));
-    private static final ResourceKey<Biome> BIOME_DYEDREAM_DENSE_FOREST = ResourceKey.create(
-            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "biome_dyedream_dense_forest"));
 
     /** 过渡群系装饰物 ResourceKey */
     private static final ResourceKey<PlacedFeature> SHORE_SPIKE = ResourceKey.create(
@@ -110,10 +105,10 @@ public class PDDyedreamBiomeModifier implements BiomeModifier {
                 LOGGER.debug("[modify] --- 开始注入过渡群系装饰物 ---");
                 if (biomeKey.isPresent()) {
                     ResourceKey<Biome> key = biomeKey.get();
-                    if (BIOME_DYEDREAM_SHORE.equals(key)) {
+                    if (PDBiomes.BIOME_DYEDREAM_SHORE.equals(key)) {
                         addFeature(builder, GenerationStep.Decoration.SURFACE_STRUCTURES, placedFeatureLookup, SHORE_SPIKE);
                         addFeature(builder, GenerationStep.Decoration.SURFACE_STRUCTURES, placedFeatureLookup, SHORE_SCATTER);
-                    } else if (BIOME_DYEDREAM_DENSE_FOREST.equals(key)) {
+                    } else if (PDBiomes.BIOME_DYEDREAM_DENSE_FOREST.equals(key)) {
                         addFeature(builder, GenerationStep.Decoration.SURFACE_STRUCTURES, placedFeatureLookup, DENSE_FOREST_MUSHROOM);
                         addFeature(builder, GenerationStep.Decoration.SURFACE_STRUCTURES, placedFeatureLookup, DENSE_FOREST_CRYSTAL_SPIKE);
                     }

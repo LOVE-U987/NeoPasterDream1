@@ -4,7 +4,8 @@
     "plains",
     "pasterdream:biome_dyedream_0",
     "pasterdream:biome_dyedream_1",
-    "pasterdream:biome_dyedream_2"
+    "pasterdream:biome_dyedream_2",
+    "pasterdream:wind_journey_biome_0"
   ],
   "step": "surface_structures",
   "terrain_adaptation": "none",

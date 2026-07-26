@@ -1,0 +1,16 @@
+{
+  "sortnum": 0,
+  "name": "pasterdream.entry.aaroncos_arena_world",
+  "icon": "pasterdream:windrunner_crystal",
+  "category": "pasterdream:overview",
+  "pages": [
+    {
+      "type": "text",
+      "text": "pasterdream.entry.aaroncos_arena_world.page0"
+    },
+    {
+      "type": "text",
+      "text": "pasterdream.entry.aaroncos_arena_world.page1"
+    }
+  ]
+}

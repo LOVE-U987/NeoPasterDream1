@@ -1,0 +1,9 @@
+{
+  "parent": "pasterdream:custom/clay_pan_1",
+  "textures": {
+    "all": "pasterdream:block/clay_pan_1",
+    "particle": "pasterdream:block/clay_pan_break",
+    "0": "pasterdream:block/clay_pan_1"
+  },
+  "render_type": "translucent"
+}

@@ -11,12 +11,16 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * 用于寒冷冰雪生物群系，3帧冰晶银色粒子缓慢旋转上浮。
  * 犹如冰雪中的魔法冰晶，自旋发光，营造寒冷梦幻的氛围。
+ * <p>
+ * 尺寸行为：粒子存续期间 quadSize 每 tick 乘以 0.999，随寿命极缓慢缩小
+ * （整个生命周期约缩小 13%~20%），模拟冰晶逐渐升华消融的效果，属有意设计。
  */
 public class SilverParticle extends TextureSheetParticle {
 
     private final SpriteSet sprites;
     private float angularVelocity;
     private static final int FADE_IN_TICKS = 20;
+    private static final int FADE_OUT_TICKS = 40;
 
     /**
      * 构造银色粒子
@@ -53,7 +57,15 @@ public class SilverParticle extends TextureSheetParticle {
         }
 
         float ageRatio = (float) this.age / this.lifetime;
-        this.alpha = Math.min(1.0f, ageRatio * this.lifetime / FADE_IN_TICKS);
+
+        if (ageRatio < (float) FADE_IN_TICKS / this.lifetime) {
+            this.alpha = Math.min(1.0f, ageRatio * this.lifetime / FADE_IN_TICKS);
+        } else if (ageRatio > 1.0f - (float) FADE_OUT_TICKS / this.lifetime) {
+            // 生命周期尾段线性淡出，避免粒子在寿命结束被 remove() 时突兀消失
+            this.alpha = Math.max(0.0f, (1.0f - ageRatio) * this.lifetime / FADE_OUT_TICKS);
+        } else {
+            this.alpha = 1.0f;
+        }
 
         this.yd -= 0.04 * this.gravity;
 
@@ -64,6 +76,7 @@ public class SilverParticle extends TextureSheetParticle {
         this.oRoll = this.roll;
         this.roll += this.angularVelocity;
 
+        // 每 tick 轻微缩小，模拟冰晶缓慢升华消融（有意设计，详见类 Javadoc）
         this.quadSize *= 0.999f;
 
         this.move(this.xd, this.yd, this.zd);

@@ -1,0 +1,9 @@
+{
+  "type": "pasterdream:shadow_blasting",
+  "input_ingredient": {
+    "item": "minecraft:rose_bush"
+  },
+  "result": {
+    "id": "minecraft:wither_rose"
+  }
+}

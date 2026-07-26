@@ -106,11 +106,14 @@ public class PDItemsTools {
                     .attackDamage(11.0f).attackSpeed(-2.4f)
                     .enchantment(10)
                     .build();
+    /**
+     * 大地之刃 (terra_sword) — W2-D 战技接入
+     * 改用自定义 {@link TerraSwordItem}（属性与原 ItemAPI 注册逐项一致），
+     * 补上泰拉剑技：右键开启后 3 次挥剑各挥出一道大地之刃剑气
+     */
     public static final DeferredItem<Item> TERRA_SWORD =
-            ItemAPI.toolItem("terra_sword")
-                    .type(ToolType.SWORD).durability(1561)
-                    .attackDamage(8.0f).attackSpeed(-2.4f)
-                    .build();
+            PDItems.ITEMS.register("terra_sword",
+                    () -> new TerraSwordItem(new Item.Properties()));
     public static final DeferredItem<Item> THERMAL_DAGGER =
             ItemAPI.toolItem("thermal_dagger")
                     .type(ToolType.SWORD).durability(1721)
@@ -159,12 +162,14 @@ public class PDItemsTools {
                     .attackDamage(6.0f).attackSpeed(-2.15f)
                     .enchantment(23)
                     .build();
+    /**
+     * 白色灾厄 (white_sword) — W2-D 战技接入
+     * 改用自定义 {@link WhiteSwordItem}（属性与原 ItemAPI 注册逐项一致，按原版补 fireResistant），
+     * 补上白厄剑雨：右键在视点落点召唤 8 轮下落光剑
+     */
     public static final DeferredItem<Item> WHITE_SWORD =
-            ItemAPI.toolItem("white_sword")
-                    .type(ToolType.SWORD).durability(1771)
-                    .attackDamage(8.0f).attackSpeed(-2.4f)
-                    .enchantment(10)
-                    .build();
+            PDItems.ITEMS.register("white_sword",
+                    () -> new WhiteSwordItem(new Item.Properties()));
 
 
     // ==================== 镐类/锤类工具 ====================

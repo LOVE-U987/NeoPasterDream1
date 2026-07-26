@@ -1,0 +1,11 @@
+{
+  "criteria": {
+    "achievement_shadow_npc_5": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "parent": "pasterdream:achievement_shadow_npc_4"
+}

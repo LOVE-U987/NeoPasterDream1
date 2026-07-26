@@ -19,6 +19,8 @@ public class LeavesParticle extends TextureSheetParticle {
     private int groundTicks;
 
     private static final int MAX_GROUND_TICKS = 60;
+    /** 生命周期尾段淡出比例：寿命最后 20% 内 alpha 线性降为 0，避免突兀消失 */
+    private static final float FADE_OUT_RATIO = 0.2f;
 
     /**
      * 构造落叶粒子
@@ -73,7 +75,8 @@ public class LeavesParticle extends TextureSheetParticle {
                 return;
             }
             float fadeRatio = 1.0f - (float) this.groundTicks / MAX_GROUND_TICKS;
-            this.alpha = Math.max(0.0f, fadeRatio);
+            // 与当前 alpha 取较小值：若在空中尾段淡出过程中落地，避免透明度向上回跳
+            this.alpha = Math.min(this.alpha, Math.max(0.0f, fadeRatio));
             this.setSpriteFromAge(this.sprites);
             return;
         }
@@ -91,7 +94,12 @@ public class LeavesParticle extends TextureSheetParticle {
 
         this.move(this.xd, this.yd, this.zd);
 
-        this.alpha = Math.min(1.0f, ageRatio * 5.0f);
+        if (ageRatio > 1.0f - FADE_OUT_RATIO) {
+            // 生命周期尾段线性淡出，避免落叶在寿命耗尽被 remove() 时突兀消失
+            this.alpha = Math.max(0.0f, (1.0f - ageRatio) / FADE_OUT_RATIO);
+        } else {
+            this.alpha = Math.min(1.0f, ageRatio * 5.0f);
+        }
 
         this.setSpriteFromAge(this.sprites);
     }

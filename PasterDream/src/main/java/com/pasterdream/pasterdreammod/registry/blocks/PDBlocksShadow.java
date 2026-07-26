@@ -212,4 +212,20 @@ public class PDBlocksShadow {
             IronBarsBlock::new, BlockBehaviour.Properties.of()
                     .sound(SoundType.WOOD)
                     .strength(2.0f, 3.0f));
+
+    // ==================== 阴影维度植被与流体 ====================
+
+    /**
+     * 阴影蘑菇（世界生成硬依赖：configured_feature/shadow_fungus 引用）
+     * 只能种植在阴影菌丝上；骨粉/randomTick 放置 shadow_fungustree_0..7
+     */
+    public static final DeferredBlock<ShadowFungusBlock> SHADOW_FUNGUS = PDBlocks.BLOCKS.registerBlock("shadow_fungus",
+            ShadowFungusBlock::new, ShadowFungusBlock.createProperties());
+
+    /**
+     * 熔融阴影流体方块（世界生成硬依赖：ground_feature_shadow_0 湖泊特征引用）
+     * 完整流体族见 {@link com.pasterdream.pasterdreammod.fluid.ShadowLiquidFluid}
+     */
+    public static final DeferredBlock<ShadowLiquidBlock> SHADOW_LIQUID = PDBlocks.BLOCKS.registerBlock("shadow_liquid",
+            p -> new ShadowLiquidBlock());
 }

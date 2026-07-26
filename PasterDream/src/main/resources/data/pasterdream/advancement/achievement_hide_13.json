@@ -1,0 +1,21 @@
+{
+  "criteria": {
+    "achievement_hide_13": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pasterdream:blueprint_0"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "pasterdream:achievement_hide_12"
+}

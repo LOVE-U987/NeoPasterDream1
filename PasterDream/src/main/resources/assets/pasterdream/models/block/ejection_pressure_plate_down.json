@@ -1,0 +1,7 @@
+{
+  "parent": "block/pressure_plate_down",
+  "textures": {
+    "texture": "pasterdream:block/dan_she_ya_li_ban_"
+  },
+  "render_type": "cutout"
+}

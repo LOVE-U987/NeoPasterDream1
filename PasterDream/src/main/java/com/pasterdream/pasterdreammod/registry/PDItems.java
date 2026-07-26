@@ -92,6 +92,11 @@ public class PDItems {
     public static final DeferredItem<?> FIG = PDItemsFunctional.FIG;
     public static final DeferredItem<?> GLASSJAR = PDItemsFunctional.GLASSJAR;
     public static final DeferredItem<?> GUIDING_DRUG = PDItemsFunctional.GUIDING_DRUG;
+    public static final DeferredItem<?> LIGHTNING_SPELL = PDItemsFunctional.LIGHTNING_SPELL;
+    public static final DeferredItem<?> POISON_SPELL = PDItemsFunctional.POISON_SPELL;
+    public static final DeferredItem<?> HEALING_SPELL = PDItemsFunctional.HEALING_SPELL;
+    public static final DeferredItem<?> FURY_SPELL = PDItemsFunctional.FURY_SPELL;
+    public static final DeferredItem<?> ICE_SPELL = PDItemsFunctional.ICE_SPELL;
     public static final DeferredItem<?> HEART_CHOCOLATE_0 = PDItemsFunctional.HEART_CHOCOLATE_0;
     public static final DeferredItem<?> HEART_CHOCOLATE_1 = PDItemsFunctional.HEART_CHOCOLATE_1;
     public static final DeferredItem<?> HEART_CHOCOLATE_2 = PDItemsFunctional.HEART_CHOCOLATE_2;
@@ -384,6 +389,37 @@ public class PDItems {
     public static final DeferredItem<?> SHADOW_FISSURE_4 = PDItemsBlocks.SHADOW_FISSURE_4;
     public static final DeferredItem<?> SHADOW_FISSURE_5 = PDItemsBlocks.SHADOW_FISSURE_5;
 
+    // 染梦维度 Phase2 方块物品
+    public static final DeferredItem<?> BIG_BUBBLE = PDItemsBlocks.BIG_BUBBLE;
+    public static final DeferredItem<?> WINDRUNNER_CRYSTAL_BLOCK = PDItemsBlocks.WINDRUNNER_CRYSTAL_BLOCK;
+    public static final DeferredItem<?> CONGEAL_WIND_BLOCK = PDItemsBlocks.CONGEAL_WIND_BLOCK;
+    public static final DeferredItem<?> STARCALL_BLOCK = PDItemsBlocks.STARCALL_BLOCK;
+    public static final DeferredItem<?> STARCALL_CRACK = PDItemsBlocks.STARCALL_CRACK;
+    public static final DeferredItem<?> CYAN_STONE = PDItemsBlocks.CYAN_STONE;
+    public static final DeferredItem<?> CYAN_MOSS_STONE = PDItemsBlocks.CYAN_MOSS_STONE;
+    public static final DeferredItem<?> WHITE_SAND = PDItemsBlocks.WHITE_SAND;
+    public static final DeferredItem<?> SALT_BLOCK = PDItemsBlocks.SALT_BLOCK;
+    public static final DeferredItem<?> CLARITY_GLASS = PDItemsBlocks.CLARITY_GLASS;
+    public static final DeferredItem<?> CARVE_CLARITY_GLASS = PDItemsBlocks.CARVE_CLARITY_GLASS;
+    public static final DeferredItem<?> FRAME_CLARITY_GLASS = PDItemsBlocks.FRAME_CLARITY_GLASS;
+    public static final DeferredItem<?> CLARITY_GLASSPANE = PDItemsBlocks.CLARITY_GLASSPANE;
+    public static final DeferredItem<?> CARVE_CLARITY_GLASSPANE = PDItemsBlocks.CARVE_CLARITY_GLASSPANE;
+    public static final DeferredItem<?> FRAME_CLARITY_GLASSPANE = PDItemsBlocks.FRAME_CLARITY_GLASSPANE;
+    public static final DeferredItem<?> BREAKWIND_CURTAIN = PDItemsBlocks.BREAKWIND_CURTAIN;
+    public static final DeferredItem<?> WINDIRON_BARS = PDItemsBlocks.WINDIRON_BARS;
+    public static final DeferredItem<?> CYAN_STONE_BRICKS = PDItemsBlocks.CYAN_STONE_BRICKS;
+    public static final DeferredItem<?> CYAN_STONE_BRICK_STAIRS = PDItemsBlocks.CYAN_STONE_BRICK_STAIRS;
+    public static final DeferredItem<?> CYAN_STONE_BRICK_SLAB = PDItemsBlocks.CYAN_STONE_BRICK_SLAB;
+    public static final DeferredItem<?> CYAN_STONE_BRICK_WALL = PDItemsBlocks.CYAN_STONE_BRICK_WALL;
+    public static final DeferredItem<?> MOSSY_CYAN_STONE_BRICKS = PDItemsBlocks.MOSSY_CYAN_STONE_BRICKS;
+    public static final DeferredItem<?> MOSSY_CYAN_STONE_BRICK_STAIRS = PDItemsBlocks.MOSSY_CYAN_STONE_BRICK_STAIRS;
+    public static final DeferredItem<?> MOSSY_CYAN_STONE_BRICK_SLAB = PDItemsBlocks.MOSSY_CYAN_STONE_BRICK_SLAB;
+    public static final DeferredItem<?> MOSSY_CYAN_STONE_BRICK_WALL = PDItemsBlocks.MOSSY_CYAN_STONE_BRICK_WALL;
+    public static final DeferredItem<?> CHISELED_CYAN_STONE_BRICKS = PDItemsBlocks.CHISELED_CYAN_STONE_BRICKS;
+    public static final DeferredItem<?> CYAN_STONE_PILLAR = PDItemsBlocks.CYAN_STONE_PILLAR;
+    public static final DeferredItem<?> CYAN_STONE_PRESSURE_PLATE = PDItemsBlocks.CYAN_STONE_PRESSURE_PLATE;
+    public static final DeferredItem<?> CYAN_STONE_BUTTON = PDItemsBlocks.CYAN_STONE_BUTTON;
+
     // --- PDItemsSpawnEggs ---
     public static final DeferredItem<?> SHADOW_GOLEM_SPAWN_EGG = PDItemsSpawnEggs.SHADOW_GOLEM_SPAWN_EGG;
     public static final DeferredItem<?> PINK_SLIME_SPAWN_EGG = PDItemsSpawnEggs.PINK_SLIME_SPAWN_EGG;
@@ -416,6 +452,8 @@ public class PDItems {
     public static final DeferredItem<?> SPORE_ENTITY_SPAWN_EGG = PDItemsSpawnEggs.SPORE_ENTITY_SPAWN_EGG;
     public static final DeferredItem<?> AARONCOS_LEFTHAND_0_SPAWN_EGG = PDItemsSpawnEggs.AARONCOS_LEFTHAND_0_SPAWN_EGG;
     public static final DeferredItem<?> AARONCOS_RIGHTHAND_0_SPAWN_EGG = PDItemsSpawnEggs.AARONCOS_RIGHTHAND_0_SPAWN_EGG;
+    public static final DeferredItem<?> TERRASWORD_WAVE_SPAWN_EGG = PDItemsSpawnEggs.TERRASWORD_WAVE_SPAWN_EGG;
+    public static final DeferredItem<?> HEALING_SPELL_ENTITY_SPAWN_EGG = PDItemsSpawnEggs.HEALING_SPELL_ENTITY_SPAWN_EGG;
 
     // --- PDItemsMaterials ---
     public static final DeferredItem<?> TITANIUM_INGOT = PDItemsMaterials.TITANIUM_INGOT;
@@ -564,6 +602,7 @@ public class PDItems {
     public static final DeferredItem<?> CHOCOLATE_MATCHA_CAKE = PDItemsFoods.CHOCOLATE_MATCHA_CAKE;
     public static final DeferredItem<?> CREAM_BUNCAKE = PDItemsFoods.CREAM_BUNCAKE;
     public static final DeferredItem<?> DREAM_COTTON_CANDY = PDItemsFoods.DREAM_COTTON_CANDY;
+    public static final DeferredItem<?> YINHUL_COTTON_CANDY = PDItemsFoods.YINHUL_COTTON_CANDY;
     public static final DeferredItem<?> DYEDREAM_FLOWER_TEA = PDItemsFoods.DYEDREAM_FLOWER_TEA;
     public static final DeferredItem<?> DYEDREAM_FRUIT_BUNCAKE = PDItemsFoods.DYEDREAM_FRUIT_BUNCAKE;
     public static final DeferredItem<?> DYEDREAM_JUICE = PDItemsFoods.DYEDREAM_JUICE;
@@ -683,5 +722,211 @@ public class PDItems {
     public static final DeferredItem<?> QIN_ARMOR_CHESTPLATE = PDItemsArmor.QIN_ARMOR_CHESTPLATE;
     public static final DeferredItem<?> QIN_ARMOR_LEGGINGS = PDItemsArmor.QIN_ARMOR_LEGGINGS;
     public static final DeferredItem<?> QIN_ARMOR_BOOTS = PDItemsArmor.QIN_ARMOR_BOOTS;
+
+    // ==================== [分区S] 暗影方块族物品 re-export（在此分区内追加） ====================
+
+    // --- 波次C：阴影植被 / 熔融阴影流体 ---
+    public static final DeferredItem<?> SHADOW_FUNGUS = PDItemsBlocks.SHADOW_FUNGUS;
+    public static final DeferredItem<?> SHADOW_LIQUID_BUCKET = PDItemsBlocks.SHADOW_LIQUID_BUCKET;
+
+    // --- 波次C：风泊木族 ---
+    public static final DeferredItem<?> WINDMOOR_LOG = PDItemsBlocks.WINDMOOR_LOG;
+    public static final DeferredItem<?> WINDMOOR_WOOD = PDItemsBlocks.WINDMOOR_WOOD;
+    public static final DeferredItem<?> STRIPPED_WINDMOOR_LOG = PDItemsBlocks.STRIPPED_WINDMOOR_LOG;
+    public static final DeferredItem<?> STRIPPED_WINDMOOR_WOOD = PDItemsBlocks.STRIPPED_WINDMOOR_WOOD;
+    public static final DeferredItem<?> WINDMOOR_PLANKS = PDItemsBlocks.WINDMOOR_PLANKS;
+    public static final DeferredItem<?> WINDMOOR_STAIRS = PDItemsBlocks.WINDMOOR_STAIRS;
+    public static final DeferredItem<?> WINDMOOR_SLAB = PDItemsBlocks.WINDMOOR_SLAB;
+    public static final DeferredItem<?> WINDMOOR_FENCE = PDItemsBlocks.WINDMOOR_FENCE;
+    public static final DeferredItem<?> WINDMOOR_FENCE_GATE = PDItemsBlocks.WINDMOOR_FENCE_GATE;
+    public static final DeferredItem<?> WINDMOOR_DOOR = PDItemsBlocks.WINDMOOR_DOOR;
+    public static final DeferredItem<?> WINDMOOR_TRAPDOOR = PDItemsBlocks.WINDMOOR_TRAPDOOR;
+    public static final DeferredItem<?> WINDMOOR_PRESSURE_PLATE = PDItemsBlocks.WINDMOOR_PRESSURE_PLATE;
+    public static final DeferredItem<?> WINDMOOR_BUTTON = PDItemsBlocks.WINDMOOR_BUTTON;
+    public static final DeferredItem<?> WINDMOOR_LEAVES_0 = PDItemsBlocks.WINDMOOR_LEAVES_0;
+    public static final DeferredItem<?> WINDMOOR_LEAVES_1 = PDItemsBlocks.WINDMOOR_LEAVES_1;
+    public static final DeferredItem<?> WINDMOOR_LEAVES_2 = PDItemsBlocks.WINDMOOR_LEAVES_2;
+
+    // --- 波次C：锈黑金属族 / 甲胄残骸族 / 弹射装置 / 风之旅地表 ---
+    public static final DeferredItem<?> RUST_BLACK_METAL_BLOCK = PDItemsBlocks.RUST_BLACK_METAL_BLOCK;
+    public static final DeferredItem<?> RUST_BLACK_METAL_BLOCK_WALL = PDItemsBlocks.RUST_BLACK_METAL_BLOCK_WALL;
+    public static final DeferredItem<?> RUST_BLACK_METAL_BLOCK_BARS = PDItemsBlocks.RUST_BLACK_METAL_BLOCK_BARS;
+    public static final DeferredItem<?> ARMOR_WRECK_BLOCK_0 = PDItemsBlocks.ARMOR_WRECK_BLOCK_0;
+    public static final DeferredItem<?> ARMOR_WRECK_BLOCK_1 = PDItemsBlocks.ARMOR_WRECK_BLOCK_1;
+    public static final DeferredItem<?> ARMOR_WRECK_BLOCK_2 = PDItemsBlocks.ARMOR_WRECK_BLOCK_2;
+    public static final DeferredItem<?> ARMOR_WRECK_BLOCK_3 = PDItemsBlocks.ARMOR_WRECK_BLOCK_3;
+    public static final DeferredItem<?> ARMOR_WRECK_BLOCK_4 = PDItemsBlocks.ARMOR_WRECK_BLOCK_4;
+    public static final DeferredItem<?> EJECTION_PRESSURE_BLOCK = PDItemsBlocks.EJECTION_PRESSURE_BLOCK;
+    public static final DeferredItem<?> EJECTION_PRESSURE_PLATE = PDItemsBlocks.EJECTION_PRESSURE_PLATE;
+    public static final DeferredItem<?> ANGEL_BLOCK = PDItemsBlocks.ANGEL_BLOCK;
+    public static final DeferredItem<?> BONE_WING_FIRE_BALL = PDItemsFunctional.BONE_WING_FIRE_BALL;
+    public static final DeferredItem<?> DREAMHARP_OF_WANDERER = PDItemsFunctional.DREAMHARP_OF_WANDERER;
+    public static final DeferredItem<?> PASTER_BLOCK_RESET_TOOL = PDItemsFunctional.PASTER_BLOCK_RESET_TOOL;
+    public static final DeferredItem<?> SHADOW_HAND_LANTERN = PDItemsFunctional.SHADOW_HAND_LANTERN;
+    public static final DeferredItem<?> STORAGE_BAG = PDItemsFunctional.STORAGE_BAG;
+    public static final DeferredItem<?> STORAGE_BAG_0 = PDItemsFunctional.STORAGE_BAG_0;
+    public static final DeferredItem<?> WIND_VANE = PDItemsFunctional.WIND_VANE;
+    public static final DeferredItem<?> FIREFLY_NEST = PDItemsBlocks.FIREFLY_NEST;
+    public static final DeferredItem<?> SMALL_STONE_SPIRIT_BLOCK = PDItemsBlocks.SMALL_STONE_SPIRIT_BLOCK;
+
+    // --- 波次C：杂项补全 ---
+    public static final DeferredItem<?> LIGHTBALL = PDItemsBlocks.LIGHTBALL;
+    public static final DeferredItem<?> CLAY_POT_0 = PDItemsBlocks.CLAY_POT_0;
+    public static final DeferredItem<?> CLAYPAN_0 = PDItemsBlocks.CLAYPAN_0;
+    public static final DeferredItem<?> CLAYPAN_2 = PDItemsBlocks.CLAYPAN_2;
+    public static final DeferredItem<?> CALLE_CARD_BLOCK = PDItemsBlocks.CALLE_CARD_BLOCK;
+    public static final DeferredItem<?> CHRISTMAS_LIGHTS = PDItemsBlocks.CHRISTMAS_LIGHTS;
+    public static final DeferredItem<?> DREAM_SPAWNER_1 = PDItemsBlocks.DREAM_SPAWNER_1;
+    public static final DeferredItem<?> CROP_0B = PDItemsBlocks.CROP_0B;
+    public static final DeferredItem<?> CROP_1B = PDItemsBlocks.CROP_1B;
+    public static final DeferredItem<?> CROP_2B = PDItemsBlocks.CROP_2B;
+    public static final DeferredItem<?> CROP_3B = PDItemsBlocks.CROP_3B;
+    public static final DeferredItem<?> CROP_4B = PDItemsBlocks.CROP_4B;
+    public static final DeferredItem<?> JUNGLE_SPORE_PLANT = PDItemsBlocks.JUNGLE_SPORE_PLANT;
+    public static final DeferredItem<?> FOURLEAF_CLOVER = PDItemsBlocks.FOURLEAF_CLOVER;
+    public static final DeferredItem<?> FIG_VINE = PDItemsBlocks.FIG_VINE;
+    public static final DeferredItem<?> MEMENTO_ITEM_11 = PDItemsBlocks.MEMENTO_ITEM_11;
+
+    // ==================== [分区M] 杂项补全物品 re-export（在此分区内追加） ====================
+
+    // --- PDItemsFunctional（杂项补全：功能物品） ---
+    public static final DeferredItem<?> TIME_HOURGLASS = PDItemsFunctional.TIME_HOURGLASS;
+    public static final DeferredItem<?> CALLE_CARD_0 = PDItemsFunctional.CALLE_CARD_0;
+    public static final DeferredItem<?> CALLE_CARD_1 = PDItemsFunctional.CALLE_CARD_1;
+    public static final DeferredItem<?> CALLE_CARD_2 = PDItemsFunctional.CALLE_CARD_2;
+    public static final DeferredItem<?> CALLE_CARD_3 = PDItemsFunctional.CALLE_CARD_3;
+    public static final DeferredItem<?> CALLE_CARD_4 = PDItemsFunctional.CALLE_CARD_4;
+    public static final DeferredItem<?> CALLE_CARD_5 = PDItemsFunctional.CALLE_CARD_5;
+    public static final DeferredItem<?> CALLE_CARD_6 = PDItemsFunctional.CALLE_CARD_6;
+    public static final DeferredItem<?> CALLE_CARD_7 = PDItemsFunctional.CALLE_CARD_7;
+    public static final DeferredItem<?> CALLE_CARD_8 = PDItemsFunctional.CALLE_CARD_8;
+    public static final DeferredItem<?> CALLE_CARD_9 = PDItemsFunctional.CALLE_CARD_9;
+    public static final DeferredItem<?> DEEP_TREASURE_0 = PDItemsFunctional.DEEP_TREASURE_0;
+    public static final DeferredItem<?> DEEP_TREASURE_1 = PDItemsFunctional.DEEP_TREASURE_1;
+    public static final DeferredItem<?> DREAMJUICE = PDItemsFunctional.DREAMJUICE;
+    public static final DeferredItem<?> TURN_PALE_CECILIA = PDItemsFunctional.TURN_PALE_CECILIA;
+    public static final DeferredItem<?> EXCAVATOR = PDItemsFunctional.EXCAVATOR;
+    public static final DeferredItem<?> LOOTSTABLE_CREATE_0 = PDItemsFunctional.LOOTSTABLE_CREATE_0;
+    public static final DeferredItem<?> LOOTSTABLE_CREATE_1 = PDItemsFunctional.LOOTSTABLE_CREATE_1;
+    public static final DeferredItem<?> LOOTSTABLE_CREATE_2 = PDItemsFunctional.LOOTSTABLE_CREATE_2;
+    public static final DeferredItem<?> LOOTSTABLE_CREATE_3 = PDItemsFunctional.LOOTSTABLE_CREATE_3;
+    public static final DeferredItem<?> LOOTSTABLE_CREATE_4 = PDItemsFunctional.LOOTSTABLE_CREATE_4;
+    public static final DeferredItem<?> LOOTSTABLE_CREATE_5 = PDItemsFunctional.LOOTSTABLE_CREATE_5;
+    public static final DeferredItem<?> LOOTSTABLE_CREATE_6 = PDItemsFunctional.LOOTSTABLE_CREATE_6;
+    public static final DeferredItem<?> LOOTSTABLE_CREATE_7 = PDItemsFunctional.LOOTSTABLE_CREATE_7;
+    public static final DeferredItem<?> LOOTSTABLE_CREATE_8 = PDItemsFunctional.LOOTSTABLE_CREATE_8;
+    public static final DeferredItem<?> LOOTSTABLE_CREATE_9 = PDItemsFunctional.LOOTSTABLE_CREATE_9;
+    public static final DeferredItem<?> ROOTS_PALE_BONENEEDLE = PDItemsFunctional.ROOTS_PALE_BONENEEDLE;
+
+    // --- PDItemsMaterials（杂项补全：简单物品） ---
+    public static final DeferredItem<?> TABITEM_1 = PDItemsMaterials.TABITEM_1;
+    public static final DeferredItem<?> TABITEM_2 = PDItemsMaterials.TABITEM_2;
+    public static final DeferredItem<?> TALENT_LIGHT = PDItemsMaterials.TALENT_LIGHT;
+    public static final DeferredItem<?> TALENT_SHADOW = PDItemsMaterials.TALENT_SHADOW;
+    public static final DeferredItem<?> LIGHTNING_ITEM = PDItemsMaterials.LIGHTNING_ITEM;
+    public static final DeferredItem<?> SHADOW_VORTEX_ITEM = PDItemsMaterials.SHADOW_VORTEX_ITEM;
+    public static final DeferredItem<?> DREAM_WAND_EMBRYO = PDItemsMaterials.DREAM_WAND_EMBRYO;
+
+    // --- PDItemsFunctional（法杖武器 W2-D） ---
+    public static final DeferredItem<?> DREAM_WAND = PDItemsFunctional.DREAM_WAND;
+    public static final DeferredItem<?> MANA_WAND = PDItemsFunctional.MANA_WAND;
+    public static final DeferredItem<?> MOLTENGOLD_WAND = PDItemsFunctional.MOLTENGOLD_WAND;
+    public static final DeferredItem<?> TRUE_MOLTENGOLD_WAND = PDItemsFunctional.TRUE_MOLTENGOLD_WAND;
+    public static final DeferredItem<?> TRUEST_MOLTENGOLD_WAND = PDItemsFunctional.TRUEST_MOLTENGOLD_WAND;
+    public static final DeferredItem<?> SQUEAL_WAVE_WAND = PDItemsFunctional.SQUEAL_WAVE_WAND;
+    public static final DeferredItem<?> STAR_WISH_ROD = PDItemsFunctional.STAR_WISH_ROD;
+    public static final DeferredItem<?> SHADOW_VORTEX_BOOK = PDItemsFunctional.SHADOW_VORTEX_BOOK;
+    public static final DeferredItem<?> WHITE_SWORD_RAIN = PDItemsFunctional.WHITE_SWORD_RAIN;
+
+    // ==================== [分区W] 武器工坊物品 re-export（在此分区内追加） ====================
+
+    // --- PDItemsBlocks（武器工坊群 BlockItem） ---
+    public static final DeferredItem<?> WEAPON_TABLE = PDItemsBlocks.WEAPON_TABLE;
+    public static final DeferredItem<?> WEAPON_WORKSHOP = PDItemsBlocks.WEAPON_WORKSHOP;
+    public static final DeferredItem<?> WORKSHOP_CAULDEON = PDItemsBlocks.WORKSHOP_CAULDEON;
+    public static final DeferredItem<?> WORKSHOP_BLAST = PDItemsBlocks.WORKSHOP_BLAST;
+    public static final DeferredItem<?> WORKSHOP_ANVIL = PDItemsBlocks.WORKSHOP_ANVIL;
+    public static final DeferredItem<?> WORKSHOP_GRIND = PDItemsBlocks.WORKSHOP_GRIND;
+
+    // --- PDItemsFunctional（蓝图物品） ---
+    public static final DeferredItem<?> BLUEPRINT_0 = PDItemsFunctional.BLUEPRINT_0;
+    public static final DeferredItem<?> BLUEPRINT_1 = PDItemsFunctional.BLUEPRINT_1;
+
+    // ==================== [分区R] 研究台组 re-export（在此分区内追加） ====================
+
+    // --- PDItemsBlocks（研究台组 BlockItem） ---
+    public static final DeferredItem<?> RESEARCH_TABLE = PDItemsBlocks.RESEARCH_TABLE;
+    public static final DeferredItem<?> SHADOW_BLAST_FURNACE = PDItemsBlocks.SHADOW_BLAST_FURNACE;
+    public static final DeferredItem<?> FORCED_TOWER = PDItemsBlocks.FORCED_TOWER;
+    public static final DeferredItem<?> DREAM_SPAWNER_0 = PDItemsBlocks.DREAM_SPAWNER_0;
+
+    // --- 寻梦者笔记分区 ---
+    public static final DeferredItem<?> DREAMNOTES_0 = PDItemsDreamnotes.DREAMNOTES_0;
+    public static final DeferredItem<?> DREAMNOTES_1 = PDItemsDreamnotes.DREAMNOTES_1;
+    public static final DeferredItem<?> DREAMNOTES_2 = PDItemsDreamnotes.DREAMNOTES_2;
+    public static final DeferredItem<?> DREAMNOTES_3 = PDItemsDreamnotes.DREAMNOTES_3;
+    public static final DeferredItem<?> DREAMNOTES_4 = PDItemsDreamnotes.DREAMNOTES_4;
+    public static final DeferredItem<?> DREAMNOTES_5 = PDItemsDreamnotes.DREAMNOTES_5;
+    public static final DeferredItem<?> DREAMNOTES_6 = PDItemsDreamnotes.DREAMNOTES_6;
+    public static final DeferredItem<?> DREAMNOTES_7 = PDItemsDreamnotes.DREAMNOTES_7;
+    public static final DeferredItem<?> DREAMNOTES_8 = PDItemsDreamnotes.DREAMNOTES_8;
+    public static final DeferredItem<?> DREAMNOTES_9 = PDItemsDreamnotes.DREAMNOTES_9;
+    public static final DeferredItem<?> DREAMNOTES_10 = PDItemsDreamnotes.DREAMNOTES_10;
+    public static final DeferredItem<?> DREAMNOTES_11 = PDItemsDreamnotes.DREAMNOTES_11;
+    public static final DeferredItem<?> DREAMNOTES_12 = PDItemsDreamnotes.DREAMNOTES_12;
+    public static final DeferredItem<?> DREAMNOTES_13 = PDItemsDreamnotes.DREAMNOTES_13;
+    public static final DeferredItem<?> DREAMNOTES_14 = PDItemsDreamnotes.DREAMNOTES_14;
+
+    // ==================== [分区F] 容器/家具/杂项方块物品（W4） re-export ====================
+
+    public static final DeferredItem<?> STRUCTURE_BLOCK_0 = PDItemsFurniture.STRUCTURE_BLOCK_0;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_1 = PDItemsFurniture.STRUCTURE_BLOCK_1;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_2 = PDItemsFurniture.STRUCTURE_BLOCK_2;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_3 = PDItemsFurniture.STRUCTURE_BLOCK_3;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_4 = PDItemsFurniture.STRUCTURE_BLOCK_4;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_5 = PDItemsFurniture.STRUCTURE_BLOCK_5;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_6 = PDItemsFurniture.STRUCTURE_BLOCK_6;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_7 = PDItemsFurniture.STRUCTURE_BLOCK_7;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_8 = PDItemsFurniture.STRUCTURE_BLOCK_8;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_9 = PDItemsFurniture.STRUCTURE_BLOCK_9;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_10 = PDItemsFurniture.STRUCTURE_BLOCK_10;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_11 = PDItemsFurniture.STRUCTURE_BLOCK_11;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_12 = PDItemsFurniture.STRUCTURE_BLOCK_12;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_13 = PDItemsFurniture.STRUCTURE_BLOCK_13;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_14 = PDItemsFurniture.STRUCTURE_BLOCK_14;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_15 = PDItemsFurniture.STRUCTURE_BLOCK_15;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_16 = PDItemsFurniture.STRUCTURE_BLOCK_16;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_17 = PDItemsFurniture.STRUCTURE_BLOCK_17;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_18 = PDItemsFurniture.STRUCTURE_BLOCK_18;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_19 = PDItemsFurniture.STRUCTURE_BLOCK_19;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_20 = PDItemsFurniture.STRUCTURE_BLOCK_20;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_21 = PDItemsFurniture.STRUCTURE_BLOCK_21;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_22 = PDItemsFurniture.STRUCTURE_BLOCK_22;
+    public static final DeferredItem<?> STRUCTURE_BLOCK_23 = PDItemsFurniture.STRUCTURE_BLOCK_23;
+    public static final DeferredItem<?> WIND_KNIGHT_SPAWNBLOCK_0 = PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_0;
+    public static final DeferredItem<?> WIND_KNIGHT_SPAWNBLOCK_1 = PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_1;
+    public static final DeferredItem<?> WIND_KNIGHT_SPAWNBLOCK_2 = PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_2;
+    public static final DeferredItem<?> WIND_KNIGHT_SPAWNBLOCK_3 = PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_3;
+    public static final DeferredItem<?> WIND_KNIGHT_SPAWNBLOCK_4 = PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_4;
+    public static final DeferredItem<?> ECOLOGY_GLASS_JAR = PDItemsFurniture.ECOLOGY_GLASS_JAR;
+    public static final DeferredItem<?> FIREFLY_GLASS_JAR = PDItemsFurniture.FIREFLY_GLASS_JAR;
+    public static final DeferredItem<?> LIGHT_FIREFLY_GLASS_JAR = PDItemsFurniture.LIGHT_FIREFLY_GLASS_JAR;
+    public static final DeferredItem<?> PICNIC_BASKET = PDItemsFurniture.PICNIC_BASKET;
+    public static final DeferredItem<?> SHADOW_DESK = PDItemsFurniture.SHADOW_DESK;
+    public static final DeferredItem<?> WINDMOOR_CRATE = PDItemsFurniture.WINDMOOR_CRATE;
+    public static final DeferredItem<?> SHADOW_BED = PDItemsFurniture.SHADOW_BED;
+    public static final DeferredItem<?> TRUE_SHADOW_BED = PDItemsFurniture.TRUE_SHADOW_BED;
+    public static final DeferredItem<?> BIRDS_NEST = PDItemsFurniture.BIRDS_NEST;
+    public static final DeferredItem<?> BROKEN_SHADOW_DUNGEON_PROTAL = PDItemsFurniture.BROKEN_SHADOW_DUNGEON_PROTAL;
+    public static final DeferredItem<?> CLAYPAN_1 = PDItemsFurniture.CLAYPAN_1;
+    public static final DeferredItem<?> DESERT_HERO_TOMB = PDItemsFurniture.DESERT_HERO_TOMB;
+    public static final DeferredItem<?> GUARD_BLOCK = PDItemsFurniture.GUARD_BLOCK;
+    public static final DeferredItem<?> RESTRAINMOVE_BLOCK = PDItemsFurniture.RESTRAINMOVE_BLOCK;
+    public static final DeferredItem<?> GUARD_CRYSTAL = PDItemsFurniture.GUARD_CRYSTAL;
+    public static final DeferredItem<?> LOST_SWORD_BLOCK = PDItemsFurniture.LOST_SWORD_BLOCK;
+    public static final DeferredItem<?> SHADOW_BRAZIER = PDItemsFurniture.SHADOW_BRAZIER;
+    public static final DeferredItem<?> SHADOW_DUNGEON_PORTAL = PDItemsFurniture.SHADOW_DUNGEON_PORTAL;
+    public static final DeferredItem<?> SHADOW_TRAP_0 = PDItemsFurniture.SHADOW_TRAP_0;
+    public static final DeferredItem<?> TWILIGHT_LANTERN = PDItemsFurniture.TWILIGHT_LANTERN;
 
 }

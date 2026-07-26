@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -15,18 +16,30 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 
 /**
  * 梦境炼药锅 GUI 容器菜单 (Dream Cauldron Menu)
- * 3 格输入槽 + 1 格输出槽 + 玩家背包（27 格）+ 快捷栏（9 格）
+ * 槽位布局完全还原原版 PasterDream（7 格炼药槽 + 玩家背包），
+ * GUI 背景纹理为原版 196×196 素材，槽位坐标与纹理绘制位置一一对应。
  *
- * 槽位分布：
- * - 索引 0-2：输入槽（位置 36, 17 / 54, 17 / 72, 17）
- * - 索引 3：输出槽（位置 134, 17）
- * - 索引 4-30：玩家背包（3×9，偏移 y=84）
- * - 索引 31-39：玩家快捷栏（1×9，偏移 y=142）
+ * 槽位分布（相对于 GUI 纹理左上角）：
+ * - 索引 0：引导药剂槽（17, 50）——合成必须放入引导药剂
+ * - 索引 1-3：材料槽（61, 19）(89, 19)(117, 19)
+ * - 索引 4：融梦液体桶输入槽（170, 23）——放入后自动注入 1000mB 并退还空桶
+ * - 索引 5：空桶回收槽（170, 77）——仅可取出
+ * - 索引 6：成品槽（89, 50)——仅可取出，合成完成后由炼药锅自动弹出
+ * - 索引 7-33：玩家背包（3×9，起始 (18, 114)）
+ * - 索引 34-42：玩家快捷栏（1×9，起始 (18, 172)）
+ *
+ * 液体量通过 {@link DataSlot} 自动同步到客户端供 GUI 显示。
  */
 public class DreamCauldronMenu extends AbstractContainerMenu {
 
+    /** 合成按钮的菜单按钮 ID（经由 vanilla clickMenuButton 通道触发） */
+    public static final int BUTTON_CRAFT = 0;
+
     private final DreamCauldronBlockEntity blockEntity;
     private final Level level;
+
+    /** 客户端同步的液体量（mB），服务端每 broadcast 周期自动推送 */
+    private final DataSlot fluidAmount = DataSlot.standalone();
 
     /**
      * 构造梦境炼药锅菜单（从网络缓冲区接收）
@@ -53,31 +66,62 @@ public class DreamCauldronMenu extends AbstractContainerMenu {
 
         IItemHandler handler = this.blockEntity.getItemHandler();
 
-        // 输入槽位 0-2：3 格，水平排列
-        this.addSlot(new SlotItemHandler(handler, 0, 36, 17));
-        this.addSlot(new SlotItemHandler(handler, 1, 54, 17));
-        this.addSlot(new SlotItemHandler(handler, 2, 72, 17));
-
-        // 输出槽位 3：1 格，不可手动放置（只有合成产出可放入）
-        this.addSlot(new SlotItemHandler(handler, 3, 134, 17) {
+        // 槽位 0：引导药剂（原版坐标 17, 50）
+        this.addSlot(new SlotItemHandler(handler, 0, 17, 50));
+        // 槽位 1-3：炼药材料（原版坐标 61/89/117, 19）
+        this.addSlot(new SlotItemHandler(handler, 1, 61, 19));
+        this.addSlot(new SlotItemHandler(handler, 2, 89, 19));
+        this.addSlot(new SlotItemHandler(handler, 3, 117, 19));
+        // 槽位 4：液体桶输入（原版坐标 170, 23）
+        this.addSlot(new SlotItemHandler(handler, 4, 170, 23));
+        // 槽位 5：空桶回收，仅可取出（原版坐标 170, 77）
+        this.addSlot(new SlotItemHandler(handler, 5, 170, 77) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
+        // 槽位 6：成品输出，仅可取出（原版坐标 89, 50）
+        this.addSlot(new SlotItemHandler(handler, 6, 89, 50) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return false;
             }
         });
 
-        // 玩家背包：3×9 网格，起始 (8, 84)
+        // 玩家背包：3×9 网格，起始 (18, 114)（原版偏移）
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 this.addSlot(new Slot(inv, col + row * 9 + 9,
-                        8 + col * 18, 84 + row * 18));
+                        18 + col * 18, 114 + row * 18));
             }
         }
 
-        // 玩家快捷栏：1×9，起始 (8, 142)
+        // 玩家快捷栏：1×9，起始 (18, 172)
         for (int col = 0; col < 9; col++) {
-            this.addSlot(new Slot(inv, col, 8 + col * 18, 142));
+            this.addSlot(new Slot(inv, col, 18 + col * 18, 172));
         }
+
+        // 液体量同步槽：服务端读方块实体储罐，客户端读同步值
+        this.addDataSlot(this.fluidAmount);
+    }
+
+    @Override
+    public void broadcastChanges() {
+        // 每次广播前刷新液体量（服务端侧）
+        if (!this.level.isClientSide()) {
+            this.fluidAmount.set(this.blockEntity.getFluidAmount());
+        }
+        super.broadcastChanges();
+    }
+
+    /**
+     * 获取当前储罐液体量（客户端为同步值）
+     *
+     * @return 液体量（mB）
+     */
+    public int getFluidAmount() {
+        return this.level.isClientSide() ? this.fluidAmount.get() : this.blockEntity.getFluidAmount();
     }
 
     /**
@@ -89,6 +133,23 @@ public class DreamCauldronMenu extends AbstractContainerMenu {
         return blockEntity;
     }
 
+    /**
+     * 处理 GUI 按钮点击（服务端调用）
+     * 客户端通过 {@code gameMode.handleInventoryButtonClick} 发送 vanilla 按钮包到达此处
+     *
+     * @param player 点击按钮的玩家
+     * @param id     按钮 ID（{@link #BUTTON_CRAFT}）
+     * @return 是否处理了该按钮
+     */
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (id == BUTTON_CRAFT) {
+            this.blockEntity.tryStartCraft(player);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
@@ -97,14 +158,14 @@ public class DreamCauldronMenu extends AbstractContainerMenu {
             ItemStack stackInSlot = slot.getItem();
             itemstack = stackInSlot.copy();
 
-            if (index < 4) {
-                // 从炼药锅槽位移到玩家背包（索引 4-39）
-                if (!this.moveItemStackTo(stackInSlot, 4, 40, true)) {
+            if (index < 7) {
+                // 从炼药锅槽位移到玩家背包（索引 7-42）
+                if (!this.moveItemStackTo(stackInSlot, 7, 43, true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                // 从玩家背包移到炼药锅输入槽（索引 0-2）
-                if (!this.moveItemStackTo(stackInSlot, 0, 3, false)) {
+                // 从玩家背包移到炼药锅可放入槽位（索引 0-4，5/6 由 mayPlace 拦截）
+                if (!this.moveItemStackTo(stackInSlot, 0, 5, false)) {
                     return ItemStack.EMPTY;
                 }
             }

@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.fluid.MeltdreamLiquidFluid;
+import com.pasterdream.pasterdreammod.fluid.ShadowLiquidFluid;
 import com.pasterdream.pasterdreammod.api.fluid.FluidAPI;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -25,4 +26,18 @@ public class PDFluids {
      */
     public static final DeferredHolder<Fluid, MeltdreamLiquidFluid.Flowing> FLOWING_MELTDREAM_LIQUID =
             FluidAPI.register("flowing_meltdream_liquid", MeltdreamLiquidFluid.Flowing::new);
+
+    /**
+     * 熔融阴影流体源（shadow_liquid）
+     * 静止状态的流体源方块（阴影维度湖泊，世界生成硬依赖）
+     */
+    public static final DeferredHolder<Fluid, ShadowLiquidFluid.Source> SHADOW_LIQUID =
+            FluidAPI.register("shadow_liquid", ShadowLiquidFluid.Source::new);
+
+    /**
+     * 熔融阴影流体流动（flowing_shadow_liquid）
+     * 流动状态的流体
+     */
+    public static final DeferredHolder<Fluid, ShadowLiquidFluid.Flowing> FLOWING_SHADOW_LIQUID =
+            FluidAPI.register("flowing_shadow_liquid", ShadowLiquidFluid.Flowing::new);
 }

@@ -8,6 +8,7 @@ import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
 import com.pasterdream.pasterdreammod.api.item.ItemAPI;
 import com.pasterdream.pasterdreammod.api.item.model.MigrationCategory;
 import com.pasterdream.pasterdreammod.api.item.model.ToolSpec.ToolType;
+import com.pasterdream.pasterdreammod.entity.projectile.SpellProjectileEntity;
 import com.pasterdream.pasterdreammod.item.*;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
@@ -70,6 +71,29 @@ public class PDItemsFunctional {
             ItemAPI.foodItem("amber_candy")
                     .nutrition(0).saturationModifier(0f)
                     .build();
+    /**
+     * 天使方块物品 (angel_block_item)：空中使用在脚下放置天使方块
+     */
+    public static final DeferredItem<Item> BONE_WING_FIRE_BALL = PDItems.ITEMS.register("bone_wing_fire_ball",
+            BoneWingFireBallItem::new);
+    public static final DeferredItem<Item> DREAMHARP_OF_WANDERER = PDItems.ITEMS.register("dreamharp_of_wanderer",
+            DreamharpOfWandererItem::new);
+    public static final DeferredItem<Item> PASTER_BLOCK_RESET_TOOL = PDItems.ITEMS.register("paster_block_reset_tool",
+            PasterBlockResetToolItem::new);
+    public static final DeferredItem<Item> SHADOW_HAND_LANTERN = PDItems.ITEMS.register("shadow_hand_lantern",
+            ShadowHandLanternItem::new);
+
+    public static final DeferredItem<Item> ANGEL_BLOCK_ITEM = PDItems.ITEMS.register("angel_block_item",
+            () -> new AngelBlockItemItem(new Item.Properties()));
+    /** 储物袋 9 格 (storage_bag) */
+    public static final DeferredItem<Item> STORAGE_BAG = PDItems.ITEMS.register("storage_bag",
+            () -> new StorageBagItem(false));
+    /** 高级储物袋 25 格 (storage_bag_0) */
+    public static final DeferredItem<Item> STORAGE_BAG_0 = PDItems.ITEMS.register("storage_bag_0",
+            () -> new StorageBagItem(true));
+    /** 风向标 (wind_vane) */
+    public static final DeferredItem<Item> WIND_VANE = PDItems.ITEMS.register("wind_vane",
+            () -> new WindVaneItem());
     public static final DeferredItem<Item> BLUE_DEW = PDItems.ITEMS.register("blue_dew",
             () -> new BlueDewItem(new Item.Properties()));
     public static final DeferredItem<Item> BREAD_SLICE =
@@ -109,6 +133,37 @@ public class PDItemsFunctional {
             ItemAPI.simpleItem("glassjar").build();
     public static final DeferredItem<Item> GUIDING_DRUG = PDItems.ITEMS.register("guiding_drug",
             () -> new GuidingDrugItem(new Item.Properties()));
+
+    // ==================== 法术物品（梦境炼药锅炼制产出，还原自原版 PasterDream） ====================
+    // 蓄力后松开发射对应法术投射物（SpellProjectileEntity），命中效果见 SpellEffects
+    public static final DeferredItem<Item> LIGHTNING_SPELL = PDItems.ITEMS.register("lightning_spell",
+            () -> new SpellItem(new Item.Properties().stacksTo(8).rarity(Rarity.COMMON),
+                    (level, caster) -> SpellProjectileEntity.shoot(level, caster,
+                            SpellProjectileEntity.SpellType.LIGHTNING),
+                    "item.pasterdream.lightning_spell.desc0"));
+    public static final DeferredItem<Item> POISON_SPELL = PDItems.ITEMS.register("poison_spell",
+            () -> new SpellItem(new Item.Properties().stacksTo(8).rarity(Rarity.COMMON),
+                    (level, caster) -> SpellProjectileEntity.shoot(level, caster,
+                            SpellProjectileEntity.SpellType.POISON),
+                    "item.pasterdream.poison_spell.desc0"));
+    public static final DeferredItem<Item> HEALING_SPELL = PDItems.ITEMS.register("healing_spell",
+            () -> new SpellItem(new Item.Properties().stacksTo(8).rarity(Rarity.COMMON),
+                    (level, caster) -> SpellProjectileEntity.shoot(level, caster,
+                            SpellProjectileEntity.SpellType.HEALING),
+                    "item.pasterdream.healing_spell.desc0",
+                    "item.pasterdream.healing_spell.desc1"));
+    public static final DeferredItem<Item> FURY_SPELL = PDItems.ITEMS.register("fury_spell",
+            () -> new SpellItem(new Item.Properties().stacksTo(8).rarity(Rarity.COMMON),
+                    (level, caster) -> SpellProjectileEntity.shoot(level, caster,
+                            SpellProjectileEntity.SpellType.FURY),
+                    "item.pasterdream.fury_spell.desc0",
+                    "item.pasterdream.fury_spell.desc1",
+                    "item.pasterdream.fury_spell.desc2"));
+    public static final DeferredItem<Item> ICE_SPELL = PDItems.ITEMS.register("ice_spell",
+            () -> new SpellItem(new Item.Properties().stacksTo(8).rarity(Rarity.COMMON),
+                    (level, caster) -> SpellProjectileEntity.shoot(level, caster,
+                            SpellProjectileEntity.SpellType.ICE),
+                    "item.pasterdream.ice_spell.desc0"));
     public static final DeferredItem<Item> HEART_CHOCOLATE_0 = PDItems.ITEMS.register("heart_chocolate_0",
             () -> new HeartChocolate0Item(new Item.Properties()));
     public static final DeferredItem<Item> HEART_CHOCOLATE_1 = PDItems.ITEMS.register("heart_chocolate_1",
@@ -651,5 +706,216 @@ public class PDItemsFunctional {
      */
     public static final DeferredItem<AaroncosHandSpawnBlockDisplayItem> AARONCOSHANDSPAWNBLOCK = PDItems.ITEMS.register("aaroncoshandspawnblock",
             () -> new AaroncosHandSpawnBlockDisplayItem(new Item.Properties()));
+
+
+    // ==================== 杂项补全：功能物品（批量移植自原版） ====================
+
+    /**
+     * 时之沙 (time_hourglass)
+     * 对空气使用跳跃世界时间；右击计时梦境方块瞬间完成一个阶段
+     */
+    public static final DeferredItem<TimeHourglassItem> TIME_HOURGLASS = PDItems.ITEMS.register("time_hourglass",
+            () -> new TimeHourglassItem(new Item.Properties()));
+
+    /**
+     * 卡莱的黄金预言（卡勒占卜卡牌）
+     * 0 号为占卜牌，使用后随机抽取一张预言卡牌；其余为具体预言卡牌
+     */
+    public static final DeferredItem<CalleCardItem> CALLE_CARD_0 = PDItems.ITEMS.register("calle_card_0",
+            () -> new CalleCardItem(0));
+    public static final DeferredItem<CalleCardItem> CALLE_CARD_1 = PDItems.ITEMS.register("calle_card_1",
+            () -> new CalleCardItem(1,
+                    "§6『墓园』",
+                    "§f▪ §7使用卡牌时：",
+                    "§7▪ §9对以自身为中心 5*5范围内的所有敌人造成100点魔法伤害",
+                    "§7▪ §9此效果不对玩家生效"));
+    public static final DeferredItem<CalleCardItem> CALLE_CARD_2 = PDItems.ITEMS.register("calle_card_2",
+            () -> new CalleCardItem(2,
+                    "§6『执剑』",
+                    "§f▪ §7使用卡牌时：",
+                    "§7▪ §9获得怒气爆发效果 持续120秒"));
+    public static final DeferredItem<CalleCardItem> CALLE_CARD_3 = PDItems.ITEMS.register("calle_card_3",
+            () -> new CalleCardItem(3,
+                    "§6『疾行』",
+                    "§f▪ §7使用卡牌时：",
+                    "§7▪ §9获得速度III 跳跃提升I效果 持续120秒",
+                    "§7▪ §9持续期间获得高速反射 瞬身术的冷却时间-20%"));
+    public static final DeferredItem<CalleCardItem> CALLE_CARD_4 = PDItems.ITEMS.register("calle_card_4",
+            () -> new CalleCardItem(4,
+                    "§6『守护』",
+                    "§f▪ §7使用卡牌时：",
+                    "§7▪ §9获得20点伤害吸收和抗性提升I效果 持续120秒"));
+    public static final DeferredItem<CalleCardItem> CALLE_CARD_5 = PDItems.ITEMS.register("calle_card_5",
+            () -> new CalleCardItem(5,
+                    "§6『对立』",
+                    "§f▪ §7使用卡牌时：",
+                    "§7▪ §9当前生命值与已损失生命值互换"));
+    public static final DeferredItem<CalleCardItem> CALLE_CARD_6 = PDItems.ITEMS.register("calle_card_6",
+            () -> new CalleCardItem(6,
+                    "§6『罪恶』",
+                    "§f▪ §7使用卡牌时：",
+                    "§7▪ §9对以自身为中心 引燃19*19范围内的所有亡灵生物15秒并造成20点火焰伤害",
+                    "§7▪ §9如果此实体为僵尸村民 则不会受到伤害且转化为村民"));
+    public static final DeferredItem<CalleCardItem> CALLE_CARD_7 = PDItems.ITEMS.register("calle_card_7",
+            () -> new CalleCardItem(7,
+                    "§6『平衡』",
+                    "§f▪ §7使用卡牌时：",
+                    "§7▪ §9当前自身拥有的部分药水效果的等级翻倍 但持续时间缩短至一半",
+                    "§7▪ §9仅对部分有等级加成的效果生效"));
+    public static final DeferredItem<CalleCardItem> CALLE_CARD_8 = PDItems.ITEMS.register("calle_card_8",
+            () -> new CalleCardItem(8,
+                    "§6『圣杯』",
+                    "§f▪ §7使用卡牌时：",
+                    "§7▪ §9获得圣杯效果 持续120秒"));
+    public static final DeferredItem<CalleCardItem> CALLE_CARD_9 = PDItems.ITEMS.register("calle_card_9",
+            () -> new CalleCardItem(9,
+                    "§6『混乱』",
+                    "§f▪ §7使用卡牌时：",
+                    "§7▪ §9对以自身为中心 7*7范围内的所有敌人陷入混乱并失去行动能力 持续10秒",
+                    "§7▪ §9此效果不对玩家生效"));
+
+    /**
+     * 深海秘宝 / 染梦深海秘宝 (deep_treasure_0 / deep_treasure_1)
+     * 右键开启随机战利品；带 deep_treasure_super 自定义数据时呈附魔光效并使用超级战利品表
+     */
+    public static final DeferredItem<DeepTreasureItem> DEEP_TREASURE_0 = PDItems.ITEMS.register("deep_treasure_0",
+            () -> new DeepTreasureItem("chests/loots_deep_treasure_0"));
+    public static final DeferredItem<DeepTreasureItem> DEEP_TREASURE_1 = PDItems.ITEMS.register("deep_treasure_1",
+            () -> new DeepTreasureItem("chests/loots_deep_treasure_1"));
+
+    /**
+     * 梦境果汁 (dreamjuice)
+     * 饮用后（需完成成就 achievement_b_0）获得梦愿效果 90 秒
+     */
+    public static final DeferredItem<DreamjuiceItem> DREAMJUICE = PDItems.ITEMS.register("dreamjuice",
+            () -> new DreamjuiceItem(new Item.Properties()));
+
+    /**
+     * 失色塞西莉娅的加护 (turn_pale_cecilia)
+     * 瞄准融梦液体源使用，转化为塞西莉娅的关怀饰品
+     */
+    public static final DeferredItem<TurnPaleCeciliaItem> TURN_PALE_CECILIA = PDItems.ITEMS.register("turn_pale_cecilia",
+            () -> new TurnPaleCeciliaItem(new Item.Properties()));
+
+    /**
+     * 挖掘机3000! (excavator)
+     * 调试用挖掘工具：右键石头/深板岩挖掘前方 5*5*20 区域
+     */
+    public static final DeferredItem<ExcavatorItem> EXCAVATOR = PDItems.ITEMS.register("excavator",
+            () -> new ExcavatorItem(new Item.Properties()));
+
+    /**
+     * 战利品生成工具 (lootstable_create_0~9)
+     * 潜行右击容器方块写入对应主题的战利品表（结构搭建/调试用）
+     */
+    public static final DeferredItem<LootstableCreateItem> LOOTSTABLE_CREATE_0 = PDItems.ITEMS.register("lootstable_create_0",
+            () -> new LootstableCreateItem("chests/loots_relic_0", "§e染梦世界遗迹通用"));
+    public static final DeferredItem<LootstableCreateItem> LOOTSTABLE_CREATE_1 = PDItems.ITEMS.register("lootstable_create_1",
+            () -> new LootstableCreateItem("loots_relic_1", "§e染梦世界遗迹通用 (少量)"));
+    public static final DeferredItem<LootstableCreateItem> LOOTSTABLE_CREATE_2 = PDItems.ITEMS.register("lootstable_create_2",
+            () -> new LootstableCreateItem("chests/loots_relic_2", "§e沙漠通用"));
+    public static final DeferredItem<LootstableCreateItem> LOOTSTABLE_CREATE_3 = PDItems.ITEMS.register("lootstable_create_3",
+            () -> new LootstableCreateItem("chests/loots_relic_3", "§e灯影通用"));
+    public static final DeferredItem<LootstableCreateItem> LOOTSTABLE_CREATE_4 = PDItems.ITEMS.register("lootstable_create_4",
+            () -> new LootstableCreateItem("chests/loots_relic_4", "§e诡异森林遗迹通用"));
+    public static final DeferredItem<LootstableCreateItem> LOOTSTABLE_CREATE_5 = PDItems.ITEMS.register("lootstable_create_5",
+            () -> new LootstableCreateItem("chests/loots_relic_5", "§e风泊板条筐"));
+    public static final DeferredItem<LootstableCreateItem> LOOTSTABLE_CREATE_6 = PDItems.ITEMS.register("lootstable_create_6",
+            () -> new LootstableCreateItem("chests/loots_relic_6", "§e海岸通用"));
+    public static final DeferredItem<LootstableCreateItem> LOOTSTABLE_CREATE_7 = PDItems.ITEMS.register("lootstable_create_7",
+            () -> new LootstableCreateItem("chests/loots_relic_7", "§e圣诞小玩意"));
+    public static final DeferredItem<LootstableCreateItem> LOOTSTABLE_CREATE_8 = PDItems.ITEMS.register("lootstable_create_8",
+            () -> new LootstableCreateItem("chests/loots_relic_8", "§e风旅通用"));
+    public static final DeferredItem<LootstableCreateItem> LOOTSTABLE_CREATE_9 = PDItems.ITEMS.register("lootstable_create_9",
+            () -> new LootstableCreateItem("chests/loots_relic_9", "§e野餐篮食物"));
+
+    /**
+     * 溯源苍白骨针 (roots_pale_boneneedle)
+     * 潜行右击设置标记点；使用后从帕斯特之梦维度返回主世界标记点/重生点（可重复使用）
+     */
+    public static final DeferredItem<RootsPaleBoneneedleItem> ROOTS_PALE_BONENEEDLE = PDItems.ITEMS.register("roots_pale_boneneedle",
+            () -> new RootsPaleBoneneedleItem(new Item.Properties()));
+
+    // ==================== [分区W] 武器工坊：蓝图物品（工坊模块专属分区） ====================
+
+    /**
+     * 蓝图·暗影高炉 (blueprint_0)
+     * 暗影高炉多方块结构图纸（暗影高炉系统待移植，蓝图先行落地）
+     */
+    public static final DeferredItem<BlueprintItem> BLUEPRINT_0 = PDItems.ITEMS.register("blueprint_0",
+            () -> new BlueprintItem("pasterdream:shadow_blast_furnace"));
+
+    /**
+     * 蓝图·精铸工坊 (blueprint_1)
+     * 精铸工坊多方块结构图纸：手持点击精铸工作台激活结构校验与铺设
+     */
+    public static final DeferredItem<BlueprintItem> BLUEPRINT_1 = PDItems.ITEMS.register("blueprint_1",
+            () -> new BlueprintItem("pasterdream:weapon_workshop", 1));
+
+    // ==================== 法杖武器（W2-D，还原自原版法杖战斗模块） ====================
+    // 物品属性（stacksTo/耐久/防火等）均在各物品类构造器内按原版补齐，注册处仅传空 Properties
+
+    /**
+     * 聚梦法杖 (dream_wand)
+     * TieredItem 万用工具型法杖：五类工具行为 + 站在染梦书桌上右键清空法杖数据
+     */
+    public static final DeferredItem<DreamWandItem> DREAM_WAND = PDItems.ITEMS.register("dream_wand",
+            () -> new DreamWandItem(new Item.Properties()));
+
+    /**
+     * 聚魔法杖 (mana_wand)
+     * 普通物品型法杖：攻击 +1 / 攻速 -2、不可损耗、防火
+     */
+    public static final DeferredItem<ManaWandItem> MANA_WAND = PDItems.ITEMS.register("mana_wand",
+            () -> new ManaWandItem(new Item.Properties()));
+
+    /**
+     * 炙焰金杖 (moltengold_wand)
+     * 右键蓄力发射炙焰法球（消耗魔法石），命中方块点火
+     */
+    public static final DeferredItem<MoltengoldWandItem> MOLTENGOLD_WAND = PDItems.ITEMS.register("moltengold_wand",
+            () -> new MoltengoldWandItem(new Item.Properties()));
+
+    /**
+     * 唤星者法杖 (true_moltengold_wand)
+     * 右键蓄力发射唤星法球，命中释放唤星照明并概率召唤唤星裂隙
+     */
+    public static final DeferredItem<TrueMoltengoldWandItem> TRUE_MOLTENGOLD_WAND = PDItems.ITEMS.register("true_moltengold_wand",
+            () -> new TrueMoltengoldWandItem(new Item.Properties()));
+
+    /**
+     * 『亚勒兹』唤星 (truest_moltengold_wand)
+     * 右键蓄力发射唤星雨法球，命中 50% 概率召唤唤星裂隙并散射炙焰法球
+     */
+    public static final DeferredItem<TruestMoltengoldWandItem> TRUEST_MOLTENGOLD_WAND = PDItems.ITEMS.register("truest_moltengold_wand",
+            () -> new TruestMoltengoldWandItem(new Item.Properties()));
+
+    /**
+     * 魂啸法杖 (squeal_wave_wand)
+     * 右键蓄力发射魂啸音波（消耗魔法石 + 融梦能量/San），法术强度触发范围魔法伤害
+     */
+    public static final DeferredItem<SquealWaveWandItem> SQUEAL_WAVE_WAND = PDItems.ITEMS.register("squeal_wave_wand",
+            () -> new SquealWaveWandItem(new Item.Properties()));
+
+    /**
+     * 占星者的祈愿 (star_wish_rod)
+     * 特殊钓鱼竿：不可损耗、防火，收/抛竿贴图由 cast 自定义数据驱动
+     */
+    public static final DeferredItem<StarWishRodItem> STAR_WISH_ROD = PDItems.ITEMS.register("star_wish_rod",
+            () -> new StarWishRodItem(new Item.Properties()));
+
+    /**
+     * 暗影旋涡 (shadow_vortex_book)
+     * 蓄力松开发射暗影旋涡法球的法术书；未达成暗影天赋成就者施法遭反噬
+     */
+    public static final DeferredItem<ShadowVortexBookItem> SHADOW_VORTEX_BOOK = PDItems.ITEMS.register("shadow_vortex_book",
+            () -> new ShadowVortexBookItem(new Item.Properties()));
+
+    /**
+     * 白厄剑雨 (white_sword_rain)
+     * 可独立投掷的光剑物品（耐久 100），亦为白色灾厄剑技的剑雨投射物贴图来源
+     */
+    public static final DeferredItem<WhiteSwordRainItem> WHITE_SWORD_RAIN = PDItems.ITEMS.register("white_sword_rain",
+            () -> new WhiteSwordRainItem(new Item.Properties()));
 
 }

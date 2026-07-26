@@ -1,11 +1,11 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.entity.damage.ConfigurableImmunityEntity;
+import com.pasterdream.pasterdreammod.util.ServerScheduler;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -144,9 +144,7 @@ public class MeltdreamCrystalEntity extends ConfigurableImmunityEntity {
 
         this.remove(RemovalReason.DISCARDED);
 
-        serverLevel.getServer().tell(new TickTask(
-                serverLevel.getServer().getTickCount() + 3,
-                () -> {
+        ServerScheduler.schedule(3, () -> {
                     Item meltdreamCrystal = BuiltInRegistries.ITEM.get(
                             ResourceLocation.parse("pasterdream:meltdream_crystal_0"));
                     if (meltdreamCrystal != Items.AIR) {
@@ -154,8 +152,7 @@ public class MeltdreamCrystalEntity extends ConfigurableImmunityEntity {
                         ItemEntity item = new ItemEntity(serverLevel, pos.x, pos.y, pos.z, drop);
                         serverLevel.addFreshEntity(item);
                     }
-                }
-        ));
+                });
 
         return InteractionResult.SUCCESS;
     }

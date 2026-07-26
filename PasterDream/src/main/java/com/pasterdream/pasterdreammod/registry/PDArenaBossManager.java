@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.util.ServerScheduler;
 import com.pasterdream.pasterdreammod.entity.mob.AaroncosLefthand0Entity;
 import com.pasterdream.pasterdreammod.entity.mob.AaroncosRighthand0Entity;
 import net.minecraft.advancements.AdvancementHolder;
@@ -10,7 +11,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -279,8 +279,7 @@ public class PDArenaBossManager {
      * @param chestPos   战利品箱位置（用于掉落坐标）
      */
     private static void spawnLootDrops(ServerLevel arenaLevel, BlockPos chestPos) {
-        arenaLevel.getServer().tell(new TickTask(
-                arenaLevel.getServer().getTickCount() + 40, () -> {
+        ServerScheduler.schedule(40, () -> {
                     double dropX = chestPos.getX() + 0.5;
                     double dropY = chestPos.getY() + 0.5;
                     double dropZ = chestPos.getZ() + 0.5;
@@ -307,7 +306,7 @@ public class PDArenaBossManager {
                     }
 
                     PasterDreamMod.LOGGER.debug("[PDArenaBossManager] 🎁 战利品已掉落于 ({}, {}, {})", dropX, dropY, dropZ);
-                }));
+                });
     }
 
     /**

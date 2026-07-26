@@ -1,0 +1,27 @@
+[
+  {
+    "6": "pasterdream:shadow_stone_tiles",
+    "7": "pasterdream:shadow_stone_brick_slab",
+    "8": "pasterdream:shadow_stone_tiles",
+    "11": "pasterdream:shadow_stone_brick_slab",
+    "12": "pasterdream:chiseled_shadow_stone_brick",
+    "13": "pasterdream:shadow_stone_brick_slab",
+    "16": "pasterdream:shadow_stone_tiles",
+    "17": "pasterdream:shadow_stone_brick_slab",
+    "18": "pasterdream:shadow_stone_tiles"
+  },
+  {
+    "6": "pasterdream:shadow_stone_tiles_wall",
+    "8": "pasterdream:shadow_stone_tiles_wall",
+    "12": "pasterdream:shadow_blast_furnace_core",
+    "16": "pasterdream:shadow_stone_tiles_wall",
+    "18": "pasterdream:shadow_stone_tiles_wall"
+  },
+  {
+    "6": "pasterdream:rust_black_metal_block_wall",
+    "8": "pasterdream:rust_black_metal_block_wall",
+    "12": "pasterdream:rust_black_metal_block",
+    "16": "pasterdream:rust_black_metal_block_wall",
+    "18": "pasterdream:rust_black_metal_block_wall"
+  }
+]

@@ -36,7 +36,11 @@ public class MeltdreamLiquidBlock extends LiquidBlock {
     }
 
     /**
-     * 方块放置时调度 tick 更新
+     * 方块放置时调度粒子方块 tick
+     * <p>
+     * 注意：super.onPlace() 调度的是流体扩散 tick，与本方块的粒子方块 tick 相互独立；
+     * 液体蔓延导致液位变化时 onPlace 会被反复触发，这里用 hasScheduledTick 去重，
+     * 避免同一位置叠加出多条并行的粒子 tick 链
      *
      * @param blockstate 当前方块状态
      * @param world      世界实例
@@ -47,7 +51,9 @@ public class MeltdreamLiquidBlock extends LiquidBlock {
     @Override
     public void onPlace(BlockState blockstate, Level world, BlockPos pos, BlockState oldState, boolean moving) {
         super.onPlace(blockstate, world, pos, oldState, moving);
-        world.scheduleTick(pos, this, 5);
+        if (!world.getBlockTicks().hasScheduledTick(pos, this)) {
+            world.scheduleTick(pos, this, 5);
+        }
     }
 
     /**
@@ -62,8 +68,10 @@ public class MeltdreamLiquidBlock extends LiquidBlock {
     @Override
     public void tick(BlockState blockstate, ServerLevel world, BlockPos pos, RandomSource random) {
         super.tick(blockstate, world, pos, random);
-        if (PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType() != null && random.nextFloat() < 0.125f) {
-            SimpleParticleType particle = (SimpleParticleType) PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType();
+        // 粒子类型在注册阶段已完成注册，运行期不可能为 null，无需判空；
+        // 通过 holder() 直接取得 SimpleParticleType 引用，类型安全，无需强制转换
+        if (random.nextFloat() < 0.125f) {
+            SimpleParticleType particle = PDParticles.MELTDREAM_CRYSTAL_PARTICLE.holder().get();
             world.sendParticles(particle, pos.getX() + 0.5, pos.getY() + 0.2, pos.getZ() + 0.5,
                     1, 0.15, 0.15, 0.15, 0.05);
         }

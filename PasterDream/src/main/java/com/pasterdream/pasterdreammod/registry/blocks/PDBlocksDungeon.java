@@ -166,9 +166,9 @@ public class PDBlocksDungeon {
                     .hasPostProcess((bs, br, bp) -> true)
                     .isRedstoneConductor((bs, br, bp) -> false));
 
-    /** 暗影高炉核心 — 多方块结构核心（可破坏，金属声） */
-    public static final DeferredBlock<Block> SHADOW_BLAST_FURNACE_CORE = PDBlocks.BLOCKS.registerBlock("shadow_blast_furnace_core",
-            Block::new, BlockBehaviour.Properties.of()
+    /** 暗影高炉核心 — 多方块结构核心（手持蓝图右键搭建暗影高炉，可破坏，金属声） */
+    public static final DeferredBlock<ShadowBlastFurnaceCoreBlock> SHADOW_BLAST_FURNACE_CORE = PDBlocks.BLOCKS.registerBlock("shadow_blast_furnace_core",
+            ShadowBlastFurnaceCoreBlock::new, BlockBehaviour.Properties.of()
                     .sound(SoundType.METAL)
                     .strength(3.0f, 1.0f)
                     .requiresCorrectToolForDrops());

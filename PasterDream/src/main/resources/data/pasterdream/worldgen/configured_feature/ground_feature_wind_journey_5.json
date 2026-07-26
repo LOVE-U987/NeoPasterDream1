@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:netherrack_replace_blobs",
+  "config": {
+    "target": {
+      "Name": "minecraft:mud"
+    },
+    "state": {
+      "Name": "pasterdream:cyan_moss_stone"
+    },
+    "radius": {
+      "type": "uniform",
+      "min_inclusive": 1,
+      "max_inclusive": 1
+    }
+  }
+}

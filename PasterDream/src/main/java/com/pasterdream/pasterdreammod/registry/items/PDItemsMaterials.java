@@ -167,7 +167,8 @@ public class PDItemsMaterials {
     public static final DeferredItem<Item> TERRASWORD_EMBRYO = PDItems.ITEMS.registerSimpleItem("terrasword_embryo");
     public static final DeferredItem<Item> TITANIUM_NUGGET = PDItems.ITEMS.registerSimpleItem("titanium_nugget");
     public static final DeferredItem<Item> TITANIUM_UPGRADE = PDItems.ITEMS.registerSimpleItem("titanium_upgrade");
-    public static final DeferredItem<Item> UNKNOWNNOTES_0 = PDItems.ITEMS.registerSimpleItem("unknownnotes_0");
+    public static final DeferredItem<Item> UNKNOWNNOTES_0 = PDItems.ITEMS.register("unknownnotes_0",
+            () -> new com.pasterdream.pasterdreammod.item.Unknownnotes0Item());
     public static final DeferredItem<Item> WHITE_COROLLA = PDItems.ITEMS.registerSimpleItem("white_corolla");
     public static final DeferredItem<Item> WHITE_CRYSTAL = PDItems.ITEMS.registerSimpleItem("white_crystal");
     public static final DeferredItem<Item> WHITE_SWORD_EMBRYO = PDItems.ITEMS.registerSimpleItem("white_sword_embryo");
@@ -248,5 +249,46 @@ public class PDItemsMaterials {
                     .build();
 
     // 四叶草护符已在下方 Curio 护符合集中使用 CurioAPI 注册
+
+
+    // ==================== 杂项补全：简单物品（批量移植自原版） ====================
+
+    /**
+     * 标签图标物品 (tabitem_1 / tabitem_2)
+     * 原版调试栏/拓展栏创造标签的图标物品，亦作为战利品表中的"空占位"条目使用
+     */
+    public static final DeferredItem<Item> TABITEM_1 =
+            ItemAPI.simpleItem("tabitem_1").stacksTo(1).build();
+    public static final DeferredItem<Item> TABITEM_2 =
+            ItemAPI.simpleItem("tabitem_2").stacksTo(1).build();
+
+    /**
+     * 天赋抉择信物 (talent_light / talent_shadow)
+     * 光/影天赋抉择的信物物品（原版即为无行为物品，天赋逻辑由成就/GUI 系统驱动）
+     * 原版未加入任何创造标签，此处保持一致
+     */
+    public static final DeferredItem<Item> TALENT_LIGHT =
+            ItemAPI.simpleItem("talent_light").stacksTo(1).build();
+    public static final DeferredItem<Item> TALENT_SHADOW =
+            ItemAPI.simpleItem("talent_shadow").stacksTo(1).build();
+
+    /**
+     * 夜明蝶 (lightning_item) 与 暗影旋涡投掷物 (shadow_vortex_item)
+     * 原版即为无行为的材料/投射物贴图物品（法术渲染用），原版未加入创造标签
+     */
+    public static final DeferredItem<Item> LIGHTNING_ITEM =
+            ItemAPI.simpleItem("lightning_item").build();
+    public static final DeferredItem<Item> SHADOW_VORTEX_ITEM =
+            ItemAPI.simpleItem("shadow_vortex_item").build();
+
+    /**
+     * 聚梦法杖原胚 (dream_wand_embryo)
+     * 锻造材料（原版另有右击染梦书桌清空法杖数据的调试行为，随聚梦法杖暂缓移植而省略）
+     */
+    public static final DeferredItem<Item> DREAM_WAND_EMBRYO =
+            ItemAPI.simpleItem("dream_wand_embryo")
+                    .stacksTo(1)
+                    .tooltip("§7未加工原胚", "§7需要在精铸工坊内完成后续锻造")
+                    .build();
 
 }

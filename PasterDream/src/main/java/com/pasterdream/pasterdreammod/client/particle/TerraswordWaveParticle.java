@@ -1,0 +1,93 @@
+package com.pasterdream.pasterdreammod.client.particle;
+
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.*;
+import net.minecraft.core.particles.SimpleParticleType;
+
+/**
+ * 大地之刃剑气粒子 (Terrasword Wave Particle)
+ * <p>
+ * 还原自原版 {@code TerraswordWaveParticleParticle}：大地之刃剑气实体的飞行残光。
+ * <ul>
+ *   <li>碰撞尺寸 0×0（渲染尺寸不缩放）</li>
+ *   <li>寿命 15 ± 3 tick，无重力，无物理碰撞，初速度 = 发射速度 ×0.1</li>
+ *   <li>4 帧动画每 3 tick 前进一帧，全亮度自发光（LIT 渲染层）</li>
+ * </ul>
+ */
+public class TerraswordWaveParticle extends TextureSheetParticle {
+
+    /** 全亮度光照值（0xF000F0） */
+    private static final int FULL_BRIGHT = 15728880;
+
+    /** 动画总帧数（terrasword_wave_particle_1 ~ _4） */
+    private static final int FRAME_COUNT = 4;
+
+    private final SpriteSet spriteSet;
+
+    /**
+     * 构造大地之刃剑气粒子
+     *
+     * @param level     客户端世界
+     * @param x         初始 X 坐标
+     * @param y         初始 Y 坐标
+     * @param z         初始 Z 坐标
+     * @param vx        X 发射速度
+     * @param vy        Y 发射速度
+     * @param vz        Z 发射速度
+     * @param spriteSet 精灵表集合
+     */
+    protected TerraswordWaveParticle(ClientLevel level, double x, double y, double z,
+                                     double vx, double vy, double vz, SpriteSet spriteSet) {
+        super(level, x, y, z);
+        this.spriteSet = spriteSet;
+        this.setSize(0f, 0f);
+        this.lifetime = Math.max(1, 15 + (this.random.nextInt(6) - 3));
+        this.gravity = 0f;
+        this.hasPhysics = false;
+        this.xd = vx * 0.1;
+        this.yd = vy * 0.1;
+        this.zd = vz * 0.1;
+        this.setSpriteFromAge(spriteSet);
+    }
+
+    @Override
+    protected int getLightColor(float partialTick) {
+        return FULL_BRIGHT;
+    }
+
+    @Override
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_LIT;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (!this.removed) {
+            this.setSprite(this.spriteSet.get((this.age / 3) % FRAME_COUNT + 1, FRAME_COUNT));
+        }
+    }
+
+    /**
+     * 大地之刃剑气粒子提供器
+     */
+    public static class Provider implements ParticleProvider<SimpleParticleType> {
+        private final SpriteSet spriteSet;
+
+        /**
+         * 构造粒子提供器
+         *
+         * @param spriteSet 精灵表集合
+         */
+        public Provider(SpriteSet spriteSet) {
+            this.spriteSet = spriteSet;
+        }
+
+        @Override
+        public Particle createParticle(SimpleParticleType type, ClientLevel level,
+                                       double x, double y, double z,
+                                       double vx, double vy, double vz) {
+            return new TerraswordWaveParticle(level, x, y, z, vx, vy, vz, this.spriteSet);
+        }
+    }
+}
