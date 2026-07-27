@@ -1,12 +1,15 @@
 package com.pasterdream.pasterdreammod.block.entity;
 
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
+import com.pasterdream.pasterdreammod.util.StructureInventoryHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -16,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
@@ -54,6 +58,11 @@ public class ShadowChestBlockEntity extends BlockEntity implements GeoBlockEntit
         }
     };
 
+    /** 结构战利品表（打开时解包一次） */
+    @Nullable
+    private ResourceKey<LootTable> lootTable;
+    private long lootTableSeed;
+
     /**
      * 构造影之箱方块实体
      *
@@ -72,6 +81,20 @@ public class ShadowChestBlockEntity extends BlockEntity implements GeoBlockEntit
      */
     public ItemStackHandler getItemHandler() {
         return itemHandler;
+    }
+
+    /** 打开 GUI 前解包结构 LootTable（若有）。 */
+    public void unpackLootIfNeeded(@Nullable Player player) {
+        if (lootTable == null || level == null || level.isClientSide || !(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        StructureInventoryHelper.unpackLootTable(
+                itemHandler, lootTable, lootTableSeed, serverLevel, worldPosition, player,
+                () -> {
+                    lootTable = null;
+                    lootTableSeed = 0L;
+                    setChanged();
+                });
     }
 
     // ==================== GeckoLib 动画 ====================
@@ -212,15 +235,19 @@ public class ShadowChestBlockEntity extends BlockEntity implements GeoBlockEntit
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        tag.put("inventory", itemHandler.serializeNBT(registries));
+        if (lootTable != null) {
+            StructureInventoryHelper.writeLootTable(tag, lootTable, lootTableSeed);
+        } else {
+            tag.put("inventory", itemHandler.serializeNBT(registries));
+        }
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        if (tag.contains("inventory")) {
-            itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
-        }
+        StructureInventoryHelper.loadItemHandler(itemHandler, tag, registries);
+        this.lootTable = StructureInventoryHelper.readLootTable(tag);
+        this.lootTableSeed = StructureInventoryHelper.readLootTableSeed(tag);
     }
 
     // ==================== 客户端同步 ====================
@@ -240,6 +267,7 @@ public class ShadowChestBlockEntity extends BlockEntity implements GeoBlockEntit
 
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
+        unpackLootIfNeeded(player);
         return new com.pasterdream.pasterdreammod.menu.ShadowChestMenu(id, inventory, this);
     }
 

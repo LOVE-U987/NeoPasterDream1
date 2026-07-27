@@ -2,8 +2,6 @@ package com.pasterdream.pasterdreammod.registry.creativetabs;
 
 import com.pasterdream.pasterdreammod.registry.PDCreativeTabs;
 import com.pasterdream.pasterdreammod.registry.PDItems;
-import com.pasterdream.pasterdreammod.registry.PDBlocks;
-import com.pasterdream.pasterdreammod.registry.PDEntities;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +20,7 @@ public class PDCreativeTabsEntity {
 
     /**
      * 生物实体标签页
-     * 包含所有刷怪蛋和生物专属掉落物
+     * 仅包含刷怪蛋（掉落物归材料/阴影/食物/纪念品等对应页）
      */
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ENTITY_TAB = PDCreativeTabs.TABS.register("entity_tab",
             () -> CreativeModeTab.builder()
@@ -60,19 +58,7 @@ public class PDCreativeTabsEntity {
                         output.accept(PDItems.SPORE_ENTITY_SPAWN_EGG.get());
                         output.accept(PDItems.AARONCOS_LEFTHAND_0_SPAWN_EGG.get());
                         output.accept(PDItems.AARONCOS_RIGHTHAND_0_SPAWN_EGG.get());
-                        output.accept(PDItems.PINK_SLIMEBALL.get());
-                        output.accept(PDItems.SHADOW_BREATH.get());
-                        output.accept(PDItems.BLACK_BEETLE_CARAPACE.get());
-                        output.accept(PDItems.BLACK_BEETLE_VOCALCORD.get());
-                        output.accept(PDItems.BASALT_SNAIL_SHELL.get());
-                        output.accept(PDItems.ELDER_GUARDIAN_SCALE.get());
-                        output.accept(PDItems.MOSS_PHANTOM_MEMBRANE.get());
-                        output.accept(PDItems.LIGHT_MOSS_PHANTOM_MEMBRANE.get());
-                        output.accept(PDItems.SOUL_DUST.get());
-                        output.accept(PDItems.SOUL_ESSENCE.get());
-                        output.accept(PDItems.STRAWBERRY_HEART.get());
-                        output.accept(PDItems.JELLYFISH_MUD.get());
-                        output.accept(PDItems.JELLYFISH_JELLO.get());
+                        // 注：TERRASWORD_WAVE / HEALING_SPELL_ENTITY 为特效实体刷怪蛋，原版亦不入创造刷怪蛋栏
                     })
                     .build());
 }

@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/frame_clarity_glass",
-    "up": "pasterdream:block/frame_clarity_glass",
-    "north": "pasterdream:block/frame_clarity_glass",
-    "east": "pasterdream:block/frame_clarity_glass",
-    "south": "pasterdream:block/frame_clarity_glass",
-    "west": "pasterdream:block/frame_clarity_glass",
-    "particle": "pasterdream:block/frame_clarity_glass"
+    "down": "pasterdream:block/xiang_kuang_cheng_che_bo_li_",
+    "up": "pasterdream:block/xiang_kuang_cheng_che_bo_li_",
+    "north": "pasterdream:block/xiang_kuang_cheng_che_bo_li_",
+    "east": "pasterdream:block/xiang_kuang_cheng_che_bo_li_",
+    "south": "pasterdream:block/xiang_kuang_cheng_che_bo_li_",
+    "west": "pasterdream:block/xiang_kuang_cheng_che_bo_li_",
+    "particle": "pasterdream:block/xiang_kuang_cheng_che_bo_li_"
   },
-  "render_type": "transparent"
+  "render_type": "translucent"
 }

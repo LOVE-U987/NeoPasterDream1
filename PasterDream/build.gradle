@@ -99,6 +99,7 @@ configurations {
 }
 
 dependencies {
+    // API 以源码模块依赖；发布时由 jar 任务打进同一 pasterdream jar，玩家只需装一个 mod。
     implementation project(':PasterDreamAPI')
 
     // 使 PasterDream 的 test sourceSet 能够访问 PasterDreamAPI 的 test sourceSet（gen/example 类）
@@ -118,8 +119,41 @@ dependencies {
     localRuntime "mezz.jei:jei-1.21.1-neoforge:${jei_version}"
 }
 
-tasks.named('jar') {
+// ======================== 单包分发：主 jar 内嵌 PasterDreamAPI ========================
+// PasterDreamAPI 不是独立 mod（无 mods.toml），其 class/资源全部并入 pasterdream-*.jar。
+// 玩家 mods 目录只放这一个 jar 即可；勿再额外安装 PasterDreamAPI-*.jar。
+tasks.named('jar', Jar).configure {
+    dependsOn(':PasterDreamAPI:classes')
+    // 合并 API 编译输出（classes + resources）
     from project(':PasterDreamAPI').sourceSets.main.output
+    // 避免双份 MANIFEST 等元数据冲突
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(
+                'Implementation-Title': mod_name,
+                'Implementation-Version': project.version,
+                'Implementation-Vendor': mod_authors,
+                'Embedded-Modules': 'PasterDreamAPI'
+        )
+    }
+}
+
+// 产出到统一 dist 目录，便于发布/拷贝到游戏 mods
+tasks.register('packageMod', Copy) {
+    group = 'distribution'
+    description = '打包单一可安装 jar（已内嵌 PasterDreamAPI）到 build/dist/'
+    dependsOn tasks.named('jar')
+    from tasks.named('jar').flatMap { it.archiveFile }
+    into rootProject.layout.buildDirectory.dir('dist')
+    doLast {
+        def out = rootProject.layout.buildDirectory.dir('dist').get().asFile
+        logger.lifecycle("packageMod → ${out.listFiles()?.collect { it.name }}（仅安装 pasterdream-*.jar，勿再装 PasterDreamAPI）")
+    }
+}
+
+// assemble / build 时默认带上单包产物
+tasks.named('assemble').configure {
+    dependsOn tasks.named('packageMod')
 }
 
 tasks.named('test', Test).configure {

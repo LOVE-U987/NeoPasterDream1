@@ -30,26 +30,20 @@ public class PDCreativeTabsShadow {
                     .icon(() -> new ItemStack(PDItems.SHADOW_CHEST.get()))
                     .withTabsBefore(PDCreativeTabs.DYEDREAM_TAB.getKey())
                     .displayItems((parameters, output) -> {
+                        // 阴影维度：容器/材料/方块（武器胚与成品在武器栏）
                         output.accept(PDItems.SHADOW_CHEST.get());
                         output.accept(PDItems.SHADOW_HILT.get());
                         output.accept(PDItems.SHADOW_DUNGEON_KEY.get());
-                        output.accept(PDItems.SHADOW_SWORD.get());
-                        output.accept(PDItems.SHADOW_SWORD_EMBRYO.get());
-                        output.accept(PDItems.SHADOW_EROSION_SWORD.get());
-                        output.accept(PDItems.SHADOW_EROSION_SWORD_EMBRYO.get());
-                        output.accept(PDItems.SHADOW_EROSION_PICKAXE.get());
-                        output.accept(PDItems.SHADOW_EROSION_PICKAXE_EMBRYO.get());
-                        output.accept(PDItems.SHADOW_EROSION_AXE_EMBRYO.get());
-                        output.accept(PDItems.SHADOW_EROSION_HOE_EMBRYO.get());
-                        output.accept(PDItems.SHADOW_EROSION_SHOVEL_EMBRYO.get());
-                        output.accept(PDItems.ICESHADOW_HAMMER.get());
-                        output.accept(PDItems.ICESHADOW_HAMMER_EMBRYO.get());
                         output.accept(PDItems.ICESHADOW_CURIO.get());
                         output.accept(PDItems.DARK_ALLLEGORY_CURIO.get());
                         output.accept(PDItems.SCULK_HEART.get());
                         output.accept(PDItems.SCULK_UPGRADE.get());
                         output.accept(PDItems.NIGHTMARE_FUEL.get());
                         output.accept(PDItems.PURE_HORROR.get());
+                        // 阴影系生物掉落（原版 paster_tab_3；曾误挂 entity_tab）
+                        output.accept(PDItems.SHADOW_BREATH.get());
+                        output.accept(PDItems.MOSS_PHANTOM_MEMBRANE.get());
+                        output.accept(PDItems.LIGHT_MOSS_PHANTOM_MEMBRANE.get());
                         // 阴影维度基础方块
                         output.accept(PDItems.SHADOW_BLOCK.get());
                         output.accept(PDItems.THICK_SHADOW_BLOCK.get());

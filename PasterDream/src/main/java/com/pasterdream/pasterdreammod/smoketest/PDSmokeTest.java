@@ -374,13 +374,15 @@ public final class PDSmokeTest {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             mc.options.pauseOnLostFocus = false;
 
-            // 标题界面出现且尚未建世界 → 自动创建超平坦创造世界
+            // 标题界面出现且尚未建世界 → 删除旧 test-audit 后自动创建超平坦创造世界
             if (!worldLaunched && mc.level == null
                     && mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen) {
                 worldLaunched = true;
-                LOGGER.info(TAG + "creating superflat creative test world 'test-audit'");
+                final String worldName = "test-audit";
+                deleteExistingWorld(mc, worldName);
+                LOGGER.info(TAG + "creating superflat creative test world '{}'", worldName);
                 net.minecraft.world.level.LevelSettings settings = new net.minecraft.world.level.LevelSettings(
-                        "test-audit",
+                        worldName,
                         net.minecraft.world.level.GameType.CREATIVE,
                         false,
                         net.minecraft.world.Difficulty.PEACEFUL,
@@ -388,9 +390,9 @@ public final class PDSmokeTest {
                         gameRules(),
                         net.minecraft.world.level.WorldDataConfiguration.DEFAULT);
                 mc.createWorldOpenFlows().createFreshLevel(
-                        "test-audit",
+                        worldName,
                         settings,
-                        new net.minecraft.world.level.levelgen.WorldOptions(20260726L, false, false),
+                        new net.minecraft.world.level.levelgen.WorldOptions(System.currentTimeMillis(), false, false),
                         registryAccess -> registryAccess
                                 .registryOrThrow(Registries.WORLD_PRESET)
                                 .getHolderOrThrow(net.minecraft.world.level.levelgen.presets.WorldPresets.FLAT)
@@ -416,7 +418,8 @@ public final class PDSmokeTest {
                     case STAGE_DONE -> {
                         schedule(20, "smoketest_5_final_view.png");
                         // 双开模式下等待移植验证测试完成后再退出（否则会截断其时间线）
-                        if (!PDPortingVerifyTest.ENABLED) {
+                        // KEEP_OPEN 时永不自动退出，供人工观察方块总览
+                        if (!PDPortingVerifyTest.ENABLED && !PDPortingVerifyTest.KEEP_OPEN) {
                             stopCountdown = 80;
                         }
                     }
@@ -435,9 +438,10 @@ public final class PDSmokeTest {
                         component -> LOGGER.info(TAG + "screenshot saved: {}", name));
             }
 
-            // 双开模式：verify 完成后由此统一收尾退出
+            // 双开模式：verify 完成后由此统一收尾退出（KEEP_OPEN 则保持打开）
             if (PDPortingVerifyTest.ENABLED && ENABLED
-                    && stage == STAGE_DONE && PDPortingVerifyTest.done && stopCountdown < 0) {
+                    && stage == STAGE_DONE && PDPortingVerifyTest.done && stopCountdown < 0
+                    && !PDPortingVerifyTest.KEEP_OPEN) {
                 stopCountdown = 80;
             }
 
@@ -450,11 +454,69 @@ public final class PDSmokeTest {
             }
         }
 
-        /** 组装测试世界游戏规则（固定晴天白昼便于截图） */
+        /**
+         * 删除 saves/&lt;name&gt; 旧档，保证每次 VERIFY/SMOKE 都是全新世界。
+         * 优先走 LevelStorageSource#deleteLevel；失败时递归删目录。
+         */
+        private static void deleteExistingWorld(net.minecraft.client.Minecraft mc, String worldName) {
+            try {
+                var levelSource = mc.getLevelSource();
+                // 1.21 LevelStorageSource 提供 levelExists / deleteLevel
+                boolean exists = false;
+                try {
+                    exists = (boolean) levelSource.getClass()
+                            .getMethod("levelExists", String.class)
+                            .invoke(levelSource, worldName);
+                } catch (ReflectiveOperationException ignored) {
+                    // 回退到文件系统探测
+                    java.nio.file.Path dir = mc.gameDirectory.toPath().resolve("saves").resolve(worldName);
+                    exists = java.nio.file.Files.isDirectory(dir);
+                }
+                if (!exists) {
+                    LOGGER.info(TAG + "no existing world '{}' to delete", worldName);
+                    return;
+                }
+                LOGGER.info(TAG + "deleting previous test world '{}'", worldName);
+                try {
+                    levelSource.getClass().getMethod("deleteLevel", String.class)
+                            .invoke(levelSource, worldName);
+                    LOGGER.info(TAG + "deleted world via LevelStorageSource: {}", worldName);
+                    return;
+                } catch (ReflectiveOperationException ex) {
+                    LOGGER.warn(TAG + "LevelStorageSource.deleteLevel 不可用，改文件系统删除: {}", ex.toString());
+                }
+                java.nio.file.Path dir = mc.gameDirectory.toPath().resolve("saves").resolve(worldName);
+                deleteRecursively(dir);
+                LOGGER.info(TAG + "deleted world directory: {}", dir);
+            } catch (Exception e) {
+                LOGGER.error(TAG + "failed to delete old world '{}'", worldName, e);
+            }
+        }
+
+        private static void deleteRecursively(java.nio.file.Path root) throws java.io.IOException {
+            if (!java.nio.file.Files.exists(root)) {
+                return;
+            }
+            try (var walk = java.nio.file.Files.walk(root)) {
+                walk.sorted(java.util.Comparator.reverseOrder()).forEach(p -> {
+                    try {
+                        java.nio.file.Files.deleteIfExists(p);
+                    } catch (java.io.IOException ex) {
+                        throw new java.io.UncheckedIOException(ex);
+                    }
+                });
+            } catch (java.io.UncheckedIOException uio) {
+                throw uio.getCause();
+            }
+        }
+
+        /** 组装测试世界游戏规则（固定晴天白昼；关闭随机刻避免展台作物/树苗在观察期生长炸服） */
         private static net.minecraft.world.level.GameRules gameRules() {
             net.minecraft.world.level.GameRules rules = new net.minecraft.world.level.GameRules();
             rules.getRule(net.minecraft.world.level.GameRules.RULE_DAYLIGHT).set(false, null);
             rules.getRule(net.minecraft.world.level.GameRules.RULE_WEATHER_CYCLE).set(false, null);
+            // 0 = 禁用随机刻（树苗/作物/火焰等）；人工观察方块总览时更稳定
+            rules.getRule(net.minecraft.world.level.GameRules.RULE_RANDOMTICKING).set(0, null);
             return rules;
         }
 

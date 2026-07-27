@@ -1,9 +1,19 @@
 // Root build.gradle for PasterDreamParent multi-module project.
 // All build logic is in the submodule build.gradle files.
 // See: PasterDreamAPI/build.gradle (API library) and PasterDream/build.gradle (main mod).
+//
+// 分发约定：玩家只安装一个 jar
+//   ./gradlew :PasterDream:packageMod
+//   → build/dist/pasterdream-<version>.jar  （已内嵌 PasterDreamAPI）
 
 subprojects {
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
     }
+}
+
+tasks.register('packageMod') {
+    group = 'distribution'
+    description = '构建并收集单一可安装 jar 到 build/dist/（内嵌 API）'
+    dependsOn ':PasterDream:packageMod'
 }

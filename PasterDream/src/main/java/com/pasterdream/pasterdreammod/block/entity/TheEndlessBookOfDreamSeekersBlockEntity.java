@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.block.entity;
 
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
+import com.pasterdream.pasterdreammod.util.StructureInventoryHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -138,9 +139,7 @@ public class TheEndlessBookOfDreamSeekersBlockEntity extends BlockEntity impleme
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        if (tag.contains("inventory")) {
-            itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
-        }
+        StructureInventoryHelper.loadItemHandler(itemHandler, tag, registries);
         // 兼容旧档（仅 1 槽）：deserialize 可能把 Size 改回 1，安全扩到 2 并保留原槽 0
         if (itemHandler.getSlots() != SLOT_COUNT) {
             int oldSlots = itemHandler.getSlots();

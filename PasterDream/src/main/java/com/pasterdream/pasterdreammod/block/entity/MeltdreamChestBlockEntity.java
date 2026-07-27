@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.block.entity;
 import com.pasterdream.pasterdreammod.block.MeltdreamChestBlock;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
+import com.pasterdream.pasterdreammod.util.StructureInventoryHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -513,9 +514,8 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        if (tag.contains("inventory")) {
-            itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
-        }
+        // inventory=本模组存档；Items=结构 NBT（遗迹内预置物品）
+        StructureInventoryHelper.loadItemHandler(itemHandler, tag, registries);
         popProgress = tag.getInt(TAG_POP_PROGRESS);
         itemsSet = tag.getBoolean(TAG_ITEMS_SET);
         openingTick = tag.getInt(TAG_OPENING_TICK);

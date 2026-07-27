@@ -49,23 +49,13 @@ public class PDBlocksDyedreamPhase2 {
                     .strength(0.5f)
                     .noOcclusion());
 
-    /** 星呼方块 */
-    public static final DeferredBlock<Block> STARCALL_BLOCK = PDBlocks.BLOCKS.registerBlock("starcall_block",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(1.5f)
-                    .lightLevel(s -> 15)
-                    .requiresCorrectToolForDrops());
+    /** 唤星照明（限时光点：粒子 + 60s 自毁） */
+    public static final DeferredBlock<StarcallBlockBlock> STARCALL_BLOCK =
+            PDBlocks.BLOCKS.registerBlock("starcall_block", p -> new StarcallBlockBlock());
 
-    /** 星呼裂纹 */
-    public static final DeferredBlock<Block> STARCALL_CRACK = PDBlocks.BLOCKS.registerBlock("starcall_crack",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(-1.0f, 3600000.0f)
-                    .lightLevel(s -> 15)
-                    .noOcclusion()
-                    .emissiveRendering((bs, br, bp) -> true)
-                    .hasPostProcess((bs, br, bp) -> true));
+    /** 唤星裂隙（限时雨火球：每 0.5s 下射 + 10s 自毁；原版亦为方块非实体） */
+    public static final DeferredBlock<StarcallCrackBlock> STARCALL_CRACK =
+            PDBlocks.BLOCKS.registerBlock("starcall_crack", p -> new StarcallCrackBlock());
 
     /** 青色石头 */
     public static final DeferredBlock<Block> CYAN_STONE = PDBlocks.BLOCKS.registerBlock("cyan_stone",
@@ -95,26 +85,23 @@ public class PDBlocksDyedreamPhase2 {
                     .sound(SoundType.SAND)
                     .strength(0.5f));
 
-    /** 透明玻璃 */
+    /** 澄澈玻璃（半透明，邻接同种可连消） */
     public static final DeferredBlock<Block> CLARITY_GLASS = PDBlocks.BLOCKS.registerBlock("clarity_glass",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(0.3f)
-                    .noOcclusion());
+            TransparentBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS)
+                    .strength(0.3f));
 
-    /** 雕刻透明玻璃 */
+    /** 雕刻澄澈玻璃 */
     public static final DeferredBlock<Block> CARVE_CLARITY_GLASS = PDBlocks.BLOCKS.registerBlock("carve_clarity_glass",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(0.3f)
-                    .noOcclusion());
+            TransparentBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS)
+                    .strength(0.3f));
 
-    /** 边框透明玻璃 */
+    /** 镶框澄澈玻璃（原版 lightLevel 12 + 发光后处理） */
     public static final DeferredBlock<Block> FRAME_CLARITY_GLASS = PDBlocks.BLOCKS.registerBlock("frame_clarity_glass",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.GLASS)
-                    .strength(0.3f)
-                    .noOcclusion());
+            TransparentBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS)
+                    .strength(0.1f)
+                    .lightLevel(s -> 12)
+                    .hasPostProcess((bs, br, bp) -> true)
+                    .emissiveRendering((bs, br, bp) -> true));
 
     /** 透明玻璃板 */
     public static final DeferredBlock<IronBarsBlock> CLARITY_GLASSPANE = PDBlocks.BLOCKS.registerBlock("clarity_glasspane",

@@ -60,6 +60,14 @@ public class PDCreativeTabsWeapon {
                         output.accept(PDItems.PERGAMYN.get());
                         output.accept(PDItems.PEN_AND_INK.get());
                         output.accept(PDItems.REEDROD.get());
+                        // 生物掉落材料（原版 paster_tab_0 物品栏；曾误挂 entity_tab）
+                        output.accept(PDItems.SOUL_DUST.get());
+                        output.accept(PDItems.SOUL_ESSENCE.get());
+                        output.accept(PDItems.PINK_SLIMEBALL.get());
+                        output.accept(PDItems.ELDER_GUARDIAN_SCALE.get());
+                        output.accept(PDItems.BLACK_BEETLE_CARAPACE.get());
+                        output.accept(PDItems.BLACK_BEETLE_VOCALCORD.get());
+                        output.accept(PDItems.BASALT_SNAIL_SHELL.get());
 
                         // 武器原胚
                         output.accept(PDItems.SWORD_EMBRYO_0.get());
@@ -145,9 +153,8 @@ public class PDCreativeTabsWeapon {
                         output.accept(PDBlocks.MOLTENGOLD_ORE.get());
                         output.accept(PDBlocks.SOUL_ORE.get());
 
-                        // Phase 1: 移植特殊物品
+                        // Phase 1: 移植特殊物品（熔梦液桶归染梦页；蓝图归纪念品/工坊相关页）
                         output.accept(PDItems.JUNGLE_SPORE.get());
-                        output.accept(PDItems.MELTDREAM_LIQUID_BUCKET.get());
                         output.accept(PDItems.PINKEGG.get());
                         output.accept(PDItems.PLIERS.get());
 
@@ -159,7 +166,7 @@ public class PDCreativeTabsWeapon {
                         output.accept(PDItems.WORKSHOP_BLAST.get());
                         output.accept(PDItems.WORKSHOP_ANVIL.get());
                         output.accept(PDItems.WORKSHOP_GRIND.get());
-                        // 蓝图（原版 tab_6）
+                        // 蓝图（工坊合成指引，与纪念品页双挂便于查找）
                         output.accept(PDItems.BLUEPRINT_0.get());
                         output.accept(PDItems.BLUEPRINT_1.get());
 

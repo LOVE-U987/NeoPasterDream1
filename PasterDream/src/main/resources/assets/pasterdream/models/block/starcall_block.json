@@ -1,13 +1,8 @@
 {
-  "parent": "block/cube",
+  "parent": "block/cube_all",
   "textures": {
-    "down": "pasterdream:block/starcall_block",
-    "up": "pasterdream:block/starcall_block",
-    "north": "pasterdream:block/starcall_block",
-    "east": "pasterdream:block/starcall_block",
-    "south": "pasterdream:block/starcall_block",
-    "west": "pasterdream:block/starcall_block",
-    "particle": "pasterdream:block/starcall_block"
+    "all": "pasterdream:block/air",
+    "particle": "pasterdream:block/air"
   },
-  "render_type": "solid"
+  "render_type": "cutout"
 }

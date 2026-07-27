@@ -66,11 +66,16 @@ public class DebugStructureWandItem extends Item {
         // 加载并放置结构
         ServerLevel serverLevel = (ServerLevel) level;
 
-        // 通过资源管理器直接加载 NBT 文件（绕开 StructureTemplateManager.get 可能的路径解析问题）
-        ResourceLocation nbtLocation = ResourceLocation.parse("pasterdream:structure/" + structurePath + ".nbt");
-        Optional<StructureTemplate> templateOpt = loadStructure(serverLevel, nbtLocation);
+        // 优先走 StructureTemplateManager（与 PDStructureBlock / 自然生成一致，含 DFU）；
+        // 失败时再从 datapack 资源直读并 readStructure（同样走 DFU）。
+        ResourceLocation structureId = ResourceLocation.parse("pasterdream:" + structurePath);
+        Optional<StructureTemplate> templateOpt = serverLevel.getStructureManager().get(structureId);
+        if (templateOpt.isEmpty() || templateOpt.get().getSize().getX() <= 0) {
+            ResourceLocation nbtLocation = ResourceLocation.parse("pasterdream:structure/" + structurePath + ".nbt");
+            templateOpt = loadStructure(serverLevel, nbtLocation);
+        }
         if (templateOpt.isEmpty()) {
-            player.sendSystemMessage(Component.literal("§c未找到结构: " + ResourceLocation.parse("pasterdream:" + structurePath)));
+            player.sendSystemMessage(Component.literal("§c未找到结构: " + structureId));
             return InteractionResultHolder.fail(itemStack);
         }
 
@@ -81,11 +86,11 @@ public class DebugStructureWandItem extends Item {
                 .setIgnoreEntities(false);
 
         Vec3i size = template.getSize();
+        // flags=3 与原版/PDStructureBlock 一致（NOTIFY_NEIGHBORS|NOTIFY_CLIENTS），保证 BE 与客户端同步
         boolean placed = template.placeInWorld(serverLevel, targetPos, targetPos.offset(
                 size.getX() - 1, size.getY() - 1, size.getZ() - 1
-        ), settings, serverLevel.random, 2);
+        ), settings, serverLevel.random, 3);
 
-        ResourceLocation structureId = ResourceLocation.parse("pasterdream:" + structurePath);
         if (placed) {
             player.sendSystemMessage(Component.literal("§a已放置结构: §f" + structureId + " §a于 " + targetPos.toShortString()));
         } else {

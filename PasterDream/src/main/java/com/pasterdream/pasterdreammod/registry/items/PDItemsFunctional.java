@@ -213,11 +213,22 @@ public class PDItemsFunctional {
                     () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_train"));
 
     /**
-     * 调试法杖 - 巨型染梦树
+     * 调试法杖 - 巨型染梦树变体 0（NBT {@code dyedream_worldtree}，对应 worldgen dyedream_worldtree_0）
+     */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_WORLDTREE_0 =
+            PDItems.ITEMS.register("debug_wand_worldtree_0",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_worldtree"));
+
+    /**
+     * 调试法杖 - 巨型染梦树变体 1 / 真树（NBT {@code dyedream_worldtree_true}，对应 worldgen dyedream_worldtree_1）
+     * <p>注册名 {@code debug_wand_worldtree} 保留兼容旧档与创造栏引用。
      */
     public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_WORLDTREE =
             PDItems.ITEMS.register("debug_wand_worldtree",
                     () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_worldtree_true"));
+
+    /** 与 {@link #DEBUG_WAND_WORLDTREE} 同实例别名，便于按 0/1 命名取用 */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_WORLDTREE_1 = DEBUG_WAND_WORLDTREE;
 
     /**
      * 调试法杖 - 粉红菇屋 0
@@ -455,6 +466,15 @@ public class PDItemsFunctional {
     public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_CHURCH_7 =
             PDItems.ITEMS.register("debug_wand_dream_church_7",
                     () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_church_7"));
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_CHURCH_8 =
+            PDItems.ITEMS.register("debug_wand_dream_church_8",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_church_8"));
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_CHURCH_9 =
+            PDItems.ITEMS.register("debug_wand_dream_church_9",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_church_9"));
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_CHURCH_10 =
+            PDItems.ITEMS.register("debug_wand_dream_church_10",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dream_church_10"));
 
     /**
      * 调试法杖 - 沙漠堡垒

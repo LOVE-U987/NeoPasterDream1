@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.block.entity;
 
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
+import com.pasterdream.pasterdreammod.util.StructureInventoryHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -69,9 +70,8 @@ public class DyedreamDeskBlockEntity extends BlockEntity implements MenuProvider
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        if (tag.contains("inventory")) {
-            itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
-        }
+        // inventory=本模组存档；Items=结构 NBT / 原版 RandomizableContainer（成书等多在书桌）
+        StructureInventoryHelper.loadItemHandler(itemHandler, tag, registries);
     }
 
     // ==================== 客户端同步 ====================

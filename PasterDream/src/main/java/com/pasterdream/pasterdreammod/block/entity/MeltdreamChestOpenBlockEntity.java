@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.block.entity;
 
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.menu.MeltdreamChestMenu;
+import com.pasterdream.pasterdreammod.util.StructureInventoryHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -65,9 +66,7 @@ public class MeltdreamChestOpenBlockEntity extends BlockEntity implements MenuPr
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        if (tag.contains("inventory")) {
-            itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
-        }
+        StructureInventoryHelper.loadItemHandler(itemHandler, tag, registries);
     }
 
     // ==================== 客户端同步 ====================

@@ -9,5 +9,5 @@
     "west": "pasterdream:block/big_bubble",
     "particle": "pasterdream:block/big_bubble"
   },
-  "render_type": "transparent"
+  "render_type": "translucent"
 }

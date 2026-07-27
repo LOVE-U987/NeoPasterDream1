@@ -121,7 +121,9 @@ public class PDItems {
     public static final DeferredItem<?> STRAWBERRY_HEART = PDItemsFunctional.STRAWBERRY_HEART;
     public static final DeferredItem<?> WAFER_BISCUIT = PDItemsFunctional.WAFER_BISCUIT;
     public static final DeferredItem<?> DEBUG_WAND_DREAM_TRAIN = PDItemsFunctional.DEBUG_WAND_DREAM_TRAIN;
+    public static final DeferredItem<?> DEBUG_WAND_WORLDTREE_0 = PDItemsFunctional.DEBUG_WAND_WORLDTREE_0;
     public static final DeferredItem<?> DEBUG_WAND_WORLDTREE = PDItemsFunctional.DEBUG_WAND_WORLDTREE;
+    public static final DeferredItem<?> DEBUG_WAND_WORLDTREE_1 = PDItemsFunctional.DEBUG_WAND_WORLDTREE_1;
     public static final DeferredItem<?> DEBUG_WAND_PINKAGARIC_0 = PDItemsFunctional.DEBUG_WAND_PINKAGARIC_0;
     public static final DeferredItem<?> DEBUG_WAND_PINKAGARIC_1 = PDItemsFunctional.DEBUG_WAND_PINKAGARIC_1;
     public static final DeferredItem<?> DEBUG_WAND_PINKAGARIC_2 = PDItemsFunctional.DEBUG_WAND_PINKAGARIC_2;
@@ -159,6 +161,9 @@ public class PDItems {
     public static final DeferredItem<?> DEBUG_WAND_DREAM_CHURCH_5 = PDItemsFunctional.DEBUG_WAND_DREAM_CHURCH_5;
     public static final DeferredItem<?> DEBUG_WAND_DREAM_CHURCH_6 = PDItemsFunctional.DEBUG_WAND_DREAM_CHURCH_6;
     public static final DeferredItem<?> DEBUG_WAND_DREAM_CHURCH_7 = PDItemsFunctional.DEBUG_WAND_DREAM_CHURCH_7;
+    public static final DeferredItem<?> DEBUG_WAND_DREAM_CHURCH_8 = PDItemsFunctional.DEBUG_WAND_DREAM_CHURCH_8;
+    public static final DeferredItem<?> DEBUG_WAND_DREAM_CHURCH_9 = PDItemsFunctional.DEBUG_WAND_DREAM_CHURCH_9;
+    public static final DeferredItem<?> DEBUG_WAND_DREAM_CHURCH_10 = PDItemsFunctional.DEBUG_WAND_DREAM_CHURCH_10;
     public static final DeferredItem<?> DEBUG_WAND_DESERT_FORTRESS_0 = PDItemsFunctional.DEBUG_WAND_DESERT_FORTRESS_0;
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TOWER_0 = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TOWER_0;
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TOWER_1 = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TOWER_1;

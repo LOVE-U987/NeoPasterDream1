@@ -74,7 +74,6 @@ public class PDCreativeTabsCurio {
                         output.accept(PDItems.SNOW_VOW_HEAD.get());
                         output.accept(PDItems.GHOST_FACE_HEAD.get());
                         output.accept(PDItems.ALLKINDS_RING.get());
-                        output.accept(PDItems.TEST_CURIO.get());
                         output.accept(PDItems.FOURLEAF_CLOVER_CURIO.get());
                     })
                     .build());

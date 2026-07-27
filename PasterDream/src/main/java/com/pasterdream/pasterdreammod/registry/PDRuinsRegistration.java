@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * 染梦遗迹/结构注册 —— 使用 RuinAPI + JigsawStructure 注册 42 个遗迹结构
+ * 染梦遗迹/结构注册 —— 使用 RuinAPI + JigsawStructure 注册 41 个遗迹结构
  * <p>
  * 采用 {@link RuinAPI} 的 Facade + Builder 模式，以 {@link JigsawStructure#CODEC}
  * 作为序列化编解码器，注册自定义 StructureType。所有 JSON 资源文件已在开发阶段
@@ -18,7 +18,7 @@ import java.util.Map;
  * 注册的遗迹（来自旧模组 FixPasterDream）：
  * <ul>
  *   <li>{@code dream_train} — 染梦列车，Y=55 空中漂浮</li>
- *   <li>{@code dyedream_worldtree} — 巨型染梦树，Y=-25 地下生长</li>
+ *   <li>{@code dyedream_worldtree_0}/{@code dyedream_worldtree_1} — 巨型染梦树两变体（NBT {@code dyedream_worldtree} / {@code dyedream_worldtree_true}），Y=-25</li>
  *   <li>{@code pinkagaric_house_0~3} — 4 种粉红菇屋，Y=-4 地表</li>
  *   <li>{@code struct_dyedream_crack_1} — 主世界染梦裂隙入口，Y=32</li>
  *   <li>{@code desert_cottage_0} — 主世界沙漠小屋，Y=0</li>
@@ -148,9 +148,21 @@ public class PDRuinsRegistration {
         buildSet("dream_train", "dream_train_set", 258, 179, 109243324);
     }
 
+    /**
+     * 巨型染梦树两变体 —— 与原版 {@code dyedream_worldtree_0/1} 一一对应。
+     * <ul>
+     *   <li>0：模板 {@code dyedream_worldtree}，spacing 156 / sep 87 / salt 1208134265</li>
+     *   <li>1：模板 {@code dyedream_worldtree_true}，spacing 289 / sep 165 / salt 1208711388</li>
+     * </ul>
+     * JSON（structure / template_pool / structure_set）已预置；此处仅注册 StructureType 元数据。
+     */
     private static void registerDyedreamWorldTree() {
-        buildRuin("dyedream_worldtree", -25);
-        buildSet("dyedream_worldtree", "dyedream_worldtree_set", 289, 165, 1208711388);
+        // biome 在预置 JSON 中为 biome_dyedream_0；generateJson=false，biomeTag 仅元数据
+        buildRuin("dyedream_worldtree_0", "pasterdream:biome_dyedream_0", -25, "none");
+        buildSet("dyedream_worldtree_0", "dyedream_worldtree_0_set", 156, 87, 1208134265);
+
+        buildRuin("dyedream_worldtree_1", "pasterdream:biome_dyedream_0", -25, "none");
+        buildSet("dyedream_worldtree_1", "dyedream_worldtree_1_set", 289, 165, 1208711388);
     }
 
     private static void registerPinkagaricHouses() {
@@ -252,30 +264,42 @@ public class PDRuinsRegistration {
     }
 
     /**
-     * 注册梦想教堂系列结构 —— dream_church_0~7
+     * 注册梦想教堂系列结构 —— dream_church_0~10（与原版 11 变体一一对应）
      * <p>
-     * 在染梦维度 Y=32 地表生成，共 8 个变体。每个教堂有独立的 spacing/separation/salt，
-     * 确保不同变体在世界中分布均匀且不重叠。
-     * NBT 结构文件为 {@code structure/dream_church_0.nbt} ~ {@code dream_church_7.nbt}。
-     * <p>
-     * dream_church_8/9/10 因方块缺失暂移除，待补全后重新加入。
+     * 数据对齐 {@code libs/FixPasterDream-main}：
+     * <ul>
+     *   <li>0–7：spacing/sep 134–137 / 60–61，Y=32，群系 {@code #pasterdream:dyedream_biome}</li>
+     *   <li>8–9：spacing 164 / sep 81，Y=32（第三教堂变体，structure_block_12）</li>
+     *   <li>10：spacing 172 / sep 95，Y=37，群系仅 {@code pasterdream:biome_dyedream_0}</li>
+     * </ul>
+     * NBT / structure / template_pool / structure_set JSON 均已预置；
+     * 0–7 的 structure_set 文件名为 {@code *_set.json}，8–10 与原版同名无后缀。
      */
     private static void registerDreamChurches() {
-        // 配置表：{index, spacing, separation, salt}
+        // 配置表：{index, spacing, separation, salt, startHeight}
+        // salt/spacing 取自原版 structure_set/dream_church_*.json
         int[][] configs = {
-                {0,  134, 60, 1163538860},
-                {1,  134, 60, 1163346486},
-                {2,  134, 60, 1163923609},
-                {3,  134, 60, 1163731235},
-                {4,  137, 61, 1162769362},
-                {5,  137, 61, 1162576988},
-                {6,  137, 61, 1163154111},
-                {7,  137, 61, 1162961737}
+                {0,  134, 60, 1163538860, 32},
+                {1,  134, 60, 1163346486, 32},
+                {2,  134, 60, 1163923609, 32},
+                {3,  134, 60, 1163731235, 32},
+                {4,  137, 61, 1162769362, 32},
+                {5,  137, 61, 1162576988, 32},
+                {6,  137, 61, 1163154111, 32},
+                {7,  137, 61, 1162961737, 32},
+                {8,  164, 81, 1161999865, 32},
+                {9,  164, 81, 1161807490, 32},
+                {10, 172, 95, 1178135507, 37},
         };
         for (int[] cfg : configs) {
-            String name = "dream_church_" + cfg[0];
-            buildRuin(name, 32);
-            buildSet(name, name + "_set", cfg[1], cfg[2], cfg[3]);
+            int idx = cfg[0];
+            String name = "dream_church_" + idx;
+            // church_10 的 biomes 在预置 JSON 中为单群系 biome_dyedream_0；
+            // generateJson=false，此处 biomeTag 仅作 StructureType 元数据，与 JSON 并存。
+            buildRuin(name, cfg[4]);
+            // 0–7 历史文件名带 _set；8–10 与原版一致不带后缀
+            String setName = idx <= 7 ? name + "_set" : name;
+            buildSet(name, setName, cfg[1], cfg[2], cfg[3]);
         }
     }
 

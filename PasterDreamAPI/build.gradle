@@ -8,10 +8,25 @@ version = mod_version
 group = mod_group_id
 
 base {
+    // 库制品名；玩家分发请用 :PasterDream:packageMod 的合并 jar，不要把本 jar 丢进 mods。
     archivesName = 'PasterDreamAPI'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+// API 不是独立 NeoForge mod（无 neoforge.mods.toml）。
+// jar 仍保留供开发/ Maven 依赖；打 classifier=api，避免与主 mod 发布物混淆。
+tasks.named('jar', Jar).configure {
+    archiveClassifier.set('api')
+    manifest {
+        attributes(
+                'Implementation-Title': 'PasterDreamAPI',
+                'Implementation-Version': project.version,
+                'Automatic-Module-Name': 'pasterdream.api',
+                'Note': 'Library only — embed via PasterDream jar; do not install into mods/'
+        )
+    }
+}
 
 neoForge {
     version = project.neo_version

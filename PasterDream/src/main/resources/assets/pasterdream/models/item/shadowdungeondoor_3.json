@@ -1,5 +1,5 @@
 {
-  "parent": "pasterdream:block/shadowdungeondoor_3",
+  "parent": "pasterdream:block/shadowdungeondoor_2",
   "display": {
     "thirdperson": {
       "rotation": [

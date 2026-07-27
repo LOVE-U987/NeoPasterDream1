@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/cyan_moss_stone",
-    "up": "pasterdream:block/cyan_moss_stone",
-    "north": "pasterdream:block/cyan_moss_stone",
-    "east": "pasterdream:block/cyan_moss_stone",
-    "south": "pasterdream:block/cyan_moss_stone",
-    "west": "pasterdream:block/cyan_moss_stone",
-    "particle": "pasterdream:block/cyan_moss_stone"
+    "down": "pasterdream:block/cang_qing_yan_",
+    "up": "pasterdream:block/cang_qing_tai_yan__top",
+    "north": "pasterdream:block/cang_qing_tai_yan_",
+    "east": "pasterdream:block/cang_qing_tai_yan_",
+    "south": "pasterdream:block/cang_qing_tai_yan_",
+    "west": "pasterdream:block/cang_qing_tai_yan_",
+    "particle": "pasterdream:block/cang_qing_yan_"
   },
   "render_type": "solid"
 }

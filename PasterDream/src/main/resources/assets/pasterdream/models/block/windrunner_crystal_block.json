@@ -9,5 +9,5 @@
     "west": "pasterdream:block/windrunner_crystal_block",
     "particle": "pasterdream:block/windrunner_crystal_block"
   },
-  "render_type": "transparent"
+  "render_type": "translucent"
 }

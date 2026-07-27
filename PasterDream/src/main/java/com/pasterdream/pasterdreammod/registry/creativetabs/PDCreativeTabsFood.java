@@ -71,6 +71,9 @@ public class PDCreativeTabsFood {
                         output.accept(PDItems.PINEAPPLE_LOVE_SEA.get());
                         output.accept(PDItems.GOLDENROD_TEA.get());
                         output.accept(PDItems.LEGEND_DRAGON_HORN_ICE_CREAM.get());
+                        // 水母相关食材（原版 paster_tab_4 食物栏；曾误挂 entity_tab）
+                        output.accept(PDItems.JELLYFISH_MUD.get());
+                        output.accept(PDItems.JELLYFISH_JELLO.get());
                         output.accept(PDItems.LIGHT_ORGAN.get());
                         output.accept(PDItems.QUEER_SOUP.get());
                         output.accept(PDItems.RAGE_ELIXIR_0.get());

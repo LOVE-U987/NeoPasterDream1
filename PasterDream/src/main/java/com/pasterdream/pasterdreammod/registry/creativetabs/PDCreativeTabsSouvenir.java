@@ -72,6 +72,8 @@ public class PDCreativeTabsSouvenir {
                         output.accept(PDItems.CRADLE_IN_ONES_ARMS.get());
                         output.accept(PDItems.SQUEAL_WAVE.get());
                         output.accept(PDItems.GUIDING_DRUG.get());
+                        // 原版拓展栏 paster_tab_9；曾误挂 entity_tab
+                        output.accept(PDItems.STRAWBERRY_HEART.get());
                         // 法术物品（梦境炼药锅炼制产出）
                         output.accept(PDItems.LIGHTNING_SPELL.get());
                         output.accept(PDItems.POISON_SPELL.get());

@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.block.entity;
 
 import com.pasterdream.pasterdreammod.menu.ShadowDeskMenu;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
+import com.pasterdream.pasterdreammod.util.StructureInventoryHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -57,9 +58,7 @@ public class ShadowDeskBlockEntity extends W4DataBlockEntity implements MenuProv
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        if (tag.contains("inventory")) {
-            itemHandler.deserializeNBT(registries, tag.getCompound("inventory"));
-        }
+        StructureInventoryHelper.loadItemHandler(itemHandler, tag, registries);
     }
 
     @Override

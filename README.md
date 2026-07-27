@@ -22,7 +22,7 @@
 
 原版模组使用 MCreator 构建，这在代码结构、性能和扩展性上都有所限制。新帕斯特之梦使用 **NeoForge 原生 API + DeferredRegister + GeckoLib** 重新实现了一切，为模组带来了更好的性能和更大的扩展空间。
 
-**原版主路径注册与自动化行为抽测已闭环**（2026-07-27 客户端终验 130/130）。它仍会成长——但首先，你可以完整游玩原作者设计的染梦/影灯/风旅主线。
+**原版主路径注册与自动化行为抽测已闭环**（2026-07-27 客户端终验 194/194，含结构/工坊/结构维度/方块总览）。它仍会成长——但首先，你可以完整游玩原作者设计的染梦/影灯/风旅主线。
 
 ***
 
@@ -33,10 +33,10 @@
 | **方块与物品（注册）** | ██████████**100%** | ✅ 终验通过（334 方块 / 690 物品期望全在场） |
 | **实体与生物** | ██████████**100%** | ✅ 51/51 |
 | **状态效果 / 药水 / 附魔** | ██████████**100%** | ✅ 46+4+2 |
-| **世界生成与四维度** | █████████░**\~95%** | ✅ 主路径可用；细节 polish 进行中 |
+| **世界生成与四维度** | ██████████**100%** | ✅ 四维 + 114 结构/集/池；structure 行为终验 18 项 |
 | **配方与成就** | ██████████**100%** | ✅ 444 配方 · 62/62 成就 |
 | **GUI / 菜单** | ██████████**100%** | ✅ 19/19（工坊·高炉·研究台·笔记·蓝图·储物袋等） |
-| **自动化验证** | ██████████**100%** | ✅ 双模 130 断言全绿 |
+| **自动化验证** | ██████████**100%** | ✅ VERIFY 行为时间线（structures×20 + workshop×28 + struct-dim×15 + gallery×3 + entity-gallery×5） |
 | **新内容设计** | ░░░░░░░░░░**\~5%** | ⏳ 原版对齐完成后的扩展位 |
 
 详见根目录 [`功能还原差距报告.md`](功能还原差距报告.md)。
@@ -83,20 +83,113 @@
 | 工具 | 用途 |
 | :--- | :--- |
 | `PASTERDREAM_SMOKETEST=1` | 炼药锅等链路自动冒烟 |
-| `PASTERDREAM_VERIFY=1` | 注册表 diff + 行为时间线（终验 130 pass） |
+| `PASTERDREAM_VERIFY=1` | 注册表 diff + 行为时间线（终验 194 pass；默认 KEEP_OPEN 不退出，便于人工观察方块总览） |
+| `PASTERDREAM_VERIFY_KEEP_OPEN=0` | 测完自动退出客户端（CI/无头用） |
 | `.trae/tools/check_lang.py` | 中英语言键完整性 |
 | `.trae/tools/verify_resource_closure.py` | JSON/模型/纹理/音效/loot 闭包 |
 
+方块总览展台（VERIFY 收尾自动铺，出生点东/南）：**主台**静物全量（门/双层植物上下半、染梦植物垫染梦草）；**特展带**用物品框+告示展示结构触发块 / 唤星限时块 / 流体（避免自毁与漫延）。
+
+实体展台（VERIFY 紧随其后，出生点西侧）：**刷怪蛋木桶**装齐本模组 `*_spawn_egg`；**无蛋实体名签桶**（投射物/MISC 用命名纸张）；**活体玻璃笼** NoAI+无敌对照模型。测完玩家停在实体展台起点，可飞回方块台。
+
+### ▶️ 进测试 / 终验命令（复制即用）
+
+工作目录：仓库根 `/opt/MDEV/NeoPasterDream1`。需要 **Java 21**。  
+下列每一段可**单独复制执行**，不要混在同一串里。
+
+IDEA / Fleet：根目录 [`.run/`](.run/) 已写入同名运行配置（`PD VERIFY KEEP_OPEN` 等），打开工程后直接 Run。
+
+#### A. 编译（可选）
+
+```bash
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk sh gradlew :PasterDream:compileJava --offline
+```
+
+#### B. 静态门禁（不启动游戏）
+
+```bash
+python3 .trae/tools/check_lang.py
+```
+
+```bash
+python3 .trae/tools/verify_resource_closure.py
+```
+
+#### C. 【推荐】人工观察终验（VERIFY，测完不退出）
+
+行为说明：
+
+- 删除旧存档 `test-audit` 并新建超平坦创造世界  
+- 全程夜视 / 飞行 / 创造  
+- 收尾铺**方块总览**（主台 + 特展带，东/南）与**实体展台**（刷怪蛋木桶 + 玻璃笼，西侧）  
+- 玩家最终停在**实体展台**起点（可飞行回方块台）  
+- 报告：`PasterDream/run/pd_verify_report.json`  
+- 看完后**手动关游戏窗口**
+
+```bash
+PASTERDREAM_VERIFY=1 \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
+#### D. CI / 只要结果（VERIFY，测完自动退出）
+
+```bash
+PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_KEEP_OPEN=0 \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
+#### E. 仅冒烟（炼药锅链路；不跑全量 VERIFY）
+
+```bash
+PASTERDREAM_SMOKETEST=1 \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
+#### F. 冒烟 + 终验双开（KEEP_OPEN 默认仍保持打开）
+
+```bash
+PASTERDREAM_SMOKETEST=1 PASTERDREAM_VERIFY=1 \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
+#### G. 查看机器可读报告
+
+```bash
+python3 - <<'PY'
+import json
+from pathlib import Path
+p = Path("PasterDream/run/pd_verify_report.json")
+d = json.loads(p.read_text())
+print(f"pass={d['pass']} fail={d['fail']}")
+fails = [a for a in d.get("assertions", []) if not a.get("pass")]
+for a in fails[:30]:
+    print("FAIL", a.get("suite"), a.get("name"), a.get("detail"))
+PY
+```
+
+| 环境变量 | 默认 | 含义 |
+| :--- | :-: | :--- |
+| `PASTERDREAM_VERIFY=1` | 关 | 启用移植终验时间线 |
+| `PASTERDREAM_VERIFY_KEEP_OPEN` | **开**（未设置即保持打开） | `0`/`false` = 测完退出 |
+| `PASTERDREAM_SMOKETEST=1` | 关 | 炼药锅等冒烟（可与 VERIFY 同开） |
+
+崩溃日志：`PasterDream/run/crash-reports/` · 最新运行日志：`PasterDream/run/logs/latest.log`。
 ***
 
 ## 🔄 进行中 / 后续
 
 | 任务 | 优先级 | 描述 |
 | :--- | :-: | :--- |
-| **人工游玩回归** | 🔥 高 | 暗影成就链 · 真影之床抉择 · 工坊手感 · 法杖耗能 |
-| **装饰性差异** | 🌙 中 | 卡牌全屏展示动画 · 部分纯 VFX · playerAnimator 资源 |
-| **第三方可选联动** | 🌙 中 | Croptopia 深度；Tetra 待上游 1.21.1 |
+| **人工游玩回归** | 🔥 高 | 暗影成就链 · 真影之床抉择 · 工坊手感 · 法杖耗能 · Curios 佩戴 · 唤星裂隙 |
+| **装饰性差异** | 🌙 低 | 卡牌全屏展示动画 · 部分纯 VFX · playerAnimator 资源 |
+| **第三方可选联动** | 🌙 低 | Croptopia 深度；Tetra 待上游 1.21.1 |
 | **新内容设计** | ⏳ 低 | 原版对齐完成后的扩展 |
+
+详见 [`功能还原差距报告.md`](功能还原差距报告.md) §2 模块 · §3 后续 · §4 命令（2026-07-27）。
 
 ***
 

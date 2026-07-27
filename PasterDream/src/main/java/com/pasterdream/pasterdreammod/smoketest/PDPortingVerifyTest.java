@@ -96,6 +96,24 @@ public final class PDPortingVerifyTest {
             "1".equals(System.getenv("PASTERDREAM_VERIFY"))
                     || Boolean.getBoolean("pasterdream.verify");
 
+    /**
+     * 测完后是否保持客户端打开供人工观察（默认 true）。
+     * 设 {@code PASTERDREAM_VERIFY_KEEP_OPEN=0} 或 {@code -Dpasterdream.verify.keepOpen=false} 可恢复自动退出。
+     */
+    public static final boolean KEEP_OPEN = keepOpenEnabled();
+
+    private static boolean keepOpenEnabled() {
+        String env = System.getenv("PASTERDREAM_VERIFY_KEEP_OPEN");
+        if (env != null) {
+            return !"0".equals(env) && !"false".equalsIgnoreCase(env);
+        }
+        // 系统属性显式 false 才关；未设置默认保持打开
+        if (System.getProperty("pasterdream.verify.keepOpen") != null) {
+            return Boolean.getBoolean("pasterdream.verify.keepOpen");
+        }
+        return true;
+    }
+
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String TAG = "[PDVerify] ";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
@@ -264,9 +282,18 @@ public final class PDPortingVerifyTest {
         at(t + 15, PDPortingVerifyTest::pinkeggAndCalleSuite);
         at(t + 17, PDPortingVerifyTest::effectModifierSuite);
         at(t + 19, PDPortingVerifyTest::endlessBookImportSuite);
+        at(t + 21, PDPortingVerifyTest::structureGenSuite);
+        at(t + 23, PDPortingVerifyTest::workshopSuite);
+        at(t + 24, PDPortingVerifyTest::structureDimensionSuite);
         at(t + 10, () -> runAttributeSuite(player()));
         at(t + 15, () -> runAttachmentSuite(player()));
         at(t + 20, () -> runEffectSuite(player()));
+
+        // 全程夜视 / 飞行（登录后立刻 + 维度跳转后刷新）
+        at(t + 1, PDPortingVerifyTest::refreshPlayerBuffs);
+        at(t + 125, PDPortingVerifyTest::refreshPlayerBuffs);
+        at(t + 215, PDPortingVerifyTest::refreshPlayerBuffs);
+        at(t + 225, PDPortingVerifyTest::refreshPlayerBuffs);
 
         // 维度往返：影灯世界 → 风之旅途 → 主世界（每跳留 80 tick 供区块生成）
         at(t + 40, () -> teleportToDimension(player(), "lamp_shadow_world"));
@@ -293,8 +320,13 @@ public final class PDPortingVerifyTest {
         at(t + 370, PDPortingVerifyTest::wandProjectileSweep);
         at(t + 375, PDPortingVerifyTest::angelBlockItemTest);
 
+        // 收尾前：方块总览展台（全量放置 + 传送玩家，供人工观察；不清理）
+        at(t + 470, PDPortingVerifyTest::blockGallerySuite);
+        // 实体展台：刷怪蛋木桶 + 无蛋名签桶 + 活体玻璃笼（西侧，与方块台错开）
+        at(t + 480, PDPortingVerifyTest::entityGallerySuite);
+
         // finish 自适应：若仍有后续步骤（如高炉按配方时长动态追加的验证）则自动顺延
-        at(t + 480, PDPortingVerifyTest::finish);
+        at(t + 500, PDPortingVerifyTest::finish);
     }
 
     private static MinecraftServer serverRef;
@@ -1012,6 +1044,51 @@ public final class PDPortingVerifyTest {
         p.removeAllEffects();
     }
 
+    // ==================== S16 世界结构生成 ====================
+
+    private static void structureGenSuite() {
+        PDStructureVerifyHooks.verify(server(), player(), r ->
+                checkDetail("structures", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== S17 武器工坊群 ====================
+
+    private static void workshopSuite() {
+        PDWorkshopVerifyHooks.verify(player(), r ->
+                checkDetail("workshop", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== S18 结构目标维度 ====================
+
+    private static void structureDimensionSuite() {
+        PDGalleryVerifyHooks.verifyStructureDimensions(server(), r ->
+                checkDetail("struct-dim", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== S19 方块总览展台（人工观察） ====================
+
+    private static void blockGallerySuite() {
+        refreshPlayerBuffs();
+        PDGalleryVerifyHooks.placeBlockGallery(player(), r ->
+                checkDetail("gallery", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== S20 实体展台（刷怪蛋容器 + 玻璃笼） ====================
+
+    private static void entityGallerySuite() {
+        refreshPlayerBuffs();
+        PDEntityGalleryVerifyHooks.placeEntityGallery(player(), r ->
+                checkDetail("entity-gallery", r.pass(), r.name(), r.detail()));
+    }
+
+    /** 全程夜视 / 抗性 / 飞行 */
+    private static void refreshPlayerBuffs() {
+        ServerPlayer p = player();
+        if (p != null) {
+            PDGalleryVerifyHooks.ensureNightVision(p);
+        }
+    }
+
     // ==================== S15 无尽书导入槽 ====================
 
     private static void endlessBookImportSuite() {
@@ -1073,7 +1150,12 @@ public final class PDPortingVerifyTest {
         }
         LOGGER.info(TAG + (fail == 0 ? "RESULT: ALL PASS" : "RESULT: HAS FAILURES"));
         writeReport(pass, fail);
-        LOGGER.info(TAG + "COMPLETE");
+        if (KEEP_OPEN) {
+            refreshPlayerBuffs();
+            LOGGER.info(TAG + "COMPLETE — KEEP_OPEN=true，客户端保持打开供人工观察方块总览/结构；手动关闭窗口结束");
+        } else {
+            LOGGER.info(TAG + "COMPLETE");
+        }
         done = true;
     }
 
@@ -1161,6 +1243,10 @@ public final class PDPortingVerifyTest {
                         "已选资源包: " + selected);
             }
             if (PDSmokeTest.ENABLED) {
+                return;
+            }
+            // 默认 KEEP_OPEN：写完报告后不退出，方便人工巡视方块总览展台
+            if (KEEP_OPEN) {
                 return;
             }
             if (done && stopCountdown < 0) {
