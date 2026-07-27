@@ -149,9 +149,14 @@ public final class PDEffectEvents {
             return;
         }
         // ---- 易伤 ----
+        // 原版 Fix 公式为 damage * 0.1 * amp，amp=0 时无增伤，与 tooltip「20%易伤」不符。
+        // 此处按等级语义修正：amp N → +(N+1)*20% 伤害（amp0 = ×1.2，amp1 = ×1.4 …）。
         if (entity.hasEffect(PDEffects.VULNERABILITY_BUFF.holder())) {
             MobEffectInstance vulnerability = entity.getEffect(PDEffects.VULNERABILITY_BUFF.holder());
-            event.setNewDamage(event.getNewDamage() * 0.1F * vulnerability.getAmplifier());
+            if (vulnerability != null) {
+                float mult = 1.0F + 0.2F * (vulnerability.getAmplifier() + 1);
+                event.setNewDamage(event.getNewDamage() * mult);
+            }
         }
     }
 

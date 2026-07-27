@@ -1,6 +1,5 @@
 package com.pasterdream.pasterdreammod.item;
 
-import com.pasterdream.pasterdreammod.attachment.MeltDreamEnergyData;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.entity.projectile.ShadowVortexBookProjectileEntity;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
@@ -85,11 +84,10 @@ public class ShadowVortexBookItem extends Item {
      * 原版 ShadowVortexBookPr1Procedure：施法门槛
      */
     private static boolean castGate(ServerPlayer player) {
-        MeltDreamEnergyData energy = PDAttachments.getMeltDreamEnergy(player);
-        boolean energyOk = energy.meltDreamEnergy() >= 0.01 || energy.isNoNeedConsume();
+        // 融梦能量门槛已剥离；仅保留 SAN / 创造旁路
         boolean sanOk = PDAttachments.getSan(player).sanValue() >= 0.05
                 || !PDAttachments.isSanCheckEnabled(player);
-        return player.getAbilities().instabuild || (energyOk && sanOk);
+        return player.getAbilities().instabuild || sanOk;
     }
 
     /**
@@ -133,7 +131,7 @@ public class ShadowVortexBookItem extends Item {
         }
         // 原版 ShadowVortexBookPr0Procedure：天赋检定与消耗/反噬
         if (hasShadowTalent(player)) {
-            PDAttachments.consumePlayerMeltDreamEnergy(player, 0.01);
+            // 融梦能量消耗已剥离至附属 mod
             PDAttachments.addPlayerSanWithCheck(player, -0.05);
             AttributeInstance magicCd = player.getAttribute(PDAttributes.MAGICCD);
             int ticks = (int) (24 + (magicCd != null ? magicCd.getValue() : 0));

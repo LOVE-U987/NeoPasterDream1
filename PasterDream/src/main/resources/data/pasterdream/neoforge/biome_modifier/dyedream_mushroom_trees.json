@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:biome_dyedream_mushroom_plains",
+  "features": [
+    "pasterdream:dyedream_trees_mushroom",
+    "pasterdream:dyedream_trees_sparse"
+  ],
+  "step": "vegetal_decoration"
+}

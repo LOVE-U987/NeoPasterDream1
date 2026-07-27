@@ -52,12 +52,20 @@ tasks.named('test', Test).configure {
 }
 
 repositories {
-    flatDir {
-        dirs rootProject.file('libs')
+    maven {
+        name = 'GeckoLib'
+        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content { includeGroup 'software.bernie.geckolib' }
+    }
+    maven {
+        name = 'TheIllusiveC4'
+        url = 'https://maven.theillusivec4.top/'
+        content { includeGroupByRegex 'top\\.theillusivec4.*' }
     }
 }
 
 dependencies {
-    compileOnly files(rootProject.file('libs/curios-neoforge-9.5.1+1.21.1.jar'))
-    compileOnly files(rootProject.file('libs/geckolib-neoforge-1.21.1-4.8.4.jar'))
+    // API 仅编译期需要类型；运行与分发由主模组 implementation 拉齐
+    compileOnly "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
 }

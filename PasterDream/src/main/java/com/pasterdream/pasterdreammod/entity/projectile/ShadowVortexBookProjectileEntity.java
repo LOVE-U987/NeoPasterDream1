@@ -113,13 +113,12 @@ public class ShadowVortexBookProjectileEntity extends AbstractWandProjectileEnti
             serverLevel.sendBlockUpdated(pos, state, state, 3);
             serverLevel.playSound(null, pos, PDSounds.SHADOW_VORTEX.get(), SoundSource.BLOCKS, 1, 1);
         }
-        // 法术强度不足 9：追加消耗融梦能量与理智
+        // 法术强度不足 9：追加消耗理智（融梦能量已剥离至附属 mod）
         if (this.getOwner() instanceof Player owner) {
             AttributeInstance magicPower = owner.getAttribute(PDAttributes.MAGICPOWER);
             if (magicPower != null) {
                 double power = magicPower.getValue();
                 if (power < 9) {
-                    PDAttachments.consumePlayerMeltDreamEnergy(owner, 0.01 * (9 - power));
                     PDAttachments.addPlayerSanWithCheck(owner, -0.02 * (9 - power));
                 }
             }

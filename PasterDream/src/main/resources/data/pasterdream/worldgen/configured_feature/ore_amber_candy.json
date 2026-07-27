@@ -7,7 +7,7 @@
       {
         "target": {
           "predicate_type": "minecraft:tag_match",
-          "tag": "minecraft:stone_ore_replaceables"
+          "tag": "pasterdream:dyedream_ore_replaceables"
         },
         "state": {
           "Name": "pasterdream:amber_candy_ore"

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/carpet",
+  "render_type": "cutout",
+  "textures": {
+    "wool": "pasterdream:block/dyedream_fallen_leaves"
+  }
+}

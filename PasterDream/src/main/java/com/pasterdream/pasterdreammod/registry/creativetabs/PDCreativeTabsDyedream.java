@@ -86,6 +86,9 @@ public class PDCreativeTabsDyedream {
                         output.accept(PDBlocks.DYEDREAM_LOG.get());
                         output.accept(PDBlocks.DYEDREAM_WOOD.get());
                         output.accept(PDBlocks.DYEDREAM_LEAVES.get());
+                        output.accept(PDBlocks.DYEDREAM_GLOWING_LEAVES.get());
+                        output.accept(PDBlocks.DYEDREAM_FALLEN_LEAVES.get());
+                        output.accept(PDBlocks.DYEDREAM_HANGING_VINE.get());
                         output.accept(PDBlocks.DYEDREAM_WORLDTREE_LEAVES.get());
                         output.accept(PDBlocks.DYEDREAM_PLANKS.get());
                         output.accept(PDBlocks.DYEDREAM_PLANKS_STAIRS.get());

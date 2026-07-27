@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/vine",
+  "render_type": "cutout",
+  "textures": {
+    "particle": "pasterdream:block/dyedream_hanging_vine",
+    "vine": "pasterdream:block/dyedream_hanging_vine"
+  }
+}

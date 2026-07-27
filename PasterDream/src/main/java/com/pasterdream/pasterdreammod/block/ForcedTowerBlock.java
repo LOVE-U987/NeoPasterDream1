@@ -2,7 +2,6 @@ package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
-import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.block.entity.ForcedTowerBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
@@ -67,7 +66,7 @@ public class ForcedTowerBlock extends BaseEntityBlock {
     public static final IntegerProperty ANIMATION = IntegerProperty.create("animation", 0, 3);
 
     /** 每次传送消耗的融梦能量 */
-    private static final double TELEPORT_ENERGY_COST = 0.5;
+    // 融梦能量消耗已剥离至附属 mod（原传送消耗常量已移除）
 
     /**
      * 构造强征传送塔方块
@@ -201,10 +200,7 @@ public class ForcedTowerBlock extends BaseEntityBlock {
             player.displayClientMessage(Component.literal("强征传送塔已被遗失或阻挡"), true);
             return;
         }
-        if (!PDAttachments.consumePlayerMeltDreamEnergy(player, TELEPORT_ENERGY_COST)) {
-            player.displayClientMessage(Component.literal("融梦能量不足"), true);
-            return;
-        }
+        // 融梦能量消耗已剥离至附属 mod
         serverLevel.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 1.5f, 1);
         BlockState current = serverLevel.getBlockState(pos);
         if (current.hasProperty(ANIMATION)) {

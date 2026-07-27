@@ -51,11 +51,14 @@ public class PDItemsCurios {
     // ==================== Curio饰品/特殊物品 ====================
     // 使用 CurioAPI 统一注册，slot() 对应 data/curios/tags/item/ 下的槽位标签文件
 
-    // 非 Curio 的普通物品
-    public static final DeferredItem<Item> ANGEL_WING = PDItems.ITEMS.registerSimpleItem("angel_wing");
-    public static final DeferredItem<Item> FORSAKENS_WING = PDItems.ITEMS.registerSimpleItem("forsakens_wing");
+    // 非 Curio 的普通物品 / 翅膀胸甲（保留短 ID 以兼容既有 manifest）
+    public static final DeferredItem<Item> ANGEL_WING = PDItems.ITEMS.register("angel_wing",
+            com.pasterdream.pasterdreammod.item.armor.AngelWingItem::new);
+    public static final DeferredItem<Item> FORSAKENS_WING = PDItems.ITEMS.register("forsakens_wing",
+            com.pasterdream.pasterdreammod.item.armor.ForsakensWingItem::new);
     public static final DeferredItem<Item> GROUND_WING = PDItems.ITEMS.registerSimpleItem("ground_wing");
-    public static final DeferredItem<Item> MACHINE_WING = PDItems.ITEMS.registerSimpleItem("machine_wing");
+    public static final DeferredItem<Item> MACHINE_WING = PDItems.ITEMS.register("machine_wing",
+            com.pasterdream.pasterdreammod.item.armor.MachineWingItem::new);
     public static final DeferredItem<Item> WINGS_OF_FANG = PDItems.ITEMS.registerSimpleItem("wings_of_fang");
 
     // === Curio 戒指 (RING) ===

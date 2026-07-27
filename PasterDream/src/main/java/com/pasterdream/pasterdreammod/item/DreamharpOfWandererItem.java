@@ -1,6 +1,5 @@
 package com.pasterdream.pasterdreammod.item;
 
-import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import com.pasterdream.pasterdreammod.util.ServerScheduler;
@@ -32,16 +31,12 @@ public class DreamharpOfWandererItem extends Item {
         tip.add(Component.literal("§7▪ §9最大生命值+4 且恢复4点生命 移动速度+10%"));
         tip.add(Component.literal("§7▪ §9精神值恢复+2.4/min"));
         tip.add(Component.literal("§7▪ §9冷却时间：10秒"));
-        tip.add(Component.literal("§7▪ §4融梦能量消耗：2"));
     }
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide()) return InteractionResultHolder.success(stack);
-        if (!PDAttachments.consumePlayerMeltDreamEnergy(player, 2)) {
-            player.displayClientMessage(Component.literal("融梦能量不足"), true);
-            return InteractionResultHolder.fail(stack);
-        }
+        // 融梦能量消耗已剥离至附属 mod
         ServerLevel server = (ServerLevel) level;
         double x=player.getX(), y=player.getY(), z=player.getZ();
         server.sendParticles(ParticleTypes.HEART, x, y, z, 7, 0.45, 0.8, 0.45, 0.5);

@@ -681,12 +681,16 @@ public class PDEffects {
                     .color(0xFF374467)
                     .onApply((entity, amplifier) -> {
                         if (entity instanceof Player player) {
+                            // mayfly 才能在生存模式起飞；flying 仅表示当前是否在飞
+                            player.getAbilities().mayfly = true;
                             player.getAbilities().flying = true;
                             player.onUpdateAbilities();
                         }
                     })
                     .onRemove((entity, amplifier) -> {
-                        if (entity instanceof Player player) {
+                        if (entity instanceof Player player
+                                && !player.isCreative() && !player.isSpectator()) {
+                            player.getAbilities().mayfly = false;
                             player.getAbilities().flying = false;
                             player.onUpdateAbilities();
                         }

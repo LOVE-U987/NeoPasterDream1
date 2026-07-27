@@ -1,20 +1,6 @@
 {
-  "type": "minecraft:tree",
+  "type": "pasterdream:dyedream_tree",
   "config": {
-    "ignore_vines": true,
-    "force_dirt": true,
-    "minimum_size": {
-      "type": "minecraft:two_layers_feature_size",
-      "limit": 1,
-      "lower_size": 0,
-      "upper_size": 1
-    },
-    "dirt_provider": {
-      "type": "minecraft:simple_state_provider",
-      "state": {
-        "Name": "pasterdream:dyedream_dirt"
-      }
-    },
     "trunk_provider": {
       "type": "minecraft:simple_state_provider",
       "state": {
@@ -30,18 +16,41 @@
         "Name": "pasterdream:dyedream_leaves"
       }
     },
+    "dirt_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:dyedream_dirt"
+      }
+    },
+    "minimum_size": {
+      "type": "minecraft:two_layers_feature_size",
+      "limit": 1,
+      "lower_size": 0,
+      "upper_size": 4
+    },
     "trunk_placer": {
-      "type": "minecraft:mega_jungle_trunk_placer",
-      "base_height": 10,
+      "type": "pasterdream:dyedream_mega_trunk_placer",
+      "base_height": 16,
       "height_rand_a": 5,
       "height_rand_b": 4
     },
     "foliage_placer": {
-      "type": "minecraft:jungle_foliage_placer",
-      "radius": 3,
-      "offset": 1,
-      "height": 4
+      "type": "pasterdream:dyedream_spheroid_foliage_placer",
+      "radius": 5,
+      "offset": 0,
+      "height": 6
     },
-    "decorators": []
+    "decorators": [
+      {
+        "type": "pasterdream:dyedream_root_decorator"
+      },
+      {
+        "type": "pasterdream:dyedream_fallen_leaves_decorator",
+        "probability": 0.6,
+        "radius": 6
+      }
+    ],
+    "ignore_vines": true,
+    "force_dirt": true
   }
 }

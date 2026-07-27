@@ -71,6 +71,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 仅在环境变量 {@code PASTERDREAM_VERIFY=1}（或 JVM 参数 {@code -Dpasterdream.verify=true}）
  * 时激活；正常游戏零影响。可与 {@link PDSmokeTest} 同时开启（时间线错开）。
  * <p>
+ * <b>分类运行</b>：{@code PASTERDREAM_VERIFY_SUITES}（或 {@code -Dpasterdream.verify.suites}）
+ * 逗号分隔套件名；未设置 / {@code all} = 全量。可用名见 {@link Suite}。
+ * 例：{@code PASTERDREAM_VERIFY_SUITES=registry,workshop} 只跑注册表 diff 与工坊。
+ * 时间线按所选套件压缩拼接，未选套件不调度。
+ * <p>
  * 两大验证面：
  * <ol>
  *     <li><b>注册表完备性</b>：加载打包在资源根的 {@code pd_porting_manifest.json}
@@ -102,6 +107,66 @@ public final class PDPortingVerifyTest {
      */
     public static final boolean KEEP_OPEN = keepOpenEnabled();
 
+    /**
+     * 可独立调度的验证套件。
+     * <p>
+     * 别名（env 里任意一个即可）：
+     * <ul>
+     *   <li>{@code registry} — manifest 注册表 diff + datapack 统计 + 新内容数据包</li>
+     *   <li>{@code core} — 属性/附件/效果/梦志/蓝图/储物袋风向标/粉蛋卡勒/效果修饰/无尽书</li>
+     *   <li>{@code dimensions}/{@code dim} — 影灯世界·风之旅途往返</li>
+     *   <li>{@code spells} — 五法术投射物行为</li>
+     *   <li>{@code content}/{@code machines} — 暗影高炉/法杖扫射/angel_block_item</li>
+     *   <li>{@code structures}/{@code structure} — 结构生成子系统</li>
+     *   <li>{@code workshop} — 武器工坊群 E2E</li>
+     *   <li>{@code struct-dim}/{@code struct_dim} — 结构→维度映射</li>
+     *   <li>{@code gallery}/{@code block-gallery} — 方块总览展台</li>
+     *   <li>{@code entity-gallery}/{@code entity_gallery} — 实体展台</li>
+     * </ul>
+     * 组合快捷：{@code all}（默认）、{@code quick}=registry+core、
+     * {@code behavior}=core+dimensions+spells+content、
+     * {@code worldgen}=structures+struct-dim、
+     * {@code galleries}/{@code visual}=gallery+entity-gallery。
+     */
+    public enum Suite {
+        REGISTRY("registry"),
+        CORE("core"),
+        DIMENSIONS("dimensions", "dim"),
+        SPELLS("spells"),
+        CONTENT("content", "machines"),
+        STRUCTURES("structures", "structure"),
+        WORKSHOP("workshop"),
+        STRUCT_DIM("struct-dim", "struct_dim"),
+        GALLERY("gallery", "block-gallery"),
+        ENTITY_GALLERY("entity-gallery", "entity_gallery");
+
+        private final String[] aliases;
+
+        Suite(String... aliases) {
+            this.aliases = aliases;
+        }
+
+        boolean matches(String token) {
+            for (String a : aliases) {
+                if (a.equalsIgnoreCase(token)) {
+                    return true;
+                }
+            }
+            return name().equalsIgnoreCase(token);
+        }
+
+        String primary() {
+            return aliases[0];
+        }
+    }
+
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final String TAG = "[PDVerify] ";
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+
+    /** 本次运行选中的套件（未配置 = 全量） */
+    public static final java.util.EnumSet<Suite> SELECTED_SUITES = parseSelectedSuites();
+
     private static boolean keepOpenEnabled() {
         String env = System.getenv("PASTERDREAM_VERIFY_KEEP_OPEN");
         if (env != null) {
@@ -114,9 +179,86 @@ public final class PDPortingVerifyTest {
         return true;
     }
 
-    private static final Logger LOGGER = LogUtils.getLogger();
-    private static final String TAG = "[PDVerify] ";
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    /**
+     * 解析 {@code PASTERDREAM_VERIFY_SUITES} / {@code -Dpasterdream.verify.suites}。
+     * 空、未设置、{@code all} → 全套；支持组合快捷 quick/behavior/worldgen/galleries/visual。
+     */
+    private static java.util.EnumSet<Suite> parseSelectedSuites() {
+        String raw = System.getenv("PASTERDREAM_VERIFY_SUITES");
+        if (raw == null || raw.isBlank()) {
+            raw = System.getProperty("pasterdream.verify.suites", "");
+        }
+        raw = raw == null ? "" : raw.trim();
+        if (raw.isEmpty() || "all".equalsIgnoreCase(raw) || "*".equals(raw)) {
+            return java.util.EnumSet.allOf(Suite.class);
+        }
+        java.util.EnumSet<Suite> out = java.util.EnumSet.noneOf(Suite.class);
+        for (String part : raw.split("[,;\\s]+")) {
+            if (part.isBlank()) {
+                continue;
+            }
+            String token = part.trim().toLowerCase(java.util.Locale.ROOT);
+            switch (token) {
+                case "all", "*" -> {
+                    return java.util.EnumSet.allOf(Suite.class);
+                }
+                case "quick", "fast" -> {
+                    out.add(Suite.REGISTRY);
+                    out.add(Suite.CORE);
+                }
+                case "behavior" -> {
+                    out.add(Suite.CORE);
+                    out.add(Suite.DIMENSIONS);
+                    out.add(Suite.SPELLS);
+                    out.add(Suite.CONTENT);
+                }
+                case "worldgen" -> {
+                    out.add(Suite.STRUCTURES);
+                    out.add(Suite.STRUCT_DIM);
+                }
+                case "galleries", "visual" -> {
+                    out.add(Suite.GALLERY);
+                    out.add(Suite.ENTITY_GALLERY);
+                }
+                default -> {
+                    boolean hit = false;
+                    for (Suite s : Suite.values()) {
+                        if (s.matches(token)) {
+                            out.add(s);
+                            hit = true;
+                            break;
+                        }
+                    }
+                    if (!hit) {
+                        LogUtils.getLogger().warn("[PDVerify] 未知套件名 '{}'，已忽略（合法: registry,core,dimensions,"
+                                + "spells,content,structures,workshop,struct-dim,gallery,entity-gallery "
+                                + "及快捷 all/quick/behavior/worldgen/galleries）", token);
+                    }
+                }
+            }
+        }
+        if (out.isEmpty()) {
+            LogUtils.getLogger().warn("[PDVerify] SUITES 解析结果为空，回退全量");
+            return java.util.EnumSet.allOf(Suite.class);
+        }
+        return out;
+    }
+
+    private static boolean suite(Suite s) {
+        return SELECTED_SUITES.contains(s);
+    }
+
+    /** 所选套件的逗号分隔主键，写入报告与启动日志 */
+    private static String selectedSuitesLabel() {
+        StringBuilder sb = new StringBuilder();
+        for (Suite s : SELECTED_SUITES) {
+            if (!sb.isEmpty()) {
+                sb.append(',');
+            }
+            sb.append(s.primary());
+        }
+        return sb.toString();
+    }
 
     /** 若冒烟测试同时开启，验证时间线整体后移到它结束之后（约 tick 420） */
     private static final int START_OFFSET_WITH_SMOKE = 460;
@@ -234,7 +376,8 @@ public final class PDPortingVerifyTest {
         ticks = 0;
         int base = PDSmokeTest.ENABLED ? START_OFFSET_WITH_SMOKE : 60;
         buildTimeline(base);
-        LOGGER.info(TAG + "porting verify timeline started (base tick {})", base);
+        LOGGER.info(TAG + "porting verify timeline started (base tick {}, suites=[{}])",
+                base, selectedSuitesLabel());
     }
 
     /**
@@ -266,67 +409,118 @@ public final class PDPortingVerifyTest {
 
     // ==================== 时间线装配 ====================
 
+    /**
+     * 按 {@link #SELECTED_SUITES} 装配时间线：未选中的套件完全不调度。
+     * 各套件使用独立相对偏移，拼接后总时长随所选缩减（单套件约数十 tick，全量约 500）。
+     */
     private static void buildTimeline(int t) {
-        at(t, () -> runRegistryDiffs(server()));
-        at(t + 5, () -> runDataPackStats(server()));
-        at(t + 7, () -> runNewContentDataSuite(server()));
-        at(t + 9, () -> PDDreamnotesVerifyHooks.verify(player(), r ->
-                checkDetail("dreamnotes", r.pass(), r.name(), r.detail())));
-        at(t + 11, () -> {
-            java.util.List<String> fails = PDBlueprintVerifyHooks.verifyAll();
-            checkDetail("blueprint", fails.isEmpty(),
-                    "蓝图子系统校验 " + (fails.isEmpty() ? "通过" : "失败 " + fails.size()),
-                    fails.isEmpty() ? "registry+loaded pages OK" : fails.toString());
-        });
-        at(t + 13, PDPortingVerifyTest::storageBagAndWindVaneSuite);
-        at(t + 15, PDPortingVerifyTest::pinkeggAndCalleSuite);
-        at(t + 17, PDPortingVerifyTest::effectModifierSuite);
-        at(t + 19, PDPortingVerifyTest::endlessBookImportSuite);
-        at(t + 21, PDPortingVerifyTest::structureGenSuite);
-        at(t + 23, PDPortingVerifyTest::workshopSuite);
-        at(t + 24, PDPortingVerifyTest::structureDimensionSuite);
-        at(t + 10, () -> runAttributeSuite(player()));
-        at(t + 15, () -> runAttachmentSuite(player()));
-        at(t + 20, () -> runEffectSuite(player()));
-
-        // 全程夜视 / 飞行（登录后立刻 + 维度跳转后刷新）
+        // 全程夜视 / 飞行：登录后立刻 + 各长时套件关键节点刷新
         at(t + 1, PDPortingVerifyTest::refreshPlayerBuffs);
-        at(t + 125, PDPortingVerifyTest::refreshPlayerBuffs);
-        at(t + 215, PDPortingVerifyTest::refreshPlayerBuffs);
-        at(t + 225, PDPortingVerifyTest::refreshPlayerBuffs);
 
-        // 维度往返：影灯世界 → 风之旅途 → 主世界（每跳留 80 tick 供区块生成）
-        at(t + 40, () -> teleportToDimension(player(), "lamp_shadow_world"));
-        at(t + 120, () -> verifyDimension(player(), "lamp_shadow_world"));
-        at(t + 130, () -> teleportToDimension(player(), "wind_journey_world"));
-        at(t + 210, () -> verifyDimension(player(), "wind_journey_world"));
-        at(t + 220, () -> returnToOverworld(player()));
+        int cursor = t;
 
-        // 法术行为测试（主世界平坦面，五法术错位 64 格互不干扰）
-        at(t + 300, () -> spellProjectileSpawnSuite(player()));
-        at(t + 310, PDPortingVerifyTest::spellLightningBegin);
-        at(t + 310 + 100, PDPortingVerifyTest::spellLightningVerify);
-        at(t + 320, PDPortingVerifyTest::spellPoisonBegin);
-        at(t + 320 + 8, PDPortingVerifyTest::spellPoisonVerify);
-        at(t + 330, PDPortingVerifyTest::spellHealingBegin);
-        at(t + 330 + 60, PDPortingVerifyTest::spellHealingVerify);
-        at(t + 340, PDPortingVerifyTest::spellFuryBegin);
-        at(t + 340 + 15, PDPortingVerifyTest::spellFuryVerify);
-        at(t + 350, PDPortingVerifyTest::spellIceBegin);
-        at(t + 350 + 10, PDPortingVerifyTest::spellIceVerify);
+        if (suite(Suite.REGISTRY)) {
+            int r = cursor;
+            at(r, () -> runRegistryDiffs(server()));
+            at(r + 5, () -> runDataPackStats(server()));
+            at(r + 7, () -> runNewContentDataSuite(server()));
+            cursor = r + 10;
+        }
 
-        // 新移植内容行为测试（研究台组/法杖/angel_block_item）
-        at(t + 365, PDPortingVerifyTest::blastFurnaceSetup);
-        at(t + 370, PDPortingVerifyTest::wandProjectileSweep);
-        at(t + 375, PDPortingVerifyTest::angelBlockItemTest);
+        if (suite(Suite.CORE)) {
+            int c = cursor;
+            at(c, () -> PDDreamnotesVerifyHooks.verify(player(), r ->
+                    checkDetail("dreamnotes", r.pass(), r.name(), r.detail())));
+            at(c + 2, () -> {
+                java.util.List<String> fails = PDBlueprintVerifyHooks.verifyAll();
+                checkDetail("blueprint", fails.isEmpty(),
+                        "蓝图子系统校验 " + (fails.isEmpty() ? "通过" : "失败 " + fails.size()),
+                        fails.isEmpty() ? "registry+loaded pages OK" : fails.toString());
+            });
+            at(c + 3, () -> runAttributeSuite(player()));
+            at(c + 4, PDPortingVerifyTest::storageBagAndWindVaneSuite);
+            at(c + 5, () -> runAttachmentSuite(player()));
+            at(c + 6, PDPortingVerifyTest::pinkeggAndCalleSuite);
+            at(c + 7, PDPortingVerifyTest::effectModifierSuite);
+            at(c + 8, () -> runEffectSuite(player()));
+            at(c + 9, PDPortingVerifyTest::endlessBookImportSuite);
+            cursor = c + 12;
+        }
 
-        // 收尾前：方块总览展台（全量放置 + 传送玩家，供人工观察；不清理）
-        at(t + 470, PDPortingVerifyTest::blockGallerySuite);
-        // 实体展台：刷怪蛋木桶 + 无蛋名签桶 + 活体玻璃笼（西侧，与方块台错开）
-        at(t + 480, PDPortingVerifyTest::entityGallerySuite);
+        if (suite(Suite.STRUCTURES)) {
+            int s = cursor;
+            at(s, PDPortingVerifyTest::structureGenSuite);
+            cursor = s + 5;
+        }
+
+        if (suite(Suite.WORKSHOP)) {
+            int w = cursor;
+            at(w, PDPortingVerifyTest::workshopSuite);
+            cursor = w + 5;
+        }
+
+        if (suite(Suite.STRUCT_DIM)) {
+            int d = cursor;
+            at(d, PDPortingVerifyTest::structureDimensionSuite);
+            cursor = d + 5;
+        }
+
+        if (suite(Suite.DIMENSIONS)) {
+            int d = cursor;
+            // 影灯世界 → 风之旅途 → 主世界（每跳留 80 tick 供区块生成）
+            at(d, PDPortingVerifyTest::refreshPlayerBuffs);
+            at(d + 5, () -> teleportToDimension(player(), "lamp_shadow_world"));
+            at(d + 85, () -> verifyDimension(player(), "lamp_shadow_world"));
+            at(d + 90, PDPortingVerifyTest::refreshPlayerBuffs);
+            at(d + 95, () -> teleportToDimension(player(), "wind_journey_world"));
+            at(d + 175, () -> verifyDimension(player(), "wind_journey_world"));
+            at(d + 180, PDPortingVerifyTest::refreshPlayerBuffs);
+            at(d + 185, () -> returnToOverworld(player()));
+            cursor = d + 200;
+        }
+
+        if (suite(Suite.SPELLS)) {
+            int s = cursor;
+            // 五法术错位 64 格；落雷需约 100 tick 观察
+            at(s, () -> spellProjectileSpawnSuite(player()));
+            at(s + 10, PDPortingVerifyTest::spellLightningBegin);
+            at(s + 110, PDPortingVerifyTest::spellLightningVerify);
+            at(s + 20, PDPortingVerifyTest::spellPoisonBegin);
+            at(s + 28, PDPortingVerifyTest::spellPoisonVerify);
+            at(s + 30, PDPortingVerifyTest::spellHealingBegin);
+            at(s + 90, PDPortingVerifyTest::spellHealingVerify);
+            at(s + 40, PDPortingVerifyTest::spellFuryBegin);
+            at(s + 55, PDPortingVerifyTest::spellFuryVerify);
+            at(s + 50, PDPortingVerifyTest::spellIceBegin);
+            at(s + 60, PDPortingVerifyTest::spellIceVerify);
+            cursor = s + 120;
+        }
+
+        if (suite(Suite.CONTENT)) {
+            int c = cursor;
+            at(c, PDPortingVerifyTest::blastFurnaceSetup);
+            at(c + 5, PDPortingVerifyTest::wandProjectileSweep);
+            at(c + 10, PDPortingVerifyTest::angelBlockItemTest);
+            // 高炉验证按配方时长动态追加；cursor 预留缓冲
+            cursor = c + 40;
+        }
+
+        if (suite(Suite.GALLERY)) {
+            int g = cursor;
+            at(g, PDPortingVerifyTest::refreshPlayerBuffs);
+            at(g + 5, PDPortingVerifyTest::blockGallerySuite);
+            cursor = g + 20;
+        }
+
+        if (suite(Suite.ENTITY_GALLERY)) {
+            int e = cursor;
+            at(e, PDPortingVerifyTest::refreshPlayerBuffs);
+            at(e + 5, PDPortingVerifyTest::entityGallerySuite);
+            cursor = e + 20;
+        }
 
         // finish 自适应：若仍有后续步骤（如高炉按配方时长动态追加的验证）则自动顺延
-        at(t + 500, PDPortingVerifyTest::finish);
+        at(Math.max(cursor + 10, t + 20), PDPortingVerifyTest::finish);
     }
 
     private static MinecraftServer serverRef;
@@ -1144,6 +1338,7 @@ public final class PDPortingVerifyTest {
         long pass = ASSERTIONS.stream().filter(Assertion::pass).count();
         long fail = ASSERTIONS.size() - pass;
         LOGGER.info(TAG + "==================================================");
+        LOGGER.info(TAG + "SUITES: [{}]", selectedSuitesLabel());
         LOGGER.info(TAG + "SUMMARY: {} passed, {} failed", pass, fail);
         for (CategoryDiff diff : DIFFS) {
             LOGGER.info(TAG + "COVERAGE {} {}/{}", diff.category(), diff.present(), diff.expected());
@@ -1163,6 +1358,7 @@ public final class PDPortingVerifyTest {
         try {
             JsonObject root = new JsonObject();
             root.addProperty("generated", "PDPortingVerifyTest");
+            root.addProperty("suites", selectedSuitesLabel());
             root.addProperty("pass", pass);
             root.addProperty("fail", fail);
             root.add("registry_coverage", GSON.toJsonTree(DIFFS));

@@ -90,15 +90,22 @@ config="${mod_id}.mixins.json"
 
 [[dependencies.${mod_id}]]
     modId="curios"
-    type="optional"
+    type="required"
     versionRange="[9.0.0,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.${mod_id}]]
     modId="geckolib"
-    type="optional"
+    type="required"
     versionRange="[4.0.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="playeranimator"
+    type="optional"
+    versionRange="[2.0.0,)"
     ordering="NONE"
     side="BOTH"
 

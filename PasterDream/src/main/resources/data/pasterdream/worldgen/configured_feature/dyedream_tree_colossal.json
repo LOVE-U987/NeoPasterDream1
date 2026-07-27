@@ -1,0 +1,59 @@
+{
+  "type": "pasterdream:dyedream_tree",
+  "config": {
+    "trunk_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:dyedream_log",
+        "Properties": {
+          "axis": "y"
+        }
+      }
+    },
+    "foliage_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:dyedream_leaves"
+      }
+    },
+    "dirt_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:dyedream_dirt"
+      }
+    },
+    "minimum_size": {
+      "type": "minecraft:two_layers_feature_size",
+      "limit": 1,
+      "lower_size": 0,
+      "upper_size": 4
+    },
+    "trunk_placer": {
+      "type": "pasterdream:dyedream_colossal_trunk_placer",
+      "base_height": 32,
+      "height_rand_a": 10,
+      "height_rand_b": 6
+    },
+    "foliage_placer": {
+      "type": "pasterdream:dyedream_spheroid_foliage_placer",
+      "radius": 7,
+      "offset": 0,
+      "height": 8
+    },
+    "decorators": [
+      {
+        "type": "pasterdream:dyedream_root_decorator"
+      },
+      {
+        "type": "pasterdream:dyedream_hanging_vine_decorator"
+      },
+      {
+        "type": "pasterdream:dyedream_fallen_leaves_decorator",
+        "probability": 0.7,
+        "radius": 8
+      }
+    ],
+    "ignore_vines": false,
+    "force_dirt": true
+  }
+}

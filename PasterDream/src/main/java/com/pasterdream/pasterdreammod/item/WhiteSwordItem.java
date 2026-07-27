@@ -1,6 +1,5 @@
 package com.pasterdream.pasterdreammod.item;
 
-import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.entity.projectile.WhiteSwordRainProjectileEntity;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
@@ -87,9 +86,7 @@ public class WhiteSwordItem extends SwordItem {
         if (!serverPlayer.getAbilities().instabuild && !hasLightTalent(serverPlayer)) {
             return;
         }
-        if (!PDAttachments.consumePlayerMeltDreamEnergy(serverPlayer, 0.1)) {
-            return;
-        }
+        // 融梦能量消耗已剥离至附属 mod
         // 施放点坐标（波次音效与剑雨基准高度均以此为锚，与原版捕获时机一致）
         double x = player.getX();
         double y = player.getY();

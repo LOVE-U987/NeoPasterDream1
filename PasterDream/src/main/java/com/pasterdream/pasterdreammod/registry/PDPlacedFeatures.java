@@ -42,6 +42,22 @@ public class PDPlacedFeatures {
     // ==================== 树木 ====================
     /** 染梦树 */
     public static final ResourceKey<PlacedFeature> DYEDREAM_TREES = createKey("dyedream_trees");
+    /** 染梦茂密森林树 */
+    public static final ResourceKey<PlacedFeature> DYEDREAM_TREES_DENSE = createKey("dyedream_trees_dense");
+    /** 染梦稀疏森林树 */
+    public static final ResourceKey<PlacedFeature> DYEDREAM_TREES_SPARSE = createKey("dyedream_trees_sparse");
+    /** 染梦原始林树 */
+    public static final ResourceKey<PlacedFeature> DYEDREAM_TREES_OLD_GROWTH = createKey("dyedream_trees_old_growth");
+    /** 染梦高地树 */
+    public static final ResourceKey<PlacedFeature> DYEDREAM_TREES_HIGHLANDS = createKey("dyedream_trees_highlands");
+    /** 染梦冰原树 */
+    public static final ResourceKey<PlacedFeature> DYEDREAM_TREES_ICY = createKey("dyedream_trees_icy");
+    /** 染梦蘑菇林树 */
+    public static final ResourceKey<PlacedFeature> DYEDREAM_TREES_MUSHROOM = createKey("dyedream_trees_mushroom");
+    /** 染梦超巨型树 */
+    public static final ResourceKey<PlacedFeature> DYEDREAM_TREE_COLOSSAL = createKey("dyedream_tree_colossal");
+    /** 染梦世界树 */
+    public static final ResourceKey<PlacedFeature> DYEDREAM_TREE_WORLDTREE = createKey("dyedream_tree_worldtree");
 
     // ==================== 地下生态特征 ====================
     /** 悬浮水晶核心 */

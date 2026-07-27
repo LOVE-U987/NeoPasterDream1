@@ -1,6 +1,5 @@
 package com.pasterdream.pasterdreammod.item;
 
-import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.entity.mob.TerraswordWaveEntity;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
@@ -92,10 +91,7 @@ public class TerraSwordItem extends SwordItem {
         if (level.isClientSide() || !(player instanceof ServerPlayer serverPlayer)) {
             return;
         }
-        if (!PDAttachments.consumePlayerMeltDreamEnergy(serverPlayer, 0.3)) {
-            serverPlayer.displayClientMessage(Component.literal("融梦能量不足"), true);
-            return;
-        }
+        // 融梦能量消耗已剥离至附属 mod，主模组不再拦截
         // 原版 AtkPr0Procedure：paster_atk = 攻击力属性 + 锋利×0.5；skill_multiplier = 战技倍率基础值
         int sharpness = stack.getEnchantmentLevel(
                 level.registryAccess().registryOrThrow(Registries.ENCHANTMENT)
@@ -111,10 +107,9 @@ public class TerraSwordItem extends SwordItem {
         AttributeInstance skillCd = serverPlayer.getAttribute(PDAttributes.SKILLCD);
         double cdFactor = skillCd != null ? skillCd.getBaseValue() : 1;
         if (WandSupport.hasCurioEquipped(serverPlayer, PDItems.TERRA_CHARM.get())) {
-            // 大地护符：攻击加成 ×1.3、返还 0.2 能量、冷却减至 40×
+            // 大地护符：攻击加成 ×1.3、冷却减至 40×（融梦能量返还已随消耗一并剥离）
             PasterItemData.putDouble(stack, "paster_atk",
                     PasterItemData.getDouble(stack, "paster_atk") * 1.3);
-            PDAttachments.addPlayerMeltDreamEnergy(serverPlayer, 0.2);
             WandSupport.applyTaggedCooldown(serverPlayer, WandSupport.SKILL_TAG, (int) (40 * cdFactor));
         } else {
             WandSupport.applyTaggedCooldown(serverPlayer, WandSupport.SKILL_TAG, (int) (100 * cdFactor));

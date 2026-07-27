@@ -34,12 +34,6 @@
       "min_delay": 1200,
       "max_delay": 1800,
       "replace_current_music": true
-    },
-    "particle": {
-      "options": {
-        "type": "minecraft:bubble"
-      },
-      "probability": 0.0015
     }
   },
   "spawners": {
@@ -54,15 +48,14 @@
     ],
     "ambient": [],
     "axolotls": [],
-    "underground_water_creature": [
+    "underground_water_creature": [],
+    "water_creature": [
       {
         "type": "minecraft:glow_squid",
         "weight": 15,
         "minCount": 2,
         "maxCount": 4
-      }
-    ],
-    "water_creature": [
+      },
       {
         "type": "minecraft:dolphin",
         "weight": 10,

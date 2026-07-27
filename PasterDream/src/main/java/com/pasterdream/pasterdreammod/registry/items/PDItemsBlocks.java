@@ -55,6 +55,9 @@ public class PDItemsBlocks {
     public static final DeferredItem<BlockItem> PINKSLIME_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("pinkslime_block", PDBlocks.PINKSLIME_BLOCK);
     public static final DeferredItem<BlockItem> ICESTONE = PDItems.ITEMS.registerSimpleBlockItem("icestone", PDBlocks.ICESTONE);
     public static final DeferredItem<BlockItem> DYEDREAM_LEAVES = PDItems.ITEMS.registerSimpleBlockItem("dyedream_leaves", PDBlocks.DYEDREAM_LEAVES);
+    public static final DeferredItem<BlockItem> DYEDREAM_GLOWING_LEAVES = PDItems.ITEMS.registerSimpleBlockItem("dyedream_glowing_leaves", PDBlocks.DYEDREAM_GLOWING_LEAVES);
+    public static final DeferredItem<BlockItem> DYEDREAM_HANGING_VINE = PDItems.ITEMS.registerSimpleBlockItem("dyedream_hanging_vine", PDBlocks.DYEDREAM_HANGING_VINE);
+    public static final DeferredItem<BlockItem> DYEDREAM_FALLEN_LEAVES = PDItems.ITEMS.registerSimpleBlockItem("dyedream_fallen_leaves", PDBlocks.DYEDREAM_FALLEN_LEAVES);
     public static final DeferredItem<BlockItem> DYEDREAM_WORLDTREE_LEAVES = PDItems.ITEMS.registerSimpleBlockItem("dyedream_worldtree_leaves", PDBlocks.DYEDREAM_WORLDTREE_LEAVES);
     public static final DeferredItem<BlockItem> DYEDREAMQUARTZ_ORE = PDItems.ITEMS.registerSimpleBlockItem("dyedreamquartz_ore", PDBlocks.DYEDREAMQUARTZ_ORE);
     public static final DeferredItem<BlockItem> DYEDREAMDUST_ORE = PDItems.ITEMS.registerSimpleBlockItem("dyedreamdust_ore", PDBlocks.DYEDREAMDUST_ORE);

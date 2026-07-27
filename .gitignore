@@ -47,4 +47,15 @@ dreamnotes_*_staging.*
 javac.*.args
 
 ### Local third-party / reference (not part of shipping sources) ###
-# Full dependency/source trees are local-only; keep the three runtime jars tracked for offline builds.
+# 运行时依赖一律 Maven（gradle.properties：geckolib/curios/player_anim/jei）。
+# 禁止再往 libs/ 丢依赖 jar 或第三方完整仓库。
+libs/**/*.jar
+!libs/**/gradle-wrapper.jar
+# 曾本地 vendoring 的第三方源码树（已删；保留 ignore 防误加回）
+libs/Curios-1.21.1/
+libs/geckolib-1.21.1/
+libs/minecraftPlayerAnimator-1.21/
+libs/eternal-starlight/
+# 原版对照源码 libs/FixPasterDream-main/：开发期本地放即可；
+# 当前仍被 git 跟踪；若要从仓库剥离可取消下面注释并 git rm -r --cached
+# libs/FixPasterDream-main/

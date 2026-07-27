@@ -37,6 +37,7 @@ import com.pasterdream.pasterdreammod.registry.PDPotions;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import com.pasterdream.pasterdreammod.registry.PDTreeDecorators;
 import com.pasterdream.pasterdreammod.registry.PDWorldgenRegistries;
+import com.pasterdream.pasterdreammod.worldgen.tree.DyedreamTreePlacers;
 import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationRegistry;
 import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
 import net.minecraft.data.DataGenerator;
@@ -145,6 +146,11 @@ public class PasterDreamMod {
         // 注册树装饰器类型（染梦树 0/1/2 的树干/树叶装饰器，供 biome_dyedream_*_tree.json 引用）
         // 缺失会导致数据包 registry 加载失败、无法创建世界（P0）
         PDTreeDecorators.TREE_DECORATOR_TYPES.register(modEventBus);
+
+        // 注册上游染梦自定义 Trunk/Foliage/Decorator Placer（供 dyedream_tree*.json 引用）
+        DyedreamTreePlacers.TRUNK_PLACERS.register(modEventBus);
+        DyedreamTreePlacers.FOLIAGE_PLACERS.register(modEventBus);
+        DyedreamTreePlacers.TREE_DECORATORS.register(modEventBus);
 
         // 注册自定义 ChunkGenerator 和 BiomeSource 类型（供维度 JSON 引用）
         PDWorldgenRegistries.CHUNK_GENERATORS.register(modEventBus);

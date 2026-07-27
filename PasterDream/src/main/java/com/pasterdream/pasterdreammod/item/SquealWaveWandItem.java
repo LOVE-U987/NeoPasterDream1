@@ -1,6 +1,5 @@
 package com.pasterdream.pasterdreammod.item;
 
-import com.pasterdream.pasterdreammod.attachment.MeltDreamEnergyData;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
 import com.pasterdream.pasterdreammod.registry.PDItems;
@@ -46,14 +45,12 @@ public class SquealWaveWandItem extends AbstractChargeWandItem {
 
     @Override
     protected boolean castGate(ServerPlayer player) {
-        // 原版 SquealWaveWandPr2Procedure
-        MeltDreamEnergyData energy = PDAttachments.getMeltDreamEnergy(player);
-        boolean energyOk = energy.meltDreamEnergy() >= 0.01 || energy.isNoNeedConsume();
+        // 融梦能量门槛已剥离；仅保留 SAN / 创造 / 鬼面头颅旁路
         boolean sanOk = PDAttachments.getSan(player).sanValue() >= 0.02
                 || !PDAttachments.isSanCheckEnabled(player);
         boolean bypass = player.getAbilities().instabuild
                 || WandSupport.hasCurioEquipped(player, PDItems.GHOST_FACE_HEAD.get());
-        return bypass || (energyOk && sanOk);
+        return bypass || sanOk;
     }
 
     @Override
@@ -73,7 +70,7 @@ public class SquealWaveWandItem extends AbstractChargeWandItem {
         boolean bypass = player.getAbilities().instabuild
                 || WandSupport.hasCurioEquipped(player, PDItems.GHOST_FACE_HEAD.get());
         if (!bypass) {
-            PDAttachments.consumePlayerMeltDreamEnergy(player, 0.01);
+            // 融梦能量消耗已剥离至附属 mod
             PDAttachments.addPlayerSanWithCheck(player, -0.02);
         }
         AttributeInstance magicCd = player.getAttribute(PDAttributes.MAGICCD);

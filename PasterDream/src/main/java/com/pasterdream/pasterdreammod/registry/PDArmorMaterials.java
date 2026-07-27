@@ -110,4 +110,55 @@ public class PDArmorMaterials {
             10f,
             1.0f
             ));
+
+    /** 天使之翼材质（GeckoLib 接管贴图） */
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> ANGEL_WING = ARMOR_MATERIALS.register("angel_wing",
+            () -> new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
+                map.put(ArmorItem.Type.HELMET, 2);
+                map.put(ArmorItem.Type.CHESTPLATE, 6);
+                map.put(ArmorItem.Type.LEGGINGS, 5);
+                map.put(ArmorItem.Type.BOOTS, 2);
+                map.put(ArmorItem.Type.BODY, 6);
+            }),
+            9,
+            SoundEvents.ARMOR_EQUIP_ELYTRA,
+            () -> Ingredient.of(Items.FEATHER),
+            List.of(new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "angel_wing"))),
+            2f,
+            0f
+            ));
+
+    /** 遗落之翼材质（GeckoLib 接管贴图） */
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> FORSAKENS_WING = ARMOR_MATERIALS.register("forsakens_wing",
+            () -> new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
+                map.put(ArmorItem.Type.HELMET, 2);
+                map.put(ArmorItem.Type.CHESTPLATE, 7);
+                map.put(ArmorItem.Type.LEGGINGS, 5);
+                map.put(ArmorItem.Type.BOOTS, 2);
+                map.put(ArmorItem.Type.BODY, 7);
+            }),
+            7,
+            SoundEvents.ARMOR_EQUIP_ELYTRA,
+            () -> Ingredient.of(com.pasterdream.pasterdreammod.registry.PDItems.NIGHTMARE_FUEL.get()),
+            List.of(new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "forsakens_wing"))),
+            3f,
+            0f
+            ));
+
+    /** 机械之翼材质（GeckoLib 接管贴图） */
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> MACHINE_WING = ARMOR_MATERIALS.register("machine_wing",
+            () -> new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
+                map.put(ArmorItem.Type.HELMET, 2);
+                map.put(ArmorItem.Type.CHESTPLATE, 7);
+                map.put(ArmorItem.Type.LEGGINGS, 5);
+                map.put(ArmorItem.Type.BOOTS, 2);
+                map.put(ArmorItem.Type.BODY, 7);
+            }),
+            9,
+            SoundEvents.ARMOR_EQUIP_NETHERITE,
+            () -> Ingredient.EMPTY,
+            List.of(new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "machine_wing"))),
+            1f,
+            0f
+            ));
 }

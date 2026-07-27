@@ -92,6 +92,13 @@ public class PDBlocks {
         BlockAPI.putConfig("dyedream_leaves", BlockConfig.of()
                 .mineable("hoe").model("cube_all")
                 .tex("all", "pasterdream:block/dyedream_leaves"));
+        BlockAPI.putConfig("dyedream_glowing_leaves", BlockConfig.of()
+                .mineable("hoe").model("cube_all")
+                .tex("all", "pasterdream:block/dyedream_glowing_leaves"));
+        BlockAPI.putConfig("dyedream_hanging_vine", BlockConfig.of()
+                .mineable("hoe"));
+        BlockAPI.putConfig("dyedream_fallen_leaves", BlockConfig.of()
+                .mineable("hoe"));
         BlockAPI.putConfig("dyedream_grass", BlockConfig.of()
                 .mineable("shovel").model("cube_top_bottom")
                 .tex("top", "pasterdream:block/dyedream_grass_top")
@@ -269,6 +276,9 @@ public class PDBlocks {
     public static final DeferredBlock<?> DYEDREAM_SEAGRASS = PDBlocksVegetation.DYEDREAM_SEAGRASS;
     public static final DeferredBlock<?> DYEDREAM_SAPLING = PDBlocksVegetation.DYEDREAM_SAPLING;
     public static final DeferredBlock<?> DYEDREAM_CRACK = PDBlocksVegetation.DYEDREAM_CRACK;
+    public static final DeferredBlock<?> DYEDREAM_GLOWING_LEAVES = PDBlocksVegetation.DYEDREAM_GLOWING_LEAVES;
+    public static final DeferredBlock<?> DYEDREAM_HANGING_VINE = PDBlocksVegetation.DYEDREAM_HANGING_VINE;
+    public static final DeferredBlock<?> DYEDREAM_FALLEN_LEAVES = PDBlocksVegetation.DYEDREAM_FALLEN_LEAVES;
     public static final DeferredBlock<?> CLOUD = PDBlocksVegetation.CLOUD;
     public static final DeferredBlock<?> DARK_CLOUD = PDBlocksVegetation.DARK_CLOUD;
     public static final DeferredBlock<?> THICK_CLOUD = PDBlocksVegetation.THICK_CLOUD;

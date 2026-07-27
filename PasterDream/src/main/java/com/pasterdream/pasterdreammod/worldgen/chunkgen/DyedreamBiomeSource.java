@@ -19,16 +19,18 @@ import java.util.stream.Stream;
  * 染梦世界自定义 BiomeSource —— 基于噪声的群系分配器
  * <p>
  * 使用大陆性噪声（Continentalness）将世界划分为海洋/岛屿/陆地群系，
- * 再叠加侵蚀度和山脊噪声进行次生群系细分。
+ * 再叠加温度、山脊噪声与独立特殊噪声进行次生群系细分。
  * <p>
  * 核心特色：采用简单直接的噪声值判定生成自然河流，
- * 通过 domain warp 噪声实现流畅弯曲的河流走向。
+ * 通过 domain warp 噪声实现流畅弯曲的河流走向；
+ * 同时使用温度噪声划分雪原、独立稀有噪声划分蘑菇平原。
  * <p>
- * 群系分配逻辑：
+ * 群系分配逻辑（与 JSON 中 biomes 列表顺序一致）：
  * <ol>
  *   <li>大陆性噪声 < -0.35 → 深海群系（biomes[0]）</li>
  *   <li>大陆性噪声 < -0.19 → 浅海/海岸群系（biomes[1]）</li>
- *   <li>河流噪声检测匹配河流 → 河流群系</li>
+ *   <li>蘑菇平原独立噪声命中 → 蘑菇平原群系（biomes[5]）</li>
+ *   <li>温度噪声 < -0.35 → 雪原群系（biomes[4]）</li>
  *   <li>山脊噪声 > 0.3 → 高原群系（biomes[3]）</li>
  *   <li>其余 → 平原群系（biomes[2]）</li>
  * </ol>
@@ -54,13 +56,22 @@ public class DyedreamBiomeSource extends BiomeSource {
     /** 丘陵山脊阈值 */
     private static final double HILLS_RIDGE_THRESHOLD = 0.3;
 
+    /** 雪原温度阈值，温度噪声低于此值时判定为寒冷雪原 */
+    private static final double SNOW_TEMPERATURE_THRESHOLD = -0.35;
+
+    /** 蘑菇平原噪声频率 */
+    private static final float MUSHROOM_NOISE_FREQUENCY = 0.0022f;
+
+    /** 蘑菇平原噪声阈值，噪声绝对值超过此值时判定为蘑菇平原（值越大越稀有） */
+    private static final double MUSHROOM_PLAINS_THRESHOLD = 0.86;
+
     /** 河流噪声频率 */
     private static final float RIVER_NOISE_FREQUENCY = 0.0012f;
 
     /** 群系缓存大小 */
     private static final int CACHE_SIZE = 8192;
 
-    /** 群系列表（按顺序：深海、浅海、平原、高原） */
+    /** 群系列表（按顺序：深海、浅海/海岸、平原、高原、雪原、蘑菇平原） */
     private final List<Holder<Biome>> biomes;
 
     /** 河流配置列表 */
@@ -72,6 +83,9 @@ public class DyedreamBiomeSource extends BiomeSource {
     /** 河流噪声实例 */
     private final FastNoise riverNoise;
 
+    /** 蘑菇平原稀有噪声实例 */
+    private final FastNoise mushroomNoise;
+
     /** 群系缓存（用于优化性能） */
     private final Long2ObjectLinkedOpenHashMap<Holder<Biome>> biomeCache =
             new Long2ObjectLinkedOpenHashMap<>(CACHE_SIZE + 1, 0.75f);
@@ -79,13 +93,14 @@ public class DyedreamBiomeSource extends BiomeSource {
     /**
      * 构造函数
      *
-     * @param biomes 群系列表。按顺序：[深海, 浅海/海岸, 平原, 高原]
+     * @param biomes 群系列表。按顺序：[深海, 浅海/海岸, 平原, 高原, 雪原, 蘑菇平原]
      * @param rivers 河流配置列表
      */
     public DyedreamBiomeSource(List<Holder<Biome>> biomes, List<RiverEntry> rivers) {
         this.biomes = biomes;
         this.rivers = rivers;
         this.riverNoise = makeRiverNoise(seed);
+        this.mushroomNoise = makeMushroomNoise(seed);
     }
 
     /**
@@ -97,6 +112,7 @@ public class DyedreamBiomeSource extends BiomeSource {
         if (this.seed != seed) {
             this.seed = seed;
             this.riverNoise.setSeed((int) seed);
+            this.mushroomNoise.setSeed((int) seed);
             this.biomeCache.clear();
         }
     }
@@ -112,6 +128,18 @@ public class DyedreamBiomeSource extends BiomeSource {
         noise.setFractalOctaves(4);
         noise.setDomainWarpAmp(60.0f);
         noise.setDomainWarpType(FastNoise.DomainWarpType.OPEN_SIMPLEX_2_REDUCED);
+        return noise;
+    }
+
+    /**
+     * 创建蘑菇平原稀有噪声实例
+     * 使用低频率 FBM 噪声生成大面积稀有斑块
+     */
+    private FastNoise makeMushroomNoise(long seed) {
+        FastNoise noise = new FastNoise((int) seed);
+        noise.setFrequency(MUSHROOM_NOISE_FREQUENCY);
+        noise.setFractalType(FastNoise.FractalType.FBM);
+        noise.setFractalOctaves(3);
         return noise;
     }
 
@@ -198,6 +226,7 @@ public class DyedreamBiomeSource extends BiomeSource {
         Climate.TargetPoint target = sampler.sample(bx >> 2, by >> 2, bz >> 2);
         double continentalness = target.continentalness();
         double ridges = target.weirdness();
+        double temperature = target.temperature();
 
         // 深海
         if (continentalness < DEEP_OCEAN_THRESHOLD) {
@@ -209,6 +238,16 @@ public class DyedreamBiomeSource extends BiomeSource {
             return getBiomeSafe(1);
         }
 
+        // 蘑菇平原：稀有特殊群系，基于独立噪声判定
+        if (isMushroomPlains(bx, bz)) {
+            return getBiomeSafe(5);
+        }
+
+        // 雪原：低温区域
+        if (temperature < SNOW_TEMPERATURE_THRESHOLD) {
+            return getBiomeSafe(4);
+        }
+
         // 高原（高山脊区域）
         if (ridges > HILLS_RIDGE_THRESHOLD) {
             return getBiomeSafe(3);
@@ -216,6 +255,20 @@ public class DyedreamBiomeSource extends BiomeSource {
 
         // 默认：平原
         return getBiomeSafe(2);
+    }
+
+    /**
+     * 判断指定位置是否为蘑菇平原
+     * <p>
+     * 使用独立低频率噪声生成稀有斑块，避免与主群系过渡过于混杂。
+     *
+     * @param bx 方块坐标 X
+     * @param bz 方块坐标 Z
+     * @return 是否为蘑菇平原
+     */
+    private boolean isMushroomPlains(int bx, int bz) {
+        float value = mushroomNoise.getNoise(bx, bz);
+        return Math.abs(value) > MUSHROOM_PLAINS_THRESHOLD;
     }
 
     /**

@@ -269,7 +269,8 @@ public class PDNetwork {
             Item turnbackCloak = PDItemsCurios.TURNBACK_CLOAK.get();
             if (!player.getCooldowns().isOnCooldown(turnbackCloak)) {
                 handler.findFirstCurio(turnbackCloak).ifPresent(slot -> {
-                    if (PDAttachments.consumePlayerMeltDreamEnergy(player, 10) && !world.isClientSide) {
+                    // 融梦能量消耗已剥离至附属 mod
+                    if (!world.isClientSide) {
                         player.getCooldowns().addCooldown(turnbackCloak, 7800);
                         playCloakActivateSounds(world, x, y, z);
                         ((ServerLevel) world).sendParticles(
@@ -286,7 +287,8 @@ public class PDNetwork {
             Item evasionCloak = PDItemsCurios.EVASION_CLOAK.get();
             if (!player.getCooldowns().isOnCooldown(evasionCloak)) {
                 handler.findFirstCurio(evasionCloak).ifPresent(slot -> {
-                    if (PDAttachments.consumePlayerMeltDreamEnergy(player, 10) && !world.isClientSide) {
+                    // 融梦能量消耗已剥离至附属 mod
+                    if (!world.isClientSide) {
                         player.getCooldowns().addCooldown(evasionCloak, 7800);
                         playCloakActivateSounds(world, x, y, z);
                         ((ServerLevel) world).sendParticles(

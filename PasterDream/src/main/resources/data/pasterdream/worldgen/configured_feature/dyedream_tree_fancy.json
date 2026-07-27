@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:tree",
+  "type": "pasterdream:dyedream_tree",
   "config": {
     "trunk_provider": {
       "type": "minecraft:simple_state_provider",
@@ -25,22 +25,31 @@
     "minimum_size": {
       "type": "minecraft:two_layers_feature_size",
       "limit": 1,
-      "lower_size": 1,
-      "upper_size": 2
+      "lower_size": 0,
+      "upper_size": 3
     },
     "trunk_placer": {
-      "type": "minecraft:fancy_trunk_placer",
-      "base_height": 6,
+      "type": "pasterdream:dyedream_branching_trunk_placer",
+      "base_height": 9,
       "height_rand_a": 3,
       "height_rand_b": 2
     },
     "foliage_placer": {
-      "type": "minecraft:fancy_foliage_placer",
-      "radius": 2,
-      "offset": 3,
-      "height": 4
+      "type": "pasterdream:dyedream_spheroid_foliage_placer",
+      "radius": 3,
+      "offset": 0,
+      "height": 5
     },
-    "decorators": [],
+    "decorators": [
+      {
+        "type": "pasterdream:dyedream_root_decorator"
+      },
+      {
+        "type": "pasterdream:dyedream_fallen_leaves_decorator",
+        "probability": 0.4,
+        "radius": 3
+      }
+    ],
     "ignore_vines": true,
     "force_dirt": true
   }

@@ -7,8 +7,10 @@ import com.pasterdream.pasterdreammod.worldgen.feature.MegaCalcitePillarFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.MegaMushroomFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.PinkagaricClusterFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.SuspendedCrystalFeature;
+import com.pasterdream.pasterdreammod.worldgen.tree.DyedreamTreeFeature;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -49,4 +51,8 @@ public class PDFeatures {
     /** 发光菌体特征 —— 在洞穴天花板/墙壁悬挂生成粉色发光菌群 */
     public static final DeferredHolder<Feature<?>, CaveGlowMushroomFeature> CAVE_GLOW_MUSHROOM =
             FEATURES.register("cave_glow_mushroom", CaveGlowMushroomFeature::new);
+
+    /** 染梦混合树特征 —— 自定义 Trunk/Foliage/Decorator 的方块树入口 */
+    public static final DeferredHolder<Feature<?>, Feature<TreeConfiguration>> DYEDREAM_TREE =
+            FEATURES.register("dyedream_tree", () -> new DyedreamTreeFeature(TreeConfiguration.CODEC));
 }

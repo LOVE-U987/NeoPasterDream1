@@ -224,6 +224,9 @@ public class PDItems {
     public static final DeferredItem<?> PINKSLIME_BLOCK = PDItemsBlocks.PINKSLIME_BLOCK;
     public static final DeferredItem<?> ICESTONE = PDItemsBlocks.ICESTONE;
     public static final DeferredItem<?> DYEDREAM_LEAVES = PDItemsBlocks.DYEDREAM_LEAVES;
+    public static final DeferredItem<?> DYEDREAM_GLOWING_LEAVES = PDItemsBlocks.DYEDREAM_GLOWING_LEAVES;
+    public static final DeferredItem<?> DYEDREAM_HANGING_VINE = PDItemsBlocks.DYEDREAM_HANGING_VINE;
+    public static final DeferredItem<?> DYEDREAM_FALLEN_LEAVES = PDItemsBlocks.DYEDREAM_FALLEN_LEAVES;
     public static final DeferredItem<?> DYEDREAM_WORLDTREE_LEAVES = PDItemsBlocks.DYEDREAM_WORLDTREE_LEAVES;
     public static final DeferredItem<?> DYEDREAMQUARTZ_ORE = PDItemsBlocks.DYEDREAMQUARTZ_ORE;
     public static final DeferredItem<?> DYEDREAMDUST_ORE = PDItemsBlocks.DYEDREAMDUST_ORE;

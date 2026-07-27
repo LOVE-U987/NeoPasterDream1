@@ -84,9 +84,30 @@
 | :--- | :--- |
 | `PASTERDREAM_SMOKETEST=1` | 炼药锅等链路自动冒烟 |
 | `PASTERDREAM_VERIFY=1` | 注册表 diff + 行为时间线（终验 194 pass；默认 KEEP_OPEN 不退出，便于人工观察方块总览） |
+| `PASTERDREAM_VERIFY_SUITES=…` | **分类运行**（逗号分隔）；未设/`all`=全量。见下表 |
 | `PASTERDREAM_VERIFY_KEEP_OPEN=0` | 测完自动退出客户端（CI/无头用） |
 | `.trae/tools/check_lang.py` | 中英语言键完整性 |
 | `.trae/tools/verify_resource_closure.py` | JSON/模型/纹理/音效/loot 闭包 |
+
+**VERIFY 套件（`PASTERDREAM_VERIFY_SUITES`）**——未选中的套件完全不调度，时间线按所选压缩：
+
+| 套件名 | 内容 |
+| :--- | :--- |
+| `registry` | manifest 注册表 diff + datapack 统计 |
+| `core` | 属性/附件/效果/梦志/蓝图/储物袋/粉蛋/效果修饰/无尽书 |
+| `dimensions` / `dim` | 影灯世界 · 风之旅途往返 |
+| `spells` | 五法术投射物行为 |
+| `content` / `machines` | 暗影高炉 / 法杖扫射 / angel_block_item |
+| `structures` | 结构生成子系统 |
+| `workshop` | 武器工坊群 E2E |
+| `struct-dim` | 结构→维度映射 |
+| `gallery` | 方块总览展台 |
+| `entity-gallery` | 实体展台 |
+| **快捷** `quick` | = `registry,core` |
+| **快捷** `behavior` | = `core,dimensions,spells,content` |
+| **快捷** `worldgen` | = `structures,struct-dim` |
+| **快捷** `galleries` / `visual` | = `gallery,entity-gallery` |
+| **快捷** `all` | 全量（默认） |
 
 方块总览展台（VERIFY 收尾自动铺，出生点东/南）：**主台**静物全量（门/双层植物上下半、染梦植物垫染梦草）；**特展带**用物品框+告示展示结构触发块 / 唤星限时块 / 流体（避免自毁与漫延）。
 
@@ -102,8 +123,14 @@ IDEA / Fleet：根目录 [`.run/`](.run/) 已写入同名运行配置，打开�
 
 | 配置名 | 作用 |
 | :--- | :--- |
-| `PD VERIFY KEEP_OPEN` | 终验，测完不退出（推荐人工观察） |
-| `PD VERIFY CI` | 终验，测完退出 |
+| `PD VERIFY KEEP_OPEN` | 全量终验，测完不退出（推荐人工观察） |
+| `PD VERIFY CI` | 全量终验，测完退出 |
+| `PD VERIFY quick` | 仅 registry+core，测完退出 |
+| `PD VERIFY workshop` | 仅工坊，测完退出 |
+| `PD VERIFY structures` | 仅 worldgen（structures+struct-dim），测完退出 |
+| `PD VERIFY spells` | 仅法术，测完退出 |
+| `PD VERIFY behavior` | core+dimensions+spells+content，测完退出 |
+| `PD VERIFY gallery` | 方块+实体展台，KEEP_OPEN |
 | `PD SMOKETEST` / `PD SMOKETEST+VERIFY` | 冒烟 / 冒烟+终验 |
 | `PD runClient` | 普通客户端 |
 | `PD compileJava` | 仅编译 |
@@ -152,6 +179,58 @@ PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_KEEP_OPEN=0 \
   sh gradlew :PasterDream:runClient --offline
 ```
 
+#### D2. 分类运行（只跑需要的套件，避免一次跑完全部）
+
+```bash
+# 快速：注册表 + 核心行为
+PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=quick PASTERDREAM_VERIFY_KEEP_OPEN=0 \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
+```bash
+# 仅工坊
+PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=workshop PASTERDREAM_VERIFY_KEEP_OPEN=0 \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
+```bash
+# 结构 + 结构维度
+PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=worldgen PASTERDREAM_VERIFY_KEEP_OPEN=0 \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
+```bash
+# 仅法术
+PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=spells PASTERDREAM_VERIFY_KEEP_OPEN=0 \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
+```bash
+# 行为链：core + 维度 + 法术 + 高炉/法杖
+PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=behavior PASTERDREAM_VERIFY_KEEP_OPEN=0 \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
+```bash
+# 展台（方块+实体，测完保持打开供观察）
+PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=galleries \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
+```bash
+# 任意组合，逗号分隔
+PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=registry,workshop,spells \
+  PASTERDREAM_VERIFY_KEEP_OPEN=0 \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
 #### E. 仅冒烟（炼药锅链路；不跑全量 VERIFY）
 
 ```bash
@@ -186,6 +265,7 @@ PY
 | 环境变量 | 默认 | 含义 |
 | :--- | :-: | :--- |
 | `PASTERDREAM_VERIFY=1` | 关 | 启用移植终验时间线 |
+| `PASTERDREAM_VERIFY_SUITES` | `all` | 逗号分隔套件；见上方套件表 |
 | `PASTERDREAM_VERIFY_KEEP_OPEN` | **开**（未设置即保持打开） | `0`/`false` = 测完退出 |
 | `PASTERDREAM_SMOKETEST=1` | 关 | 炼药锅等冒烟（可与 VERIFY 同开） |
 
@@ -207,20 +287,45 @@ PY
 
 ## 📦 安装与打包
 
-本仓库两个子模块，**发布给玩家时只装一个 jar**：
+本仓库两个子模块，**发布给玩家时只装一个 jar**（再加下方运行时依赖）：
 
 | 产物 | 说明 |
 | :--- | :--- |
-| `build/dist/pasterdream-<version>.jar` | **唯一**可安装包；已**内嵌** `PasterDreamAPI`（无独立 `mods.toml`） |
+| `build/dist/pasterdream-<version>.jar` | **本模组**可安装包；已**内嵌** `PasterDreamAPI`（无独立 `mods.toml`） |
 | `PasterDreamAPI` 带 `api` classifier 的 jar | 仅开发/依赖用，**不要**丢进 `mods/` |
 
+### 玩家 / 整合包需一并安装的依赖
+
+本模组**不**把第三方 jar 打进发布包（标准 soft-dep 方式）。`neoforge.mods.toml`：
+
+| modId | 关系 | 建议版本（与开发一致） |
+| :--- | :-: | :--- |
+| `geckolib` | **required** | 4.8.4（1.21.1 NeoForge） |
+| `curios` | **required** | 9.5.1+1.21.1 |
+| `playeranimator` | optional | 2.0.4+1.21.1 |
+| `jei` | optional | 开发期 localRuntime，玩家自选 |
+
+### 开发者依赖（Maven，不再使用 `libs/*.jar`）
+
+版本集中在根目录 [`gradle.properties`](gradle.properties)：`geckolib_version` / `curios_version` / `player_anim_version` / `jei_version`。
+
+```groovy
+// :PasterDream — 节选
+implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+implementation "dev.kosmx.player-anim:player-animation-lib-forge:${player_anim_version}"
+```
+
+仓库：GeckoLib Cloudsmith · TheIllusiveC4 · KosmX · BlameJared（JEI）。  
+`libs/` 仅作**对照源码**（如 `FixPasterDream-main`），**不要**再放依赖 jar。
+
 ```bash
-# 仓库根；需要 Java 21
-JAVA_HOME=/usr/lib/jvm/java-21-openjdk sh gradlew packageMod --offline
+# 仓库根；需要 Java 21（首次解析依赖需联网；之后可用 --offline）
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk sh gradlew packageMod
 # 或 :PasterDream:packageMod ；assemble / build 也会触发 packageMod
 ```
 
-拷贝 `build/dist/pasterdream-*.jar` 到游戏 `mods/` 即可（版本号见 `gradle.properties` 的 `mod_version`）。
+拷贝 `build/dist/pasterdream-*.jar` 与 GeckoLib / Curios（及可选 Player Animator）到游戏 `mods/` 即可（版本号见 `gradle.properties` 的 `mod_version`）。
 
 ***
 

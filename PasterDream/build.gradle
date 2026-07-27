@@ -21,23 +21,31 @@ tasks.named('processResources', ProcessResources).configure {
 }
 
 repositories {
-    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
-    // JEI（Just Enough Items）官方发布仓库
+    // GeckoLib 官方
+    maven {
+        name = 'GeckoLib'
+        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content { includeGroup 'software.bernie.geckolib' }
+    }
+    // Curios 官方
+    maven {
+        name = 'TheIllusiveC4'
+        url = 'https://maven.theillusivec4.top/'
+        content { includeGroupByRegex 'top\\.theillusivec4.*' }
+    }
+    // Player Animator 官方
+    maven {
+        name = 'KosmX'
+        url = 'https://maven.kosmx.dev/'
+        content { includeGroupByRegex 'dev\\.kosmx.*' }
+    }
+    // JEI（Just Enough Items）
     maven {
         name = 'BlameJared'
         url = 'https://maven.blamejared.com'
-        content {
-            // 限定该仓库只解析 JEI 组，避免拖慢其他依赖解析
-            includeGroup 'mezz.jei'
-        }
-    }
-    flatDir {
-        dirs rootProject.file('libs')
+        content { includeGroup 'mezz.jei' }
     }
 }
-
-// JEI 版本（1.21.1 NeoForge 最新稳定版，坐标已经 curl 探测 maven.blamejared.com 确认）
-def jei_version = '19.39.0.372'
 
 base {
     archivesName = mod_id
@@ -105,9 +113,11 @@ dependencies {
     // 使 PasterDream 的 test sourceSet 能够访问 PasterDreamAPI 的 test sourceSet（gen/example 类）
     testImplementation project(':PasterDreamAPI').sourceSets.test.output
 
-    implementation files(rootProject.file('libs/geckolib-neoforge-1.21.1-4.8.4.jar'))
-    implementation files(rootProject.file('libs/player-animation-lib-forge-2.0.4+1.21.1.jar'))
-    implementation files(rootProject.file('libs/curios-neoforge-9.5.1+1.21.1.jar'))
+    // ======================== 必需第三方 mod（Maven，开发期进 classpath；不打进发布 jar） ========================
+    // 玩家需自行安装同版本或兼容范围的 GeckoLib / Curios / Player Animator。
+    implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+    implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+    implementation "dev.kosmx.player-anim:player-animation-lib-forge:${player_anim_version}"
 
     // ======================== JEI 集成（可选依赖） ========================
     // 编译期只依赖 API（common + neoforge 两部分），不会被打进发布 jar；

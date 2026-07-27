@@ -128,6 +128,27 @@ public class PDBlocksVegetation {
     public static final DeferredBlock<DyedreamCrackBlock> DYEDREAM_CRACK = PDBlocks.BLOCKS.registerBlock("dyedream_crack",
             p -> new DyedreamCrackBlock());
 
+    /**
+     * 染梦发光树叶 (dyedream_glowing_leaves)
+     * 继承 LeavesBlock，亮度 8，用于树冠边缘与发光树变体
+     */
+    public static final DeferredBlock<Block> DYEDREAM_GLOWING_LEAVES = PDBlocks.BLOCKS.registerBlock("dyedream_glowing_leaves",
+            p -> new DyedreamGlowingLeavesBlock());
+
+    /**
+     * 染梦垂挂藤蔓 (dyedream_hanging_vine)
+     * 继承 VineBlock，亮度 4，从树冠向下延伸
+     */
+    public static final DeferredBlock<Block> DYEDREAM_HANGING_VINE = PDBlocks.BLOCKS.registerBlock("dyedream_hanging_vine",
+            p -> new DyedreamHangingVineBlock());
+
+    /**
+     * 染梦落叶层 (dyedream_fallen_leaves)
+     * 继承 CarpetBlock，装饰树干周围地表
+     */
+    public static final DeferredBlock<Block> DYEDREAM_FALLEN_LEAVES = PDBlocks.BLOCKS.registerBlock("dyedream_fallen_leaves",
+            p -> new DyedreamFallenLeavesBlock());
+
     // ==================== 云朵方块 ====================
     public static final DeferredBlock<CloudBlock> CLOUD = PDBlocks.BLOCKS.registerBlock("cloud", p -> new CloudBlock());
     public static final DeferredBlock<DarkCloudBlock> DARK_CLOUD = PDBlocks.BLOCKS.registerBlock("dark_cloud", p -> new DarkCloudBlock());
