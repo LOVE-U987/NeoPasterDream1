@@ -97,7 +97,19 @@
 工作目录：仓库根 `/opt/MDEV/NeoPasterDream1`。需要 **Java 21**。  
 下列每一段可**单独复制执行**，不要混在同一串里。
 
-IDEA / Fleet：根目录 [`.run/`](.run/) 已写入同名运行配置（`PD VERIFY KEEP_OPEN` 等），打开工程后直接 Run。
+IDEA / Fleet：根目录 [`.run/`](.run/) 已写入同名运行配置，打开工程后直接 Run。  
+配置**不**写死 `JAVA_HOME`（由 IDE / 系统 JDK 21 解析）；若本机默认不是 21，请在 IDEA 的 Gradle JVM / Project SDK 选 Java 21。
+
+| 配置名 | 作用 |
+| :--- | :--- |
+| `PD VERIFY KEEP_OPEN` | 终验，测完不退出（推荐人工观察） |
+| `PD VERIFY CI` | 终验，测完退出 |
+| `PD SMOKETEST` / `PD SMOKETEST+VERIFY` | 冒烟 / 冒烟+终验 |
+| `PD runClient` | 普通客户端 |
+| `PD compileJava` | 仅编译 |
+| `PD packageMod` | 打可安装单 jar → `build/dist/` |
+| `PD check_lang` / `PD verify_resource_closure` | 静态门禁 |
+| `PD read_verify_report` | 读 `pd_verify_report.json` |
 
 #### A. 编译（可选）
 
@@ -193,6 +205,65 @@ PY
 
 ***
 
+## 📦 安装与打包
+
+本仓库两个子模块，**发布给玩家时只装一个 jar**：
+
+| 产物 | 说明 |
+| :--- | :--- |
+| `build/dist/pasterdream-<version>.jar` | **唯一**可安装包；已**内嵌** `PasterDreamAPI`（无独立 `mods.toml`） |
+| `PasterDreamAPI` 带 `api` classifier 的 jar | 仅开发/依赖用，**不要**丢进 `mods/` |
+
+```bash
+# 仓库根；需要 Java 21
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk sh gradlew packageMod --offline
+# 或 :PasterDream:packageMod ；assemble / build 也会触发 packageMod
+```
+
+拷贝 `build/dist/pasterdream-*.jar` 到游戏 `mods/` 即可（版本号见 `gradle.properties` 的 `mod_version`）。
+
+***
+
+## 🧭 开发：快捷切换维度
+
+创造/作弊开着时，用原版 `execute in`（Y=160 与终验一致，落地后可飞行）：
+
+```mcfunction
+/execute in pasterdream:dyedream_world run tp @s 0 160 0
+/execute in pasterdream:lamp_shadow_world run tp @s 0 160 0
+/execute in pasterdream:wind_journey_world run tp @s 0 160 0
+/execute in pasterdream:aaroncos_arena_world run tp @s 0 160 0
+/execute in minecraft:overworld run tp @s ~ ~ ~
+```
+
+| 维度 | 正式入口（非调试） |
+| :--- | :--- |
+| 染梦 | 染梦裂隙 · 染梦传送水晶 |
+| 影灯 | 暗影地牢门等流程 |
+| 风之旅途 | 风维度流程物品 |
+| 竞技场 | 亚伦柯斯竞技场相关 |
+
+说明：`/pasterdream dimension reset <id>` 是**重置维度存档**，不是传送。调试栏 `DEBUG_WAND_*` 只刷结构。
+
+***
+
+## 🎒 创造模式标签（摘要）
+
+原版多 tab 语义已按主题重排（不按 `paster_tab_*` 旧名 diff）：
+
+| 标签 | 内容 |
+| :--- | :--- |
+| **生物实体** | **仅刷怪蛋**；掉落材料不进此页 |
+| 武器工具 | 锭/胚/武器 + 灵魂尘、粉史莱姆球、甲虫甲壳等掉落材料 |
+| 阴影维度 | 影系方块/机关 + 暗影吐息、苔藓幻膜等 |
+| 食物饮品 | 含水母泥 / 水母果冻 |
+| 纪念品 | 笔记/蓝图/法术物等 + 草莓之心 |
+| §c 调试功能 | 结构调试杖等 |
+
+特效实体刷怪蛋（如大地之刃剑气、治疗立场）不进创造刷怪蛋栏（与原版一致）。
+
+***
+
 ## ❓ 常见问题
 
 | 问题                        | 回答                                                                  |
@@ -200,8 +271,11 @@ PY
 | **与原版 PasterDream 有何区别？** | 原版是 1.20.1 Forge + MCreator。新帕斯特之梦在 1.21.1 NeoForge 下使用原生 API 完全重写。 |
 | **美术风格会改变吗？**             | \*\*不会。\*\*原版作者的纹理、模型和视觉设计是我们珍视的遗产，将完整保留。                           |
 | **现在可以玩吗？** | **可以。** 四维度主路径、工作站、笔记/卡牌/法杖与 62 成就均已接通；详见差距报告终验表。 |
-| **存档会损坏吗？**               | 染梦维度通过裂隙进入，不影响主世界。未来更新保持向后兼容。                                       |
-| **支持多人联机吗？**              | **完全兼容**多人服务器。                                                      |
+| **要装几个 jar？** | **一个。** `packageMod` 产出的 `pasterdream-*.jar`（已内嵌 API）。不要再装 `PasterDreamAPI`。 |
+| **怎么快速去自定义维度？** | 见上文「快捷切换维度」；或用裂隙/传送水晶等正式入口。 |
+| **存档会损坏吗？** | 染梦等维度通过裂隙/物品进入，不改写主世界生成。未来更新尽量向后兼容。 |
+| **支持多人联机吗？** | **完全兼容**多人服务器。 |
+| **构建报 class file major version 70？** | 系统默认成了 Java 26。请用 **Java 21**（`JAVA_HOME=/usr/lib/jvm/java-21-openjdk` 或 IDE 的 Gradle JVM）。 |
 
 ***
 
