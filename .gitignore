@@ -40,11 +40,6 @@ repo/
 
 ### AI tools ###
 .claude
-.claude/**
-memory
-blueprint_*_staging.*
-dreamnotes_*_staging.*
-javac.*.args
 
 ### Local third-party / reference (not part of shipping sources) ###
 # 运行时依赖一律 Maven（gradle.properties：geckolib/curios/player_anim/jei）。
