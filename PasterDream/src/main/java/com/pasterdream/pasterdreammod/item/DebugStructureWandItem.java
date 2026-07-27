@@ -28,18 +28,21 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 调试结构法杖 —— 右键在目标位置放置指定的遗迹结构
+ * 调试结构法杖 —— 右键在目标位置放置指定的遗迹结构。
  * <p>
  * 用于开发阶段快速验证结构 NBT 的放置效果。
  * 右键点击一个方块，在点击面的外侧放置结构。
  * 仅服务器端执行，客户端仅触发动画。
- *
- * @param structurePath 结构 NBT 文件的路径（不含命名空间和扩展名）
  */
 public class DebugStructureWandItem extends Item {
 
+    /** 结构 NBT 路径（不含命名空间和扩展名），如 {@code dream_train} */
     private final String structurePath;
 
+    /**
+     * @param properties    物品属性
+     * @param structurePath 结构 NBT 文件路径（不含命名空间和扩展名）
+     */
     public DebugStructureWandItem(Properties properties, String structurePath) {
         super(properties);
         this.structurePath = structurePath;

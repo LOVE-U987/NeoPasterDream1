@@ -46,7 +46,7 @@ public class TheEndlessBookOfDreamSeekersBlockEntity extends BlockEntity impleme
 
     /**
      * 2 格库存：0 展示 / 1 导入；最大堆叠 1（原版 getMaxStackSize=1）。
-     * 展示槽 {@link #isItemValid} 返回 false，仅 {@link #importFromSlot} 可写入。
+     * 展示槽 {@code isItemValid} 返回 false，仅 {@link #importFromSlot} 可写入。
      */
     private final ItemStackHandler itemHandler = new ItemStackHandler(SLOT_COUNT) {
         @Override
