@@ -16,6 +16,8 @@ import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDRecipeTypes;
+import com.pasterdream.pasterdreammod.smoketest.PDCurioVerifyHooks;
+import com.pasterdream.pasterdreammod.smoketest.PDStaleCommentVerifyHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -444,7 +446,11 @@ public final class PDPortingVerifyTest {
             at(c + 7, PDPortingVerifyTest::effectModifierSuite);
             at(c + 8, () -> runEffectSuite(player()));
             at(c + 9, PDPortingVerifyTest::endlessBookImportSuite);
-            cursor = c + 12;
+            at(c + 10, () -> PDStaleCommentVerifyHooks.verify(server(), player() != null ? player().serverLevel() : null, player(), r ->
+                    checkDetail("stale-comments", r.pass(), r.name(), r.detail())));
+            at(c + 11, () -> PDCurioVerifyHooks.verify(player(), r ->
+                    checkDetail("curios", r.pass(), r.name(), r.detail())));
+            cursor = c + 13;
         }
 
         if (suite(Suite.STRUCTURES)) {

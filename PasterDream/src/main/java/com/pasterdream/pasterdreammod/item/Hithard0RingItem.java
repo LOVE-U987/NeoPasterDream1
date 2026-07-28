@@ -36,7 +36,16 @@ public class Hithard0RingItem extends Item implements ICurioItem {
     public boolean canEquip(SlotContext slotContext, ItemStack stack) {
         if (slotContext.entity() != null) {
             return top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(slotContext.entity())
-                    .map(handler -> handler.findFirstCurio(stack.getItem()).isEmpty())
+                    .map(handler -> {
+                        var curios = handler.getCurios();
+                        for (var sh : curios.values()) {
+                            var h = sh.getStacks();
+                            for (int i = 0; i < h.getSlots(); i++) {
+                                if (h.getStackInSlot(i).is(stack.getItem())) return false;
+                            }
+                        }
+                        return true;
+                    })
                     .orElse(true);
         }
         return true;

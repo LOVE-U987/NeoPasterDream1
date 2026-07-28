@@ -22,7 +22,7 @@
 
 原版模组使用 MCreator 构建，这在代码结构、性能和扩展性上都有所限制。新帕斯特之梦使用 **NeoForge 原生 API + DeferredRegister + GeckoLib** 重新实现了一切，为模组带来了更好的性能和更大的扩展空间。
 
-**原版主路径注册与自动化行为抽测已闭环**（2026-07-27 客户端终验 194/194，含结构/工坊/结构维度/方块总览）。它仍会成长——但首先，你可以完整游玩原作者设计的染梦/影灯/风旅主线。
+**原版主路径注册与自动化行为抽测已闭环**（CORE 近次 140/0，含饰品 curios×53；全量行为 250+）。它仍会成长——但首先，你可以完整游玩原作者设计的染梦/影灯/风旅主线。
 
 ***
 
@@ -36,10 +36,10 @@
 | **世界生成与四维度** | ██████████**100%** | ✅ 四维 + 114 结构/集/池；structure 行为终验 18 项 |
 | **配方与成就** | ██████████**100%** | ✅ 444 配方 · 62/62 成就 |
 | **GUI / 菜单** | ██████████**100%** | ✅ 19/19（工坊·高炉·研究台·笔记·蓝图·储物袋等） |
-| **自动化验证** | ██████████**100%** | ✅ VERIFY 行为时间线（structures×20 + workshop×28 + struct-dim×15 + gallery×3 + entity-gallery×5） |
+| **自动化验证** | ██████████**100%** | ✅ VERIFY 行为时间线（structures×20 + workshop×28 + struct-dim×15 + gallery×3 + entity-gallery×5 + **curios×53** + stale-comments 等，合计 250+） |
 | **新内容设计** | ░░░░░░░░░░**\~5%** | ⏳ 原版对齐完成后的扩展位 |
 
-详见根目录 [`功能还原差距报告.md`](功能还原差距报告.md)。
+详见 [`docs/功能状态.md`](docs/功能状态.md) · 索引 [`docs/README.md`](docs/README.md)。
 
 ***
 
@@ -83,7 +83,7 @@
 | 工具 | 用途 |
 | :--- | :--- |
 | `PASTERDREAM_SMOKETEST=1` | 炼药锅等链路自动冒烟 |
-| `PASTERDREAM_VERIFY=1` | 注册表 diff + 行为时间线（终验 194 pass；默认 KEEP_OPEN 不退出，便于人工观察方块总览） |
+| `PASTERDREAM_VERIFY=1` | 注册表 diff + 行为时间线（默认 KEEP_OPEN 不退出，便于人工观察方块/实体总览；CORE 含 curios / stale-comments） |
 | `PASTERDREAM_VERIFY_SUITES=…` | **分类运行**（逗号分隔）；未设/`all`=全量。见下表 |
 | `PASTERDREAM_VERIFY_KEEP_OPEN=0` | 测完自动退出客户端（CI/无头用） |
 | `.trae/tools/check_lang.py` | 中英语言键完整性 |
@@ -94,7 +94,7 @@
 | 套件名 | 内容 |
 | :--- | :--- |
 | `registry` | manifest 注册表 diff + datapack 统计 |
-| `core` | 属性/附件/效果/梦志/蓝图/储物袋/粉蛋/效果修饰/无尽书 |
+| `core` | 属性/附件/效果/梦志/蓝图/储物袋/粉蛋/效果修饰/无尽书 + **curios 饰品** + **stale-comments** |
 | `dimensions` / `dim` | 影灯世界 · 风之旅途往返 |
 | `spells` | 五法术投射物行为 |
 | `content` / `machines` | 暗影高炉 / 法杖扫射 / angel_block_item |
@@ -281,7 +281,7 @@ PY
 | **第三方可选联动** | 🌙 低 | Croptopia 深度；Tetra 待上游 1.21.1 |
 | **新内容设计** | ⏳ 低 | 原版对齐完成后的扩展 |
 
-详见 [`功能还原差距报告.md`](功能还原差距报告.md) §2 模块 · §3 后续 · §4 命令（2026-07-27）。
+详见 [`docs/功能状态.md`](docs/功能状态.md) · [`docs/验证复现.md`](docs/验证复现.md) · [`docs/注释审计.md`](docs/注释审计.md) · 索引 [`docs/README.md`](docs/README.md)。
 
 ***
 
