@@ -160,6 +160,42 @@ public class ThundercloudEntity extends GeckoLibMonsterEntity {
     }
 
     /**
+     * VERIFY / 调试：强制落一轮雷（chance=1，无环境粒子）。
+     * 正常游戏仍走 baseTick 1.2% / hurt 50%。
+     */
+    /**
+     * 祭坛伴生 / 悬空雷云：不应在和平被立刻抹掉（VERIFY 创造档曾用 PEACEFUL）。
+     * 仍可被玩家击杀；仅跳过「和平自动清除敌对」规则。
+     */
+    @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return false;
+    }
+
+    /**
+     * VERIFY：对指定玩家强制落一轮雷（不依赖 AABB 探测）。
+     */
+    public void forceRainBoltsForTest(Player target) {
+        if (!(this.level() instanceof ServerLevel world) || target == null || !target.isAlive()) {
+            return;
+        }
+        RandomSource rng = this.getRandom();
+        for (int i = 0; i < 6; i++) {
+            double bx = 0.1D * Mth.nextDouble(rng, -6.0D, 6.0D) + target.getX();
+            double by = target.getY() + 5.0D;
+            double bz = 0.1D * Mth.nextDouble(rng, -6.0D, 6.0D) + target.getZ();
+            LightningProjectileEntity bolt =
+                    LightningProjectileEntity.summonRainBolt(world, bx, by, bz, BOLT_DAMAGE);
+            bolt.setOwner(this);
+        }
+    }
+
+    /** @see #forceRainBoltsForTest(Player) */
+    public void forceRainBoltsForTest() {
+        tryRainBolts(1.0D, BOLT_DAMAGE, false);
+    }
+
+    /**
      * 对附近玩家落 6 道竖直雷（对齐 Pr0/Pr1）。
      *
      * @param chance      触发概率

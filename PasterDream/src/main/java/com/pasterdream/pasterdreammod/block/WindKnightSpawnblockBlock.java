@@ -18,6 +18,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -245,13 +246,26 @@ public class WindKnightSpawnblockBlock extends BaseEntityBlock {
         level.setBlock(pos, newState, 3);
     }
 
-    /** 在指定位置生成实体并随机朝向 */
+    /**
+     * 在指定位置生成实体并随机朝向。
+     * <p>
+     * 不用 {@code EntityType#spawn(BlockPos)}：其对悬空/碰撞位可能返回 null
+     *（祭坛伴生雷云 y+8 实测曾 Δcloud=0，骑士仍成功）。改为 create + moveTo + addFresh。
+     */
     private static void spawnAt(ServerLevel level, net.minecraft.world.entity.EntityType<?> type,
                                 double x, double y, double z) {
-        Entity entity = type.spawn(level, BlockPos.containing(x, y, z), MobSpawnType.MOB_SUMMONED);
-        if (entity != null) {
-            entity.setYRot(level.getRandom().nextFloat() * 360F);
+        Entity entity = type.create(level);
+        if (entity == null) {
+            return;
         }
+        float yRot = level.getRandom().nextFloat() * 360F;
+        entity.moveTo(x, y, z, yRot, 0.0F);
+        if (entity instanceof Mob mob) {
+            mob.finalizeSpawn(level, level.getCurrentDifficultyAt(entity.blockPosition()),
+                    MobSpawnType.MOB_SUMMONED, null);
+            mob.setPersistenceRequired();
+        }
+        level.addFreshEntity(entity);
     }
 
     /** 向玩家发送快捷栏提示（仅服务端） */

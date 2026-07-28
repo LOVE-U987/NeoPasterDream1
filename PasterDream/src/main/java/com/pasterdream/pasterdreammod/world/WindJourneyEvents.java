@@ -36,6 +36,9 @@ public final class WindJourneyEvents {
             "北方", "东北方", "东方", "东南方", "南方", "西南方", "西方", "西北方"
     };
 
+    /** 上次已处理的日序号（dayTime/24000），避免 dayTime==0 或卡在日界时每 tick 重roll */
+    private static long lastWindDayIndex = Long.MIN_VALUE;
+
     private WindJourneyEvents() {
     }
 
@@ -76,7 +79,11 @@ public final class WindJourneyEvents {
         }
 
         long dayTime = serverLevel.getDayTime();
-        if (dayTime % 24000L == 0L) {
+        // 原版用 dayTime % 24000 == 0，但 VERIFY 快进 / dayTime 停在 0 时会每 tick 命中。
+        // 改为「跨过新的一天序号」才 roll 一次（仍含 0 点日界）。
+        long dayIndex = Math.floorDiv(dayTime, 24000L);
+        if (dayIndex != lastWindDayIndex && dayTime % 24000L == 0L) {
+            lastWindDayIndex = dayIndex;
             int dir = Mth.nextInt(RandomSource.create(), 0, 7);
             GameRules.IntegerValue rule = serverLevel.getGameRules().getRule(PDGameRules.WIND_DIRECTION);
             rule.set(dir, serverLevel.getServer());

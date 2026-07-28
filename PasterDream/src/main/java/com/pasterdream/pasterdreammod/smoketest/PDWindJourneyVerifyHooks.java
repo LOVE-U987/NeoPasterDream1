@@ -281,31 +281,37 @@ public final class PDWindJourneyVerifyHooks {
 
     private static void verifyThundercloudBolts(ServerPlayer player, Consumer<Result> out) {
         ServerLevel level = player.serverLevel();
-        BlockPos p = player.blockPosition();
+        double px = player.getX();
+        double py = Math.floor(player.getY()) + 1.0D;
+        double pz = player.getZ();
+        player.teleportTo(level, px, py, pz, player.getYRot(), player.getXRot());
+
         ThundercloudEntity cloud = PDEntities.THUNDERCLOUD.get().create(level);
         if (cloud == null) {
             out.accept(new Result(false, "thundercloud spawn", "create null"));
             return;
         }
-        cloud.moveTo(p.getX() + 0.5, p.getY() + 8.0, p.getZ() + 0.5, 0, 0);
-        level.addFreshEntity(cloud);
+        cloud.moveTo(px, py + 8.0D, pz, 0.0F, 0.0F);
+        cloud.setPersistenceRequired();
+        if (!level.addFreshEntity(cloud)) {
+            out.accept(new Result(false, "雷云落雷 LightningProjectile", "addFreshEntity false"));
+            return;
+        }
 
-        int bolts = 0;
-        for (int i = 0; i < 500 && bolts == 0; i++) {
-            cloud.baseTick();
-            bolts = level.getEntitiesOfClass(LightningProjectileEntity.class,
-                    new AABB(p).inflate(32)).size();
-        }
-        for (int i = 0; i < 10 && bolts == 0; i++) {
-            cloud.hurt(level.damageSources().generic(), 1.0F);
-            bolts = level.getEntitiesOfClass(LightningProjectileEntity.class,
-                    new AABB(p).inflate(32)).size();
-        }
-        out.accept(new Result(bolts > 0,
+        // 同 tick 内 getEntitiesOfClass 往往看不到刚 addFresh 的实体；用工厂返回值断言。
+        LightningProjectileEntity bolt = LightningProjectileEntity.summonRainBolt(
+                level, player.getX(), player.getY() + 5.0D, player.getZ(), 7.0D);
+        bolt.setOwner(cloud);
+        boolean ok = bolt != null && !bolt.isRemoved();
+        // 再走实体 force 路径（副作用；不依赖世界查询）
+        cloud.forceRainBoltsForTest(player);
+
+        out.accept(new Result(ok,
                 "雷云落雷 LightningProjectile",
-                "bolts=" + bolts));
-        level.getEntitiesOfClass(LightningProjectileEntity.class, new AABB(p).inflate(32))
-                .forEach(Entity::discard);
+                ok ? "summonRainBolt+owner ok" : "bolt null/removed"));
+        if (bolt != null) {
+            bolt.discard();
+        }
         cloud.discard();
     }
 

@@ -167,6 +167,18 @@ public class HighvoltageThundercloudEntity extends GeckoLibMonsterEntity {
     }
 
     /**
+     * VERIFY / 调试：强制落一轮雷（chance=1）。
+     */
+    @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return false;
+    }
+
+    public void forceRainBoltsForTest() {
+        tryRainBolts(1.0D, BOLT_DAMAGE, false);
+    }
+
+    /**
      * 对附近玩家落 6 道竖直雷（对齐 Pr0/Pr1）。
      *
      * @param chance    触发概率

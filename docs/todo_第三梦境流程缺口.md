@@ -136,6 +136,15 @@
 
 ---
 
+
+### P1.5 — 1.21.1 worldgen 兼容（2026-07-29）
+
+- [x] **禁用 `ground_feature_wind_journey_1`（`minecraft:lake`）biome_modifier 挂接**
+  - 现象：进风维 / VERIFY 生成区块时 `LakeFeature.place` → `getBiome` → `Requested chunk unavailable during world generation`，集成服 FATAL 断连。
+  - 原因：1.21.1 `WorldGenRegion` 对 lake 取邻块群系比 1.20.1 更严；原版挂 `surface_structures`、改 `lakes` 步仍炸。
+  - 处理：移除 `neoforge/biome_modifier/wind_journey_lakes.json`（configured/placed JSON 保留，未挂接不跑）。
+  - 验收：进风维与 `wind-journey` VERIFY 不再 FATAL；水色湖暂无自然生成（结构/手置不受影响）。
+
 ## 2. 已确认「不用当缺口重做」的部分
 
 | 模块 | 状态 |

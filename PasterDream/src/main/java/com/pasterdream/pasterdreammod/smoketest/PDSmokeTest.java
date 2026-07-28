@@ -381,11 +381,17 @@ public final class PDSmokeTest {
                 final String worldName = "test-audit";
                 deleteExistingWorld(mc, worldName);
                 LOGGER.info(TAG + "creating superflat creative test world '{}'", worldName);
+                // VERIFY 需刷怪/祭坛伴生雷云等 Monster；PEACEFUL 会每 tick 清掉。
+                // 仅冒烟仍可用 PEACEFUL；开了 VERIFY 则 EASY。
+                net.minecraft.world.Difficulty difficulty =
+                        PDPortingVerifyTest.ENABLED
+                                ? net.minecraft.world.Difficulty.EASY
+                                : net.minecraft.world.Difficulty.PEACEFUL;
                 net.minecraft.world.level.LevelSettings settings = new net.minecraft.world.level.LevelSettings(
                         worldName,
                         net.minecraft.world.level.GameType.CREATIVE,
                         false,
-                        net.minecraft.world.Difficulty.PEACEFUL,
+                        difficulty,
                         true,
                         gameRules(),
                         net.minecraft.world.level.WorldDataConfiguration.DEFAULT);
