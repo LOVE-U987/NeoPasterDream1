@@ -2,7 +2,7 @@
 
 > **类别**：活文档 · 待办 / 缺口跟踪  
 > **日期**：2026-07-28  
-> **来源**：原版 `libs/FixPasterDream-main` 与 Neo 对照审计（主 agent + 三 subagent：进/出维 · 材料祭坛 Boss · 辅系统；主 agent 交叉核实）  
+> **来源**：原版 `libs/FixPasterDream-main` 与 Neo 对照审计（主 agent + 三 subagent：进/出维 · 材料祭坛 Boss · 辅系统；主 agent 交叉核实；**二轮** todo 对照扫描回写）  
 > **玩法参考** → [`第三梦境.md`](第三梦境.md)  
 > **功能总览** → [`功能状态.md`](功能状态.md)
 
@@ -11,7 +11,7 @@
 ## 0. 一句话
 
 **进维门控、祭坛五阶段过程、Boss 实体本体、维度/结构 datapack、材料配方多已接线，不是空壳。**  
-**纯生存端到端走不完**：风维 **不自动挂云雾 → 设计出口失效**；**双矿无 biome_modifier → 材料断供**；**Boss 无实体 loot**；**融梦箱不授风旅宝藏**；风向 / 破风幕 / 进维反馈 / Boss AOE 与原版仍有差距。
+**纯生存端到端走不完**：风维 **不自动挂云雾 → 设计出口失效**；**矿 + 风草花无 biome_modifier（且 grass 谓词误绑染梦地）→ 材料断供**；**Boss 无实体 loot**（`pulse_windrunner_crystal` 零获取路径）；**融梦箱不授风旅宝藏**；风向 / 破风幕 / 进维反馈 / Boss AOE 与原版仍有差距。
 
 | 维度 | 判定 |
 | :--- | :--- |
@@ -19,7 +19,7 @@
 | 祭坛组装 vs 原版 | **HIGH**（五阶段语义齐） |
 | Boss 战 vs 原版 | **MED**（能打；AOE/掉落/伴生雷云偏弱或缺失） |
 | 整条玩家链路 vs 原版 | **LOW–MED**（入口可试、出口与资源链断） |
-| 生存可玩性 | **PARTIAL** — 命令/创造可走；生存卡在 **出维 + 矿 + 掉落** |
+| 生存可玩性 | **PARTIAL** — 命令/创造可走；生存卡在 **出维 + 风维 worldgen 材料 + 掉落** |
 
 ---
 
@@ -36,38 +36,45 @@
   - 建议落点：玩家 tick / 维度环境钩（与染梦、灯影 San 环境统一更佳）。  
   - 验收：进风维后无需命令即持有云雾（可刷新）；持效果降至 Y≤5 → 主世界重生/出生 XZ、**Y=304**；San 变化方向与原版同号。
 
-- [ ] **补风维矿 biome_modifier（`windrunner_crystal_ore` / `congeal_wind_ore`）**
-  - 原版：`data/pasterdream/forge/biome_modifier/*_ore_biome_modifier.json` → `forge:add_features`，群系 `wind_journey_biome_0`，step `underground_ores`。  
-  - Neo 现状：`configured_feature` + `placed_feature` + 方块/掉落表 **在**；`data/pasterdream/neoforge/biome_modifier/` **无**对应 wind 矿条目（染梦矿有独立 modifier 可对照）。  
-  - 后果：风泊地表草花或可做提取液，但 **凝结之风 / 风行者水晶** 主矿道断 → 祭坛材料难自给。  
-  - 验收：新生成 `wind_journey_biome_0` 区块可挖到两种矿（高度带与 placed 一致：水晶约 40–80、凝风约 15–80）；`/locate` 或 VERIFY  bulk 扫描非零。
+- [ ] **补风维 worldgen 挂接：双矿 + 草花/地表特征 biome_modifier（并修 placed 谓词）**
+  - 原版：`forge/biome_modifier` 对 `wind_journey_biome_0` 挂  
+    - `windrunner_crystal_ore` / `congeal_wind_ore`（`underground_ores`）  
+    - `grass_13`（及同类）+ `ground_feature_wind_journey_*`（`vegetal_decoration` 等）  
+  - Neo 现状：  
+    - `configured_feature` / `placed_feature` / 方块 loot **在**；  
+    - `data/pasterdream/neoforge/biome_modifier/` **零** `wind*` 条目（染梦有完整 `dyedream_ores` 等可对照 `neoforge:add_features`）；  
+    - `wind_journey_biome_0.json` 的 `features` 近空（仅 vanilla `bamboo_light` 一类）；  
+    - **`placed_feature/grass_13|14|15.json` / `flower_18.json` 的 `block_predicate_filter` 误要求 `dyedream_grass/dirt/sand…`**，且缺原版式纯 `minecraft:biome` 过滤（原版 grass_13 placed 仅 count/square/heightmap/biome）。  
+  - 后果：**凝结之风 / 风行者水晶** 与 **`wind_plant_extract` 原料（grass_13..15 + flower_18）** 双断 → 祭坛「水晶 + 三锭」难自给（结构 NBT 零星掉落不可当主路径）。  
+  - 验收：新生成风维区块可挖双矿（高度带与 placed：水晶约 40–80、凝风约 15–80）；地表可见 grass_13 等；`mortar` 链可合成 extract → `wind_iron_ingot`；VERIFY/扫描非零。
 
 - [ ] **补 Boss 实体战利品表 `loot_table/entities/wind_knight.json`**
   - 原版：固定 **1× `pulse_windrunner_crystal`**。  
-  - Neo 现状：`data/pasterdream/loot_table/entities/` 仅 aaroncos / pink_slime / shadow_golem 等，**无** `wind_knight.json`；实体死亡仅 XP/移除。  
-  - 验收：击杀 `wind_knight` 掉落脉冲风行者水晶；物品已注册 `PDItemsMaterials`。
+  - Neo 现状：`data/pasterdream/loot_table/entities/` 无 `wind_knight.json`；实体死亡仅 XP/移除。  
+  - 附注：`pulse_windrunner_crystal` **已注册**，全 data/loot **无任何**其它获取路径 → 仅修表即可闭环。  
+  - 验收：击杀 `wind_knight` 掉落 1× 脉冲风行者水晶。
 
 - [ ] **融梦箱开箱授予 `achievement_treasure_wind_journey`**
   - 原版：`MeltdreamChestPr0` 若 `dimension == wind_journey_world` → award 全准则。  
-  - Neo 现状：`MeltdreamChestBlock` 有风碟/风铁稀有池；**无** Advancement award / 维度分支。成就 JSON（`impossible`）在。  
-  - 验收：风维内首次开融梦箱获得隐藏成就「风旅宝藏」。
+  - Neo 现状：`MeltdreamChestBlock` 稀有池可出风铁/风碟，**无条件、无** Advancement award / 维度分支。成就 JSON（`impossible`）在；全 Java **无** `treasure_wind_journey` 引用。  
+  - 验收：风维内首次开融梦箱获得隐藏成就「风旅宝藏」（其它维开箱不授）。
 
 ### P0.5 — 须游戏内 / VERIFY 核实后再升/降级
 
 - [ ] **核实 `lost_windknight_ruins` 自然生成（datapack jigsaw）**
   - 现状：`worldgen/structure` + `structure_set`（spacing 42 / sep 25 / salt）+ NBT + pool **齐全**，绑 `wind_journey_biome_0`。  
-  - **未**进 `PDRuinsRegistration`（染梦教堂走 RuinAPI；风遗迹走原版式 structure_set）。  
-  - 与暮影之笼「无 GenerateWorld 强制 place」不同：此处应靠 **结构集随机散布**；需确认 1.21.1 加载与高度图/噪声世界实际出结构。  
-  - 验收：`PASTERDREAM_VERIFY` 或手测 `/locate structure pasterdream:lost_windknight_ruins` 有结果；模板内含 `wind_knight_spawnblock_0`。
+  - **未**进 `PDRuinsRegistration`：**预期如此**（RuinAPI 主服务染梦教堂等；风遗迹走原版 structure_set datapack）。  
+  - 与暮影之笼「无 GenerateWorld 强制 place」不同：此处应靠 **结构集随机散布**；需确认 1.21.1 + 噪声世界实际出结构。  
+  - 验收：`/locate structure pasterdream:lost_windknight_ruins` 有结果；模板内含 `wind_knight_spawnblock_0`。
 
-- [ ] **核实祭坛 BE 创建（非静态 NPE）**
-  - `PDBlockEntitiesFurniture` 工厂 lambda **延后**取 `WIND_KNIGHT_SPAWNBLOCKS.get(index)`，写法与 `STRUCTURE_BLOCKS` / 玻璃罐相同，**静态初始化时不应调用 factory**。  
-  - 子代理「class init NPE」**倾向不成立**；仍建议放置 `wind_knight_spawnblock_0` 确认 BE + Geo + 右键推进。  
-  - 验收：五阶段右键无崩；阶段替换保留朝向等属性。
+- [ ] **核实祭坛 BE 创建 + 五阶段推进（非静态 NPE）**
+  - `PDBlockEntitiesFurniture` 工厂 lambda **延后**取 `WIND_KNIGHT_SPAWNBLOCKS.get(index)`，与 `STRUCTURE_BLOCKS` / 玻璃罐相同；**class init 不调用 factory**。  
+  - 二轮审计仍 **不采信静态 NPE**；须手测放置 `wind_knight_spawnblock_0`：BE + Geo + 右键 0→4 + 86t 出 knight + 台回 0。  
+  - 验收：五阶段无崩；阶段替换保留朝向等属性；召唤布局四雷云 + 骑士。
 
-- [ ] **核实进维落点 Y 与维度 height=256**
-  - 进维保留主世界 **Y≥306**；风维 `min_y=0` / `height=256` → 可能夹到顶或异常。原版同逻辑。  
-  - 验收：迷梦 Y=308 进维后玩家可站立/不虚空；必要时 clamp 到合理云海高度（若原版也炸则记已知疾）。
+- [ ] **核实进维落点 Y 与维度 height=256（必要时 clamp）**
+  - `fondillusionTick` 保留主世界 **Y≥306** 直传；风维 `min_y=0` / `height=256` → 可能夹顶。原版 `FondillusionBuffPr0` 同未 clamp；出维侧落点固定 304。  
+  - 验收：迷梦 Y=308 进维后可站立/不虚空；若炸则 clamp 到云海安全 Y 并回写文档。
 
 ### P1 — 体验 / 原版 parity
 
@@ -112,13 +119,13 @@
 ### P2 — 抛光 / 文档 / VERIFY
 
 - [ ] **扩展 VERIFY 套件 `wind-journey`（或并入 dim/structure）**
-  - 现状：`PDPortingVerifyTest` 维度往返 + 风向标烟雾；结构/图鉴抽样 windmoor；**无**云雾出维、矿生成、祭坛阶段、loot、宝藏成就断言。  
+  - 现状：`PDPortingVerifyTest` 维度往返 + 风向标烟雾；结构/图鉴抽样 windmoor；**无**云雾出维、矿/草生成、祭坛阶段、loot、宝藏成就断言。  
   - 建议断言（修好 P0 后）：  
     - 风维玩家 tick 后持有 cloudmist  
     - Y≤5 返主世界 Y≈304  
-    - 矿 placed 或 chunk 扫描 >0  
+    - chunk 扫描：双矿 + grass_13（或 extract 可合成）>0  
     - 祭坛 0→4 道具推进 + 86t 出 knight  
-    - 击杀掉落 pulse  
+    - 击杀掉落 pulse（非零）  
     - 风维开融梦箱 → treasure_wind_journey  
   - **勿**在 P0 未修前并入默认 `all` 绿集（同 twilight-lantern 策略）。
 
@@ -144,8 +151,8 @@
 | 维度 JSON / `PDDimensions.WIND_JOURNEY_*` | ✅ min_y0 height256 bed_works |
 | 群系 0/1 音乐粒子刷怪表 datapack | ✅ |
 | 结构集：遗迹/风车/岛/池/树/幕/侵染石 等 JSON+NBT | ✅ 数据在（生成见 P0.5） |
-| 材料配方：`wind_plant_extract`、`wind_iron_ingot_*` | ✅ |
-| 梦境炼药釜闪电法术配方 | ✅ `DreamCauldronBlockEntity` |
+| 材料配方：`wind_plant_extract`、`wind_iron_ingot_*` | ✅ JSON 在；**原料生成见 P0 worldgen** |
+| 梦境炼药釜闪电法术配方 | ✅ `DreamCauldronBlockEntity`（引导药等染梦侧可先行） |
 | 祭坛五阶段 + 86t 召唤骑士与四雷云 + 台重置 0 | ✅ `WindKnightSpawnblockBlock` |
 | 五阶段方块/物品/Geo 资源 | ✅ |
 | Boss 属性/近战 AI/基础免疫/XP | ✅ 可战 |
@@ -157,11 +164,12 @@
 ## 3. 建议动手顺序
 
 ```text
-1. SanHelper 风维：cloudmist 自动续 + San +1.2     ← 解锁设计出口
-2. 双矿 neoforge biome_modifier                     ← 解锁材料自给
+1. SanHelper 风维：cloudmist 自动续 + San +1.2              ← 解锁设计出口
+2. 风维 worldgen：双矿 + grass/flower + ground_feature 挂接
+   （修 grass placed 谓词；对照 dyedream_ores modifier）     ← 解锁材料自给
 3. wind_knight 实体 loot → pulse_windrunner_crystal
 4. MeltdreamChest 风维 grant treasure_wind_journey
-5. VERIFY 定位：lost_windknight_ruins 自然生成 + 祭坛 BE 手测
+5. VERIFY/手测：lost_windknight_ruins locate + 祭坛 0→4 + 进维 Y
 6. 风向 Pr0 → Pr1/Pr2 + 旗帜；破风幕 entityInside
 7. 进维消息/音乐（+ 可选包序列）；Boss AOE / 雷云 AI 取舍
 8. 文档与功能状态；可选 wind-journey VERIFY 套件
@@ -192,17 +200,18 @@ PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=dim PASTERDREAM_VERIFY_KEEP_OPEN=
 
 ## 4. 审计交叉结论（防误报）
 
-| 子代理主张 | 主 agent 结论 |
+| 主张 | 结论 |
 | :--- | :--- |
-| 出维无自动云雾 | **成立** — P0 |
-| 双矿无 Neo biome_modifier | **成立** — P0（feature JSON 在、未 add_features） |
-| 无 `wind_knight` 实体 loot | **成立** — P0 |
-| 融梦箱不授 treasure_wind | **成立** — P0 |
-| 祭坛 BE 静态 NPE | **不采信为 P0** — 延迟 factory，同 structure_block 模式；改 P0.5 手测 |
-| 遗迹完全不生成因未进 PDRuinsRegistration | **降级 P0.5** — structure_set datapack 应可生成；须 locate/VERIFY |
+| 出维无自动云雾 | **成立** — P0（二轮再确认） |
+| 双矿无 Neo biome_modifier | **成立** — P0；并入 **草花/地表特征** 同批 worldgen |
+| grass_13 placed 谓词绑 dyedream 地 | **成立** — 二轮新增；与缺 modifier 叠加阻断 extract |
+| 无 `wind_knight` 实体 loot / pulse 零路径 | **成立** — P0 |
+| 融梦箱不授 treasure_wind | **成立** — P0（全 Java 无 ID 引用） |
+| 祭坛 BE 静态 NPE | **不采信** — 延迟 factory；P0.5 手测五阶段 |
+| 遗迹因未进 PDRuinsRegistration 必不生成 | **不采信为 P0** — structure_set 路径预期有效；P0.5 locate |
 | 风向 / 幕帐 / 进维文案缺失 | **成立** — P1 |
 | Boss AOE 数值不同 | **成立** — P1 取舍 |
-| 文档 §8–10 大体正确 | **成立**；结构 ID `breakwing`/`breakwind` 脚注即可 |
+| 文档 §8–10 大体正确 | **成立**；`breakwing`/`breakwind` 脚注即可 |
 
 ---
 
