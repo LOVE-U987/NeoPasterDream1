@@ -124,11 +124,15 @@ public final class PDPortingVerifyTest {
      *   <li>{@code struct-dim}/{@code struct_dim} — 结构→维度映射</li>
      *   <li>{@code gallery}/{@code block-gallery} — 方块总览展台</li>
      *   <li>{@code entity-gallery}/{@code entity_gallery} — 实体展台</li>
+     *   <li>{@code twilight-lantern}/{@code twilight}/{@code lantern} — 暮影之笼流程缺口核实</li>
      * </ul>
      * 组合快捷：{@code all}（默认）、{@code quick}=registry+core、
      * {@code behavior}=core+dimensions+spells+content、
      * {@code worldgen}=structures+struct-dim、
      * {@code galleries}/{@code visual}=gallery+entity-gallery。
+     * <p>
+     * 注意：{@code all} <b>不含</b> {@code twilight-lantern}（专项缺口核实，默认不进全量，
+     * 避免「确认缺口」类断言与全绿终验语义冲突；显式 {@code PASTERDREAM_VERIFY_SUITES=twilight-lantern}）。
      */
     public enum Suite {
         REGISTRY("registry"),
@@ -140,7 +144,9 @@ public final class PDPortingVerifyTest {
         WORKSHOP("workshop"),
         STRUCT_DIM("struct-dim", "struct_dim"),
         GALLERY("gallery", "block-gallery"),
-        ENTITY_GALLERY("entity-gallery", "entity_gallery");
+        ENTITY_GALLERY("entity-gallery", "entity_gallery"),
+        /** 暮影之笼专项；不在 all 默认集合内，见 {@link #parseSelectedSuites} */
+        TWILIGHT_LANTERN("twilight-lantern", "twilight", "lantern");
 
         private final String[] aliases;
 
@@ -192,7 +198,10 @@ public final class PDPortingVerifyTest {
         }
         raw = raw == null ? "" : raw.trim();
         if (raw.isEmpty() || "all".equalsIgnoreCase(raw) || "*".equals(raw)) {
-            return java.util.EnumSet.allOf(Suite.class);
+            // 全量终验不含暮影专项（缺口确认断言会与 ALL PASS 语义冲突）
+            java.util.EnumSet<Suite> all = java.util.EnumSet.allOf(Suite.class);
+            all.remove(Suite.TWILIGHT_LANTERN);
+            return all;
         }
         java.util.EnumSet<Suite> out = java.util.EnumSet.noneOf(Suite.class);
         for (String part : raw.split("[,;\\s]+")) {
@@ -202,7 +211,9 @@ public final class PDPortingVerifyTest {
             String token = part.trim().toLowerCase(java.util.Locale.ROOT);
             switch (token) {
                 case "all", "*" -> {
-                    return java.util.EnumSet.allOf(Suite.class);
+                    java.util.EnumSet<Suite> all = java.util.EnumSet.allOf(Suite.class);
+                    all.remove(Suite.TWILIGHT_LANTERN);
+                    return all;
                 }
                 case "quick", "fast" -> {
                     out.add(Suite.REGISTRY);
@@ -233,8 +244,8 @@ public final class PDPortingVerifyTest {
                     }
                     if (!hit) {
                         LogUtils.getLogger().warn("[PDVerify] 未知套件名 '{}'，已忽略（合法: registry,core,dimensions,"
-                                + "spells,content,structures,workshop,struct-dim,gallery,entity-gallery "
-                                + "及快捷 all/quick/behavior/worldgen/galleries）", token);
+                                + "spells,content,structures,workshop,struct-dim,gallery,entity-gallery,"
+                                + "twilight-lantern 及快捷 all/quick/behavior/worldgen/galleries）", token);
                     }
                 }
             }
@@ -457,6 +468,14 @@ public final class PDPortingVerifyTest {
             int s = cursor;
             at(s, PDPortingVerifyTest::structureGenSuite);
             cursor = s + 5;
+        }
+
+        if (suite(Suite.TWILIGHT_LANTERN)) {
+            int tl = cursor;
+            at(tl, PDPortingVerifyTest::refreshPlayerBuffs);
+            at(tl + 2, PDPortingVerifyTest::twilightLanternSuite);
+            // 大模板 place + 扫描，预留 tick
+            cursor = tl + 40;
         }
 
         if (suite(Suite.WORKSHOP)) {
@@ -1249,6 +1268,13 @@ public final class PDPortingVerifyTest {
     private static void structureGenSuite() {
         PDStructureVerifyHooks.verify(server(), player(), r ->
                 checkDetail("structures", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== 暮影之笼流程缺口核实 ====================
+
+    private static void twilightLanternSuite() {
+        PDTwilightLanternVerifyHooks.verify(server(), player(), r ->
+                checkDetail("twilight-lantern", r.pass(), r.name(), r.detail()));
     }
 
     // ==================== S17 武器工坊群 ====================

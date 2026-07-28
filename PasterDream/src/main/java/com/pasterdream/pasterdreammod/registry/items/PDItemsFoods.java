@@ -13,6 +13,7 @@ import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -117,8 +118,23 @@ public class PDItemsFoods {
             new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).alwaysEdible().fast().build()));
     public static final DeferredItem<Item> PUMPKIN_BUNCAKE = PDItems.ITEMS.registerSimpleItem("pumpkin_buncake",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.5f).alwaysEdible().fast().build()));
+    /** 奇异炖菜 — 原版：迷梦 6000t + 融梦能量 +1 瞬时；食用时长 24；返还碗。风之旅途入口前置。 */
     public static final DeferredItem<Item> QUEER_SOUP = PDItems.ITEMS.register("queer_soup",
-            () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build()), () -> Items.BOWL));
+            () -> new GlassDrinkItem(new Item.Properties()
+                    .craftRemainder(Items.BOWL)
+                    .stacksTo(64)
+                    .food(new FoodProperties.Builder()
+                            .nutrition(0)
+                            .saturationModifier(0f)
+                            .alwaysEdible()
+                            .effect(() -> new MobEffectInstance(PDEffects.MELT_DREAM_ENERGY_INCREASE, 1, 0), 1.0f)
+                            .effect(() -> new MobEffectInstance(PDEffects.FONDILLUSION_BUFF.holder(), 6000, 0), 1.0f)
+                            .build()), () -> Items.BOWL) {
+                @Override
+                public int getUseDuration(ItemStack stack, LivingEntity entity) {
+                    return 24;
+                }
+            });
     public static final DeferredItem<Item> RAGE_ELIXIR_0 = PDItems.ITEMS.register("rage_elixir_0",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build()), PDItems.ELIXIR_BOTTLE::get));
     public static final DeferredItem<Item> RICECAKE = PDItems.ITEMS.registerSimpleItem("ricecake",
