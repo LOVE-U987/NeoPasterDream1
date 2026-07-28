@@ -1,7 +1,9 @@
 # 设计 · 暮影据点真·要塞式世界生成 + locate
 
 > **日期**：2026-07-28  
-> **状态**：待用户审 spec（实现前）  
+> **状态**：已实现 · 计划 [`../plans/2026-07-28-shadow-world-door-structure.md`](../plans/2026-07-28-shadow-world-door-structure.md)  
+> **VERIFY**：`twilight-lantern` **36/0**（2026-07-29）；Locator 超平 SKIP 预期内  
+> **范围备注**：本设计原不含灯影 spawn / hide_7 / 返程；后续 P0 已另实现，见 todo  
 > **玩法参考** → [`docs/暮影之笼.md`](../../暮影之笼.md)  
 > **缺口跟踪** → [`docs/todo_暮影之笼流程缺口.md`](../../todo_暮影之笼流程缺口.md)
 
@@ -9,7 +11,8 @@
 
 ## 0. 一句话
 
-主世界暮影之笼据点改为 **数据驱动结构**（jigsaw 单模板 + `concentric_rings` structure_set），坐标一律经 **`findNearestMapStructure`** 获取；笔记 8/9 全改 locate，**不再**用 `randomCoord*21` 公式。灯影 spawn / hide_7 / 返程 spawn **不在本设计范围**。
+主世界暮影之笼据点改为 **数据驱动结构**（jigsaw 单模板 + `concentric_rings` structure_set），坐标一律经 **`findNearestMapStructure`** 获取；笔记 8/9 全改 locate，**不再**用 `randomCoord*21` 公式。  
+（设计原文非目标：灯影 spawn / hide_7 / 返程 — **后续 P0 已另实现**，见 todo / VERIFY 36/0。）
 
 ---
 

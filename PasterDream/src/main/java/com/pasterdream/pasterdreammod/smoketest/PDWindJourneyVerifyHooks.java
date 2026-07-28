@@ -1,0 +1,392 @@
+package com.pasterdream.pasterdreammod.smoketest;
+
+import com.pasterdream.pasterdreammod.entity.mob.ThundercloudEntity;
+import com.pasterdream.pasterdreammod.entity.mob.WindKnightEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.LightningProjectileEntity;
+import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import com.pasterdream.pasterdreammod.registry.PDDimensions;
+import com.pasterdream.pasterdreammod.registry.PDEffects;
+import com.pasterdream.pasterdreammod.registry.PDEntities;
+import com.pasterdream.pasterdreammod.registry.PDItems;
+import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
+import com.pasterdream.pasterdreammod.registry.items.PDItemsFunctional;
+import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
+import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.world.PDSanHelper;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
+/**
+ * 第三梦境「风之旅途」VERIFY 套件 {@code wind-journey}。
+ * <p>
+ * 断言代码侧可稳定复现的流程点：structure datapack、Boss loot、云雾出维、
+ * 祭坛阶段、雷云落雷、融梦箱宝藏成就。locate 自然生成仍属 P0.5 手测。
+ * <p>
+ * <b>不</b>并入默认 {@code all}（与 twilight-lantern 同策略）；须
+ * {@code PASTERDREAM_VERIFY_SUITES=wind-journey} 显式开启。
+ */
+public final class PDWindJourneyVerifyHooks {
+
+    public record Result(boolean pass, String name, String detail) {
+    }
+
+    private static BlockPos altarPos;
+    private static int knightsBefore;
+    private static int cloudsBefore;
+
+    private PDWindJourneyVerifyHooks() {
+    }
+
+    /**
+     * 同步阶段：注册表 / loot / 进维 / 云雾出维 / loot roll / 雷云 / 祭坛启动。
+     * 祭坛 86t 召唤结果由 {@link #verifyAltarAftermath} 在延迟后调用。
+     */
+    public static void verifySync(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
+        if (server == null) {
+            out.accept(new Result(false, "wind-skip", "server == null"));
+            return;
+        }
+        verifyStructureDatapack(server, out);
+        verifyWindKnightLootTable(server, out);
+        verifyFlagRegistered(out);
+        out.accept(new Result(true, "PDSanHelper 可加载", PDSanHelper.class.getSimpleName()));
+
+        if (player == null) {
+            out.accept(new Result(false, "wind-player-skip", "player == null"));
+            return;
+        }
+
+        ServerLevel wind = server.getLevel(PDDimensions.WIND_JOURNEY_WORLD_LEVEL_KEY);
+        if (wind == null) {
+            out.accept(new Result(false, "wind-dim-missing", "wind_journey_world getLevel == null"));
+            return;
+        }
+
+        double ox = player.getX();
+        double oz = player.getZ();
+        float yRot = player.getYRot();
+        float xRot = player.getXRot();
+        player.teleportTo(wind, ox, 120.0D, oz, yRot, xRot);
+        out.accept(new Result(PDDimensions.isWindJourneyWorld(player.level()),
+                "teleport-wind",
+                "dim=" + player.level().dimension().location()));
+
+        verifyCloudmistPresent(player, out);
+        verifyCloudmistExit(server, player, out);
+
+        if (!PDDimensions.isWindJourneyWorld(player.level())) {
+            player.teleportTo(wind, ox, 120.0D, oz, yRot, xRot);
+        }
+        verifyBossLootDrop(player, out);
+        verifyThundercloudBolts(player, out);
+        verifyMeltdreamTreasure(player, out);
+        startAltarStages(player, out);
+    }
+
+    /**
+     * 祭坛 86t 后：骑士 + 四雷云 + 台回 0。
+     */
+    public static void verifyAltarAftermath(ServerPlayer player, Consumer<Result> out) {
+        if (player == null || altarPos == null) {
+            out.accept(new Result(false, "altar-aftermath-skip", "no altar context"));
+            return;
+        }
+        ServerLevel level = player.serverLevel();
+        // 推进 ServerScheduler 已由主 tick 完成；此处只读结果
+        boolean reset0 = level.getBlockState(altarPos).is(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0.get());
+        int knights = level.getEntitiesOfClass(WindKnightEntity.class,
+                new AABB(altarPos).inflate(16)).size();
+        int clouds = level.getEntitiesOfClass(ThundercloudEntity.class,
+                new AABB(altarPos).inflate(24)).size();
+        boolean knightOk = knights >= knightsBefore + 1;
+        boolean cloudOk = clouds >= cloudsBefore + 4;
+        out.accept(new Result(reset0 && knightOk && cloudOk,
+                "祭坛 4→召唤 骑士+4雷云 台回 0",
+                "reset0=" + reset0
+                        + " Δknight=" + (knights - knightsBefore)
+                        + " Δcloud=" + (clouds - cloudsBefore)));
+
+        level.getEntitiesOfClass(WindKnightEntity.class, new AABB(altarPos).inflate(16))
+                .forEach(Entity::discard);
+        level.getEntitiesOfClass(ThundercloudEntity.class, new AABB(altarPos).inflate(24))
+                .forEach(Entity::discard);
+        level.removeBlock(altarPos, false);
+        altarPos = null;
+    }
+
+    // ==================== datapack / loot / 注册 ====================
+
+    private static void verifyStructureDatapack(MinecraftServer server, Consumer<Result> out) {
+        var structures = server.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath("pasterdream", "lost_windknight_ruins");
+        boolean present = structures.containsKey(id);
+        out.accept(new Result(present,
+                "structure lost_windknight_ruins 注册",
+                present ? "ok" : "missing"));
+
+        var sets = server.registryAccess().registryOrThrow(Registries.STRUCTURE_SET);
+        boolean setPresent = sets.containsKey(id);
+        out.accept(new Result(setPresent,
+                "structure_set lost_windknight_ruins 注册",
+                setPresent ? "ok" : "missing"));
+
+        boolean nbt = server.getStructureManager()
+                .get(ResourceLocation.fromNamespaceAndPath("pasterdream", "lost_windknight_ruins"))
+                .isPresent();
+        out.accept(new Result(nbt,
+                "STM 加载 lost_windknight_ruins.nbt",
+                nbt ? "ok" : "missing"));
+    }
+
+    private static void verifyWindKnightLootTable(MinecraftServer server, Consumer<Result> out) {
+        ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE,
+                ResourceLocation.fromNamespaceAndPath("pasterdream", "entities/wind_knight"));
+        LootTable table = server.reloadableRegistries().getLootTable(key);
+        boolean loaded = table != LootTable.EMPTY;
+        out.accept(new Result(loaded,
+                "loot entities/wind_knight 加载",
+                loaded ? "non-empty" : "EMPTY"));
+    }
+
+    private static void verifyFlagRegistered(Consumer<Result> out) {
+        boolean reg = PDItems.WIND_KNIGHT_FLAG.asItem() != null;
+        out.accept(new Result(reg,
+                "wind_knight_flag 已注册（原版亦无配方/loot，创造获取）",
+                reg ? "ok" : "missing"));
+    }
+
+    // ==================== 云雾 ====================
+
+    private static void verifyCloudmistPresent(ServerPlayer player, Consumer<Result> out) {
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                PDEffects.CLOUDMIST_BUFF.holder(), 200, 0, false, false));
+        boolean has = player.hasEffect(PDEffects.CLOUDMIST_BUFF.holder());
+        out.accept(new Result(has, "风维 cloudmist_buff 可挂效", has ? "dur=200" : "missing"));
+    }
+
+    private static void verifyCloudmistExit(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
+        ServerLevel wind = server.getLevel(PDDimensions.WIND_JOURNEY_WORLD_LEVEL_KEY);
+        if (wind == null) {
+            out.accept(new Result(false, "cloudmist-exit-skip", "wind null"));
+            return;
+        }
+        if (!PDDimensions.isWindJourneyWorld(player.level())) {
+            player.teleportTo(wind, player.getX(), 120.0D, player.getZ(),
+                    player.getYRot(), player.getXRot());
+        }
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                PDEffects.CLOUDMIST_BUFF.holder(), 400, 0, false, false));
+        player.teleportTo(wind, player.getX(), 3.0D, player.getZ(),
+                player.getYRot(), player.getXRot());
+        for (int i = 0; i < 5; i++) {
+            var inst = player.getEffect(PDEffects.CLOUDMIST_BUFF.holder());
+            if (inst != null) {
+                PDEffects.CLOUDMIST_BUFF.holder().value().applyEffectTick(player, inst.getAmplifier());
+            }
+        }
+        boolean back = player.level().dimension() == Level.OVERWORLD;
+        double y = player.getY();
+        out.accept(new Result(back, "cloudmist Y≤5 返主世界",
+                "dim=" + player.level().dimension().location() + " y=" + y));
+        out.accept(new Result(back && Math.abs(y - 304.0D) < 2.0D,
+                "出维落点 Y≈304", "y=" + y));
+    }
+
+    // ==================== 祭坛（多 tick：启动后 90t 读 aftermath） ====================
+
+    private static void startAltarStages(ServerPlayer player, Consumer<Result> out) {
+        ServerLevel level = player.serverLevel();
+        BlockPos base = player.blockPosition().offset(4, 0, 4);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                level.setBlock(base.offset(dx, -1, dz), Blocks.STONE.defaultBlockState(), 3);
+            }
+        }
+        level.setBlock(base, PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0.get().defaultBlockState(), 3);
+        BlockEntity be0 = level.getBlockEntity(base);
+        out.accept(new Result(be0 != null, "祭坛 stage0 BE 创建",
+                be0 == null ? "null BE" : be0.getClass().getSimpleName()));
+
+        player.setItemInHand(InteractionHand.MAIN_HAND,
+                new ItemStack(PDItemsMaterials.WINDRUNNER_CRYSTAL.get()));
+        useBlock(player, level, base);
+        boolean s1 = level.getBlockState(base).is(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_1.get());
+        out.accept(new Result(s1, "祭坛 0→1 风行者水晶",
+                level.getBlockState(base).getBlock().toString()));
+
+        // 凝风铁推进带 1t schedule：每步 use 后泵 2 个 scheduler tick
+        for (int step = 0; step < 3; step++) {
+            player.setItemInHand(InteractionHand.MAIN_HAND,
+                    new ItemStack(PDItemsMaterials.WIND_IRON_INGOT.get()));
+            useBlock(player, level, base);
+            pumpScheduler(level.getServer(), 2);
+        }
+        boolean s4 = level.getBlockState(base).is(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get());
+        out.accept(new Result(s4, "祭坛 →4 凝风铁×3",
+                level.getBlockState(base).getBlock().toString()));
+
+        altarPos = base;
+        knightsBefore = level.getEntitiesOfClass(WindKnightEntity.class,
+                new AABB(base).inflate(16)).size();
+        cloudsBefore = level.getEntitiesOfClass(ThundercloudEntity.class,
+                new AABB(base).inflate(24)).size();
+
+        if (s4) {
+            player.setItemInHand(InteractionHand.MAIN_HAND,
+                    new ItemStack(PDItemsFunctional.LIGHTNING_SPELL.get()));
+            useBlock(player, level, base);
+            out.accept(new Result(true, "祭坛 4 已投闪电法术（待 86t）", "scheduled"));
+        } else {
+            out.accept(new Result(false, "祭坛 4 已投闪电法术（待 86t）", "not at stage 4"));
+        }
+    }
+
+    /**
+     * 推进 {@link ServerScheduler} 计数（不跑完整 server tick，避免重入 VERIFY 调度）。
+     */
+    private static void pumpScheduler(MinecraftServer server, int ticks) {
+        ServerScheduler.advanceForTest(ticks);
+    }
+
+    private static void useBlock(ServerPlayer player, ServerLevel level, BlockPos pos) {
+        BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false);
+        level.getBlockState(pos).useWithoutItem(level, player, hit);
+    }
+
+    // ==================== 雷云 ====================
+
+    private static void verifyThundercloudBolts(ServerPlayer player, Consumer<Result> out) {
+        ServerLevel level = player.serverLevel();
+        BlockPos p = player.blockPosition();
+        ThundercloudEntity cloud = PDEntities.THUNDERCLOUD.get().create(level);
+        if (cloud == null) {
+            out.accept(new Result(false, "thundercloud spawn", "create null"));
+            return;
+        }
+        cloud.moveTo(p.getX() + 0.5, p.getY() + 8.0, p.getZ() + 0.5, 0, 0);
+        level.addFreshEntity(cloud);
+
+        int bolts = 0;
+        for (int i = 0; i < 500 && bolts == 0; i++) {
+            cloud.baseTick();
+            bolts = level.getEntitiesOfClass(LightningProjectileEntity.class,
+                    new AABB(p).inflate(32)).size();
+        }
+        for (int i = 0; i < 10 && bolts == 0; i++) {
+            cloud.hurt(level.damageSources().generic(), 1.0F);
+            bolts = level.getEntitiesOfClass(LightningProjectileEntity.class,
+                    new AABB(p).inflate(32)).size();
+        }
+        out.accept(new Result(bolts > 0,
+                "雷云落雷 LightningProjectile",
+                "bolts=" + bolts));
+        level.getEntitiesOfClass(LightningProjectileEntity.class, new AABB(p).inflate(32))
+                .forEach(Entity::discard);
+        cloud.discard();
+    }
+
+    // ==================== Boss loot ====================
+
+    private static void verifyBossLootDrop(ServerPlayer player, Consumer<Result> out) {
+        ServerLevel level = player.serverLevel();
+        BlockPos p = player.blockPosition().offset(2, 0, 2);
+        WindKnightEntity knight = PDEntities.WIND_KNIGHT.get().create(level);
+        if (knight == null) {
+            out.accept(new Result(false, "wind_knight spawn", "create null"));
+            return;
+        }
+        knight.moveTo(p.getX() + 0.5, p.getY(), p.getZ() + 0.5, 0, 0);
+        level.addFreshEntity(knight);
+
+        ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE,
+                ResourceLocation.fromNamespaceAndPath("pasterdream", "entities/wind_knight"));
+        LootTable table = level.getServer().reloadableRegistries().getLootTable(key);
+        LootParams params = new LootParams.Builder(level)
+                .withParameter(LootContextParams.THIS_ENTITY, knight)
+                .withParameter(LootContextParams.ORIGIN, knight.position())
+                .withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().generic())
+                .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, player)
+                .withOptionalParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)
+                .create(LootContextParamSets.ENTITY);
+        List<ItemStack> drops = table.getRandomItems(params);
+        boolean pulse = drops.stream().anyMatch(s -> s.is(PDItems.PULSE_WINDRUNNER_CRYSTAL.get()));
+        out.accept(new Result(pulse,
+                "wind_knight loot → pulse_windrunner_crystal",
+                "drops=" + drops.stream()
+                        .map(s -> s.getItem() + "x" + s.getCount())
+                        .toList()));
+        knight.discard();
+    }
+
+    // ==================== 融梦箱 ====================
+
+    private static void verifyMeltdreamTreasure(ServerPlayer player, Consumer<Result> out) {
+        ServerLevel level = player.serverLevel();
+        if (!PDDimensions.isWindJourneyWorld(level)) {
+            ServerLevel wind = player.server.getLevel(PDDimensions.WIND_JOURNEY_WORLD_LEVEL_KEY);
+            if (wind == null) {
+                out.accept(new Result(false, "meltdream-skip", "wind null"));
+                return;
+            }
+            player.teleportTo(wind, player.getX(), 120, player.getZ(),
+                    player.getYRot(), player.getXRot());
+            level = wind;
+        }
+
+        ResourceLocation advId = ResourceLocation.fromNamespaceAndPath(
+                "pasterdream", "achievement_treasure_wind_journey");
+        AdvancementHolder holder = player.server.getAdvancements().get(advId);
+        out.accept(new Result(holder != null,
+                "成就 achievement_treasure_wind_journey 注册",
+                holder == null ? "missing" : "present"));
+        if (holder != null) {
+            var progress = player.getAdvancements().getOrStartProgress(holder);
+            List<String> done = new ArrayList<>();
+            for (String crit : progress.getCompletedCriteria()) {
+                done.add(crit);
+            }
+            for (String crit : done) {
+                player.getAdvancements().revoke(holder, crit);
+            }
+        }
+
+        BlockPos base = player.blockPosition().offset(6, 0, 0);
+        level.setBlock(base.below(), Blocks.STONE.defaultBlockState(), 3);
+        level.setBlock(base, PDBlocks.MELTDREAM_CHEST.get().defaultBlockState(), 3);
+        BlockEntity be = level.getBlockEntity(base);
+        out.accept(new Result(be != null, "融梦箱 BE",
+                be == null ? "null" : be.getClass().getSimpleName()));
+
+        useBlock(player, level, base);
+        boolean granted = holder != null
+                && player.getAdvancements().getOrStartProgress(holder).isDone();
+        out.accept(new Result(granted,
+                "风维开融梦箱授予 treasure_wind_journey",
+                granted ? "granted" : "not granted"));
+        level.removeBlock(base, false);
+    }
+}

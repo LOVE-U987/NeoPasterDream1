@@ -3,10 +3,14 @@ package com.pasterdream.pasterdreammod.block;
 import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.block.entity.MeltdreamChestBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
+import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -216,7 +220,41 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
         chest.setCooldown(player);
         chest.initOpening(player, quality);
 
+        // 7. 维度宝藏成就（原版 MeltdreamChestPr0）
+        if (player instanceof ServerPlayer sp) {
+            awardDimensionTreasure(sp, level);
+        }
+
         return InteractionResult.CONSUME;
+    }
+
+    /**
+     * 开箱时按维度授予隐藏宝藏成就（风旅 / 染梦）。
+     *
+     * @param player 开箱玩家
+     * @param level  箱子所在维度
+     */
+    private static void awardDimensionTreasure(ServerPlayer player, Level level) {
+        if (PDDimensions.isWindJourneyWorld(level)) {
+            awardAdvancement(player, "achievement_treasure_wind_journey");
+        } else if (PDDimensions.isDyedreamWorld(level)) {
+            awardAdvancement(player, "achievement_treasure_dyedream");
+        }
+    }
+
+    private static void awardAdvancement(ServerPlayer player, String path) {
+        AdvancementHolder holder = player.server.getAdvancements()
+                .get(ResourceLocation.fromNamespaceAndPath("pasterdream", path));
+        if (holder == null) {
+            return;
+        }
+        AdvancementProgress progress = player.getAdvancements().getOrStartProgress(holder);
+        if (progress.isDone()) {
+            return;
+        }
+        for (String criteria : progress.getRemainingCriteria()) {
+            player.getAdvancements().award(holder, criteria);
+        }
     }
 
     /**

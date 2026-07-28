@@ -115,13 +115,10 @@ public class PDBlocksDyedreamPhase2 {
     public static final DeferredBlock<IronBarsBlock> FRAME_CLARITY_GLASSPANE = PDBlocks.BLOCKS.registerBlock("frame_clarity_glasspane",
             IronBarsBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS_PANE));
 
-    /** 破风幕 */
-    public static final DeferredBlock<Block> BREAKWIND_CURTAIN = PDBlocks.BLOCKS.registerBlock("breakwind_curtain",
-            Block::new, BlockBehaviour.Properties.of()
-                    .sound(SoundType.WOOL)
-                    .strength(0.1f)
-                    .noOcclusion()
-                    .noCollission());
+    /** 破风幕（entityInside 弹射，见 {@link com.pasterdream.pasterdreammod.block.BreakwindCurtainBlock}） */
+    public static final DeferredBlock<com.pasterdream.pasterdreammod.block.BreakwindCurtainBlock> BREAKWIND_CURTAIN =
+            PDBlocks.BLOCKS.registerBlock("breakwind_curtain",
+                    props -> new com.pasterdream.pasterdreammod.block.BreakwindCurtainBlock());
 
     /** 风铁栏杆 */
     public static final DeferredBlock<IronBarsBlock> WINDIRON_BARS = PDBlocks.BLOCKS.registerBlock("windiron_bars",

@@ -89,4 +89,31 @@ public final class ServerScheduler {
     public static void onServerStopped(ServerStoppedEvent event) {
         PENDING.clear();
     }
+
+    /**
+     * VERIFY / 单测用：不经完整 server tick，仅推进调度器时钟并执行到期任务。
+     * <p>
+     * 勿在正常游戏逻辑调用。
+     *
+     * @param ticks 推进 tick 数
+     */
+    public static void advanceForTest(int ticks) {
+        for (int i = 0; i < ticks; i++) {
+            currentTick++;
+            if (PENDING.isEmpty()) {
+                continue;
+            }
+            List<Runnable> due = new ArrayList<>();
+            while (!PENDING.isEmpty() && PENDING.peek().dueTick() <= currentTick) {
+                due.add(PENDING.poll().task());
+            }
+            for (Runnable task : due) {
+                try {
+                    task.run();
+                } catch (Exception e) {
+                    PasterDreamMod.LOGGER.error("[ServerScheduler] advanceForTest 任务异常", e);
+                }
+            }
+        }
+    }
 }

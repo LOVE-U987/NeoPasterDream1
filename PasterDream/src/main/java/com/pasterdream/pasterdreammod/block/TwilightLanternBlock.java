@@ -11,8 +11,6 @@ import com.pasterdream.pasterdreammod.registry.items.PDItemsFunctional;
 import com.pasterdream.pasterdreammod.util.ServerScheduler;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
-import net.minecraft.commands.CommandSource;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -48,6 +46,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -66,7 +65,7 @@ import java.util.List;
  * <p>
  * 忠实还原原版 {@code TwilightLanternBlock + TwilightLanternPr0/Pr1/Pr2}：
  * <ul>
- *   <li>在 lamp_shadow_world 中右键：20 tick 后送回主世界并执行 /spawn；</li>
+ *   <li>在 lamp_shadow_world 中右键：20 tick 后 WIN_GAME 过场并传送至主世界重生点/出生点；</li>
  *   <li>主世界右键（achievement_hide_8 或 hide_10 已达成）：主手融梦水晶碎片
  *       点燃影灯（switch=true），触发暮影之笼事件——2600 tick 内 20 tick 周期
  *       计数（number），按节点召唤暗影幽魂波（Pr2）、暗影傀儡与噬影鸦，
@@ -209,34 +208,11 @@ public class TwilightLanternBlock extends BaseEntityBlock {
                 level.playSound(null, pos, SoundEvents.LANTERN_PLACE, SoundSource.NEUTRAL, 1, 1);
             }
             ServerScheduler.schedule(20, () -> {
-                if (player instanceof ServerPlayer serverPlayer && !serverPlayer.level().isClientSide()) {
-                    if (serverPlayer.level().dimension() != Level.OVERWORLD) {
-                        ServerLevel overworld = serverPlayer.server.getLevel(Level.OVERWORLD);
-                        if (overworld != null) {
-                            serverPlayer.connection.send(
-                                    new ClientboundGameEventPacket(ClientboundGameEventPacket.WIN_GAME, 0));
-                            serverPlayer.teleportTo(overworld, serverPlayer.getX(), serverPlayer.getY(),
-                                    serverPlayer.getZ(), serverPlayer.getYRot(), serverPlayer.getXRot());
-                            serverPlayer.connection.send(
-                                    new ClientboundPlayerAbilitiesPacket(serverPlayer.getAbilities()));
-                            for (MobEffectInstance effect : serverPlayer.getActiveEffects()) {
-                                serverPlayer.connection.send(
-                                        new ClientboundUpdateMobEffectPacket(serverPlayer.getId(), effect, false));
-                            }
-                            serverPlayer.connection.send(
-                                    new ClientboundLevelEventPacket(1032, BlockPos.ZERO, 0, false));
-                        }
-                    }
+                if (!(player instanceof ServerPlayer serverPlayer) || serverPlayer.level().isClientSide()) {
+                    return;
                 }
-                if (!player.level().isClientSide() && player.getServer() != null) {
-                    player.getServer().getCommands().performPrefixedCommand(
-                            new CommandSourceStack(CommandSource.NULL, player.position(),
-                                    player.getRotationVector(),
-                                    player.level() instanceof ServerLevel sl ? sl : null, 4,
-                                    player.getName().getString(), player.getDisplayName(),
-                                    player.level().getServer(), player),
-                            "spawn");
-                }
+                // 返程：WIN_GAME 过场 + 主世界重生点/世界出生点（不再依赖未注册的裸 /spawn）
+                teleportToOverworldSpawn(serverPlayer);
             });
             return InteractionResult.SUCCESS;
         }
@@ -322,6 +298,40 @@ public class TwilightLanternBlock extends BaseEntityBlock {
         AdvancementHolder holder = serverPlayer.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath("pasterdream", name));
         return holder != null && serverPlayer.getAdvancements().getOrStartProgress(holder).isDone();
+    }
+
+    /**
+     * 灯影返主世界：过场包 + 落在玩家主世界重生点，否则世界共享出生点。
+     * 不再执行未注册的裸命令 {@code spawn}。
+     */
+    private static void teleportToOverworldSpawn(ServerPlayer player) {
+        ServerLevel overworld = player.server.getLevel(Level.OVERWORLD);
+        if (overworld == null) {
+            return;
+        }
+        Vec3 dest = overworldSpawnTarget(overworld, player);
+        if (player.level().dimension() != Level.OVERWORLD) {
+            player.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.WIN_GAME, 0));
+        }
+        player.teleportTo(overworld, dest.x, dest.y, dest.z, player.getYRot(), player.getXRot());
+        player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
+        for (MobEffectInstance effect : player.getActiveEffects()) {
+            player.connection.send(new ClientboundUpdateMobEffectPacket(player.getId(), effect, false));
+        }
+        player.connection.send(new ClientboundLevelEventPacket(1032, BlockPos.ZERO, 0, false));
+    }
+
+    private static Vec3 overworldSpawnTarget(ServerLevel overworld, ServerPlayer player) {
+        if (player.getRespawnPosition() != null
+                && Level.OVERWORLD.equals(player.getRespawnDimension())) {
+            BlockPos rp = player.getRespawnPosition();
+            return new Vec3(rp.getX() + 0.5, rp.getY(), rp.getZ() + 0.5);
+        }
+        BlockPos spawn = overworld.getSharedSpawnPos();
+        int y = overworld.getHeight(
+                net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING,
+                spawn.getX(), spawn.getZ());
+        return new Vec3(spawn.getX() + 0.5, Math.max(y, spawn.getY()), spawn.getZ() + 0.5);
     }
 
     /** 授予成就（缺失成就时降级跳过） */

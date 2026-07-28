@@ -103,11 +103,13 @@
 | `struct-dim` | 结构→维度映射 |
 | `gallery` | 方块总览展台 |
 | `entity-gallery` | 实体展台 |
+| `twilight-lantern` / `twilight` / `lantern` | 暮影之笼链路（**不在** `all`；见 `docs/todo_暮影之笼流程缺口.md`） |
+| `wind-journey` / `wind` / `third-dream` | 第三梦境风旅核实（**不在** `all`；见 `docs/todo_第三梦境流程缺口.md`） |
 | **快捷** `quick` | = `registry,core` |
 | **快捷** `behavior` | = `core,dimensions,spells,content` |
 | **快捷** `worldgen` | = `structures,struct-dim` |
 | **快捷** `galleries` / `visual` | = `gallery,entity-gallery` |
-| **快捷** `all` | 全量（默认） |
+| **快捷** `all` | 全量（默认；**不含** twilight-lantern / wind-journey） |
 
 方块总览展台（VERIFY 收尾自动铺，出生点东/南）：**主台**静物全量（门/双层植物上下半、染梦植物垫染梦草）；**特展带**用物品框+告示展示结构触发块 / 唤星限时块 / 流体（避免自毁与漫延）。
 
@@ -128,6 +130,8 @@ IDEA / Fleet：根目录 [`.run/`](.run/) 已写入同名运行配置，打开�
 | `PD VERIFY quick` | 仅 registry+core，测完退出 |
 | `PD VERIFY workshop` | 仅工坊，测完退出 |
 | `PD VERIFY structures` | 仅 worldgen（structures+struct-dim），测完退出 |
+| `PD VERIFY wind-journey` | 第三梦境专项，测完退出（不在 all） |
+| `PD VERIFY twilight-lantern` | 暮影之笼专项，测完退出（不在 all） |
 | `PD VERIFY spells` | 仅法术，测完退出 |
 | `PD VERIFY behavior` | core+dimensions+spells+content，测完退出 |
 | `PD VERIFY gallery` | 方块+实体展台，KEEP_OPEN |
@@ -219,6 +223,20 @@ PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=behavior PASTERDREAM_VERIFY_KEEP_
 ```bash
 # 展台（方块+实体，测完保持打开供观察）
 PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=galleries \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
+```bash
+# 第三梦境风旅专项（不在默认 all；结构/出维/祭坛/雷云等）
+PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=wind-journey PASTERDREAM_VERIFY_KEEP_OPEN=0 \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
+```bash
+# 暮影之笼专项（不在默认 all）
+PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=twilight-lantern PASTERDREAM_VERIFY_KEEP_OPEN=0 \
   JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
   sh gradlew :PasterDream:runClient --offline
 ```

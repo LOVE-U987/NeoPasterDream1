@@ -198,6 +198,13 @@ public class PasterDreamMod {
         NeoForge.EVENT_BUS.addListener(PlayerDataEvents::onPlayerChangedDimension);
         NeoForge.EVENT_BUS.addListener(PlayerDataEvents::onPlayerClone);
 
+        // 理智环境 tick（SanHelper：含风维 cloudmist 续效）
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDSanHelper::onPlayerTick);
+        // 风之旅途：日更风向 / 顺逆风 / 进维文案与主题曲
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.WindJourneyEvents::onLevelTick);
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.WindJourneyEvents::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.WindJourneyEvents::onPlayerChangedDimension);
+
         // 监听通用设置事件
         modEventBus.addListener(this::commonSetup);
 
@@ -209,6 +216,10 @@ public class PasterDreamMod {
 
         // 在游戏总线上注册竞技场维度事件（玩家进入竞技场时的初始化逻辑）
         NeoForge.EVENT_BUS.addListener(PDArenaEvents::onPlayerChangedDimension);
+
+        // 灯影出生结构（shadow_world_spawn）；Warden→hide_7 / 远古守卫者鳞
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDLampShadowWorldgen::onLevelLoad);
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDEntityDeathEvents::onLivingDeath);
 
         // 客户端 Tick 事件和极光天幕渲染器通过 @EventBusSubscriber(Dist.CLIENT)
         // 在 PDClientEvents 和 DyeDreamSkyRenderer 中自动注册，避免服务端类加载

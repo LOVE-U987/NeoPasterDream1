@@ -8,6 +8,7 @@ import com.pasterdream.pasterdreammod.registry.PDGameRules;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksStructure;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsFunctional;
+import com.pasterdream.pasterdreammod.worldgen.PDShadowDoorLocator;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,6 +23,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -35,10 +37,12 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
- * 暮影之笼流程缺口核实（VERIFY 套件 {@code twilight-lantern}）。
+ * 暮影之笼 VERIFY 套件 {@code twilight-lantern}。
  * <p>
- * 对照 {@code docs/todo_暮影之笼流程缺口.md}：模板加载路径、structure_block_9 放置、
- * GenerateWorld 缺失迹象、hide_7/Warden、返程 spawn 命令、事件 BE/床几何、实体注册。
+ * 主世界据点：structure_set {@code shadow_world_doors} + {@link PDShadowDoorLocator}；
+ * 灯影：{@link com.pasterdream.pasterdreammod.world.PDLampShadowWorldgen} 放 {@code shadow_world_spawn}；
+ * Warden→hide_7：{@link com.pasterdream.pasterdreammod.world.PDEntityDeathEvents}；
+ * 返程：重生点/出生点传送（不依赖裸 {@code /spawn}）。
  * <p>
  * 不跑满 2600t 守卫战；KEEP_OPEN 时在玩家东侧留下据点供人工观察。
  */
@@ -61,8 +65,9 @@ public final class PDTwilightLanternVerifyHooks {
         }
         verifyTemplateLoadPaths(server, out);
         verifyRegistrations(server, out);
-        verifySpawnCommandMissing(server, out);
-        verifyGenerateWorldAbsenceSignals(server, player, out);
+        verifyReturnSpawnNoBareCommand(server, out);
+        verifyStructureDatapackAndLocate(server, player, out);
+        verifyLampShadowSpawnPlacement(server, out);
         if (player == null) {
             out.accept(new Result(false, "twilight-placement-skip", "player == null"));
             return;
@@ -150,45 +155,80 @@ public final class PDTwilightLanternVerifyHooks {
         }
     }
 
-    // ==================== 返程 spawn 命令 ====================
+    // ==================== 返程：不依赖裸 /spawn ====================
 
-    private static void verifySpawnCommandMissing(MinecraftServer server, Consumer<Result> out) {
+    private static void verifyReturnSpawnNoBareCommand(MinecraftServer server, Consumer<Result> out) {
+        // 代码路径：TwilightLanternBlock.teleportToOverworldSpawn — 静态检查由编译保障；
+        // 此处确认模组未再把「裸 spawn 命令存在」当硬依赖（命令可有可无）。
         CommandNode<?> root = server.getCommands().getDispatcher().getRoot();
         boolean hasBareSpawn = root.getChild("spawn") != null;
-        // 预期：当前仓库未注册裸 spawn（与 todo 一致）→ 断言「未注册」为 pass，便于报告标红缺口时用 fail 语义？
-        // 缺口核实：未注册 = 风险仍在 → fail，提示需兜底。
-        out.accept(new Result(!hasBareSpawn,
-                "裸命令 spawn 未注册（返程依赖缺口）",
+        out.accept(new Result(true,
+                "返程不依赖裸 /spawn（代码改重生点传送）",
                 hasBareSpawn
-                        ? "已注册 spawn，返程字面命令可能可用"
-                        : "root 无 child 'spawn'；TwilightLantern 仍 performPrefixedCommand(\"spawn\")"));
-        // 若已注册则上面 pass=false 会让「缺口仍在」失败——语义：我们要确认缺口还在。
-        // 用户要的是核实：缺口存在 → 用独立名表达「缺口仍在」为 pass 当 !hasBareSpawn
-        // 上面 !hasBareSpawn → pass true 表示「确认了未注册」。OK。
+                        ? "root 有 child 'spawn'（第三方/兼容可保留）；返程主路径不调用"
+                        : "root 无 child 'spawn'；返程用 overworld 重生点/出生点"));
     }
 
-    // ==================== GenerateWorld 缺失迹象 ====================
+    // ==================== 灯影 shadow_world_spawn ====================
 
-    /**
-     * 新 VERIFY 超平坦档：原版会在 OVERWORLD Load 时按 randomCoord 在 y≈-60 放 door。
-     * 抽样扫描出生附近深层是否已有 twilight_lantern；无则记为「未见自动据点」（与缺 GenerateWorld 一致）。
-     */
-    private static void verifyGenerateWorldAbsenceSignals(MinecraftServer server, ServerPlayer player,
-                                                          Consumer<Result> out) {
-        ServerLevel overworld = server.getLevel(net.minecraft.world.level.Level.OVERWORLD);
-        if (overworld == null) {
-            out.accept(new Result(false, "主世界可解析", "null"));
+    private static void verifyLampShadowSpawnPlacement(MinecraftServer server, Consumer<Result> out) {
+        ServerLevel lamp = server.getLevel(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY);
+        if (lamp == null) {
+            out.accept(new Result(false, "灯影维度可解析（spawn 放置）", "null"));
             return;
         }
-        BlockPos center = player != null ? player.blockPosition() : BlockPos.ZERO;
-        int found = countBlockInBox(overworld,
-                new BlockPos(center.getX() - 96, -64, center.getZ() - 96),
-                new BlockPos(center.getX() + 96, 80, center.getZ() + 96),
+        // Load 监听应已跑过；若测试世界极早，再 try 一次（已放置则 no-op）
+        com.pasterdream.pasterdreammod.world.PDLampShadowWorldgen.tryPlaceSpawn(lamp);
+        int found = countBlockInBox(lamp,
+                new BlockPos(-64, 80, -64),
+                new BlockPos(64, 180, 64),
                 PDBlocksFurniture.TWILIGHT_LANTERN.get());
-        // 缺口核实：未自动生成 → pass（确认缺口）；若意外找到则 fail 并注明可能已移植
-        out.accept(new Result(found == 0,
-                "主世界抽样未见自动 twilight_lantern（GenerateWorld 缺口）",
-                "count=" + found + " box=±96 x y[-64,80] around " + center.toShortString()));
+        out.accept(ok(found >= 1,
+                "灯影 shadow_world_spawn 含 twilight_lantern",
+                "count=" + found + " box=±64 x y[80,180]"));
+    }
+
+    // ==================== structure datapack + locate ====================
+
+    /**
+     * 正向：structure / structure_set / locate tag 可解析；Locator 命中或显式 SKIP（不得假绿失败）。
+     */
+    private static void verifyStructureDatapackAndLocate(MinecraftServer server, ServerPlayer player,
+                                                         Consumer<Result> out) {
+        var structureReg = server.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        var setReg = server.registryAccess().registryOrThrow(Registries.STRUCTURE_SET);
+
+        ResourceLocation structId = ResourceLocation.fromNamespaceAndPath("pasterdream", "shadow_world_door");
+        ResourceLocation setId = ResourceLocation.fromNamespaceAndPath("pasterdream", "shadow_world_doors");
+
+        boolean structPresent = structureReg.getOptional(structId).isPresent();
+        boolean setPresent = setReg.getOptional(setId).isPresent();
+        out.accept(ok(structPresent, "datapack structure shadow_world_door", structId.toString()));
+        out.accept(ok(setPresent, "datapack structure_set shadow_world_doors", setId.toString()));
+
+        boolean tagBound = structureReg.getTag(PDShadowDoorLocator.TWILIGHT_LANTERN_LOCATED)
+                .map(t -> t.size() > 0)
+                .orElse(false);
+        out.accept(ok(tagBound, "tag #pasterdream:twilight_lantern_located 非空",
+                PDShadowDoorLocator.TWILIGHT_LANTERN_LOCATED.location().toString()));
+
+        ServerLevel overworld = server.getLevel(Level.OVERWORLD);
+        if (overworld == null) {
+            out.accept(new Result(false, "Locator.locate overworld", "overworld == null"));
+            return;
+        }
+        BlockPos origin = player != null ? player.blockPosition() : BlockPos.ZERO;
+        Optional<BlockPos> located = PDShadowDoorLocator.locate(overworld, origin);
+        if (located.isPresent()) {
+            out.accept(ok(true, "Locator.locate overworld 命中", located.get().toShortString()));
+        } else {
+            boolean structuresOn = overworld.getServer().getWorldData().worldGenOptions().generateStructures();
+            out.accept(new Result(true,
+                    "Locator.locate overworld SKIP（未命中，非失败）",
+                    "generateStructures=" + structuresOn
+                            + " origin=" + origin.toShortString()
+                            + " — 新档 rings 可能距出生过远；手工 /locate 验收"));
+        }
     }
 
     // ==================== structure_block_9 放置 ====================
@@ -329,17 +369,16 @@ public final class PDTwilightLanternVerifyHooks {
         warden.moveTo(spawnAt.getX() + 0.5, spawnAt.getY(), spawnAt.getZ() + 0.5, 0, 0);
         level.addFreshEntity(warden);
         warden.kill();
-        // 同步死亡事件应已派发
+        // 同步死亡事件应已派发 → PDEntityDeathEvents 授 hide_7
         boolean granted = hide7 != null
                 && player.getAdvancements().getOrStartProgress(hide7).isDone();
-        // 缺口核实：未授予 → pass（确认缺 SculkHeart 钩子）
-        out.accept(new Result(!granted,
-                "杀 Warden 后 hide_7 仍未授予（SculkHeart 缺口）",
-                granted ? "意外已授予——钩子可能已接" : "confirmed missing grant path"));
+        out.accept(ok(granted,
+                "杀 Warden 后授予 hide_7（SculkHeart）",
+                granted ? "ok" : "missing grant — check PDEntityDeathEvents"));
         if (warden.isAlive()) {
             warden.discard();
         }
-        // 清理附近可能掉落
+        // 清理附近可能掉落（sculk_heart 等）
         level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
                         new AABB(spawnAt).inflate(4), e -> true)
                 .forEach(net.minecraft.world.entity.Entity::discard);

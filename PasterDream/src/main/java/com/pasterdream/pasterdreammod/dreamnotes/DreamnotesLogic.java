@@ -2,12 +2,14 @@ package com.pasterdream.pasterdreammod.dreamnotes;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
+import com.pasterdream.pasterdreammod.worldgen.PDShadowDoorLocator;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -18,11 +20,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 
 import java.text.DecimalFormat;
+import java.util.Optional;
 
 /**
  * 寻梦者笔记 procedure 语义（Pr0/Pr1、翻书音效、经验启发、成就发放）。
@@ -72,40 +74,40 @@ public final class DreamnotesLogic {
         double z = entity.getZ();
         switch (noteId) {
             case 1 -> tryUnlock(world, x, y, z, entity, "achievement_a_0", "achievement_start",
-                    "你习得了新的知识 关于§a[染梦裂隙]§f，新的进度已解锁", true, false, stack, 0, 0);
+                    "你习得了新的知识 关于§a[染梦裂隙]§f，新的进度已解锁", true);
             case 2 -> tryUnlock(world, x, y, z, entity, "achievement_b_0", "achievement_a_0",
-                    "你习得了新的知识 关于§a[染梦世界]§f，新的进度已解锁", true, false, stack, 0, 0);
+                    "你习得了新的知识 关于§a[染梦世界]§f，新的进度已解锁", true);
             case 3 -> tryUnlock(world, x, y, z, entity, "achievement_hide_0", "achievement_start",
-                    "你习得了新的知识 关于§a[粉红史莱姆]§f，新的进度已解锁", true, false, stack, 0, 0);
+                    "你习得了新的知识 关于§a[粉红史莱姆]§f，新的进度已解锁", true);
             case 4 -> tryUnlock(world, x, y, z, entity, "achievement_a_1", "achievement_start",
-                    "你习得了新的知识 关于§a[苍白雪莲]§f，新的进度已解锁", true, false, stack, 0, 0);
+                    "你习得了新的知识 关于§a[苍白雪莲]§f，新的进度已解锁", true);
             case 5 -> tryUnlock(world, x, y, z, entity, "achievement_hide_3", "achievement_a_1",
-                    "你习得了新的知识 关于§a[苍白骨针]§f，新的进度已解锁", true, false, stack, 0, 0);
+                    "你习得了新的知识 关于§a[苍白骨针]§f，新的进度已解锁", true);
             case 6 -> tryUnlock(world, x, y, z, entity, "achievement_c_2", "achievement_start",
-                    "你习得了新的知识 关于§a[衍梦肥泥]§f，新的进度已解锁", true, false, stack, 0, 0);
+                    "你习得了新的知识 关于§a[衍梦肥泥]§f，新的进度已解锁", true);
             case 7 -> tryUnlock(world, x, y, z, entity, "achievement_c_3", "achievement_b_0",
-                    "你习得了新的知识 关于§a[蓄梦池]§f，新的进度已解锁", true, false, stack, 0, 0);
+                    "你习得了新的知识 关于§a[蓄梦池]§f，新的进度已解锁", true);
             case 8 -> onUseNote8(world, x, y, z, entity, stack);
             case 9 -> onUseNote9(world, x, y, z, entity, stack);
             case 10 -> tryUnlock(world, x, y, z, entity, "achievement_hide_11", "achievement_shadow_start",
-                    "你习得了新的知识 关于§a[沉淀阴影]§f，新的进度已解锁", true, false, stack, 0, 0);
+                    "你习得了新的知识 关于§a[沉淀阴影]§f，新的进度已解锁", true);
             case 11 -> tryUnlock(world, x, y, z, entity, "achievement_hide_12", "achievement_hide_11",
-                    "你习得了新的知识 关于§a[阴影游记]§f，新的进度已解锁", true, false, stack, 0, 0);
+                    "你习得了新的知识 关于§a[阴影游记]§f，新的进度已解锁", true);
             case 12 -> {
                 if (tryUnlock(world, x, y, z, entity, "achievement_hide_14", "achievement_hide_13",
-                        "你习得了新的知识 关于§a[暗影地牢]§f，新的进度已解锁", true, false, stack, 0, 0)) {
+                        "你习得了新的知识 关于§a[暗影地牢]§f，新的进度已解锁", true)) {
                     msg(entity, "你学会了修复暗影地牢的方法", false);
                 }
             }
             case 13 -> {
                 if (tryUnlock(world, x, y, z, entity, "achievement_hide_15", "achievement_hide_14",
-                        "你习得了新的知识 关于§a[恐惧]§f，新的进度已解锁", true, false, stack, 0, 0)) {
+                        "你习得了新的知识 关于§a[恐惧]§f，新的进度已解锁", true)) {
                     msg(entity, "黑暗双手的掌心向你敞开", false);
                 }
             }
             case 14 -> {
                 if (tryUnlock(world, x, y, z, entity, "achievement_hide_16", "achievement_b_0",
-                        "你习得了新的知识 关于§a[无翼鸟也有展翅的梦]§f，新的进度已解锁", true, false, stack, 0, 0)) {
+                        "你习得了新的知识 关于§a[无翼鸟也有展翅的梦]§f，新的进度已解锁", true)) {
                     msg(entity, "天空的云层将可以被你撕裂", false);
                 }
             }
@@ -138,15 +140,16 @@ public final class DreamnotesLogic {
             if (awardAllCriteria(entity, "achievement_hide_8")) {
                 msg(entity, "你习得了新的知识 关于§a[阴影中的潜藏者]§f，新的进度已解锁", false);
                 playChallenge(world, x, y, z);
-                writeCoords(world, stack, -22, -21);
+                if (writeCoords(world, entity, stack)) {
+                    msg(entity, "笔记的背面刻印这一个坐标", false);
+                    msg(entity, "X:" + INT_FMT.format(DreamnotesData.getDouble(stack, "x"))
+                            + "Z:" + INT_FMT.format(DreamnotesData.getDouble(stack, "z")), false);
+                }
                 grantNotesExpup(entity);
-                msg(entity, "笔记的背面刻印这一个坐标", false);
-                msg(entity, "X:" + INT_FMT.format(DreamnotesData.getDouble(stack, "x"))
-                        + "Z:" + INT_FMT.format(DreamnotesData.getDouble(stack, "z")), false);
             }
-        }
-        if (isDone(entity, "achievement_hide_8")) {
-            writeCoords(world, stack, 0, 0);
+        } else if (isDone(entity, "achievement_hide_8")) {
+            // 已解锁后再读：刷新为当前最近据点
+            writeCoords(world, entity, stack);
         }
     }
 
@@ -154,8 +157,9 @@ public final class DreamnotesLogic {
         boolean hide10 = isDone(entity, "achievement_hide_10");
         boolean b0 = isDone(entity, "achievement_b_0");
         if (hide10 && b0) {
-            writeCoords(world, stack, -22, -21);
-            msg(entity, "笔记的背面刻印这一个坐标", false);
+            if (writeCoords(world, entity, stack)) {
+                msg(entity, "笔记的背面刻印这一个坐标", false);
+            }
         }
         if (!hide10 && b0) {
             if (awardAllCriteria(entity, "achievement_hide_10")) {
@@ -164,18 +168,20 @@ public final class DreamnotesLogic {
                 DreamnotesData.putBoolean(stack, "switch", true);
                 giveCalleCard0(entity);
                 msg(entity, "你在对折的笔记里发现了一张卡片", false);
-                writeCoords(world, stack, -22, -21);
+                if (writeCoords(world, entity, stack)) {
+                    msg(entity, "笔记的背面刻印这一个坐标", false);
+                    msg(entity, "X:" + INT_FMT.format(DreamnotesData.getDouble(stack, "x"))
+                            + "Z:" + INT_FMT.format(DreamnotesData.getDouble(stack, "z")), false);
+                }
                 grantNotesExpup(entity);
+            }
+        }
+        if (entity instanceof Player player && player.getAbilities().instabuild) {
+            if (writeCoords(world, entity, stack)) {
                 msg(entity, "笔记的背面刻印这一个坐标", false);
                 msg(entity, "X:" + INT_FMT.format(DreamnotesData.getDouble(stack, "x"))
                         + "Z:" + INT_FMT.format(DreamnotesData.getDouble(stack, "z")), false);
             }
-        }
-        if (entity instanceof Player player && player.getAbilities().instabuild) {
-            writeCoords(world, stack, 0, 0);
-            msg(entity, "笔记的背面刻印这一个坐标", false);
-            msg(entity, "X:" + INT_FMT.format(DreamnotesData.getDouble(stack, "x"))
-                    + "Z:" + INT_FMT.format(DreamnotesData.getDouble(stack, "z")), false);
         }
     }
 
@@ -183,9 +189,7 @@ public final class DreamnotesLogic {
      * @return 本次是否成功新解锁
      */
     private static boolean tryUnlock(Level world, double x, double y, double z, Entity entity,
-                                     String unlock, String prereq, String message,
-                                     boolean expup, boolean coords, ItemStack stack,
-                                     int xOff, int zOff) {
+                                     String unlock, String prereq, String message, boolean expup) {
         if (isDone(entity, unlock) || !isDone(entity, prereq)) {
             return false;
         }
@@ -197,39 +201,28 @@ public final class DreamnotesLogic {
         if (expup) {
             grantNotesExpup(entity);
         }
-        if (coords) {
-            writeCoords(world, stack, xOff, zOff);
-        }
         return true;
     }
 
-    private static void writeCoords(Level world, ItemStack stack, int xOffset, int zOffset) {
-        int rx = readRandomCoord(world, true);
-        int rz = readRandomCoord(world, false);
-        // 原版：((r*20)+r)+offset = r*21 + offset
-        double cx = (rx * 20.0 + rx) + xOffset;
-        double cz = (rz * 20.0 + rz) + zOffset;
-        DreamnotesData.putBoolean(stack, "switch", true);
-        DreamnotesData.putDouble(stack, "x", cx);
-        DreamnotesData.putDouble(stack, "z", cz);
-    }
-
     /**
-     * 读取 randomCoordX/Z。优先 PDGameRules（主仓可能已注册）；否则 0。
-     * 不在本分区重复 GameRules.register，避免与 PDGameRules 冲突。
+     * 写入最近暮影据点坐标（locate）。失败不写假 x/z。
+     *
+     * @return 是否成功写入
      */
-    @SuppressWarnings("unchecked")
-    private static int readRandomCoord(Level world, boolean xAxis) {
-        try {
-            Class<?> clazz = Class.forName("com.pasterdream.pasterdreammod.registry.PDGameRules");
-            Object key = clazz.getField(xAxis ? "RANDOM_COORD_X" : "RANDOM_COORD_Z").get(null);
-            if (key instanceof GameRules.Key<?> ruleKey) {
-                return world.getGameRules().getInt((GameRules.Key<GameRules.IntegerValue>) ruleKey);
-            }
-        } catch (ReflectiveOperationException | ClassCastException ignored) {
-            // PDGameRules 未加载时坐标记为 0（与默认 gamerule 一致）
+    private static boolean writeCoords(Level world, Entity entity, ItemStack stack) {
+        if (!(world instanceof ServerLevel server) || entity == null) {
+            return false;
         }
-        return 0;
+        Optional<BlockPos> found = PDShadowDoorLocator.locate(server, entity.blockPosition());
+        if (found.isEmpty()) {
+            msg(entity, "尚未感应到暮影据点的方位", false);
+            return false;
+        }
+        BlockPos pos = found.get();
+        DreamnotesData.putBoolean(stack, "switch", true);
+        DreamnotesData.putDouble(stack, "x", pos.getX());
+        DreamnotesData.putDouble(stack, "z", pos.getZ());
+        return true;
     }
 
     private static void giveCalleCard0(Entity entity) {

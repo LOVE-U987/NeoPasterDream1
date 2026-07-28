@@ -10,6 +10,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -54,8 +55,14 @@ public class WindKnightEntity extends GeckoLibMobEntity {
     /** 上一次挥动的时间 */
     private long lastSwing;
 
-    /** AOE爆炸技能冷却计时器 */
-    private int aoeCooldown = 0;
+    /**
+     * AOE 充能计数（原版 persistentData {@code time}）：
+     * 每 tick +1，≥180 且 11 格内有玩家时释放技能并归零。
+     */
+    private int aoeCharge = 0;
+
+    /** 技能前摇进行中，避免重复触发 */
+    private boolean aoeWindingUp = false;
 
     /**
      * 构造风之骑士实体
@@ -169,31 +176,72 @@ public class WindKnightEntity extends GeckoLibMobEntity {
     // ==================== AOE爆炸技能实现 ====================
 
     /**
-     * 服务端每 tick AOE检测逻辑
-     * 原WindKnightPr0Procedure：检测玩家并对附近非特殊实体造成AOE伤害
+     * 服务端每 tick AOE（对齐原版 {@code WindKnightPr0}）。
+     * <p>
+     * 充能 180t → 11 格内有玩家 → skill_0 动画 + 缓慢 IV 20t → 5t 铁傀儡受伤音
+     * → 25t 后半径约 6 格 30 伤 + 粒子/爆炸音 + 自身速度 I 20t。
      */
     private void serverAoeTick() {
-        if (aoeCooldown > 0) {
-            aoeCooldown--;
+        this.clearFire();
+        if (aoeWindingUp) {
             return;
         }
-        // 检测附近玩家
-        Player target = this.level().getNearestPlayer(this, 10.0);
-        if (target != null && target.isAlive() && this.hasLineOfSight(target)) {
-            // 播放技能音效
-            this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
-                    PDSounds.WIND_KNIGHT_SKILL_0.get(), this.getSoundSource(), 1.0F, 1.0F);
-            // 对半径4格内非特殊实体造成AOE伤害
-            this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0),
-                            e -> e != this && !e.getType().is(TagKey.create(Registries.ENTITY_TYPE,
-                                    ResourceLocation.fromNamespaceAndPath("pasterdream", "special_entity_tag"))))
-                    .forEach(e -> e.hurt(this.damageSources().mobAttack(this), 12.0F));
-            // 自身获得移动速度提升与缓慢减益（平衡性设计）
-            this.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 200, 0));
-            this.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 1));
-            // 设置冷却（300 tick = 15秒）
-            aoeCooldown = 300;
+        if (aoeCharge < 180) {
+            aoeCharge++;
+            return;
         }
+        Player nearest = this.level().getNearestPlayer(this, 11.0);
+        if (nearest == null || !nearest.isAlive()) {
+            return;
+        }
+
+        aoeWindingUp = true;
+        aoeCharge = 0;
+        this.setAnimation("skill_0");
+        this.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false));
+
+        final double cx = this.getX();
+        final double cy = this.getY();
+        final double cz = this.getZ();
+        final Level level = this.level();
+
+        // 5t：铁傀儡受伤音
+        com.pasterdream.pasterdreammod.util.ServerScheduler.schedule(5, () -> {
+            if (!this.isAlive() || level.isClientSide()) {
+                return;
+            }
+            level.playSound(null, this.blockPosition(), SoundEvents.IRON_GOLEM_HURT,
+                    SoundSource.MASTER, 1.0F, 1.1F);
+        });
+
+        // 25t：爆发伤害与特效
+        com.pasterdream.pasterdreammod.util.ServerScheduler.schedule(25, () -> {
+            aoeWindingUp = false;
+            if (!this.isAlive() || level.isClientSide()) {
+                return;
+            }
+            TagKey<net.minecraft.world.entity.EntityType<?>> special = TagKey.create(
+                    Registries.ENTITY_TYPE,
+                    ResourceLocation.fromNamespaceAndPath("pasterdream", "special_entity_tag"));
+            level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(6.0),
+                            e -> e != this && !e.getType().is(special))
+                    .forEach(e -> {
+                        e.hurt(this.damageSources().mobAttack(this), 30.0F);
+                        if (level instanceof net.minecraft.server.level.ServerLevel sl) {
+                            sl.sendParticles(ParticleTypes.EXPLOSION,
+                                    e.getX(), e.getY(), e.getZ(), 3, 0.1, 0.1, 0.1, 0.1);
+                        }
+                    });
+            if (level instanceof net.minecraft.server.level.ServerLevel sl) {
+                sl.sendParticles(ParticleTypes.CLOUD, cx, cy + 1.5, cz, 80, 3, 0.5, 3, 0.1);
+                sl.sendParticles(ParticleTypes.CRIT, cx, cy + 1.5, cz, 80, 3, 0.5, 3, 0.1);
+            }
+            level.playSound(null, this.blockPosition(), PDSounds.WIND_KNIGHT_SKILL_0.get(),
+                    SoundSource.MASTER, 1.1F, 0.9F);
+            level.playSound(null, this.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(),
+                    SoundSource.MASTER, 0.7F, 1.0F);
+            this.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20, 0, false, false));
+        });
     }
 
     @Override

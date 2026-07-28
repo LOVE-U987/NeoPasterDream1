@@ -13,6 +13,10 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+import net.minecraft.network.protocol.game.ClientboundLevelEventPacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
+import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -1127,8 +1131,18 @@ public class PDEffects {
                     ServerLevel windJourney = player.server.getLevel(WIND_JOURNEY_WORLD);
                     // 风之旅途维度尚未还原时 getLevel 返回 null，静默跳过
                     if (windJourney != null && player.level().dimension() != WIND_JOURNEY_WORLD) {
+                        // 对齐原版 FondillusionBuffPr0 / 灯影床：WIN_GAME + teleport + 能力/效果 + 1032
+                        player.connection.send(new ClientboundGameEventPacket(
+                                ClientboundGameEventPacket.WIN_GAME, 0));
                         player.teleportTo(windJourney, player.getX(), player.getY(), player.getZ(),
                                 player.getYRot(), player.getXRot());
+                        player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
+                        for (MobEffectInstance effect : player.getActiveEffects()) {
+                            player.connection.send(new ClientboundUpdateMobEffectPacket(
+                                    player.getId(), effect, false));
+                        }
+                        player.connection.send(new ClientboundLevelEventPacket(
+                                1032, BlockPos.ZERO, 0, false));
                     }
                 }
             } else {

@@ -1,0 +1,31 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="PD VERIFY wind-journey" type="GradleRunConfiguration" factoryName="Gradle">
+    <ExternalSystemSettings>
+      <option name="executionName" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$" />
+      <option name="externalSystemIdString" value="GRADLE" />
+      <option name="scriptParameters" value="--offline" />
+      <option name="taskDescriptions">
+        <list />
+      </option>
+      <option name="taskNames">
+        <list>
+          <option value=":PasterDream:runClient" />
+        </list>
+      </option>
+      <option name="vmOptions" value="" />
+      <option name="env">
+        <map>
+          <entry key="PASTERDREAM_VERIFY" value="1" />
+          <entry key="PASTERDREAM_VERIFY_SUITES" value="wind-journey" />
+          <entry key="PASTERDREAM_VERIFY_KEEP_OPEN" value="0" />
+        </map>
+      </option>
+    </ExternalSystemSettings>
+    <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+    <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+    <DebugAllEnabled>false</DebugAllEnabled>
+    <RunAsTest>false</RunAsTest>
+    <method v="2" />
+  </configuration>
+</component>

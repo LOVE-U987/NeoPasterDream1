@@ -1,0 +1,11 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:wind_journey_biome_0",
+  "features": [
+    "pasterdream:grass_13",
+    "pasterdream:grass_14",
+    "pasterdream:grass_15",
+    "pasterdream:flower_18"
+  ],
+  "step": "vegetal_decoration"
+}

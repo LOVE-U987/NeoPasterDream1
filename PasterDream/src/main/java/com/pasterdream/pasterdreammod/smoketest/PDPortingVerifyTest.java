@@ -125,14 +125,16 @@ public final class PDPortingVerifyTest {
      *   <li>{@code gallery}/{@code block-gallery} — 方块总览展台</li>
      *   <li>{@code entity-gallery}/{@code entity_gallery} — 实体展台</li>
      *   <li>{@code twilight-lantern}/{@code twilight}/{@code lantern} — 暮影之笼流程缺口核实</li>
+     *   <li>{@code wind-journey}/{@code wind}/{@code third-dream} — 第三梦境风之旅途流程核实</li>
      * </ul>
      * 组合快捷：{@code all}（默认）、{@code quick}=registry+core、
      * {@code behavior}=core+dimensions+spells+content、
      * {@code worldgen}=structures+struct-dim、
      * {@code galleries}/{@code visual}=gallery+entity-gallery。
      * <p>
-     * 注意：{@code all} <b>不含</b> {@code twilight-lantern}（专项缺口核实，默认不进全量，
-     * 避免「确认缺口」类断言与全绿终验语义冲突；显式 {@code PASTERDREAM_VERIFY_SUITES=twilight-lantern}）。
+     * 注意：{@code all} <b>不含</b> {@code twilight-lantern} / {@code wind-journey}
+     * （专项缺口核实，默认不进全量，避免与全绿终验语义冲突；
+     * 显式 {@code PASTERDREAM_VERIFY_SUITES=twilight-lantern} 或 {@code wind-journey}）。
      */
     public enum Suite {
         REGISTRY("registry"),
@@ -146,7 +148,9 @@ public final class PDPortingVerifyTest {
         GALLERY("gallery", "block-gallery"),
         ENTITY_GALLERY("entity-gallery", "entity_gallery"),
         /** 暮影之笼专项；不在 all 默认集合内，见 {@link #parseSelectedSuites} */
-        TWILIGHT_LANTERN("twilight-lantern", "twilight", "lantern");
+        TWILIGHT_LANTERN("twilight-lantern", "twilight", "lantern"),
+        /** 第三梦境风之旅途专项；不在 all 默认集合内 */
+        WIND_JOURNEY("wind-journey", "wind", "third-dream");
 
         private final String[] aliases;
 
@@ -198,9 +202,10 @@ public final class PDPortingVerifyTest {
         }
         raw = raw == null ? "" : raw.trim();
         if (raw.isEmpty() || "all".equalsIgnoreCase(raw) || "*".equals(raw)) {
-            // 全量终验不含暮影专项（缺口确认断言会与 ALL PASS 语义冲突）
+            // 全量终验不含专项缺口套件（与 ALL PASS 语义冲突）
             java.util.EnumSet<Suite> all = java.util.EnumSet.allOf(Suite.class);
             all.remove(Suite.TWILIGHT_LANTERN);
+            all.remove(Suite.WIND_JOURNEY);
             return all;
         }
         java.util.EnumSet<Suite> out = java.util.EnumSet.noneOf(Suite.class);
@@ -213,6 +218,7 @@ public final class PDPortingVerifyTest {
                 case "all", "*" -> {
                     java.util.EnumSet<Suite> all = java.util.EnumSet.allOf(Suite.class);
                     all.remove(Suite.TWILIGHT_LANTERN);
+                    all.remove(Suite.WIND_JOURNEY);
                     return all;
                 }
                 case "quick", "fast" -> {
@@ -245,7 +251,7 @@ public final class PDPortingVerifyTest {
                     if (!hit) {
                         LogUtils.getLogger().warn("[PDVerify] 未知套件名 '{}'，已忽略（合法: registry,core,dimensions,"
                                 + "spells,content,structures,workshop,struct-dim,gallery,entity-gallery,"
-                                + "twilight-lantern 及快捷 all/quick/behavior/worldgen/galleries）", token);
+                                + "twilight-lantern,wind-journey 及快捷 all/quick/behavior/worldgen/galleries）", token);
                     }
                 }
             }
@@ -476,6 +482,15 @@ public final class PDPortingVerifyTest {
             at(tl + 2, PDPortingVerifyTest::twilightLanternSuite);
             // 大模板 place + 扫描，预留 tick
             cursor = tl + 40;
+        }
+
+        if (suite(Suite.WIND_JOURNEY)) {
+            int wj = cursor;
+            at(wj, PDPortingVerifyTest::refreshPlayerBuffs);
+            at(wj + 2, PDPortingVerifyTest::windJourneySuiteSync);
+            // 祭坛 86t 召唤 + 缓冲
+            at(wj + 100, PDPortingVerifyTest::windJourneySuiteAltarAftermath);
+            cursor = wj + 120;
         }
 
         if (suite(Suite.WORKSHOP)) {
@@ -1275,6 +1290,18 @@ public final class PDPortingVerifyTest {
     private static void twilightLanternSuite() {
         PDTwilightLanternVerifyHooks.verify(server(), player(), r ->
                 checkDetail("twilight-lantern", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== 第三梦境风之旅途流程核实 ====================
+
+    private static void windJourneySuiteSync() {
+        PDWindJourneyVerifyHooks.verifySync(server(), player(), r ->
+                checkDetail("wind-journey", r.pass(), r.name(), r.detail()));
+    }
+
+    private static void windJourneySuiteAltarAftermath() {
+        PDWindJourneyVerifyHooks.verifyAltarAftermath(player(), r ->
+                checkDetail("wind-journey", r.pass(), r.name(), r.detail()));
     }
 
     // ==================== S17 武器工坊群 ====================

@@ -1,0 +1,16 @@
+{
+  "structures": [
+    {
+      "structure": "pasterdream:shadow_world_door",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:concentric_rings",
+    "distance": 32,
+    "spread": 3,
+    "count": 64,
+    "salt": 26072801,
+    "preferred_biomes": "#minecraft:is_overworld"
+  }
+}

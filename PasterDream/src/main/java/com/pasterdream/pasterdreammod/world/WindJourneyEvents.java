@@ -1,0 +1,220 @@
+package com.pasterdream.pasterdreammod.world;
+
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
+import com.pasterdream.pasterdreammod.registry.PDDimensions;
+import com.pasterdream.pasterdreammod.registry.PDEffects;
+import com.pasterdream.pasterdreammod.registry.PDGameRules;
+import com.pasterdream.pasterdreammod.registry.PDItems;
+import com.pasterdream.pasterdreammod.registry.PDParticles;
+import com.pasterdream.pasterdreammod.registry.PDSounds;
+import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import top.theillusivec4.curios.api.CuriosApi;
+
+/**
+ * 风之旅途：日更风向、面朝顺/逆风、进维提示与主题曲。
+ * <p>
+ * 对应原版 {@code WindDirectionPr0/1/2}、{@code WindJourneyWorldPr0}、
+ * {@code PlayerTotalTickUpdateProcedure} 中的风向分支。
+ */
+public final class WindJourneyEvents {
+
+    private static final String[] WIND_DIR_NAMES = {
+            "北方", "东北方", "东方", "东南方", "南方", "西南方", "西方", "西北方"
+    };
+
+    private WindJourneyEvents() {
+    }
+
+    /**
+     * 进入风维：聊天「本主题梦境尚未完工」+ 主题曲。
+     *
+     * @param event 跨维度事件
+     */
+    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        if (!event.getTo().equals(PDDimensions.WIND_JOURNEY_WORLD_LEVEL_KEY)) {
+            return;
+        }
+        player.displayClientMessage(Component.literal("§4本主题梦境尚未完工"), false);
+        player.serverLevel().playSound(
+                null,
+                player.blockPosition(),
+                PDSounds.WIND_JOURNEY_MUSIC.get(),
+                SoundSource.MUSIC,
+                1.0F,
+                1.0F);
+    }
+
+    /**
+     * 世界 tick：风维日更风向、广播、音效与羽毛粒子（Pr0）。
+     *
+     * @param event 维度 tick 后
+     */
+    public static void onLevelTick(LevelTickEvent.Post event) {
+        Level level = event.getLevel();
+        if (level.isClientSide() || !(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (!PDDimensions.isWindJourneyWorld(serverLevel)) {
+            return;
+        }
+
+        long dayTime = serverLevel.getDayTime();
+        if (dayTime % 24000L == 0L) {
+            int dir = Mth.nextInt(RandomSource.create(), 0, 7);
+            GameRules.IntegerValue rule = serverLevel.getGameRules().getRule(PDGameRules.WIND_DIRECTION);
+            rule.set(dir, serverLevel.getServer());
+
+            for (ServerPlayer player : serverLevel.players()) {
+                serverLevel.playSound(
+                        null,
+                        player.blockPosition(),
+                        PDSounds.WIND_CHIME.get(),
+                        SoundSource.WEATHER,
+                        1.0F,
+                        1.0F);
+                serverLevel.sendParticles(
+                        (SimpleParticleType) PDParticles.FEATHER_WHITE_PARTICLE.holder().get(),
+                        player.getX(),
+                        player.getY() + 2.0D,
+                        player.getZ(),
+                        48,
+                        3.0D,
+                        3.0D,
+                        3.0D,
+                        0.05D);
+            }
+
+            final int broadcastDir = dir;
+            ServerScheduler.schedule(2, () -> {
+                if (!serverLevel.getServer().isRunning()) {
+                    return;
+                }
+                String name = WIND_DIR_NAMES[Mth.clamp(broadcastDir, 0, 7)];
+                Component msg = Component.literal("§7§o朝阳升起... 呼啸的风正吹往 §a" + name);
+                for (ServerPlayer player : serverLevel.players()) {
+                    player.displayClientMessage(msg, false);
+                }
+            });
+
+            ServerScheduler.schedule(79, () -> {
+                if (!serverLevel.getServer().isRunning()) {
+                    return;
+                }
+                for (ServerPlayer player : serverLevel.players()) {
+                    serverLevel.playSound(
+                            null,
+                            player.blockPosition(),
+                            PDSounds.BREEZE_WIND.get(),
+                            SoundSource.WEATHER,
+                            1.0F,
+                            1.0F);
+                }
+            });
+        }
+
+        if (dayTime == 1L || dayTime == 5L) {
+            for (ServerPlayer player : serverLevel.players()) {
+                serverLevel.sendParticles(
+                        (SimpleParticleType) PDParticles.FEATHER_WHITE_PARTICLE.holder().get(),
+                        player.getX(),
+                        player.getY() + 2.0D,
+                        player.getZ(),
+                        48,
+                        3.0D,
+                        3.0D,
+                        3.0D,
+                        0.05D);
+            }
+        }
+    }
+
+    /**
+     * 玩家 tick：无防风时按朝向施加顺风 / 逆风（Pr1 + Pr2）。
+     *
+     * @param event 玩家 tick 后
+     */
+    public static void onPlayerTick(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
+        if (player.level().isClientSide() || !(player instanceof ServerPlayer sp)) {
+            return;
+        }
+        if (!PDDimensions.isWindJourneyWorld(sp.level())) {
+            return;
+        }
+        int interval = Math.max(1, PDCommonConfig.PLAYER_TOTAL_TICK_UPDATE.get());
+        if (sp.tickCount % interval != 0) {
+            return;
+        }
+        if (sp.hasEffect(PDEffects.WINDPROOF_BUFF.holder())) {
+            return;
+        }
+
+        int windDir = sp.level().getGameRules().getInt(PDGameRules.WIND_DIRECTION);
+        float yRot = sp.getYRot();
+        int tailwindAmp = (int) sp.getPersistentData().getDouble("player_tailwind_force");
+        int deadwindAmp = (int) sp.getPersistentData().getDouble("player_deadwind_force");
+
+        // Pr1：面朝风向 → 顺风
+        if (facingWindCone(yRot, windDir)) {
+            sp.addEffect(new MobEffectInstance(PDEffects.TAILWIND_BUFF.holder(), 20, tailwindAmp, false, false));
+        }
+
+        // Pr2：背风锥；戴破风旗帜则逆当顺，否则逆风
+        boolean hasFlag = CuriosApi.getCuriosInventory(sp)
+                .map(handler -> handler.findFirstCurio(PDItems.WIND_KNIGHT_FLAG.get()).isPresent())
+                .orElse(false);
+        int opposite = (windDir + 4) % 8;
+        if (facingWindCone(yRot, opposite)) {
+            if (hasFlag) {
+                sp.addEffect(new MobEffectInstance(PDEffects.TAILWIND_BUFF.holder(), 20, tailwindAmp, false, false));
+            } else {
+                sp.addEffect(new MobEffectInstance(PDEffects.DEADWIND_BUFF.holder(), 20, deadwindAmp, false, false));
+            }
+        }
+    }
+
+    /**
+     * 原版各风向对应的 YRot 锥（与 WindDirectionPr1 表一致）。
+     *
+     * @param yRot 玩家偏航
+     * @param dir  风向 0–7
+     * @return 是否面朝该风向锥
+     */
+    private static boolean facingWindCone(float yRot, int dir) {
+        // 归一到 [-180, 180)
+        while (yRot >= 180.0F) {
+            yRot -= 360.0F;
+        }
+        while (yRot < -180.0F) {
+            yRot += 360.0F;
+        }
+        return switch (dir & 7) {
+            case 0 -> yRot <= 35.0F && yRot >= -35.0F;
+            case 1 -> yRot <= 70.0F && yRot >= 10.0F;
+            case 2 -> yRot <= 125.0F && yRot >= 55.0F;
+            case 3 -> yRot <= 170.0F && yRot >= 100.0F;
+            case 4 -> (yRot <= 180.0F && yRot >= 145.0F) || (yRot <= -145.0F && yRot >= -180.0F);
+            case 5 -> yRot <= -100.0F && yRot >= -170.0F;
+            case 6 -> yRot <= -55.0F && yRot >= -125.0F;
+            case 7 -> yRot <= -10.0F && yRot >= -80.0F;
+            default -> false;
+        };
+    }
+}

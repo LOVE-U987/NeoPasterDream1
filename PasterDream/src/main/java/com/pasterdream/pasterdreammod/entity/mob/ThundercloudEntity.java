@@ -1,9 +1,15 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMonsterEntity;
+import com.pasterdream.pasterdreammod.entity.projectile.LightningProjectileEntity;
+import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -16,25 +22,28 @@ import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.SpectralArrow;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animation.*;
 
 /**
- * 雷云 (Thundercloud) — 飞行生物，被动/中立
+ * 雷云 (Thundercloud) — 飞行敌对生物
  * <p>
- * 行为：
- * - 飞行移动，使用 FlyingMoveControl + FlyingPathNavigation
- * - 无重力，免疫摔落和闪电伤害
- * - 在三维空间中随机游荡
- * <p>
- * 渲染：GeckoLib 动画实体，始终播放 idle 动画
+ * 行为（对齐原版 {@code ThundercloudPr0}/{@code Pr1}）：
+ * <ul>
+ *   <li>飞行游荡，无重力，免疫闪电与摔落</li>
+ *   <li>baseTick：约 1.2% 概率对脚下 24 格内玩家落 6 道雷（伤害 7）</li>
+ *   <li>受伤：约 50% 概率立刻再落一轮（同伤害）</li>
+ * </ul>
  */
 public class ThundercloudEntity extends GeckoLibMonsterEntity {
+
+    /** 落雷基础伤害（原版 ThundercloudPr0/Pr1） */
+    private static final double BOLT_DAMAGE = 7.0D;
 
     /**
      * 构造雷云实体
@@ -49,17 +58,10 @@ public class ThundercloudEntity extends GeckoLibMonsterEntity {
         this.setNoGravity(true);
     }
 
-    /**
-     * 返回默认纹理名称
-     *
-     * @return 默认纹理名
-     */
     @Override
     protected String getDefaultTexture() {
         return "thundercloud";
     }
-
-    // ======================== 导航 ========================
 
     @Override
     protected @NotNull PathNavigation createNavigation(Level level) {
@@ -70,13 +72,6 @@ public class ThundercloudEntity extends GeckoLibMonsterEntity {
         return navigation;
     }
 
-    // ======================== 属性 ========================
-
-    /**
-     * 创建雷云实体的属性
-     *
-     * @return 属性构造器
-     */
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 30)
@@ -87,8 +82,6 @@ public class ThundercloudEntity extends GeckoLibMonsterEntity {
                 .add(Attributes.FOLLOW_RANGE, 16)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.8);
     }
-
-    // ======================== AI 目标 ========================
 
     @Override
     protected void registerGoals() {
@@ -104,8 +97,6 @@ public class ThundercloudEntity extends GeckoLibMonsterEntity {
             }
         });
     }
-
-    // ======================== 音效 ========================
 
     @Override
     public void playStepSound(BlockPos pos, BlockState blockIn) {
@@ -125,8 +116,6 @@ public class ThundercloudEntity extends GeckoLibMonsterEntity {
                 net.minecraft.resources.ResourceLocation.withDefaultNamespace("block.candle.extinguish"));
     }
 
-    // ======================== 受伤/免疫 ========================
-
     @Override
     public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source) {
         return false;
@@ -139,11 +128,15 @@ public class ThundercloudEntity extends GeckoLibMonsterEntity {
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (source.is(DamageTypes.LIGHTNING_BOLT)) return false;
+        // 原版 ThundercloudPr1：受伤时 50% 立刻落雷反击
+        if (!this.level().isClientSide()) {
+            tryRainBolts(0.5D, BOLT_DAMAGE, false);
+        }
+        if (source.is(DamageTypes.LIGHTNING_BOLT)) {
+            return false;
+        }
         return super.hurt(source, amount);
     }
-
-    // ======================== 飞行行为 ========================
 
     @Override
     public void aiStep() {
@@ -155,6 +148,10 @@ public class ThundercloudEntity extends GeckoLibMonsterEntity {
     public void baseTick() {
         super.baseTick();
         this.refreshDimensions();
+        // 原版 ThundercloudPr0：每 tick 1.2% 落雷
+        if (!this.level().isClientSide()) {
+            tryRainBolts(0.012D, BOLT_DAMAGE, true);
+        }
     }
 
     @Override
@@ -162,7 +159,56 @@ public class ThundercloudEntity extends GeckoLibMonsterEntity {
         super.setNoGravity(true);
     }
 
-    // ======================== 死亡处理 ========================
+    /**
+     * 对附近玩家落 6 道竖直雷（对齐 Pr0/Pr1）。
+     *
+     * @param chance      触发概率
+     * @param damage      单支落雷伤害
+     * @param ambientFx   是否播放云体环境粒子（Pr0 有，Pr1 无）
+     */
+    private void tryRainBolts(double chance, double damage, boolean ambientFx) {
+        if (!(this.level() instanceof ServerLevel world)) {
+            return;
+        }
+        if (this.random.nextDouble() > chance) {
+            return;
+        }
+        double x = this.getX();
+        double y = this.getY();
+        double z = this.getZ();
+        AABB probe = AABB.ofSize(new Vec3(x, y - 10.0D, z), 24.0D, 24.0D, 24.0D);
+        if (world.getEntitiesOfClass(Player.class, probe, e -> true).isEmpty()) {
+            return;
+        }
+        Player player = world.getEntitiesOfClass(Player.class,
+                        AABB.ofSize(new Vec3(x, y - 5.0D, z), 24.0D, 24.0D, 24.0D), e -> true)
+                .stream()
+                .min((a, b) -> Double.compare(a.distanceToSqr(x, y - 5.0D, z), b.distanceToSqr(x, y - 5.0D, z)))
+                .orElse(null);
+        if (player == null || !player.isAlive()) {
+            return;
+        }
+
+        RandomSource rng = this.getRandom();
+        for (int i = 0; i < 6; i++) {
+            double bx = 0.1D * Mth.nextDouble(rng, -6.0D, 6.0D) + player.getX();
+            double by = player.getY() + 5.0D;
+            double bz = 0.1D * Mth.nextDouble(rng, -6.0D, 6.0D) + player.getZ();
+            LightningProjectileEntity bolt =
+                    LightningProjectileEntity.summonRainBolt(world, bx, by, bz, damage);
+            bolt.setOwner(this);
+        }
+
+        world.playSound(null, player.blockPosition(), PDSounds.THUNDERCLOUD_ATTACK.get(),
+                SoundSource.MASTER, 0.6F, 1.0F);
+        world.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE,
+                player.getX(), player.getY(), player.getZ(), 16, 0.4, 0.2, 0.4, 0.004);
+        this.clearFire();
+        if (ambientFx) {
+            world.sendParticles(ParticleTypes.ELECTRIC_SPARK, x, y, z, 1, 0.6, 0.3, 0.6, 0.004);
+            world.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, x, y, z, 1, 0.6, 0.3, 0.6, 0.004);
+        }
+    }
 
     @Override
     protected void tickDeath() {
@@ -172,15 +218,6 @@ public class ThundercloudEntity extends GeckoLibMonsterEntity {
         }
     }
 
-    // ======================== GeckoLib 动画 ========================
-
-    /**
-     * 移动状态动画控制器
-     * 雷云始终播放 idle 循环动画
-     *
-     * @param state 动画状态
-     * @return 播放状态
-     */
     private PlayState movementPredicate(AnimationState<ThundercloudEntity> state) {
         if (this.getSyncedAnimation().equals("empty")) {
             return state.setAndContinue(RawAnimation.begin().thenLoop("idle"));
