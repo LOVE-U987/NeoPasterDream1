@@ -19,6 +19,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
@@ -28,9 +29,13 @@ import java.util.List;
  * 塞西莉娅的加护（ceciliacare_charm）。
  * <p>
  * 还原自原版 CeciliacareCharmItem + CeciliaCarePr0Procedure：
- * 佩戴时若当前生命 ≤ 最大生命 15%，触发一次守护：
+ * <b>不依赖常驻药水标记</b>（避免清效果怪抹掉守护）；佩戴后由 curioTick
+ * 直接检测生命 ≤ 最大生命 15% 时一次性触发：
  * 消耗本饰品 → 抗性 IV / 再生 III 5 秒、移速 II / 跳跃 I 10 秒、
  * 清除瞬身术冷却标记、图腾音效与粒子，并返还失色塞西莉娅的加护。
+ * <p>
+ * 触发时爆发药水 {@code visible/showIcon=true}，便于确认生效
+ * （原版 MCreator 写成 false,false，HUD 上看不到图标）。
  */
 public class CeciliacareCharmItem extends Item implements ICurioItem {
 
@@ -52,21 +57,30 @@ public class CeciliacareCharmItem extends Item implements ICurioItem {
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         LivingEntity entity = slotContext.entity();
+        if (entity == null) {
+            return;
+        }
         Level level = entity.level();
         if (level.isClientSide() || stack.isEmpty()) {
             return;
         }
+        // 直接按生命判定，不挂常驻 MobEffect 标记
         if (entity.getHealth() > entity.getMaxHealth() * 0.15f) {
             return;
         }
 
-        // 消耗饰品（Curios 槽位会随 stack 清空而卸下）
-        stack.shrink(1);
+        // 从 Curios 槽卸下（比单纯 shrink 更能保证槽位同步）
+        CuriosApi.getCuriosInventory(entity).ifPresent(inv ->
+                inv.setEquippedCurio(slotContext.identifier(), slotContext.index(), ItemStack.EMPTY));
+        if (!stack.isEmpty()) {
+            stack.setCount(0);
+        }
 
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 100, 4, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 3, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 200, 2, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.JUMP, 200, 1, false, false));
+        // ambient=false, visible=true, showIcon=true — 触发后 HUD 可见
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 100, 4, false, true, true));
+        entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 3, false, true, true));
+        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 200, 2, false, true, true));
+        entity.addEffect(new MobEffectInstance(MobEffects.JUMP, 200, 1, false, true, true));
         entity.removeEffect(PDEffects.TELEPORTATION_BUFF.holder());
 
         double x = entity.getX();

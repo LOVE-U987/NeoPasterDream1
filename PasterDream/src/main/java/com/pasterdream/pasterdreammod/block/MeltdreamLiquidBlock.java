@@ -1,11 +1,14 @@
 package com.pasterdream.pasterdreammod.block;
 
+import com.pasterdream.pasterdreammod.item.TurnPaleCeciliaItem;
 import com.pasterdream.pasterdreammod.registry.PDFluids;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -18,6 +21,8 @@ import net.minecraft.world.level.material.PushReaction;
  * 融梦涌泉流体方块
  * 继承 LiquidBlock，具有发光、无碰撞、无战利品表、爆炸抗性 100 等属性
  * 每 tick（5 游戏刻）产生融梦水晶粒子效果
+ * <p>
+ * 失色塞西莉娅的加护掉落物进入源格时转化为塞西莉娅的加护。
  */
 public class MeltdreamLiquidBlock extends LiquidBlock {
 
@@ -54,6 +59,21 @@ public class MeltdreamLiquidBlock extends LiquidBlock {
         if (!world.getBlockTicks().hasScheduledTick(pos, this)) {
             world.scheduleTick(pos, this, 5);
         }
+    }
+
+    /**
+     * 掉落物进入融梦涌泉源：失色塞西莉娅 → 塞西莉娅的加护。
+     */
+    @Override
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        super.entityInside(state, level, pos, entity);
+        if (level.isClientSide() || !(entity instanceof ItemEntity itemEntity)) {
+            return;
+        }
+        if (!level.getFluidState(pos).isSource()) {
+            return;
+        }
+        TurnPaleCeciliaItem.tryRestoreItemEntity(itemEntity);
     }
 
     /**
