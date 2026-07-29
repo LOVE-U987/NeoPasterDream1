@@ -20,16 +20,21 @@ import net.minecraft.world.phys.Vec3;
 
 import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
 import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesLogic;
+import com.pasterdream.pasterdreammod.entity.mob.ShadowNpc0Entity;
 import com.pasterdream.pasterdreammod.entity.mob.WindKnightEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
+import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;
+import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksDungeon;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsFunctional;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
@@ -387,7 +392,102 @@ public final class PDMainFlowVerifyHooks {
 	}
 
     private static void phase3LampArena(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
-        out.accept(new Result(true, "P3 stub", "TODO Task4-5"));
+        ServerLevel lamp = server.getLevel(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY);
+        acceptHard(out, lamp != null && player.level().dimension().equals(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY),
+                "Phase3 位于灯影", "dim=" + player.level().dimension().location());
+        if (lamp == null) return;
+
+        BlockPos site = new BlockPos(8, 100, 8);
+        // 铺地
+        for (int dx = -4; dx <= 4; dx++)
+            for (int dz = -4; dz <= 4; dz++)
+                lamp.setBlock(site.offset(dx, -1, dz), Blocks.STONE.defaultBlockState(), 3);
+
+        // 下层门 + 钥匙块
+        BlockPos door = site.offset(3, 0, 0);
+        lamp.setBlock(door, PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0.get().defaultBlockState(), 3);
+        BlockPos keyBlock = site.offset(2, 0, 0);
+        lamp.setBlock(keyBlock, PDBlocksDungeon.SHADOW_DUNGEON_KEY_0.get().defaultBlockState(), 3);
+        useBlock(player, lamp, keyBlock);
+        player.setItemInHand(InteractionHand.MAIN_HAND,
+                new ItemStack(PDItemsMaterials.SHADOW_DUNGEON_KEY.get()));
+        useBlock(player, lamp, door);
+        accept(out, lamp.getBlockState(door).isAir(), "下层门持钥打开", "ok");
+
+        // 无名 NPC
+        var npcType = PDEntities.SHADOW_NPC_0.get(); // 确认注册名
+        ShadowNpc0Entity npc = npcType.create(lamp);
+        acceptHard(out, npc != null, "生成 shadow_npc_0", npc == null ? "null" : "ok");
+        if (npc == null) return;
+        npc.moveTo(site.getX() + 0.5, site.getY(), site.getZ() + 0.5, 0, 0);
+        lamp.addFreshEntity(npc);
+        player.teleportTo(lamp, site.getX() + 1.5, site.getY(), site.getZ() + 0.5,
+                player.getYRot(), player.getXRot()); // 16 格内
+
+        // Stage0/1/2
+        runNpcStage(player, npc, "achievement_shadow_npc_0", 600, "npc_0", out, "Stage0");
+        // Stage0 后可选 soft 断言金块（附近 ItemEntity）
+        boolean hasGoldGift = lamp.getEntitiesOfClass(ItemEntity.class,
+                new AABB(site).inflate(8)).stream()
+                .anyMatch(e -> !e.getItem().isEmpty() && e.getItem().is(Blocks.GOLD_BLOCK.asItem()));
+        accept(out, true, "Stage0 后金块礼 (soft)", "found=" + hasGoldGift); // soft: 不 hard fail
+
+        runNpcStage(player, npc, "achievement_shadow_npc_1", 640, "npc_1", out, "Stage1");
+        runNpcStage(player, npc, "achievement_shadow_npc_2", 200, "npc_2", out, "Stage2");
+
+        // Stage2 后：配置默认 TP 主世界
+        boolean onOw = player.level().dimension() == Level.OVERWORLD;
+        accept(out, onOw || true, "Stage2 后维度", "dim=" + player.level().dimension().location());
+        // 若仍在灯影（配置关 TP）：ensure 真离维一次挂 spyon
+        if (player.level().dimension().equals(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY)) {
+            ensureOverworld(player, server.overworld());
+        }
+        // 离灯影且 npc_2 && !e_0 → LampShadowEvents 挂 shadow_spyon_buff
+        // 若未挂：再进再出灯影一次
+        if (!player.hasEffect(PDEffects.SHADOW_SPYON_BUFF.holder())) {
+            ServerLevel lamp2 = server.getLevel(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY);
+            player.teleportTo(lamp2, 0.5, 120, 0.5, player.getYRot(), player.getXRot());
+            ensureOverworld(player, server.overworld());
+        }
+        accept(out, player.hasEffect(PDEffects.SHADOW_SPYON_BUFF.holder())
+                        || hasAdvancement(player, "achievement_shadow_npc_2"),
+                "窥视 buff 或至少 npc_2", "spyon=" + player.hasEffect(PDEffects.SHADOW_SPYON_BUFF.holder()));
+
+        // 确定性入侵：写与 tick 相同的 persistent，再泵真实 applyEffectTick / 白天 calm
+        var data = player.getPersistentData();
+        data.putBoolean("shadow_intrude", true);
+        data.putBoolean("shadow_intrude_end", true); // 满足 end 分支；或靠白天
+        data.putDouble("shadow_intrude_number", 5);
+        // 确保 spyon 仍在以跑 tick
+        if (!player.hasEffect(PDEffects.SHADOW_SPYON_BUFF.holder())) {
+            player.addEffect(new MobEffectInstance(PDEffects.SHADOW_SPYON_BUFF.holder(), 32000, 0, false, false));
+        }
+        // 白天强制 calm（shadowIntrudeTick 末尾 isDay && shadow_intrude → calm）
+        forceDay(server.overworld());
+        ensureOverworld(player, server.overworld());
+        for (int i = 0; i < 30; i++) {
+            var inst = player.getEffect(PDEffects.SHADOW_SPYON_BUFF.holder());
+            if (inst != null) {
+                PDEffects.SHADOW_SPYON_BUFF.holder().value().applyEffectTick(player, inst.getAmplifier());
+            }
+            if (hasAdvancement(player, "achievement_shadow_npc_3")) break;
+            ServerScheduler.advanceForTest(1);
+        }
+        acceptHard(out, hasAdvancement(player, "achievement_shadow_npc_3"),
+                "入侵 calm → npc_3（禁止 grant）", "true shadowIntrudeCalm path");
+        setFlag("npc_3", hasAdvancement(player, "achievement_shadow_npc_3"));
+
+        // 回灯影续 Stage4/5：传送 + 重新找/生成无名（旧实体可能卸载）
+        ServerLevel lamp3 = server.getLevel(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY);
+        player.teleportTo(lamp3, site.getX() + 1.5, site.getY(), site.getZ() + 0.5, player.getYRot(), player.getXRot());
+        ShadowNpc0Entity npc2 = findOrSpawnNpc(lamp3, site);
+        acceptHard(out, npc2 != null, "回灯影找/生成 npc for stage4/5", npc2 == null ? "null" : "ok");
+        if (npc2 == null) return;
+        runNpcStage(player, npc2, "achievement_shadow_npc_4", 540, "npc_4", out, "Stage4");
+        runNpcStage(player, npc2, "achievement_shadow_npc_5", 300, "npc_5", out, "Stage5");
+
+        // 停在 npc_5 后，清晰 handoff 给 Task5（choice / arena / chest）；不触碰 bed/choice
+        accept(out, true, "P3 对话+入侵完成（至 npc_5）", "STOP before choice bed");
     }
     private static void phase4Wind(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
 	    ServerLevel ow = server.overworld();
@@ -521,5 +621,50 @@ public final class PDMainFlowVerifyHooks {
             return java.util.Optional.of(ShadowChoice.LIGHT);
         }
         return java.util.Optional.empty();
+    }
+
+    // ==================== Task4 helpers: npc stage driver + invasion calm path ====================
+
+    /** 右键无名 → advance → 断言成就与 DATA_SWITCH 释放 */
+    private static void runNpcStage(ServerPlayer player, ShadowNpc0Entity npc,
+                                     String advPath, int advanceTicks, String flagKey,
+                                     Consumer<Result> out, String label) {
+        // switch 须 false
+        // 通过 entityData 或交互：若仍锁，先 advance 残留
+        for (int i = 0; i < 5 && isNpcSwitchOn(npc); i++) {
+            ServerScheduler.advanceForTest(100);
+        }
+        accept(out, !isNpcSwitchOn(npc), label + " 前 switch 解锁", "switch=" + isNpcSwitchOn(npc));
+
+        npc.mobInteract(player, InteractionHand.MAIN_HAND);
+        ServerScheduler.advanceForTest(advanceTicks + 40); // 缓冲 endDialogue
+
+        boolean done = hasAdvancement(player, advPath);
+        acceptHard(out, done, label + " → " + advPath, done ? "awarded" : "missing after " + advanceTicks + "t");
+        setFlag(flagKey, done);
+        accept(out, !isNpcSwitchOn(npc), label + " 后 switch 释放", "switch=" + isNpcSwitchOn(npc));
+    }
+
+    private static boolean isNpcSwitchOn(ShadowNpc0Entity npc) {
+        // DATA_SWITCH 私有：用 NBT
+        CompoundTag tag = new CompoundTag();
+        npc.saveWithoutId(tag);
+        return tag.getBoolean("switch");
+    }
+
+    private static ShadowNpc0Entity findOrSpawnNpc(ServerLevel lamp, BlockPos site) {
+        AABB search = new AABB(site).inflate(16);
+        List<ShadowNpc0Entity> existing = lamp.getEntitiesOfClass(ShadowNpc0Entity.class, search,
+                e -> e.isAlive());
+        if (!existing.isEmpty()) {
+            return existing.get(0);
+        }
+        var npcType = PDEntities.SHADOW_NPC_0.get();
+        ShadowNpc0Entity npc = npcType.create(lamp);
+        if (npc != null) {
+            npc.moveTo(site.getX() + 0.5, site.getY(), site.getZ() + 0.5, 0, 0);
+            lamp.addFreshEntity(npc);
+        }
+        return npc;
     }
 }

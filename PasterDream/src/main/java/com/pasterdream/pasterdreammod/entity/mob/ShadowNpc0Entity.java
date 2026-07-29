@@ -350,9 +350,19 @@ public class ShadowNpc0Entity extends GeckoLibMobEntity {
         void accept(ServerPlayer player);
     }
 
-    /** 原版 16 格内全体玩家同步收消息 */
+    /** 原版 16 格内全体玩家同步收消息；使用 ServerLevel#players() 距离过滤以确保 same-tick TP 后可靠广播（VERIFY 关键） */
     private void forEachNearbyPlayer(double x, double y, double z, PlayerAction action) {
         Vec3 center = new Vec3(x, y, z);
+        double r2 = 16.0 * 16.0;
+        if (this.level() instanceof ServerLevel sl) {
+            sl.players().stream()
+                    .filter(ServerPlayer::isAlive)
+                    .filter(p -> p.distanceToSqr(center) <= r2)
+                    .sorted(Comparator.comparingDouble(p -> p.distanceToSqr(center)))
+                    .forEach(action::accept);
+            return;
+        }
+        // fallback for non-server
         List<Player> players = this.level().getEntitiesOfClass(Player.class,
                 new AABB(center, center).inflate(16.0),
                 Entity::isAlive);
