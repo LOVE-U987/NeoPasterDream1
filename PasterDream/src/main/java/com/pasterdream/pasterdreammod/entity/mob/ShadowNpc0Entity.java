@@ -27,6 +27,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
@@ -38,10 +39,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animation.*;
 
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * 无名（shadow_npc_0）—— 暗影地牢 NPC
@@ -347,23 +350,29 @@ public class ShadowNpc0Entity extends GeckoLibMobEntity {
         void accept(ServerPlayer player);
     }
 
-    /**
-     * 原版 16 格内全体玩家同步收消息。
-     * <p>
-     * 用 {@link ServerLevel#players()} 而非 {@code getEntitiesOfClass}：
-     * 后者依赖实体 section，同 tick 跨维/传送后可能暂查不到玩家，
-     * 会导致对话 schedule 整段未挂上（VERIFY main-flow Stage0–5 复现）。
-     */
+    /** 原版 16 格内全体玩家同步收消息；使用 ServerLevel#players() 距离过滤以确保 same-tick TP 后可靠广播（VERIFY 关键） */
     private void forEachNearbyPlayer(double x, double y, double z, PlayerAction action) {
-        if (!(this.level() instanceof ServerLevel sl)) {
-            return;
-        }
         Vec3 center = new Vec3(x, y, z);
         double r2 = 16.0 * 16.0;
-        sl.players().stream()
-                .filter(p -> p.isAlive() && p.distanceToSqr(center) <= r2)
+        if (this.level() instanceof ServerLevel sl) {
+            sl.players().stream()
+                    .filter(ServerPlayer::isAlive)
+                    .filter(p -> p.distanceToSqr(center) <= r2)
+                    .sorted(Comparator.comparingDouble(p -> p.distanceToSqr(center)))
+                    .forEach(action::accept);
+            return;
+        }
+        // fallback for non-server
+        List<Player> players = this.level().getEntitiesOfClass(Player.class,
+                new AABB(center, center).inflate(16.0),
+                Entity::isAlive);
+        players.stream()
                 .sorted(Comparator.comparingDouble(p -> p.distanceToSqr(center)))
-                .forEach(action::accept);
+                .forEach(p -> {
+                    if (p instanceof ServerPlayer sp) {
+                        action.accept(sp);
+                    }
+                });
     }
 
     private static void scheduleMsg(ServerPlayer player, int delay, String text) {

@@ -127,7 +127,7 @@ public final class PDPortingVerifyTest {
      *   <li>{@code twilight-lantern}/{@code twilight}/{@code lantern} — 暮影之笼流程缺口核实</li>
      *   <li>{@code wind-journey}/{@code wind}/{@code third-dream} — 第三梦境风之旅途流程核实</li>
      *   <li>{@code second-dream}/{@code second}/{@code lamp-shadow} — 第二梦境灯影流程核实</li>
-     *   <li>{@code main-flow}/{@code main}/{@code story}/{@code full-flow} — 主干全链路连续流程</li>
+     *   <li>{@code main-flow}/{@code main}/{@code story}/{@code full-flow} — 主干全链路连续流程（染梦→暮影→灯影抉择→竞技场→风旅）；不在 all 默认集合内</li>
      * </ul>
      * 组合快捷：{@code all}（默认）、{@code quick}=registry+core、
      * {@code behavior}=core+dimensions+spells+content、
@@ -269,7 +269,12 @@ public final class PDPortingVerifyTest {
         }
         if (out.isEmpty()) {
             LogUtils.getLogger().warn("[PDVerify] SUITES 解析结果为空，回退全量");
-            return java.util.EnumSet.allOf(Suite.class);
+            java.util.EnumSet<Suite> all = java.util.EnumSet.allOf(Suite.class);
+            all.remove(Suite.TWILIGHT_LANTERN);
+            all.remove(Suite.WIND_JOURNEY);
+            all.remove(Suite.SECOND_DREAM);
+            all.remove(Suite.MAIN_FLOW);
+            return all;
         }
         return out;
     }
@@ -517,7 +522,8 @@ public final class PDPortingVerifyTest {
             int mf = cursor;
             at(mf, PDPortingVerifyTest::refreshPlayerBuffs);
             at(mf + 2, PDPortingVerifyTest::mainFlowSuite);
-            // 对话/入侵/抉择/竞技场/风旅均在 hooks 内 advanceForTest；时间线只需覆盖登录缓冲
+            // 对话 ~2.1k t + 入侵 + 抉择 + 竞技场 + 风旅；advance 在 hooks 内同步泵，
+            // 时间线只需覆盖 wall 与偶发真实 tick 依赖；给足余量
             cursor = mf + 80;
         }
 
@@ -1344,7 +1350,7 @@ public final class PDPortingVerifyTest {
                 checkDetail("second-dream", r.pass(), r.name(), r.detail()));
     }
 
-    // ==================== 主干全链路连续流程 ====================
+    // ==================== 主干全链路连续流程核实（main-flow） ====================
 
     private static void mainFlowSuite() {
         PDMainFlowVerifyHooks.run(server(), player(), r ->
@@ -1467,6 +1473,14 @@ public final class PDPortingVerifyTest {
             root.addProperty("suites", selectedSuitesLabel());
             root.addProperty("pass", pass);
             root.addProperty("fail", fail);
+            if (SELECTED_SUITES.contains(Suite.MAIN_FLOW)) {
+                root.addProperty("suite", "main-flow");
+                root.addProperty("shadowChoice",
+                        PDMainFlowVerifyHooks.shadowChoice() == PDMainFlowVerifyHooks.ShadowChoice.LIGHT
+                                ? "light" : "dark");
+                root.add("phases", GSON.toJsonTree(PDMainFlowVerifyHooks.phaseSummaries()));
+                root.add("continuousFlags", GSON.toJsonTree(PDMainFlowVerifyHooks.continuousFlags()));
+            }
             root.add("registry_coverage", GSON.toJsonTree(DIFFS));
             root.add("assertions", GSON.toJsonTree(ASSERTIONS));
             if (SELECTED_SUITES.contains(Suite.MAIN_FLOW)) {
