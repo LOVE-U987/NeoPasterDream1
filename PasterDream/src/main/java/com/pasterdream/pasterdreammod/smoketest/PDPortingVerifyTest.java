@@ -154,6 +154,11 @@ public final class PDPortingVerifyTest {
         TWILIGHT_LANTERN("twilight-lantern", "twilight", "lantern"),
         /** 第三梦境风之旅途专项；不在 all 默认集合内 */
         WIND_JOURNEY("wind-journey", "wind", "third-dream"),
+        /**
+         * 风维水色湖专项（非超平坦+开建筑+VERIFY-only 挂 lake）；不在 all。
+         * 见 docs/superpowers/specs/2026-07-29-wind-lake-verify-design.md
+         */
+        WIND_LAKE("wind-lake", "wind_lake", "lake"),
         /** 第二梦境灯影专项；不在 all 默认集合内 */
         SECOND_DREAM("second-dream", "second", "lamp-shadow"),
         /** 主干全链路连续流程；不在 all 默认集合内 */
@@ -210,12 +215,7 @@ public final class PDPortingVerifyTest {
         raw = raw == null ? "" : raw.trim();
         if (raw.isEmpty() || "all".equalsIgnoreCase(raw) || "*".equals(raw)) {
             // 全量终验不含专项缺口套件（与 ALL PASS 语义冲突）
-            java.util.EnumSet<Suite> all = java.util.EnumSet.allOf(Suite.class);
-            all.remove(Suite.TWILIGHT_LANTERN);
-            all.remove(Suite.WIND_JOURNEY);
-            all.remove(Suite.SECOND_DREAM);
-            all.remove(Suite.MAIN_FLOW);
-            return all;
+            return defaultAllSuites();
         }
         java.util.EnumSet<Suite> out = java.util.EnumSet.noneOf(Suite.class);
         for (String part : raw.split("[,;\\s]+")) {
@@ -225,12 +225,7 @@ public final class PDPortingVerifyTest {
             String token = part.trim().toLowerCase(java.util.Locale.ROOT);
             switch (token) {
                 case "all", "*" -> {
-                    java.util.EnumSet<Suite> all = java.util.EnumSet.allOf(Suite.class);
-                    all.remove(Suite.TWILIGHT_LANTERN);
-                    all.remove(Suite.WIND_JOURNEY);
-                    all.remove(Suite.SECOND_DREAM);
-                    all.remove(Suite.MAIN_FLOW);
-                    return all;
+                    return defaultAllSuites();
                 }
                 case "quick", "fast" -> {
                     out.add(Suite.REGISTRY);
@@ -262,25 +257,39 @@ public final class PDPortingVerifyTest {
                     if (!hit) {
                         LogUtils.getLogger().warn("[PDVerify] 未知套件名 '{}'，已忽略（合法: registry,core,dimensions,"
                                 + "spells,content,structures,workshop,struct-dim,gallery,entity-gallery,"
-                                + "twilight-lantern,wind-journey,second-dream,main-flow 及快捷 all/quick/behavior/worldgen/galleries）", token);
+                                + "twilight-lantern,wind-journey,wind-lake,second-dream,main-flow 及快捷 all/quick/behavior/worldgen/galleries）", token);
                     }
                 }
             }
         }
         if (out.isEmpty()) {
             LogUtils.getLogger().warn("[PDVerify] SUITES 解析结果为空，回退全量");
-            java.util.EnumSet<Suite> all = java.util.EnumSet.allOf(Suite.class);
-            all.remove(Suite.TWILIGHT_LANTERN);
-            all.remove(Suite.WIND_JOURNEY);
-            all.remove(Suite.SECOND_DREAM);
-            all.remove(Suite.MAIN_FLOW);
-            return all;
+            return defaultAllSuites();
         }
         return out;
     }
 
+    /** 全量终验默认集合：去掉专项（含 wind-lake）。 */
+    private static java.util.EnumSet<Suite> defaultAllSuites() {
+        java.util.EnumSet<Suite> all = java.util.EnumSet.allOf(Suite.class);
+        all.remove(Suite.TWILIGHT_LANTERN);
+        all.remove(Suite.WIND_JOURNEY);
+        all.remove(Suite.WIND_LAKE);
+        all.remove(Suite.SECOND_DREAM);
+        all.remove(Suite.MAIN_FLOW);
+        return all;
+    }
+
     private static boolean suite(Suite s) {
         return SELECTED_SUITES.contains(s);
+    }
+
+    /**
+     * 供 {@link PDSmokeTest} 建档门控：是否需要非超平坦 + 开建筑。
+     * 与 {@link #SELECTED_SUITES} 同源，禁止二次解析 env。
+     */
+    public static boolean needsNormalWorldWithStructures() {
+        return ENABLED && SELECTED_SUITES.contains(Suite.WIND_LAKE);
     }
 
     /** 所选套件的逗号分隔主键，写入报告与启动日志 */
@@ -507,6 +516,15 @@ public final class PDPortingVerifyTest {
             // 祭坛 86t 召唤 + 缓冲
             at(wj + 100, PDPortingVerifyTest::windJourneySuiteAltarAftermath);
             cursor = wj + 120;
+        }
+
+        if (suite(Suite.WIND_LAKE)) {
+            int wl = cursor;
+            at(wl, PDPortingVerifyTest::refreshPlayerBuffs);
+            // TP + force chunk + 扫描；预留 gen 落地时间
+            at(wl + 2, PDPortingVerifyTest::windLakeSuite);
+            at(wl + 40, PDPortingVerifyTest::windLakeSuiteRescan);
+            cursor = wl + 50;
         }
 
         if (suite(Suite.SECOND_DREAM)) {
@@ -1336,6 +1354,21 @@ public final class PDPortingVerifyTest {
     private static void windJourneySuiteAltarAftermath() {
         PDWindJourneyVerifyHooks.verifyAltarAftermath(player(), r ->
                 checkDetail("wind-journey", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== 风维水色湖专项（wind-lake） ====================
+
+    private static void windLakeSuite() {
+        PDWindLakeVerifyHooks.verify(server(), player(), r ->
+                checkDetail("wind-lake", r.pass(), r.name(), r.detail()));
+    }
+
+    /** chunk 生成落地后再扫一次，降低首扫假 fail。 */
+    private static void windLakeSuiteRescan() {
+        PDWindLakeVerifyHooks.verify(server(), player(), r -> {
+            // 门控/structures 等静态断言第二次可跳过噪音；仍全部写入便于对照
+            checkDetail("wind-lake", r.pass(), r.name() + "#rescan", r.detail());
+        });
     }
 
     // ==================== 第二梦境灯影流程核实 ====================

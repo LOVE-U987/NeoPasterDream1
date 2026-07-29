@@ -6,6 +6,7 @@ import com.pasterdream.pasterdreammod.worldgen.feature.FloatingIslandFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.MegaCalcitePillarFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.MegaMushroomFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.PinkagaricClusterFeature;
+import com.pasterdream.pasterdreammod.worldgen.feature.SafeLakeFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.SuspendedCrystalFeature;
 import com.pasterdream.pasterdreammod.worldgen.tree.DyedreamTreeFeature;
 import net.minecraft.core.registries.Registries;
@@ -55,4 +56,11 @@ public class PDFeatures {
     /** 染梦混合树特征 —— 自定义 Trunk/Foliage/Decorator 的方块树入口 */
     public static final DeferredHolder<Feature<?>, Feature<TreeConfiguration>> DYEDREAM_TREE =
             FEATURES.register("dyedream_tree", () -> new DyedreamTreeFeature(TreeConfiguration.CODEC));
+
+    /**
+     * 安全水色湖 —— 对齐 LakeFeature 形貌，但不调用 getBiome 结冰检查
+     *（避免 1.21.1 WorldGenRegion OOB FATAL）。供 ground_feature_wind_journey_1 等使用。
+     */
+    public static final DeferredHolder<Feature<?>, SafeLakeFeature> SAFE_LAKE =
+            FEATURES.register("safe_lake", SafeLakeFeature::new);
 }

@@ -29,4 +29,11 @@ public class PDBiomeModifiers {
      */
     public static final DeferredHolder<MapCodec<? extends BiomeModifier>, MapCodec<PDDyedreamBiomeModifier>> DYEDREAM_FEATURES =
             BIOME_MODIFIER_SERIALIZERS.register("dyedream_features", () -> PDDyedreamBiomeModifier.CODEC);
+
+    /**
+     * 风维水色湖 VERIFY-only 挂接序列化器（{@code pasterdream:wind_lake_verify}）。
+     * JSON 可常驻；实际注入由 {@link PDWindLakeBiomeModifier#isVerifyLakeEnabled()} 门控。
+     */
+    public static final DeferredHolder<MapCodec<? extends BiomeModifier>, MapCodec<PDWindLakeBiomeModifier>> WIND_LAKE_VERIFY =
+            BIOME_MODIFIER_SERIALIZERS.register("wind_lake_verify", () -> PDWindLakeBiomeModifier.CODEC);
 }

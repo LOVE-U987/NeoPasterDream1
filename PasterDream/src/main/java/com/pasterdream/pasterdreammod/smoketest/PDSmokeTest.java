@@ -380,13 +380,19 @@ public final class PDSmokeTest {
                 worldLaunched = true;
                 final String worldName = "test-audit";
                 deleteExistingWorld(mc, worldName);
-                LOGGER.info(TAG + "creating superflat creative test world '{}'", worldName);
                 // VERIFY 需刷怪/祭坛伴生雷云等 Monster；PEACEFUL 会每 tick 清掉。
                 // 仅冒烟仍可用 PEACEFUL；开了 VERIFY 则 EASY。
                 net.minecraft.world.Difficulty difficulty =
                         PDPortingVerifyTest.ENABLED
                                 ? net.minecraft.world.Difficulty.EASY
                                 : net.minecraft.world.Difficulty.PEACEFUL;
+                // wind-lake 专项：非超平坦 + 开建筑，便于 LakeFeature 在真实噪声维复现/回归
+                final boolean normalWithStructures = PDPortingVerifyTest.needsNormalWorldWithStructures();
+                if (normalWithStructures) {
+                    LOGGER.info(TAG + "creating NORMAL structures-on creative test world '{}' (wind-lake)", worldName);
+                } else {
+                    LOGGER.info(TAG + "creating superflat creative test world '{}'", worldName);
+                }
                 net.minecraft.world.level.LevelSettings settings = new net.minecraft.world.level.LevelSettings(
                         worldName,
                         net.minecraft.world.level.GameType.CREATIVE,
@@ -395,13 +401,20 @@ public final class PDSmokeTest {
                         true,
                         gameRules(),
                         net.minecraft.world.level.WorldDataConfiguration.DEFAULT);
+                net.minecraft.resources.ResourceKey<net.minecraft.world.level.levelgen.presets.WorldPreset> preset =
+                        normalWithStructures
+                                ? net.minecraft.world.level.levelgen.presets.WorldPresets.NORMAL
+                                : net.minecraft.world.level.levelgen.presets.WorldPresets.FLAT;
                 mc.createWorldOpenFlows().createFreshLevel(
                         worldName,
                         settings,
-                        new net.minecraft.world.level.levelgen.WorldOptions(System.currentTimeMillis(), false, false),
+                        new net.minecraft.world.level.levelgen.WorldOptions(
+                                System.currentTimeMillis(),
+                                normalWithStructures /* generateStructures */,
+                                false),
                         registryAccess -> registryAccess
                                 .registryOrThrow(Registries.WORLD_PRESET)
-                                .getHolderOrThrow(net.minecraft.world.level.levelgen.presets.WorldPresets.FLAT)
+                                .getHolderOrThrow(preset)
                                 .value().createWorldDimensions(),
                         mc.screen);
                 return;

@@ -161,6 +161,9 @@ public class PasterDreamMod {
         PDWorldgenRegistries.CHUNK_GENERATORS.register(modEventBus);
         PDWorldgenRegistries.BIOME_SOURCES.register(modEventBus);
 
+        // BiomeModifier 序列化器（dyedream_features 兼容 + wind_lake_verify 门控挂湖）
+        com.pasterdream.pasterdreammod.worldgen.PDBiomeModifiers.BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
+
         // 注册流体类型
         PDFluidsType.FLUID_TYPES.register(modEventBus);
 
@@ -259,7 +262,7 @@ public class PasterDreamMod {
      */
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.debug("===== PasterDreamMod 地形生成系统初始化 =====");
-        LOGGER.debug("BiomeModifier 序列化器已注册: pasterdream:dyedream_features");
+        LOGGER.debug("BiomeModifier 序列化器: pasterdream:dyedream_features, pasterdream:wind_lake_verify");
 
         // 注册 API 装饰物（冰刺、冰之门等）
         ModDecorations.register();
