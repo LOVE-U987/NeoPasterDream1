@@ -55,3 +55,4 @@ libs/eternal-starlight/
 # 当前仍被 git 跟踪；若要从仓库剥离可取消下面注释并 git rm -r --cached
 # libs/FixPasterDream-main/
 .trae
+/.superpowers/
