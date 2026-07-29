@@ -126,15 +126,17 @@ public final class PDPortingVerifyTest {
      *   <li>{@code entity-gallery}/{@code entity_gallery} — 实体展台</li>
      *   <li>{@code twilight-lantern}/{@code twilight}/{@code lantern} — 暮影之笼流程缺口核实</li>
      *   <li>{@code wind-journey}/{@code wind}/{@code third-dream} — 第三梦境风之旅途流程核实</li>
+     *   <li>{@code second-dream}/{@code second}/{@code lamp-shadow} — 第二梦境灯影流程核实</li>
      * </ul>
      * 组合快捷：{@code all}（默认）、{@code quick}=registry+core、
      * {@code behavior}=core+dimensions+spells+content、
      * {@code worldgen}=structures+struct-dim、
      * {@code galleries}/{@code visual}=gallery+entity-gallery。
      * <p>
-     * 注意：{@code all} <b>不含</b> {@code twilight-lantern} / {@code wind-journey}
+     * 注意：{@code all} <b>不含</b> {@code twilight-lantern} / {@code wind-journey} /
+     * {@code second-dream}
      * （专项缺口核实，默认不进全量，避免与全绿终验语义冲突；
-     * 显式 {@code PASTERDREAM_VERIFY_SUITES=twilight-lantern} 或 {@code wind-journey}）。
+     * 显式 {@code PASTERDREAM_VERIFY_SUITES=…}）。
      */
     public enum Suite {
         REGISTRY("registry"),
@@ -150,7 +152,9 @@ public final class PDPortingVerifyTest {
         /** 暮影之笼专项；不在 all 默认集合内，见 {@link #parseSelectedSuites} */
         TWILIGHT_LANTERN("twilight-lantern", "twilight", "lantern"),
         /** 第三梦境风之旅途专项；不在 all 默认集合内 */
-        WIND_JOURNEY("wind-journey", "wind", "third-dream");
+        WIND_JOURNEY("wind-journey", "wind", "third-dream"),
+        /** 第二梦境灯影专项；不在 all 默认集合内 */
+        SECOND_DREAM("second-dream", "second", "lamp-shadow");
 
         private final String[] aliases;
 
@@ -206,6 +210,7 @@ public final class PDPortingVerifyTest {
             java.util.EnumSet<Suite> all = java.util.EnumSet.allOf(Suite.class);
             all.remove(Suite.TWILIGHT_LANTERN);
             all.remove(Suite.WIND_JOURNEY);
+            all.remove(Suite.SECOND_DREAM);
             return all;
         }
         java.util.EnumSet<Suite> out = java.util.EnumSet.noneOf(Suite.class);
@@ -219,6 +224,7 @@ public final class PDPortingVerifyTest {
                     java.util.EnumSet<Suite> all = java.util.EnumSet.allOf(Suite.class);
                     all.remove(Suite.TWILIGHT_LANTERN);
                     all.remove(Suite.WIND_JOURNEY);
+                    all.remove(Suite.SECOND_DREAM);
                     return all;
                 }
                 case "quick", "fast" -> {
@@ -491,6 +497,15 @@ public final class PDPortingVerifyTest {
             // 祭坛 86t 召唤 + 缓冲
             at(wj + 100, PDPortingVerifyTest::windJourneySuiteAltarAftermath);
             cursor = wj + 120;
+        }
+
+        if (suite(Suite.SECOND_DREAM)) {
+            int sd = cursor;
+            at(sd, PDPortingVerifyTest::refreshPlayerBuffs);
+            at(sd + 2, PDPortingVerifyTest::secondDreamSuiteSync);
+            // 胜利倒计时 410t + 缓冲（sync 内已 advance 部分 scheduler）
+            at(sd + 430, PDPortingVerifyTest::secondDreamSuiteVictoryAftermath);
+            cursor = sd + 450;
         }
 
         if (suite(Suite.WORKSHOP)) {
@@ -1302,6 +1317,18 @@ public final class PDPortingVerifyTest {
     private static void windJourneySuiteAltarAftermath() {
         PDWindJourneyVerifyHooks.verifyAltarAftermath(player(), r ->
                 checkDetail("wind-journey", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== 第二梦境灯影流程核实 ====================
+
+    private static void secondDreamSuiteSync() {
+        PDSecondDreamVerifyHooks.verifySync(server(), player(), r ->
+                checkDetail("second-dream", r.pass(), r.name(), r.detail()));
+    }
+
+    private static void secondDreamSuiteVictoryAftermath() {
+        PDSecondDreamVerifyHooks.verifyVictoryAftermath(server(), player(), r ->
+                checkDetail("second-dream", r.pass(), r.name(), r.detail()));
     }
 
     // ==================== S17 武器工坊群 ====================

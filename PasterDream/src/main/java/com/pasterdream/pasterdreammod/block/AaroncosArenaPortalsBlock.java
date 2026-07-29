@@ -1,8 +1,12 @@
 package com.pasterdream.pasterdreammod.block;
 
+import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -30,12 +34,12 @@ import java.util.List;
 /**
  * 亚伦柯斯竞技场传送门方块
  * <p>
- * 位于主世界的不可破坏传送门方块，触碰时传送至竞技场维度。
- * 继承 SlabBlock 实现半砖形状，具有发光效果。
+ * 触碰时传送至竞技场维度。继承 SlabBlock 实现半砖形状，具有发光效果。
  * <p>
- * 传送条件：无条件，任何玩家都可以进入
+ * 传送条件（原 {@code AaroncosArenaPortalsPr0}）：已完成 {@code achievement_shadow_d_0}
+ * 或创造模式；否则提示尚未完成前置进度。
  * <p>
- * 感染效果：传送门周围的地面方块会被转化为灯影之下风格的方块（阴影方块、厚阴影方块等）
+ * 感染效果：传送门周围的地面方块会被转化为灯影之下风格的方块。
  */
 public class AaroncosArenaPortalsBlock extends SlabBlock {
 
@@ -172,15 +176,9 @@ public class AaroncosArenaPortalsBlock extends SlabBlock {
     }
 
     /**
-     * 当实体进入方块碰撞箱时触发 —— 实现竞技场传送
+     * 当实体进入方块碰撞箱时触发 —— 实现竞技场传送。
      * <p>
-     * 传送条件：无条件，任何玩家都可以进入
-     * 传送到目标维度后赋予缓降效果。
-     *
-     * @param state  当前方块状态
-     * @param level  当前世界
-     * @param pos    方块位置
-     * @param entity 进入方块的实体
+     * 需 {@code achievement_shadow_d_0} 或创造；通过后传送并赋予缓降。
      */
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
@@ -189,6 +187,12 @@ public class AaroncosArenaPortalsBlock extends SlabBlock {
         }
 
         if (level.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY)) {
+            return;
+        }
+
+        if (!player.getAbilities().instabuild && !hasAdvancement(player, "achievement_shadow_d_0")) {
+            player.displayClientMessage(
+                    Component.translatable("message.pasterdream.aaroncos_arena_portals.locked"), true);
             return;
         }
 
@@ -211,5 +215,11 @@ public class AaroncosArenaPortalsBlock extends SlabBlock {
         if (entity instanceof LivingEntity livingEntity) {
             livingEntity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 120, 0));
         }
+    }
+
+    private static boolean hasAdvancement(ServerPlayer player, String name) {
+        AdvancementHolder holder = player.server.getAdvancements()
+                .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, name));
+        return holder != null && player.getAdvancements().getOrStartProgress(holder).isDone();
     }
 }

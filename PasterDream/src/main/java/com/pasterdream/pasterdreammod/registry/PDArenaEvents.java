@@ -92,6 +92,8 @@ public class PDArenaEvents {
         // 赋予缓降效果（30 秒，不显示粒子）—— 所有进入的玩家都执行
         if (entity instanceof Player player) {
             player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 600, 0, false, false));
+            // 原版进场 ADVENTURE：经 GUARD_BLOCK_BUFF onApply 切换（长时；结构内 guard 可续）
+            player.addEffect(new MobEffectInstance(PDEffects.GUARD_BLOCK_BUFF.holder(), 72000, 0, false, false));
         }
     }
 
@@ -242,6 +244,9 @@ public class PDArenaEvents {
 
         // 更新战斗管理器中的存活状态
         PDArenaBossManager.setBossAlive(arenaLevel, leftHand != null, rightHand != null);
+
+        // 原 handspawn Pr1：召唤后时序恐怖鸟增援
+        spawnTerrorbeakReinforcements(arenaLevel);
     }
 
     /**

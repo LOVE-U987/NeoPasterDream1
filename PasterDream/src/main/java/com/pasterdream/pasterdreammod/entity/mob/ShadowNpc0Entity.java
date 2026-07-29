@@ -354,7 +354,7 @@ public class ShadowNpc0Entity extends GeckoLibMobEntity {
     private void forEachNearbyPlayer(double x, double y, double z, PlayerAction action) {
         Vec3 center = new Vec3(x, y, z);
         List<Player> players = this.level().getEntitiesOfClass(Player.class,
-                new AABB(center, center).inflate(8.0),
+                new AABB(center, center).inflate(16.0),
                 Entity::isAlive);
         players.stream()
                 .sorted(Comparator.comparingDouble(p -> p.distanceToSqr(center)))

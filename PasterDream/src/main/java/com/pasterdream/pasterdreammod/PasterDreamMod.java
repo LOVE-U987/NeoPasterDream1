@@ -14,6 +14,7 @@ import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
 import com.pasterdream.pasterdreammod.registry.PDGameRules;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDArenaEvents;
+import com.pasterdream.pasterdreammod.registry.LampShadowEvents;
 import com.pasterdream.pasterdreammod.registry.PDCreativeTabs;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
@@ -216,6 +217,9 @@ public class PasterDreamMod {
 
         // 在游戏总线上注册竞技场维度事件（玩家进入竞技场时的初始化逻辑）
         NeoForge.EVENT_BUS.addListener(PDArenaEvents::onPlayerChangedDimension);
+
+        // 灯影进出：title / 配置赠针 / 离维窥视 buff（LampShadowPr0/Pr1）
+        NeoForge.EVENT_BUS.addListener(LampShadowEvents::onPlayerChangedDimension);
 
         // 灯影出生结构（shadow_world_spawn）；Warden→hide_7 / 远古守卫者鳞
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDLampShadowWorldgen::onLevelLoad);

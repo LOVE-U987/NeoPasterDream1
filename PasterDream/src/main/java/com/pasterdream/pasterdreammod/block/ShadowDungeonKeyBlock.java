@@ -1,11 +1,15 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
+import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.Rotation;
@@ -15,8 +19,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
@@ -127,14 +133,25 @@ public class ShadowDungeonKeyBlock extends HorizontalDirectionalBlock {
     }
 
     /**
-     * 获取掉落物 - 返回空气（不掉落方块自身，实际掉落由战利品表控制）
-     * 注意：原模组中掉落 SHADOW_DUNGEON_KEY 物品，此处通过战利品表实现
-     * @param state 方块状态
-     * @param builder 掉落参数构建器
-     * @return 掉落物列表（空列表，由战利品表接管）
+     * 掉落暗影地牢钥匙物品（对齐原版 Key 块 getDrops）。
      */
     @Override
     public @NotNull List<ItemStack> getDrops(@NotNull BlockState state, @NotNull LootParams.Builder builder) {
-        return Collections.emptyList();
+        return Collections.singletonList(new ItemStack(PDItemsMaterials.SHADOW_DUNGEON_KEY.get()));
+    }
+
+    /**
+     * 右键拾取：销毁方块并给予钥匙物品（原 {@code ShadowDungeonKeyPr0}）。
+     */
+    @Override
+    protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, @NotNull Level level,
+                                                          @NotNull BlockPos pos, @NotNull Player player,
+                                                          @NotNull BlockHitResult hitResult) {
+        if (level.isClientSide) {
+            return InteractionResult.SUCCESS;
+        }
+        level.destroyBlock(pos, false);
+        ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(PDItemsMaterials.SHADOW_DUNGEON_KEY.get()));
+        return InteractionResult.SUCCESS;
     }
 }

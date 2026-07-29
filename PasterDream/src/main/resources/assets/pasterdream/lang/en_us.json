@@ -82,6 +82,7 @@
   "arena.pasterdream.summon_fighting": "§cBOSS is already in battle!",
   "arena.pasterdream.summon_summoning": "§eBOSS is summoning, please wait...",
   "arena.pasterdream.summon_victory": "§aYou have defeated the BOSS! Right-click to leave",
+  "arena.pasterdream.loot_opened_leave_via_eye": "§eLoot opened. Pick up, then right-click the eye to leave (force leave cancelled)",
   "arena.pasterdream.summon_waking": "§5⚔️ Aaroncos's Hand is waking up...",
   "arena.pasterdream.summon_wrong_dimension": "§cThis block only works in Aaroncos Arena!",
   "attribute.pasterdream.luck": "Luck",

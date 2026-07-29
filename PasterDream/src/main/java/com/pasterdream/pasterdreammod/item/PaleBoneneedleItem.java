@@ -17,9 +17,8 @@ import net.minecraft.world.level.portal.DimensionTransition;
 /**
  * 苍白骨针 (Pale Bone Needle)
  * <p>
- * 右键使用时，若玩家处于染梦维度，则消耗 1 点生命值将玩家传送回主世界。
- * 一次性消耗品，使用后减少 1 个物品数量。
- * 功能与 {@code DyedreamCrackBlock} 类似，但为单向传送且需付出生命代价。
+ * 右键使用时，若玩家处于染梦 / 灯影 / 亚伦柯斯竞技场，则消耗 1 点生命值将玩家传送回主世界。
+ * 一次性消耗品，使用后减少 1 个物品数量（对齐原 {@code PaleBoneneedlePr0} 三维度）。
  */
 public class PaleBoneneedleItem extends Item {
 
@@ -55,8 +54,8 @@ public class PaleBoneneedleItem extends Item {
             return InteractionResultHolder.success(stack);
         }
 
-        // 仅在染梦维度生效
-        if (!level.dimension().equals(PDDimensions.DYEDREAM_WORLD_LEVEL_KEY)) {
+        // 染梦 / 灯影 / 竞技场（原 PaleBoneneedlePr0）
+        if (!isPasterDreamDimension(level)) {
             return InteractionResultHolder.fail(stack);
         }
 
@@ -102,6 +101,12 @@ public class PaleBoneneedleItem extends Item {
         }
 
         return InteractionResultHolder.consume(stack);
+    }
+
+    private static boolean isPasterDreamDimension(Level level) {
+        return level.dimension().equals(PDDimensions.DYEDREAM_WORLD_LEVEL_KEY)
+                || level.dimension().equals(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY)
+                || level.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY);
     }
 
     /**
