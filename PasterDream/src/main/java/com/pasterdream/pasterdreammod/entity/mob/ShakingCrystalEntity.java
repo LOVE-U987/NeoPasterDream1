@@ -1,6 +1,6 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
-import com.pasterdream.pasterdreammod.entity.damage.ConfigurableImmunityEntity;
+import com.pasterdream.pasterdreammod.api.entity.damage.ConfigurableImmunityEntity;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import net.minecraft.core.particles.ParticleTypes;

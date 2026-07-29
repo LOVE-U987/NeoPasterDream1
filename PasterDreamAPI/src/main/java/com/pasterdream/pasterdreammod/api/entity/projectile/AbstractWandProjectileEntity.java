@@ -1,4 +1,4 @@
-package com.pasterdream.pasterdreammod.entity.projectile;
+package com.pasterdream.pasterdreammod.api.entity.projectile;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;

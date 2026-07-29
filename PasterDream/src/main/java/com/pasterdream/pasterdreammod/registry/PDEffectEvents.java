@@ -1,7 +1,7 @@
 package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import com.pasterdream.pasterdreammod.api.effect.base.PasterDreamEffect;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsCurios;
 import net.minecraft.core.BlockPos;

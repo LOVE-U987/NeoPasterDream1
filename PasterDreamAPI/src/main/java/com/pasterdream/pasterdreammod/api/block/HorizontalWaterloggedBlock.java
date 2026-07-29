@@ -1,4 +1,4 @@
-package com.pasterdream.pasterdreammod.block;
+package com.pasterdream.pasterdreammod.api.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -7,7 +7,11 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -21,12 +25,28 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * 水平朝向可水浸方块基类 (Horizontal Waterlogged Block)
+ * <p>
+ * 封装水平朝向 (FACING) + WATERLOGGED 状态的公共逻辑，适用于各种贴墙/地面装饰方块。
+ * 继承 HorizontalDirectionalBlock 并实现 SimpleWaterloggedBlock。
+ * <p>
+ * 典型用法：子类实现抽象 {@link #getShape} 方法，并可覆盖放置/形状等行为。
+ * 所有通过 API 批量注册的此类装饰方块可复用本基类。
+ * <p>
+ * 注意：本类为 vanilla-only，不包含模组特定逻辑。
+ *
+ * @see SelfDropBlock
+ */
 public abstract class HorizontalWaterloggedBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
+    /**
+     * @param properties 方块属性
+     */
     public HorizontalWaterloggedBlock(BlockBehaviour.Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any()

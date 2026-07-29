@@ -4,7 +4,7 @@ import com.pasterdream.pasterdreammod.client.renderer.armor.AngelWingArmorRender
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.registry.PDArmorMaterials;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;

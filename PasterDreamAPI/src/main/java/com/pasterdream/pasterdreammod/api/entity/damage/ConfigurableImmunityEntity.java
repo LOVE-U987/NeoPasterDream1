@@ -1,4 +1,4 @@
-package com.pasterdream.pasterdreammod.entity.damage;
+package com.pasterdream.pasterdreammod.api.entity.damage;
 
 import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
 import net.minecraft.world.damagesource.DamageSource;
@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
  * 所有继承此类的实体将自动获得基于 {@link DamageImmunityConfig} 的伤害免疫判断，
  * 无需在每个实体类中重复编写 {@code hurt()} 方法。
  * <p>
- * 免疫规则通过 {@link EntityImmunitySetup#setupAllImmunities()} 集中配置，
+ * 免疫规则通过 {@link com.pasterdream.pasterdreammod.entity.damage.EntityImmunitySetup#setupAllImmunities()} 集中配置，
  * 使用 {@link DamageImmunityConfig#getInstance()} 获取全局单例配置。
  * <p>
  * 注意：此基类继承 {@link GeckoLibMobEntity}，适用于需要动画能力和伤害免疫的实体。
@@ -21,7 +21,7 @@ import net.minecraft.world.level.Level;
  * {@link DamageImmunityConfig#isImmune(Entity, DamageSource)} 进行免疫检查。
  *
  * @see DamageImmunityConfig
- * @see EntityImmunitySetup
+ * @see com.pasterdream.pasterdreammod.entity.damage.EntityImmunitySetup
  */
 public abstract class ConfigurableImmunityEntity extends GeckoLibMobEntity {
 
@@ -54,7 +54,7 @@ public abstract class ConfigurableImmunityEntity extends GeckoLibMobEntity {
     /**
      * 获取全局共享的伤害免疫配置实例
      * <p>
-     * 供 {@link EntityImmunitySetup} 在模组初始化时配置所有实体的免疫规则。
+     * 供 {@link com.pasterdream.pasterdreammod.entity.damage.EntityImmunitySetup} 在模组初始化时配置所有实体的免疫规则。
      *
      * @return 全局 {@link DamageImmunityConfig} 实例（等同于 {@link DamageImmunityConfig#getInstance()}）
      */

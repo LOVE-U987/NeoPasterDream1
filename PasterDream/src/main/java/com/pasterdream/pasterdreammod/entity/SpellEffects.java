@@ -4,7 +4,7 @@ import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvent;

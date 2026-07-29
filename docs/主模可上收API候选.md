@@ -1,7 +1,7 @@
 # 主模 → PasterDreamAPI 可上收候选
 
 > **类别**：参考 · 架构 / 边界  
-> **日期**：2026-07-29  
+> **日期**：2026-07-29（P0 批 + StructureInventoryHelper 已落地）  
 > **范围**：五域只读排查（实体·世界生成·方块物品·横切工具·客户端杂项）  
 > **原则**：API = 可复用框架 / Builder / 基类 / 横切工具；主模 = 内容数据、玩法数值、具体资产与维度 ID  
 > **功能是否对等** → [`功能状态.md`](功能状态.md)  
@@ -13,14 +13,27 @@
 
 | 域 | 结论 |
 | :--- | :--- |
-| **横切工具** | **P0**：`ServerScheduler` 必上收；**P1**：`StructureInventoryHelper` |
-| **实体** | **P0**：伤害免疫 Config + 基类；`AbstractWandProjectileEntity` |
-| **方块/物品** | **P0–P1**：`HorizontalWaterloggedBlock`、`AbstractGeoDisplayItem`；FluidType 补进 FluidAPI；通用容器 Menu 骨架 |
+| **横切工具** | ✅ 已上收 `ServerScheduler` · `StructureInventoryHelper` |
+| **实体** | ✅ 已上收伤害免疫 Config + 基类 · `AbstractWandProjectileEntity`；`EntityImmunitySetup` 数据表留主模 |
+| **方块/物品** | ✅ 已上收 `HorizontalWaterloggedBlock` · `AbstractGeoDisplayItem`；余下 FluidType / Menu 骨架 |
 | **客户端** | **P1**：BGM 交叉淡入框架（去资产绑定）；Block 数据生成 Provider 基类 |
 | **世界生成** | **几乎无内容可搬**；只做 Tree 注册增强 / locator 工具 / 可选新 DecorationType |
 | **明确勿上收** | 具体实体·装饰·遗迹列表·ChunkGen·SAN/能量 Attachment·HUD·VERIFY hooks·配置项 |
 
-当前 API 已覆盖大量 Builder（Block/Item/Entity/Menu/Particle/Curio/Ruin/Decor…）。剩余价值集中在 **横切调度**、**免疫/投射物/Geo 显示基类**、**BGM 状态机**，而非再搬一批内容类。
+当前 API 已覆盖 Builder 族 + **横切调度 / 结构库存 / 免疫·投射物·Geo 显示基类**。剩余价值集中在 **FluidType 一站式**、**BGM 状态机（去资产）**、**Menu/数据生成骨架**，而非再搬一批内容类。
+
+### 0.1 本批落地（2026-07-29）
+
+| API 落点 | 主模变更要点 | 编译 |
+| :--- | :--- | :---: |
+| `api/util/ServerScheduler` | 去 `@EventBusSubscriber(modid)`；`register(IEventBus)`；`PasterDreamMod` → `ServerScheduler.register(NeoForge.EVENT_BUS)`；保留 `advanceForTest` | ✅ |
+| `api/util/StructureInventoryHelper` | BE 等 import 改 API；行为（双格式 NBT / 书页迁移 / loot unpack）不变 | ✅ |
+| `api/entity/damage/{DamageImmunityConfig,ConfigurableImmunityEntity}` | mob / 投射物 import 改 API；`EntityImmunitySetup` **留主模** 填 `PDEntities` | ✅ |
+| `api/entity/projectile/AbstractWandProjectileEntity` | 法杖弹子类 import 改 API | ✅ |
+| `api/block/HorizontalWaterloggedBlock` | ClayPot / ChristmasLights 等 | ✅ |
+| `api/item/base/AbstractGeoDisplayItem` | ~20 DisplayItem | ✅ |
+
+验证：`JAVA_HOME=…/java-21-openjdk sh gradlew :PasterDreamAPI:compileJava :PasterDream:compileJava --offline` → **BUILD SUCCESSFUL**。主模旧路径已删；旧 package 引用 grep 为 0。
 
 ---
 
@@ -31,35 +44,38 @@
 | 注册门面 | `PasterDreamAPI.registerAll` · Block/Item/Entity/Menu/Fluid/Particle/Curio/BlockEntity API + Builder |
 | 世界生成 | `worldgen/decor/*` · `WorldGenUtils` · `TreeRegistry`（键） · RuinAPI · `dimension/terrain/*` |
 | 实体动画 | `GeckoLib{Mob,Monster,Projectile}Entity` · `ProcedureAnimationHandler` · `EntitySkill*` |
+| 实体扩展 | `api/entity/damage/*`（免疫 Config + 基类）· `api/entity/projectile/AbstractWandProjectileEntity` |
+| 方块 / 物品基类 | `SelfDropBlock` · `HorizontalWaterloggedBlock` · `api/item/base/AbstractGeoDisplayItem` |
+| 横切工具 | `api/util/ServerScheduler`（显式 `register(bus)`，非 DeferredRegister）· `api/util/StructureInventoryHelper` |
 | 音效 | `ApiSoundRegistry`（维度 BGM 注册） · DimensionBuilder `.withMusic` |
 | Curios | `CurioAPI` / `CurioBuilder` + `CurioClientBridge` |
-| 缺口 | **无** `network/` · `attachment/` · `util/ServerScheduler` · 客户端 `audio/` 框架 · Fluid**Type** 一站式 · 通用 Menu/BE 容器基类 |
+| 缺口 | **无** `network/` · `attachment/` · 客户端 `audio/` 框架 · Fluid**Type** 一站式 · 通用 Menu/BE 容器基类 |
 
 ---
 
 ## 2. 推荐上收（按优先级）
 
-### 2.1 P0 — 高价值、低内容耦合
+### 2.1 P0 — ~~高价值、低内容耦合~~（本批已完成）
 
-| 候选 | 主模路径 | 建议 API 落点 | 理由 | 上收注意 |
-| :--- | :--- | :--- | :--- | :--- |
-| **ServerScheduler** | `util/ServerScheduler.java` | `api/util/ServerScheduler` | 真 delay tick（替代 TickTask 塌缩）；全模 30+ 引用；纯横切 | 去掉硬编码 `PasterDreamMod.MOD_ID`；`register(bus)` 或参数化 subscriber；保留 `advanceForTest` |
-| **DamageImmunityConfig** | `entity/damage/DamageImmunityConfig.java` | `api/entity/damage/` | 集中 EntityType→免疫 DamageType；Preset；无模组 ID | 数据表由主模 setup 填 |
-| **ConfigurableImmunityEntity** | `entity/damage/ConfigurableImmunityEntity.java` | 同上 | 已继承 API `GeckoLibMobEntity`；统一 `hurt` 过滤 | 与 Config 同批 |
-| **AbstractWandProjectileEntity** | `entity/projectile/AbstractWandProjectileEntity.java` | `api/entity/projectile/` | 法杖弹模板（configureShot / tick discard / 穿透 NBT hack）；子类供 Item | 保持 vanilla-only 依赖 |
-| **HorizontalWaterloggedBlock** | `block/HorizontalWaterloggedBlock.java` | `api/block/` | 定向 + waterlogged 标准模板；多装饰块共用 | — |
-| **AbstractGeoDisplayItem** | `item/AbstractGeoDisplayItem.java` | `api/item/base/` | Geo BlockItem 手持显示公共骨架；对齐实体 Gecko 基类风格 | 客户端 Geo 接口边界与 entity base 一致策略 |
+| 候选 | 状态 | API 落点 | 备注 |
+| :--- | :---: | :--- | :--- |
+| **ServerScheduler** | ✅ | `api/util/ServerScheduler` | 主模 `PasterDreamMod` 显式 `register(NeoForge.EVENT_BUS)` |
+| **DamageImmunityConfig** | ✅ | `api/entity/damage/` | 数据表仍由主模 `EntityImmunitySetup` 填 |
+| **ConfigurableImmunityEntity** | ✅ | 同上 | 继承 API `GeckoLibMobEntity` |
+| **AbstractWandProjectileEntity** | ✅ | `api/entity/projectile/` | vanilla-only |
+| **HorizontalWaterloggedBlock** | ✅ | `api/block/` | |
+| **AbstractGeoDisplayItem** | ✅ | `api/item/base/` | |
+| **StructureInventoryHelper** | ✅ | `api/util/` | 原 P1，与 P0 同批落地 |
 
-### 2.2 P1 — 明显可泛化
+### 2.2 P1 — 明显可泛化（剩余）
 
 | 候选 | 主模路径 | 建议 | 理由 |
 | :--- | :--- | :--- | :--- |
-| **StructureInventoryHelper** | `util/StructureInventoryHelper.java` | `api/util` 或 `api/worldgen` | 结构容器双格式 NBT、书页迁移、loot unpack；无模组 ID |
-| **BGM 交叉淡入框架** | `client/audio/*`（`CrossfadeManager`、`VolumeSoundInstance`、`MusicSystemFactory`、`CooldownManager`…） | `api/client/audio` 或桥接式 `api/sound/bgm` | 状态机/DI/可测；**资产列表与维度白名单留主模** |
+| **BGM 交叉淡入框架** | `client/audio/*`（`CrossfadeManager`、`VolumeSoundInstance`、`MusicSystemFactory`、`CooldownManager`…） | `api/client/audio` 或桥接式 `api/sound/bgm` | 状态机/DI/可测；**资产列表与维度白名单留主模**；难度高，需先抽 Lookup 注入 |
 | **FluidType + 完整 FluidBuilder** | `registry/PDFluidsType.java` + Fluid 实现 | 扩展 `FluidAPI` | 现 API 只盖 Fluid；Type 仍独立 DeferredRegister |
 | **通用容器 Menu 骨架** | 多处 `AbstractContainerMenu` 样板 | `api/menu/SimpleContainerMenu` 等 | 背包槽 + quickMove + Handler 重复 |
 | **Block 数据生成 Provider** | `data/PDBlockModelProvider` · `PDBlockTagProvider` | `api/data` / `api/block/data` | 已读 `BlockAPI.getBlockConfigs()`，本质是 API 驱动生成器 |
-| **EntityImmunitySetup** | `entity/damage/EntityImmunitySetup.java` | **数据留主模**；可选 setup 辅助签名进 API | 配置表绑 `PDEntities` |
+| **EntityImmunitySetup** | `entity/damage/EntityImmunitySetup.java` | **数据留主模**（已是）；可选 setup 辅助签名进 API | 配置表绑 `PDEntities` |
 | **Item 双注册收敛** | `PDItems.ITEMS` + `ItemAPI.REGISTRY` | 文档 + 逐步迁纯 ItemAPI | 一致性，非新类 |
 
 ### 2.3 P2 — 可选 / 需重构后再收
@@ -93,8 +109,8 @@
 
 | 动作 | 项 |
 | :--- | :--- |
-| **上收** | `DamageImmunityConfig` · `ConfigurableImmunityEntity` · `AbstractWandProjectileEntity` |
-| **部分** | `EntityImmunitySetup`（机制 vs `PDEntities` 数据） |
+| **已上收** | `DamageImmunityConfig` · `ConfigurableImmunityEntity` · `AbstractWandProjectileEntity` → `api/entity/damage|projectile` |
+| **部分** | `EntityImmunitySetup`（机制在 API；`PDEntities` 数据表留主模） |
 | **保持** | 全部具体 mob/projectile；`SpellEffects`；`AaroncosHandEntity`；手写 skillTimer/charge；`RendererRegistry` 与全部 *Renderer/*Model；`PDEntities`/`PDEntityEvents` |
 | **清理** | 主模空壳 `entity.GeckoLibMonsterEntity` |
 | **重构建议** | 更多实体改继承免疫基类消 inline `hurt`；Boss skill 评估接 `EntitySkillManager`（基类需 implements 接口缝，见地表/动画文档 §3.3） |
@@ -114,7 +130,7 @@
 
 | 动作 | 项 |
 | :--- | :--- |
-| **上收基类** | `HorizontalWaterloggedBlock` · `AbstractGeoDisplayItem` |
+| **已上收基类** | `HorizontalWaterloggedBlock` · `AbstractGeoDisplayItem` |
 | **扩展 API** | FluidType + 综合 FluidBuilder；SimpleContainerMenu / Container BE 骨架 |
 | **可选泛化** | W4Data/W4Geo 骨架 · SimpleMarker BE · 液态方块基 · Particle RenderType |
 | **保持** | 全部 `registry/blocks|items/*` 分组内容 · 具体 Menu/BE/流体实现 · MemorialDoll 领域链 |
@@ -124,7 +140,7 @@
 
 | 动作 | 项 |
 | :--- | :--- |
-| **上收** | `ServerScheduler` · `StructureInventoryHelper` |
+| **已上收** | `ServerScheduler` · `StructureInventoryHelper` → `api/util`（Scheduler 须主模 `register(NeoForge.EVENT_BUS)`） |
 | **部分抽取** | `PasterItemData` 底层 · 维度 region 重置 helpers |
 | **保持** | `PDNetwork` + 全部 Payload 业务 · `attachment/*`（SAN/能量）· `config/*` · `PDCommands` 命令体 · `WeaponWorkshopVariables` / `WorkshopMultiBlock` · `world/PDSanHelper` · Wind/LampShadow/Arena 事件 |
 
@@ -157,21 +173,21 @@
 
 ---
 
-## 5. 建议落地顺序（若动手）
+## 5. 建议落地顺序
 
 ```text
-1. ServerScheduler → API + 主模改 import + 总线注册
-2. DamageImmunity* + AbstractWandProjectile → API；EntityImmunitySetup 留主模填表
-3. HorizontalWaterloggedBlock + AbstractGeoDisplayItem
-4. StructureInventoryHelper
+✅ 1. ServerScheduler → API + 主模改 import + 总线 register(NeoForge.EVENT_BUS)
+✅ 2. DamageImmunity* + AbstractWandProjectile → API；EntityImmunitySetup 留主模填表
+✅ 3. HorizontalWaterloggedBlock + AbstractGeoDisplayItem
+✅ 4. StructureInventoryHelper
 5. FluidAPI 补 FluidType 一站式；Item 双注册收敛（可穿插）
-6. BGM 框架上收（拆 Lookup/维度白名单注入）+ DimensionAPI 钩子
+6. BGM 框架上收（拆 Lookup/维度白名单注入）+ DimensionAPI 钩子  ← 难度高，单独设计
 7. Menu/容器骨架、Block data providers、Tree/ locator 增强
 8. 清理：主模空壳 GeckoLibMonster、废弃 BiomeModifier、死 Feature
 9. （可选）EntitySkill 与基类接口钉死后再迁 Boss 状态机
 ```
 
-每步：编译 → 相关 VERIFY 套件（scheduler 影响面大，优先 smoke/core）→ 更新本文件与 [`架构差异.md`](架构差异.md)。
+每步：编译 → 相关 VERIFY 套件（scheduler 影响面大，优先 smoke/core / main-flow）→ 更新本文件与 [`架构差异.md`](架构差异.md)。
 
 ---
 

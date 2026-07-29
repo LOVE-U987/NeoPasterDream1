@@ -1,9 +1,7 @@
-package com.pasterdream.pasterdreammod.util;
+package com.pasterdream.pasterdreammod.api.util;
 
-import com.pasterdream.pasterdreammod.PasterDreamMod;
-import net.minecraft.server.MinecraftServer;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -27,7 +25,6 @@ import java.util.PriorityQueue;
  * 线程模型：仅在服务端主线程调用（法术命中、实体 tick 等上下文），
  * 由 {@link ServerTickEvent.Post} 在每 tick 末尾统一派发到期任务。
  */
-@EventBusSubscriber(modid = PasterDreamMod.MOD_ID)
 public final class ServerScheduler {
 
     /** 待执行任务（按到期 tick 排序的小顶堆） */
@@ -42,6 +39,19 @@ public final class ServerScheduler {
     }
 
     private ServerScheduler() {
+    }
+
+    /**
+     * 注册调度器到 NeoForge 游戏事件总线。
+     * <p>
+     * 主模组构造器中调用：{@code ServerScheduler.register(NeoForge.EVENT_BUS);}
+     *
+     * @param forgeBus NeoForge.EVENT_BUS
+     */
+    public static void register(IEventBus forgeBus) {
+        forgeBus.addListener(ServerScheduler::onServerTick);
+        forgeBus.addListener(ServerScheduler::onServerStopped);
+        PasterDreamAPI.LOGGER.debug("[ServerScheduler] 已注册到 NeoForge 事件总线");
     }
 
     /**
@@ -60,7 +70,6 @@ public final class ServerScheduler {
      *
      * @param event 服务端 tick 事件
      */
-    @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
         currentTick++;
         if (PENDING.isEmpty()) {
@@ -75,7 +84,7 @@ public final class ServerScheduler {
             try {
                 task.run();
             } catch (Exception e) {
-                PasterDreamMod.LOGGER.error("[ServerScheduler] 延迟任务执行异常", e);
+                PasterDreamAPI.LOGGER.error("[ServerScheduler] 延迟任务执行异常", e);
             }
         }
     }
@@ -85,7 +94,6 @@ public final class ServerScheduler {
      *
      * @param event 服务器停止事件
      */
-    @SubscribeEvent
     public static void onServerStopped(ServerStoppedEvent event) {
         PENDING.clear();
     }
@@ -111,7 +119,7 @@ public final class ServerScheduler {
                 try {
                     task.run();
                 } catch (Exception e) {
-                    PasterDreamMod.LOGGER.error("[ServerScheduler] advanceForTest 任务异常", e);
+                    PasterDreamAPI.LOGGER.error("[ServerScheduler] advanceForTest 任务异常", e);
                 }
             }
         }

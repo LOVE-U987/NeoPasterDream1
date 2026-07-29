@@ -1,7 +1,7 @@
 package com.pasterdream.pasterdreammod.item;
 
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;

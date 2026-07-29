@@ -1,6 +1,6 @@
 package com.pasterdream.pasterdreammod.block;
 
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;

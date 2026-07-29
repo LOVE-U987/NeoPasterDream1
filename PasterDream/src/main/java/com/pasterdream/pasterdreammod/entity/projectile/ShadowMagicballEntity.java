@@ -5,7 +5,7 @@ import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import com.pasterdream.pasterdreammod.entity.damage.DamageImmunityConfig;
+import com.pasterdream.pasterdreammod.api.entity.damage.DamageImmunityConfig;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;

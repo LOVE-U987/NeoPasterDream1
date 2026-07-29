@@ -1,4 +1,4 @@
-package com.pasterdream.pasterdreammod.entity.damage;
+package com.pasterdream.pasterdreammod.api.entity.damage;
 
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageSource;

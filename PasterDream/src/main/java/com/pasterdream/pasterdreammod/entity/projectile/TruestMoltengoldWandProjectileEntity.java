@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.entity.projectile;
 
+import com.pasterdream.pasterdreammod.api.entity.projectile.AbstractWandProjectileEntity;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;

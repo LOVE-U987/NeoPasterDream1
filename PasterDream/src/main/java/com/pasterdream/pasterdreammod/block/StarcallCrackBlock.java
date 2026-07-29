@@ -3,7 +3,7 @@ package com.pasterdream.pasterdreammod.block;
 import com.pasterdream.pasterdreammod.entity.projectile.MoltengoldWandProjectileEntity;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;

@@ -6,7 +6,7 @@ import com.pasterdream.pasterdreammod.block.entity.W4GeoDataBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDGameRules;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;

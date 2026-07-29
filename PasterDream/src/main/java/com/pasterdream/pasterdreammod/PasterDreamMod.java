@@ -41,6 +41,7 @@ import com.pasterdream.pasterdreammod.registry.PDWorldgenRegistries;
 import com.pasterdream.pasterdreammod.worldgen.tree.DyedreamTreePlacers;
 import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationRegistry;
 import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.data.DataGenerator;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -84,6 +85,9 @@ public class PasterDreamMod {
     public PasterDreamMod(IEventBus modEventBus, ModContainer modContainer) {
         // 统一注册 PasterDreamAPI 模块下所有 DeferredRegister
         PasterDreamAPI.registerAll(modEventBus);
+
+        // 注册 ServerScheduler（已上收至 PasterDreamAPI）
+        ServerScheduler.register(NeoForge.EVENT_BUS);
 
         // 显式引用 DecorationRegistry 以触发类初始化，确保 generic_decor 特征在注册事件前填充到 FEATURES
         // DecorationRegistry.FEATURES 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册

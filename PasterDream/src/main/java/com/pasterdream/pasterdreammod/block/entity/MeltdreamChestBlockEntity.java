@@ -3,7 +3,7 @@ package com.pasterdream.pasterdreammod.block.entity;
 import com.pasterdream.pasterdreammod.block.MeltdreamChestBlock;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
-import com.pasterdream.pasterdreammod.util.StructureInventoryHelper;
+import com.pasterdream.pasterdreammod.api.util.StructureInventoryHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;

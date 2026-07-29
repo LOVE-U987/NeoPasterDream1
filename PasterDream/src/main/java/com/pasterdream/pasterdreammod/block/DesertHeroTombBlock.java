@@ -7,7 +7,7 @@ import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsFoods;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsTools;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;

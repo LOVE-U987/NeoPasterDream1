@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -206,7 +207,7 @@ public class WindKnightEntity extends GeckoLibMobEntity {
         final Level level = this.level();
 
         // 5t：铁傀儡受伤音
-        com.pasterdream.pasterdreammod.util.ServerScheduler.schedule(5, () -> {
+        ServerScheduler.schedule(5, () -> {
             if (!this.isAlive() || level.isClientSide()) {
                 return;
             }
@@ -215,7 +216,7 @@ public class WindKnightEntity extends GeckoLibMobEntity {
         });
 
         // 25t：爆发伤害与特效
-        com.pasterdream.pasterdreammod.util.ServerScheduler.schedule(25, () -> {
+        ServerScheduler.schedule(25, () -> {
             aoeWindingUp = false;
             if (!this.isAlive() || level.isClientSide()) {
                 return;

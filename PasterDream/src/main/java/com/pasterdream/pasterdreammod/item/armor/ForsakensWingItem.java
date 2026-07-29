@@ -3,7 +3,7 @@ package com.pasterdream.pasterdreammod.item.armor;
 import com.pasterdream.pasterdreammod.client.renderer.armor.ForsakensWingArmorRenderer;
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.registry.PDArmorMaterials;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;

@@ -1,4 +1,5 @@
 package com.pasterdream.pasterdreammod.item;
+import com.pasterdream.pasterdreammod.api.item.base.AbstractGeoDisplayItem;
 
 import net.minecraft.world.level.block.Block;
 import software.bernie.geckolib.animation.AnimationState;

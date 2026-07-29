@@ -1,4 +1,5 @@
 package com.pasterdream.pasterdreammod.item;
+import com.pasterdream.pasterdreammod.api.item.base.AbstractGeoDisplayItem;
 
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.world.item.Item;

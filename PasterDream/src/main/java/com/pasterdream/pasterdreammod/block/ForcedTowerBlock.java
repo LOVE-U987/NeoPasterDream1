@@ -6,7 +6,7 @@ import com.pasterdream.pasterdreammod.block.entity.ForcedTowerBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import com.pasterdream.pasterdreammod.util.PasterItemData;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;

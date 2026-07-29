@@ -6,7 +6,7 @@ import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksVegetation;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;

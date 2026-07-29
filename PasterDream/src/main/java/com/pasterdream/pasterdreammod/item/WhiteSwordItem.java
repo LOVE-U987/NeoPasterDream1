@@ -3,7 +3,7 @@ package com.pasterdream.pasterdreammod.item;
 import com.pasterdream.pasterdreammod.entity.projectile.WhiteSwordRainProjectileEntity;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;

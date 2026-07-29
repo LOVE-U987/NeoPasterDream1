@@ -2,7 +2,7 @@ package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;

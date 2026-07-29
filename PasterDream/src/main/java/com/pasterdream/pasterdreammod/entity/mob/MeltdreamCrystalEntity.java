@@ -1,7 +1,7 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
-import com.pasterdream.pasterdreammod.entity.damage.ConfigurableImmunityEntity;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.entity.damage.ConfigurableImmunityEntity;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;

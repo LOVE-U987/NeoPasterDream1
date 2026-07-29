@@ -5,7 +5,7 @@ import com.pasterdream.pasterdreammod.block.entity.W4GeoDataBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;

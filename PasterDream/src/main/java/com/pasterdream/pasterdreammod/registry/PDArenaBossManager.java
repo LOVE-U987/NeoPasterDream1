@@ -2,7 +2,7 @@ package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.block.entity.AaroncosHandChestBlockEntity;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import com.pasterdream.pasterdreammod.entity.mob.AaroncosLefthand0Entity;
 import com.pasterdream.pasterdreammod.entity.mob.AaroncosRighthand0Entity;
 import net.minecraft.advancements.AdvancementHolder;

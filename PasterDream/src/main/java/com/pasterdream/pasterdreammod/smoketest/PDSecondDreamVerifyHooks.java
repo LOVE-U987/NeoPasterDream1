@@ -13,7 +13,7 @@ import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksDungeon;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;

@@ -9,7 +9,7 @@ import com.pasterdream.pasterdreammod.registry.PDSounds;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsFunctional;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;

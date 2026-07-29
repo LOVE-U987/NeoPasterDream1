@@ -2,7 +2,7 @@ package com.pasterdream.pasterdreammod.block.entity;
 
 import com.pasterdream.pasterdreammod.menu.WindmoorCrateMenu;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
-import com.pasterdream.pasterdreammod.util.StructureInventoryHelper;
+import com.pasterdream.pasterdreammod.api.util.StructureInventoryHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;

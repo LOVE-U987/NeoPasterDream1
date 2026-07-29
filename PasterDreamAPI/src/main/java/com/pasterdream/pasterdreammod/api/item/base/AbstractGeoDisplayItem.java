@@ -1,4 +1,4 @@
-package com.pasterdream.pasterdreammod.item;
+package com.pasterdream.pasterdreammod.api.item.base;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;

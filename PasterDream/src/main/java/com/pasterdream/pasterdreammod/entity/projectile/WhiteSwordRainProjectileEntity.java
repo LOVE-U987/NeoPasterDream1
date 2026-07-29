@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.entity.projectile;
 
+import com.pasterdream.pasterdreammod.api.entity.projectile.AbstractWandProjectileEntity;
 import com.pasterdream.pasterdreammod.entity.mob.AaroncosLefthand0Entity;
 import com.pasterdream.pasterdreammod.entity.mob.AaroncosRighthand0Entity;
 import com.pasterdream.pasterdreammod.registry.PDEffects;

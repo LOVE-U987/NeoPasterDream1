@@ -1,4 +1,4 @@
-package com.pasterdream.pasterdreammod.util;
+package com.pasterdream.pasterdreammod.api.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -42,6 +42,8 @@ import java.util.Optional;
  * <p>
  * 物品解析：优先 {@link ItemStack#parse}（DFU 后 components）；失败时对
  * {@code written_book} 的旧 {@code tag{pages,title,author}} 做手工迁移。
+ *
+ * <p>用途：结构容器双格式 NBT 读写辅助（支持原版结构与本模组持久化格式互操作）。
  */
 public final class StructureInventoryHelper {
 

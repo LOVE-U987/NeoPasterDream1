@@ -1,6 +1,8 @@
 package com.pasterdream.pasterdreammod.entity.damage;
 
 import com.pasterdream.pasterdreammod.registry.PDEntities;
+import com.pasterdream.pasterdreammod.api.entity.damage.ConfigurableImmunityEntity;
+import com.pasterdream.pasterdreammod.api.entity.damage.DamageImmunityConfig;
 import net.minecraft.world.damagesource.DamageTypes;
 
 import java.util.Set;

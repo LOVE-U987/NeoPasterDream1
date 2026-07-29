@@ -6,7 +6,7 @@ import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.util.PasterItemData;
-import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import com.pasterdream.pasterdreammod.util.WeaponWorkshopVariables;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
