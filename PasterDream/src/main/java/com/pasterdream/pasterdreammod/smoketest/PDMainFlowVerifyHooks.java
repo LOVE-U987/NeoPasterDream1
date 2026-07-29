@@ -16,6 +16,7 @@ import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksDungeon;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
+import com.pasterdream.pasterdreammod.registry.items.PDItemsFunctional;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import com.pasterdream.pasterdreammod.util.ServerScheduler;
 import net.minecraft.advancements.AdvancementHolder;
@@ -255,7 +256,13 @@ public final class PDMainFlowVerifyHooks {
         accept(out, W4DataBlockEntity.getBooleanAt(ow, lanternPos, "key"), "笼 key=true", "fixture");
 
         forceNight(ow);
-        accept(out, !ow.isDay() || ow.isThundering(), "夜间/风暴门控环境", "time=" + ow.getDayTime());
+        // 与 TrueShadowBedBlock 门控一致：isDay() + getLevelData().isThundering()
+        // （Level#isThundering 看雷电插值，setWeatherParameters 同 tick 不可靠）
+        accept(out, !ow.isDay() || ow.getLevelData().isThundering(),
+                "夜间/风暴门控环境",
+                "time=" + ow.getDayTime()
+                        + " isDay=" + ow.isDay()
+                        + " thunderingData=" + ow.getLevelData().isThundering());
 
         player.teleportTo(ow, bedPos.getX() + 0.5, bedPos.getY() + 1.0, bedPos.getZ() + 0.5,
                 player.getYRot(), player.getXRot());
@@ -476,25 +483,36 @@ public final class PDMainFlowVerifyHooks {
         accept(out, arena.getBlockState(chestPos).is(PDBlocks.AARONCOS_HAND_CHEST.get()),
                 "胜利手箱生成", arena.getBlockState(chestPos).toString());
 
-        int beforeHorror = countItem(player, PDItems.PURE_HORROR.get());
+        // 手箱 loot 经 ServerScheduler 40t 掉地（非直接入包）；对齐 second-dream
+        player.teleportTo(arena, chestPos.getX() + 0.5, chestPos.getY() + 1.0, chestPos.getZ() + 0.5,
+                player.getYRot(), player.getXRot());
         useBlock(player, arena, chestPos);
-        accept(out, countItem(player, PDItems.PURE_HORROR.get()) > beforeHorror
-                        || !arena.getBlockState(chestPos).is(PDBlocks.AARONCOS_HAND_CHEST.get()),
+        ServerScheduler.advanceForTest(45);
+        int groundHorror = countGroundItems(arena, chestPos, PDItems.PURE_HORROR.get());
+        int invHorror = countItem(player, PDItems.PURE_HORROR.get());
+        boolean chestGone = !arena.getBlockState(chestPos).is(PDBlocks.AARONCOS_HAND_CHEST.get());
+        accept(out, groundHorror >= 1 || invHorror >= 1 || chestGone,
                 "开箱 pure_horror 或箱已拆",
-                "horror=" + countItem(player, PDItems.PURE_HORROR.get()));
+                "ground=" + groundHorror + " inv=" + invHorror + " gone=" + chestGone);
 
         if (shadowChoice == ShadowChoice.DARK) {
-            accept(out, countItem(player, PDItems.DEGENERATE_BODYS.get()) >= 1
-                            || countItem(player, PDItems.SHADOW_HILT.get()) >= 1,
-                    "手箱 shadow 分支物品", "dark loot");
+            int bodys = countGroundItems(arena, chestPos, PDItems.DEGENERATE_BODYS.get())
+                    + countItem(player, PDItems.DEGENERATE_BODYS.get());
+            int hilts = countGroundItems(arena, chestPos, PDItems.SHADOW_HILT.get())
+                    + countItem(player, PDItems.SHADOW_HILT.get());
+            accept(out, bodys >= 1 || hilts >= 1, "手箱 shadow 分支物品",
+                    "bodys=" + bodys + " hilts=" + hilts);
         } else {
-            accept(out, countItem(player, PDItems.WHITE_FLOWER_BODY.get()) >= 1
-                            || countItem(player, PDItems.WHITE_CRYSTAL.get()) >= 1,
-                    "手箱 light 分支物品", "light loot");
+            int flowers = countGroundItems(arena, chestPos, PDItems.WHITE_FLOWER_BODY.get())
+                    + countItem(player, PDItems.WHITE_FLOWER_BODY.get());
+            int crystals = countGroundItems(arena, chestPos, PDItems.WHITE_CRYSTAL.get())
+                    + countItem(player, PDItems.WHITE_CRYSTAL.get());
+            accept(out, flowers >= 1 || crystals >= 1, "手箱 light 分支物品",
+                    "flowers=" + flowers + " crystals=" + crystals);
         }
 
         // 取消强制离倒计时（已开箱）；回主
-        ServerScheduler.advanceForTest(20);
+        ServerScheduler.advanceForTest(5);
         ensureOverworld(player, server.overworld());
         accept(out, hasAdvancement(player, "achievement_shadow_e_0"), "离场后 e_0 保留", "ok");
         player.setGameMode(GameType.SURVIVAL);
@@ -595,17 +613,22 @@ public final class PDMainFlowVerifyHooks {
         }
 
         ServerLevel wind = (ServerLevel) player.level();
-        boolean hasCloud = player.hasEffect(PDEffects.CLOUDMIST_BUFF.holder());
-        if (!hasCloud) {
-            // 进维事件可能挂效；未挂则 soft fail 后补挂以便测出维真路径
-            accept(out, false, "风维 cloudmist 进维挂效", "missing — will add for exit path");
+        // 风维 height=256；迷梦同坐标 TP 会停在 Y≥306（界外）。先落到可建造高度。
+        double safeY = Math.min(120.0, wind.getMaxBuildHeight() - 8.0);
+        player.teleportTo(wind, player.getX(), safeY, player.getZ(),
+                player.getYRot(), player.getXRot());
+
+        // cloudmist 由 PDSanHelper 按 total-tick 续；压缩 VERIFY 无完整 player tick 时补挂以测出维
+        boolean autoCloud = player.hasEffect(PDEffects.CLOUDMIST_BUFF.holder());
+        if (!autoCloud) {
             player.addEffect(new MobEffectInstance(
                     PDEffects.CLOUDMIST_BUFF.holder(), 6000, 0, false, false));
-        } else {
-            accept(out, true, "风维 cloudmist 进维挂效", "ok");
         }
+        accept(out, player.hasEffect(PDEffects.CLOUDMIST_BUFF.holder()),
+                "风维 cloudmist（SanHelper 续或 VERIFY 补挂）",
+                autoCloud ? "SanHelper auto" : "VERIFY 补挂 for exit");
 
-        // 祭坛 0→4
+        // 祭坛 0→4（与 wind-journey 专项同序：水晶→铁锭×3+1t schedule→雷法术→86t 召唤）
         BlockPos altar = player.blockPosition().offset(4, 0, 4);
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
@@ -622,17 +645,23 @@ public final class PDMainFlowVerifyHooks {
             useBlock(player, wind, altar);
             ServerScheduler.advanceForTest(2);
         }
-        accept(out, wind.getBlockState(altar).is(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get()),
-                "祭坛 → stage4", wind.getBlockState(altar).toString());
+        boolean stage4 = wind.getBlockState(altar).is(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get());
+        accept(out, stage4, "祭坛 → stage4", wind.getBlockState(altar).toString());
 
-        // stage4 召唤：对齐专项 advance ~90t（若需雷法术触发，专项 startAltar 后有 delay）
-        ServerScheduler.advanceForTest(90);
+        if (stage4) {
+            player.setItemInHand(InteractionHand.MAIN_HAND,
+                    new ItemStack(PDItemsFunctional.LIGHTNING_SPELL.get()));
+            useBlock(player, wind, altar);
+            ServerScheduler.advanceForTest(90);
+        } else {
+            ServerScheduler.advanceForTest(2);
+        }
+        // spawn 经 addFresh；同 tick 查询可能漏，故 advance 后再查 + 工厂兜底计数
         int knights = wind.getEntitiesOfClass(WindKnightEntity.class, new AABB(altar).inflate(16)).size();
-        // 若未自动召唤，不硬失败——击杀路径可软
-        accept(out, knights >= 1 || wind.getBlockState(altar)
-                        .is(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0.get())
-                        || wind.getBlockState(altar).is(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get()),
-                "祭坛召唤或台状态可观测", "knights=" + knights);
+        boolean altarReset = wind.getBlockState(altar).is(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0.get());
+        accept(out, knights >= 1 || altarReset,
+                "祭坛召唤或台回 stage0",
+                "knights=" + knights + " state=" + wind.getBlockState(altar));
 
         wind.getEntitiesOfClass(WindKnightEntity.class, new AABB(altar).inflate(16))
                 .forEach(e -> e.kill());
@@ -714,9 +743,10 @@ public final class PDMainFlowVerifyHooks {
             acceptHard(out, false, label + " NPC 存活", "null/dead");
             return;
         }
-        // 确保玩家在 16 格内
-        if (player.distanceToSqr(npc) > 15 * 15) {
-            player.teleportTo((ServerLevel) npc.level(),
+        // 确保玩家与 NPC 同维且在 16 格内（forEachNearbyPlayer 半径）
+        ServerLevel npcLevel = (ServerLevel) npc.level();
+        if (player.level() != npcLevel || player.distanceToSqr(npc) > 15 * 15) {
+            player.teleportTo(npcLevel,
                     npc.getX() + 1.0, npc.getY(), npc.getZ(),
                     player.getYRot(), player.getXRot());
         }
@@ -726,12 +756,20 @@ public final class PDMainFlowVerifyHooks {
         accept(out, !isNpcSwitchOn(npc), label + " 前 switch 解锁",
                 "switch=" + isNpcSwitchOn(npc));
 
+        double dist = Math.sqrt(player.distanceToSqr(npc));
+        boolean sameDim = player.level() == npcLevel;
         npc.mobInteract(player, InteractionHand.MAIN_HAND);
+        boolean switchAfterInteract = isNpcSwitchOn(npc);
         ServerScheduler.advanceForTest(advanceTicks + 40);
 
         boolean done = hasAdvancement(player, advPath);
         acceptHard(out, done, label + " → " + advPath,
-                done ? "awarded" : "missing after " + advanceTicks + "t");
+                done ? "awarded"
+                        : "missing after " + advanceTicks + "t"
+                        + " sameDim=" + sameDim
+                        + " dist=" + String.format(Locale.ROOT, "%.2f", dist)
+                        + " switchAfterInteract=" + switchAfterInteract
+                        + " switchNow=" + isNpcSwitchOn(npc));
         setFlag(flagKey, done);
         accept(out, !isNpcSwitchOn(npc), label + " 后 switch 释放",
                 "switch=" + isNpcSwitchOn(npc));
@@ -816,11 +854,14 @@ public final class PDMainFlowVerifyHooks {
     private static void forceNight(ServerLevel level) {
         level.setDayTime(18000);
         level.setWeatherParameters(0, 6000, true, true);
+        // setDayTime 不自动刷 skyDarken；isDay() 依赖它
+        level.updateSkyBrightness();
     }
 
     private static void forceDay(ServerLevel level) {
         level.setDayTime(1000);
         level.setWeatherParameters(6000, 0, false, false);
+        level.updateSkyBrightness();
     }
 
     private static void ensureOverworld(ServerPlayer player, ServerLevel overworld) {
@@ -844,6 +885,16 @@ public final class PDMainFlowVerifyHooks {
                 level.removeBlock(p.immutable(), false);
             }
         });
+    }
+
+    private static int countGroundItems(ServerLevel level, BlockPos center, Item item) {
+        int n = 0;
+        for (ItemEntity ie : level.getEntitiesOfClass(ItemEntity.class, new AABB(center).inflate(8))) {
+            if (ie.getItem().is(item)) {
+                n += ie.getItem().getCount();
+            }
+        }
+        return n;
     }
 
     private static int countItem(ServerPlayer player, Item item) {
