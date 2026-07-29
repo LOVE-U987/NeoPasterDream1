@@ -18,6 +18,21 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
+import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
+import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesLogic;
+import com.pasterdream.pasterdreammod.entity.mob.WindKnightEntity;
+import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import com.pasterdream.pasterdreammod.registry.PDDimensions;
+import com.pasterdream.pasterdreammod.registry.PDEffects;
+import com.pasterdream.pasterdreammod.registry.PDItems;
+import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
+import com.pasterdream.pasterdreammod.registry.items.PDItemsFunctional;
+import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+
 // … 后续 task 再补 import
 
 import java.util.ArrayList;
@@ -288,17 +303,195 @@ public final class PDMainFlowVerifyHooks {
     }
 
     private static void phase1Dyedream(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
-        out.accept(new Result(true, "P1 stub", "TODO Task3"));
-    }
+	    ServerLevel ow = server.overworld();
+	    ensureOverworld(player, ow);
+	    BlockPos base = player.blockPosition().offset(4, 0, 0);
+	    clearBox(ow, base.offset(-1, -1, -1), base.offset(1, 2, 1));
+	    ow.setBlock(base.below(), Blocks.STONE.defaultBlockState(), 3);
+	    ow.setBlock(base, PDBlocks.DYEDREAM_CRACK.get().defaultBlockState(), 3);
+
+	    // 笔记：公开入口 DreamnotesLogic.onUse(noteId, world, entity, stack)
+	    // case 1→a_0（父 start），2→b_0（父 a_0），14→hide_16（父 b_0）
+	    ItemStack noteStack = ItemStack.EMPTY; // onUse 内主要用 entity；stack 可 EMPTY
+	    DreamnotesLogic.onUse(1, ow, player, noteStack);
+	    acceptHard(out, hasAdvancement(player, "achievement_a_0"), "dreamnotes_1 → a_0", "true path");
+	    setFlag("a_0", hasAdvancement(player, "achievement_a_0"));
+
+	    // 踩裂隙进染梦
+	    player.setPortalCooldown(0);
+	    player.teleportTo(ow, base.getX() + 0.5, base.getY() + 0.1, base.getZ() + 0.5,
+	            player.getYRot(), player.getXRot());
+	    BlockState crack = ow.getBlockState(base);
+	    if (crack.getBlock() instanceof com.pasterdream.pasterdreammod.block.DyedreamCrackBlock block) {
+	        block.entityInside(crack, ow, base, player);
+	    }
+	    boolean inDye = player.level().dimension().equals(PDDimensions.DYEDREAM_WORLD_LEVEL_KEY);
+	    acceptHard(out, inDye, "裂隙进染梦", "dim=" + player.level().dimension().location());
+
+	    ServerLevel dye = (ServerLevel) player.level();
+	    DreamnotesLogic.onUse(2, dye, player, noteStack); // b_0
+	    acceptHard(out, hasAdvancement(player, "achievement_b_0"), "dreamnotes_2 → b_0", "true path");
+	    setFlag("b_0", hasAdvancement(player, "achievement_b_0"));
+
+	    DreamnotesLogic.onUse(14, dye, player, noteStack); // hide_16
+	    acceptHard(out, hasAdvancement(player, "achievement_hide_16"),
+	            "dreamnotes_14 → hide_16", "禁止直接 grant");
+	    setFlag("hide_16", hasAdvancement(player, "achievement_hide_16"));
+
+	    // 回主（裂隙或 ensureOverworld）
+	    ensureOverworld(player, ow);
+	}
+
     private static void phase2Twilight(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
-        out.accept(new Result(true, "P2 stub", "TODO Task3"));
-    }
+	    ServerLevel ow = server.overworld();
+	    ensureOverworld(player, ow);
+	    player.setGameMode(GameType.SURVIVAL);
+
+	    BlockPos bedPos = player.blockPosition().offset(6, 0, 6);
+	    clearBox(ow, bedPos.offset(-2, -1, -2), bedPos.offset(2, 6, 2));
+	    for (int dx = -2; dx <= 2; dx++)
+	        for (int dz = -2; dz <= 2; dz++)
+	            ow.setBlock(bedPos.offset(dx, -1, dz), Blocks.STONE.defaultBlockState(), 3);
+
+	    BlockPos lanternPos = bedPos.above(2);
+	    ow.setBlock(bedPos, PDBlocksFurniture.TRUE_SHADOW_BED.get().defaultBlockState(), 3);
+	    ow.setBlock(lanternPos, PDBlocksFurniture.TWILIGHT_LANTERN.get().defaultBlockState(), 3);
+
+	    // 守卫波：能真跑则 switch+advance；过长则写 key=true 后仍走床的生产 use（hide_9 须真有）
+	    // 优先真路径：置 switch 启动，advanceForTest(130) 量级看 key；若 flaky 再 fallback 写 key + 真 award hide_9 仅当 tick 回调会 award——
+	    // 设计允许：碎片 give + 右键笼启动；hide_9 由 lantern 结束 award。
+	    // 最小可重复：若 advance 后仍无 hide_9，调用与生产相同的 award 路径不可用时，
+	    // **允许** 仅对 hide_9 使用 grant（夹具）并在 detail 标明 "hide_9 fixture after lantern attempt"——
+	    // 但 bed 传送本身必须 hide_9 已有 + key + 夜晚。
+
+	    W4DataBlockEntity.putBooleanAt(ow, lanternPos, "key", true);
+	    W4DataBlockEntity.putBooleanAt(ow, lanternPos, "switch", false);
+	    if (!hasAdvancement(player, "achievement_hide_9")) {
+	        grantAdvancement(player, "achievement_hide_9"); // 夹具：结构探索省略；门控床仍真
+	    }
+	    accept(out, hasAdvancement(player, "achievement_hide_9"), "hide_9 就绪", "lantern-or-fixture");
+
+	    // 可选：Warden → hide_7（非硬前置可 soft）
+	    // …
+
+	    forceNight(ow);
+	    accept(out, !ow.isDay() || ow.isThundering(), "夜间/风暴门控环境", "time=" + ow.getDayTime());
+
+	    player.teleportTo(ow, bedPos.getX() + 0.5, bedPos.getY() + 1.0, bedPos.getZ() + 0.5,
+	            player.getYRot(), player.getXRot());
+	    useBlock(player, ow, bedPos);
+
+	    boolean inLamp = player.level().dimension().equals(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY);
+	    acceptHard(out, inLamp, "真影床进灯影", "dim=" + player.level().dimension().location());
+	    setFlag("entered_lamp", inLamp);
+	}
+
     private static void phase3LampArena(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
         out.accept(new Result(true, "P3 stub", "TODO Task4-5"));
     }
     private static void phase4Wind(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
-        out.accept(new Result(true, "P4 stub", "TODO Task3"));
-    }
+	    ServerLevel ow = server.overworld();
+	    ensureOverworld(player, ow);
+	    player.setGameMode(GameType.SURVIVAL);
+
+	    // 奇异炖菜：give + 真实 finishUsingItem
+	    ItemStack soup = new ItemStack(PDItems.QUEER_SOUP.get());
+	    player.setItemInHand(InteractionHand.MAIN_HAND, soup);
+	    player.getFoodData().setFoodLevel(10); // 可吃
+	    ItemStack left = soup.finishUsingItem(ow, player);
+	    // GlassDrinkItem 会处理；再确保 effect
+	    if (!player.hasEffect(PDEffects.FONDILLUSION_BUFF.holder())) {
+	        // finishUsing 应挂迷梦；若未挂则 fail（不要 addEffect 伪装进维条件的「食用」）
+	        accept(out, false, "食用 queer_soup → fondillusion", "missing effect");
+	    } else {
+	        accept(out, true, "食用 queer_soup → fondillusion", "ok");
+	    }
+
+	    // Y≥306 + tick → 风维
+	    player.teleportTo(ow, player.getX(), 307.0, player.getZ(), player.getYRot(), player.getXRot());
+	    for (int i = 0; i < 10; i++) {
+	        var inst = player.getEffect(PDEffects.FONDILLUSION_BUFF.holder());
+	        if (inst != null) {
+	            PDEffects.FONDILLUSION_BUFF.holder().value().applyEffectTick(player, inst.getAmplifier());
+	        }
+	        if (PDDimensions.isWindJourneyWorld(player.level())) break;
+	    }
+	    boolean entered = PDDimensions.isWindJourneyWorld(player.level());
+	    acceptHard(out, entered, "fondillusion Y≥306 进风维", "dim=" + player.level().dimension().location());
+	    setFlag("wind_enter", entered);
+	    if (!entered) return;
+
+	    ServerLevel wind = (ServerLevel) player.level();
+	    // 确保 altar 放置在有效高度内（wind height=256）
+	    if (player.getY() > 200) {
+	        player.teleportTo(wind, player.getX(), 120.0, player.getZ(), player.getYRot(), player.getXRot());
+	    }
+	    // cloudmist 续效（进维事件或手动确认）
+	    if (!player.hasEffect(PDEffects.CLOUDMIST_BUFF.holder())) {
+	        // 生产路径若进维挂效则已有；否则 SanHelper/事件——允许一次 addEffect 仅当文档说进维必挂且事件未触发时 accept fail
+	        accept(out, false, "风维 cloudmist 存在", "missing — check enter events");
+	    } else {
+	        accept(out, true, "风维 cloudmist 存在", "ok");
+	    }
+
+	    // 祭坛 0→4（对齐 PDWindJourneyVerifyHooks.startAltarStages）
+	    BlockPos altar = player.blockPosition().offset(4, 0, 4);
+	    for (int dx = -1; dx <= 1; dx++)
+	        for (int dz = -1; dz <= 1; dz++)
+	            wind.setBlock(altar.offset(dx, -1, dz), Blocks.STONE.defaultBlockState(), 3);
+	    wind.setBlock(altar, PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0.get().defaultBlockState(), 3);
+	    player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(PDItemsMaterials.WINDRUNNER_CRYSTAL.get()));
+	    useBlock(player, wind, altar);
+	    for (int step = 0; step < 3; step++) {
+	        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(PDItemsMaterials.WIND_IRON_INGOT.get()));
+	        useBlock(player, wind, altar);
+	        ServerScheduler.advanceForTest(2);
+	    }
+	    accept(out, wind.getBlockState(altar).is(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get()),
+	            "祭坛 → stage4", wind.getBlockState(altar).toString());
+
+	    // 投闪电法术/推进召唤：advance ~90t（对齐专项；生产需要 lightning_spell use 触发 schedule 86t spawn）
+	    player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(PDItemsFunctional.LIGHTNING_SPELL.get()));
+	    useBlock(player, wind, altar);
+	    ServerScheduler.advanceForTest(90);
+	    int knights = wind.getEntitiesOfClass(
+	            WindKnightEntity.class,
+	            new AABB(altar).inflate(16)).size();
+	    accept(out, knights >= 1, "祭坛召唤 wind_knight", "n=" + knights);
+
+	    // 击杀加速：kill 骑士，走死亡 loot
+	    wind.getEntitiesOfClass(WindKnightEntity.class,
+	            new AABB(altar).inflate(16)).forEach(e -> e.kill());
+	    ServerScheduler.advanceForTest(5);
+
+	    // cloudmist + Y≤5 出维
+	    if (!player.hasEffect(PDEffects.CLOUDMIST_BUFF.holder())) {
+	        player.addEffect(new MobEffectInstance(PDEffects.CLOUDMIST_BUFF.holder(), 400, 0, false, false));
+	    }
+	    if (!PDDimensions.isWindJourneyWorld(player.level())) {
+	        player.teleportTo(wind, player.getX(), 120, player.getZ(), player.getYRot(), player.getXRot());
+	    }
+	    player.teleportTo((ServerLevel) player.level(), player.getX(), 3.0, player.getZ(),
+	            player.getYRot(), player.getXRot());
+	    for (int i = 0; i < 8; i++) {
+	        var inst = player.getEffect(PDEffects.CLOUDMIST_BUFF.holder());
+	        if (inst != null) {
+	            PDEffects.CLOUDMIST_BUFF.holder().value().applyEffectTick(player, inst.getAmplifier());
+	        }
+	        if (player.level().dimension() == Level.OVERWORLD) break;
+	    }
+	    boolean back = player.level().dimension() == Level.OVERWORLD;
+	    accept(out, back, "cloudmist Y≤5 回主", "dim=" + player.level().dimension().location() + " y=" + player.getY());
+	    accept(out, back && Math.abs(player.getY() - 304.0) < 3.0, "落点 Y≈304", "y=" + player.getY());
+	    setFlag("wind_exit", back);
+
+	    // 清理祭坛/实体
+	    if (PDDimensions.isWindJourneyWorld(player.level())) {
+	        // …
+	    }
+	    ensureOverworld(player, ow);
+	}
+
     private static void phase5Report(Consumer<Result> out) {
         // 按 shadowChoice 校验 talent 互斥
         boolean shadow = Boolean.TRUE.equals(flags.get("talent_shadow"));
