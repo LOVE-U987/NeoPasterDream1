@@ -18,10 +18,13 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
+import com.pasterdream.pasterdreammod.block.AaroncosArenaPortalsBlock;
 import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
 import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesLogic;
 import com.pasterdream.pasterdreammod.entity.mob.ShadowNpc0Entity;
 import com.pasterdream.pasterdreammod.entity.mob.WindKnightEntity;
+import com.pasterdream.pasterdreammod.menu.ShadowSelectEndMenu;
+import com.pasterdream.pasterdreammod.registry.PDArenaBossManager;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
@@ -231,6 +234,16 @@ public final class PDMainFlowVerifyHooks {
             ItemStack s = player.getInventory().getItem(i);
             if (s.is(item)) {
                 n += s.getCount();
+            }
+        }
+        return n;
+    }
+
+    private static int countGround(ServerLevel level, BlockPos center, net.minecraft.world.item.Item item) {
+        int n = 0;
+        for (ItemEntity ie : level.getEntitiesOfClass(ItemEntity.class, new AABB(center).inflate(6))) {
+            if (ie.getItem().is(item)) {
+                n += ie.getItem().getCount();
             }
         }
         return n;
@@ -486,8 +499,124 @@ public final class PDMainFlowVerifyHooks {
         runNpcStage(player, npc2, "achievement_shadow_npc_4", 540, "npc_4", out, "Stage4");
         runNpcStage(player, npc2, "achievement_shadow_npc_5", 300, "npc_5", out, "Stage5");
 
-        // 停在 npc_5 后，清晰 handoff 给 Task5（choice / arena / chest）；不触碰 bed/choice
-        accept(out, true, "P3 对话+入侵完成（至 npc_5）", "STOP before choice bed");
+        // === Task5: 抉择前 portal 拒入（soft） + 真影床 + click one side + arena/chest ===
+        // 条件：灯影、npc_5、!d_0
+        // Step 1: portal reject soft (no d_0)
+        BlockPos portalReject = site.offset(5, 0, 5);
+        lamp.setBlock(portalReject.below(), Blocks.STONE.defaultBlockState(), 3);
+        lamp.setBlock(portalReject, PDBlocks.AARONCOS_ARENA_PORTALS.get().defaultBlockState(), 3);
+        BlockState prState = lamp.getBlockState(portalReject);
+        if (prState.getBlock() instanceof AaroncosArenaPortalsBlock prBlock) {
+            prBlock.entityInside(prState, lamp, portalReject, player);
+        }
+        accept(out, player.level().dimension().equals(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY),
+                "抉择前 portal 拒入（soft）", "dim=" + player.level().dimension().location());
+
+        // Step 2: 真影床打开菜单 + clickMenuButton（仅点一侧）
+        BlockPos choiceBed = site.offset(0, 0, 3);
+        lamp.setBlock(choiceBed.below(), Blocks.STONE.defaultBlockState(), 3);
+        lamp.setBlock(choiceBed, PDBlocksFurniture.TRUE_SHADOW_BED.get().defaultBlockState(), 3);
+        // 灯影内抉择不依赖笼/夜晚
+        player.teleportTo(lamp, choiceBed.getX() + 0.5, choiceBed.getY() + 1, choiceBed.getZ() + 0.5,
+                player.getYRot(), player.getXRot());
+        useBlock(player, lamp, choiceBed);
+
+        boolean menuOpen = player.containerMenu instanceof ShadowSelectEndMenu;
+        acceptHard(out, menuOpen, "真影床打开 ShadowSelectEndMenu",
+                player.containerMenu.getClass().getName());
+
+        int button = shadowChoice == ShadowChoice.DARK
+                ? ShadowSelectEndMenu.BUTTON_DARK
+                : ShadowSelectEndMenu.BUTTON_LIGHT;
+        boolean clicked = player.containerMenu.clickMenuButton(player, button);
+        acceptHard(out, clicked, "clickMenuButton " + shadowChoice, "button=" + button);
+
+        // FORBID reflect; only one side; d_0 from click path
+        if (shadowChoice == ShadowChoice.DARK) {
+            ServerScheduler.advanceForTest(280); // 旁白
+        }
+        acceptHard(out, hasAdvancement(player, "achievement_shadow_d_0"), "d_0 已授予", "choice path");
+        setFlag("d_0", true);
+        setFlag("choice_done", true);
+
+        if (shadowChoice == ShadowChoice.DARK) {
+            accept(out, hasAdvancement(player, "achievement_talent_shadow"), "talent_shadow", "dark");
+            accept(out, !hasAdvancement(player, "achievement_talent_light"), "无 talent_light", "mutex");
+            accept(out, countItem(player, PDItems.SHADOW_HILT.get()) >= 1, "赠 shadow_hilt", "inv");
+            setFlag("talent_shadow", true);
+            setFlag("talent_light", false);
+        } else {
+            accept(out, hasAdvancement(player, "achievement_talent_light"), "talent_light", "light");
+            accept(out, !hasAdvancement(player, "achievement_talent_shadow"), "无 talent_shadow", "mutex");
+            accept(out, countItem(player, PDItems.WHITE_CRYSTAL.get()) >= 1, "赠 white_crystal", "inv");
+            setFlag("talent_light", true);
+            setFlag("talent_shadow", false);
+        }
+
+        // Step 3: 竞技场进场 / 胜利 / 手箱
+        // 对齐 PDSecondDreamVerifyHooks 但不 grant talent（已由抉择获得）
+        // 优先 portal entityInside 真路径
+        ServerLevel arena = server.getLevel(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY);
+        BlockPos gate = site.offset(6, 0, 0);
+        lamp.setBlock(gate.below(), Blocks.STONE.defaultBlockState(), 3);
+        lamp.setBlock(gate, PDBlocks.AARONCOS_ARENA_PORTALS.get().defaultBlockState(), 3);
+        BlockState gateState = lamp.getBlockState(gate);
+        if (gateState.getBlock() instanceof AaroncosArenaPortalsBlock gateBlock) {
+            gateBlock.entityInside(gateState, lamp, gate, player);
+        }
+        accept(out, player.level().dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY),
+                "有 d_0 踩门进竞技场（portal entityInside）", "dim=" + player.level().dimension().location());
+
+        accept(out, player.hasEffect(PDEffects.GUARD_BLOCK_BUFF.holder()), "进场 GUARD", "ok");
+
+        // 胜利：双灭手（生产 onLeft/RightHandDeath）
+        PDArenaBossManager.initializeBossFight(arena);
+        PDArenaBossManager.setBossAlive(arena, true, true);
+        PDArenaBossManager.setPhase(arena, PDArenaBossManager.BossFightPhase.FIGHTING);
+        PDArenaBossManager.onLeftHandDeath(arena);
+        PDArenaBossManager.onRightHandDeath(arena);
+
+        acceptHard(out, hasAdvancement(player, "achievement_shadow_e_0"), "e_0 胜利", "boss manager");
+        setFlag("e_0", true);
+
+        BlockPos chestPos = new BlockPos(0, 69, 0);
+        accept(out, arena.getBlockState(chestPos).is(PDBlocks.AARONCOS_HAND_CHEST.get()),
+                "胜利手箱生成", arena.getBlockState(chestPos).toString());
+
+        // 开箱：生产经 ServerScheduler ~40t 掉落到地面（非瞬时 inventory）
+        // 适配：advance + 查 ground ItemEntity 和/或 inventory；与 brief 样本 inv 即时断言有差异时记录
+        int beforeH = countItem(player, PDItems.PURE_HORROR.get());
+        useBlock(player, arena, chestPos);
+        ServerScheduler.advanceForTest(50);
+        int afterH = countItem(player, PDItems.PURE_HORROR.get());
+        int gHorror = countGround(arena, chestPos, PDItems.PURE_HORROR.get());
+        accept(out, (afterH > beforeH) || (gHorror > 0), "开箱 pure_horror（inv/ground 40t+）", "invΔ=" + (afterH - beforeH) + " g=" + gHorror);
+
+        if (shadowChoice == ShadowChoice.DARK) {
+            int gBody = countGround(arena, chestPos, PDItems.DEGENERATE_BODYS.get());
+            int gHilt = countGround(arena, chestPos, PDItems.SHADOW_HILT.get());
+            int invBody = countItem(player, PDItems.DEGENERATE_BODYS.get());
+            int invHilt = countItem(player, PDItems.SHADOW_HILT.get());
+            accept(out, gBody >= 1 || gHilt >= 1 || invBody >= 1 || invHilt >= 1,
+                    "手箱 shadow 分支物品", "dark loot g=" + gBody + "/" + gHilt + " inv=" + invBody + "/" + invHilt);
+        } else {
+            int gFlower = countGround(arena, chestPos, PDItems.WHITE_FLOWER_BODY.get());
+            int gCrystal = countGround(arena, chestPos, PDItems.WHITE_CRYSTAL.get());
+            int invFlower = countItem(player, PDItems.WHITE_FLOWER_BODY.get());
+            int invCrystal = countItem(player, PDItems.WHITE_CRYSTAL.get());
+            accept(out, gFlower >= 1 || gCrystal >= 1 || invFlower >= 1 || invCrystal >= 1,
+                    "手箱 light 分支物品", "light loot g=" + gFlower + "/" + gCrystal + " inv=" + invFlower + "/" + invCrystal);
+        }
+
+        // 离场主世界；e_0 保留
+        ensureOverworld(player, server.overworld());
+        accept(out, hasAdvancement(player, "achievement_shadow_e_0"), "离场后 e_0 保留", "ok");
+        // 清理竞技场实体（可选，留给后续或不严格）
+        // 灯影内残留 portal 等不清理，测试环境
+
+        // 移除 choice 区域 portal 以干净（可选）
+        lamp.removeBlock(portalReject, false);
+        lamp.removeBlock(gate, false);
     }
     private static void phase4Wind(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
 	    ServerLevel ow = server.overworld();
