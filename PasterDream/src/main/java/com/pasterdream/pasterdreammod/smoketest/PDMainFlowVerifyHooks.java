@@ -2,8 +2,22 @@ package com.pasterdream.pasterdreammod.smoketest;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.util.ServerScheduler;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementProgress;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+
 // … 后续 task 再补 import
 
 import java.util.ArrayList;
@@ -129,10 +143,150 @@ public final class PDMainFlowVerifyHooks {
         return new Result(pass, name, detail);
     }
 
-    // ---- phase stubs（Task 2+ 填充）----
-    private static void phase0Bootstrap(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
-        out.accept(new Result(true, "P0 stub", "TODO Task2"));
+    // ==================== shared helpers (from SecondDream + 新增 for main-flow) ====================
+
+    private static void useBlock(ServerPlayer player, ServerLevel level, BlockPos pos) {
+        BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false);
+        level.getBlockState(pos).useWithoutItem(level, player, hit);
     }
+
+    private static boolean hasAdvancement(ServerPlayer player, String path) {
+        AdvancementHolder h = player.server.getAdvancements()
+                .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
+        return h != null && player.getAdvancements().getOrStartProgress(h).isDone();
+    }
+
+    private static void grantAdvancement(ServerPlayer player, String path) {
+        AdvancementHolder h = player.server.getAdvancements()
+                .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
+        if (h == null) {
+            return;
+        }
+        AdvancementProgress p = player.getAdvancements().getOrStartProgress(h);
+        if (!p.isDone()) {
+            for (String c : p.getRemainingCriteria()) {
+                player.getAdvancements().award(h, c);
+            }
+        }
+    }
+
+    private static void revokeAdvancement(ServerPlayer player, String path) {
+        AdvancementHolder h = player.server.getAdvancements()
+                .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
+        if (h == null) {
+            return;
+        }
+        AdvancementProgress p = player.getAdvancements().getOrStartProgress(h);
+        for (String c : p.getCompletedCriteria()) {
+            player.getAdvancements().revoke(h, c);
+        }
+    }
+
+    private static void ensureOverworld(ServerPlayer player, ServerLevel overworld) {
+        if (player.level().dimension() != Level.OVERWORLD) {
+            BlockPos spawn = overworld.getSharedSpawnPos();
+            player.teleportTo(overworld,
+                    spawn.getX() + 0.5, spawn.getY() + 1.0, spawn.getZ() + 0.5,
+                    player.getYRot(), player.getXRot());
+        }
+        player.setGameMode(GameType.SURVIVAL);
+    }
+
+    /** minimal teleport helper per brief */
+    private static void teleport(ServerLevel level, ServerPlayer player, double x, double y, double z) {
+        player.teleportTo(level, x, y, z, player.getYRot(), player.getXRot());
+    }
+
+    private static void clearBox(ServerLevel level, BlockPos a, BlockPos b) {
+        BlockPos.betweenClosed(a, b).forEach(p -> {
+            if (!level.getBlockState(p).isAir()) {
+                level.removeBlock(p.immutable(), false);
+            }
+        });
+    }
+
+    private static int countItem(Player player, net.minecraft.world.item.Item item) {  // note: Player for generality, but callers use ServerPlayer
+        int n = 0;
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack s = player.getInventory().getItem(i);
+            if (s.is(item)) {
+                n += s.getCount();
+            }
+        }
+        return n;
+    }
+
+    private static void setSurvival(ServerPlayer player) {
+        player.setGameMode(GameType.SURVIVAL);
+    }
+
+    private static void forceNight(ServerLevel level) {
+        level.setDayTime(18000); // 午夜
+        level.setWeatherParameters(0, 6000, true, false); // 可选雨；床门控要 !isDay || thundering
+    }
+
+    private static void forceDay(ServerLevel level) {
+        level.setDayTime(1000);
+        level.setWeatherParameters(6000, 0, false, false);
+    }
+
+    private static void accept(Consumer<Result> out, boolean pass, String name, String detail) {
+        out.accept(new Result(pass, name, detail));
+        bump(currentPhase, pass);
+    }
+
+    private static void acceptHard(Consumer<Result> out, boolean pass, String name, String detail) {
+        accept(out, pass, name, detail);
+        if (!pass) markHardFail();
+    }
+
+    private static void dumpPlayer(ServerPlayer player, String label) {
+        if (player == null) {
+            PasterDreamMod.LOGGER.info("[PDVerify] DUMP {}: player=null", label);
+            return;
+        }
+        PasterDreamMod.LOGGER.info("[PDVerify] DUMP {}: dim={} pos={} mode={} health={} xp={}",
+                label,
+                player.level().dimension().location(),
+                player.blockPosition(),
+                player.gameMode.getGameModeForPlayer(),
+                player.getHealth(),
+                player.experienceLevel);
+    }
+
+    // ---- phase stubs（Task 2+ 填充；仅 P0/P5 本 task 实现）----
+    private static void phase0Bootstrap(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
+        var choice = parseShadowChoice();
+        if (choice.isEmpty()) {
+            acceptHard(out, false, "SHADOW_CHOICE 非法",
+                    String.valueOf(System.getenv("PASTERDREAM_VERIFY_SHADOW_CHOICE")));
+            return;
+        }
+        shadowChoice = choice.get();
+        accept(out, true, "shadowChoice=" + shadowChoice.name().toLowerCase(Locale.ROOT), "env/prop");
+
+        player.setGameMode(GameType.SURVIVAL);
+        accept(out, player.gameMode.getGameModeForPlayer() == GameType.SURVIVAL, "切生存", "ok");
+
+        // 最小自举：无 start 时 grant achievement_start（夹具）
+        if (!hasAdvancement(player, "achievement_start")) {
+            grantAdvancement(player, "achievement_start");
+        }
+        accept(out, hasAdvancement(player, "achievement_start"), "achievement_start", "fixture-or-prior");
+
+        ServerLevel ow = server.overworld();
+        ensureOverworld(player, ow);
+        BlockPos anchor = player.blockPosition();
+        // 小平台
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                ow.setBlock(anchor.offset(dx, -1, dz), Blocks.STONE.defaultBlockState(), 3);
+                ow.setBlock(anchor.offset(dx, 0, dz), Blocks.AIR.defaultBlockState(), 3);
+            }
+        }
+        accept(out, true, "主世界锚点平台", anchor.toShortString());
+    }
+
     private static void phase1Dyedream(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
         out.accept(new Result(true, "P1 stub", "TODO Task3"));
     }
@@ -146,8 +300,19 @@ public final class PDMainFlowVerifyHooks {
         out.accept(new Result(true, "P4 stub", "TODO Task3"));
     }
     private static void phase5Report(Consumer<Result> out) {
-        out.accept(new Result(true, "P5 continuousFlags snapshot", flags.toString()));
+        // 按 shadowChoice 校验 talent 互斥
+        boolean shadow = Boolean.TRUE.equals(flags.get("talent_shadow"));
+        boolean light = Boolean.TRUE.equals(flags.get("talent_light"));
+        boolean exclusive = shadowChoice == ShadowChoice.DARK
+                ? (shadow && !light) : (light && !shadow);
+        accept(out, exclusive || !Boolean.TRUE.equals(flags.get("choice_done")),
+                "talent 与 shadowChoice 互斥一致",
+                "choice=" + shadowChoice + " shadow=" + shadow + " light=" + light);
+        accept(out, true, "continuousFlags", flags.toString());
+        PasterDreamMod.LOGGER.info("[PDVerify] MAIN-FLOW phases={} choice={}",
+                phaseSummaries(), shadowChoice);
     }
+
 
     /** 解析影之抉择；非法返回 empty，由 P0 fail fast */
     static java.util.Optional<ShadowChoice> parseShadowChoice() {
