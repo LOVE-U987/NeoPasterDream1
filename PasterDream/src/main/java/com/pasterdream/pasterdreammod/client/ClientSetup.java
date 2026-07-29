@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.client;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.client.model.Modelslime;
+import com.pasterdream.pasterdreammod.client.gui.config.PDConfigScreen;
 import com.pasterdream.pasterdreammod.client.particle.*;
 import com.pasterdream.pasterdreammod.client.particle.AuroraGlowParticle;
 import com.pasterdream.pasterdreammod.client.particle.CrystalSnowflakeParticle;
@@ -45,7 +46,9 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -79,6 +82,13 @@ public class ClientSetup {
         event.enqueueWork(() -> {
             CurioClientHandler.init();
             PasterDreamMod.LOGGER.debug("[ClientSetup] 饰品身体渲染器初始化完成");
+
+            // 注册模组配置界面：在 Mod 列表点击“配置”按钮时打开 PDConfigScreen
+            ModList.get().getModContainerById(PasterDreamMod.MOD_ID).ifPresent(container ->
+                    container.registerExtensionPoint(IConfigScreenFactory.class,
+                            (IConfigScreenFactory) (modContainer, modListScreen) -> new PDConfigScreen(modListScreen))
+            );
+            PasterDreamMod.LOGGER.debug("[ClientSetup] 配置界面工厂已注册");
         });
     }
 

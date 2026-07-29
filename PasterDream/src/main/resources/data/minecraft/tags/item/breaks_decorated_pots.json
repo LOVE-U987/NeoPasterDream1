@@ -1,0 +1,31 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:copper_axe",
+    "pasterdream:copper_hoe",
+    "pasterdream:copper_pickaxe",
+    "pasterdream:copper_shovel",
+    "pasterdream:dyedream_axe",
+    "pasterdream:dyedream_hammer",
+    "pasterdream:dyedream_hoe",
+    "pasterdream:dyedream_pickaxe",
+    "pasterdream:dyedream_shovel",
+    "pasterdream:meltdream_axe",
+    "pasterdream:meltdream_hoe",
+    "pasterdream:meltdream_pickaxe",
+    "pasterdream:meltdream_shovel",
+    "pasterdream:moltengold_axe",
+    "pasterdream:moltengold_hoe",
+    "pasterdream:moltengold_pickaxe",
+    "pasterdream:moltengold_shovel",
+    "pasterdream:shadow_erosion_axe",
+    "pasterdream:shadow_erosion_hoe",
+    "pasterdream:shadow_erosion_pickaxe",
+    "pasterdream:shadow_erosion_shovel",
+    "pasterdream:titanium_axe",
+    "pasterdream:titanium_hoe",
+    "pasterdream:titanium_pickaxe",
+    "pasterdream:titanium_shovel",
+    "pasterdream:true_moltengold_pickaxe"
+  ]
+}

@@ -1,8 +1,15 @@
 {
+  "replace": false,
   "values": [
-    "pasterdream:dyedream_glasspane",
+    "pasterdream:carve_clarity_glass",
+    "pasterdream:carve_dyedream_glass",
     "pasterdream:carve_dyedream_glasspane",
-    "pasterdream:gold_carve_dyedream_glasspane",
-    "pasterdream:dyedream_planks_pane"
+    "pasterdream:clarity_glass",
+    "pasterdream:dyedream_glass",
+    "pasterdream:dyedream_glasspane",
+    "pasterdream:dyedream_planks_pane",
+    "pasterdream:frame_clarity_glass",
+    "pasterdream:gold_carve_dyedream_glass",
+    "pasterdream:gold_carve_dyedream_glasspane"
   ]
 }

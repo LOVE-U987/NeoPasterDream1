@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -43,8 +44,9 @@ public class LoseMindOverlay implements LayeredDraw.Layer {
         if (player.getVehicle() instanceof LivingEntity) {
             return;
         }
-        // 理智系统关闭时不显示
-        if (!player.getData(PDAttachments.PLAYER_SAN).sanCheck()) {
+        // San 理智系统总开关或游戏规则关闭时不显示
+        if (!Boolean.TRUE.equals(PDCommonConfig.ENABLE_SAN_SYSTEM.get())
+                || !player.getData(PDAttachments.PLAYER_SAN).sanCheck()) {
             return;
         }
 

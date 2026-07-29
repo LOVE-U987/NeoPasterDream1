@@ -44,7 +44,7 @@ public class MusicPlaybackController {
         SoundEvent soundEvent = soundEventLookup.lookup(musicName);
         if (soundEvent == null) return;
         currentMusicName = musicName;
-        currentSound = VolumeSoundInstance.forMusic(soundEvent, ModMusicManager.TARGET_VOLUME);
+        currentSound = VolumeSoundInstance.forMusic(soundEvent, ModMusicManager.getEffectiveVolume());
         Minecraft.getInstance().getSoundManager().play(currentSound);
     }
 
@@ -61,13 +61,10 @@ public class MusicPlaybackController {
         }
         SoundEvent soundEvent = soundEventLookup.lookup(currentMusicName);
         if (soundEvent == null) return;
-        currentSound = VolumeSoundInstance.forMusic(soundEvent, ModMusicManager.TARGET_VOLUME);
+        currentSound = VolumeSoundInstance.forMusic(soundEvent, ModMusicManager.getEffectiveVolume());
         Minecraft.getInstance().getSoundManager().play(currentSound);
     }
 
-    /**
-     * 停止当前音乐并清除状态
-     */
     public void stop() {
         if (currentSound != null) {
             Minecraft.getInstance().getSoundManager().stop(currentSound);

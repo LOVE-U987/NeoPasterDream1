@@ -2,6 +2,9 @@
   "replace": false,
   "values": [
     "pasterdream:sculk_heart",
-    "silentsdelight:warden_heart"
+    {
+      "id": "silentsdelight:warden_heart",
+      "required": false
+    }
   ]
 }

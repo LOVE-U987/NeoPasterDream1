@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:copper_armor_chestplate",
+    "pasterdream:dyedream_armor_chestplate",
+    "pasterdream:qin_armor_chestplate",
+    "pasterdream:sculk_armor_chestplate",
+    "pasterdream:titanium_armor_chestplate"
+  ]
+}

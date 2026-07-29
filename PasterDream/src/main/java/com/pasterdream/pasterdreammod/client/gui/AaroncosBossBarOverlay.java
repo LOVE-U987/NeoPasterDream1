@@ -85,6 +85,10 @@ public class AaroncosBossBarOverlay {
      */
     @SubscribeEvent
     public static void onBossEventProgress(CustomizeGuiOverlayEvent.BossEventProgress event) {
+        // 关闭模组 UI 时使用原版 BOSS 血条，不取消渲染
+        if (!com.pasterdream.pasterdreammod.config.PDClientConfig.ENABLE_MOD_UI.get()) {
+            return;
+        }
         String name = event.getBossEvent().getName().getString();
         // 匹配原始翻译键（语言文件未提供翻译时显示）或已翻译的名称
         if (name.contains("aaroncos_lefthand") || name.contains("aaroncos_righthand")) {
@@ -102,6 +106,9 @@ public class AaroncosBossBarOverlay {
      */
     @SubscribeEvent
     public static void onRenderGuiPost(RenderGuiEvent.Post event) {
+        if (!com.pasterdream.pasterdreammod.config.PDClientConfig.ENABLE_MOD_UI.get()) {
+            return;
+        }
         if (MC.player == null || MC.options.hideGui || MC.level == null) return;
 
         // 搜索附近的左右手实体

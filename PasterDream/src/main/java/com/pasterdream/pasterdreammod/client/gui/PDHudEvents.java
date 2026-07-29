@@ -27,7 +27,8 @@ public class PDHudEvents {
      */
     @SubscribeEvent
     public static void onRenderGuiLayerPre(RenderGuiLayerEvent.Pre event) {
-        if (!PDClientConfig.PASTER_HEALTH_HUD.get()) {
+        // 关闭模组 UI 时恢复原版血条渲染
+        if (!PDClientConfig.ENABLE_MOD_UI.get() || !PDClientConfig.PASTER_HEALTH_HUD.get()) {
             return;
         }
         if (VanillaGuiLayers.PLAYER_HEALTH.equals(event.getName())) {

@@ -52,7 +52,7 @@ public class PlayerHealthHudOverlay implements LayeredDraw.Layer {
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        if (!PDClientConfig.PASTER_HEALTH_HUD.get()) {
+        if (!PDClientConfig.ENABLE_MOD_UI.get() || !PDClientConfig.PASTER_HEALTH_HUD.get()) {
             return;
         }
         Minecraft mc = Minecraft.getInstance();

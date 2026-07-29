@@ -4,6 +4,7 @@
     "pasterdream:shadow_planks_door",
     "pasterdream:dyedream_planks_stairs",
     "pasterdream:dyedream_planks_slab",
+    "pasterdream:research_table",
     "pasterdream:dyedream_planks_button",
     "pasterdream:the_endless_book_of_dream_seekers",
     "pasterdream:dyedream_planks_fence",
@@ -21,6 +22,17 @@
     "pasterdream:dyedream_desk",
     "pasterdream:dyedream_wood",
     "pasterdream:shadow_planks_slab",
-    "pasterdream:dyedream_planks_fencegate"
+    "pasterdream:dyedream_planks_fencegate",
+    "pasterdream:windmoor_log",
+    "pasterdream:windmoor_wood",
+    "pasterdream:stripped_windmoor_log",
+    "pasterdream:stripped_windmoor_wood",
+    "pasterdream:windmoor_planks",
+    "pasterdream:windmoor_stairs",
+    "pasterdream:windmoor_slab",
+    "pasterdream:windmoor_fence",
+    "pasterdream:windmoor_fence_gate",
+    "pasterdream:windmoor_door",
+    "pasterdream:windmoor_trapdoor"
   ]
 }

@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:copper_armor_helmet",
+    "pasterdream:dyedream_armor_helmet",
+    "pasterdream:qin_armor_helmet",
+    "pasterdream:sculk_armor_helmet",
+    "pasterdream:titanium_armor_helmet"
+  ]
+}

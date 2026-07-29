@@ -1,9 +1,13 @@
 {
   "replace": false,
   "values": [
-    "pasterdream:dyedream_block",
     "pasterdream:blackmetal_block",
+    "pasterdream:charged_amethyst_block",
+    "pasterdream:dyedream_block",
+    "pasterdream:moltengold_block",
+    "pasterdream:raw_titanium_block",
+    "pasterdream:rust_black_metal_block",
     "pasterdream:titanium_block",
-    "pasterdream:moltengold_block"
+    "pasterdream:wind_iron_block"
   ]
 }

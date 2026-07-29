@@ -15,13 +15,19 @@ import java.util.List;
 /**
  * 厚重云朵方块
  * 实体方块，不透明，比普通云朵更坚固，允许天光穿透
+ * <p>
+ * 风之旅途 default_block：保持完整碰撞（不做 noCollision），
+ * 通过略低 friction + 提速/小幅助跳，减轻「实心碎岛」上的拖沓体感。
  */
 public class ThickCloudBlock extends Block {
     public ThickCloudBlock() {
         super(BlockBehaviour.Properties.of()
                 .ignitedByLava()
                 .sound(SoundType.WOOL)
-                .strength(0.3f, 0.5f));
+                .strength(0.3f, 0.5f)
+                .friction(0.55f)
+                .speedFactor(1.2f)
+                .jumpFactor(1.05f));
     }
 
     /**

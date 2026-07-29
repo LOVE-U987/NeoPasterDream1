@@ -3,6 +3,13 @@
   "values": [
     "pasterdream:dyedream_log",
     "pasterdream:dyedream_wood",
-    "pasterdream:windmoor_log"
+    "pasterdream:shadow_hyphae",
+    "pasterdream:shadow_stem",
+    "pasterdream:stripped_shadow_hyphae",
+    "pasterdream:stripped_shadow_stem",
+    "pasterdream:stripped_windmoor_log",
+    "pasterdream:stripped_windmoor_wood",
+    "pasterdream:windmoor_log",
+    "pasterdream:windmoor_wood"
   ]
 }

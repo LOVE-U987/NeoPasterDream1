@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.config.PDClientConfig;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import net.minecraft.client.DeltaTracker;

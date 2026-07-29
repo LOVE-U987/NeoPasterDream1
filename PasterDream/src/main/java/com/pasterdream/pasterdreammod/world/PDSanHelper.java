@@ -47,7 +47,8 @@ public final class PDSanHelper {
         if (player.level().isClientSide() || !(player instanceof ServerPlayer sp)) {
             return;
         }
-        if (!sp.level().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM)) {
+        if (!sp.level().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM)
+                || !Boolean.TRUE.equals(PDCommonConfig.ENABLE_SAN_SYSTEM.get())) {
             return;
         }
 
@@ -61,7 +62,14 @@ public final class PDSanHelper {
             }
         }
 
-        int totalInterval = Math.max(1, PDCommonConfig.PLAYER_TOTAL_TICK_UPDATE.get());
+        // 防御性读取：避免 TOML 中存在浮点污染导致 Integer 类型转换崩溃
+        int totalInterval;
+        Object rawInterval = PDCommonConfig.PLAYER_TOTAL_TICK_UPDATE.getRaw();
+        if (rawInterval instanceof Number number) {
+            totalInterval = Math.max(1, number.intValue());
+        } else {
+            totalInterval = Math.max(1, PDCommonConfig.PLAYER_TOTAL_TICK_UPDATE.get());
+        }
         if (sp.tickCount % totalInterval != 0) {
             return;
         }

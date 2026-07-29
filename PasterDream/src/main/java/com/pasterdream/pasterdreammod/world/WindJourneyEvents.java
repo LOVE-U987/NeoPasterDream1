@@ -43,13 +43,19 @@ public final class WindJourneyEvents {
     }
 
     /**
-     * 进入风维：聊天「本主题梦境尚未完工」+ 主题曲。
+     * 跨维度：进入风维提示 + 主题曲；离开风维清掉顺/逆风，避免 permanent modifier 残留。
+     * <p>
+     * 不在离开时清 force NBT（纸飞机仍可能装备，回维应保留 amp）。
      *
      * @param event 跨维度事件
      */
     public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) {
             return;
+        }
+        if (event.getFrom().equals(PDDimensions.WIND_JOURNEY_WORLD_LEVEL_KEY)) {
+            player.removeEffect(PDEffects.DEADWIND_BUFF.holder());
+            player.removeEffect(PDEffects.TAILWIND_BUFF.holder());
         }
         if (!event.getTo().equals(PDDimensions.WIND_JOURNEY_WORLD_LEVEL_KEY)) {
             return;

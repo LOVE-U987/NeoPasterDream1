@@ -27,6 +27,19 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
 
     private static final float STEP = 0.25f;
 
+    /**
+     * 特征生成时可安全访问的区块半径
+     * <p>
+     * Minecraft 在生成特征时通常只保证当前区块及周围一圈（±1）已加载，
+     * 超过此范围调用 setBlock 会触发 "Detected setBlock in a far chunk" 错误。
+     */
+    private static final int SAFE_CHUNK_RADIUS = 1;
+
+    /**
+     * 拱体到区块边界保留的安全余量（格），用于抵消四舍五入和管壁厚度
+     */
+    private static final int BOUNDS_MARGIN = 1;
+
     private static final SimpleWeightedRandomList<BlockState> VANILLA_ICE;
 
     static {
@@ -45,10 +58,18 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
         RandomSource random = context.random();
 
         boolean alongX = random.nextBoolean();
-
-        int end1Coord = alongX ? origin.getX() - config.gateMaxWidth() : origin.getZ() - config.gateMaxWidth();
-        int end2Coord = alongX ? origin.getX() + config.gateMaxWidth() : origin.getZ() + config.gateMaxWidth();
         int centerPerpendicular = alongX ? origin.getZ() : origin.getX();
+
+        int tubeRadius = Math.max(3, config.beamThickness());
+        int baseFlareRadius = tubeRadius + 1;
+
+        // 先根据原点所在区块位置计算安全半跨，避免后续 setBlock 落入 far chunk
+        int maxSafeHalfWidth = computeMaxSafeHalfWidth(origin, alongX, baseFlareRadius);
+
+        // 地面搜索距离不能超过安全半跨，否则读取/写入 far chunk
+        int endSearchDist = Math.min(config.gateMaxWidth(), maxSafeHalfWidth);
+        int end1Coord = alongX ? origin.getX() - endSearchDist : origin.getZ() - endSearchDist;
+        int end2Coord = alongX ? origin.getX() + endSearchDist : origin.getZ() + endSearchDist;
 
         int end1GroundY = WorldGenUtils.findGroundY(level, config.replaceable(),
                 alongX ? end1Coord : origin.getX(), origin.getY(),
@@ -82,13 +103,14 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
         int minSpan = Math.max(config.gateMinWidth(), aboveWaterHeight * 2);
         int maxSpan = Math.max(config.gateMaxWidth(), aboveWaterHeight * 3);
         maxSpan = Math.min(maxSpan, 80);
+        // 限制跨距不超过当前原点允许的安全半跨，避免越界到 far chunk
+        maxSpan = Math.min(maxSpan, maxSafeHalfWidth * 2);
         minSpan = Math.min(minSpan, maxSpan);
         int halfWidth = random.nextIntBetweenInclusive(minSpan, maxSpan) / 2;
         if (halfWidth < 2) halfWidth = 2;
+        halfWidth = Math.min(halfWidth, maxSafeHalfWidth);
 
         int centerAlong = alongX ? origin.getX() : origin.getZ();
-        int tubeRadius = Math.max(3, config.beamThickness());
-        int baseFlareRadius = tubeRadius + 1;
         boolean placedAny = false;
 
         int steps = (int) Math.ceil(halfWidth * 2.0f / STEP) + 1;
@@ -124,7 +146,7 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
                                 ? new BlockPos(cAlong + bd, cY + by, centerPerpendicular + bp)
                                 : new BlockPos(centerPerpendicular + bp, cY + by, cAlong + bd);
 
-                        if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 2)) continue;
+                        if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, SAFE_CHUNK_RADIUS)) continue;
                         if (!WorldGenUtils.isReplaceable(level, config.replaceable(), pos)) continue;
 
                         BlockState state = pickBlockForHeight(random, pos.getY(), seaLevel, config, pos);
@@ -136,7 +158,7 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
         }
 
         addIcicles(level, random, config, origin, centerAlong, centerPerpendicular, baseY, height, halfWidth, tubeRadius, alongX);
-        addDebrisScatter(level, random, config, centerAlong, centerPerpendicular, baseY, halfWidth, tubeRadius, alongX);
+        addDebrisScatter(level, random, config, origin, centerAlong, centerPerpendicular, baseY, halfWidth, tubeRadius, alongX);
         addGlowDecorations(level, random, config, origin, centerAlong, centerPerpendicular, baseY, halfWidth, tubeRadius, height, alongX);
 
         return placedAny;
@@ -193,7 +215,7 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
      * 在拱门底部周围散落碎冰渣（损坏变种效果）
      */
     private void addDebrisScatter(WorldGenLevel level, RandomSource random, DecorationConfig config,
-                                   int centerAlong, int centerPerpendicular, int baseY,
+                                   BlockPos origin, int centerAlong, int centerPerpendicular, int baseY,
                                    int halfWidth, int tubeRadius, boolean alongX) {
         float scatterBaseChance = config.decorationChance() * 1.5f;
         if (random.nextFloat() >= scatterBaseChance) return;
@@ -210,6 +232,7 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
             if (sy < baseY - 2) sy = baseY - 2;
 
             BlockPos sPos = new BlockPos(sx, sy + 1, sz);
+            if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, sPos, SAFE_CHUNK_RADIUS)) continue;
             if (!WorldGenUtils.isReplaceable(level, config.replaceable(), sPos)) continue;
 
             BlockState debrisState = config.bodyBlock().getState(random, sPos);
@@ -252,7 +275,7 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
                         BlockPos pos = alongX
                                 ? new BlockPos(cAlong, cY + by - i, centerPerpendicular + bp)
                                 : new BlockPos(centerPerpendicular + bp, cY + by - i, cAlong);
-                        if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 2)) break;
+                        if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, SAFE_CHUNK_RADIUS)) break;
                         if (!WorldGenUtils.isReplaceable(level, config.replaceable(), pos)) break;
                         level.setBlock(pos, config.bodyBlock().getState(random, pos), 3);
                     }
@@ -284,8 +307,40 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
             if (Math.abs(gy - baseY) > 5) continue;
             BlockPos gPos = new BlockPos(gx, gy + 1, gz);
             if (!WorldGenUtils.isReplaceable(level, config.replaceable(), gPos)) continue;
-            if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, gPos, 2)) continue;
+            if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, gPos, SAFE_CHUNK_RADIUS)) continue;
             level.setBlock(gPos, PDBlocks.ICE_BUD_0.get().defaultBlockState(), 3);
         }
+    }
+
+    /**
+     * 计算当前原点位置下，拱体在沿轴方向上允许的最大半跨
+     * <p>
+     * Minecraft 特征生成时只保证 {@value #SAFE_CHUNK_RADIUS} 个区块半径的安全范围。
+     * 根据原点在区块内的偏移，分别计算沿轴正负两个方向还能延伸多少格，再减去
+     * 管壁最大半径和安全余量，得到不会触发 far chunk 的最大半跨。
+     *
+     * @param origin          特征生成原点
+     * @param alongX          拱体是否沿 X 轴延伸
+     * @param maxTubeRadius   拱体管壁最大半径（含两端加宽）
+     * @return 安全的最大半跨（格），至少为 2
+     */
+    private int computeMaxSafeHalfWidth(BlockPos origin, boolean alongX, int maxTubeRadius) {
+        int originChunkX = origin.getX() >> 4;
+        int originChunkZ = origin.getZ() >> 4;
+        int totalExtent = maxTubeRadius + BOUNDS_MARGIN;
+
+        int alongPositive;
+        int alongNegative;
+        if (alongX) {
+            // 允许写入的区块范围：[originChunkX - 1, originChunkX + 1]
+            alongPositive = (originChunkX + 1) * 16 + 15 - origin.getX();
+            alongNegative = origin.getX() - (originChunkX - 1) * 16;
+        } else {
+            alongPositive = (originChunkZ + 1) * 16 + 15 - origin.getZ();
+            alongNegative = origin.getZ() - (originChunkZ - 1) * 16;
+        }
+
+        int maxExtent = Math.min(alongPositive, alongNegative) - totalExtent;
+        return Math.max(2, maxExtent);
     }
 }

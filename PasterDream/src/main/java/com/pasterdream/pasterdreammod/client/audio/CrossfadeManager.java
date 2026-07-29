@@ -101,7 +101,7 @@ public class CrossfadeManager {
 
         // 新音乐从零音量开始渐强
         VolumeSoundInstance newSound = VolumeSoundInstance.forMusicFadeIn(soundEvent);
-        newSound.fadeTo(ModMusicManager.TARGET_VOLUME, ModMusicManager.CROSSFADE_STEPS);
+        newSound.fadeTo(ModMusicManager.getEffectiveVolume(), ModMusicManager.CROSSFADE_STEPS);
         playbackController.setCurrentSound(newSound);
         playbackController.setCurrentMusicName(newMusicName);
         Minecraft.getInstance().getSoundManager().play(newSound);
@@ -150,7 +150,7 @@ public class CrossfadeManager {
             }
 
             // 原淡出侧改为从当前音量渐强，重新成为当前音乐
-            reversedIn.fadeTo(ModMusicManager.TARGET_VOLUME, ModMusicManager.CROSSFADE_STEPS);
+            reversedIn.fadeTo(ModMusicManager.getEffectiveVolume(), ModMusicManager.CROSSFADE_STEPS);
             fadingInSound = reversedIn;
             playbackController.setCurrentSound(reversedIn);
             playbackController.setCurrentMusicName(reversedInName);
@@ -169,7 +169,7 @@ public class CrossfadeManager {
         }
 
         VolumeSoundInstance newSound = VolumeSoundInstance.forMusicFadeIn(soundEvent);
-        newSound.fadeTo(ModMusicManager.TARGET_VOLUME, ModMusicManager.CROSSFADE_STEPS);
+        newSound.fadeTo(ModMusicManager.getEffectiveVolume(), ModMusicManager.CROSSFADE_STEPS);
         playbackController.setCurrentSound(newSound);
         playbackController.setCurrentMusicName(newMusicName);
         Minecraft.getInstance().getSoundManager().play(newSound);

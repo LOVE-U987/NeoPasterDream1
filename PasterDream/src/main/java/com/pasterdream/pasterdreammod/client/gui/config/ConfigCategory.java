@@ -1,0 +1,53 @@
+package com.pasterdream.pasterdreammod.client.gui.config;
+
+import net.minecraft.network.chat.Component;
+
+/**
+ * 配置界面左侧导航分类
+ * <p>
+ * 与 TOML 顶层分类一一对应：Client 配置归入 HUD，Common 配置归入 Basic/Property/Ban。
+ *
+ * @author PasterDream
+ */
+public enum ConfigCategory {
+
+    /** 客户端 HUD 显示配置 */
+    HUD("hud"),
+    /** 通用基础游戏机制配置 */
+    BASIC("basic"),
+    /** 性能与更新频率配置 */
+    PROPERTY("property"),
+    /** 功能禁用配置 */
+    BAN("ban"),
+    /** 背景音乐配置 */
+    BGM("bgm"),
+    /** San 精神值设置 */
+    SAN("san"),
+    /** 融梦能量设置 */
+    MELTDREAM("meltdream");
+
+    private final String key;
+    private final Component title;
+
+    /**
+     * @param key 语言键短名，完整语言键为 {@code gui.pasterdream.config.category.<key>}
+     */
+    ConfigCategory(String key) {
+        this.key = key;
+        this.title = Component.translatable("gui.pasterdream.config.category." + key);
+    }
+
+    /**
+     * @return 分类语言键短名
+     */
+    public String getKey() {
+        return key;
+    }
+
+    /**
+     * @return 分类显示标题（已翻译）
+     */
+    public Component getTitle() {
+        return title;
+    }
+}

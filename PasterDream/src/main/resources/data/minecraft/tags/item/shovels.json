@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:copper_shovel",
+    "pasterdream:dyedream_shovel",
+    "pasterdream:meltdream_shovel",
+    "pasterdream:moltengold_shovel",
+    "pasterdream:shadow_erosion_shovel",
+    "pasterdream:titanium_shovel"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "pasterdream:blackmetal_ingot",
+    "pasterdream:dyedream_ingot",
+    "pasterdream:moltengold_ingot",
+    "pasterdream:titanium_ingot",
+    "pasterdream:wind_iron_ingot"
+  ]
+}

@@ -17,6 +17,13 @@ public class PDCommonConfig {
     /** 配置规格 */
     public static final ModConfigSpec SPEC;
 
+    // ==================== System ====================
+
+    /** 启用 San 理智系统（默认 true） */
+    public static final ModConfigSpec.ConfigValue<Boolean> ENABLE_SAN_SYSTEM;
+    /** 启用融梦能量系统（默认 true） */
+    public static final ModConfigSpec.ConfigValue<Boolean> ENABLE_MELTDREAM_ENERGY_SYSTEM;
+
     // ==================== Basic ====================
 
     /** 玩家在主世界的夜晚会降低精神值（默认 true） */
@@ -67,6 +74,15 @@ public class PDCommonConfig {
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
+        builder.push("System");
+        ENABLE_SAN_SYSTEM = builder
+                .comment("启用 San 理智系统 默认：true（关闭后停止理智计算、同步与 HUD 显示）")
+                .define("enable san system", true);
+        ENABLE_MELTDREAM_ENERGY_SYSTEM = builder
+                .comment("启用融梦能量系统 默认：true（关闭后停止能量计算、消耗与 HUD 显示）")
+                .define("enable meltdream energy system", true);
+        builder.pop();
+
         builder.push("Basic");
         OVERWORLD_NIGHT_LOWERS_SAN = builder
                 .comment("玩家在主世界的夜晚会降低精神值 默认：true")
@@ -116,7 +132,7 @@ public class PDCommonConfig {
         builder.push("property");
         PLAYER_TOTAL_TICK_UPDATE = builder
                 .comment("pasterdream玩家刻功能程序更新频率，算法：每-[此配置单位时间]-进行一次更新 单位/tick，过快的更新频率可能会影响性能，过慢的频率会让部分功能显得非常迟钝，推荐频率范围[2~20]整数  默认：5")
-                .define("player total tick update", 5);
+                .defineInRange("player total tick update", 5, 2, 20);
         builder.pop();
 
         builder.push("Ban");

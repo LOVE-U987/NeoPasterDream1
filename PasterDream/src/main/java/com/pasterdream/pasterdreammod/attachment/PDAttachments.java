@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.attachment;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.network.MeltDreamEnergyPayload;
 import com.pasterdream.pasterdreammod.network.SanDataPayload;
 import com.pasterdream.pasterdreammod.registry.PDGameRules;
@@ -102,27 +103,29 @@ public class PDAttachments {
     // ==================== San 修改（带游戏规则检查，对应原版公开 API） ====================
 
     /**
-     * 设置玩家 San 值（仅当游戏规则 pasterdreamSanSystem 开启，对应原版 setPlayerSanWithCheck）
+     * 设置玩家 San 值（仅当游戏规则与配置均开启，对应原版 setPlayerSanWithCheck）
      *
      * @param player 玩家
      * @param san    新理智值
      */
     public static void setPlayerSanWithCheck(Player player, double san) {
         if (player instanceof ServerPlayer sp
-                && sp.level().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM)) {
+                && sp.level().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM)
+                && Boolean.TRUE.equals(PDCommonConfig.ENABLE_SAN_SYSTEM.get())) {
             setPlayerSan(sp, san);
         }
     }
 
     /**
-     * 增减玩家 San 值（仅当游戏规则 pasterdreamSanSystem 开启，对应原版 addPlayerSanWithCheck）
+     * 增减玩家 San 值（仅当游戏规则与配置均开启，对应原版 addPlayerSanWithCheck）
      *
      * @param player 玩家
      * @param san    变化量（可为负）
      */
     public static void addPlayerSanWithCheck(Player player, double san) {
         if (player instanceof ServerPlayer sp
-                && sp.level().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM)) {
+                && sp.level().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM)
+                && Boolean.TRUE.equals(PDCommonConfig.ENABLE_SAN_SYSTEM.get())) {
             addPlayerSan(sp, san);
         }
     }
@@ -148,7 +151,7 @@ public class PDAttachments {
      * @param value  新能量值
      */
     public static void setPlayerMeltDreamEnergy(Player player, double value) {
-        if (player instanceof ServerPlayer sp) {
+        if (player instanceof ServerPlayer sp && Boolean.TRUE.equals(PDCommonConfig.ENABLE_MELTDREAM_ENERGY_SYSTEM.get())) {
             sp.setData(PLAYER_MELTDREAM_ENERGY, sp.getData(PLAYER_MELTDREAM_ENERGY).withEnergy(value));
             syncMeltDreamEnergy(sp);
         }
@@ -161,7 +164,7 @@ public class PDAttachments {
      * @param value  变化量（可为负）
      */
     public static void addPlayerMeltDreamEnergy(Player player, double value) {
-        if (player instanceof ServerPlayer sp) {
+        if (player instanceof ServerPlayer sp && Boolean.TRUE.equals(PDCommonConfig.ENABLE_MELTDREAM_ENERGY_SYSTEM.get())) {
             sp.setData(PLAYER_MELTDREAM_ENERGY, sp.getData(PLAYER_MELTDREAM_ENERGY).addEnergy(value));
             syncMeltDreamEnergy(sp);
         }
@@ -174,7 +177,7 @@ public class PDAttachments {
      * @param value  true 叠加一层，false 撤销一层
      */
     public static void setPlayerMeltDreamEnergyNoNeedConsume(Player player, boolean value) {
-        if (player instanceof ServerPlayer sp) {
+        if (player instanceof ServerPlayer sp && Boolean.TRUE.equals(PDCommonConfig.ENABLE_MELTDREAM_ENERGY_SYSTEM.get())) {
             sp.setData(PLAYER_MELTDREAM_ENERGY, sp.getData(PLAYER_MELTDREAM_ENERGY).withNoNeedConsume(value));
             syncMeltDreamEnergy(sp);
         }
@@ -187,7 +190,7 @@ public class PDAttachments {
      * @param value  true 开启，false 关闭
      */
     public static void setPlayerMeltDreamEnergyNoNeedConsumeByCommand(Player player, boolean value) {
-        if (player instanceof ServerPlayer sp) {
+        if (player instanceof ServerPlayer sp && Boolean.TRUE.equals(PDCommonConfig.ENABLE_MELTDREAM_ENERGY_SYSTEM.get())) {
             sp.setData(PLAYER_MELTDREAM_ENERGY, sp.getData(PLAYER_MELTDREAM_ENERGY).withNoNeedConsumeByCommand(value));
             syncMeltDreamEnergy(sp);
         }
@@ -196,7 +199,7 @@ public class PDAttachments {
     /**
      * 尝试消耗玩家融梦能量（对应原版 consumePlayerMeltDreamEnergy）
      * <p>
-     * 免消耗或创造模式直接成功；能量大于消耗值时扣除并同步。
+     * 系统关闭、免消耗或创造模式直接成功；能量大于消耗值时扣除并同步。
      * 客户端调用仅做预检查、不修改数据（与原版一致）。
      *
      * @param player 玩家（双端可用）
@@ -206,7 +209,8 @@ public class PDAttachments {
     public static boolean consumePlayerMeltDreamEnergy(Player player, double value) {
         MeltDreamEnergyData data = player.getData(PLAYER_MELTDREAM_ENERGY);
         if (player instanceof ServerPlayer sp) {
-            if (data.isNoNeedConsume() || sp.isCreative()) {
+            if (!Boolean.TRUE.equals(PDCommonConfig.ENABLE_MELTDREAM_ENERGY_SYSTEM.get())
+                    || data.isNoNeedConsume() || sp.isCreative()) {
                 return true;
             }
             if (data.meltDreamEnergy() > value) {

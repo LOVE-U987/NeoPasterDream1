@@ -1012,6 +1012,8 @@ public class PDEffects {
     /** 逆风生效：移除顺风 + 按等级施加永久修饰符 */
     private static void deadwindApply(LivingEntity entity, Integer amplifier) {
         entity.removeEffect(TAILWIND_BUFF.holder());
+        // 先摘旧 modifier，再 add：amp 0↔1 或 force 切换时 addPermanentIfAbsent 不会卡住旧数值
+        deadwindRemove(entity, amplifier);
         if (amplifier == 0) {
             addPermanentIfAbsent(entity, Attributes.MOVEMENT_SPEED, modifierId("deadwind_buff_0"),
                     -0.02, AttributeModifier.Operation.ADD_VALUE);
@@ -1039,6 +1041,8 @@ public class PDEffects {
     /** 顺风生效：移除逆风 + 按等级施加永久修饰符 */
     private static void tailwindApply(LivingEntity entity, Integer amplifier) {
         entity.removeEffect(DEADWIND_BUFF.holder());
+        // 先摘旧 modifier，再 add：amp 0↔1 或纸飞机 force 切换时保证数值刷新
+        tailwindRemove(entity, amplifier);
         if (amplifier == 0) {
             addPermanentIfAbsent(entity, Attributes.MOVEMENT_SPEED, modifierId("tailwind_buff_0"),
                     0.03, AttributeModifier.Operation.ADD_VALUE);

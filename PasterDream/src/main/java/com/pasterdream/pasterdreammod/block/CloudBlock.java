@@ -19,6 +19,9 @@ import java.util.List;
 /**
  * 云朵方块
  * 轻质、透明、可被点燃，同种云朵相邻时会跳过面渲染，允许天光穿透
+ * <p>
+ * 保持完整碰撞与 noOcclusion / 空视觉形状；
+ * friction/speedFactor/jumpFactor 让踏云比寻常方块更「轻」，改善风维步行体验。
  */
 public class CloudBlock extends Block {
     public CloudBlock() {
@@ -27,7 +30,10 @@ public class CloudBlock extends Block {
                 .sound(SoundType.WOOL)
                 .strength(0.2f, 0f)
                 .noOcclusion()
-                .isRedstoneConductor((bs, br, bp) -> false));
+                .isRedstoneConductor((bs, br, bp) -> false)
+                .friction(0.5f)
+                .speedFactor(1.25f)
+                .jumpFactor(1.1f));
     }
 
     /**

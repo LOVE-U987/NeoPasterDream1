@@ -28,11 +28,13 @@ import java.util.stream.Stream;
  * 群系分配逻辑（与 JSON 中 biomes 列表顺序一致）：
  * <ol>
  *   <li>大陆性噪声 < -0.35 → 深海群系（biomes[0]）</li>
- *   <li>大陆性噪声 < -0.19 → 浅海/海岸群系（biomes[1]）</li>
- *   <li>蘑菇平原独立噪声命中 → 蘑菇平原群系（biomes[5]）</li>
- *   <li>温度噪声 < -0.35 → 雪原群系（biomes[4]）</li>
- *   <li>山脊噪声 > 0.3 → 高原群系（biomes[3]）</li>
- *   <li>其余 → 平原群系（biomes[2]）</li>
+ *   <li>大陆性噪声 < -0.19 → 浅海群系（biomes[1]）</li>
+ *   <li>大陆性噪声 < -0.05 → 海岸群系（biomes[2]）</li>
+ *   <li>蘑菇平原独立噪声命中 → 蘑菇平原群系（biomes[7]）</li>
+ *   <li>温度噪声 < -0.35 → 雪原群系（biomes[6]）</li>
+ *   <li>山脊噪声 > 0.3 且湿度较高 → 密林群系（biomes[5]）</li>
+ *   <li>山脊噪声 > 0.3 → 森林/高地群系（biomes[4]）</li>
+ *   <li>其余 → 平原群系（biomes[3]）</li>
  * </ol>
  *
  * @author PasterDream Team
@@ -47,17 +49,23 @@ public class DyedreamBiomeSource extends BiomeSource {
             ).apply(instance, instance.stable(DyedreamBiomeSource::new))
     );
 
-    /** 大陆性噪声岛屿判定阈值（与 DyedreamNoises.ISLAND_THRESHOLD 一致） */
+    /** 大陆性噪声深海判定阈值 */
     private static final double DEEP_OCEAN_THRESHOLD = -0.35;
 
-    /** 浅海/海岸阈值 */
+    /** 大陆性噪声浅海判定阈值 */
     private static final double SHALLOW_OCEAN_THRESHOLD = -0.19;
+
+    /** 大陆性噪声海岸判定阈值 */
+    private static final double SHORE_THRESHOLD = -0.05;
 
     /** 丘陵山脊阈值 */
     private static final double HILLS_RIDGE_THRESHOLD = 0.3;
 
     /** 雪原温度阈值，温度噪声低于此值时判定为寒冷雪原 */
     private static final double SNOW_TEMPERATURE_THRESHOLD = -0.35;
+
+    /** 密林湿度阈值，湿度噪声高于此值时山脊区域判定为密林而非普通森林 */
+    private static final double DENSE_FOREST_HUMIDITY_THRESHOLD = 0.15;
 
     /** 蘑菇平原噪声频率 */
     private static final float MUSHROOM_NOISE_FREQUENCY = 0.0022f;
@@ -71,7 +79,7 @@ public class DyedreamBiomeSource extends BiomeSource {
     /** 群系缓存大小 */
     private static final int CACHE_SIZE = 8192;
 
-    /** 群系列表（按顺序：深海、浅海/海岸、平原、高原、雪原、蘑菇平原） */
+    /** 群系列表（按顺序：深海、浅海、海岸、平原、森林/高地、密林、雪原、蘑菇平原） */
     private final List<Holder<Biome>> biomes;
 
     /** 河流配置列表 */
@@ -93,7 +101,7 @@ public class DyedreamBiomeSource extends BiomeSource {
     /**
      * 构造函数
      *
-     * @param biomes 群系列表。按顺序：[深海, 浅海/海岸, 平原, 高原, 雪原, 蘑菇平原]
+     * @param biomes 群系列表。按顺序：[深海, 浅海, 海岸, 平原, 森林/高地, 密林, 雪原, 蘑菇平原]
      * @param rivers 河流配置列表
      */
     public DyedreamBiomeSource(List<Holder<Biome>> biomes, List<RiverEntry> rivers) {
@@ -227,34 +235,42 @@ public class DyedreamBiomeSource extends BiomeSource {
         double continentalness = target.continentalness();
         double ridges = target.weirdness();
         double temperature = target.temperature();
+        double humidity = target.humidity();
 
         // 深海
         if (continentalness < DEEP_OCEAN_THRESHOLD) {
             return getBiomeSafe(0);
         }
 
-        // 浅海/海岸
+        // 浅海
         if (continentalness < SHALLOW_OCEAN_THRESHOLD) {
             return getBiomeSafe(1);
         }
 
+        // 海岸
+        if (continentalness < SHORE_THRESHOLD) {
+            return getBiomeSafe(2);
+        }
+
         // 蘑菇平原：稀有特殊群系，基于独立噪声判定
         if (isMushroomPlains(bx, bz)) {
-            return getBiomeSafe(5);
+            return getBiomeSafe(7);
         }
 
         // 雪原：低温区域
         if (temperature < SNOW_TEMPERATURE_THRESHOLD) {
-            return getBiomeSafe(4);
+            return getBiomeSafe(6);
         }
 
-        // 高原（高山脊区域）
+        // 山脊区域：森林/高地，湿度较高时生成为密林
         if (ridges > HILLS_RIDGE_THRESHOLD) {
-            return getBiomeSafe(3);
+            return humidity > DENSE_FOREST_HUMIDITY_THRESHOLD
+                    ? getBiomeSafe(5)
+                    : getBiomeSafe(4);
         }
 
         // 默认：平原
-        return getBiomeSafe(2);
+        return getBiomeSafe(3);
     }
 
     /**

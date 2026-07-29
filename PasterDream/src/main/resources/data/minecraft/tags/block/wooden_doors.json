@@ -1,5 +1,8 @@
 {
+  "replace": false,
   "values": [
-    "pasterdream:dyedream_planks_door"
+    "pasterdream:dyedream_planks_door",
+    "pasterdream:shadow_planks_door",
+    "pasterdream:windmoor_door"
   ]
 }

@@ -1,10 +1,12 @@
 package com.pasterdream.pasterdreammod.client.audio;
 
+import com.pasterdream.pasterdreammod.config.PDClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * 模组背景音乐管理器 —— 自定义维度的群系BGM交叉淡化过渡
@@ -43,6 +45,18 @@ public class ModMusicManager {
 
     /** BGM 目标音量（与 sounds.json 中的 volume 一致） */
     public static final float TARGET_VOLUME = 0.3f;
+
+    /**
+     * 获取实际生效的 BGM 音量。
+     * <p>
+     * 由 {@link com.pasterdream.pasterdreammod.config.PDClientConfig#BGM_MASTER_VOLUME}
+     * 作为总音量倍率与目标音量相乘得到；配置实时生效，不需要重启游戏。
+     *
+     * @return 实际播放音量（0.0 ~ 1.0）
+     */
+    public static float getEffectiveVolume() {
+        return TARGET_VOLUME * PDClientConfig.BGM_MASTER_VOLUME.get().floatValue();
+    }
 
     /** 交叉淡化步数（每步 = 1 个游戏 tick ≈ 50ms，60步 ≈ 3秒） */
     public static final int CROSSFADE_STEPS = 60;
@@ -181,6 +195,16 @@ public class ModMusicManager {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
 
+        // BGM 总开关关闭 → 淡出并停止所有模组 BGM（不影响唱片等其它音乐）
+        if (!PDClientConfig.BGM_MASTER_ENABLED.get()) {
+            if (playbackController.getCurrentSound() != null
+                    || playbackController.getCurrentMusicName() != null
+                    || crossfadeManager.isCrossfading()) {
+                stopAllMusic();
+            }
+            return;
+        }
+
         // 不在自定义维度中 → 淡出并停止所有音乐（含播完待重播的残留状态）
         if (!biomeMusicRegistry.isCustomDimension(mc.player.level())) {
             if (playbackController.getCurrentSound() != null
@@ -196,8 +220,16 @@ public class ModMusicManager {
         if (biomeKeyOptional.isEmpty()) return;
         ResourceLocation currentBiomeId = biomeKeyOptional.get().location();
 
-        String musicName = biomeMusicRegistry.getMusicForBiome(currentBiomeId);
+        String musicName = resolveMusicName(currentBiomeId);
         long gameTick = mc.level.getGameTime();
+
+        // 当前正在播放的音乐被单独禁用 → 淡出停止
+        String currentMusicName = playbackController.getCurrentMusicName();
+        if (currentMusicName != null && !isBgmEnabled(currentMusicName)) {
+            crossfadeManager.beginFadeOutAll();
+            previousBiomeId = currentBiomeId;
+            return;
+        }
 
         // 处理已经在进行中的过渡步进
         // 过渡期间不再跳过群系变化检测，避免跨群系切换滞后整个淡化周期
@@ -245,10 +277,17 @@ public class ModMusicManager {
         previousBiomeId = currentBiomeId;
 
         if (biomeChanged) {
-            String currentMusicName = playbackController.getCurrentMusicName();
-            // 新群系无音乐映射（musicName == null）→ 不进入冷却/停止，继续当前 BGM；
+            String playingName = playbackController.getCurrentMusicName();
+            // 新群系无音乐映射或被单独禁用 → 淡出停止当前 BGM；
             // 音乐相同 → 同样不切换也不进入冷却；两种情况都只标记群系已变化
-            if (musicName == null || musicName.equals(currentMusicName)) {
+            if (musicName == null) {
+                if (playbackController.getCurrentSound() != null || crossfadeManager.isCrossfading()) {
+                    crossfadeManager.beginFadeOutAll();
+                }
+                loopRestartManager.markBiomeChanged();
+                return;
+            }
+            if (musicName.equals(playingName)) {
                 loopRestartManager.markBiomeChanged();
                 return;
             }
@@ -297,5 +336,34 @@ public class ModMusicManager {
         crossfadeManager.updateStep();      // 推进淡出，检测是否全部结束
         cooldownManager.cancelCooldown();
         loopRestartManager.reset();
+    }
+
+    /**
+     * 解析群系对应的有效音乐名称。
+     * <p>
+     * 若群系无映射，或映射的音乐在配置中被单独禁用，则返回 null。
+     *
+     * @param biomeId 群系 ID
+     * @return 可播放的音乐名称；不可播放时返回 null
+     */
+    private String resolveMusicName(ResourceLocation biomeId) {
+        String name = biomeMusicRegistry.getMusicForBiome(biomeId);
+        if (name == null) {
+            return null;
+        }
+        return isBgmEnabled(name) ? name : null;
+    }
+
+    /**
+     * 检查指定音乐是否被配置启用。
+     * <p>
+     * 未在配置表中注册的音乐默认视为启用，以保持向后兼容。
+     *
+     * @param musicName 音乐名称
+     * @return 如果启用返回 true
+     */
+    private boolean isBgmEnabled(String musicName) {
+        Supplier<Boolean> switchSupplier = PDClientConfig.getBgmSwitch(musicName);
+        return switchSupplier == null || Boolean.TRUE.equals(switchSupplier.get());
     }
 }
