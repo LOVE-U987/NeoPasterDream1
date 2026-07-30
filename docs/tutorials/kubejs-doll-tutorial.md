@@ -266,8 +266,8 @@ PasterDreamEvents.dollRegistry(event => {
 ```js
 // kubejs/client_scripts/phantom_daze_lang.js
 ClientEvents.lang('zh_cn', event => {
-    event.add('block.pasterdream.phantom_daze', '幻胧玩偶');
-    event.add('item.pasterdream.phantom_daze', '幻胧玩偶');
+    event.add('block.pasterdream.phantom_daze', '小大幻翼');
+    event.add('item.pasterdream.phantom_daze', '小大幻翼');
 });
 ```
 
