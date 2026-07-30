@@ -1,7 +1,7 @@
 # 主模 → PasterDreamAPI 可上收候选
 
 > **类别**：参考 · 架构 / 边界  
-> **日期**：2026-07-29（P0 批 + StructureInventoryHelper 已落地）  
+> **日期**：2026-07-30（P0 + P1 批已落地）  
 > **范围**：五域只读排查（实体·世界生成·方块物品·横切工具·客户端杂项）  
 > **原则**：API = 可复用框架 / Builder / 基类 / 横切工具；主模 = 内容数据、玩法数值、具体资产与维度 ID  
 > **功能是否对等** → [`功能状态.md`](功能状态.md)  
@@ -15,14 +15,14 @@
 | :--- | :--- |
 | **横切工具** | ✅ 已上收 `ServerScheduler` · `StructureInventoryHelper` |
 | **实体** | ✅ 已上收伤害免疫 Config + 基类 · `AbstractWandProjectileEntity`；`EntityImmunitySetup` 数据表留主模 |
-| **方块/物品** | ✅ 已上收 `HorizontalWaterloggedBlock` · `AbstractGeoDisplayItem`；余下 FluidType / Menu 骨架 |
-| **客户端** | **P1**：BGM 交叉淡入框架（去资产绑定）；Block 数据生成 Provider 基类 |
+| **方块/物品** | ✅ 已上收 `HorizontalWaterloggedBlock` · `AbstractGeoDisplayItem` · `FluidTypeAPI`/`FluidBuilder` · `SimpleContainerMenu` · Block datagen 基类；Item 双注册为文档收敛 |
+| **客户端** | ✅ BGM **纯逻辑**上收 `api/audio`（FadeState/Cooldown/LoopRestart/BiomeMusicTable/IMusicEventLookup）；播放实现留主模 `client.audio` |
 | **世界生成** | **几乎无内容可搬**；只做 Tree 注册增强 / locator 工具 / 可选新 DecorationType |
 | **明确勿上收** | 具体实体·装饰·遗迹列表·ChunkGen·SAN/能量 Attachment·HUD·VERIFY hooks·配置项 |
 
-当前 API 已覆盖 Builder 族 + **横切调度 / 结构库存 / 免疫·投射物·Geo 显示基类**。剩余价值集中在 **FluidType 一站式**、**BGM 状态机（去资产）**、**Menu/数据生成骨架**，而非再搬一批内容类。
+当前 API 已覆盖 Builder 族 + **横切调度 / 结构库存 / 免疫·投射物·Geo 显示基类** + **P1（FluidType / Menu 骨架 / Block datagen / BGM 纯逻辑）**。剩余多为 P2（Tree/locator、W4 BE 骨架等）与内容清理，而非再搬一批内容类。
 
-### 0.1 本批落地（2026-07-29）
+### 0.1 P0 落地（2026-07-29）
 
 | API 落点 | 主模变更要点 | 编译 |
 | :--- | :--- | :---: |
@@ -35,21 +35,34 @@
 
 验证：`JAVA_HOME=…/java-21-openjdk sh gradlew :PasterDreamAPI:compileJava :PasterDream:compileJava --offline` → **BUILD SUCCESSFUL**。主模旧路径已删；旧 package 引用 grep 为 0。
 
+### 0.2 P1 落地（2026-07-30）
+
+| API 落点 | 主模变更要点 | 编译 |
+| :--- | :--- | :---: |
+| `api/fluid/FluidTypeAPI` + `FluidBuilder`（`fluidType`/`source`/`flowing`/`buildPair`） | `PDFluidsType` 改走 `FluidTypeAPI.register`；去掉主模自有 FLUID_TYPES；`PasterDreamMod` 侧效加载 Type+Fluid | ✅ |
+| `api/menu/SimpleContainerMenu` | 箱子/框/桌/永恒书卷等 Menu 继承骨架（槽网格 + 玩家背包 + quickMove + stillValid） | ✅ |
+| `api/data/ApiBlockModelProvider` · `ApiBlockTagProvider` | `PDBlockModelProvider` / `PDBlockTagProvider` 薄壳；手写 tag 列表在 `addExtraTags` | ✅ |
+| `api/audio/*`（`FadeState` · `CooldownManager` · `LoopRestartManager` · `BiomeMusicTable` · `IMusicEventLookup` · `BgmAPI`） | 主模 `client.audio`：`Cooldown`/`LoopRestart` 薄继承 API；`BiomeMusicRegistry` extends `BiomeMusicTable`；`SoundEventLookup` implements `IMusicEventLookup`；**VolumeSound / Crossfade / ModMusicManager 播放层留主模**（server-safe） | ✅ |
+| **Item 双注册收敛** | **文档约定**（非 bulk 迁 600+ 条）：简单材料/食物/工具优先 `ItemAPI.*`；复杂自定义 / BlockItem / Geo / 强交互可继续 `PDItems.ITEMS` 或 `ItemAPI.registerCustom`；两路均为 `createItems("pasterdream")`，勿再开第三条 DeferredRegister | ✅ |
+
+验证：同上 compile 命令 → **BUILD SUCCESSFUL**（2026-07-30）。
+
+
 ---
 
 ## 1. 已有 API 边界（勿重复当候选）
 
 | 域 | API 已有 |
 | :--- | :--- |
-| 注册门面 | `PasterDreamAPI.registerAll` · Block/Item/Entity/Menu/Fluid/Particle/Curio/BlockEntity API + Builder |
+| 注册门面 | `PasterDreamAPI.registerAll` · Block/Item/Entity/Menu/**Fluid+FluidType**/Particle/Curio/BlockEntity API + Builder |
 | 世界生成 | `worldgen/decor/*` · `WorldGenUtils` · `TreeRegistry`（键） · RuinAPI · `dimension/terrain/*` |
 | 实体动画 | `GeckoLib{Mob,Monster,Projectile}Entity` · `ProcedureAnimationHandler` · `EntitySkill*` |
 | 实体扩展 | `api/entity/damage/*`（免疫 Config + 基类）· `api/entity/projectile/AbstractWandProjectileEntity` |
-| 方块 / 物品基类 | `SelfDropBlock` · `HorizontalWaterloggedBlock` · `api/item/base/AbstractGeoDisplayItem` |
+| 方块 / 物品基类 | `SelfDropBlock` · `HorizontalWaterloggedBlock` · `api/item/base/AbstractGeoDisplayItem` · `api/menu/SimpleContainerMenu` · `api/data/ApiBlock{Model,Tag}Provider` |
 | 横切工具 | `api/util/ServerScheduler`（显式 `register(bus)`，非 DeferredRegister）· `api/util/StructureInventoryHelper` |
-| 音效 | `ApiSoundRegistry`（维度 BGM 注册） · DimensionBuilder `.withMusic` |
+| 音效 / BGM | `ApiSoundRegistry` · DimensionBuilder `.withMusic` · **`api/audio`**（纯逻辑 + Lookup/Table 契约；播放实现不在 API） |
 | Curios | `CurioAPI` / `CurioBuilder` + `CurioClientBridge` |
-| 缺口 | **无** `network/` · `attachment/` · 客户端 `audio/` 框架 · Fluid**Type** 一站式 · 通用 Menu/BE 容器基类 |
+| 缺口 | **无** `network/` · `attachment/` · 客户端 **播放** 层（刻意留主模）· 通用 BE 容器基类（Menu 骨架已有） |
 
 ---
 
@@ -67,16 +80,16 @@
 | **AbstractGeoDisplayItem** | ✅ | `api/item/base/` | |
 | **StructureInventoryHelper** | ✅ | `api/util/` | 原 P1，与 P0 同批落地 |
 
-### 2.2 P1 — 明显可泛化（剩余）
+### 2.2 P1 — ~~明显可泛化~~（本批已完成）
 
-| 候选 | 主模路径 | 建议 | 理由 |
-| :--- | :--- | :--- | :--- |
-| **BGM 交叉淡入框架** | `client/audio/*`（`CrossfadeManager`、`VolumeSoundInstance`、`MusicSystemFactory`、`CooldownManager`…） | `api/client/audio` 或桥接式 `api/sound/bgm` | 状态机/DI/可测；**资产列表与维度白名单留主模**；难度高，需先抽 Lookup 注入 |
-| **FluidType + 完整 FluidBuilder** | `registry/PDFluidsType.java` + Fluid 实现 | 扩展 `FluidAPI` | 现 API 只盖 Fluid；Type 仍独立 DeferredRegister |
-| **通用容器 Menu 骨架** | 多处 `AbstractContainerMenu` 样板 | `api/menu/SimpleContainerMenu` 等 | 背包槽 + quickMove + Handler 重复 |
-| **Block 数据生成 Provider** | `data/PDBlockModelProvider` · `PDBlockTagProvider` | `api/data` / `api/block/data` | 已读 `BlockAPI.getBlockConfigs()`，本质是 API 驱动生成器 |
-| **EntityImmunitySetup** | `entity/damage/EntityImmunitySetup.java` | **数据留主模**（已是）；可选 setup 辅助签名进 API | 配置表绑 `PDEntities` |
-| **Item 双注册收敛** | `PDItems.ITEMS` + `ItemAPI.REGISTRY` | 文档 + 逐步迁纯 ItemAPI | 一致性，非新类 |
+| 候选 | 状态 | API 落点 | 备注 |
+| :--- | :---: | :--- | :--- |
+| **FluidType + 完整 FluidBuilder** | ✅ | `api/fluid/FluidTypeAPI` · `builder/FluidBuilder` | 主模 `PDFluidsType` 仅持有 Holder；`buildPair` 可选一站式 |
+| **通用容器 Menu 骨架** | ✅ | `api/menu/SimpleContainerMenu` | 复杂机台 Menu 可继续手写槽，或只复用 `addPlayerInventory` / quickMove helper |
+| **Block 数据生成 Provider** | ✅ | `api/data/ApiBlockModelProvider` · `ApiBlockTagProvider` | 主模 hook：`registerExtraStatesAndModels` / `addExtraTags` |
+| **BGM 交叉淡入框架（去资产）** | ✅ | `api/audio/*` | **仅纯逻辑 + 契约**；`CrossfadeManager`/`VolumeSoundInstance`/`ModMusicManager` 留主模 |
+| **Item 双注册收敛** | ✅ 文档 | （无新类） | 见 §0.2 / §3.3：优先 ItemAPI；复杂件可 `PDItems` 或 `registerCustom` |
+| **EntityImmunitySetup** | — | 数据留主模 | 机制已在 P0 API；无需再迁 |
 
 ### 2.3 P2 — 可选 / 需重构后再收
 
@@ -131,10 +144,10 @@
 | 动作 | 项 |
 | :--- | :--- |
 | **已上收基类** | `HorizontalWaterloggedBlock` · `AbstractGeoDisplayItem` |
-| **扩展 API** | FluidType + 综合 FluidBuilder；SimpleContainerMenu / Container BE 骨架 |
+| **已上收 P1** | FluidTypeAPI + FluidBuilder；SimpleContainerMenu；ApiBlock Model/Tag Provider |
 | **可选泛化** | W4Data/W4Geo 骨架 · SimpleMarker BE · 液态方块基 · Particle RenderType |
 | **保持** | 全部 `registry/blocks|items/*` 分组内容 · 具体 Menu/BE/流体实现 · MemorialDoll 领域链 |
-| **工程债** | `PDItems` 自有 `DeferredRegister` 与 ItemAPI 双轨 → 收敛 |
+| **工程债（约定）** | Item：`PDItems.ITEMS` 与 `ItemAPI.REGISTRY` 双轨允许共存（同 modid）；**新建简单物品走 ItemAPI**；勿开第三条 DR；bulk 迁非本批范围 |
 
 ### 3.4 网络 / 调度 / Attachment / 命令 / 配置 / util
 
@@ -148,8 +161,8 @@
 
 | 动作 | 项 |
 | :--- | :--- |
-| **上收框架** | `client/audio` 交叉淡入核心（Factory/Crossfade/VolumeSound/Cooldown…）；具体 biome→音乐表与维度集合留主模；与 DimensionAPI.withMusic 联动注册钩子 |
-| **上收工具** | Block Model/Tag Provider（读 BlockAPI configs）；W4Geo*Renderer · AnimUtils（可选） |
+| **已上收框架** | `api/audio` 纯逻辑（Cooldown/Loop/Fade/Table/Lookup）；biome→音乐表与维度白名单、播放/交叉淡化实现留主模 `client.audio` |
+| **已上收工具** | Block Model/Tag Provider（读 BlockAPI configs）；W4Geo*Renderer · AnimUtils 仍属 P2 可选 |
 | **薄完善** | Curio 默认 ClientBridge |
 | **保持** | 全部 HUD · 具体 Model/Renderer/Particle/Screen/Sky · smoketest `*VerifyHooks` · ClientSetup 业务 glue |
 
@@ -180,11 +193,11 @@
 ✅ 2. DamageImmunity* + AbstractWandProjectile → API；EntityImmunitySetup 留主模填表
 ✅ 3. HorizontalWaterloggedBlock + AbstractGeoDisplayItem
 ✅ 4. StructureInventoryHelper
-5. FluidAPI 补 FluidType 一站式；Item 双注册收敛（可穿插）
-6. BGM 框架上收（拆 Lookup/维度白名单注入）+ DimensionAPI 钩子  ← 难度高，单独设计
-7. Menu/容器骨架、Block data providers、Tree/ locator 增强
+✅ 5. FluidTypeAPI + FluidBuilder 一站式；Item 双注册文档收敛
+✅ 6. BGM 纯逻辑上收 api/audio（Lookup/Table 注入；播放层留主模）
+✅ 7. Menu/容器骨架、Block data providers
 8. 清理：主模空壳 GeckoLibMonster、废弃 BiomeModifier、死 Feature
-9. （可选）EntitySkill 与基类接口钉死后再迁 Boss 状态机
+9. （可选）Tree/locator 增强 · W4 BE 骨架 · EntitySkill 与基类接口钉死后迁 Boss 状态机
 ```
 
 每步：编译 → 相关 VERIFY 套件（scheduler 影响面大，优先 smoke/core / main-flow）→ 更新本文件与 [`架构差异.md`](架构差异.md)。
@@ -207,4 +220,4 @@
 - 完成一次上收后：从 §2 删掉已迁项，记入 §1「已有」；主模路径改为 re-export 或删除。  
 - 新增主模「通用基类」时先问：是否零 `PD*` 注册表依赖？是 → 候选进本文；否 → 内容。  
 - 本文 **不** 记录功能缺失；只记录边界与迁移优先级。  
-- 五域排查为 2026-07-29 静态只读快照；大改注册结构后应重扫 P0/P1。
+- 五域排查为 2026-07-29 静态只读快照；P1 落地补记 2026-07-30。大改注册结构后应重扫 P2。

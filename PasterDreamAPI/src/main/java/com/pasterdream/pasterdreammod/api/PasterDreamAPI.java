@@ -6,6 +6,7 @@ import com.pasterdream.pasterdreammod.api.curio.CurioAPI;
 import com.pasterdream.pasterdreammod.api.effect.MobEffectAPI;
 import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
 import com.pasterdream.pasterdreammod.api.fluid.FluidAPI;
+import com.pasterdream.pasterdreammod.api.fluid.FluidTypeAPI;
 import com.pasterdream.pasterdreammod.api.item.ItemAPI;
 import com.pasterdream.pasterdreammod.api.menu.MenuAPI;
 import com.pasterdream.pasterdreammod.api.particle.ParticleAPI;
@@ -54,9 +55,10 @@ public final class PasterDreamAPI {
         CurioAPI.REGISTRY.register(modEventBus);
         MenuAPI.REGISTRY.register(modEventBus);
         FluidAPI.REGISTRY.register(modEventBus);
+        FluidTypeAPI.REGISTRY.register(modEventBus);
         ApiSoundRegistry.DIMENSION_SOUNDS.register(modEventBus);
         DecorationRegistry.FEATURES.register(modEventBus);
 
-        LOGGER.debug("[PasterDreamAPI] 已统一注册 12 个 API 注册器到事件总线");
+        LOGGER.debug("[PasterDreamAPI] 已统一注册 13 个 API 注册器到事件总线");
     }
 }

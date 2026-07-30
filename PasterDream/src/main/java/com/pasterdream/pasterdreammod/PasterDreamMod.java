@@ -164,11 +164,9 @@ public class PasterDreamMod {
         // BiomeModifier 序列化器（dyedream_features 兼容 + wind_lake_verify 门控挂湖）
         com.pasterdream.pasterdreammod.worldgen.PDBiomeModifiers.BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
 
-        // 注册流体类型
-        PDFluidsType.FLUID_TYPES.register(modEventBus);
-
-        // 显式引用 PDFluids 的静态字段以触发类初始化，确保流体静态字段填充到 FluidAPI.REGISTRY
-        // FluidAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
+        // 显式引用流体 Type / Fluid 静态字段以触发类初始化，填充 FluidTypeAPI / FluidAPI
+        // 二者 DeferredRegister 已由 PasterDreamAPI.registerAll() 统一挂总线
+        Object unusedMeltdreamType = PDFluidsType.MELTDREAM_LIQUID_TYPE;
         Object unusedMeltdreamLiquid = PDFluids.MELTDREAM_LIQUID;
 
         // 配置刷怪蛋模型自动生成输出目录

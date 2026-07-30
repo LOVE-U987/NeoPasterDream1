@@ -28,13 +28,26 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * 物品注册类
- * 使用 DeferredRegister 模式注册所有物品
+ * 物品注册类（主模聚合门面 + 部分直接 {@link #ITEMS} 注册）。
+ * <p>
+ * <b>与 {@link ItemAPI} 的双轨约定（P1 文档收敛，2026-07-30）：</b>
+ * <ul>
+ *   <li>{@link #ITEMS} 与 {@link ItemAPI#REGISTRY} 均为 {@code DeferredRegister.createItems("pasterdream")}，
+ *       可并存；<b>禁止</b>再开第三条同 modid 的 Items DeferredRegister。</li>
+ *   <li><b>新建</b>简单材料 / 食物 / 标准工具 / 可用 Builder 表达的饰品 → 优先
+ *       {@link ItemAPI#simpleItem} / {@link ItemAPI#foodItem} / {@link ItemAPI#toolItem} /
+ *       {@link ItemAPI#curioItem}。</li>
+ *   <li>复杂自定义逻辑、Geo 展示、特殊 BlockItem、强交互类 → 可继续
+ *       {@code ITEMS.register(...)} 或 {@link ItemAPI#registerCustom}；保持单一入口即可，勿双注同 id。</li>
+ *   <li>本类大量 {@code public static final} 字段为分组子文件（{@code registry.items.*}）的聚合引用，
+ *       调用方应继续通过 {@code PDItems.XXX} 取 Holder，与底层走哪条 DR 无关。</li>
+ * </ul>
  */
 public class PDItems {
 
     /**
-     * 物品注册器
+     * 主模物品 DeferredRegister（复杂件 / 历史条目 / BlockItem 等）。
+     * 简单件请优先 {@link ItemAPI}。
      */
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(PasterDreamMod.MOD_ID);
 
