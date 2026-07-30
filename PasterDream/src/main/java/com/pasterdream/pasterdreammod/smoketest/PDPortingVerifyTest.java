@@ -127,6 +127,7 @@ public final class PDPortingVerifyTest {
      *   <li>{@code twilight-lantern}/{@code twilight}/{@code lantern} — 暮影之笼流程缺口核实</li>
      *   <li>{@code wind-journey}/{@code wind}/{@code third-dream} — 第三梦境风之旅途流程核实</li>
      *   <li>{@code second-dream}/{@code second}/{@code lamp-shadow} — 第二梦境灯影流程核实</li>
+     *   <li>{@code shadow-intrude}/{@code shadow_intrude}/{@code invasion} — 暗影入侵专项（spyon→calm→npc_3）；不在 all</li>
      *   <li>{@code main-flow}/{@code main}/{@code story}/{@code full-flow} — 主干全链路连续流程（染梦→暮影→灯影抉择→竞技场→风旅）；不在 all 默认集合内</li>
      *   <li>{@code dyedream}/{@code dye-dream}/{@code dream-world} — 染梦世界：狐狸雕像仪式 + 迷梦冶梦莲多方块 + 染梦莲；不在 all</li>
      * </ul>
@@ -136,7 +137,7 @@ public final class PDPortingVerifyTest {
      * {@code galleries}/{@code visual}=gallery+entity-gallery。
      * <p>
      * 注意：{@code all} <b>不含</b> {@code twilight-lantern} / {@code wind-journey} /
-     * {@code second-dream} / {@code main-flow} / {@code dyedream}
+     * {@code second-dream} / {@code shadow-intrude} / {@code main-flow} / {@code dyedream}
      * （专项缺口核实，默认不进全量，避免与全绿终验语义冲突；
      * 显式 {@code PASTERDREAM_VERIFY_SUITES=…}）。
      */
@@ -162,6 +163,11 @@ public final class PDPortingVerifyTest {
         WIND_LAKE("wind-lake", "wind_lake", "lake"),
         /** 第二梦境灯影专项；不在 all 默认集合内 */
         SECOND_DREAM("second-dream", "second", "lamp-shadow"),
+        /**
+         * 暗影入侵专项（窥视 buff / 白天·清剿 calm / npc_3 / Stage4）；不在 all。
+         * 见 docs/暗影入侵事件流程扫描.md
+         */
+        SHADOW_INTRUDE("shadow-intrude", "shadow_intrude", "invasion", "shadow-invasion"),
         /** 主干全链路连续流程；不在 all 默认集合内 */
         MAIN_FLOW("main-flow", "main", "story", "full-flow"),
         /** 染梦世界：狐狸雕像 + flower_12 多方块 + dyedream_lotus；不在 all */
@@ -260,7 +266,7 @@ public final class PDPortingVerifyTest {
                     if (!hit) {
                         LogUtils.getLogger().warn("[PDVerify] 未知套件名 '{}'，已忽略（合法: registry,core,dimensions,"
                                 + "spells,content,structures,workshop,struct-dim,gallery,entity-gallery,"
-                                + "twilight-lantern,wind-journey,wind-lake,second-dream,main-flow,dyedream 及快捷 all/quick/behavior/worldgen/galleries）", token);
+                                + "twilight-lantern,wind-journey,wind-lake,second-dream,shadow-intrude,main-flow,dyedream 及快捷 all/quick/behavior/worldgen/galleries）", token);
                     }
                 }
             }
@@ -279,6 +285,7 @@ public final class PDPortingVerifyTest {
         all.remove(Suite.WIND_JOURNEY);
         all.remove(Suite.WIND_LAKE);
         all.remove(Suite.SECOND_DREAM);
+        all.remove(Suite.SHADOW_INTRUDE);
         all.remove(Suite.MAIN_FLOW);
         all.remove(Suite.DYEDREAM);
         return all;
@@ -540,6 +547,14 @@ public final class PDPortingVerifyTest {
             cursor = sd + 450;
         }
 
+        if (suite(Suite.SHADOW_INTRUDE)) {
+            int si = cursor;
+            at(si, PDPortingVerifyTest::refreshPlayerBuffs);
+            at(si + 2, PDPortingVerifyTest::shadowIntrudeSuite);
+            // hooks 内 advance Stage4 ~560t + 多段 pump；时间线给余量
+            cursor = si + 40;
+        }
+
         if (suite(Suite.MAIN_FLOW)) {
             int mf = cursor;
             at(mf, PDPortingVerifyTest::refreshPlayerBuffs);
@@ -742,7 +757,7 @@ public final class PDPortingVerifyTest {
         long lootTables = server.reloadableRegistries().getKeys(Registries.LOOT_TABLE).stream()
                 .filter(rl -> rl.getNamespace().equals(PasterDreamMod.MOD_ID)).count();
         checkDetail("datapack", recipes >= 434, "配方加载数 " + recipes, "研究台组结算后≥434（W4 结算再+4）");
-        checkDetail("datapack", advancements >= 60, "成就加载数 " + advancements, "当前 60/62，W4 结算后 62");
+        checkDetail("datapack", advancements >= 62, "成就加载数 " + advancements, "期望 62（与原版 ID 全量对齐）");
         checkDetail("datapack", lootTables >= 174, "战利品表加载数 " + lootTables, "研究台组补齐后 174+");
     }
 
@@ -1392,6 +1407,13 @@ public final class PDPortingVerifyTest {
     private static void secondDreamSuiteVictoryAftermath() {
         PDSecondDreamVerifyHooks.verifyVictoryAftermath(server(), player(), r ->
                 checkDetail("second-dream", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== 暗影入侵专项（shadow-intrude） ====================
+
+    private static void shadowIntrudeSuite() {
+        PDShadowIntrudeVerifyHooks.verify(server(), player(), r ->
+                checkDetail("shadow-intrude", r.pass(), r.name(), r.detail()));
     }
 
     // ==================== 主干全链路连续流程核实（main-flow） ====================

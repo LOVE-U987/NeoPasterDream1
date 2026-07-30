@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.item;
 
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -90,6 +91,9 @@ public class PaleBoneneedleItem extends Item {
 
         serverPlayer.changeDimension(transition);
         serverPlayer.setPortalCooldown(TELEPORT_COOLDOWN);
+
+        // 原版 PaleBoneneedlePr0：回程授予 achievement_b_2
+        PDAdvancements.award(serverPlayer, PDAdvancements.B_2);
 
         // 播放使用音效
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
