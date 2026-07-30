@@ -6,7 +6,6 @@ import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.item.Hithard0RingItem;
 import com.pasterdream.pasterdreammod.item.LightButterflyCurioItem;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
-import com.pasterdream.pasterdreammod.registry.items.PDItemsCurios;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -23,6 +22,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -245,7 +245,7 @@ public final class PDCurioVerifyHooks {
 
         double e0 = player.getData(PDAttachments.PLAYER_MELTDREAM_ENERGY).meltDreamEnergy();
 
-        if (stack.getItem() instanceof PDItemsCurios.MeltdreamEnergy0RingItem r) {
+        if (stack.getItem() instanceof ICurioItem r) {
             SlotContext ctx = new SlotContext("ring", player, 0, false, true);
             int old = player.tickCount;
             player.tickCount = 20; // %20 == 0

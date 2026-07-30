@@ -8,6 +8,7 @@ import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 染梦遗迹/结构注册 —— 使用 RuinAPI + JigsawStructure 注册 41 个遗迹结构
  * <p>
@@ -49,7 +50,7 @@ public class PDRuinsRegistration {
 
     /** 注册所有染梦遗迹结构 */
     public static void register() {
-        PasterDreamMod.LOGGER.debug("[PDRuinsRegistration] ===== 开始注册染梦遗迹结构 =====");
+        PDDebugLogger.mainDebug("[PDRuinsRegistration] ===== 开始注册染梦遗迹结构 =====");
 
         registerDreamTrain();
         registerDyedreamWorldTree();
@@ -83,7 +84,7 @@ public class PDRuinsRegistration {
         registerMeltdreamLiquidWell1();
 
         int count = REGISTERED_STRUCTURES.size();
-        PasterDreamMod.LOGGER.debug("[PDRuinsRegistration] ✅ 染梦遗迹结构注册完成: 共 {} 个", count);
+        PDDebugLogger.mainDebug("[PDRuinsRegistration] ✅ 染梦遗迹结构注册完成: 共 {} 个", count);
     }
 
     /**

@@ -51,6 +51,8 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import org.jetbrains.annotations.Nullable;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
+import com.pasterdream.pasterdreammod.config.PDClientConfig;
 /**
  * 客户端设置类
  * 负责注册客户端特有的渲染器、屏幕、粒子和维度特效
@@ -81,14 +83,18 @@ public class ClientSetup {
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             CurioClientHandler.init();
-            PasterDreamMod.LOGGER.debug("[ClientSetup] 饰品身体渲染器初始化完成");
+            PDDebugLogger.mainDebug("[ClientSetup] 饰品身体渲染器初始化完成");
+
+            // 根据客户端配置同步内嵌 UI 资源包状态（ENABLE_MOD_UI 关闭时自动卸载）
+            PDPackHandler.applyPackState(PDClientConfig.ENABLE_MOD_UI.get());
+            PDDebugLogger.mainDebug("[ClientSetup] 内嵌 UI 资源包状态已同步：{}", PDClientConfig.ENABLE_MOD_UI.get());
 
             // 注册模组配置界面：在 Mod 列表点击“配置”按钮时打开 PDConfigScreen
             ModList.get().getModContainerById(PasterDreamMod.MOD_ID).ifPresent(container ->
                     container.registerExtensionPoint(IConfigScreenFactory.class,
                             (IConfigScreenFactory) (modContainer, modListScreen) -> new PDConfigScreen(modListScreen))
             );
-            PasterDreamMod.LOGGER.debug("[ClientSetup] 配置界面工厂已注册");
+            PDDebugLogger.mainDebug("[ClientSetup] 配置界面工厂已注册");
         });
     }
 
@@ -100,7 +106,7 @@ public class ClientSetup {
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(Modelslime.LAYER_LOCATION, Modelslime::createBodyLayer);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册模型层: {}", Modelslime.LAYER_LOCATION);
+        PDDebugLogger.mainDebug("[ClientSetup] 注册模型层: {}", Modelslime.LAYER_LOCATION);
     }
 
     /**
@@ -119,7 +125,7 @@ public class ClientSetup {
             }
             return -145678;
         }, PDBlocks.DYEDREAM_LEAVES.get());
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册树叶颜色提供者: dyedream_leaves");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册树叶颜色提供者: dyedream_leaves");
     }
 
     /**
@@ -130,48 +136,48 @@ public class ClientSetup {
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(PDMenus.SHADOW_CHEST.get(), ShadowChestScreen::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: shadow_chest → ShadowChestScreen");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: shadow_chest → ShadowChestScreen");
 
         event.register(PDMenus.MELTDREAM_CHEST.get(), MeltdreamChestScreen::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: meltdream_chest → MeltdreamChestScreen");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: meltdream_chest → MeltdreamChestScreen");
 
         event.register(PDMenus.DYEDREAM_DESK.get(), DyedreamDeskScreen::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: dyedream_desk → DyedreamDeskScreen");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: dyedream_desk → DyedreamDeskScreen");
 
         event.register(PDMenus.DREAM_CAULDRON.get(), DreamCauldronScreen::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: dream_cauldron → DreamCauldronScreen");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: dream_cauldron → DreamCauldronScreen");
 
         event.register(PDMenus.THE_ENDLESS_BOOK_OF_DREAM_SEEKERS.get(), TheEndlessBookOfDreamSeekersScreen::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: the_endless_book_of_dream_seekers → TheEndlessBookOfDreamSeekersScreen");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: the_endless_book_of_dream_seekers → TheEndlessBookOfDreamSeekersScreen");
 
         // ==================== [分区W] 武器工坊群 ====================
 
         event.register(PDMenus.WEAPON_WORKSHOP.get(), WeaponWorkshopScreen::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: weapon_workshop → WeaponWorkshopScreen");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: weapon_workshop → WeaponWorkshopScreen");
 
         event.register(PDMenus.WORKSHOP_ANVIL.get(), WorkshopAnvilScreen::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: workshop_anvil → WorkshopAnvilScreen");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: workshop_anvil → WorkshopAnvilScreen");
 
         event.register(PDMenus.WORKSHOP_BLAST.get(), WorkshopBlastScreen::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: workshop_blast → WorkshopBlastScreen");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: workshop_blast → WorkshopBlastScreen");
 
         // ==================== [分区R] 研究台组 ====================
 
         event.register(PDMenus.RESEARCH_TABLE.get(), ResearchTableScreen::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: research_table → ResearchTableScreen");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: research_table → ResearchTableScreen");
 
         event.register(PDMenus.SHADOW_BLAST_FURNACE.get(), ShadowBlastFurnaceScreen::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: shadow_blast_furnace → ShadowBlastFurnaceScreen");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: shadow_blast_furnace → ShadowBlastFurnaceScreen");
 
         event.register(PDMenus.DREAM_ACCUMULATOR.get(), DreamAccumulatorScreen::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: dream_accumulator → DreamAccumulatorScreen");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: dream_accumulator → DreamAccumulatorScreen");
 
         event.register(PDMenus.SHADOW_SELECT_END.get(), ShadowSelectEndScreen::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: shadow_select_end → ShadowSelectEndScreen");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: shadow_select_end → ShadowSelectEndScreen");
 
         event.register(PDMenus.STORAGE_BAG.get(), StorageBagScreen::new);
         event.register(PDMenus.STORAGE_BAG_0.get(), StorageBagScreen::new);
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册 GUI 屏幕: storage_bag / storage_bag_0 → StorageBagScreen");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: storage_bag / storage_bag_0 → StorageBagScreen");
     }
 
     /**
@@ -181,7 +187,7 @@ public class ClientSetup {
      */
     @SubscribeEvent
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 开始注册粒子提供器...");
+        PDDebugLogger.mainDebug("[ClientSetup] 开始注册粒子提供器...");
 
         event.registerSpriteSet((SimpleParticleType) PDParticles.MELTDREAM_CRYSTAL_PARTICLE.particleType(), LifeCrystalParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.DREAM_AMBIENT_PARTICLE.particleType(), DreamAmbientParticle.Provider::new);
@@ -210,15 +216,7 @@ public class ClientSetup {
         // ===== 4.4 梦境炼药锅炼制粒子 =====
         event.registerSpriteSet((SimpleParticleType) PDParticles.DUST_0_PARTICLE.particleType(), Dust0Particle.Provider::new);
 
-        // ===== 4.5 法术粒子（还原自原版法术模块） =====
-        event.registerSpriteSet((SimpleParticleType) PDParticles.POISON_GAS_PARTICLE.particleType(), PoisonGasParticle.Provider::new);
-        event.registerSpriteSet((SimpleParticleType) PDParticles.POISON_SOUL_PARTICLE.particleType(), PoisonSoulParticle.Provider::new);
-        event.registerSpriteSet((SimpleParticleType) PDParticles.FURY_SPELL_PARTICLE.particleType(), FurySpellParticle.Provider::new);
-        event.registerSpriteSet((SimpleParticleType) PDParticles.HEALING_SPELL_PARTICLE.particleType(), HealingSpellParticle.Provider::new);
-        event.registerSpriteSet((SimpleParticleType) PDParticles.YELLOW_SMOKE_PARTICLE.particleType(), YellowSmokeParticle.Provider::new);
-        event.registerSpriteSet((SimpleParticleType) PDParticles.SNOWFLAKE_1_PARTICLE.particleType(), Snowflake1Particle.Provider::new);
-
-        // ===== 4.6 法杖武器与战斗粒子（W2-D，还原自原版法杖战斗模块） =====
+        // ===== 4.5 法杖武器与战斗粒子（W2-D，还原自原版法杖战斗模块） =====
         event.registerSpriteSet((SimpleParticleType) PDParticles.ATTACK_0_PARTICLE.particleType(), Attack0Particle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.BUFF_0_PARTICLE.particleType(), Buff0Particle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.FIREFLY_GLASS_JAR_PARTICLE.particleType(), FireflyGlassJarParticle.Provider::new);
@@ -232,7 +230,7 @@ public class ClientSetup {
         event.registerSpriteSet((SimpleParticleType) PDParticles.STARCALL_PARTICLE.particleType(), StarcallParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.TERRASWORD_WAVE_PARTICLE.particleType(), TerraswordWaveParticle.Provider::new);
 
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 粒子提供器注册完成，共 39 个粒子类型");
+        PDDebugLogger.mainDebug("[ClientSetup] 粒子提供器注册完成，共 39 个粒子类型");
     }
 
     /**
@@ -253,7 +251,7 @@ public class ClientSetup {
                 return ResourceLocation.fromNamespaceAndPath("pasterdream", "block/meltdream_liquid_flowing");
             }
         }, PDFluidsType.MELTDREAM_LIQUID_TYPE.get());
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册融梦涌泉流体类型客户端纹理");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册融梦涌泉流体类型客户端纹理");
 
         // ===== 熔融阴影流体纹理（波次C） =====
         event.registerFluidType(new IClientFluidTypeExtensions() {
@@ -267,7 +265,7 @@ public class ClientSetup {
                 return ResourceLocation.fromNamespaceAndPath("pasterdream", "block/shadow_liquid_flowing");
             }
         }, PDFluidsType.SHADOW_LIQUID_TYPE.get());
-        PasterDreamMod.LOGGER.debug("[ClientSetup] 注册熔融阴影流体类型客户端纹理");
+        PDDebugLogger.mainDebug("[ClientSetup] 注册熔融阴影流体类型客户端纹理");
     }
 
     /**

@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 遗迹结构构建器 —— 采用 Builder 模式链式配置结构类型和 JSON 资源文件生成
  * <p>
@@ -110,7 +111,7 @@ public class RuinBuilder {
      */
     public RuinBuilder biomeTag(String biomeTagId) {
         this.biomeTag = biomeTagId.startsWith("#") ? biomeTagId : "#" + biomeTagId;
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] {} → biomeTag={}", structureName, this.biomeTag);
+        PDDebugLogger.apiDebug("[RuinBuilder] {} → biomeTag={}", structureName, this.biomeTag);
         return this;
     }
 
@@ -124,7 +125,7 @@ public class RuinBuilder {
      */
     public RuinBuilder templatePool(String poolId) {
         this.templatePool = poolId;
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] {} → templatePool={}", structureName, poolId);
+        PDDebugLogger.apiDebug("[RuinBuilder] {} → templatePool={}", structureName, poolId);
         return this;
     }
 
@@ -138,7 +139,7 @@ public class RuinBuilder {
      */
     public RuinBuilder structureClass(Class<? extends Structure> structureClass) {
         this.structureClass = structureClass;
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] {} → structureClass={}", structureName, structureClass.getSimpleName());
+        PDDebugLogger.apiDebug("[RuinBuilder] {} → structureClass={}", structureName, structureClass.getSimpleName());
         return this;
     }
 
@@ -152,7 +153,7 @@ public class RuinBuilder {
      */
     public RuinBuilder codec(MapCodec<? extends Structure> codec) {
         this.codec = codec;
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] {} → codec=已配置", structureName);
+        PDDebugLogger.apiDebug("[RuinBuilder] {} → codec=已配置", structureName);
         return this;
     }
 
@@ -166,7 +167,7 @@ public class RuinBuilder {
      */
     public RuinBuilder terrainAdaptation(String terrainAdaptation) {
         this.terrainAdaptation = terrainAdaptation;
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] {} → terrainAdaptation={}", structureName, terrainAdaptation);
+        PDDebugLogger.apiDebug("[RuinBuilder] {} → terrainAdaptation={}", structureName, terrainAdaptation);
         return this;
     }
 
@@ -178,7 +179,7 @@ public class RuinBuilder {
      */
     public RuinBuilder step(String step) {
         this.step = step;
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] {} → step={}", structureName, step);
+        PDDebugLogger.apiDebug("[RuinBuilder] {} → step={}", structureName, step);
         return this;
     }
 
@@ -192,7 +193,7 @@ public class RuinBuilder {
      */
     public RuinBuilder size(int size) {
         this.size = size;
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] {} → size={}", structureName, size);
+        PDDebugLogger.apiDebug("[RuinBuilder] {} → size={}", structureName, size);
         return this;
     }
 
@@ -204,7 +205,7 @@ public class RuinBuilder {
      */
     public RuinBuilder startHeight(int startHeight) {
         this.startHeight = startHeight;
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] {} → startHeight={}", structureName, startHeight);
+        PDDebugLogger.apiDebug("[RuinBuilder] {} → startHeight={}", structureName, startHeight);
         return this;
     }
 
@@ -218,7 +219,7 @@ public class RuinBuilder {
      */
     public RuinBuilder extraFields(JsonObject extraFields) {
         this.extraFields = extraFields;
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] {} → extraFields=已配置 ({} 个字段)", structureName, extraFields.size());
+        PDDebugLogger.apiDebug("[RuinBuilder] {} → extraFields=已配置 ({} 个字段)", structureName, extraFields.size());
         return this;
     }
 
@@ -233,7 +234,7 @@ public class RuinBuilder {
      */
     public RuinBuilder generateJson(boolean generate) {
         this.generateJsonFiles = generate;
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] {} → generateJson={}", structureName, generate);
+        PDDebugLogger.apiDebug("[RuinBuilder] {} → generateJson={}", structureName, generate);
         return this;
     }
 
@@ -247,7 +248,7 @@ public class RuinBuilder {
      */
     public RuinBuilder basePath(String basePath) {
         this.basePath = basePath;
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] {} → basePath={}", structureName, basePath);
+        PDDebugLogger.apiDebug("[RuinBuilder] {} → basePath={}", structureName, basePath);
         return this;
     }
 
@@ -265,7 +266,7 @@ public class RuinBuilder {
      */
     public RuinBuilder largeStructure(TerrainRequirements reqs) {
         this.terrainRequirements = reqs;
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] 🏗️ 标记为大型结构: {} | 需求={}", structureName, reqs);
+        PDDebugLogger.apiDebug("[RuinBuilder] 🏗️ 标记为大型结构: {} | 需求={}", structureName, reqs);
         return this;
     }
 
@@ -302,8 +303,8 @@ public class RuinBuilder {
      * @throws RuntimeException      如果 JSON 文件写入失败
      */
     public RuinResult build() {
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] ===== 开始构建遗迹结构: {} =====", structureName);
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder]   配置: biomeTag={}, templatePool={}, step={}, terrainAdaptation={}, size={}, startHeight={}",
+        PDDebugLogger.apiDebug("[RuinBuilder] ===== 开始构建遗迹结构: {} =====", structureName);
+        PDDebugLogger.apiDebug("[RuinBuilder]   配置: biomeTag={}, templatePool={}, step={}, terrainAdaptation={}, size={}, startHeight={}",
                 biomeTag, templatePool, step, terrainAdaptation, size, startHeight);
 
         // 验证必要参数
@@ -316,48 +317,48 @@ public class RuinBuilder {
         }
 
         // 1. 注册 StructureType（通过 DeferredRegister 懒注册）
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] 注册 StructureType: {}.{}", modId, structureName);
+        PDDebugLogger.apiDebug("[RuinBuilder] 注册 StructureType: {}.{}", modId, structureName);
         @SuppressWarnings("unchecked")
         StructureType<Structure> type = () -> (MapCodec<Structure>) codec;
         registry.register(structureName, () -> type);
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] ✅ 已注册 StructureType: {}.{}", modId, structureName);
+        PDDebugLogger.apiDebug("[RuinBuilder] ✅ 已注册 StructureType: {}.{}", modId, structureName);
 
         // 2. 生成 JSON 资源文件
         if (generateJsonFiles) {
             try {
-                PasterDreamAPI.LOGGER.debug("[RuinBuilder] ===== 开始生成结构资源文件: {} =====", structureName);
+                PDDebugLogger.apiDebug("[RuinBuilder] ===== 开始生成结构资源文件: {} =====", structureName);
 
-                PasterDreamAPI.LOGGER.debug("[RuinBuilder] 生成 structure JSON → data/{}/worldgen/structure/{}.json", modId, structureName);
+                PDDebugLogger.apiDebug("[RuinBuilder] 生成 structure JSON → data/{}/worldgen/structure/{}.json", modId, structureName);
                 saveStructureJson();
 
-                PasterDreamAPI.LOGGER.debug("[RuinBuilder] 生成 template_pool JSON → data/{}/worldgen/template_pool/{}_pool.json", modId, structureName);
+                PDDebugLogger.apiDebug("[RuinBuilder] 生成 template_pool JSON → data/{}/worldgen/template_pool/{}_pool.json", modId, structureName);
                 saveTemplatePoolJson();
 
-                PasterDreamAPI.LOGGER.debug("[RuinBuilder] ✅ 结构资源文件生成完成: {}", structureName);
+                PDDebugLogger.apiDebug("[RuinBuilder] ✅ 结构资源文件生成完成: {}", structureName);
             } catch (IOException e) {
                 PasterDreamAPI.LOGGER.error("[RuinBuilder] ❌ 无法生成结构资源文件 [{}]: {}", structureName, e.getMessage(), e);
                 throw new RuntimeException("RuinBuilder: 无法生成结构资源文件 [" + structureName + "]", e);
             }
         } else {
-            PasterDreamAPI.LOGGER.debug("[RuinBuilder] ⏭️ 跳过 JSON 文件生成: {} (generateJson=false)", structureName);
+            PDDebugLogger.apiDebug("[RuinBuilder] ⏭️ 跳过 JSON 文件生成: {} (generateJson=false)", structureName);
         }
 
         // 3. 创建并缓存 RuinResult
         RuinResult result = (terrainRequirements != null)
                 ? RuinResult.of(modId, structureName, terrainRequirements)
                 : RuinResult.of(modId, structureName);
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] 创建 RuinResult: typeKey={}, structureKey={}", result.typeKey(), result.structureKey());
+        PDDebugLogger.apiDebug("[RuinBuilder] 创建 RuinResult: typeKey={}, structureKey={}", result.typeKey(), result.structureKey());
 
         // 如果是大型结构，注册到地形协商器
         if (terrainRequirements != null) {
             StructureTerrainNegotiator negotiator = StructureTerrainNegotiator.getInstance();
             negotiator.registerLargeStructure(structureName, modId, terrainRequirements);
-            PasterDreamAPI.LOGGER.debug("[RuinBuilder] 🔗 已注册大型结构到地形协商器: {}", structureName);
+            PDDebugLogger.apiDebug("[RuinBuilder] 🔗 已注册大型结构到地形协商器: {}", structureName);
         }
 
         com.pasterdream.pasterdreammod.api.ruin.RuinAPI.cacheRuin(result);
 
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] ✅ 遗迹结构构建完成: {} | result={}", structureName, result);
+        PDDebugLogger.apiDebug("[RuinBuilder] ✅ 遗迹结构构建完成: {} | result={}", structureName, result);
         return result;
     }
 
@@ -411,7 +412,7 @@ public class RuinBuilder {
             GSON.toJson(root, writer);
         }
 
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] ✅ 已生成 structure JSON → {}", outputFile);
+        PDDebugLogger.apiDebug("[RuinBuilder] ✅ 已生成 structure JSON → {}", outputFile);
     }
 
     /**
@@ -435,6 +436,6 @@ public class RuinBuilder {
             GSON.toJson(root, writer);
         }
 
-        PasterDreamAPI.LOGGER.debug("[RuinBuilder] ✅ 已生成 template_pool JSON → {}", outputFile);
+        PDDebugLogger.apiDebug("[RuinBuilder] ✅ 已生成 template_pool JSON → {}", outputFile);
     }
 }

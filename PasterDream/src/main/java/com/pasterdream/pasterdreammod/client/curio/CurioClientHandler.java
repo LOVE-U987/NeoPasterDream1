@@ -11,6 +11,7 @@ import top.theillusivec4.curios.api.client.ICurioRenderer;
 
 import java.util.function.Supplier;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 饰品客户端处理器 —— 负责初始化饰品客户端桥接
  * <p>
@@ -59,7 +60,7 @@ public class CurioClientHandler implements CurioAPI.CurioClientBridge {
 
             if (item != Items.AIR) {
                 CuriosRendererRegistry.register(item, (Supplier<ICurioRenderer>) entry.getValue());
-                PasterDreamMod.LOGGER.debug(
+                PDDebugLogger.mainDebug(
                         "[CurioClient] 已注册饰品渲染器: {}",
                         fullName);
             } else {
@@ -72,7 +73,7 @@ public class CurioClientHandler implements CurioAPI.CurioClientBridge {
         // 2. 遍历所有配置了渲染的饰品并输出日志
         for (var registration : CurioAPI.getRegisteredCurios()) {
             if (!"none".equals(registration.renderType())) {
-                PasterDreamMod.LOGGER.debug(
+                PDDebugLogger.mainDebug(
                         "[CurioClient] 饰品 {} 配置了渲染类型: {}",
                         registration.fullName(),
                         registration.renderType());

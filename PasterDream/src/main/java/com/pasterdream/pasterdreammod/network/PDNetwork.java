@@ -1,8 +1,12 @@
 package com.pasterdream.pasterdreammod.network;
 
-import com.pasterdream.pasterdreammod.attachment.MeltDreamEnergyData;
+import com.pasterdream.pasterdreammod.api.network.MeltDreamEnergyPayload;
+
+import com.pasterdream.pasterdreammod.api.network.SanDataPayload;
+
+import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyData;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
-import com.pasterdream.pasterdreammod.attachment.SanData;
+import com.pasterdream.pasterdreammod.api.san.SanData;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDParticles;

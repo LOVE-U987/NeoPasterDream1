@@ -40,6 +40,7 @@ import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 研究台方块实体 (Research Table Block Entity)
  * <p>
@@ -212,7 +213,7 @@ public class ResearchTableBlockEntity extends BlockEntity implements GeoBlockEnt
                 .getOptional(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, itemName))
                 .orElse(Items.AIR);
         if (item == Items.AIR) {
-            PasterDreamMod.LOGGER.debug("[ResearchTable] 研究产物 {} 未注册，跳过发放", itemName);
+            PDDebugLogger.mainDebug("[ResearchTable] 研究产物 {} 未注册，跳过发放", itemName);
             return;
         }
         itemHandler.setStackInSlot(SLOT_STUDY_RESULT, new ItemStack(item));
@@ -248,7 +249,7 @@ public class ResearchTableBlockEntity extends BlockEntity implements GeoBlockEnt
         AdvancementHolder holder = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
         if (holder == null) {
-            PasterDreamMod.LOGGER.debug("[ResearchTable] 成就 {} 未注册，按未完成处理", path);
+            PDDebugLogger.mainDebug("[ResearchTable] 成就 {} 未注册，按未完成处理", path);
             return false;
         }
         return player.getAdvancements().getOrStartProgress(holder).isDone();

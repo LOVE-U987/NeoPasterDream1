@@ -38,6 +38,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.function.Consumer;
 
 /**
@@ -50,6 +51,11 @@ import java.util.function.Consumer;
  * {@code PASTERDREAM_VERIFY_SUITES=second-dream} 显式开启。
  */
 public final class PDSecondDreamVerifyHooks {
+
+    /** 白花胸针已拆分到 PasterDreamSanity；测试时通过注册表动态获取 */
+    private static final Supplier<Item> WHITE_FLOWER_BODY = () ->
+            BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdreamsanity", "white_flower_body"))
+                    .orElseThrow(() -> new IllegalStateException("white_flower_body 未注册，PasterDreamSanity 是否已加载？"));
 
     public record Result(boolean pass, String name, String detail) {
     }
@@ -433,7 +439,7 @@ public final class PDSecondDreamVerifyHooks {
 
         grantAdvancement(player, "achievement_talent_light");
         List<ItemStack> light = AaroncosHandChestBlockEntity.buildLootFor(player);
-        out.accept(ok(lootHas(light, PDItems.WHITE_FLOWER_BODY.get())
+        out.accept(ok(lootHas(light, WHITE_FLOWER_BODY.get())
                         && lootHas(light, PDItems.WHITE_CRYSTAL.get())
                         && lootHas(light, PDItems.PURE_HORROR.get())
                         && !lootHas(light, PDItems.DEGENERATE_BODYS.get()),
@@ -446,14 +452,14 @@ public final class PDSecondDreamVerifyHooks {
         out.accept(ok(lootHas(shadow, PDItems.DEGENERATE_BODYS.get())
                         && lootHas(shadow, PDItems.SHADOW_HILT.get())
                         && lootHas(shadow, PDItems.PURE_HORROR.get())
-                        && !lootHas(shadow, PDItems.WHITE_FLOWER_BODY.get()),
+                        && !lootHas(shadow, WHITE_FLOWER_BODY.get()),
                 "buildLoot talent_shadow → 堕落体+影柄+horror",
                 "n=" + shadow.size()));
 
         grantAdvancement(player, "achievement_talent_light");
         List<ItemStack> both = AaroncosHandChestBlockEntity.buildLootFor(player);
         out.accept(ok(both.size() == 5
-                        && lootHas(both, PDItems.WHITE_FLOWER_BODY.get())
+                        && lootHas(both, WHITE_FLOWER_BODY.get())
                         && lootHas(both, PDItems.SHADOW_HILT.get())
                         && lootHas(both, PDItems.PURE_HORROR.get()),
                 "buildLoot 双 talent → 5 件（Pr0 两 if 可并存）",
@@ -470,7 +476,7 @@ public final class PDSecondDreamVerifyHooks {
         int horrors = countGround(arena, chestPos, PDItems.PURE_HORROR.get());
         int bodys = countGround(arena, chestPos, PDItems.DEGENERATE_BODYS.get());
         int hilts = countGround(arena, chestPos, PDItems.SHADOW_HILT.get());
-        int flowers = countGround(arena, chestPos, PDItems.WHITE_FLOWER_BODY.get());
+        int flowers = countGround(arena, chestPos, WHITE_FLOWER_BODY.get());
         boolean chestGone = arena.getBlockState(chestPos).isAir();
         out.accept(ok(horrors >= 1, "右键开箱 40t 后 pure_horror 掉落", "horrors=" + horrors));
         out.accept(ok(bodys >= 1 && hilts >= 1,

@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.DefaultedBlockGeoModel;
 import software.bernie.geckolib.renderer.GeoBlockRenderer;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 暗影漩涡方块渲染器
  * <p>
@@ -29,7 +30,7 @@ public class ShadowVortexBlockRenderer extends GeoBlockRenderer<ShadowVortexBloc
      */
     public ShadowVortexBlockRenderer(BlockEntityRendererProvider.Context context) {
         super(new DefaultedBlockGeoModel<>(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, NAME)));
-        PasterDreamMod.LOGGER.debug("[ShadowVortexBlockRenderer] 初始化完成，资源名: {} | 模型=geo/block/{}.geo.json 纹理=textures/block/{}.png 动画=animations/block/{}.animation.json",
+        PDDebugLogger.mainDebug("[ShadowVortexBlockRenderer] 初始化完成，资源名: {} | 模型=geo/block/{}.geo.json 纹理=textures/block/{}.png 动画=animations/block/{}.animation.json",
                 NAME, NAME, NAME, NAME);
     }
 }

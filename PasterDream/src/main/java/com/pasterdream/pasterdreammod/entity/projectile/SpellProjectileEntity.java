@@ -1,8 +1,8 @@
 package com.pasterdream.pasterdreammod.entity.projectile;
 
 import com.pasterdream.pasterdreammod.entity.SpellEffects;
-import com.pasterdream.pasterdreammod.registry.PDEntities;
-import com.pasterdream.pasterdreammod.registry.PDItems;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -12,6 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ItemSupplier;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -40,23 +41,25 @@ public class SpellProjectileEntity extends AbstractArrow implements ItemSupplier
 
     /**
      * 法术类型：绑定实体类型、物品外观与命中效果
+     * <p>
+     * 实体类型和物品通过 {@link BuiltInRegistries} 动态查询 PasterDreamSpells 子模组的注册项。
      */
     public enum SpellType {
         /** 闪电法术：5*5 区域 4 次随机落雷 */
-        LIGHTNING(() -> PDEntities.LIGHTNING_SPELL_PROJECTILE.get(),
-                () -> PDItems.LIGHTNING_SPELL.get(), SpellEffects::lightning),
+        LIGHTNING(SpellProjectileEntity::lookupLightningEntityType,
+                SpellProjectileEntity::lookupLightningItem, SpellEffects::lightning),
         /** 剧毒法术：7*7 区域三波剧毒攻势 */
-        POISON(() -> PDEntities.POISON_SPELL_PROJECTILE.get(),
-                () -> PDItems.POISON_SPELL.get(), SpellEffects::poison),
+        POISON(SpellProjectileEntity::lookupPoisonEntityType,
+                SpellProjectileEntity::lookupPoisonItem, SpellEffects::poison),
         /** 治疗法术：生成治疗立场 */
-        HEALING(() -> PDEntities.HEALING_SPELL_PROJECTILE.get(),
-                () -> PDItems.HEALING_SPELL.get(), SpellEffects::healing),
+        HEALING(SpellProjectileEntity::lookupHealingEntityType,
+                SpellProjectileEntity::lookupHealingItem, SpellEffects::healing),
         /** 狂暴法术：生成狂暴立场 */
-        FURY(() -> PDEntities.FURY_SPELL_PROJECTILE.get(),
-                () -> PDItems.FURY_SPELL.get(), SpellEffects::fury),
+        FURY(SpellProjectileEntity::lookupFuryEntityType,
+                SpellProjectileEntity::lookupFuryItem, SpellEffects::fury),
         /** 冰冻法术：7*7 区域 5 波冻结 */
-        ICE(() -> PDEntities.ICE_SPELL_PROJECTILE.get(),
-                () -> PDItems.ICE_SPELL.get(), SpellEffects::ice);
+        ICE(SpellProjectileEntity::lookupIceEntityType,
+                SpellProjectileEntity::lookupIceItem, SpellEffects::ice);
 
         /**
          * 命中效果回调（服务端）
@@ -188,4 +191,33 @@ public class SpellProjectileEntity extends AbstractArrow implements ItemSupplier
                 1f / (level.getRandom().nextFloat() * 0.5f + 1) + 0.4f / 2);
         return projectile;
     }
+
+    // ==================== PasterDreamSpells 动态查询方法 ====================
+
+    private static final String SPELLS_NS = "pasterdreamspells";
+
+    @SuppressWarnings("unchecked")
+    private static EntityType<SpellProjectileEntity> lookupEntityType(String path) {
+        return (EntityType<SpellProjectileEntity>) BuiltInRegistries.ENTITY_TYPE
+                .getOptional(ResourceLocation.fromNamespaceAndPath(SPELLS_NS, path))
+                .orElse(null);
+    }
+
+    private static Item lookupItem(String path) {
+        return BuiltInRegistries.ITEM
+                .getOptional(ResourceLocation.fromNamespaceAndPath(SPELLS_NS, path))
+                .orElse(Items.AIR);
+    }
+
+    private static EntityType<SpellProjectileEntity> lookupLightningEntityType() { return lookupEntityType("lightning_spell_projectile"); }
+    private static EntityType<SpellProjectileEntity> lookupPoisonEntityType() { return lookupEntityType("poison_spell_projectile"); }
+    private static EntityType<SpellProjectileEntity> lookupHealingEntityType() { return lookupEntityType("healing_spell_projectile"); }
+    private static EntityType<SpellProjectileEntity> lookupFuryEntityType() { return lookupEntityType("fury_spell_projectile"); }
+    private static EntityType<SpellProjectileEntity> lookupIceEntityType() { return lookupEntityType("ice_spell_projectile"); }
+
+    private static Item lookupLightningItem() { return lookupItem("lightning_spell"); }
+    private static Item lookupPoisonItem() { return lookupItem("poison_spell"); }
+    private static Item lookupHealingItem() { return lookupItem("healing_spell"); }
+    private static Item lookupFuryItem() { return lookupItem("fury_spell"); }
+    private static Item lookupIceItem() { return lookupItem("ice_spell"); }
 }

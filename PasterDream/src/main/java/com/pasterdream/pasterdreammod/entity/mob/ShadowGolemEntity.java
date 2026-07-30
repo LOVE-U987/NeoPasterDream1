@@ -37,6 +37,7 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 暗影魔像 (Shadow Golem) — 150 血的精英怪物
  * <p>
@@ -176,11 +177,11 @@ public class ShadowGolemEntity extends ConfigurableImmunityEntity {
                 playRoarSound();
             }
             if (skillTimer == 9) {
-                PasterDreamMod.LOGGER.info("ShadowGolem skill phase 2: playing skill animation");
+                PDDebugLogger.mainInfo("ShadowGolem skill phase 2: playing skill animation");
                 setAnimation("skill");
             }
             if (skillTimer == 45) {
-                PasterDreamMod.LOGGER.info("ShadowGolem skill phase 3: explosion!");
+                PDDebugLogger.mainInfo("ShadowGolem skill phase 3: explosion!");
                 doSkillExplosion();
             }
             if (skillTimer >= 46) {
@@ -195,7 +196,7 @@ public class ShadowGolemEntity extends ConfigurableImmunityEntity {
                     skillTimer = 1;
                     setAnimation("storage");
                     skillTime = 0;
-                    PasterDreamMod.LOGGER.info("ShadowGolem skill triggered! storage animation set, player distance: {}",
+                    PDDebugLogger.mainInfo("ShadowGolem skill triggered! storage animation set, player distance: {}",
                             this.distanceTo(nearest));
                 }
             }

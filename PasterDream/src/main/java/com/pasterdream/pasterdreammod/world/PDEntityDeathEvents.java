@@ -24,6 +24,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 实体死亡挂钩：对齐原版 {@code EntityDeathPr0} + {@code SculkHeartPr0}。
  * <ul>
@@ -92,7 +93,7 @@ public final class PDEntityDeathEvents {
                 sp.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0, false, false));
                 sp.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0, false, false));
             });
-            PasterDreamMod.LOGGER.debug("[EntityDeath] granted hide_7 to {} near {}",
+            PDDebugLogger.mainDebug("[EntityDeath] granted hide_7 to {} near {}",
                     sp.getGameProfile().getName(), BlockPos.containing(x, y, z).toShortString());
         }
     }

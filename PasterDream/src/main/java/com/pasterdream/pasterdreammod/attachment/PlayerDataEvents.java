@@ -1,5 +1,7 @@
 package com.pasterdream.pasterdreammod.attachment;
 
+import com.pasterdream.pasterdreammod.api.san.SanData;
+
 import com.pasterdream.pasterdreammod.registry.PDGameRules;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameRules;

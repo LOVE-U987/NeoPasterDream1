@@ -257,9 +257,4 @@ public class PDItemsSpawnEggs {
     public static final DeferredItem<Item> TERRASWORD_WAVE_SPAWN_EGG =
             EntityAPI.createSpawnEggItem(PDItems.ITEMS, "terrasword_wave", PDEntities.TERRASWORD_WAVE);
 
-    /** 治疗法术立场刷怪蛋（原版 healing_spell_entity_spawn_egg） */
-    public static final DeferredItem<Item> HEALING_SPELL_ENTITY_SPAWN_EGG = PDItems.ITEMS.register(
-            "healing_spell_entity_spawn_egg",
-            () -> new SpawnEggItem(PDEntities.HEALING_SPELL_ENTITY.get(), 0xFEF670, 0xFFC03D, new Item.Properties()));
-
 }

@@ -1,0 +1,34 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="pasterdreammeltdream"
+version="${mod_version}"
+displayName="PasterDreamMeltDream"
+description='''
+PasterDream 融梦能量系统附属模组。
+提供融梦能量相关的物品、方块、流体、实体与效果。
+'''
+
+[[dependencies.pasterdreammeltdream]]
+modId="neoforge"
+type="required"
+versionRange="[${neo_version},)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.pasterdreammeltdream]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.pasterdreammeltdream]]
+modId="pasterdreamapi"
+type="required"
+versionRange="[${mod_version},)"
+ordering="AFTER"
+side="BOTH"
+reason="依赖 PasterDreamAPI 提供的融梦能量数据附件与网络同步"

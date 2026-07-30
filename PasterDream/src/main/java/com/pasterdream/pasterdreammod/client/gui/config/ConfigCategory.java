@@ -24,7 +24,9 @@ public enum ConfigCategory {
     /** San 精神值设置 */
     SAN("san"),
     /** 融梦能量设置 */
-    MELTDREAM("meltdream");
+    MELTDREAM("meltdream"),
+    /** 调试日志设置 */
+    DEBUG("debug");
 
     private final String key;
     private final Component title;

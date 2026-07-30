@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import java.util.List;
 import java.util.UUID;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 启动自动冒烟测试驱动（PDSmokeTest）。
  * <p>
@@ -105,7 +106,7 @@ public final class PDSmokeTest {
     private static void check(boolean ok, String what) {
         if (ok) {
             passCount++;
-            LOGGER.info(TAG + "PASS: {}", what);
+            PDDebugLogger.smoketestInfo(TAG + "PASS: {}", what);
         } else {
             failCount++;
             LOGGER.error(TAG + "FAIL: {}", what);
@@ -134,7 +135,7 @@ public final class PDSmokeTest {
         }
         playerId = sp.getUUID();
         ticks = 0;
-        LOGGER.info(TAG + "player logged in, smoke test timeline started");
+        PDDebugLogger.smoketestInfo(TAG + "player logged in, smoke test timeline started");
     }
 
     /**
@@ -177,7 +178,7 @@ public final class PDSmokeTest {
                     check(m.getFluidAmount() == 0, "initial fluid amount is 0mb (actual " + m.getFluidAmount() + ")");
                     cauldron(level).getItemHandler()
                             .setStackInSlot(4, new ItemStack(item("pasterdream:meltdream_liquid_bucket")));
-                    LOGGER.info(TAG + "meltdream_liquid_bucket inserted into slot 4");
+                    PDDebugLogger.smoketestInfo(TAG + "meltdream_liquid_bucket inserted into slot 4");
                 }
             }
             case 180 -> {
@@ -195,7 +196,7 @@ public final class PDSmokeTest {
                 be.getItemHandler().setStackInSlot(1, new ItemStack(Items.CORNFLOWER));
                 be.getItemHandler().setStackInSlot(2, new ItemStack(Items.REDSTONE));
                 be.getItemHandler().setStackInSlot(3, new ItemStack(item("pasterdream:dark_cloud")));
-                LOGGER.info(TAG + "lightning spell recipe placed: guiding_drug + cornflower + redstone + dark_cloud");
+                PDDebugLogger.smoketestInfo(TAG + "lightning spell recipe placed: guiding_drug + cornflower + redstone + dark_cloud");
                 stage = STAGE_SLOTS_FILLED;
             }
             case 300 -> {
@@ -226,10 +227,10 @@ public final class PDSmokeTest {
                 check(be.getItemHandler().getStackInSlot(6).isEmpty(), "result slot 6 cleared after ejection");
             }
             case 420 -> {
-                LOGGER.info(TAG + "==================================================");
-                LOGGER.info(TAG + "SUMMARY: {} passed, {} failed", passCount, failCount);
-                LOGGER.info(TAG + (failCount == 0 ? "RESULT: ALL PASS" : "RESULT: HAS FAILURES"));
-                LOGGER.info(TAG + "COMPLETE");
+                PDDebugLogger.smoketestInfo(TAG + "==================================================");
+                PDDebugLogger.smoketestInfo(TAG + "SUMMARY: {} passed, {} failed", passCount, failCount);
+                PDDebugLogger.smoketestInfo(TAG + (failCount == 0 ? "RESULT: ALL PASS" : "RESULT: HAS FAILURES"));
+                PDDebugLogger.smoketestInfo(TAG + "COMPLETE");
                 stage = STAGE_DONE;
             }
             default -> {
@@ -307,7 +308,7 @@ public final class PDSmokeTest {
             check(it != Items.AIR, "give item resolvable: " + hotbar[i]);
             player.getInventory().setItem(i, new ItemStack(it));
         }
-        LOGGER.info(TAG + "hotbar items granted");
+        PDDebugLogger.smoketestInfo(TAG + "hotbar items granted");
         stage = STAGE_PREPARED;
     }
 
@@ -335,7 +336,7 @@ public final class PDSmokeTest {
             check(level.getBlockState(pos).is(b), "phase2 block placed: " + samples[i]);
         }
         player.teleportTo(level, base.getX() + 0.5, base.getY(), base.getZ() + 0.5, -90.0f, 15.0f);
-        LOGGER.info(TAG + "blocks placed, player positioned for screenshots");
+        PDDebugLogger.smoketestInfo(TAG + "blocks placed, player positioned for screenshots");
     }
 
     // ==================== 客户端：自动建世界 + 截图 + 退出 ====================
@@ -389,9 +390,9 @@ public final class PDSmokeTest {
                 // wind-lake 专项：非超平坦 + 开建筑，便于 LakeFeature 在真实噪声维复现/回归
                 final boolean normalWithStructures = PDPortingVerifyTest.needsNormalWorldWithStructures();
                 if (normalWithStructures) {
-                    LOGGER.info(TAG + "creating NORMAL structures-on creative test world '{}' (wind-lake)", worldName);
+                    PDDebugLogger.smoketestInfo(TAG + "creating NORMAL structures-on creative test world '{}' (wind-lake)", worldName);
                 } else {
-                    LOGGER.info(TAG + "creating superflat creative test world '{}'", worldName);
+                    PDDebugLogger.smoketestInfo(TAG + "creating superflat creative test world '{}'", worldName);
                 }
                 net.minecraft.world.level.LevelSettings settings = new net.minecraft.world.level.LevelSettings(
                         worldName,
@@ -454,7 +455,7 @@ public final class PDSmokeTest {
                 String name = shotName;
                 net.minecraft.client.Screenshot.grab(mc.gameDirectory, name,
                         mc.getMainRenderTarget(),
-                        component -> LOGGER.info(TAG + "screenshot saved: {}", name));
+                        component -> PDDebugLogger.smoketestInfo(TAG + "screenshot saved: {}", name));
             }
 
             // 双开模式：verify 完成后由此统一收尾退出（KEEP_OPEN 则保持打开）
@@ -468,7 +469,7 @@ public final class PDSmokeTest {
                 stopCountdown--;
             } else if (stopCountdown == 0) {
                 stopCountdown = -1;
-                LOGGER.info(TAG + "smoke test finished, stopping client");
+                PDDebugLogger.smoketestInfo(TAG + "smoke test finished, stopping client");
                 mc.stop();
             }
         }
@@ -492,21 +493,21 @@ public final class PDSmokeTest {
                     exists = java.nio.file.Files.isDirectory(dir);
                 }
                 if (!exists) {
-                    LOGGER.info(TAG + "no existing world '{}' to delete", worldName);
+                    PDDebugLogger.smoketestInfo(TAG + "no existing world '{}' to delete", worldName);
                     return;
                 }
-                LOGGER.info(TAG + "deleting previous test world '{}'", worldName);
+                PDDebugLogger.smoketestInfo(TAG + "deleting previous test world '{}'", worldName);
                 try {
                     levelSource.getClass().getMethod("deleteLevel", String.class)
                             .invoke(levelSource, worldName);
-                    LOGGER.info(TAG + "deleted world via LevelStorageSource: {}", worldName);
+                    PDDebugLogger.smoketestInfo(TAG + "deleted world via LevelStorageSource: {}", worldName);
                     return;
                 } catch (ReflectiveOperationException ex) {
                     LOGGER.warn(TAG + "LevelStorageSource.deleteLevel 不可用，改文件系统删除: {}", ex.toString());
                 }
                 java.nio.file.Path dir = mc.gameDirectory.toPath().resolve("saves").resolve(worldName);
                 deleteRecursively(dir);
-                LOGGER.info(TAG + "deleted world directory: {}", dir);
+                PDDebugLogger.smoketestInfo(TAG + "deleted world directory: {}", dir);
             } catch (Exception e) {
                 LOGGER.error(TAG + "failed to delete old world '{}'", worldName, e);
             }

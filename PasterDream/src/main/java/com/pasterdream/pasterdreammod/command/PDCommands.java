@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionException;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 模组指令注册 —— 提供维度刷新等调试/测试功能
  * <p>
@@ -261,12 +262,12 @@ public class PDCommands {
             sb.append("  §7MaxDelay: §f").append(music.getMaxDelay()).append(" tick (").append(music.getMaxDelay() / 20).append("s)\n");
             sb.append("  §7ReplaceCurrent: §f").append(music.replaceCurrentMusic()).append("\n");
 
-            PasterDreamMod.LOGGER.info("[BGMDebug] 玩家 {} 在群系 {}，音乐配置: event={}, minDelay={}, maxDelay={}, replace={}",
+            PDDebugLogger.mainInfo("[BGMDebug] 玩家 {} 在群系 {}，音乐配置: event={}, minDelay={}, maxDelay={}, replace={}",
                     player.getName().getString(), biomeId,
                     music.getEvent().value().getLocation(), music.getMinDelay(), music.getMaxDelay(), music.replaceCurrentMusic());
         } else {
             sb.append("§c音乐配置: 不存在 ✗\n");
-            PasterDreamMod.LOGGER.info("[BGMDebug] 玩家 {} 在群系 {}，无音乐配置", player.getName().getString(), biomeId);
+            PDDebugLogger.mainInfo("[BGMDebug] 玩家 {} 在群系 {}，无音乐配置", player.getName().getString(), biomeId);
         }
 
         source.sendSuccess(() -> Component.literal(sb.toString()), true);
@@ -289,7 +290,7 @@ public class PDCommands {
 
         if (soundEvent == null) {
             source.sendFailure(Component.literal("§c未找到声音事件: " + soundLocation));
-            PasterDreamMod.LOGGER.info("[BGMDebug] 尝试播放 BGM 失败: {} 未注册", soundLocation);
+            PDDebugLogger.mainInfo("[BGMDebug] 尝试播放 BGM 失败: {} 未注册", soundLocation);
             return 0;
         }
 
@@ -297,7 +298,7 @@ public class PDCommands {
 
         String displayName = BGM_NAMES.getOrDefault(biome, biome);
         source.sendSuccess(() -> Component.literal("§a正在播放 BGM: " + displayName + " (" + soundLocation + ")"), true);
-        PasterDreamMod.LOGGER.info("[BGMDebug] 已为玩家 {} 播放 BGM: {}", player.getName().getString(), soundLocation);
+        PDDebugLogger.mainInfo("[BGMDebug] 已为玩家 {} 播放 BGM: {}", player.getName().getString(), soundLocation);
         return 1;
     }
 
@@ -326,7 +327,7 @@ public class PDCommands {
 
         source.sendSuccess(() -> Component.literal(sb.toString()), true);
 
-        PasterDreamMod.LOGGER.info("[BGMDebug] BGM 清单: {}/{} 已注册", found, BGM_BIOMES.length);
+        PDDebugLogger.mainInfo("[BGMDebug] BGM 清单: {}/{} 已注册", found, BGM_BIOMES.length);
         return 1;
     }
 

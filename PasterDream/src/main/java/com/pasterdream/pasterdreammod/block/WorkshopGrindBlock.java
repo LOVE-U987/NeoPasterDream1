@@ -47,6 +47,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 工坊磨石方块 (Workshop Grind)
  * <p>
@@ -242,7 +243,7 @@ public class WorkshopGrindBlock extends BaseEntityBlock {
         // 成品未注册（法杖模块尚未落地）时不消耗原胚，避免重复强化刷属性
         Item resultItem = resolveResult(hand);
         if (resultItem == Items.AIR) {
-            PasterDreamMod.LOGGER.debug("[WorkshopGrind] 原胚 {} 的成品尚未注册，跳过出品",
+            PDDebugLogger.mainDebug("[WorkshopGrind] 原胚 {} 的成品尚未注册，跳过出品",
                     BuiltInRegistries.ITEM.getKey(hand.getItem()));
             player.displayClientMessage(Component.literal("无法识别该原胚的成品"), true);
             return;

@@ -1,17 +1,20 @@
 package com.pasterdream.pasterdreammod.entity;
 
-import com.pasterdream.pasterdreammod.registry.PDEffects;
-import com.pasterdream.pasterdreammod.registry.PDEntities;
-import com.pasterdream.pasterdreammod.registry.PDParticles;
-import com.pasterdream.pasterdreammod.registry.PDSounds;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -19,11 +22,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.server.level.ServerLevel;
 
 import java.util.List;
 
@@ -73,7 +74,7 @@ public final class SpellEffects {
         level.sendParticles(ParticleTypes.ELECTRIC_SPARK, x, y + 1, z, 32, 2, 1, 2, 0.02);
 
         schedule(level, 2, () -> {
-            playSound(level, x, y, z, PDSounds.LIGHTNING_SPELL.get(), 1.0f);
+            playSound(level, x, y, z, lookupSound("lightning_spell"), 1.0f);
             level.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, x, y + 1, z, 32, 2, 1, 2, 0.02);
             level.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 1, z, 32, 2, 1, 2, 0.02);
             level.sendParticles(ParticleTypes.ELECTRIC_SPARK, x, y + 1, z, 32, 2, 1, 2, 0.02);
@@ -114,16 +115,16 @@ public final class SpellEffects {
      */
     public static void poison(ServerLevel level, double x, double y, double z) {
         playSound(level, x, y, z, SoundEvents.SPLASH_POTION_BREAK, 1.0f);
-        level.sendParticles(PDParticles.POISON_GAS_PARTICLE.holder().get(), x, y + 1, z, 48, 2, 1, 2, 0.01);
-        level.sendParticles(PDParticles.POISON_SOUL_PARTICLE.holder().get(), x, y + 1, z, 24, 2, 1, 2, 0.02);
+        level.sendParticles(lookupParticle("poison_gas_particle"), x, y + 1, z, 48, 2, 1, 2, 0.01);
+        level.sendParticles(lookupParticle("poison_soul_particle"), x, y + 1, z, 24, 2, 1, 2, 0.02);
 
         for (int base : POISON_WAVE_BASE_TICKS) {
             // 效果脉冲：粒子 + 施加剧毒/虚弱/缓慢
             for (int pulse : POISON_EFFECT_PULSE_TICKS) {
                 schedule(level, base + pulse, () -> {
-                    level.sendParticles(PDParticles.POISON_GAS_PARTICLE.holder().get(),
+                    level.sendParticles(lookupParticle("poison_gas_particle"),
                             x, y + 1, z, 64, 2, 1, 2, 0.01);
-                    level.sendParticles(PDParticles.POISON_SOUL_PARTICLE.holder().get(),
+                    level.sendParticles(lookupParticle("poison_soul_particle"),
                             x, y + 1, z, 32, 2, 1, 2, 0.02);
                     applyPoisonEffects(level, x, y, z);
                 });
@@ -131,9 +132,9 @@ public final class SpellEffects {
             // 纯粒子脉冲
             for (int pulse : POISON_PARTICLE_PULSE_TICKS) {
                 schedule(level, base + pulse, () -> {
-                    level.sendParticles(PDParticles.POISON_GAS_PARTICLE.holder().get(),
+                    level.sendParticles(lookupParticle("poison_gas_particle"),
                             x, y + 1, z, 32, 2, 1, 2, 0.01);
-                    level.sendParticles(PDParticles.POISON_SOUL_PARTICLE.holder().get(),
+                    level.sendParticles(lookupParticle("poison_soul_particle"),
                             x, y + 1, z, 16, 2, 1, 2, 0.02);
                 });
             }
@@ -167,10 +168,10 @@ public final class SpellEffects {
      */
     public static void healing(ServerLevel level, double x, double y, double z) {
         playSound(level, x, y, z, SoundEvents.SPLASH_POTION_BREAK, 1.0f);
-        level.sendParticles(PDParticles.HEALING_SPELL_PARTICLE.holder().get(), x, y + 1, z, 64, 2, 1, 2, 0.05);
-        level.sendParticles(PDParticles.YELLOW_SMOKE_PARTICLE.holder().get(), x, y + 0.5, z, 32, 2, 1, 2, 0.05);
-        spawnField(level, PDEntities.HEALING_SPELL_ENTITY.get(), x, y, z);
-        schedule(level, 2, () -> playSound(level, x, y, z, PDSounds.HEALING_SPELL.get(), 0.2f));
+        level.sendParticles(lookupParticle("healing_spell_particle"), x, y + 1, z, 64, 2, 1, 2, 0.05);
+        level.sendParticles(lookupParticle("yellow_smoke_particle"), x, y + 0.5, z, 32, 2, 1, 2, 0.05);
+        spawnField(level, lookupHealingSpellEntity(), x, y, z);
+        schedule(level, 2, () -> playSound(level, x, y, z, lookupSound("healing_spell"), 0.2f));
     }
 
     /**
@@ -184,8 +185,8 @@ public final class SpellEffects {
      */
     public static void fury(ServerLevel level, double x, double y, double z) {
         playSound(level, x, y, z, SoundEvents.SPLASH_POTION_BREAK, 1.2f);
-        playSound(level, x, y, z, PDSounds.FURY_SPELL_0.get(), 1.0f);
-        spawnField(level, PDEntities.FURY_SPELL_ENTITY.get(), x, y, z);
+        playSound(level, x, y, z, lookupSound("fury_spell_0"), 1.0f);
+        spawnField(level, lookupFurySpellEntity(), x, y, z);
         furyPulse(level, x, y, z);
         for (int t : FURY_PULSE_TICKS) {
             schedule(level, t, () -> furyPulse(level, x, y, z));
@@ -198,14 +199,14 @@ public final class SpellEffects {
     private static void furyPulse(ServerLevel level, double x, double y, double z) {
         level.sendParticles(ParticleTypes.ENCHANT, x, y + 3, z, 100, 2.5, 1, 2.5, 0.02);
         level.sendParticles(ParticleTypes.DRAGON_BREATH, x, y + 0.8, z, 100, 2.5, 0.3, 2.5, 0.01);
-        level.sendParticles(PDParticles.FURY_SPELL_PARTICLE.holder().get(), x, y + 2, z, 12, 2.5, 1, 2.5, 0.02);
+        level.sendParticles(lookupParticle("fury_spell_particle"), x, y + 2, z, 12, 2.5, 1, 2.5, 0.02);
         level.sendParticles(ParticleTypes.END_ROD, x, y + 2, z, 6, 2.5, 1, 2.5, 0.02);
 
         Vec3 center = new Vec3(x, y, z);
         List<Player> players = level.getEntitiesOfClass(Player.class,
                 new AABB(center, center).inflate(8 / 2d), e -> true);
         for (Player player : players) {
-            player.addEffect(new MobEffectInstance(PDEffects.FURY_SPELL_BUFF, 60, 0));
+            player.addEffect(new MobEffectInstance(lookupEffect("fury_spell_buff"), 60, 0));
         }
     }
 
@@ -220,11 +221,11 @@ public final class SpellEffects {
      */
     public static void ice(ServerLevel level, double x, double y, double z) {
         playSound(level, x, y, z, SoundEvents.SPLASH_POTION_BREAK, 1.2f);
-        playSound(level, x, y, z, PDSounds.ICE_SPELL.get(), 1.0f);
+        playSound(level, x, y, z, lookupSound("ice_spell"), 1.0f);
         level.sendParticles(ParticleTypes.SNOWFLAKE, x + 0.5, y + 1.5, z + 0.5, 240, 2.5, 1.5, 2.5, 0.05);
-        level.sendParticles(PDParticles.SNOWFLAKE_0_PARTICLE.holder().get(),
+        level.sendParticles(lookupParticle("spell_snowflake_0_particle"),
                 x + 0.5, y + 2, z + 0.5, 128, 2.5, 1.5, 2.5, 0.1);
-        level.sendParticles(PDParticles.SNOWFLAKE_1_PARTICLE.holder().get(),
+        level.sendParticles(lookupParticle("snowflake_1_particle"),
                 x + 0.5, y + 2, z + 0.5, 128, 2.5, 1.5, 2.5, 0.1);
         iceFreezeWave(level, x, y, z);
         for (int t : ICE_WAVE_TICKS) {
@@ -237,9 +238,9 @@ public final class SpellEffects {
      */
     private static void iceFreezeWave(ServerLevel level, double x, double y, double z) {
         level.sendParticles(ParticleTypes.SNOWFLAKE, x + 0.5, y + 1.5, z + 0.5, 48, 2.5, 1.5, 2.5, 0.1);
-        level.sendParticles(PDParticles.SNOWFLAKE_0_PARTICLE.holder().get(),
+        level.sendParticles(lookupParticle("spell_snowflake_0_particle"),
                 x + 0.5, y + 2, z + 0.5, 32, 2.5, 1.5, 2.5, 0.1);
-        level.sendParticles(PDParticles.SNOWFLAKE_1_PARTICLE.holder().get(),
+        level.sendParticles(lookupParticle("snowflake_1_particle"),
                 x + 0.5, y + 2, z + 0.5, 32, 2.5, 1.5, 2.5, 0.1);
 
         Vec3 center = new Vec3(x, y, z);
@@ -248,7 +249,7 @@ public final class SpellEffects {
         for (Entity target : targets) {
             target.setTicksFrozen(140);
             if (target instanceof LivingEntity living) {
-                living.addEffect(new MobEffectInstance(PDEffects.ICE_SPELL_BUFF, 40, 0));
+                living.addEffect(new MobEffectInstance(lookupEffect("ice_spell_buff"), 40, 0));
             }
         }
     }
@@ -287,5 +288,67 @@ public final class SpellEffects {
      */
     private static void schedule(ServerLevel level, int delay, Runnable task) {
         ServerScheduler.schedule(delay, task);
+    }
+
+    /**
+     * 动态查找 PasterDreamSpells 的粒子类型。
+     *
+     * @param path 粒子注册名（如 "fury_spell_particle"）
+     * @return SimpleParticleType，未注册时返回 ParticleTypes.EFFECT（安全兜底）
+     */
+    @SuppressWarnings("unchecked")
+    private static SimpleParticleType lookupParticle(String path) {
+        ParticleType<?> type = BuiltInRegistries.PARTICLE_TYPE.getOptional(
+                ResourceLocation.fromNamespaceAndPath("pasterdreamspells", path)).orElse(null);
+        return type instanceof SimpleParticleType spt ? spt : (SimpleParticleType) ParticleTypes.EFFECT;
+    }
+
+    /**
+     * 动态查找 PasterDreamSpells 的音效事件。
+     *
+     * @param path 音效注册名（如 "fury_spell_0"）
+     * @return SoundEvent，未注册时返回 SoundEvents.EMPTY
+     */
+    private static SoundEvent lookupSound(String path) {
+        return BuiltInRegistries.SOUND_EVENT.getOptional(
+                ResourceLocation.fromNamespaceAndPath("pasterdreamspells", path))
+                .orElse(SoundEvents.EMPTY);
+    }
+
+    /**
+     * 动态查找 PasterDreamSpells 的状态效果。
+     *
+     * @param path 效果注册名（如 "fury_spell_buff"）
+     * @return MobEffect 的 Holder，未注册时返回 null
+     */
+    @SuppressWarnings("unchecked")
+    private static Holder<MobEffect> lookupEffect(String path) {
+        return (Holder<MobEffect>) (Holder<?>) BuiltInRegistries.MOB_EFFECT.getHolder(
+                ResourceLocation.fromNamespaceAndPath("pasterdreamspells", path))
+                .orElse(null);
+    }
+
+    /**
+     * 动态查找 PasterDreamSpells 的治疗法术立场实体类型。
+     *
+     * @return 实体类型，未注册时返回 null
+     */
+    @SuppressWarnings("unchecked")
+    private static EntityType<? extends Entity> lookupHealingSpellEntity() {
+        return (EntityType<? extends Entity>) BuiltInRegistries.ENTITY_TYPE.getOptional(
+                ResourceLocation.fromNamespaceAndPath("pasterdreamspells", "healing_spell_entity"))
+                .orElse(null);
+    }
+
+    /**
+     * 动态查找 PasterDreamSpells 的狂暴法术立场实体类型。
+     *
+     * @return 实体类型，未注册时返回 null
+     */
+    @SuppressWarnings("unchecked")
+    private static EntityType<? extends Entity> lookupFurySpellEntity() {
+        return (EntityType<? extends Entity>) BuiltInRegistries.ENTITY_TYPE.getOptional(
+                ResourceLocation.fromNamespaceAndPath("pasterdreamspells", "fury_spell_entity"))
+                .orElse(null);
     }
 }

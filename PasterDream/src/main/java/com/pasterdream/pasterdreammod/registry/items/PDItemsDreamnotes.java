@@ -10,6 +10,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 
 import java.util.List;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 寻梦者笔记物品分区注册 (dreamnotes_0..14)。
  * <p>
@@ -69,7 +70,7 @@ public final class PDItemsDreamnotes {
      */
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
-        PasterDreamMod.LOGGER.info("[PDItemsDreamnotes] 寻梦者笔记分区已加载 (dreamnotes_0..14)");
+        PDDebugLogger.mainInfo("[PDItemsDreamnotes] 寻梦者笔记分区已加载 (dreamnotes_0..14)");
     }
 
     /**

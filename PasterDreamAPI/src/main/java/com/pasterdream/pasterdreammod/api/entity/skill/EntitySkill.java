@@ -7,6 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 import javax.annotation.Nullable;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 实体技能定义 —— 代表一个实体可执行的技能
  * <p>
@@ -52,7 +53,7 @@ public record EntitySkill(
      * @return 技能构建器实例
      */
     public static EntitySkillBuilder builder(String name) {
-        PasterDreamAPI.LOGGER.debug("[EntitySkill] 创建技能构建器: {}", name);
+        PDDebugLogger.apiDebug("[EntitySkill] 创建技能构建器: {}", name);
         return new EntitySkillBuilder(name);
     }
 
@@ -76,7 +77,7 @@ public record EntitySkill(
      */
     public boolean isInRange(LivingEntity attacker, LivingEntity target) {
         boolean inRange = attacker.distanceTo(target) <= range;
-        PasterDreamAPI.LOGGER.debug("[EntitySkill] 范围检查: skill={}, attacker={}, target={}, distance={}, range={}, inRange={}",
+        PDDebugLogger.apiDebug("[EntitySkill] 范围检查: skill={}, attacker={}, target={}, distance={}, range={}, inRange={}",
                 name, attacker, target, attacker.distanceTo(target), range, inRange);
         return inRange;
     }

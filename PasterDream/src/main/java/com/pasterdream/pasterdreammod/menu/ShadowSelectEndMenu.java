@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 影之抉择 GUI 容器菜单 (Shadow Select End Menu)
  * <p>
@@ -148,7 +149,7 @@ public class ShadowSelectEndMenu extends AbstractContainerMenu {
                 .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
         if (holder == null) {
             // TODO(成就联动)：对应成就尚未移植，落地后此处自动生效
-            PasterDreamMod.LOGGER.debug("[ShadowSelectEnd] 成就 {} 未注册，跳过授予", path);
+            PDDebugLogger.mainDebug("[ShadowSelectEnd] 成就 {} 未注册，跳过授予", path);
             return;
         }
         AdvancementProgress progress = player.getAdvancements().getOrStartProgress(holder);

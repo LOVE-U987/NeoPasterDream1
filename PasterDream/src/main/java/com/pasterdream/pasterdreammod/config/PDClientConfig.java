@@ -93,6 +93,12 @@ public class PDClientConfig {
     public static final ModConfigSpec.ConfigValue<Boolean> BGM_SWEETDREAM;
     /** 落雪蘑菇原群系 BGM（默认 true） */
     public static final ModConfigSpec.ConfigValue<Boolean> BGM_SNOWFALL_DREAM;
+    /** 风之旅途·启程 BGM 音量倍率（默认 1.0） */
+    public static final ModConfigSpec.ConfigValue<Double> BGM_WIND_JOURNEY_DEPARTURE_VOLUME;
+    /** 风之旅途·盛夏光年 BGM 音量倍率（默认 0.2） */
+    public static final ModConfigSpec.ConfigValue<Double> BGM_WIND_JOURNEY_MIDSUMMER_VOLUME;
+    /** 梦幻草原·Daisy BGM 音量倍率（默认 0.2） */
+    public static final ModConfigSpec.ConfigValue<Double> BGM_DREAM_MEADOW_DAISY_VOLUME;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -108,7 +114,7 @@ public class PDClientConfig {
                 .comment("启动帕斯特之梦的主题生命值条 默认：true")
                 .define("paster health hud", true);
         ENABLE_MOD_UI = builder
-                .comment("启用帕斯特之梦模组自定义UI（关闭后将使用原版UI） 默认：true")
+                .comment("启用帕斯特之梦模组自定义原版UI纹理（按钮/生命值条/BOSS血条/快捷栏等，关闭后将使用原版UI） 默认：true")
                 .define("enable mod ui", true);
         builder.pop();
 
@@ -180,6 +186,15 @@ public class PDClientConfig {
         BGM_SNOWFALL_DREAM = builder
                 .comment("启用落雪蘑菇原群系 BGM 默认：true")
                 .define("bgm snowfall dream", true);
+        BGM_WIND_JOURNEY_DEPARTURE_VOLUME = builder
+                .comment("风之旅途·启程 BGM 音量倍率（0.0 ~ 2.0）默认：1.0")
+                .defineInRange("bgm wind journey departure volume", 1.0d, 0.0d, 2.0d);
+        BGM_WIND_JOURNEY_MIDSUMMER_VOLUME = builder
+                .comment("风之旅途·盛夏光年 BGM 音量倍率（0.0 ~ 2.0）默认：0.2")
+                .defineInRange("bgm wind journey midsummer volume", 0.2d, 0.0d, 2.0d);
+        BGM_DREAM_MEADOW_DAISY_VOLUME = builder
+                .comment("梦幻草原·Daisy BGM 音量倍率（0.0 ~ 2.0）默认：0.2")
+                .defineInRange("bgm dream meadow daisy volume", 0.2d, 0.0d, 2.0d);
         builder.pop();
 
         SPEC = builder.build();
@@ -201,6 +216,23 @@ public class PDClientConfig {
             case "dream_taiga" -> BGM_DREAM_TAIGA::get;
             case "sweetdream_music" -> BGM_SWEETDREAM::get;
             case "snowfall_dream_music" -> BGM_SNOWFALL_DREAM::get;
+            default -> null;
+        };
+    }
+
+    /**
+     * 根据音乐名称查询对应的独立音量倍率配置。
+     * <p>
+     * 用于 ModMusicManager 计算各曲目的实际播放音量，唱片音乐不受影响。
+     *
+     * @param musicName 音乐名称（如 "wind_journey_departure"）
+     * @return 该音乐的音量倍率配置 Supplier；若未定义则返回 null
+     */
+    public static Supplier<Double> getBgmVolume(String musicName) {
+        return switch (musicName) {
+            case "wind_journey_departure" -> BGM_WIND_JOURNEY_DEPARTURE_VOLUME::get;
+            case "wind_journey_midsummer" -> BGM_WIND_JOURNEY_MIDSUMMER_VOLUME::get;
+            case "dream_meadow_daisy" -> BGM_DREAM_MEADOW_DAISY_VOLUME::get;
             default -> null;
         };
     }

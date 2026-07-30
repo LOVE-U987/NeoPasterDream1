@@ -117,31 +117,22 @@ public class PDCreativeTabsDebug {
                         // output.accept(PDItems.DEBUG_WAND_LIFECRYSTAL_CAVE_0.get()); // 未注册
                         output.accept(PDItems.DEBUG_WAND_MELTDREAM_LIQUID_WELL_0.get());
                         output.accept(PDItems.DEBUG_WAND_MELTDREAM_LIQUID_WELL_1.get());
-                        // W4：结构生成方块与调试机关
-                        output.accept(PDItems.STRUCTURE_BLOCK_0.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_1.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_2.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_3.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_4.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_5.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_6.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_7.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_8.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_9.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_10.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_11.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_12.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_13.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_14.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_15.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_16.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_17.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_18.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_19.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_20.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_21.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_22.get());
-                        output.accept(PDItems.STRUCTURE_BLOCK_23.get());
+                        // 结构方块补全调试水晶（去重后保留为水晶）
+                        output.accept(PDItems.DEBUG_WAND_CRYSTAL_BALL.get());
+                        output.accept(PDItems.DEBUG_WAND_STONE_PILLAR_SKY.get());
+                        output.accept(PDItems.DEBUG_WAND_SHADOW_WORLD_DOOR.get());
+                        output.accept(PDItems.DEBUG_WAND_SHADOW_TOMB.get());
+                        output.accept(PDItems.DEBUG_WAND_SHADOW_CHAIN.get());
+                        output.accept(PDItems.DEBUG_WAND_SHADOW_SHELTER.get());
+                        output.accept(PDItems.DEBUG_WAND_SHADOW_FUNGUS_NEST.get());
+                        output.accept(PDItems.DEBUG_WAND_SHADOW_FOUNDRY.get());
+                        output.accept(PDItems.DEBUG_WAND_SHADOW_DUNGEON.get());
+                        output.accept(PDItems.DEBUG_WAND_SHADOW_FUNGUS_HOUSE.get());
+                        output.accept(PDItems.DEBUG_WAND_SHADOW_UNDERGROUND_WORKROOM.get());
+                        output.accept(PDItems.DEBUG_WAND_WINDMOOR_TREE.get());
+                        output.accept(PDItems.DEBUG_WAND_HOT_AIR_BALLOON.get());
+                        output.accept(PDItems.DEBUG_WAND_CHRISTMAS_TREE.get());
+                        // W4：调试机关
                         output.accept(PDItems.GUARD_BLOCK.get());
                         output.accept(PDItems.RESTRAINMOVE_BLOCK.get());
                         output.accept(PDItems.LOST_SWORD_BLOCK.get());

@@ -1,0 +1,37 @@
+{
+  "effect.pasterdreamspells.fury_spell_buff": "狂暴法术",
+  "effect.pasterdreamspells.fury_spell_buff.description": "攻击力、攻击速度与移动速度大幅提升。",
+  "effect.pasterdreamspells.ice_spell_buff": "冰冻",
+  "effect.pasterdreamspells.ice_spell_buff.description": "被冰封定身，无法移动与造成伤害。",
+
+  "entity.pasterdreamspells.fury_spell_entity": "狂暴法术立场",
+  "entity.pasterdreamspells.fury_spell_projectile": "狂暴法术",
+  "entity.pasterdreamspells.healing_spell_entity": "治疗法术立场",
+  "entity.pasterdreamspells.healing_spell_projectile": "治疗法术",
+  "entity.pasterdreamspells.ice_spell_projectile": "冰冻法术",
+  "entity.pasterdreamspells.lightning_spell_projectile": "闪电法术",
+  "entity.pasterdreamspells.poison_spell_projectile": "剧毒法术",
+
+  "item.pasterdreamspells.fury_spell": "狂暴法术",
+  "item.pasterdreamspells.fury_spell.desc0": "§7▪ §9对8*8区域内玩家给予短暂狂暴",
+  "item.pasterdreamspells.fury_spell.desc1": "§7▪ §9大幅度增加攻击力 攻击速度 和移动速度",
+  "item.pasterdreamspells.fury_spell.desc2": "§7▪ §9减少瞬身术和战技的冷却时间",
+  "item.pasterdreamspells.healing_spell": "治疗法术",
+  "item.pasterdreamspells.healing_spell.desc0": "§7▪ §9在5*5区域范围内生成治疗立场 持续20秒",
+  "item.pasterdreamspells.healing_spell.desc1": "§7▪ §9为在立场内的玩家或和平生物每秒恢复最大生命值的5%的血量",
+  "item.pasterdreamspells.ice_spell": "冰冻法术",
+  "item.pasterdreamspells.ice_spell.desc0": "§7▪ §9冰冻7*7区域内的实体",
+  "item.pasterdreamspells.lightning_spell": "闪电法术",
+  "item.pasterdreamspells.lightning_spell.desc0": "§7▪ §9对5*5区域范围内生成4次随机落雷",
+  "item.pasterdreamspells.poison_spell": "剧毒法术",
+  "item.pasterdreamspells.poison_spell.desc0": "§7▪ §9对7*7区域范围内的生物施加剧毒4 虚弱和缓慢",
+
+  "itemGroup.pasterdreamspells": "§4帕斯特之梦丨法术",
+
+  "subtitle.pasterdreamspells.fury_spell": "怒焰立场轰鸣",
+  "subtitle.pasterdreamspells.fury_spell_0": "狂暴法术命中",
+  "subtitle.pasterdreamspells.healing_spell": "治疗法术生效",
+  "subtitle.pasterdreamspells.ice_spell": "冰冻法术冻结",
+  "subtitle.pasterdreamspells.lightning_spell": "闪电法术劈落",
+  "subtitle.pasterdreamspells.poison_spell": "剧毒法术弥漫"
+}

@@ -15,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 灯影维度进出瞬时效果 —— 对齐原版 {@code LampShadowPr0/Pr1}。
  * <p>
@@ -63,7 +64,7 @@ public final class LampShadowEvents {
                 && !hasAdvancement(player, "achievement_shadow_e_0")) {
             player.addEffect(new MobEffectInstance(
                     PDEffects.SHADOW_SPYON_BUFF.holder(), 32000, 0, false, false));
-            PasterDreamMod.LOGGER.debug("[LampShadowEvents] 已为 {} 挂上 shadow_spyon_buff",
+            PDDebugLogger.mainDebug("[LampShadowEvents] 已为 {} 挂上 shadow_spyon_buff",
                     player.getGameProfile().getName());
         }
     }

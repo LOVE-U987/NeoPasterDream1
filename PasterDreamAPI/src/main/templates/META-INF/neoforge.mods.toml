@@ -1,0 +1,28 @@
+# PasterDreamAPI neoforge.mods.toml
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="pasterdreamapi"
+version="${mod_version}"
+displayName="${mod_name}"
+description='''
+PasterDream API - 梦境与暗影的前置库
+提供物品、方块、实体、维度、世界生成等 Builder/Facade API，
+供 PasterDream 及其附属模组共享使用。
+'''
+
+[[dependencies.${mod_id}]]
+modId="neoforge"
+type="required"
+versionRange="[${neo_version},)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"

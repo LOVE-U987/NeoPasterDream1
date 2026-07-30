@@ -10,8 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import javax.annotation.Nullable;
-
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * API 层的声音事件注册器工具类。
  * 提供维度背景音乐的动态注册能力，供主模组和 DimensionBuilder / DimensionAPI 使用。
@@ -31,7 +30,7 @@ public final class ApiSoundRegistry {
 
     /** API 专属的 SoundEvent 注册器 */
     public static final DeferredRegister<SoundEvent> DIMENSION_SOUNDS =
-            DeferredRegister.create(Registries.SOUND_EVENT, PasterDreamAPI.MOD_ID);
+            DeferredRegister.create(Registries.SOUND_EVENT, PasterDreamAPI.DATA_NAMESPACE);
 
     /** 缓存已注册的维度音乐事件 */
     private static final Map<String, Supplier<SoundEvent>> DIMENSION_MUSIC_CACHE = new HashMap<>();
@@ -41,33 +40,25 @@ public final class ApiSoundRegistry {
      * ID 格式为 {@code music.{musicName}}，声音文件对应
      * {@code assets/pasterdream/sounds/music/{musicName}.ogg}。
      * <p>
-     * 注册前会检查对应 .ogg 文件是否存在于类路径中；若缺失则跳过注册并记录警告。
+     * 不做 .ogg 文件存在性检查——文件实际由 {@code sounds.json} 在运行时解析，SoundEvent 注册本身仅需注册表键。
+     * 多模块环境下（PasterDreamAPI 与 PasterDream 分离），API 模块的类加载器无法访问主模块资源，检查会导致误判。
      *
      * @param musicName 音乐名称（如 "dyedream_world"）
-     * @return 已注册的 SoundEvent Supplier；若文件缺失则返回 {@code null}
+     * @return 已注册的 SoundEvent Supplier
      */
-    @Nullable
     public static synchronized Supplier<SoundEvent> registerDimensionMusic(String musicName) {
         if (DIMENSION_MUSIC_CACHE.containsKey(musicName)) {
             return DIMENSION_MUSIC_CACHE.get(musicName);
         }
 
-        String resourcePath = "/assets/" + PasterDreamAPI.MOD_ID + "/sounds/music/" + musicName + ".ogg";
-        if (ApiSoundRegistry.class.getResource(resourcePath) == null) {
-            PasterDreamAPI.LOGGER.warn("[ApiSoundRegistry] 背景音乐文件缺失: assets/{}/sounds/music/{}.ogg，跳过注册",
-                    PasterDreamAPI.MOD_ID, musicName);
-            DIMENSION_MUSIC_CACHE.put(musicName, null);
-            return null;
-        }
-
         String soundId = "music." + musicName;
         Supplier<SoundEvent> supplier = DIMENSION_SOUNDS.register(soundId,
                 () -> SoundEvent.createVariableRangeEvent(
-                        ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.MOD_ID, soundId)
+                        ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.DATA_NAMESPACE, soundId)
                 ));
         DIMENSION_MUSIC_CACHE.put(musicName, supplier);
-        PasterDreamAPI.LOGGER.debug("[ApiSoundRegistry] 已注册背景音乐 SoundEvent: {} (assets/{}/sounds/music/{}.ogg)",
-                soundId, PasterDreamAPI.MOD_ID, musicName);
+        PDDebugLogger.apiDebug("[ApiSoundRegistry] 已注册背景音乐 SoundEvent: {} (assets/{}/sounds/music/{}.ogg)",
+                soundId, PasterDreamAPI.DATA_NAMESPACE, musicName);
         return supplier;
     }
 

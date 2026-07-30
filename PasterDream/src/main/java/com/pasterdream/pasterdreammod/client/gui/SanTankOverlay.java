@@ -2,9 +2,9 @@ package com.pasterdream.pasterdreammod.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.san.SanConfigRegistry;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.config.PDClientConfig;
-import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -43,7 +43,7 @@ public class SanTankOverlay implements LayeredDraw.Layer {
             return;
         }
         // 系统关闭或 HUD 关闭时不显示
-        if (!Boolean.TRUE.equals(PDCommonConfig.ENABLE_SAN_SYSTEM.get())
+        if (!Boolean.TRUE.equals(SanConfigRegistry.get().enabled().get())
                 || !PDClientConfig.SHOW_SAN_HUD.get()) {
             return;
         }

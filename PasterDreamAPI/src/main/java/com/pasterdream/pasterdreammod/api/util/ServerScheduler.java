@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 服务端延迟任务调度器 (Server Scheduler)
  * <p>
@@ -51,7 +52,7 @@ public final class ServerScheduler {
     public static void register(IEventBus forgeBus) {
         forgeBus.addListener(ServerScheduler::onServerTick);
         forgeBus.addListener(ServerScheduler::onServerStopped);
-        PasterDreamAPI.LOGGER.debug("[ServerScheduler] 已注册到 NeoForge 事件总线");
+        PDDebugLogger.apiDebug("[ServerScheduler] 已注册到 NeoForge 事件总线");
     }
 
     /**

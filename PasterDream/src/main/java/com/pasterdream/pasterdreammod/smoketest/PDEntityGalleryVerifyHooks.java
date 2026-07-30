@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 人工终验：实体展台。
  * <ul>
@@ -247,7 +248,7 @@ public final class PDEntityGalleryVerifyHooks {
                         + " noEgg=" + noEggEntities.size()
                         + " living=" + livingTypes.size()));
 
-        PasterDreamMod.LOGGER.info(
+        PDDebugLogger.smoketestInfo(
                 "[PDEntityGallery] origin={} eggs={}/{} barrels={} paper={}/{} caged={}/{} modEntities={}",
                 origin.toShortString(), filledEggStacks, spawnEggs.size(), eggBarrelPlaced,
                 paperStacks, noEggEntities.size(), caged, livingTypes.size(), modEntities);

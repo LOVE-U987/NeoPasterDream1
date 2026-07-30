@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 结构-维度地形协商器 —— 连接 RuinAPI 和 DimensionAPI 的中心协调器。
  * <p>
@@ -30,7 +31,7 @@ public class StructureTerrainNegotiator {
     private final Map<String, String> structureDimensions = new ConcurrentHashMap<>();
 
     private StructureTerrainNegotiator() {
-        PasterDreamAPI.LOGGER.debug("[TerrainNegotiator] 🏗️ 地形协商器初始化完成");
+        PDDebugLogger.apiDebug("[TerrainNegotiator] 🏗️ 地形协商器初始化完成");
     }
 
     /**
@@ -59,7 +60,7 @@ public class StructureTerrainNegotiator {
     public void registerLargeStructure(String structureName, String dimensionId, TerrainRequirements requirements) {
         largeStructures.put(structureName, requirements);
         structureDimensions.put(structureName, dimensionId);
-        PasterDreamAPI.LOGGER.debug("[TerrainNegotiator] 📝 注册大型结构: {} (维度: {}) | 需求: {}",
+        PDDebugLogger.apiDebug("[TerrainNegotiator] 📝 注册大型结构: {} (维度: {}) | 需求: {}",
                 structureName, dimensionId, requirements);
     }
 
@@ -70,7 +71,7 @@ public class StructureTerrainNegotiator {
      */
     public void enableDimensionSupport(String dimensionId) {
         enabledDimensions.add(dimensionId);
-        PasterDreamAPI.LOGGER.debug("[TerrainNegotiator] 🌍 启用维度的大型结构支持: {}", dimensionId);
+        PDDebugLogger.apiDebug("[TerrainNegotiator] 🌍 启用维度的大型结构支持: {}", dimensionId);
     }
 
     // ======================== 查询接口 ========================
@@ -235,7 +236,7 @@ public class StructureTerrainNegotiator {
         if (hasFailing) {
             PasterDreamAPI.LOGGER.error("[TerrainNegotiator] {}", sb);
         } else {
-            PasterDreamAPI.LOGGER.debug("[TerrainNegotiator] {}", sb);
+            PDDebugLogger.apiDebug("[TerrainNegotiator] {}", sb);
         }
     }
 
@@ -282,7 +283,7 @@ public class StructureTerrainNegotiator {
         enabledDimensions.clear();
         placementRecords.clear();
         structureDimensions.clear();
-        PasterDreamAPI.LOGGER.debug("[TerrainNegotiator] 🔄 已重置所有统计数据");
+        PDDebugLogger.apiDebug("[TerrainNegotiator] 🔄 已重置所有统计数据");
     }
 
     /**

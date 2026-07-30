@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 结构集构建器 —— 采用 Builder 模式链式配置结构集和 JSON 资源文件生成
  * <p>
@@ -71,7 +72,7 @@ public class StructureSetBuilder {
         this.modId = modId;
         this.ruinName = ruinName;
         this.setName = setName;
-        PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] 创建结构集构建器: modId={}, ruin={}, setName={}", modId, ruinName, setName);
+        PDDebugLogger.apiDebug("[StructureSetBuilder] 创建结构集构建器: modId={}, ruin={}, setName={}", modId, ruinName, setName);
         this.spacing = 32;
         this.separation = 8;
         this.salt = 0;
@@ -93,7 +94,7 @@ public class StructureSetBuilder {
      */
     public StructureSetBuilder spacing(int spacing) {
         this.spacing = spacing;
-        PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] {} → spacing={}", setName, spacing);
+        PDDebugLogger.apiDebug("[StructureSetBuilder] {} → spacing={}", setName, spacing);
         return this;
     }
 
@@ -108,7 +109,7 @@ public class StructureSetBuilder {
      */
     public StructureSetBuilder separation(int separation) {
         this.separation = separation;
-        PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] {} → separation={}", setName, separation);
+        PDDebugLogger.apiDebug("[StructureSetBuilder] {} → separation={}", setName, separation);
         return this;
     }
 
@@ -123,7 +124,7 @@ public class StructureSetBuilder {
      */
     public StructureSetBuilder salt(int salt) {
         this.salt = salt;
-        PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] {} → salt={}", setName, salt);
+        PDDebugLogger.apiDebug("[StructureSetBuilder] {} → salt={}", setName, salt);
         return this;
     }
 
@@ -137,7 +138,7 @@ public class StructureSetBuilder {
      */
     public StructureSetBuilder placementType(String placementType) {
         this.placementType = placementType;
-        PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] {} → placementType={}", setName, placementType);
+        PDDebugLogger.apiDebug("[StructureSetBuilder] {} → placementType={}", setName, placementType);
         return this;
     }
 
@@ -152,7 +153,7 @@ public class StructureSetBuilder {
      */
     public StructureSetBuilder generateJson(boolean generate) {
         this.generateJsonFiles = generate;
-        PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] {} → generateJson={}", setName, generate);
+        PDDebugLogger.apiDebug("[StructureSetBuilder] {} → generateJson={}", setName, generate);
         return this;
     }
 
@@ -166,7 +167,7 @@ public class StructureSetBuilder {
      */
     public StructureSetBuilder basePath(String basePath) {
         this.basePath = basePath;
-        PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] {} → basePath={}", setName, basePath);
+        PDDebugLogger.apiDebug("[StructureSetBuilder] {} → basePath={}", setName, basePath);
         return this;
     }
 
@@ -187,8 +188,8 @@ public class StructureSetBuilder {
      * @throws RuntimeException      如果 JSON 文件写入失败
      */
 public RuinResult build() {
-        PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] ===== 开始构建结构集: {} =====", setName);
-        PasterDreamAPI.LOGGER.debug("[StructureSetBuilder]   配置: ruin={}, spacing={}, separation={}, salt={}, placementType={}",
+        PDDebugLogger.apiDebug("[StructureSetBuilder] ===== 开始构建结构集: {} =====", setName);
+        PDDebugLogger.apiDebug("[StructureSetBuilder]   配置: ruin={}, spacing={}, separation={}, salt={}, placementType={}",
                 ruinName, spacing, separation, salt, placementType);
 
         // 1. 查找关联的 RuinResult
@@ -203,24 +204,24 @@ public RuinResult build() {
         // 2. 生成 JSON 资源文件
         if (generateJsonFiles) {
             try {
-                PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] 生成结构集 JSON: data/{}/worldgen/structure_set/{}.json", modId, setName);
+                PDDebugLogger.apiDebug("[StructureSetBuilder] 生成结构集 JSON: data/{}/worldgen/structure_set/{}.json", modId, setName);
                 saveStructureSetJson();
-                PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] ✅ 结构集 JSON 生成完成: {}", setName);
+                PDDebugLogger.apiDebug("[StructureSetBuilder] ✅ 结构集 JSON 生成完成: {}", setName);
             } catch (IOException e) {
                 PasterDreamAPI.LOGGER.error("[StructureSetBuilder] ❌ 无法生成结构集 JSON [{}]: {}", setName, e.getMessage(), e);
                 throw new RuntimeException("StructureSetBuilder: 无法生成结构集资源文件 [" + setName + "]", e);
             }
         } else {
-            PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] ⏭️ 跳过 JSON 文件生成: {} (generateJson=false)", setName);
+            PDDebugLogger.apiDebug("[StructureSetBuilder] ⏭️ 跳过 JSON 文件生成: {} (generateJson=false)", setName);
         }
 
         // 4. 创建新的 RuinResult（包含结构集 Key）并缓存
         RuinResult updatedResult = result.withSetKey(setName, modId);
-        PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] 创建 RuinResult（含结构集 Key）: ruin={}, structureKey={}, setKey={}",
+        PDDebugLogger.apiDebug("[StructureSetBuilder] 创建 RuinResult（含结构集 Key）: ruin={}, structureKey={}, setKey={}",
                 ruinName, updatedResult.structureKey(), updatedResult.setKey());
         com.pasterdream.pasterdreammod.api.ruin.RuinAPI.cacheRuin(updatedResult);
 
-        PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] ✅ 结构集构建完成: {} | spacing={}, separation={}, salt={}",
+        PDDebugLogger.apiDebug("[StructureSetBuilder] ✅ 结构集构建完成: {} | spacing={}, separation={}, salt={}",
                 setName, spacing, separation, salt);
         return updatedResult;
     }
@@ -257,6 +258,6 @@ public RuinResult build() {
             GSON.toJson(root, writer);
         }
 
-        PasterDreamAPI.LOGGER.debug("[StructureSetBuilder] ✅ 已生成 structure_set JSON → {}", outputFile);
+        PDDebugLogger.apiDebug("[StructureSetBuilder] ✅ 已生成 structure_set JSON → {}", outputFile);
     }
 }

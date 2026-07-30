@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 地形调整引擎 —— 采用隆起平台策略，在不产生明显断层的前提下调整地形。
  * <p>
@@ -50,7 +51,7 @@ public class TerrainAdjuster {
         int startZ = Math.max(minBZ, chunkMinZ);
         int endZ = Math.min(maxBZ, chunkMaxZ);
 
-        PasterDreamAPI.LOGGER.debug("[TerrainAdjuster] 🏗️ 创建平滑平台: center=({},{}), flat={}, blend={}, total={}",
+        PDDebugLogger.apiDebug("[TerrainAdjuster] 🏗️ 创建平滑平台: center=({},{}), flat={}, blend={}, total={}",
                 centerX, centerZ, flatRadius, blendRadius, totalRadius);
 
         int count = 0;
@@ -77,7 +78,7 @@ public class TerrainAdjuster {
             }
         }
 
-        PasterDreamAPI.LOGGER.debug("[TerrainAdjuster] ✅ 平台创建完成: 调整了 {} 个方块列", count);
+        PDDebugLogger.apiDebug("[TerrainAdjuster] ✅ 平台创建完成: 调整了 {} 个方块列", count);
     }
 
     /**

@@ -1,0 +1,34 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="pasterdreamsanity"
+version="${mod_version}"
+displayName="PasterDreamSanity"
+description='''
+PasterDream San 值系统附属模组。
+提供 San 值相关的物品、效果、饰品与环境逻辑。
+'''
+
+[[dependencies.pasterdreamsanity]]
+modId="neoforge"
+type="required"
+versionRange="[${neo_version},)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.pasterdreamsanity]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.pasterdreamsanity]]
+modId="pasterdreamapi"
+type="required"
+versionRange="[${mod_version},)"
+ordering="AFTER"
+side="BOTH"
+reason="依赖 PasterDreamAPI 提供的 San 值数据附件与网络同步"

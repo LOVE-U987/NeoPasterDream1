@@ -8,6 +8,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 寻梦者笔记客户端接线：菜单屏幕绑定。
  * <p>
@@ -27,6 +28,6 @@ public final class PDDreamnotesClientEvents {
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(PDMenusDreamnotes.DREAMNOTES_GUI_0.get(), DreamnotesGui0Screen::new);
-        PasterDreamMod.LOGGER.debug("[PDDreamnotesClientEvents] 注册 GUI 屏幕: dreamnotes_gui_0 → DreamnotesGui0Screen");
+        PDDebugLogger.mainDebug("[PDDreamnotesClientEvents] 注册 GUI 屏幕: dreamnotes_gui_0 → DreamnotesGui0Screen");
     }
 }

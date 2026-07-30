@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/forsakens_wing"
+    "layer0": "pasterdream:item/forsakens_wing_item"
   }
 }

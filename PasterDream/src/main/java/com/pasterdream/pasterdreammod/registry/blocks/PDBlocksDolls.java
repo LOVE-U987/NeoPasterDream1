@@ -57,7 +57,7 @@ public class PDBlocksDolls {
                     .noOcclusion()));
 
     /**
-     * 琴雨梦纪念玩偶方块 (love_u_doll)
+     * LOVE_U拉乌酱玩偶方块 (love_u_doll)
      * 可放置方块玩偶，绑定 LoveUDollBlockEntity
      */
     public static final DeferredBlock<LoveUDollBlock> LOVE_U_DOLL = PDBlocks.BLOCKS.register("love_u_doll",
@@ -67,7 +67,7 @@ public class PDBlocksDolls {
                     .noOcclusion()));
 
     /**
-     * 幼幼紫纪念玩偶方块 (eoul_doll)
+     * EOUL小幽灵玩偶方块 (eoul_doll)
      * 可放置方块玩偶，绑定 EoulDollBlockEntity
      */
     public static final DeferredBlock<EoulDollBlock> EOUL_DOLL = PDBlocks.BLOCKS.register("eoul_doll",

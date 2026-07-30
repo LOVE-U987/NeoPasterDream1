@@ -57,7 +57,7 @@ public final class BlockAPI {
      * }</pre>
      */
     public static final DeferredRegister.Blocks REGISTRY =
-            DeferredRegister.createBlocks(PasterDreamAPI.MOD_ID);
+            DeferredRegister.createBlocks(PasterDreamAPI.DATA_NAMESPACE);
 
     /** 方块配置存储表 —— 方块注册名 → 配置，供数据生成器读取 */
     static final Map<String, BlockConfig> BLOCK_CONFIGS = new HashMap<>();

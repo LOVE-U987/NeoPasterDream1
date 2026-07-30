@@ -50,6 +50,9 @@ public class PDSounds {
         registerDimensionMusic("dream_delta");
         registerDimensionMusic("sweetdream_music");
         registerDimensionMusic("snowfall_dream_music");
+        registerDimensionMusic("wind_journey_departure");
+        registerDimensionMusic("wind_journey_midsummer");
+        registerDimensionMusic("dream_meadow_daisy");
     }
 
     // ==================== 融梦水晶箱 SoundEvent ====================
@@ -127,6 +130,27 @@ public class PDSounds {
     public static final Supplier<SoundEvent> DREAM_DELTA_MUSIC = SOUND_EVENTS.register("dream_delta_music",
             () -> SoundEvent.createVariableRangeEvent(
                     ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "music/dream_delta")));
+
+    /**
+     * 风之旅途·启程 唱片音乐 SoundEvent
+     */
+    public static final Supplier<SoundEvent> WIND_JOURNEY_DEPARTURE_MUSIC = SOUND_EVENTS.register("wind_journey_departure",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "music/wind_journey_departure")));
+
+    /**
+     * 风之旅途·盛夏光年 唱片音乐 SoundEvent
+     */
+    public static final Supplier<SoundEvent> WIND_JOURNEY_MIDSUMMER_MUSIC = SOUND_EVENTS.register("wind_journey_midsummer",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "music/wind_journey_midsummer")));
+
+    /**
+     * 梦幻草原·Daisy 唱片音乐 SoundEvent
+     */
+    public static final Supplier<SoundEvent> DREAM_MEADOW_DAISY_MUSIC = SOUND_EVENTS.register("dream_meadow_daisy_music",
+            () -> SoundEvent.createVariableRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "music/dream_meadow_daisy")));
 
     // ==================== 维度背景音乐（统一注册入口） ====================
 
@@ -368,36 +392,6 @@ public class PDSounds {
             () -> SoundEvent.createVariableRangeEvent(
                     ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "skill2")));
 
-    // ==================== 法术音效 SoundEvent（还原自原版法术模块） ====================
-
-    /**
-     * 闪电法术命中音效 (lightning_spell)
-     */
-    public static final Supplier<SoundEvent> LIGHTNING_SPELL = SOUND_EVENTS.register("lightning_spell",
-            () -> SoundEvent.createVariableRangeEvent(
-                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "lightning_spell")));
-
-    /**
-     * 狂暴法术命中音效 (fury_spell_0)
-     */
-    public static final Supplier<SoundEvent> FURY_SPELL_0 = SOUND_EVENTS.register("fury_spell_0",
-            () -> SoundEvent.createVariableRangeEvent(
-                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "fury_spell_0")));
-
-    /**
-     * 治疗法术命中音效 (healing_spell)
-     */
-    public static final Supplier<SoundEvent> HEALING_SPELL = SOUND_EVENTS.register("healing_spell",
-            () -> SoundEvent.createVariableRangeEvent(
-                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "healing_spell")));
-
-    /**
-     * 冰冻法术命中音效 (ice_spell)
-     */
-    public static final Supplier<SoundEvent> ICE_SPELL = SOUND_EVENTS.register("ice_spell",
-            () -> SoundEvent.createVariableRangeEvent(
-                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "ice_spell")));
-
     // ==================== 玩家动作音效（还原自原版状态效果模块） ====================
 
     /**
@@ -488,11 +482,6 @@ public class PDSounds {
             () -> SoundEvent.createVariableRangeEvent(
                     ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dyedream_world_music")));
 
-    /** 批量补注册：fury_spell */
-    public static final Supplier<SoundEvent> FURY_SPELL = SOUND_EVENTS.register("fury_spell",
-            () -> SoundEvent.createVariableRangeEvent(
-                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "fury_spell")));
-
     /** 批量补注册：gale_wind */
     public static final Supplier<SoundEvent> GALE_WIND = SOUND_EVENTS.register("gale_wind",
             () -> SoundEvent.createVariableRangeEvent(
@@ -537,11 +526,6 @@ public class PDSounds {
     public static final Supplier<SoundEvent> PLIERS0 = SOUND_EVENTS.register("pliers0",
             () -> SoundEvent.createVariableRangeEvent(
                     ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "pliers0")));
-
-    /** 批量补注册：poison_spell */
-    public static final Supplier<SoundEvent> POISON_SPELL = SOUND_EVENTS.register("poison_spell",
-            () -> SoundEvent.createVariableRangeEvent(
-                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "poison_spell")));
 
     /** 批量补注册：portal */
     public static final Supplier<SoundEvent> PORTAL = SOUND_EVENTS.register("portal",

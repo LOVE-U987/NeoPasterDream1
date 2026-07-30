@@ -10,6 +10,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 法杖武器模型谓词注册类 (Wand Item Properties)
  * <p>
@@ -33,7 +34,7 @@ public class PDWandItemProperties {
                     ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "cast"),
                     (stack, clientLevel, livingEntity, seed) ->
                             PasterItemData.getBoolean(stack, "cast") ? 1.0F : 0.0F);
-            PasterDreamMod.LOGGER.debug("[PDWandItemProperties] 注册模型谓词: star_wish_rod → pasterdream:cast");
+            PDDebugLogger.mainDebug("[PDWandItemProperties] 注册模型谓词: star_wish_rod → pasterdream:cast");
         });
     }
 }

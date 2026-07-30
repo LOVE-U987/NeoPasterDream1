@@ -10,6 +10,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 寻梦者笔记菜单分区注册 (dreamnotes_gui_0)。
  * <p>
@@ -31,7 +32,7 @@ public final class PDMenusDreamnotes {
 
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
-        PasterDreamMod.LOGGER.debug("[PDMenusDreamnotes] dreamnotes_gui_0 菜单分区已加载");
+        PDDebugLogger.mainDebug("[PDMenusDreamnotes] dreamnotes_gui_0 菜单分区已加载");
     }
 
     /** 显式触发类加载（同时拉起物品分区） */

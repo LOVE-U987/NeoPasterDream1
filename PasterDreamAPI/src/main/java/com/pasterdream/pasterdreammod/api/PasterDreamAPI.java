@@ -1,5 +1,7 @@
 package com.pasterdream.pasterdreammod.api;
 
+import com.pasterdream.pasterdreammod.api.attachment.PDPlayerAttachments;
+import com.pasterdream.pasterdreammod.api.attribute.APIAttributes;
 import com.pasterdream.pasterdreammod.api.block.BlockAPI;
 import com.pasterdream.pasterdreammod.api.blockentity.BlockEntityAPI;
 import com.pasterdream.pasterdreammod.api.curio.CurioAPI;
@@ -10,6 +12,7 @@ import com.pasterdream.pasterdreammod.api.item.ItemAPI;
 import com.pasterdream.pasterdreammod.api.menu.MenuAPI;
 import com.pasterdream.pasterdreammod.api.particle.ParticleAPI;
 import com.pasterdream.pasterdreammod.api.ruin.RuinAPI;
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationRegistry;
 import net.neoforged.bus.api.IEventBus;
 import org.slf4j.Logger;
@@ -23,8 +26,10 @@ import org.slf4j.LoggerFactory;
  */
 public final class PasterDreamAPI {
 
-    /** 模组命名空间，须与主模组 {@code PasterDreamAPI.MOD_ID} 一致 */
-    public static final String MOD_ID = "pasterdream";
+    /** 独立前置 mod ID */
+    public static final String MOD_ID = "pasterdreamapi";
+    /** 数据命名空间，沿用 pasterdream 以保持 Attachment、网络包等旧数据兼容 */
+    public static final String DATA_NAMESPACE = "pasterdream";
 
     /** API 模块日志记录器 */
     public static final Logger LOGGER = LoggerFactory.getLogger("PasterDreamAPI");
@@ -48,6 +53,7 @@ public final class PasterDreamAPI {
         BlockEntityAPI.REGISTRY.register(modEventBus);
         ItemAPI.REGISTRY.register(modEventBus);
         EntityAPI.REGISTRY.register(modEventBus);
+        APIAttributes.ATTRIBUTES.register(modEventBus);
         MobEffectAPI.REGISTRY.register(modEventBus);
         ParticleAPI.REGISTRY.register(modEventBus);
         RuinAPI.REGISTRY.register(modEventBus);
@@ -56,7 +62,8 @@ public final class PasterDreamAPI {
         FluidAPI.REGISTRY.register(modEventBus);
         ApiSoundRegistry.DIMENSION_SOUNDS.register(modEventBus);
         DecorationRegistry.FEATURES.register(modEventBus);
+        PDPlayerAttachments.ATTACHMENT_TYPES.register(modEventBus);
 
-        LOGGER.debug("[PasterDreamAPI] 已统一注册 12 个 API 注册器到事件总线");
+        PDDebugLogger.apiDebug("[PasterDreamAPI] 已统一注册 13 个 API 注册器到事件总线");
     }
 }

@@ -14,6 +14,7 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 import java.util.Objects;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 装饰物流式 Builder —— 用于链式配置装饰物参数并注册
  * <p>
@@ -605,7 +606,7 @@ public class DecorationBuilder {
                 customGeneratorKey
         );
 
-        PasterDreamAPI.LOGGER.debug("[DecorationBuilder] 构建装饰物配置: name={}, type={}", name, type);
+        PDDebugLogger.apiDebug("[DecorationBuilder] 构建装饰物配置: name={}, type={}", name, type);
         return DecorationRegistry.register(name, config, targetBiome, step, rarity);
     }
 }

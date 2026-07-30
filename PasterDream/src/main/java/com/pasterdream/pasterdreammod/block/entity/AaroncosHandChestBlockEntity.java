@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -38,6 +39,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 亚伦柯斯之触战利品箱方块实体
  * <p>
@@ -116,7 +118,7 @@ public class AaroncosHandChestBlockEntity extends BlockEntity implements GeoBloc
             for (ItemStack stack : drops) {
                 spawnItem(sl, stack, x, y, z);
             }
-            PasterDreamMod.LOGGER.debug("[AaroncosHandChest] 🎁 战利品已掉落于 ({}, {}, {}) count={}",
+            PDDebugLogger.mainDebug("[AaroncosHandChest] 🎁 战利品已掉落于 ({}, {}, {}) count={}",
                     x, y, z, drops.size());
         });
 
@@ -151,7 +153,7 @@ public class AaroncosHandChestBlockEntity extends BlockEntity implements GeoBloc
         for (ItemStack stack : buildLootFor(player)) {
             ItemHandlerHelper.giveItemToPlayer(player, stack);
         }
-        PasterDreamMod.LOGGER.info("[AaroncosHandChest] 📦 未开启箱：已将战利品给予 {}",
+        PDDebugLogger.mainInfo("[AaroncosHandChest] 📦 未开启箱：已将战利品给予 {}",
                 player.getName().getString());
     }
 
@@ -168,7 +170,9 @@ public class AaroncosHandChestBlockEntity extends BlockEntity implements GeoBloc
         List<ItemStack> out = new ArrayList<>();
         if (player instanceof ServerPlayer sp) {
             if (hasAdvancement(sp, "achievement_talent_light")) {
-                out.add(new ItemStack(PDItems.WHITE_FLOWER_BODY.get()));
+                // 白花胸针已拆分到 PasterDreamSanity；未安装时不加入战利品
+                BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdreamsanity", "white_flower_body"))
+                        .ifPresent(item -> out.add(new ItemStack(item)));
                 out.add(new ItemStack(PDItems.WHITE_CRYSTAL.get()));
             }
             if (hasAdvancement(sp, "achievement_talent_shadow")) {

@@ -5,14 +5,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * 幼幼紫纪念玩偶方块实体 (Eoul Doll Block Entity)
+ * EOUL小幽灵玩偶方块实体 (Eoul Doll Block Entity)
  * <p>
  * 继承纪念玩偶方块实体基类，仅绑定到 {@link PDBlockEntities#EOUL_DOLL}。
  */
 public class EoulDollBlockEntity extends MemorialDollBlockEntity {
 
     /**
-     * 构造幼幼紫纪念玩偶方块实体
+     * 构造EOUL小幽灵玩偶方块实体
      *
      * @param pos   方块位置
      * @param state 方块状态

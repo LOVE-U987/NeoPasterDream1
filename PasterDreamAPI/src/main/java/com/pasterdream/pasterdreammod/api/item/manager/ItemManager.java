@@ -16,6 +16,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 物品移植管理器 —— 追踪物品移植进度、批量注册、生成迁移报告
  * <p>
@@ -169,7 +170,7 @@ public class ItemManager {
                 DeferredItem<Item> item = builder.build();
                 registered.add(item);
                 markMigrated(MigrationCategory.MATERIAL, spec.registryName());
-                PasterDreamAPI.LOGGER.debug("[ItemManager] 已注册简单物品: {}", spec.registryName());
+                PDDebugLogger.apiDebug("[ItemManager] 已注册简单物品: {}", spec.registryName());
             } catch (RuntimeException e) {
                 // 批量注册兜底：单条失败不应影响后续物品注册
                 warnings.add("注册物品失败: " + spec.registryName() + " - " + e.getMessage());
@@ -209,7 +210,7 @@ public class ItemManager {
                 DeferredItem<Item> item = builder.build();
                 registered.add(item);
                 markMigrated(MigrationCategory.FOOD, name);
-                PasterDreamAPI.LOGGER.debug("[ItemManager] 已注册食物物品: {}", name);
+                PDDebugLogger.apiDebug("[ItemManager] 已注册食物物品: {}", name);
             } catch (RuntimeException e) {
                 // 批量注册兜底：单条失败不应影响后续食物注册
                 warnings.add("注册食物物品失败: " + name + " - " + e.getMessage());
@@ -248,7 +249,7 @@ public class ItemManager {
      * @return 格式化的移植报告字符串
      */
     public String generateReport() {
-        MigrationReport report = new MigrationReport(PasterDreamAPI.MOD_ID);
+        MigrationReport report = new MigrationReport(PasterDreamAPI.DATA_NAMESPACE);
 
         for (MigrationCategory category : MigrationCategory.values()) {
             int migrated = migratedItems.get(category).size();
@@ -274,6 +275,6 @@ public class ItemManager {
         }
         allMigratedNames.clear();
         warnings.clear();
-        PasterDreamAPI.LOGGER.debug("[ItemManager] 所有追踪状态已重置");
+        PDDebugLogger.apiDebug("[ItemManager] 所有追踪状态已重置");
     }
 }

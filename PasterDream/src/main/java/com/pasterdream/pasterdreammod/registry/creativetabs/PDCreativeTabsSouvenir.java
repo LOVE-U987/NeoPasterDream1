@@ -1,14 +1,20 @@
 package com.pasterdream.pasterdreammod.registry.creativetabs;
 
+import com.pasterdream.pasterdreammod.api.util.AddonDetector;
 import com.pasterdream.pasterdreammod.registry.PDCreativeTabs;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsDreamnotes;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
+
+import java.util.Optional;
 
 
 /**
@@ -74,18 +80,25 @@ public class PDCreativeTabsSouvenir {
                         output.accept(PDItems.GUIDING_DRUG.get());
                         // 原版拓展栏 paster_tab_9；曾误挂 entity_tab
                         output.accept(PDItems.STRAWBERRY_HEART.get());
-                        // 法术物品（梦境炼药锅炼制产出）
-                        output.accept(PDItems.LIGHTNING_SPELL.get());
-                        output.accept(PDItems.POISON_SPELL.get());
-                        output.accept(PDItems.HEALING_SPELL.get());
-                        output.accept(PDItems.FURY_SPELL.get());
-                        output.accept(PDItems.ICE_SPELL.get());
+                        // 法术物品（梦境炼药锅炼制产出，仅在 PasterDreamSpells 安装时显示）
+                        if (AddonDetector.isSpellsLoaded()) {
+                            acceptSpellItem(output, "lightning_spell");
+                            acceptSpellItem(output, "poison_spell");
+                            acceptSpellItem(output, "healing_spell");
+                            acceptSpellItem(output, "fury_spell");
+                            acceptSpellItem(output, "ice_spell");
+                        }
                         output.accept(PDItems.WHITE_COROLLA.get());
                         output.accept(PDItems.PALE_BONENEEDLE.get());
                         // 玩偶/雕像
                         output.accept(PDItems.QIN_DOLL_0.get());
                         output.accept(PDItems.LITTLE_PURPLE_DOLL_0.get());
+                        output.accept(PDItems.LOVE_U_DOLL.get());
+                        output.accept(PDItems.EOUL_DOLL.get());
                         output.accept(PDItems.GOLDEN_FOX_SCULPTURE.get());
+
+                        // DollAPI 动态注册的玩偶
+                        com.pasterdream.pasterdreammod.api.doll.DollAPI.getItems().forEach(item -> output.accept(item.get()));
 
                         // 杂项补全：特殊功能道具与收藏品（原版物品栏 tab_0）
                         output.accept(PDItems.TIME_HOURGLASS.get());
@@ -122,4 +135,16 @@ public class PDCreativeTabsSouvenir {
                         output.accept(PDItems.LOOTSTABLE_CREATE_9.get());
                     })
                     .build());
+
+    /**
+     * 通过 {@link BuiltInRegistries#ITEM} 动态查找 PasterDreamSpells 的法术物品并加入创造栏。
+     *
+     * @param output 创造栏输出收集器
+     * @param path   法术物品注册名（如 "lightning_spell"）
+     */
+    private static void acceptSpellItem(CreativeModeTab.Output output, String path) {
+        Optional<Item> item = BuiltInRegistries.ITEM.getOptional(
+                ResourceLocation.fromNamespaceAndPath("pasterdreamspells", path));
+        item.ifPresent(output::accept);
+    }
 }

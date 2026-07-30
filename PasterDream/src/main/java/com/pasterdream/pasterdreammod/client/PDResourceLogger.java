@@ -13,6 +13,7 @@ import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 资源审计日志记录器
  * 监听客户端资源重载事件（F3+T 或进入世界时），扫描并记录 pasterdream 命名空间下的所有资源。
@@ -39,7 +40,7 @@ public class PDResourceLogger {
                 logResourceSummary(resourceManager);
             }
         });
-        PasterDreamMod.LOGGER.info("[PDResourceLogger] 资源审计日志记录器已注册，将在每次资源重载后输出报告");
+        PDDebugLogger.mainInfo("[PDResourceLogger] 资源审计日志记录器已注册，将在每次资源重载后输出报告");
     }
 
     /**
@@ -62,7 +63,7 @@ public class PDResourceLogger {
 
         String assetPrefix = "assets/" + NS + "/";
 
-        PasterDreamMod.LOGGER.info("========== [PDResourceLogger] {} 资源审计报告 ==========", NS);
+        PDDebugLogger.mainInfo("========== [PDResourceLogger] {} 资源审计报告 ==========", NS);
 
         int totalCount = 0;
         int totalWarn = 0;
@@ -75,9 +76,9 @@ public class PDResourceLogger {
                 totalWarn++;
                 continue;
             }
-            PasterDreamMod.LOGGER.info("  [{}] 共 {} 个文件:", cat.label, found.size());
+            PDDebugLogger.mainInfo("  [{}] 共 {} 个文件:", cat.label, found.size());
             for (ResourceLocation loc : found) {
-                PasterDreamMod.LOGGER.debug("    - {}", loc.getPath());
+                PDDebugLogger.mainDebug("    - {}", loc.getPath());
             }
             totalCount += found.size();
         }
@@ -86,13 +87,13 @@ public class PDResourceLogger {
         Map<ResourceLocation, ?> sounds = manager.listResources("sounds",
                 loc -> loc.getNamespace().equals(NS) && loc.getPath().endsWith(".ogg"));
         if (!sounds.isEmpty()) {
-            PasterDreamMod.LOGGER.info("  [sounds] 共 {} 个音效文件", sounds.size());
+            PDDebugLogger.mainInfo("  [sounds] 共 {} 个音效文件", sounds.size());
             totalCount += sounds.size();
         }
 
-        PasterDreamMod.LOGGER.info("----------------------------------------------------");
-        PasterDreamMod.LOGGER.info("  {} 命名空间资源总计: {} 个文件 | 空目录警告: {} 个", NS, totalCount, totalWarn);
-        PasterDreamMod.LOGGER.info("====================================================");
+        PDDebugLogger.mainInfo("----------------------------------------------------");
+        PDDebugLogger.mainInfo("  {} 命名空间资源总计: {} 个文件 | 空目录警告: {} 个", NS, totalCount, totalWarn);
+        PDDebugLogger.mainInfo("====================================================");
     }
 
     /**

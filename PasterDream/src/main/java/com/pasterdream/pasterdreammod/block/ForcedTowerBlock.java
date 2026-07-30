@@ -44,6 +44,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 强征传送塔方块 (Forced Tower)
  * <p>
@@ -235,7 +236,7 @@ public class ForcedTowerBlock extends BaseEntityBlock {
                 .getOptional(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dream_wand"))
                 .orElse(Items.AIR);
         if (wand == Items.AIR) {
-            PasterDreamMod.LOGGER.debug("[ForcedTower] dream_wand 未注册，跳过链接交互");
+            PDDebugLogger.mainDebug("[ForcedTower] dream_wand 未注册，跳过链接交互");
             return;
         }
         ItemStack held = player.getMainHandItem();

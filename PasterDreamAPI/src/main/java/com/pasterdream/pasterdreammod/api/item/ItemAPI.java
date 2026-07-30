@@ -157,7 +157,7 @@ public final class ItemAPI {
      * ItemAPI.REGISTRY.register(modEventBus);
      * }</pre>
      */
-    public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(PasterDreamAPI.MOD_ID);
+    public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(PasterDreamAPI.DATA_NAMESPACE);
 
     /**
      * 单例的迁移管理器实例。

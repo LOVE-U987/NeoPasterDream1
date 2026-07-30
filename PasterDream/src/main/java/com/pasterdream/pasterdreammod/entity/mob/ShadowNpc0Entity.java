@@ -46,6 +46,7 @@ import software.bernie.geckolib.animation.*;
 import java.util.Comparator;
 import java.util.List;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 无名（shadow_npc_0）—— 暗影地牢 NPC
  * <p>
@@ -402,7 +403,7 @@ public class ShadowNpc0Entity extends GeckoLibMobEntity {
         AdvancementHolder holder = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
         if (holder == null) {
-            PasterDreamMod.LOGGER.debug("[ShadowNpc0] 成就 {} 未注册，跳过授予", path);
+            PDDebugLogger.mainDebug("[ShadowNpc0] 成就 {} 未注册，跳过授予", path);
             return;
         }
         AdvancementProgress progress = player.getAdvancements().getOrStartProgress(holder);

@@ -44,7 +44,7 @@ public class MusicPlaybackController {
         SoundEvent soundEvent = soundEventLookup.lookup(musicName);
         if (soundEvent == null) return;
         currentMusicName = musicName;
-        currentSound = VolumeSoundInstance.forMusic(soundEvent, ModMusicManager.getEffectiveVolume());
+        currentSound = VolumeSoundInstance.forMusic(soundEvent, ModMusicManager.getEffectiveVolume(musicName));
         Minecraft.getInstance().getSoundManager().play(currentSound);
     }
 
@@ -61,7 +61,7 @@ public class MusicPlaybackController {
         }
         SoundEvent soundEvent = soundEventLookup.lookup(currentMusicName);
         if (soundEvent == null) return;
-        currentSound = VolumeSoundInstance.forMusic(soundEvent, ModMusicManager.getEffectiveVolume());
+        currentSound = VolumeSoundInstance.forMusic(soundEvent, ModMusicManager.getEffectiveVolume(currentMusicName));
         Minecraft.getInstance().getSoundManager().play(currentSound);
     }
 

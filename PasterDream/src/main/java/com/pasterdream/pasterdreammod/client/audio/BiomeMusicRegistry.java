@@ -4,8 +4,11 @@ import com.pasterdream.pasterdreammod.PasterDreamMod;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,21 +27,31 @@ import java.util.Set;
  */
 public class BiomeMusicRegistry {
 
-    /** 群系 ID → 音乐名称映射 */
-    private final Map<ResourceLocation, String> biomeMusicMap = new LinkedHashMap<>();
+    /** 群系 ID → 音乐名称列表映射（支持同一群系多首曲目随机） */
+    private final Map<ResourceLocation, List<String>> biomeMusicMap = new LinkedHashMap<>();
 
     /** 自定义维度 ID 集合（在此集合中的维度启用 ModMusicManager） */
     private final Set<ResourceLocation> customDimensions = new HashSet<>();
 
     /**
-     * 注册群系音乐映射
+     * 注册群系音乐映射（单首曲目）
      *
      * @param biomeId   群系 ID（相对于模组命名空间）
      * @param musicName 音乐注册名称（如 "dream_meadow"）
      */
     public void registerBiomeMusic(String biomeId, String musicName) {
+        registerBiomeMusic(biomeId, new String[]{musicName});
+    }
+
+    /**
+     * 注册群系音乐映射（多首曲目随机）
+     *
+     * @param biomeId    群系 ID（相对于模组命名空间）
+     * @param musicNames 音乐注册名称列表（如 "wind_journey_departure", "wind_journey_midsummer"）
+     */
+    public void registerBiomeMusic(String biomeId, String... musicNames) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, biomeId);
-        biomeMusicMap.put(id, musicName);
+        biomeMusicMap.put(id, new ArrayList<>(Arrays.asList(musicNames)));
     }
 
     /**
@@ -51,12 +64,12 @@ public class BiomeMusicRegistry {
     }
 
     /**
-     * 获取群系对应的音乐名称
+     * 获取群系对应的音乐名称列表
      *
      * @param biomeId 群系 ID
-     * @return 音乐名称，无映射时返回 null
+     * @return 音乐名称列表，无映射时返回 null
      */
-    public String getMusicForBiome(ResourceLocation biomeId) {
+    public List<String> getMusicForBiome(ResourceLocation biomeId) {
         return biomeMusicMap.get(biomeId);
     }
 

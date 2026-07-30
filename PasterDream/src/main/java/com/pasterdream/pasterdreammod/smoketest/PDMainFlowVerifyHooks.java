@@ -6,11 +6,13 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
@@ -34,6 +36,7 @@ import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksDungeon;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsFunctional;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -49,7 +52,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 主干全链路 VERIFY 套件 {@code main-flow}。
  * 不并入默认 {@code all}；须 PASTERDREAM_VERIFY_SUITES=main-flow。
@@ -57,6 +62,14 @@ import java.util.function.Consumer;
  */
 public final class PDMainFlowVerifyHooks {
 
+    /** 白花胸针已拆分到 PasterDreamSanity；测试时通过注册表动态获取 */
+    private static final Supplier<Item> WHITE_FLOWER_BODY = () ->
+            BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdreamsanity", "white_flower_body"))
+                    .orElseThrow(() -> new IllegalStateException("white_flower_body 未注册，PasterDreamSanity 是否已加载？"));
+
+    /**
+     * 单条 VERIFY 结果记录。
+     */
     public record Result(boolean pass, String name, String detail) {}
 
     public enum ShadowChoice { DARK, LIGHT }
@@ -277,10 +290,10 @@ public final class PDMainFlowVerifyHooks {
 
     private static void dumpPlayer(ServerPlayer player, String label) {
         if (player == null) {
-            PasterDreamMod.LOGGER.info("[PDVerify] DUMP {}: player=null", label);
+            PDDebugLogger.smoketestInfo("[PDVerify] DUMP {}: player=null", label);
             return;
         }
-        PasterDreamMod.LOGGER.info("[PDVerify] DUMP {}: dim={} pos={} mode={} health={} xp={}",
+        PDDebugLogger.smoketestInfo("[PDVerify] DUMP {}: dim={} pos={} mode={} health={} xp={}",
                 label,
                 player.level().dimension().location(),
                 player.blockPosition(),
@@ -602,9 +615,9 @@ public final class PDMainFlowVerifyHooks {
             accept(out, gBody >= 1 || gHilt >= 1 || invBody >= 1 || invHilt >= 1,
                     "手箱 shadow 分支物品", "dark loot g=" + gBody + "/" + gHilt + " inv=" + invBody + "/" + invHilt);
         } else {
-            int gFlower = countGround(arena, chestPos, PDItems.WHITE_FLOWER_BODY.get());
+            int gFlower = countGround(arena, chestPos, WHITE_FLOWER_BODY.get());
             int gCrystal = countGround(arena, chestPos, PDItems.WHITE_CRYSTAL.get());
-            int invFlower = countItem(player, PDItems.WHITE_FLOWER_BODY.get());
+            int invFlower = countItem(player, WHITE_FLOWER_BODY.get());
             int invCrystal = countItem(player, PDItems.WHITE_CRYSTAL.get());
             accept(out, gFlower >= 1 || gCrystal >= 1 || invFlower >= 1 || invCrystal >= 1,
                     "手箱 light 分支物品", "light loot g=" + gFlower + "/" + gCrystal + " inv=" + invFlower + "/" + invCrystal);
@@ -681,7 +694,7 @@ public final class PDMainFlowVerifyHooks {
 	            "祭坛 → stage4", wind.getBlockState(altar).toString());
 
 	    // 投闪电法术/推进召唤：advance ~90t（对齐专项；生产需要 lightning_spell use 触发 schedule 86t spawn）
-	    player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(PDItemsFunctional.LIGHTNING_SPELL.get()));
+	    player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(lookupLightningSpell()));
 	    useBlock(player, wind, altar);
 	    ServerScheduler.advanceForTest(90);
 	    int knights = wind.getEntitiesOfClass(
@@ -747,7 +760,7 @@ public final class PDMainFlowVerifyHooks {
                 "talent 与 shadowChoice 互斥一致",
                 "choice=" + shadowChoice + " shadow=" + shadow + " light=" + light);
         accept(out, true, "continuousFlags", flags.toString());
-        PasterDreamMod.LOGGER.info("[PDVerify] MAIN-FLOW phases={} choice={}",
+        PDDebugLogger.smoketestInfo("[PDVerify] MAIN-FLOW phases={} choice={}",
                 phaseSummaries(), shadowChoice);
     }
 
@@ -811,5 +824,16 @@ public final class PDMainFlowVerifyHooks {
             lamp.addFreshEntity(npc);
         }
         return npc;
+    }
+
+    /**
+     * 动态查找 PasterDreamSpells 的闪电法术物品。
+     *
+     * @return 闪电法术物品，未注册时返回 Items.AIR
+     */
+    private static Item lookupLightningSpell() {
+        return BuiltInRegistries.ITEM.getOptional(
+                ResourceLocation.fromNamespaceAndPath("pasterdreamspells", "lightning_spell"))
+                .orElse(net.minecraft.world.item.Items.AIR);
     }
 }

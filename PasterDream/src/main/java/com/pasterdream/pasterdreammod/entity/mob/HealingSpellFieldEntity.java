@@ -1,8 +1,11 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
-import com.pasterdream.pasterdreammod.registry.PDParticles;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,8 +34,8 @@ import java.util.List;
  *   <li>存在 400 tick（20 秒），期间每 tick 为 5*5 区域内的玩家/和平生物
  *       回复最大生命值的 1/400（即每秒 5%）</li>
  *   <li>每 tick 散发治疗/黄色烟雾粒子</li>
- *   <li>与原版一致为可受击生物（10 点生命），无 AI、不移动</li>
- *   <li>循环播放 "idle" 动画（GeckoLib，半透明渲染）</li>
+ *   <li>立场实体为无敌状态，不会受到任何伤害</li>
+ *   <li>无 AI、不移动，循环播放 "idle" 动画（GeckoLib，半透明渲染）</li>
  * </ul>
  */
 public class HealingSpellFieldEntity extends PathfinderMob implements GeoEntity {
@@ -83,6 +86,17 @@ public class HealingSpellFieldEntity extends PathfinderMob implements GeoEntity 
         // 立场无任何 AI 行为
     }
 
+    /**
+     * 治疗立场无敌，免疫所有伤害源
+     *
+     * @param source 伤害源
+     * @return 始终为 true
+     */
+    @Override
+    public boolean isInvulnerableTo(DamageSource source) {
+        return true;
+    }
+
     @Override
     public void baseTick() {
         super.baseTick();
@@ -95,9 +109,9 @@ public class HealingSpellFieldEntity extends PathfinderMob implements GeoEntity 
             return;
         }
         if (this.level() instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(PDParticles.HEALING_SPELL_PARTICLE.holder().get(),
+            serverLevel.sendParticles(lookupParticle("healing_spell_particle"),
                     this.getX(), this.getY() - 0.5, this.getZ(), 3, 1.7, 0.5, 1.7, 0.05);
-            serverLevel.sendParticles(PDParticles.YELLOW_SMOKE_PARTICLE.holder().get(),
+            serverLevel.sendParticles(lookupParticle("yellow_smoke_particle"),
                     this.getX(), this.getY() + 0.1, this.getZ(), 2, 1.7, 0.5, 1.7, 0.05);
             healNearby();
         }
@@ -146,5 +160,19 @@ public class HealingSpellFieldEntity extends PathfinderMob implements GeoEntity 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+    // ==================== 动态引用（PasterDreamSpells 注册项） ====================
+
+    /**
+     * 动态查找 PasterDreamSpells 的粒子类型。
+     *
+     * @param path 粒子注册名
+     * @return SimpleParticleType，未注册时返回 null
+     */
+    private static SimpleParticleType lookupParticle(String path) {
+        var type = BuiltInRegistries.PARTICLE_TYPE.getOptional(
+                ResourceLocation.fromNamespaceAndPath("pasterdreamspells", path)).orElse(null);
+        return type instanceof net.minecraft.core.particles.SimpleParticleType spt ? spt : null;
     }
 }

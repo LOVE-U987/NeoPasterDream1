@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 暗影魔像渲染器
  * 使用 GeckoLib 渲染动画实体
@@ -23,7 +24,7 @@ public class ShadowGolemRenderer extends GeoEntityRenderer<ShadowGolemEntity> {
     public ShadowGolemRenderer(EntityRendererProvider.Context context) {
         super(context, new DefaultedEntityGeoModel<>(
                 ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, NAME)));
-        PasterDreamMod.LOGGER.debug("[ShadowGolemRenderer] 初始化完成，资源名: {} | 模型=geo/entity/{}.geo.json 纹理=textures/entity/{}.png 动画=animations/entity/{}.animation.json",
+        PDDebugLogger.mainDebug("[ShadowGolemRenderer] 初始化完成，资源名: {} | 模型=geo/entity/{}.geo.json 纹理=textures/entity/{}.png 动画=animations/entity/{}.animation.json",
                 NAME, NAME, NAME, NAME);
     }
 }

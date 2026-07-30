@@ -9,6 +9,16 @@ version = mod_version
 group = mod_group_id
 
 evaluationDependsOn(':PasterDreamAPI')
+evaluationDependsOn(':PasterDreamMeltDream')
+evaluationDependsOn(':PasterDreamSanity')
+evaluationDependsOn(':PasterDreamSpells')
+
+// ======================== 附属模组开关配置 ========================
+// 从 gradle.properties 读取，可用 -P 命令行覆盖
+//   .\gradlew :PasterDream:runClient -PenableMeltDream=false
+def meltDreamEnabled = project.findProperty('enableMeltDream') ?: 'true'
+def sanityEnabled   = project.findProperty('enableSanity')   ?: 'true'
+def spellsEnabled   = project.findProperty('enableSpells')   ?: 'true'
 
 sourceSets.main.resources {
     srcDir('src/generated/resources')
@@ -44,6 +54,12 @@ repositories {
         name = 'BlameJared'
         url = 'https://maven.blamejared.com'
         content { includeGroup 'mezz.jei' }
+    }
+    // Modrinth Maven（KubeJS 等）
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content { includeGroup 'maven.modrinth' }
     }
 }
 
@@ -97,7 +113,24 @@ neoForge {
     mods {
         "${mod_id}" {
             sourceSet(sourceSets.main)
+        }
+        "pasterdreamapi" {
             sourceSet(apiProject.sourceSets.main)
+        }
+        if (meltDreamEnabled == 'true') {
+            "pasterdreammeltdream" {
+                sourceSet(project(':PasterDreamMeltDream').sourceSets.main)
+            }
+        }
+        if (sanityEnabled == 'true') {
+            "pasterdreamsanity" {
+                sourceSet(project(':PasterDreamSanity').sourceSets.main)
+            }
+        }
+        if (spellsEnabled == 'true') {
+            "pasterdreamspells" {
+                sourceSet(project(':PasterDreamSpells').sourceSets.main)
+            }
         }
     }
 }
@@ -107,8 +140,20 @@ configurations {
 }
 
 dependencies {
-    // API 以源码模块依赖；发布时由 jar 任务打进同一 pasterdream jar，玩家只需装一个 mod。
+    // API 以源码模块依赖；Jar-in-Jar 内嵌到主模组 jar 中，玩家只需安装一个 jar。
     implementation project(':PasterDreamAPI')
+    jarJar project(':PasterDreamAPI')
+
+    // ======================== 附属模组（条件加载，由 enable* 开关控制） ========================
+    if (meltDreamEnabled == 'true') {
+        implementation project(':PasterDreamMeltDream')
+    }
+    if (sanityEnabled == 'true') {
+        implementation project(':PasterDreamSanity')
+    }
+    if (spellsEnabled == 'true') {
+        implementation project(':PasterDreamSpells')
+    }
 
     // 使 PasterDream 的 test sourceSet 能够访问 PasterDreamAPI 的 test sourceSet（gen/example 类）
     testImplementation project(':PasterDreamAPI').sourceSets.test.output
@@ -127,23 +172,27 @@ dependencies {
     compileOnly "mezz.jei:jei-1.21.1-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-1.21.1-neoforge-api:${jei_version}"
     localRuntime "mezz.jei:jei-1.21.1-neoforge:${jei_version}"
+
+    // ======================== KubeJS 集成（可选依赖） ========================
+    // 仅编译期依赖，不进入发布 jar；未安装 KubeJS 时相关类不会被加载
+    compileOnly "maven.modrinth:umyGl7zF:${kubejs_version}"
+    localRuntime "maven.modrinth:umyGl7zF:${kubejs_version}"
+
+    // ======================== Rhino（KubeJS 前置，可选依赖） ========================
+    // KubeJS 运行需要 Rhino 脚本引擎，同样以 optional 形式挂载，不进入发布 jar
+    compileOnly "maven.modrinth:sk9knFPE:${rhino_version}"
+    localRuntime "maven.modrinth:sk9knFPE:${rhino_version}"
 }
 
-// ======================== 单包分发：主 jar 内嵌 PasterDreamAPI ========================
-// PasterDreamAPI 不是独立 mod（无 mods.toml），其 class/资源全部并入 pasterdream-*.jar。
-// 玩家 mods 目录只放这一个 jar 即可；勿再额外安装 PasterDreamAPI-*.jar。
+// ======================== 分发：PasterDream 内嵌 PasterDreamAPI ========================
+// PasterDreamAPI 以 Jar-in-Jar 方式内嵌在主模组 jar 中。
+// 玩家只需安装一个 pasterdream-<version>.jar，API 会自动加载。
 tasks.named('jar', Jar).configure {
-    dependsOn(':PasterDreamAPI:classes')
-    // 合并 API 编译输出（classes + resources）
-    from project(':PasterDreamAPI').sourceSets.main.output
-    // 避免双份 MANIFEST 等元数据冲突
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes(
                 'Implementation-Title': mod_name,
                 'Implementation-Version': project.version,
-                'Implementation-Vendor': mod_authors,
-                'Embedded-Modules': 'PasterDreamAPI'
+                'Implementation-Vendor': mod_authors
         )
     }
 }
@@ -151,13 +200,13 @@ tasks.named('jar', Jar).configure {
 // 产出到统一 dist 目录，便于发布/拷贝到游戏 mods
 tasks.register('packageMod', Copy) {
     group = 'distribution'
-    description = '打包单一可安装 jar（已内嵌 PasterDreamAPI）到 build/dist/'
+    description = '打包可安装 jar 到 build/dist/（已内嵌 PasterDreamAPI）'
     dependsOn tasks.named('jar')
     from tasks.named('jar').flatMap { it.archiveFile }
     into rootProject.layout.buildDirectory.dir('dist')
     doLast {
         def out = rootProject.layout.buildDirectory.dir('dist').get().asFile
-        logger.lifecycle("packageMod → ${out.listFiles()?.collect { it.name }}（仅安装 pasterdream-*.jar，勿再装 PasterDreamAPI）")
+        logger.lifecycle("packageMod → ${out.listFiles()?.collect { it.name }}（已内嵌 PasterDreamAPI）")
     }
 }
 

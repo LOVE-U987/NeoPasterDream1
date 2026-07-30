@@ -1,0 +1,56 @@
+{
+  "lightning_spell": {
+    "subtitle": "subtitle.pasterdreamspells.lightning_spell",
+    "sounds": [
+      {
+        "name": "pasterdreamspells:lightning_spell",
+        "stream": false
+      }
+    ]
+  },
+  "fury_spell_0": {
+    "subtitle": "subtitle.pasterdreamspells.fury_spell_0",
+    "sounds": [
+      {
+        "name": "pasterdreamspells:fury_spell_0",
+        "stream": false
+      }
+    ]
+  },
+  "healing_spell": {
+    "subtitle": "subtitle.pasterdreamspells.healing_spell",
+    "sounds": [
+      {
+        "name": "pasterdreamspells:healing_spell",
+        "stream": false
+      }
+    ]
+  },
+  "ice_spell": {
+    "subtitle": "subtitle.pasterdreamspells.ice_spell",
+    "sounds": [
+      {
+        "name": "pasterdreamspells:ice_spell",
+        "stream": false
+      }
+    ]
+  },
+  "fury_spell": {
+    "subtitle": "subtitle.pasterdreamspells.fury_spell",
+    "sounds": [
+      {
+        "name": "pasterdreamspells:fury_spell",
+        "stream": false
+      }
+    ]
+  },
+  "poison_spell": {
+    "subtitle": "subtitle.pasterdreamspells.poison_spell",
+    "sounds": [
+      {
+        "name": "pasterdreamspells:poison_spell",
+        "stream": false
+      }
+    ]
+  }
+}
