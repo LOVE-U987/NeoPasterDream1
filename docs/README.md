@@ -17,6 +17,7 @@
 | [`superpowers/游戏流程分析/第二梦境.md`](superpowers/游戏流程分析/第二梦境.md) | **参考 · 玩法逻辑** | 灯影之下：进维、笔记/地牢、无名、影之抉择、亚伦柯斯 Boss |
 | [`superpowers/游戏流程分析/第三梦境.md`](superpowers/游戏流程分析/第三梦境.md) | **参考 · 玩法逻辑** | 风之旅途：迷梦高空进维、材料链、破风骑士祭坛与 Boss、出维云雾 |
 | [`流程缺口修复审查确认.md`](流程缺口修复审查确认.md) | **活文档 · 审查** | 2026-07-29：文档「已收口」项对照代码/VERIFY 的交叉确认 |
+| [`暗影入侵事件流程扫描.md`](暗影入侵事件流程扫描.md) | **活文档 · 审查** | 2026-07-30：暗影入侵五路扫描；专项 VERIFY `shadow-intrude`；总判可正常进行 |
 | [`superpowers/plans/2026-07-30-wind-altar-stage-model-fix.md`](superpowers/plans/2026-07-30-wind-altar-stage-model-fix.md) | **计划 · 缺陷** | 风旅祭坛 0→4 阶段 mesh/贴图不切换：根因分诊与修复步骤 |
 | [`archive/缺陷档案_2026-07.md`](archive/缺陷档案_2026-07.md) | **归档 · 已结案** | 2026-07 六十项 bug 核实与修复记录（只读） |
 

@@ -108,11 +108,12 @@
 | `wind-lake` / `wind_lake` / `lake` | 水色湖专项：NORMAL+开建筑；校验正式常驻 `safe_lake`；**不在** `all` |
 | `dyedream` / `dye-dream` / `dream-world` | 染梦专项：狐狸雕像仪式 + flower_12 多方块 + 莲花；**不在** `all` |
 | `second-dream` / `second` / `lamp-shadow` | 第二梦境灯影核实（**不在** `all`；玩法 `docs/superpowers/游戏流程分析/第二梦境.md`） |
+| `shadow-intrude` / `shadow_intrude` / `invasion` | 暗影入侵专项（**不在** `all`；确定性 calm→npc_3；扫描 `docs/暗影入侵事件流程扫描.md`） |
 | **快捷** `quick` | = `registry,core` |
 | **快捷** `behavior` | = `core,dimensions,spells,content` |
 | **快捷** `worldgen` | = `structures,struct-dim` |
 | **快捷** `galleries` / `visual` | = `gallery,entity-gallery` |
-| **快捷** `all` | 全量（默认；**不含** twilight-lantern / wind-journey / wind-lake / second-dream） |
+| **快捷** `all` | 全量（默认；**不含** twilight-lantern / wind-journey / wind-lake / second-dream / shadow-intrude） |
 
 方块总览展台（VERIFY 收尾自动铺，出生点东/南）：**主台**静物全量（门/双层植物上下半、染梦植物垫染梦草）；**特展带**用物品框+告示展示结构触发块 / 唤星限时块 / 流体（避免自毁与漫延）。
 
@@ -137,6 +138,7 @@ IDEA / Fleet：根目录 [`.run/`](.run/) 已写入同名运行配置，打开�
 | `PD VERIFY wind-lake` | 水色湖专项（非超平坦+开建筑），测完退出（不在 all） |
 | `PD VERIFY twilight-lantern` | 暮影之笼专项，测完退出（不在 all） |
 | `PD VERIFY second-dream` | 第二梦境专项，测完退出（不在 all） |
+| `PD VERIFY shadow-intrude` | 暗影入侵专项，测完退出（不在 all） |
 | `PD VERIFY dyedream` | 染梦专项（雕像仪式/莲花等），测完退出（不在 all） |
 | `PD VERIFY main-flow` | 主干全链路（默认 dark），测完退出（不在 all） |
 | `PD VERIFY main-flow (light)` | 主干全链路 light 抉择，测完退出 |
