@@ -1,6 +1,8 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
+import com.pasterdream.pasterdreammod.config.PDProcessLimitHelper;
 import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.W4GeoDataBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
@@ -201,7 +203,8 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
             return InteractionResult.SUCCESS;
         }
 
-        if (hasAdvancement(player, "achievement_hide_14")) {
+        if (!PDProcessLimitHelper.shouldApplyRestriction(player, PDCommonConfig.RESTRICTION_BROKEN_PORTAL_REPAIR)
+                || hasAdvancement(player, "achievement_hide_14")) {
             boolean lightMainMetalOff =
                     player.getMainHandItem().getItem() == PDBlocksVegetation.SHADOW_LIGHT_0.get().asItem()
                             && player.getOffhandItem().getItem() == PDItemsMaterials.BLACKMETAL_INGOT.get();
@@ -210,12 +213,9 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
                             && player.getOffhandItem().getItem() == PDBlocksVegetation.SHADOW_LIGHT_0.get().asItem();
             if (lightMainMetalOff || metalMainLightOff) {
                 startRepair(level, pos, player);
-                ItemStack metal = new ItemStack(PDItemsMaterials.BLACKMETAL_INGOT.get());
-                player.getInventory().clearOrCountMatchingItems(
-                        s -> metal.getItem() == s.getItem(), 1, player.inventoryMenu.getCraftSlots());
-                ItemStack light = new ItemStack(PDBlocksVegetation.SHADOW_LIGHT_0.get());
-                player.getInventory().clearOrCountMatchingItems(
-                        s -> light.getItem() == s.getItem(), 1, player.inventoryMenu.getCraftSlots());
+                // 直接减少主手/副手物品数量，而非在整个容器中搜索
+                player.getMainHandItem().shrink(1);
+                player.getOffhandItem().shrink(1);
             } else if (!player.level().isClientSide()) {
                 player.displayClientMessage(Component.literal("双手持§e黑金属§f和§e影灯§f以修复核心"), true);
             }

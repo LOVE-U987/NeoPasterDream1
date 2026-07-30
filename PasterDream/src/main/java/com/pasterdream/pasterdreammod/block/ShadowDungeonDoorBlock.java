@@ -1,6 +1,8 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
+import com.pasterdream.pasterdreammod.config.PDProcessLimitHelper;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksDungeon;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
@@ -133,7 +135,9 @@ public class ShadowDungeonDoorBlock extends Block {
                         Component.literal("需要在本层寻找暗影地牢钥匙以打开大门"), true);
             }
         } else {
-            if (player instanceof ServerPlayer sp && hasAdvancement(sp, "achievement_shadow_npc_5")) {
+            if (player instanceof ServerPlayer sp
+                    && (!PDProcessLimitHelper.shouldApplyRestriction(sp, PDCommonConfig.RESTRICTION_SHADOW_DUNGEON_DOOR)
+                    || hasAdvancement(sp, "achievement_shadow_npc_5"))) {
                 destroyDoorGroup(level, pos, false);
             } else {
                 player.displayClientMessage(Component.literal("大门紧闭不开"), true);

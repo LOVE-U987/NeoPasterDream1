@@ -67,6 +67,9 @@ public class PDEntityEvents {
         // BOSS 实体
         EntityAPI.registerAttributes(event, "aaroncos_lefthand_0");
         EntityAPI.registerAttributes(event, "aaroncos_righthand_0");
+
+        // 技能投射物/剑气
+        EntityAPI.registerAttributes(event, "terrasword_wave");
     }
 
     /**

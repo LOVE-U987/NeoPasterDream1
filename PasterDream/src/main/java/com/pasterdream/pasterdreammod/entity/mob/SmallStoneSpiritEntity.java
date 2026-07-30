@@ -198,13 +198,15 @@ public class SmallStoneSpiritEntity extends GeckoLibMobEntity {
         List<SmallStoneSpiritEntity> nearbySpirits = this.level().getEntitiesOfClass(
                 SmallStoneSpiritEntity.class, aabb, e -> e != this && e.isAlive());
 
-        for (SmallStoneSpiritEntity spirit : nearbySpirits) {
+        if (!nearbySpirits.isEmpty()) {
             // 增加附近小石灵的 size（封顶 MAX_SIZE）
-            spirit.size = Math.min(spirit.size + 0.1, MAX_SIZE);
-            // 给死亡者自身施加效果（基于附近实体的 size）
+            for (SmallStoneSpiritEntity spirit : nearbySpirits) {
+                spirit.size = Math.min(spirit.size + 0.1, MAX_SIZE);
+            }
+            // 给死亡者自身施加效果（基于自身的 size），仅施加一次
             this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 80, 6, false, false));
             this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 400, 0, false, false));
-            int healthBoostLevel = (int) (spirit.size * 10 - 1);
+            int healthBoostLevel = (int) (this.size * 10 - 1);
             if (healthBoostLevel >= 0) {
                 this.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 400,
                         Math.min(healthBoostLevel, 255), false, false));

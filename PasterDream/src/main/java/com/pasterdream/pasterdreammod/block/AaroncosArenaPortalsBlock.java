@@ -1,6 +1,8 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
+import com.pasterdream.pasterdreammod.config.PDProcessLimitHelper;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.advancements.AdvancementHolder;
@@ -190,7 +192,8 @@ public class AaroncosArenaPortalsBlock extends SlabBlock {
             return;
         }
 
-        if (!player.getAbilities().instabuild && !hasAdvancement(player, "achievement_shadow_d_0")) {
+        if (PDProcessLimitHelper.shouldApplyRestriction(player, PDCommonConfig.RESTRICTION_ARENA_PORTAL_TELEPORT)
+                && !hasAdvancement(player, "achievement_shadow_d_0")) {
             player.displayClientMessage(
                     Component.translatable("message.pasterdream.aaroncos_arena_portals.locked"), true);
             return;

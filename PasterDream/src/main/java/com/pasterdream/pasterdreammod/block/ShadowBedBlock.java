@@ -1,5 +1,7 @@
 package com.pasterdream.pasterdreammod.block;
 
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
+import com.pasterdream.pasterdreammod.config.PDProcessLimitHelper;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
@@ -147,7 +149,8 @@ public class ShadowBedBlock extends Block implements SimpleWaterloggedBlock, Ent
         boolean notInLampWorld = level.dimension() != PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY;
         if (nightOrThunder || notInLampWorld) {
             if (player instanceof ServerPlayer serverPlayer && serverPlayer.level() instanceof ServerLevel
-                    && hasAdvancement(serverPlayer, "achievement_shadow_start")) {
+                    && (!PDProcessLimitHelper.shouldApplyRestriction(serverPlayer, PDCommonConfig.RESTRICTION_SHADOW_BED_TELEPORT)
+                    || hasAdvancement(serverPlayer, "achievement_shadow_start"))) {
                 PDAttachments.addPlayerSanWithCheck(serverPlayer, -10);
                 if (!hasAdvancement(serverPlayer, "achievement_shadow_a_1")) {
                     awardAdvancement(serverPlayer, "achievement_shadow_a_1");

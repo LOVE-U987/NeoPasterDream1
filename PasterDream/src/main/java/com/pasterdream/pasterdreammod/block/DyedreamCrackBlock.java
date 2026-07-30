@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
+import com.pasterdream.pasterdreammod.config.PDProcessLimitHelper;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import net.minecraft.core.BlockPos;
@@ -162,7 +163,8 @@ public class DyedreamCrackBlock extends Block implements SimpleWaterloggedBlock 
             targetDimension = Level.OVERWORLD;
         } else {
             // 原版：主世界侧仅在已完成 achievement_a_0（读笔记习得裂隙知识）后才传送
-            if (!PDAdvancements.has(player, PDAdvancements.A_0)) {
+            if (PDProcessLimitHelper.shouldApplyRestriction(player, PDCommonConfig.RESTRICTION_CRACK_TELEPORT)
+                    && !PDAdvancements.has(player, PDAdvancements.A_0)) {
                 player.setPortalCooldown(TELEPORT_COOLDOWN);
                 return;
             }

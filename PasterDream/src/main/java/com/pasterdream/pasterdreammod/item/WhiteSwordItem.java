@@ -1,5 +1,7 @@
 package com.pasterdream.pasterdreammod.item;
 
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
+import com.pasterdream.pasterdreammod.config.PDProcessLimitHelper;
 import com.pasterdream.pasterdreammod.entity.projectile.WhiteSwordRainProjectileEntity;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
@@ -83,7 +85,8 @@ public class WhiteSwordItem extends SwordItem {
                 || !(level instanceof ServerLevel serverLevel)) {
             return;
         }
-        if (!serverPlayer.getAbilities().instabuild && !hasLightTalent(serverPlayer)) {
+        if (PDProcessLimitHelper.shouldApplyRestriction(serverPlayer, PDCommonConfig.RESTRICTION_WHITE_SWORD_SKILL)
+                && !hasLightTalent(serverPlayer)) {
             return;
         }
         // 融梦能量消耗已剥离至附属 mod

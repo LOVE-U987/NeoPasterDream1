@@ -1,5 +1,7 @@
 package com.pasterdream.pasterdreammod.item;
 
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
+import com.pasterdream.pasterdreammod.config.PDProcessLimitHelper;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.entity.projectile.ShadowVortexBookProjectileEntity;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
@@ -130,7 +132,8 @@ public class ShadowVortexBookItem extends Item {
             AbstractChargeWandItem.consumeAmmo(level, player, ammo);
         }
         // 原版 ShadowVortexBookPr0Procedure：天赋检定与消耗/反噬
-        if (hasShadowTalent(player)) {
+        if (!PDProcessLimitHelper.shouldApplyRestriction(player, PDCommonConfig.RESTRICTION_SHADOW_VORTEX_SAFE_CAST)
+                || hasShadowTalent(player)) {
             // 融梦能量消耗已剥离至附属 mod
             PDAttachments.addPlayerSanWithCheck(player, -0.05);
             AttributeInstance magicCd = player.getAttribute(PDAttributes.MAGICCD);

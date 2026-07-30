@@ -1,5 +1,7 @@
 package com.pasterdream.pasterdreammod.item;
 
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
+import com.pasterdream.pasterdreammod.config.PDProcessLimitHelper;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.advancements.AdvancementHolder;
@@ -62,7 +64,8 @@ public class DreamjuiceItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         ItemStack result = super.finishUsingItem(stack, level, entity);
         if (level instanceof ServerLevel serverLevel && entity instanceof ServerPlayer player) {
-            if (hasPrerequisite(player)) {
+            if (!PDProcessLimitHelper.shouldApplyRestriction(player, PDCommonConfig.RESTRICTION_DREAMJUICE_EFFECT)
+                    || hasPrerequisite(player)) {
                 player.addEffect(new MobEffectInstance(PDEffects.DREAMWISH_BUFF.holder(), 1800, 0));
                 serverLevel.sendParticles((SimpleParticleType) PDParticles.DYEDREAM_0_PARTICLE.particleType(),
                         player.getX(), player.getY() + 0.5, player.getZ(), 64, 1, 1, 1, 0.1);
