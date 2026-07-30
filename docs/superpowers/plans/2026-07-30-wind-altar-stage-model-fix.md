@@ -2,7 +2,7 @@
 
 > **类别**：计划 · 缺陷修复  
 > **日期**：2026-07-30  
-> **状态**：待实施（本文件只规划，不改业务代码）  
+> **状态**：**已实施**（2026-07-30）  
 > **关联开放项**：[`功能状态.md`](../../功能状态.md) §3.2「风之旅途 P0.5 剩余手测：祭坛手感」  
 > **玩法参考**：[`archive/游戏流程分析/第三梦境.md`](../../archive/游戏流程分析/第三梦境.md)  
 > **VERIFY**：`wind-journey` / `main-flow`（目前只断言方块阶段与召唤，**不**断言客户端 mesh）
@@ -250,3 +250,32 @@ Neo Defaulted 则解析为分阶段贴图路径；因文件内容相同，**视�
 ---
 
 *排查：主代理对照原版 procedure/Model + GeckoLib 4.8.4 源码缓存键；Explore 子代理并行扫目录。*
+
+---
+
+## 11. 实施记录（2026-07-30）
+
+**分支判定（代码侧，等价 T0）**
+
+| 检查 | 结果 |
+|:---|:---|
+| geo mesh 0..4 差异 | 有（bones/cubes 递增）；`geo/` 与 `geo/block/` 字节一致 |
+| 贴图 | `_0.._4` 与主图 md5 相同 → **还原向预期如此**（阶段差在 mesh） |
+| BER 注册 | 每 stage 独立 `W4GeoBlockRenderer("wind_knight_spawnblock_"+i)` |
+| 静态 CODEC | **确认缺陷**：`simpleCodec(p -> new ...(0,p))` |
+| 交互双端 | `useWithoutItem` 无 client early-return；`ServerScheduler` 为 JVM 静态队列 → 集成端有风险 |
+
+**已改**
+
+1. **T1** `WindKnightSpawnblockBlock`  
+   - 每实例 `MapCodec` 闭包捕获 stage；`registerDefaultState(ANIMATION=0)`  
+   - `newBlockEntity` 经 `stageOf(state.getBlock())` 解析 BE type（防字段写坏）  
+   - 交互 **仅服务端** 推进/扣物/`ServerScheduler`；各 stage 分支 `return` 防连锁  
+2. **T2** `PDWindJourneyVerifyHooks`：并排 setblock 0..4 + 交互每步后断言 `be.getType() == WIND_KNIGHT_SPAWNBLOCKS.get(n)`；召唤后回 stage0 同检  
+3. **T4** 十份 geo（flat + `geo/block/`）`identifier` → `geometry.wind_knight_spawnblock_{n}`  
+4. **T3** 未改 BER（资源路径已正确；贴图策略保持单图内容）
+
+**构建**：`compileJava` SUCCESS  
+
+**手测仍建议**：并排/交互 mesh 观感、重进世界（§7.1/2/5）。
+

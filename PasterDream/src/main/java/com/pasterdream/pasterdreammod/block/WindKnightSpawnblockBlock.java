@@ -41,7 +41,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Map.Entry;
 import net.minecraft.world.level.block.state.properties.Property;
 
@@ -58,14 +57,17 @@ import net.minecraft.world.level.block.state.properties.Property;
  */
 public class WindKnightSpawnblockBlock extends BaseEntityBlock {
 
-    public static final MapCodec<WindKnightSpawnblockBlock> CODEC =
-            simpleCodec(p -> new WindKnightSpawnblockBlock(0, p));
-
     /** MCreator 动画状态属性（0..1） */
     public static final IntegerProperty ANIMATION = IntegerProperty.create("animation", 0, 1);
 
     /** 阶段编号（0..4） */
     private final int stage;
+
+    /**
+     * 每注册实例各自 codec：闭包捕获本 stage。
+     * 禁止 static simpleCodec(…0…)——反序列化会造出 stage=0 实例，newBlockEntity 绑错 BE type。
+     */
+    private final MapCodec<WindKnightSpawnblockBlock> codec;
 
     /**
      * 构造风之骑士唤醒台
@@ -76,11 +78,43 @@ public class WindKnightSpawnblockBlock extends BaseEntityBlock {
     public WindKnightSpawnblockBlock(int stage, Properties properties) {
         super(properties);
         this.stage = stage;
+        this.codec = simpleCodec(p -> new WindKnightSpawnblockBlock(stage, p));
+        this.registerDefaultState(this.stateDefinition.any().setValue(ANIMATION, 0));
     }
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+        return this.codec;
+    }
+
+    /** 注册阶段 0..4 */
+    public int getStage() {
+        return this.stage;
+    }
+
+    /**
+     * 按方块身份解析阶段（防御 codec/拷贝路径写坏 stage 字段）。
+     */
+    public static int stageOf(Block block) {
+        if (block == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0.get()) {
+            return 0;
+        }
+        if (block == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_1.get()) {
+            return 1;
+        }
+        if (block == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_2.get()) {
+            return 2;
+        }
+        if (block == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_3.get()) {
+            return 3;
+        }
+        if (block == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get()) {
+            return 4;
+        }
+        if (block instanceof WindKnightSpawnblockBlock wind) {
+            return wind.stage;
+        }
+        return 0;
     }
 
     @Override
@@ -125,8 +159,9 @@ public class WindKnightSpawnblockBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        int resolved = stageOf(state.getBlock());
         return new W4GeoDataBlockEntity(
-                PDBlockEntitiesFurniture.WIND_KNIGHT_SPAWNBLOCKS.get(stage).get(), pos, state);
+                PDBlockEntitiesFurniture.WIND_KNIGHT_SPAWNBLOCKS.get(resolved).get(), pos, state);
     }
 
     // ==================== 右键交互（原 WindKnightSpawnblockPr0Procedure） ====================
@@ -134,12 +169,17 @@ public class WindKnightSpawnblockBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hitResult) {
+        // 客户端只回报成功；换块 / 扣物 / ServerScheduler 仅服务端。
+        // ServerScheduler 为 JVM 静态队列，集成端客户端若 schedule 会把 ClientLevel 任务塞进服务端 tick。
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
         interact(level, pos, player);
         return InteractionResult.SUCCESS;
     }
 
     /**
-     * 阶段推进交互（忠实原 procedure，逐阶段判断当前方块）
+     * 阶段推进交互（忠实原 procedure，逐阶段判断当前方块；仅服务端）
      *
      * @param level  世界
      * @param pos    位置
@@ -151,9 +191,7 @@ public class WindKnightSpawnblockBlock extends BaseEntityBlock {
         if (current.getBlock() == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0.get()) {
             if (player.getMainHandItem().getItem() == PDItemsMaterials.WINDRUNNER_CRYSTAL.get()) {
                 replaceKeepingProperties(level, pos, PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_1.get());
-                if (!level.isClientSide()) {
-                    level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_PLACE, SoundSource.BLOCKS, 1, 1);
-                }
+                level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_PLACE, SoundSource.BLOCKS, 1, 1);
                 if (level instanceof ServerLevel serverLevel) {
                     serverLevel.sendParticles(ParticleTypes.SCRAPE,
                             pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 8, 0.5, 0.5, 0.5, 0.1);
@@ -162,22 +200,26 @@ public class WindKnightSpawnblockBlock extends BaseEntityBlock {
             } else {
                 message(player, "需要嵌入 [风行者水晶] ");
             }
+            return;
         }
 
-        if (level.getBlockState(pos).getBlock() == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_1.get()) {
+        if (current.getBlock() == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_1.get()) {
             advanceWithIron(level, pos, player, PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_2.get(), 12, 0.7,
                     "需要 [凝风铁锭] 组装躯干");
+            return;
         }
-        if (level.getBlockState(pos).getBlock() == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_2.get()) {
+        if (current.getBlock() == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_2.get()) {
             advanceWithIron(level, pos, player, PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_3.get(), 20, 0.9,
                     "需要 [凝风铁锭] 组装手臂");
+            return;
         }
-        if (level.getBlockState(pos).getBlock() == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_3.get()) {
+        if (current.getBlock() == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_3.get()) {
             advanceWithIron(level, pos, player, PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get(), 24, 0.9,
                     "需要 [凝风铁锭] 组装头颅");
+            return;
         }
 
-        if (level.getBlockState(pos).getBlock() == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get()) {
+        if (current.getBlock() == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get()) {
             if (player.getMainHandItem().getItem() == PDItemsFunctional.LIGHTNING_SPELL.get()) {
                 player.getMainHandItem().shrink(1);
                 if (level instanceof ServerLevel serverLevel) {
@@ -199,8 +241,6 @@ public class WindKnightSpawnblockBlock extends BaseEntityBlock {
                                 pos.getX() + 6.5, pos.getY() + 8, pos.getZ() - 6.5);
                         spawnAt(serverLevel, PDEntities.THUNDERCLOUD.get(),
                                 pos.getX() - 6.5, pos.getY() + 8, pos.getZ() - 6.5);
-                    }
-                    if (!level.isClientSide()) {
                         level.playSound(null, pos, PDSounds.SHADOW_DOOR.get(), SoundSource.MASTER, 1, 1);
                     }
                 });
@@ -210,13 +250,11 @@ public class WindKnightSpawnblockBlock extends BaseEntityBlock {
         }
     }
 
-    /** 用凝风铁锭推进一个阶段（音效 + 粒子 + 1 tick 后替换方块） */
+    /** 用凝风铁锭推进一个阶段（音效 + 粒子 + 1 tick 后替换方块；仅服务端） */
     private static void advanceWithIron(Level level, BlockPos pos, Player player,
                                         Block next, int particleCount, double spread, String failMessage) {
         if (player.getMainHandItem().getItem() == PDItemsMaterials.WIND_IRON_INGOT.get()) {
-            if (!level.isClientSide()) {
-                level.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1, 1);
-            }
+            level.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1, 1);
             if (level instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(ParticleTypes.SCRAPE,
                         pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5,
