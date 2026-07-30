@@ -4,10 +4,8 @@ import com.pasterdream.pasterdreammod.api.attachment.PDPlayerAttachments;
 import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyConfigRegistry;
 import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyData;
 import com.pasterdream.pasterdreammod.api.network.MeltDreamEnergyPayload;
-import com.pasterdream.pasterdreammod.api.network.SanDataPayload;
-import com.pasterdream.pasterdreammod.api.san.SanConfigRegistry;
 import com.pasterdream.pasterdreammod.api.san.SanData;
-import com.pasterdream.pasterdreammod.registry.PDGameRules;
+import com.pasterdream.pasterdreammod.api.san.SanHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -44,7 +42,7 @@ public class PDAttachments {
      * @return San 数据
      */
     public static SanData getSan(Player player) {
-        return player.getData(PLAYER_SAN);
+        return SanHelper.getSan(player);
     }
 
     /**
@@ -67,10 +65,7 @@ public class PDAttachments {
      * @return 理智系统是否启用
      */
     public static boolean isSanCheckEnabled(Player player) {
-        if (player instanceof ServerPlayer sp) {
-            return sp.serverLevel().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM);
-        }
-        return player.getData(PLAYER_SAN).sanCheck();
+        return SanHelper.isSanCheckEnabled(player);
     }
 
     // ==================== San 修改（带游戏规则检查，对应原版公开 API） ====================
@@ -82,11 +77,7 @@ public class PDAttachments {
      * @param san    新理智值
      */
     public static void setPlayerSanWithCheck(Player player, double san) {
-        if (player instanceof ServerPlayer sp
-                && sp.level().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM)
-                && Boolean.TRUE.equals(SanConfigRegistry.get().enabled().get())) {
-            setPlayerSan(sp, san);
-        }
+        SanHelper.setPlayerSanWithCheck(player, san);
     }
 
     /**
@@ -96,23 +87,7 @@ public class PDAttachments {
      * @param san    变化量（可为负）
      */
     public static void addPlayerSanWithCheck(Player player, double san) {
-        if (player instanceof ServerPlayer sp
-                && sp.level().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM)
-                && Boolean.TRUE.equals(SanConfigRegistry.get().enabled().get())) {
-            addPlayerSan(sp, san);
-        }
-    }
-
-    /** 直接设置 San 值并同步（原版为 private，仅供 WithCheck 入口调用） */
-    private static void setPlayerSan(ServerPlayer sp, double san) {
-        sp.setData(PLAYER_SAN, sp.getData(PLAYER_SAN).withSanValue(san));
-        syncSanValueOnly(sp);
-    }
-
-    /** 直接增减 San 值并同步（原版为 private，仅供 WithCheck 入口调用） */
-    private static void addPlayerSan(ServerPlayer sp, double san) {
-        sp.setData(PLAYER_SAN, sp.getData(PLAYER_SAN).addSanValue(san));
-        syncSanValueOnly(sp);
+        SanHelper.addPlayerSanWithCheck(player, san);
     }
 
     // ==================== 融梦能量修改（对应原版公开 API） ====================
@@ -210,10 +185,7 @@ public class PDAttachments {
      * @param sp 目标玩家
      */
     public static void syncSan(ServerPlayer sp) {
-        boolean check = sp.serverLevel().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM);
-        SanData data = sp.getData(PLAYER_SAN).withSanCheck(check);
-        sp.setData(PLAYER_SAN, data);
-        PacketDistributor.sendToPlayer(sp, SanDataPayload.full(data.sanValue(), data.sanCheck()));
+        SanHelper.syncSan(sp);
     }
 
     /**
@@ -222,7 +194,7 @@ public class PDAttachments {
      * @param sp 目标玩家
      */
     public static void syncSanValueOnly(ServerPlayer sp) {
-        PacketDistributor.sendToPlayer(sp, SanDataPayload.valueOnly(sp.getData(PLAYER_SAN).sanValue()));
+        SanHelper.syncSanValueOnly(sp);
     }
 
     /**
@@ -231,8 +203,7 @@ public class PDAttachments {
      * @param sp 目标玩家
      */
     public static void syncSanCheckOnly(ServerPlayer sp) {
-        boolean check = sp.serverLevel().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM);
-        PacketDistributor.sendToPlayer(sp, SanDataPayload.checkOnly(check));
+        SanHelper.syncSanCheckOnly(sp);
     }
 
     /**

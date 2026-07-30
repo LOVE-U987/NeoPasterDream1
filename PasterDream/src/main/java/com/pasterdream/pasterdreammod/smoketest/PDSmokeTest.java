@@ -222,7 +222,7 @@ public final class PDSmokeTest {
                 check(consumed, "ingredient slots 0-3 consumed after craft");
                 List<ItemEntity> drops = level.getEntitiesOfClass(ItemEntity.class,
                         new AABB(cauldronPos).inflate(4),
-                        e -> e.getItem().is(item("pasterdream:lightning_spell")));
+                        e -> e.getItem().is(item("pasterdreamspells:lightning_spell")));
                 check(!drops.isEmpty(), "lightning_spell item entity ejected above cauldron");
                 check(be.getItemHandler().getStackInSlot(6).isEmpty(), "result slot 6 cleared after ejection");
             }

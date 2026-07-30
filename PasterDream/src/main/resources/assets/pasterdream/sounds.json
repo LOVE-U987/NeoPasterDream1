@@ -460,42 +460,6 @@
       "pasterdream:skill2"
     ]
   },
-  "lightning_spell": {
-    "subtitle": "subtitle.pasterdream.lightning_spell",
-    "sounds": [
-      {
-        "name": "pasterdream:lightning_spell",
-        "stream": false
-      }
-    ]
-  },
-  "fury_spell_0": {
-    "subtitle": "subtitle.pasterdream.fury_spell_0",
-    "sounds": [
-      {
-        "name": "pasterdream:fury_spell_0",
-        "stream": false
-      }
-    ]
-  },
-  "healing_spell": {
-    "subtitle": "subtitle.pasterdream.healing_spell",
-    "sounds": [
-      {
-        "name": "pasterdream:healing_spell",
-        "stream": false
-      }
-    ]
-  },
-  "ice_spell": {
-    "subtitle": "subtitle.pasterdream.ice_spell",
-    "sounds": [
-      {
-        "name": "pasterdream:ice_spell",
-        "stream": false
-      }
-    ]
-  },
   "breeze_wind": {
     "subtitle": "subtitle.pasterdream.breeze_wind",
     "category": "weather",
@@ -626,16 +590,6 @@
       }
     ]
   },
-  "fury_spell": {
-    "subtitle": "subtitle.pasterdream.fury_spell",
-    "category": "neutral",
-    "sounds": [
-      {
-        "name": "pasterdream:fury_spell",
-        "stream": false
-      }
-    ]
-  },
   "gale_wind": {
     "subtitle": "subtitle.pasterdream.gale_wind",
     "category": "weather",
@@ -711,16 +665,6 @@
     "sounds": [
       {
         "name": "pasterdream:pliers0",
-        "stream": false
-      }
-    ]
-  },
-  "poison_spell": {
-    "subtitle": "subtitle.pasterdream.poison_spell",
-    "category": "neutral",
-    "sounds": [
-      {
-        "name": "pasterdream:poison_spell",
         "stream": false
       }
     ]
