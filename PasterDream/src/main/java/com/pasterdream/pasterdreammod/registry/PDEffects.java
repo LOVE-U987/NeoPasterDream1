@@ -1122,7 +1122,14 @@ public class PDEffects {
 
     // ---------- fondillusion_buff（FondillusionBuffPr0Procedure） ----------
 
-    /** 迷梦 tick：主世界高空云雾浓度 + 达成条件后传送风之旅途 */
+    /**
+     * 迷梦 tick：主世界高空云雾浓度 + 达成条件后传送风之旅途。
+     * <p>
+     * 落点 XY 与原版一致；Y 在保留主世界高度的前提下 clamp 到目标维
+     * {@code [minBuildHeight, maxBuildHeight - 2]}。风维 datapack
+     * {@code height=256 / min_y=0}，主世界进维门槛 Y≥306 会超出建造顶，
+     * 原版同写 {@code teleportTo(next, x,y,z)}，Neo 补 clamp 避免顶天/越界。
+     */
     private static void fondillusionTick(LivingEntity entity) {
         if (entity.level().isClientSide || !(entity instanceof Player)) {
             return;
@@ -1136,10 +1143,11 @@ public class PDEffects {
                     ServerLevel windJourney = player.server.getLevel(WIND_JOURNEY_WORLD);
                     // 防御性：维度未加载时 getLevel 为 null，静默跳过
                     if (windJourney != null && player.level().dimension() != WIND_JOURNEY_WORLD) {
+                        double destY = clampDimensionY(windJourney, player.getY());
                         // 对齐原版 FondillusionBuffPr0 / 灯影床：WIN_GAME + teleport + 能力/效果 + 1032
                         player.connection.send(new ClientboundGameEventPacket(
                                 ClientboundGameEventPacket.WIN_GAME, 0));
-                        player.teleportTo(windJourney, player.getX(), player.getY(), player.getZ(),
+                        player.teleportTo(windJourney, player.getX(), destY, player.getZ(),
                                 player.getYRot(), player.getXRot());
                         player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
                         for (MobEffectInstance effect : player.getActiveEffects()) {
@@ -1158,6 +1166,23 @@ public class PDEffects {
                 || entity.level().dimension().equals(WIND_JOURNEY_WORLD))) {
             entity.getPersistentData().putDouble("cloudmist_percent", 0);
         }
+    }
+
+    /**
+     * 将落点 Y 夹到维度可站立范围（脚下至少留 1 格建造顶余量）。
+     *
+     * @param level 目标维
+     * @param y     期望高度（通常为主世界进维时的 Y）
+     * @return clamp 后的 Y
+     */
+    private static double clampDimensionY(ServerLevel level, double y) {
+        double min = level.getMinBuildHeight();
+        // maxBuildHeight 为 exclusive 顶；减 2 避免头/眼贴顶或越界
+        double max = level.getMaxBuildHeight() - 2.0D;
+        if (max < min) {
+            return min;
+        }
+        return Mth.clamp(y, min, max);
     }
 
     /** 判断玩家指定成就是否已完成（成就未注册时视为未完成） */

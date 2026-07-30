@@ -137,6 +137,9 @@ IDEA / Fleet：根目录 [`.run/`](.run/) 已写入同名运行配置，打开�
 | `PD VERIFY wind-lake` | 水色湖专项（非超平坦+开建筑），测完退出（不在 all） |
 | `PD VERIFY twilight-lantern` | 暮影之笼专项，测完退出（不在 all） |
 | `PD VERIFY second-dream` | 第二梦境专项，测完退出（不在 all） |
+| `PD VERIFY dyedream` | 染梦专项（雕像仪式/莲花等），测完退出（不在 all） |
+| `PD VERIFY main-flow` | 主干全链路（默认 dark），测完退出（不在 all） |
+| `PD VERIFY main-flow (light)` | 主干全链路 light 抉择，测完退出 |
 | `PD VERIFY spells` | 仅法术，测完退出 |
 | `PD VERIFY behavior` | core+dimensions+spells+content，测完退出 |
 | `PD VERIFY gallery` | 方块+实体展台，KEEP_OPEN |

@@ -90,7 +90,11 @@ public class TwilightLanternBlock extends BaseEntityBlock {
      */
     public TwilightLanternBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+        // ANIMATION 默认 0 → W4Geo  idle 循环 "0"；动画资源仅含 "0"，
+        // 原版/本模均无 setValue(1) 触发位（procedure 控制器保留兼容）
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(ANIMATION, 0)
+                .setValue(FACING, Direction.NORTH));
     }
 
     @Override
