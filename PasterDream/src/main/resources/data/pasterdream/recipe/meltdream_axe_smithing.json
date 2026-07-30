@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "pasterdream:dyedream_upgrade"
+  },
+  "base": {
+    "item": "pasterdream:meltdream_crystal_0"
+  },
+  "addition": {
+    "item": "pasterdream:dyedream_axe"
+  },
+  "result": {
+    "id": "pasterdream:meltdream_axe",
+    "count": 1
+  }
+}

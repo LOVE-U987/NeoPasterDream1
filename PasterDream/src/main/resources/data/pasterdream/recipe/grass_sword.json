@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
+  "category": "misc",
   "pattern": [
     " ab",
     "aca",
@@ -21,7 +21,7 @@
     }
   },
   "result": {
-    "id": "pasterdream:grass_sword",
-    "count": 1
+    "count": 1,
+    "id": "pasterdream:grass_sword"
   }
 }

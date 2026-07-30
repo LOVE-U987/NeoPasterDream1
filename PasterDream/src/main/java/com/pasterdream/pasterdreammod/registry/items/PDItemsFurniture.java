@@ -134,9 +134,6 @@ public class PDItemsFurniture {
     /** 阴影火盆（GeckoLib 3D） */
     public static final DeferredItem<BlockItem> SHADOW_BRAZIER = PDItems.ITEMS.register("shadow_brazier",
             () -> new W4GeoDisplayItem(PDBlocksFurniture.SHADOW_BRAZIER.get(), new Item.Properties()));
-    /** 暗影地牢传送门（GeckoLib 3D） */
-    public static final DeferredItem<BlockItem> SHADOW_DUNGEON_PORTAL = PDItems.ITEMS.register("shadow_dungeon_portal",
-            () -> new W4GeoDisplayItem(PDBlocksFurniture.SHADOW_DUNGEON_PORTAL.get(), new Item.Properties()));
     /** 阴影陷阱（GeckoLib 3D） */
     public static final DeferredItem<BlockItem> SHADOW_TRAP_0 = PDItems.ITEMS.register("shadow_trap_0",
             () -> new W4GeoDisplayItem(PDBlocksFurniture.SHADOW_TRAP_0.get(), new Item.Properties()));

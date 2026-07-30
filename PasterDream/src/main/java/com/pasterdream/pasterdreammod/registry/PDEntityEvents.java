@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -259,10 +260,13 @@ public class PDEntityEvents {
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         // 孢子实体：地面生成（飞行实体，初始生成在地面）
+        // 原模组逻辑：方块下方为 ANIMALS_SPAWNABLE_ON + 亮度 > 8
         event.register(PDEntities.SPORE_ENTITY.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Mob::checkMobSpawnRules,
+                (entityType, world, reason, pos, random) ->
+                        world.getBlockState(pos.below()).is(BlockTags.ANIMALS_SPAWNABLE_ON)
+                                && world.getRawBrightness(pos, 0) > 8,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         // ==================== BOSS 实体 ====================

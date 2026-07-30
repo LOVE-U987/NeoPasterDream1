@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "pasterdream:dyedream_bud_nugget"
+  },
+  "base": {
+    "item": "pasterdream:titanium_shovel"
+  },
+  "addition": {
+    "item": "pasterdream:dyedream_upgrade"
+  },
+  "result": {
+    "id": "pasterdream:dyedream_shovel",
+    "count": 1
+  }
+}

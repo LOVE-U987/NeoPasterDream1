@@ -6,13 +6,14 @@ import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDGameRules;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
-import com.pasterdream.pasterdreammod.registry.PDSounds;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.registry.PDSounds;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -61,13 +62,6 @@ public final class WindJourneyEvents {
             return;
         }
         player.displayClientMessage(Component.literal("§4本主题梦境尚未完工"), false);
-        player.serverLevel().playSound(
-                null,
-                player.blockPosition(),
-                PDSounds.WIND_JOURNEY_MUSIC.get(),
-                SoundSource.MUSIC,
-                1.0F,
-                1.0F);
     }
 
     /**
@@ -159,7 +153,26 @@ public final class WindJourneyEvents {
     }
 
     /**
-     * 玩家 tick：无防风时按朝向施加顺风 / 逆风（Pr1 + Pr2）。
+     * 风维虚空保护：玩家掉出世界底部时传送回主世界上空。
+     */
+    private static void voidFallbackToOverworld(ServerPlayer player) {
+        ServerLevel overworld = player.server.getLevel(Level.OVERWORLD);
+        if (overworld == null) return;
+        double tx, tz;
+        BlockPos respawn = player.getRespawnPosition();
+        if (player.getRespawnDimension().equals(Level.OVERWORLD) && respawn != null) {
+            tx = respawn.getX();
+            tz = respawn.getZ();
+        } else {
+            BlockPos spawn = overworld.getSharedSpawnPos();
+            tx = spawn.getX();
+            tz = spawn.getZ();
+        }
+        player.teleportTo(overworld, tx, 304, tz, player.getYRot(), player.getXRot());
+    }
+
+    /**
+     * 玩家 tick：风维虚空保护 + 无防风时按朝向施加顺风 / 逆风（Pr1 + Pr2）。
      *
      * @param event 玩家 tick 后
      */
@@ -169,6 +182,11 @@ public final class WindJourneyEvents {
             return;
         }
         if (!PDDimensions.isWindJourneyWorld(sp.level())) {
+            return;
+        }
+        // 虚空保护：掉到世界底部以下 → 传回主世界上空
+        if (sp.getY() < -10) {
+            voidFallbackToOverworld(sp);
             return;
         }
         int interval = Math.max(1, PDCommonConfig.PLAYER_TOTAL_TICK_UPDATE.get());

@@ -2,8 +2,10 @@ package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.block.entity.TheEndlessBookOfDreamSeekersBlockEntity;
+import com.pasterdream.pasterdreammod.item.EndlessBookAnimationHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -94,16 +96,50 @@ public class TheEndlessBookOfDreamSeekersBlock extends BaseEntityBlock {
     // 说明：本方块无逐 tick 逻辑（GeckoLib 动画由渲染器自行驱动），
     // 因此不覆写 getTicker（默认返回 null，即不注册 ticker），避免注册空 ticker 浪费开销
 
+    /**
+     * 非创造模式使用后的冷却刻数（20 tick = 1 秒）
+     */
+    private static final int COOLDOWN_TICKS = 20;
+
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (level.isClientSide()) return InteractionResult.SUCCESS;
 
         BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof TheEndlessBookOfDreamSeekersBlockEntity book) {
-            if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.openMenu(book, pos);
-            }
+
+        // ======== 触发 GeckoLib 使用动画 ========
+        if (be instanceof TheEndlessBookOfDreamSeekersBlockEntity bookBe) {
+            bookBe.triggerAnim("use_controller", "use");
         }
+
+        if (player.getAbilities().instabuild) {
+            // ======== 创造模式：打开原版 GUI（展示槽+导入槽+导入按钮） ========
+            if (be instanceof TheEndlessBookOfDreamSeekersBlockEntity book) {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.openMenu(book, pos);
+                }
+            }
+            return InteractionResult.CONSUME;
+        }
+
+        // ======== 非创造模式：冷却 + 动画 + 给予书籍 ========
+        ServerLevel serverLevel = (ServerLevel) level;
+        ServerPlayer serverPlayer = (ServerPlayer) player;
+
+        // 应用冷却，防止高频触发
+        player.getCooldowns().addCooldown(player.getMainHandItem().getItem(), COOLDOWN_TICKS);
+
+        // 读取方块实体展示槽（制作副本，不清除原始物品）
+        ItemStack blockBook = ItemStack.EMPTY;
+        if (be instanceof TheEndlessBookOfDreamSeekersBlockEntity book) {
+            blockBook = book.getItemHandler()
+                    .getStackInSlot(TheEndlessBookOfDreamSeekersBlockEntity.SLOT_DISPLAY)
+                    .copy();
+        }
+
+        // 播放动画（方块位置为中心），优先给予方块实体存储的书籍，无则战利品表
+        EndlessBookAnimationHelper.playAnimationAndGiveBook(serverLevel, pos, serverPlayer, blockBook);
+
         return InteractionResult.CONSUME;
     }
 

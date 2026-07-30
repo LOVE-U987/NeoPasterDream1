@@ -1,6 +1,6 @@
 package com.pasterdream.pasterdreammod.item;
-import com.pasterdream.pasterdreammod.api.item.base.AbstractGeoDisplayItem;
 
+import com.pasterdream.pasterdreammod.api.item.base.AbstractGeoDisplayItem;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.world.item.Item;
 import software.bernie.geckolib.animation.AnimationState;
@@ -8,7 +8,10 @@ import software.bernie.geckolib.animation.PlayState;
 
 /**
  * 寻梦者的永恒书卷显示物品
- * 使用 GeoItem 实现 3D 物品手持渲染（无 GeckoLib 动画的简化版本）
+ * <p>
+ * 使用 GeoItem 实现 3D 物品手持渲染。
+ * 右键交互逻辑由对应方块 {@code TheEndlessBookOfDreamSeekersBlock} 的
+ * {@code useWithoutItem} 处理。
  */
 public class TheEndlessBookOfDreamSeekersDisplayItem extends AbstractGeoDisplayItem {
 

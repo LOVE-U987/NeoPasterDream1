@@ -111,16 +111,25 @@ public class TheEndlessBookOfDreamSeekersBlockEntity extends BlockEntity impleme
     // ==================== GeckoLib 动画 ====================
 
     /**
-     * 书卷动画谓词 - 持续循环播放动画
+     * 主控制器：循环播放在待机动画 "0"。
      */
-    private PlayState predicate(AnimationState<TheEndlessBookOfDreamSeekersBlockEntity> state) {
+    private PlayState idlePredicate(AnimationState<TheEndlessBookOfDreamSeekersBlockEntity> state) {
         state.getController().setAnimation(RawAnimation.begin().thenLoop("0"));
+        return PlayState.CONTINUE;
+    }
+
+    /**
+     * 使用动画控制器：由 triggerAnim 触发一次动画 "1"，不循环。
+     */
+    private PlayState usePredicate(AnimationState<TheEndlessBookOfDreamSeekersBlockEntity> state) {
         return PlayState.CONTINUE;
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "controller", 0, this::predicate));
+        controllers.add(new AnimationController<>(this, "idle_controller", 0, this::idlePredicate));
+        controllers.add(new AnimationController<>(this, "use_controller", 0, this::usePredicate)
+                .triggerableAnim("use", RawAnimation.begin().thenPlay("1")));
     }
 
     @Override

@@ -137,7 +137,6 @@ public class PDCreativeTabsShadow {
                         output.accept(PDItems.TRUE_SHADOW_BED.get());
                         output.accept(PDItems.SHADOW_DESK.get());
                         output.accept(PDItems.SHADOW_BRAZIER.get());
-                        output.accept(PDItems.SHADOW_DUNGEON_PORTAL.get());
                         output.accept(PDItems.BROKEN_SHADOW_DUNGEON_PROTAL.get());
                         output.accept(PDItems.SHADOW_TRAP_0.get());
                         output.accept(PDItems.TWILIGHT_LANTERN.get());

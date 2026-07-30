@@ -1,8 +1,10 @@
 package com.pasterdream.pasterdreammod.client;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.client.renderer.block.ShadowDungeonPortalGeoModel;
 import com.pasterdream.pasterdreammod.client.renderer.block.W4GeoBlockRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.W4GeoDisplayItemRenderer;
+import software.bernie.geckolib.renderer.GeoBlockRenderer;
 import com.pasterdream.pasterdreammod.client.screen.PicnicBasketScreen;
 import com.pasterdream.pasterdreammod.client.screen.ShadowDeskScreen;
 import com.pasterdream.pasterdreammod.client.screen.WindmoorCrateScreen;
@@ -55,16 +57,15 @@ public class PDClientFurniture {
                 context -> new W4GeoBlockRenderer("picnic_basket"));
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.BIRDS_NEST.get(),
                 context -> new W4GeoBlockRenderer("birds_nest"));
+        // 使用自定义 GeoModel 根据 animation 属性切换破碎/修复纹理与模型
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.BROKEN_SHADOW_DUNGEON_PROTAL.get(),
-                context -> new W4GeoBlockRenderer("broken_shadow_dungeon_protal"));
+                context -> new GeoBlockRenderer<>(new ShadowDungeonPortalGeoModel()));
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.DESERT_HERO_TOMB.get(),
                 context -> new W4GeoBlockRenderer("desert_hero_tomb"));
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.GUARD_CRYSTAL.get(),
                 context -> new W4GeoBlockRenderer("guard_crystal"));
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.SHADOW_BRAZIER.get(),
                 context -> new W4GeoBlockRenderer("shadow_brazier"));
-        event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.SHADOW_DUNGEON_PORTAL.get(),
-                context -> new W4GeoBlockRenderer("shadow_dungeon_portal"));
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.SHADOW_TRAP_0.get(),
                 context -> new W4GeoBlockRenderer("shadow_trap_0"));
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.TWILIGHT_LANTERN.get(),
@@ -111,7 +112,6 @@ public class PDClientFurniture {
         registerDisplayItem(event, PDItemsFurniture.class, "desert_hero_tomb", PDItemsFurniture.DESERT_HERO_TOMB.get());
         registerDisplayItem(event, PDItemsFurniture.class, "guard_crystal", PDItemsFurniture.GUARD_CRYSTAL.get());
         registerDisplayItem(event, PDItemsFurniture.class, "shadow_brazier", PDItemsFurniture.SHADOW_BRAZIER.get());
-        registerDisplayItem(event, PDItemsFurniture.class, "shadow_dungeon_portal", PDItemsFurniture.SHADOW_DUNGEON_PORTAL.get());
         registerDisplayItem(event, PDItemsFurniture.class, "shadow_trap_0", PDItemsFurniture.SHADOW_TRAP_0.get());
         registerDisplayItem(event, PDItemsFurniture.class, "twilight_lantern", PDItemsFurniture.TWILIGHT_LANTERN.get());
         PDDebugLogger.mainDebug("[PDClientFurniture] W4 显示物品客户端扩展注册完成");

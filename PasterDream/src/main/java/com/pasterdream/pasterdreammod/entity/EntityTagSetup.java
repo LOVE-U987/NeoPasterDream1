@@ -41,17 +41,30 @@ public final class EntityTagSetup {
     /**
      * 绑定灯影怪物标签
      * <p>
-     * 包含暗影系列敌对生物：暗影魔像、暗影幽灵、暗影尖啸幽灵、暗影之手、暗影调和图腾。
-     * 这些怪物在相互攻击时不会造成伤害，避免 AoE 或误伤导致内耗。
+     * 包含所有暗影系列敌对生物与恐怖尖喙系列，这些怪物在相互攻击时不会造成伤害，避免 AoE 或误伤导致内耗。
+     * <ul>
+     *   <li>暗影魔像、暗影幽灵、暗影尖啸幽灵、暗影之手、暗影调和图腾</li>
+     *   <li>恐怖尖喙、疯狂恐怖尖喙、虚弱恐怖尖喙（尖喙系列变种）</li>
+     *   <li>亚伦柯斯之手（左/右 BOSS）—— 其内置 {@code hurtNearbyLivingWithConfusion()} 已使用
+     *       {@code pasterdream:shadow_mob} 标签排除同系实体，此处统一加标签以便全局友伤免疫生效</li>
+     * </ul>
      */
     private static void setupLampShadowMonsters() {
         EntityTagRegistry.registerAll(EntityTag.LAMP_SHADOW_MONSTER,
+                // 暗影系列
                 PDEntities.SHADOW_GOLEM.get(),
                 PDEntities.SHADOW_GHOST.get(),
                 PDEntities.SHADOW_SQUEAL_GHOST.get(),
                 PDEntities.SHADOW_SQUEAL_GHOST_0.get(),
                 PDEntities.SHADOW_HAND.get(),
-                PDEntities.SHADOW_TUNE_TOTEM.get()
+                PDEntities.SHADOW_TUNE_TOTEM.get(),
+                // 恐怖尖喙系列
+                PDEntities.TERRORBEAK.get(),
+                PDEntities.CRAZY_TERRORBEAK.get(),
+                PDEntities.WEAKENESS_TERRORBEAK.get(),
+                // 暗影 BOSS
+                PDEntities.AARONCOS_LEFTHAND_0.get(),
+                PDEntities.AARONCOS_RIGHTHAND_0.get()
         );
     }
 

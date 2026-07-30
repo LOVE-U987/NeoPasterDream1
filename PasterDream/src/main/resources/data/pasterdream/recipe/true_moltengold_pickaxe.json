@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
+  "category": "misc",
   "pattern": [
     " a ",
     "bcb",
@@ -21,7 +21,7 @@
     }
   },
   "result": {
-    "id": "pasterdream:true_moltengold_pickaxe",
-    "count": 1
+    "count": 1,
+    "id": "pasterdream:true_moltengold_pickaxe"
   }
 }

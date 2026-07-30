@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.ElderGuardian;
@@ -25,17 +26,107 @@ import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
+
+import java.util.List;
+import java.util.Map;
+
 /**
- * 实体死亡挂钩：对齐原版 {@code EntityDeathPr0} + {@code SculkHeartPr0}。
+ * 实体死亡挂钩：对齐原版 {@code EntityDeathPr0} + {@code SculkHeartPr0} + 自定义诙谐死亡提示。
  * <ul>
  *   <li>Warden → 附近玩家（需 achievement_start、未 hide_7）授 hide_7 + 文案/效果；无 silentsdelight 时掉 sculk_heart</li>
  *   <li>ElderGuardian → elder_guardian_scale</li>
+ *   <li>模组怪物击杀玩家 → 随机播放一条诙谐自定义死亡消息</li>
  * </ul>
  */
 public final class PDEntityDeathEvents {
 
     private PDEntityDeathEvents() {
     }
+
+    /**
+     * 怪物类型 → 死亡消息语言键列表（随机选取一条）的映射表。
+     * 消息使用 {@code death.pasterdream.<entity_registry_name>.<0..n>} 格式，
+     * 每条消息的 {@code %1$s} 即为玩家名。
+     */
+    private static final Map<EntityType<?>, List<String>> DEATH_MESSAGE_KEYS = Map.ofEntries(
+            // ====== 灯影世界 ======
+            Map.entry(EntityType.byString("pasterdream:shadow_golem").orElse(null), List.of(
+                    "death.pasterdream.shadow_golem.0",
+                    "death.pasterdream.shadow_golem.1")),
+            Map.entry(EntityType.byString("pasterdream:shadow_ghost").orElse(null), List.of(
+                    "death.pasterdream.shadow_ghost.0",
+                    "death.pasterdream.shadow_ghost.1")),
+            Map.entry(EntityType.byString("pasterdream:shadow_squeal_ghost").orElse(null), List.of(
+                    "death.pasterdream.shadow_squeal_ghost.0",
+                    "death.pasterdream.shadow_squeal_ghost.1")),
+            Map.entry(EntityType.byString("pasterdream:shadow_squeal_ghost_0").orElse(null), List.of(
+                    "death.pasterdream.shadow_squeal_ghost.0",
+                    "death.pasterdream.shadow_squeal_ghost.1")),
+            Map.entry(EntityType.byString("pasterdream:shadow_hand").orElse(null), List.of(
+                    "death.pasterdream.shadow_hand.0",
+                    "death.pasterdream.shadow_hand.1")),
+            Map.entry(EntityType.byString("pasterdream:shadow_tune_totem").orElse(null), List.of(
+                    "death.pasterdream.shadow_tune_totem.0",
+                    "death.pasterdream.shadow_tune_totem.1")),
+            // ====== 恐怖尖喙家族 ======
+            Map.entry(EntityType.byString("pasterdream:terrorbeak").orElse(null), List.of(
+                    "death.pasterdream.terrorbeak.0",
+                    "death.pasterdream.terrorbeak.1")),
+            Map.entry(EntityType.byString("pasterdream:crazy_terrorbeak").orElse(null), List.of(
+                    "death.pasterdream.crazy_terrorbeak.0",
+                    "death.pasterdream.crazy_terrorbeak.1")),
+            Map.entry(EntityType.byString("pasterdream:weakeness_terrorbeak").orElse(null), List.of(
+                    "death.pasterdream.weakeness_terrorbeak.0",
+                    "death.pasterdream.weakeness_terrorbeak.1")),
+            // ====== 骨翼 ======
+            Map.entry(EntityType.byString("pasterdream:bone_wing").orElse(null), List.of(
+                    "death.pasterdream.bone_wing.0",
+                    "death.pasterdream.bone_wing.1")),
+            Map.entry(EntityType.byString("pasterdream:ash_bone_wing").orElse(null), List.of(
+                    "death.pasterdream.ash_bone_wing.0",
+                    "death.pasterdream.ash_bone_wing.1")),
+            // ====== 雷云家族 ======
+            Map.entry(EntityType.byString("pasterdream:thundercloud").orElse(null), List.of(
+                    "death.pasterdream.thundercloud.0",
+                    "death.pasterdream.thundercloud.1")),
+            Map.entry(EntityType.byString("pasterdream:highvoltage").orElse(null), List.of(
+                    "death.pasterdream.highvoltage.0",
+                    "death.pasterdream.highvoltage.1")),
+            // ====== 风之旅途 ======
+            Map.entry(EntityType.byString("pasterdream:wind_knight").orElse(null), List.of(
+                    "death.pasterdream.wind_knight.0",
+                    "death.pasterdream.wind_knight.1")),
+            // ====== 黑甲虫家族 ======
+            Map.entry(EntityType.byString("pasterdream:black_beetle").orElse(null), List.of(
+                    "death.pasterdream.black_beetle.0",
+                    "death.pasterdream.black_beetle.1")),
+            Map.entry(EntityType.byString("pasterdream:black_beetle_mother").orElse(null), List.of(
+                    "death.pasterdream.black_beetle_mother.0",
+                    "death.pasterdream.black_beetle_mother.1")),
+            // ====== 其他敌对 ======
+            Map.entry(EntityType.byString("pasterdream:fox_fire").orElse(null), List.of(
+                    "death.pasterdream.fox_fire.0",
+                    "death.pasterdream.fox_fire.1")),
+            Map.entry(EntityType.byString("pasterdream:shaking_crystal").orElse(null), List.of(
+                    "death.pasterdream.shaking_crystal.0",
+                    "death.pasterdream.shaking_crystal.1")),
+            Map.entry(EntityType.byString("pasterdream:small_stone_spirit").orElse(null), List.of(
+                    "death.pasterdream.small_stone_spirit.0",
+                    "death.pasterdream.small_stone_spirit.1")),
+            Map.entry(EntityType.byString("pasterdream:meltdream_crystal").orElse(null), List.of(
+                    "death.pasterdream.meltdream_crystal.0",
+                    "death.pasterdream.meltdream_crystal.1")),
+            Map.entry(EntityType.byString("pasterdream:spore_entity").orElse(null), List.of(
+                    "death.pasterdream.spore_entity.0",
+                    "death.pasterdream.spore_entity.1")),
+            // ====== BOSS ======
+            Map.entry(EntityType.byString("pasterdream:aaroncos_lefthand_0").orElse(null), List.of(
+                    "death.pasterdream.aaroncos.0",
+                    "death.pasterdream.aaroncos.1")),
+            Map.entry(EntityType.byString("pasterdream:aaroncos_righthand_0").orElse(null), List.of(
+                    "death.pasterdream.aaroncos.0",
+                    "death.pasterdream.aaroncos.1"))
+    );
 
     public static void onLivingDeath(LivingDeathEvent event) {
         LivingEntity entity = event.getEntity();
@@ -47,6 +138,7 @@ public final class PDEntityDeathEvents {
         double y = entity.getY();
         double z = entity.getZ();
 
+        // —— 原版生物特殊掉落 ——
         if (entity instanceof Warden) {
             grantSculkHeartMemory(level, x, y, z);
             if (!ModList.get().isLoaded("silentsdelight") && level instanceof ServerLevel server) {
@@ -60,6 +152,24 @@ public final class PDEntityDeathEvents {
                     new ItemStack(PDItems.ELDER_GUARDIAN_SCALE.get()));
             drop.setPickUpDelay(10);
             server.addFreshEntity(drop);
+        }
+
+        // —— 玩家被模组怪物击杀 → 哏式死亡消息 ——
+        if (entity instanceof ServerPlayer serverPlayer) {
+            Entity killer = event.getSource().getEntity();
+            if (killer != null) {
+                List<String> keys = DEATH_MESSAGE_KEYS.get(killer.getType());
+                if (keys != null && !keys.isEmpty()) {
+                    int idx = serverPlayer.getRandom().nextInt(keys.size());
+                    Component msg = Component.translatable(keys.get(idx), serverPlayer.getDisplayName());
+                    // 下一 tick 广播自定义死亡消息（原版消息也会同时发出，丰富演出效果）
+                    ServerScheduler.schedule(0, () -> {
+                        if (serverPlayer.getServer() != null) {
+                            serverPlayer.getServer().getPlayerList().broadcastSystemMessage(msg, false);
+                        }
+                    });
+                }
+            }
         }
     }
 

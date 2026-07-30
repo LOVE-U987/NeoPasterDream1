@@ -1,19 +1,17 @@
 package com.pasterdream.pasterdreammod.client.renderer.entity;
 
-import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.client.model.entity.SmallStoneSpiritModel;
 import com.pasterdream.pasterdreammod.entity.mob.SmallStoneSpiritEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 /**
  * 小石灵渲染器
- * GeckoLib 动画实体，使用 DefaultedEntityGeoModel 自动加载模型/纹理/动画
+ * <p>
+ * 使用自定义 {@link SmallStoneSpiritModel} 加载 GeckoLib 模型/纹理/动画，
+ * 支持头部追踪与动态纹理切换。
  */
 public class SmallStoneSpiritRenderer extends GeoEntityRenderer<SmallStoneSpiritEntity> {
-
-    private static final String NAME = "small_stone_spirit";
 
     /**
      * 构造小石灵渲染器
@@ -21,7 +19,6 @@ public class SmallStoneSpiritRenderer extends GeoEntityRenderer<SmallStoneSpirit
      * @param context 渲染器上下文
      */
     public SmallStoneSpiritRenderer(EntityRendererProvider.Context context) {
-        super(context, new DefaultedEntityGeoModel<>(
-                ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, NAME)));
+        super(context, new SmallStoneSpiritModel());
     }
 }

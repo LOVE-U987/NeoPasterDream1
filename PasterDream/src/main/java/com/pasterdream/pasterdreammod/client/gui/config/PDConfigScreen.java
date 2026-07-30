@@ -1,10 +1,13 @@
 package com.pasterdream.pasterdreammod.client.gui.config;
 
+import com.electronwill.nightconfig.core.CommentedConfig;
+import com.electronwill.nightconfig.toml.TomlWriter;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.util.AddonDetector;
 import com.pasterdream.pasterdreammod.client.PDPackHandler;
 import com.pasterdream.pasterdreammod.config.PDClientConfig;
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -12,7 +15,11 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -33,8 +40,8 @@ public class PDConfigScreen extends Screen {
     private static final String LANG_PREFIX = "gui.pasterdream.config";
 
     private final Screen parent;
-    private final List<ConfigEntry<?>> allEntries = new ArrayList<>();
-    private final List<ConfigEntry<?>> visibleEntries = new ArrayList<>();
+    private final List<Object> allEntries = new ArrayList<>();
+    private final List<Object> visibleEntries = new ArrayList<>();
     private final List<AbstractWidget> categoryButtons = new ArrayList<>();
     private final List<AbstractWidget> footerButtons = new ArrayList<>();
     private final Map<ConfigCategory, Integer> categoryCounts = new EnumMap<>(ConfigCategory.class);
@@ -50,7 +57,7 @@ public class PDConfigScreen extends Screen {
     /** 是否正在分类切换动画中 */
     private boolean inCategoryTransition;
     /** 切换前的配置项列表，用于旧页面向左淡出 */
-    private final List<ConfigEntry<?>> previousVisibleEntries = new ArrayList<>();
+    private final List<Object> previousVisibleEntries = new ArrayList<>();
 
     /** 侧边栏选中反光条当前 Y 坐标（lerp） */
     private float categoryBarY;
@@ -206,22 +213,37 @@ public class PDConfigScreen extends Screen {
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.BAN_FIRE_NECKLACE, ConfigCategory.BAN, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.BAN_TIME_HOURGLASS, ConfigCategory.BAN, idx++));
 
-        // ==================== BGM (11 items) ====================
+        // ==================== BGM (9 个可折叠分组) ====================
         allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.BGM_MASTER_ENABLED, ConfigCategory.BGM, idx++));
         allEntries.add(new ConfigEntry.SliderEntry(PDClientConfig.BGM_MASTER_VOLUME,
                 ConfigCategory.BGM, idx++, 0.0d, 1.0d));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.BGM_DYEDREAM_WORLD, ConfigCategory.BGM, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.BGM_DREAM_HEATH, ConfigCategory.BGM, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.BGM_DREAM_DELTA, ConfigCategory.BGM, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.BGM_DREAM_TAIGA, ConfigCategory.BGM, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.BGM_SWEETDREAM, ConfigCategory.BGM, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.BGM_SNOWFALL_DREAM, ConfigCategory.BGM, idx++));
-        allEntries.add(new ConfigEntry.SliderEntry(PDClientConfig.BGM_WIND_JOURNEY_DEPARTURE_VOLUME,
-                ConfigCategory.BGM, idx++, 0.0d, 2.0d));
-        allEntries.add(new ConfigEntry.SliderEntry(PDClientConfig.BGM_WIND_JOURNEY_MIDSUMMER_VOLUME,
-                ConfigCategory.BGM, idx++, 0.0d, 2.0d));
-        allEntries.add(new ConfigEntry.SliderEntry(PDClientConfig.BGM_DREAM_MEADOW_DAISY_VOLUME,
-                ConfigCategory.BGM, idx++, 0.0d, 2.0d));
+        allEntries.add(new BgmGroupEntry(ConfigCategory.BGM, idx++,
+                PDClientConfig.BGM_DYEDREAM_WORLD, PDClientConfig.BGM_DYEDREAM_WORLD_VOLUME, "dyedream_world",
+                () -> { saveLoadedConfig(PasterDreamMod.clientModConfig); }));
+        allEntries.add(new BgmGroupEntry(ConfigCategory.BGM, idx++,
+                PDClientConfig.BGM_DREAM_HEATH, PDClientConfig.BGM_DREAM_HEATH_VOLUME, "dream_heath",
+                () -> { saveLoadedConfig(PasterDreamMod.clientModConfig); }));
+        allEntries.add(new BgmGroupEntry(ConfigCategory.BGM, idx++,
+                PDClientConfig.BGM_DREAM_DELTA, PDClientConfig.BGM_DREAM_DELTA_VOLUME, "dream_delta",
+                () -> { saveLoadedConfig(PasterDreamMod.clientModConfig); }));
+        allEntries.add(new BgmGroupEntry(ConfigCategory.BGM, idx++,
+                PDClientConfig.BGM_DREAM_TAIGA, PDClientConfig.BGM_DREAM_TAIGA_VOLUME, "dream_taiga",
+                () -> { saveLoadedConfig(PasterDreamMod.clientModConfig); }));
+        allEntries.add(new BgmGroupEntry(ConfigCategory.BGM, idx++,
+                PDClientConfig.BGM_SWEETDREAM, PDClientConfig.BGM_SWEETDREAM_VOLUME, "sweetdream_music",
+                () -> { saveLoadedConfig(PasterDreamMod.clientModConfig); }));
+        allEntries.add(new BgmGroupEntry(ConfigCategory.BGM, idx++,
+                PDClientConfig.BGM_SNOWFALL_DREAM, PDClientConfig.BGM_SNOWFALL_DREAM_VOLUME, "snowfall_dream_music",
+                () -> { saveLoadedConfig(PasterDreamMod.clientModConfig); }));
+        allEntries.add(new BgmGroupEntry(ConfigCategory.BGM, idx++,
+                PDClientConfig.BGM_WIND_JOURNEY_DEPARTURE, PDClientConfig.BGM_WIND_JOURNEY_DEPARTURE_VOLUME, "wind_journey_departure",
+                () -> { saveLoadedConfig(PasterDreamMod.clientModConfig); }));
+        allEntries.add(new BgmGroupEntry(ConfigCategory.BGM, idx++,
+                PDClientConfig.BGM_WIND_JOURNEY_MIDSUMMER, PDClientConfig.BGM_WIND_JOURNEY_MIDSUMMER_VOLUME, "wind_journey_midsummer",
+                () -> { saveLoadedConfig(PasterDreamMod.clientModConfig); }));
+        allEntries.add(new BgmGroupEntry(ConfigCategory.BGM, idx++,
+                PDClientConfig.BGM_DREAM_MEADOW_DAISY, PDClientConfig.BGM_DREAM_MEADOW_DAISY_VOLUME, "dream_meadow_daisy",
+                () -> { saveLoadedConfig(PasterDreamMod.clientModConfig); }));
 
         // ==================== Debug (4 items) ====================
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.ENABLE_DEBUG_LOG, ConfigCategory.DEBUG, idx++));
@@ -233,10 +255,36 @@ public class PDConfigScreen extends Screen {
         categoryCounts.clear();
         activeCategories.clear();
         for (ConfigCategory c : ConfigCategory.values()) categoryCounts.put(c, 0);
-        for (ConfigEntry<?> entry : allEntries) categoryCounts.merge(entry.getCategory(), 1, Integer::sum);
+        for (Object entry : allEntries) {
+            ConfigCategory cat = getEntryCategory(entry);
+            categoryCounts.merge(cat, 1, Integer::sum);
+        }
         for (ConfigCategory c : ConfigCategory.values()) {
             if (categoryCounts.getOrDefault(c, 0) > 0) activeCategories.add(c);
         }
+    }
+
+    /**
+     * 获取条目所属分类。
+     *
+     * @param entry {@link ConfigEntry} 或 {@link BgmGroupEntry}
+     * @return 分类枚举
+     */
+    private static ConfigCategory getEntryCategory(Object entry) {
+        if (entry instanceof ConfigEntry<?> ce) return ce.getCategory();
+        if (entry instanceof BgmGroupEntry be) return be.getCategory();
+        return ConfigCategory.HUD;
+    }
+
+    /**
+     * 获取条目的视觉高度。
+     *
+     * @param entry {@link ConfigEntry} 或 {@link BgmGroupEntry}
+     * @return 条目高度（px）
+     */
+    private static int getEntryVisualHeight(Object entry) {
+        if (entry instanceof BgmGroupEntry be) return be.getVisualHeight();
+        return ConfigStyles.ROW_HEIGHT;
     }
 
     private void rebuildVisibleEntries() {
@@ -245,8 +293,8 @@ public class PDConfigScreen extends Screen {
             selectedCategory = ConfigCategory.HUD;
         }
         visibleEntries.clear();
-        for (ConfigEntry<?> entry : allEntries) {
-            if (entry.getCategory() == selectedCategory) visibleEntries.add(entry);
+        for (Object entry : allEntries) {
+            if (getEntryCategory(entry) == selectedCategory) visibleEntries.add(entry);
         }
         scrollOffset = 0;
         targetScrollOffset = 0f;
@@ -337,10 +385,12 @@ public class PDConfigScreen extends Screen {
 
     private void updateWidgetPositions() {
         int controlX = contentX + contentWidth - ConfigStyles.ROW_PADDING_X - ConfigStyles.TOGGLE_WIDTH;
-        for (ConfigEntry<?> entry : visibleEntries) {
-            for (AbstractWidget widget : entry.widgets) {
-                int widgetX = controlX - (widget.getWidth() - ConfigStyles.TOGGLE_WIDTH);
-                widget.setX(widgetX);
+        for (Object entry : visibleEntries) {
+            if (entry instanceof ConfigEntry<?> ce) {
+                for (AbstractWidget widget : ce.widgets) {
+                    int widgetX = controlX - (widget.getWidth() - ConfigStyles.TOGGLE_WIDTH);
+                    widget.setX(widgetX);
+                }
             }
         }
     }
@@ -414,7 +464,8 @@ public class PDConfigScreen extends Screen {
         gui.setColor(1f, 1f, 1f, 1f);
         gui.pose().popPose();
 
-        // 5. 惯性滚动
+        // 5. 惯性滚动 + 变高条目边界修正
+        recalculateScrollBounds();
         if (Math.abs(targetScrollOffset - scrollOffset) > 0.1f) {
             scrollOffset += (int) Math.round((targetScrollOffset - scrollOffset) * 0.22f);
         } else {
@@ -593,10 +644,29 @@ public class PDConfigScreen extends Screen {
     }
 
     /**
-     * 渲染主内容区滚动条
+     * 重新计算滚动边界并修正目标滚动偏移。
+     * <p>
+     * 当 {@link BgmGroupEntry} 展开/折叠后，可见条目的总高度发生变化，
+     * 必须重新计算 maxScroll 以免用户无法滚动查看新增内容或滚动超出范围。
+     */
+    private void recalculateScrollBounds() {
+        int totalH = 0;
+        for (Object entry : visibleEntries) {
+            totalH += getEntryVisualHeight(entry);
+        }
+        int visibleH = listBottom - listTop;
+        int maxScroll = Math.max(0, totalH - visibleH);
+        targetScrollOffset = Math.max(0, Math.min(maxScroll, targetScrollOffset));
+    }
+
+    /**
+     * 渲染主内容区滚动条（支持变高条目）
      */
     private void renderScrollbar(GuiGraphics gui, int mouseX, int mouseY) {
-        int totalH = visibleEntries.size() * ConfigStyles.ROW_HEIGHT;
+        int totalH = 0;
+        for (Object entry : visibleEntries) {
+            totalH += getEntryVisualHeight(entry);
+        }
         int visibleH = listBottom - listTop;
         if (totalH <= visibleH) return;
 
@@ -668,27 +738,44 @@ public class PDConfigScreen extends Screen {
     }
 
     /**
-     * 渲染单个配置项列表
+     * 渲染单个配置项列表（支持变高条目如 {@link BgmGroupEntry}）。
      */
-    private void renderEntryList(GuiGraphics gui, List<ConfigEntry<?>> entries, int baseY, int x, int rowWidth,
+    private void renderEntryList(GuiGraphics gui, List<Object> entries, int baseY, int x, int rowWidth,
                                  int mouseX, int mouseY, float partialTick, long now, boolean isExiting) {
+        int accumulatedY = baseY;
         for (int i = 0; i < entries.size(); i++) {
-            ConfigEntry<?> entry = entries.get(i);
+            Object entry = entries.get(i);
 
-            float entryProgress = isExiting ? 1f : getEntryProgress(entry.getIndex(), now);
+            float entryProgress = isExiting ? 1f : getEntryProgress(getEntryIndex(entry), now);
             if (entryProgress <= 0f) continue;
 
             int yOffset = (int) ((1f - entryProgress) * 14f);
-            int y = baseY + i * ConfigStyles.ROW_HEIGHT + yOffset;
+            int visualH = getEntryVisualHeight(entry);
+            int y = accumulatedY + yOffset;
 
-            if (y + ConfigStyles.ROW_HEIGHT < listTop || y > listBottom) {
-                entry.widgets.forEach(w -> w.visible = false);
+            if (y + visualH < listTop || y > listBottom) {
+                // 超出可见区域，仍然要累加高度
+                accumulatedY += visualH;
                 continue;
             }
-            entry.widgets.forEach(w -> w.visible = true);
 
-            entry.render(gui, x, y, rowWidth, mouseX, mouseY, partialTick);
+            if (entry instanceof ConfigEntry<?> ce) {
+                ce.render(gui, x, y, rowWidth, mouseX, mouseY, partialTick);
+            } else if (entry instanceof BgmGroupEntry be) {
+                be.render(gui, x, y, rowWidth, mouseX, mouseY, partialTick);
+            }
+
+            accumulatedY += visualH;
         }
+    }
+
+    /**
+     * 获取条目在全部列表中的序号，用于入场动画错峰。
+     */
+    private static int getEntryIndex(Object entry) {
+        if (entry instanceof ConfigEntry<?> ce) return ce.getIndex();
+        if (entry instanceof BgmGroupEntry be) return be.getIndex();
+        return 0;
     }
 
     private float getEntryProgress(int index, long now) {
@@ -790,18 +877,35 @@ public class PDConfigScreen extends Screen {
         // 主内容区
         int baseY = listTop - scrollOffset;
         int x = contentX + (int) categorySlideOffset;
+        int accumulatedY = baseY;
         for (int i = 0; i < visibleEntries.size(); i++) {
-            ConfigEntry<?> entry = visibleEntries.get(i);
-            float entryProgress = getEntryProgress(entry.getIndex(), now);
+            Object entry = visibleEntries.get(i);
+            float entryProgress = getEntryProgress(getEntryIndex(entry), now);
             int yOffset = (int) ((1f - entryProgress) * 14f);
-            int y = baseY + i * ConfigStyles.ROW_HEIGHT + yOffset;
-            if (mouseX >= x && mouseX < x + contentWidth && mouseY >= y && mouseY < y + ConfigStyles.ROW_HEIGHT) {
-                if (entry.mouseClicked(mouseX, mouseY, button)) {
-                    focusedListener = entry;
-                    checkEnableModUiChange();
-                    return true;
+            int visualH = getEntryVisualHeight(entry);
+            int y = accumulatedY + yOffset;
+
+            if (mouseX >= x && mouseX < x + contentWidth && mouseY >= y && mouseY < y + visualH) {
+                if (entry instanceof ConfigEntry<?> ce) {
+                    if (ce.mouseClicked(mouseX, mouseY, button)) {
+                        focusedListener = ce;
+                        checkEnableModUiChange();
+                        return true;
+                    }
+                } else if (entry instanceof BgmGroupEntry be) {
+                    // 检查是否点击了标题行（第一行区域内）
+                    if (mouseY < y + ConfigStyles.ROW_HEIGHT) {
+                        be.toggleExpanded();
+                        return true;
+                    }
+                    // 展开时检查子控件
+                    if (be.mouseClicked(mouseX, mouseY, button)) {
+                        return true;
+                    }
                 }
             }
+
+            accumulatedY += visualH;
         }
 
         if (focusedListener != null) {
@@ -814,12 +918,22 @@ public class PDConfigScreen extends Screen {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (focusedListener != null) return focusedListener.mouseReleased(mouseX, mouseY, button);
+        // 传递给展开的 BgmGroupEntry
+        for (Object entry : visibleEntries) {
+            if (entry instanceof BgmGroupEntry be && be.mouseReleased(mouseX, mouseY, button))
+                return true;
+        }
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (focusedListener != null) return focusedListener.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        // 传递给展开的 BgmGroupEntry
+        for (Object entry : visibleEntries) {
+            if (entry instanceof BgmGroupEntry be && be.mouseDragged(mouseX, mouseY, button, dragX, dragY))
+                return true;
+        }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
@@ -880,7 +994,7 @@ public class PDConfigScreen extends Screen {
      */
     private void saveConfig() {
         boolean anyInvalid = false;
-        for (ConfigEntry<?> entry : allEntries) {
+        for (Object entry : allEntries) {
             if (entry instanceof ConfigEntry.NumberEntry numberEntry && !numberEntry.isValid()) {
                 anyInvalid = true;
                 break;
@@ -891,9 +1005,19 @@ public class PDConfigScreen extends Screen {
             return;
         }
 
-        for (ConfigEntry<?> entry : allEntries) {
-            entry.save();
+        for (Object entry : allEntries) {
+            if (entry instanceof ConfigEntry<?> ce) {
+                ce.save();
+            } else if (entry instanceof BgmGroupEntry be) {
+                be.save();
+            }
         }
+
+        // 持久化配置到 TOML 文件（configValue.set() 仅修改内存值，须通过 ILoadedConfig.save() 写入磁盘）
+        saveLoadedConfig(PasterDreamMod.clientModConfig);
+        saveLoadedConfig(PasterDreamMod.commonModConfig);
+        PDDebugLogger.mainDebug("[PDConfigScreen] 配置文件已持久化到磁盘");
+
         saveFeedbackStart = System.currentTimeMillis();
         // 主菜单打开配置时 player 可能为 null
         if (Minecraft.getInstance().player != null) {
@@ -903,11 +1027,38 @@ public class PDConfigScreen extends Screen {
     }
 
     /**
+     * 将 {@link ModConfig} 的当前值持久化到 TOML 文件。
+     * <p>
+     * 通过 {@link ModConfig#getFullPath()} 获取文件路径，使用 {@link TomlWriter} 直接将
+     * {@link CommentedConfig} 写入磁盘。不调用 {@code ILoadedConfig.save()} 以避免触发
+     * {@code ModConfigEvent.Reloading} 事件（该事件可能导致正在播放的 BGM 音量短暂回退）。
+     *
+     * @param modConfig 要持久化的配置对象，若为 null 则跳过
+     */
+    private static void saveLoadedConfig(@Nullable ModConfig modConfig) {
+        if (modConfig == null) return;
+        try (OutputStream os = new FileOutputStream(modConfig.getFullPath().toFile())) {
+            CommentedConfig configData = modConfig.getLoadedConfig().config();
+            if (configData == null) {
+                PasterDreamMod.LOGGER.warn("[PDConfigScreen] {}", new Object() { String getMessage() { return "ModConfig %s 的 loadedConfig 为 null".formatted(modConfig.getFileName()); } });
+                return;
+            }
+            new TomlWriter().write(configData, os);
+        } catch (Exception e) {
+            PasterDreamMod.LOGGER.error("[PDConfigScreen] 无法写入配置文件 {}", modConfig.getFileName(), e);
+        }
+    }
+
+    /**
      * 将所有配置项恢复为默认值
      */
     private void resetAll() {
-        for (ConfigEntry<?> entry : allEntries) {
-            entry.resetToDefault();
+        for (Object entry : allEntries) {
+            if (entry instanceof ConfigEntry<?> ce) {
+                ce.resetToDefault();
+            } else if (entry instanceof BgmGroupEntry be) {
+                be.resetToDefault();
+            }
         }
         Minecraft.getInstance().player.displayClientMessage(
                 Component.translatable(LANG_PREFIX + ".reset.success"), true);

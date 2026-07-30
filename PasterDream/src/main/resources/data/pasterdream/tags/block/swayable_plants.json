@@ -1,0 +1,14 @@
+{
+  "values": [
+    "#minecraft:small_flowers",
+    "#minecraft:tall_flowers",
+    "#minecraft:leaves",
+    "#minecraft:saplings",
+    "#minecraft:vines",
+    "#minecraft:crops",
+    "pasterdream:dyedream_fallen_leaves",
+    "pasterdream:dyedream_lily_pad",
+    "pasterdream:dyedream_lotus",
+    "pasterdream:dyedream_seagrass"
+  ]
+}

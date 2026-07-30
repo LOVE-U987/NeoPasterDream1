@@ -50,6 +50,7 @@ public class PDSounds {
         registerDimensionMusic("dream_delta");
         registerDimensionMusic("sweetdream_music");
         registerDimensionMusic("snowfall_dream_music");
+        registerDimensionMusic("wind_journey");
         registerDimensionMusic("wind_journey_departure");
         registerDimensionMusic("wind_journey_midsummer");
         registerDimensionMusic("dream_meadow_daisy");

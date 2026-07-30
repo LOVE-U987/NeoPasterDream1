@@ -215,7 +215,7 @@ public final class RendererRegistry {
         event.registerEntityRenderer(PDEntities.SHADOW_NPC_0.get(), ShadowNpc0Renderer::new);
         PDDebugLogger.mainDebug("[RendererRegistry] 注册实体渲染器: shadow_npc_0 （GeckoLib）");
         event.registerEntityRenderer(PDEntities.SPORE_ENTITY.get(), SporeEntityRenderer::new);
-        PDDebugLogger.mainDebug("[RendererRegistry] 注册实体渲染器: spore_entity （原版模型）");
+        PDDebugLogger.mainDebug("[RendererRegistry] 注册实体渲染器: spore_entity （自定义立方体模型 + 存活时不可见）");
         count += 4;
 
         // BOSS 系列

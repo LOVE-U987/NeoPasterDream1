@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -34,7 +33,6 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -63,10 +61,8 @@ public class SmallStoneSpiritEntity extends GeckoLibMobEntity {
      * 防止 size 无意义地无限增长。
      */
     private static final double MAX_SIZE = 25.6;
-    /** 累积的尺寸数值（受附近小石灵数量影响） */
+    /** 累积的尺寸数值（死亡时附近小石灵会获得 size 提升） */
     private double size = 0;
-    /** 群体增益检测间隔 counter（每 20 tick 检测一次） */
-    private int groupBuffCooldown = 0;
 
     /**
      * 构造小石灵实体
@@ -182,56 +178,39 @@ public class SmallStoneSpiritEntity extends GeckoLibMobEntity {
     @Override
     public void baseTick() {
         super.baseTick();
-        this.refreshDimensions();
-        // 服务端群体增益逻辑（每 20 tick 检测一次）
-        if (!this.level().isClientSide() && this.isAlive()) {
-            groupBuffCooldown--;
-            if (groupBuffCooldown <= 0) {
-                groupBuffCooldown = 20; // 每秒检测一次
-                executeGroupBuff();
-            }
-        }
+        // 注意：1.21.1 NeoForge 中 LivingEntity.getDimensions(Pose) 为 final，
+        // 无法像 1.20.1 原版那样通过 override getDimensions() 缩放碰撞箱。
+        // 群体增益的 HEALTH_BOOST 效果已通过死亡时 addEffect 实现。
     }
 
-    // ==================== 群体增益技能实现 ====================
+    // ==================== 群体增益技能 ====================
 
     /**
-     * 群体增益：附近有小石灵时相互 buff
-     * 原 SmallStoneSpiritPr0Procedure 逻辑
-     * - 附近每只小石灵使 size +0.1
-     * - 自身获得 再生VI、抗性I、生命提升（等级 = size * 10）
+     * 死亡群体增益：扫描 10 格内的小石灵，增加其 size 并给死亡者自身施加增益
+     * 原 SmallStoneSpiritPr0Procedure 逻辑，仅在死亡时触发一次
      */
-    private void executeGroupBuff() {
+    private void deathGroupBuff() {
         double x = this.getX();
         double y = this.getY();
         double z = this.getZ();
 
-        // 检测 10 格内的小石灵
         AABB aabb = new AABB(new Vec3(x, y, z), new Vec3(x, y, z)).inflate(10 / 2d);
         List<SmallStoneSpiritEntity> nearbySpirits = this.level().getEntitiesOfClass(
                 SmallStoneSpiritEntity.class, aabb, e -> e != this && e.isAlive());
 
         for (SmallStoneSpiritEntity spirit : nearbySpirits) {
-            // 增加对方 size（封顶 MAX_SIZE，防止无限增长）
+            // 增加附近小石灵的 size（封顶 MAX_SIZE）
             spirit.size = Math.min(spirit.size + 0.1, MAX_SIZE);
-        }
-
-        // 如果有附近小石灵，自身获得增益效果
-        if (!nearbySpirits.isEmpty()) {
-            // 播放石灵增益音效（原模组无 skill 动画，仅保留音效）
-            this.level().playSound(null, BlockPos.containing(x, y, z),
-                    SoundEvents.STONE_PLACE, SoundSource.HOSTILE, 1.0F, 1.2F);
-
+            // 给死亡者自身施加效果（基于附近实体的 size）
             this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 80, 6, false, false));
             this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 400, 0, false, false));
-            int healthBoostLevel = (int) (size * 10 - 1);
+            int healthBoostLevel = (int) (spirit.size * 10 - 1);
             if (healthBoostLevel >= 0) {
                 this.addEffect(new MobEffectInstance(MobEffects.HEALTH_BOOST, 400,
                         Math.min(healthBoostLevel, 255), false, false));
             }
         }
-
-        }
+    }
 
     @Override
     public void aiStep() {
@@ -242,8 +221,8 @@ public class SmallStoneSpiritEntity extends GeckoLibMobEntity {
     // ======================== 死亡处理 ========================
 
     /**
-     * 死亡时：若尸体位置为空气且脚下非空，50% 概率 22 tick 后放回小石灵方块
-     * （原版 SmallStoneSpiritPr0Procedure 在 die 中调用的后半段）。
+     * 死亡时：触发群体增益并 50% 概率 22 tick 后放回小石灵方块
+     * 原版 SmallStoneSpiritPr0Procedure 逻辑
      */
     @Override
     public void die(DamageSource source) {
@@ -251,6 +230,9 @@ public class SmallStoneSpiritEntity extends GeckoLibMobEntity {
         if (this.level().isClientSide()) {
             return;
         }
+        // 死亡群体增益（原 Pr0Procedure 前半段）
+        deathGroupBuff();
+        // 死亡掉方块逻辑（原 Pr0Procedure 后半段）
         BlockPos pos = BlockPos.containing(this.getX(), this.getY(), this.getZ());
         if (this.level().getBlockState(pos).is(Blocks.AIR)
                 && !this.level().getBlockState(pos.below()).is(Blocks.AIR)

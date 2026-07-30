@@ -11,6 +11,7 @@ import com.pasterdream.pasterdreammod.menu.StorageBagMenu;
 import com.pasterdream.pasterdreammod.menu.MeltdreamChestMenu;
 import com.pasterdream.pasterdreammod.menu.ShadowChestMenu;
 import com.pasterdream.pasterdreammod.menu.TheEndlessBookOfDreamSeekersMenu;
+import com.pasterdream.pasterdreammod.menu.PlayerBookMenu;
 import com.pasterdream.pasterdreammod.menu.WeaponWorkshopMenu;
 import com.pasterdream.pasterdreammod.menu.WorkshopAnvilMenu;
 import com.pasterdream.pasterdreammod.menu.WorkshopBlastMenu;
@@ -58,6 +59,15 @@ public class PDMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<TheEndlessBookOfDreamSeekersMenu>> THE_ENDLESS_BOOK_OF_DREAM_SEEKERS =
             MenuAPI.<TheEndlessBookOfDreamSeekersMenu>createMenu("the_endless_book_of_dream_seekers")
                     .factory(TheEndlessBookOfDreamSeekersMenu::new)
+                    .build();
+
+    /**
+     * 玩家书籍管理菜单（创造模式）
+     * 与寻梦者的永恒书卷共用相同 GUI 纹理，数据存储于玩家 NBT。
+     */
+    public static final DeferredHolder<MenuType<?>, MenuType<PlayerBookMenu>> PLAYER_BOOK =
+            MenuAPI.<PlayerBookMenu>createMenu("player_book")
+                    .factory(PlayerBookMenu::new)
                     .build();
 
     /**

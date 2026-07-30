@@ -3,8 +3,10 @@ package com.pasterdream.pasterdreammod.api.audio;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -17,8 +19,8 @@ import java.util.Set;
  */
 public class BiomeMusicTable {
 
-    /** 群系 ID → 音乐名称映射 */
-    private final Map<ResourceLocation, String> biomeMusicMap = new LinkedHashMap<>();
+    /** 群系 ID → 音乐名称列表映射（支持多首曲目随机播放） */
+    private final Map<ResourceLocation, List<String>> biomeMusicMap = new LinkedHashMap<>();
 
     /** 启用 BGM 框架的自定义维度 ID 集合 */
     private final Set<ResourceLocation> customDimensions = new HashSet<>();
@@ -35,20 +37,25 @@ public class BiomeMusicTable {
 
     /**
      * 注册群系音乐映射（短 id，自动补全 defaultNamespace）。
+     * <p>
+     * 同一群系可多次调用，每首曲目会被追加到曲目列表中，
+     * 播放时从中随机选择一首。
      *
      * @param biomeId   群系 path（相对于 defaultNamespace）
      * @param musicName 音乐注册名称（如 "dream_meadow"）
      */
     public void registerBiomeMusic(String biomeId, String musicName) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(defaultNamespace, biomeId);
-        biomeMusicMap.put(id, musicName);
+        biomeMusicMap.computeIfAbsent(id, k -> new ArrayList<>()).add(musicName);
     }
 
     /**
      * 注册群系音乐映射（完整 ResourceLocation）。
+     * <p>
+     * 同一群系可多次调用，每首曲目会被追加到曲目列表中。
      */
     public void registerBiomeMusic(ResourceLocation biomeId, String musicName) {
-        biomeMusicMap.put(biomeId, musicName);
+        biomeMusicMap.computeIfAbsent(biomeId, k -> new ArrayList<>()).add(musicName);
     }
 
     /**
@@ -59,10 +66,11 @@ public class BiomeMusicTable {
     }
 
     /**
-     * 获取群系对应的音乐名称；无映射时返回 null。
+     * 获取群系对应的音乐名称列表（可能有多首曲目，播放时随机选一首）；
+     * 无映射时返回空列表。
      */
-    public String getMusicForBiome(ResourceLocation biomeId) {
-        return biomeMusicMap.get(biomeId);
+    public List<String> getMusicForBiome(ResourceLocation biomeId) {
+        return biomeMusicMap.getOrDefault(biomeId, List.of());
     }
 
     /**

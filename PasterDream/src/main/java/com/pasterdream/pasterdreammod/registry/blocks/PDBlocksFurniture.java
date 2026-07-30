@@ -12,7 +12,6 @@ import com.pasterdream.pasterdreammod.block.PicnicBasketBlock;
 import com.pasterdream.pasterdreammod.block.ShadowBedBlock;
 import com.pasterdream.pasterdreammod.block.ShadowBrazierBlock;
 import com.pasterdream.pasterdreammod.block.ShadowDeskBlock;
-import com.pasterdream.pasterdreammod.block.ShadowDungeonPortalBlock;
 import com.pasterdream.pasterdreammod.block.ShadowTrap0Block;
 import com.pasterdream.pasterdreammod.block.TrueShadowBedBlock;
 import com.pasterdream.pasterdreammod.block.TwilightLanternBlock;
@@ -236,11 +235,6 @@ public class PDBlocksFurniture {
     /** 阴影火盆 (shadow_brazier)：影烛点燃触发敌潮，燃尽掉钥匙 */
     public static final DeferredBlock<ShadowBrazierBlock> SHADOW_BRAZIER =
             PDBlocks.BLOCKS.registerBlock("shadow_brazier", ShadowBrazierBlock::new, unbreakableStone());
-
-    /** 暗影地牢传送门 (shadow_dungeon_portal)：随机 5 层地牢 */
-    public static final DeferredBlock<ShadowDungeonPortalBlock> SHADOW_DUNGEON_PORTAL =
-            PDBlocks.BLOCKS.registerBlock("shadow_dungeon_portal", ShadowDungeonPortalBlock::new,
-                    unbreakableStone());
 
     /** 阴影陷阱 (shadow_trap_0)：踩踏束缚 + 破坏刷暗影之手 */
     public static final DeferredBlock<ShadowTrap0Block> SHADOW_TRAP_0 =
