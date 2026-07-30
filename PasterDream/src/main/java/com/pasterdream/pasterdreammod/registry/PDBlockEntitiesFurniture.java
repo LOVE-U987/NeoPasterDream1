@@ -188,13 +188,6 @@ public class PDBlockEntitiesFurniture {
                     .validBlock(PDBlocksFurniture.SHADOW_BRAZIER)
                     .build();
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<W4GeoDataBlockEntity>> SHADOW_DUNGEON_PORTAL =
-            BlockEntityAPI.<W4GeoDataBlockEntity>createBlockEntity("shadow_dungeon_portal")
-                    .factory((pos, state) -> new W4GeoDataBlockEntity(
-                            PDBlockEntitiesFurniture.SHADOW_DUNGEON_PORTAL.get(), pos, state))
-                    .validBlock(PDBlocksFurniture.SHADOW_DUNGEON_PORTAL)
-                    .build();
-
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<W4GeoDataBlockEntity>> SHADOW_TRAP_0 =
             BlockEntityAPI.<W4GeoDataBlockEntity>createBlockEntity("shadow_trap_0")
                     .factory((pos, state) -> new W4GeoDataBlockEntity(

@@ -137,6 +137,17 @@ public class VolumeSoundInstance extends AbstractTickableSoundInstance {
     }
 
     /**
+     * 获取渐变目标音量。
+     * <p>
+     * 由 {@link ModMusicManager} 用于检测配置变更后是否需更新当前播放音量。
+     *
+     * @return 目标音量值（0.0 ~ 1.0）
+     */
+    public float getTargetVolume() {
+        return targetVolume;
+    }
+
+    /**
      * 每 tick 由 SoundEngine 调用 —— 步进音量渐变
      * <p>
      * SoundEngine 在调用本方法后会重新读取 {@link #getVolume()} 并应用到声道，

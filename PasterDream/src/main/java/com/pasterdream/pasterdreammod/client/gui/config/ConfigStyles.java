@@ -230,4 +230,22 @@ public final class ConfigStyles {
     public static final int COLOR_SCROLLBAR_THUMB = 0x554ECDC4;
     /** 滚动条滑块悬停 */
     public static final int COLOR_SCROLLBAR_THUMB_HOVER = 0x884ECDC4;
+
+    /**
+     * 线性插值两个 ARGB 颜色。
+     *
+     * @param a 起始颜色
+     * @param b 目标颜色
+     * @param t 插值因子（0.0 ~ 1.0）
+     * @return 插值后的 ARGB 颜色
+     */
+    public static int lerpColor(int a, int b, float t) {
+        int aA = (a >> 24) & 0xFF, aR = (a >> 16) & 0xFF, aG = (a >> 8) & 0xFF, aB = a & 0xFF;
+        int bA = (b >> 24) & 0xFF, bR = (b >> 16) & 0xFF, bG = (b >> 8) & 0xFF, bB = b & 0xFF;
+        int al = (int) (aA + (bA - aA) * t);
+        int r = (int) (aR + (bR - aR) * t);
+        int g = (int) (aG + (bG - aG) * t);
+        int bl = (int) (aB + (bB - aB) * t);
+        return (al << 24) | (r << 16) | (g << 8) | bl;
+    }
 }

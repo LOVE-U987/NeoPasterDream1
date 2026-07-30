@@ -84,6 +84,17 @@
       }
     ]
   },
+  "music.wind_journey": {
+    "category": "music",
+    "subtitle": "subtitle.pasterdream.music.wind_journey",
+    "sounds": [
+      {
+        "name": "pasterdream:music/wind_journey",
+        "stream": true,
+        "volume": 0.4
+      }
+    ]
+  },
   "wind_journey1": {
     "category": "record",
     "subtitle": "subtitle.pasterdream.wind_journey1",
@@ -113,7 +124,7 @@
       {
         "name": "pasterdream:music/wind_journey_midsummer",
         "stream": true,
-        "volume": 0.06
+        "volume": 0.3
       }
     ]
   },
@@ -124,7 +135,7 @@
       {
         "name": "pasterdream:music/dream_meadow_daisy",
         "stream": true,
-        "volume": 0.06
+        "volume": 0.5
       }
     ]
   },
@@ -190,7 +201,7 @@
       {
         "name": "pasterdream:music/wind_journey_midsummer",
         "stream": true,
-        "volume": 0.3
+        "volume": 0.09
       }
     ]
   },
@@ -201,7 +212,7 @@
       {
         "name": "pasterdream:music/dream_meadow_daisy",
         "stream": true,
-        "volume": 0.3
+        "volume": 0.15
       }
     ]
   },

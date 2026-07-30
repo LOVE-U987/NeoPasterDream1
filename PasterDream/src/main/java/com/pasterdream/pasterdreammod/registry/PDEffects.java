@@ -917,8 +917,9 @@ public class PDEffects {
             if (entity.getY() > 260 && entity.getY() <= 310) {
                 entity.getPersistentData().putDouble("cloudmist_percent", (entity.getY() - 260) * 2);
                 if (entity.getY() >= 306 && entity instanceof ServerPlayer player
-                        && isAdvancementDone(player, "achievement_b_0")
-                        && isAdvancementDone(player, "achievement_hide_16")) {
+                        && (player.isCreative()
+                            || (isAdvancementDone(player, "achievement_b_0")
+                                && isAdvancementDone(player, "achievement_hide_16")))) {
                     ServerLevel windJourney = player.server.getLevel(WIND_JOURNEY_WORLD);
                     // 防御性：维度未加载时 getLevel 为 null，静默跳过
                     if (windJourney != null && player.level().dimension() != WIND_JOURNEY_WORLD) {

@@ -78,11 +78,8 @@ public class TheEndlessBookOfDreamSeekersMenu extends SimpleContainerMenu {
     }
 
     /**
-     * 处理 GUI 按钮点击（服务端调用）
-     *
-     * @param player 点击按钮的玩家
-     * @param id     按钮 ID（{@link #BUTTON_IMPORT}）
-     * @return 是否处理了该按钮
+     * 处理 GUI 按钮点击（服务端调用）。
+     * 执行方块实体导入（槽 1 → 槽 0），数据保存在方块实体的 NBT 中。
      */
     @Override
     public boolean clickMenuButton(Player player, int id) {

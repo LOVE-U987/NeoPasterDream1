@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "minecraft:flint"
+  },
+  "base": {
+    "item": "minecraft:diamond_axe"
+  },
+  "addition": {
+    "item": "pasterdream:titanium_upgrade"
+  },
+  "result": {
+    "id": "pasterdream:titanium_axe",
+    "count": 1
+  }
+}

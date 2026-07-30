@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "minecraft:prismarine_crystals"
+  },
+  "base": {
+    "item": "pasterdream:tide_sword"
+  },
+  "addition": {
+    "item": "pasterdream:blue_heart_of_the_sea"
+  },
+  "result": {
+    "id": "pasterdream:true_tide_sword",
+    "count": 1
+  }
+}

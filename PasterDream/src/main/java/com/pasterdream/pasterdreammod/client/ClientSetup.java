@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.client;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.client.model.Modelslime;
+import com.pasterdream.pasterdreammod.client.model.SporeEntityModel;
 import com.pasterdream.pasterdreammod.client.gui.config.PDConfigScreen;
 import com.pasterdream.pasterdreammod.client.particle.*;
 import com.pasterdream.pasterdreammod.client.particle.AuroraGlowParticle;
@@ -21,6 +22,7 @@ import com.pasterdream.pasterdreammod.client.screen.DyedreamDeskScreen;
 import com.pasterdream.pasterdreammod.client.screen.MeltdreamChestScreen;
 import com.pasterdream.pasterdreammod.client.screen.ShadowChestScreen;
 import com.pasterdream.pasterdreammod.client.screen.TheEndlessBookOfDreamSeekersScreen;
+import com.pasterdream.pasterdreammod.client.screen.PlayerBookScreen;
 import com.pasterdream.pasterdreammod.client.screen.WeaponWorkshopScreen;
 import com.pasterdream.pasterdreammod.client.screen.WorkshopAnvilScreen;
 import com.pasterdream.pasterdreammod.client.screen.WorkshopBlastScreen;
@@ -107,6 +109,9 @@ public class ClientSetup {
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(Modelslime.LAYER_LOCATION, Modelslime::createBodyLayer);
         PDDebugLogger.mainDebug("[ClientSetup] 注册模型层: {}", Modelslime.LAYER_LOCATION);
+
+        event.registerLayerDefinition(SporeEntityModel.LAYER_LOCATION, SporeEntityModel::createBodyLayer);
+        PDDebugLogger.mainDebug("[ClientSetup] 注册模型层: {}", SporeEntityModel.LAYER_LOCATION);
     }
 
     /**
@@ -149,6 +154,9 @@ public class ClientSetup {
 
         event.register(PDMenus.THE_ENDLESS_BOOK_OF_DREAM_SEEKERS.get(), TheEndlessBookOfDreamSeekersScreen::new);
         PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: the_endless_book_of_dream_seekers → TheEndlessBookOfDreamSeekersScreen");
+
+        event.register(PDMenus.PLAYER_BOOK.get(), PlayerBookScreen::new);
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: player_book → PlayerBookScreen");
 
         // ==================== [分区W] 武器工坊群 ====================
 

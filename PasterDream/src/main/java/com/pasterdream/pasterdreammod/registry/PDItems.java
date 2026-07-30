@@ -956,7 +956,6 @@ public class PDItems {
     public static final DeferredItem<?> GUARD_CRYSTAL = PDItemsFurniture.GUARD_CRYSTAL;
     public static final DeferredItem<?> LOST_SWORD_BLOCK = PDItemsFurniture.LOST_SWORD_BLOCK;
     public static final DeferredItem<?> SHADOW_BRAZIER = PDItemsFurniture.SHADOW_BRAZIER;
-    public static final DeferredItem<?> SHADOW_DUNGEON_PORTAL = PDItemsFurniture.SHADOW_DUNGEON_PORTAL;
     public static final DeferredItem<?> SHADOW_TRAP_0 = PDItemsFurniture.SHADOW_TRAP_0;
     public static final DeferredItem<?> TWILIGHT_LANTERN = PDItemsFurniture.TWILIGHT_LANTERN;
 

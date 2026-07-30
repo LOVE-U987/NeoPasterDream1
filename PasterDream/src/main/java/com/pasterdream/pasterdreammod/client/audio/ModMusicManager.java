@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.client.audio;
 
 import com.pasterdream.pasterdreammod.config.PDClientConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
@@ -48,8 +49,8 @@ public class ModMusicManager {
 
     // ==================== 常量 ====================
 
-    /** BGM 目标音量（与 sounds.json 中的 volume 一致） */
-    public static final float TARGET_VOLUME = 0.3f;
+    /** BGM 基础音量倍率（音乐文件原始音量 × 0.4，配合 config 默认值 1.0 得到舒适音量） */
+    private static final float TARGET_VOLUME = 0.4f;
 
     /**
      * 获取实际生效的 BGM 音量。
@@ -145,12 +146,12 @@ public class ModMusicManager {
      */
     public void initializeDefaultBiomeMusic() {
         registerBiomeMusic("biome_dyedream_0", "dyedream_world");
-        registerBiomeMusic("biome_dyedream_1", "dream_heath");
+        registerBiomeMusic("biome_dyedream_1", "dream_heath", "dream_meadow_daisy");
         registerBiomeMusic("biome_dyedream_2", "dream_delta");
         registerBiomeMusic("biome_dyedream_3", "dream_taiga");
         registerBiomeMusic("biome_dyedream_deep_ocean", "sweetdream_music");
         registerBiomeMusic("biome_dyedream_mushroom_plains", "snowfall_dream_music");
-        registerBiomeMusic("biome_dyedream_dense_forest", "dream_meadow_daisy");
+        registerBiomeMusic("biome_dyedream_dense_forest", "dream_heath", "dream_meadow_daisy");
         registerBiomeMusic("wind_journey_biome_0", "wind_journey_departure", "wind_journey_midsummer");
         registerBiomeMusic("wind_journey_biome_1", "wind_journey_departure", "wind_journey_midsummer");
     }
@@ -264,8 +265,8 @@ public class ModMusicManager {
         if (biomeKeyOptional.isEmpty()) return;
         ResourceLocation currentBiomeId = biomeKeyOptional.get().location();
 
-        String candidate = biomeMusicRegistry.getMusicForBiome(currentBiomeId);
-        List<String> candidates = candidate != null ? List.of(candidate) : List.of();
+        // 获取当前群系的候选曲目列表（可能有多首，随机选一首播放）
+        List<String> candidates = biomeMusicRegistry.getMusicForBiome(currentBiomeId);
         String musicName = selectTrack(currentBiomeId, candidates);
         long gameTick = mc.level.getGameTime();
 
@@ -364,6 +365,18 @@ public class ModMusicManager {
                 if (!deduplication.isBgmActive(playbackController.getCurrentMusicName())) {
                     playbackController.restart();
                 }
+            }
+        }
+
+        // ==================== 实时音量同步：配置变更后即时更新当前 BGM 音量 ====================
+        // 当玩家在配置界面调整了群系独立音量或主音量后，当前播放的声音实例的目标音量
+        // 不会被自动更新。此处每 tick 检查配置值与实例值，有偏差则平滑过渡。
+        SoundInstance currentSound = playbackController.getCurrentSound();
+        currentMusicName = playbackController.getCurrentMusicName();
+        if (currentSound instanceof VolumeSoundInstance vsi && currentMusicName != null) {
+            float configuredVolume = getEffectiveVolume(currentMusicName);
+            if (Math.abs(vsi.getTargetVolume() - configuredVolume) > 0.001f) {
+                vsi.fadeTo(configuredVolume, 10);
             }
         }
     }

@@ -58,6 +58,7 @@ public class SporeEntityEntity extends ConfigurableImmunityEntity {
         this.moveControl = new FlyingMoveControl(this, 10, true);
         this.setNoGravity(true);
         this.xpReward = 0;
+        this.setNoAi(false);
     }
 
     // ======================== 属性 ========================
@@ -153,6 +154,12 @@ public class SporeEntityEntity extends ConfigurableImmunityEntity {
     @Override
     protected void pushEntities() {
         // 不可推动其他实体
+    }
+
+    @Override
+    public void setNoGravity(boolean ignored) {
+        // 原模组逻辑：强制始终无重力，禁止外部修改
+        super.setNoGravity(true);
     }
 
     @Override

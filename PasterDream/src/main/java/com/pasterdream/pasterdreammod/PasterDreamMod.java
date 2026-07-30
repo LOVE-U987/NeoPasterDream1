@@ -49,6 +49,7 @@ import net.minecraft.data.DataGenerator;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -74,6 +75,11 @@ public class PasterDreamMod {
      * 模组日志记录器
      */
     public static final Logger LOGGER = LoggerFactory.getLogger(PasterDreamMod.class);
+
+    /** 客户端配置的 ModConfig 引用，用于在配置界面保存时持久化到 TOML 文件 */
+    public static ModConfig clientModConfig;
+    /** 通用配置的 ModConfig 引用，用于在配置界面保存时持久化到 TOML 文件 */
+    public static ModConfig commonModConfig;
 
     static {
         ApiCodeGenConfig.setDefaultBasePath(ApiCodeGenConfig.DEFAULT_BASE_PATH);
@@ -206,8 +212,10 @@ public class PasterDreamMod {
         PDRecipeTypes.register(modEventBus);
 
         // 注册配置文件（文件名与原版一致：PasterDream-Client.toml / PasterDream-Common.toml）
-        modContainer.registerConfig(ModConfig.Type.CLIENT, PDClientConfig.SPEC, "PasterDream-Client.toml");
-        modContainer.registerConfig(ModConfig.Type.COMMON, PDCommonConfig.SPEC, "PasterDream-Common.toml");
+        // 使用 ConfigTracker.INSTANCE.registerConfig() 直接注册以捕获 ModConfig 引用，
+        // 用于配置界面保存时将修改持久化到 TOML 文件
+        clientModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.CLIENT, PDClientConfig.SPEC, modContainer, "PasterDream-Client.toml");
+        commonModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.COMMON, PDCommonConfig.SPEC, modContainer, "PasterDream-Common.toml");
 
         // 注入调试日志开关（必须在配置文件注册之后，否则 Supplier 读取不到实际值）
         PDDebugLogger.setApiLogger(PasterDreamAPI.LOGGER);

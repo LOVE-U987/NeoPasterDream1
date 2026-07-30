@@ -562,7 +562,6 @@ public class PDBlocks {
     public static final DeferredBlock<?> GUARD_CRYSTAL = PDBlocksFurniture.GUARD_CRYSTAL;
     public static final DeferredBlock<?> LOST_SWORD_BLOCK = PDBlocksFurniture.LOST_SWORD_BLOCK;
     public static final DeferredBlock<?> SHADOW_BRAZIER = PDBlocksFurniture.SHADOW_BRAZIER;
-    public static final DeferredBlock<?> SHADOW_DUNGEON_PORTAL = PDBlocksFurniture.SHADOW_DUNGEON_PORTAL;
     public static final DeferredBlock<?> SHADOW_TRAP_0 = PDBlocksFurniture.SHADOW_TRAP_0;
     public static final DeferredBlock<?> TWILIGHT_LANTERN = PDBlocksFurniture.TWILIGHT_LANTERN;
 
