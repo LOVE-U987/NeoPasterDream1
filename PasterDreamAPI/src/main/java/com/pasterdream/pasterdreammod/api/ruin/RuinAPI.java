@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 遗迹/结构注册 API —— 将繁琐的结构注册集中管理，提供高效简洁的注册方式
  * <p>
@@ -66,7 +67,7 @@ public final class RuinAPI {
     public static final DeferredRegister<StructureType<?>> REGISTRY =
             DeferredRegister.create(
                     net.minecraft.core.registries.Registries.STRUCTURE_TYPE,
-                    PasterDreamAPI.MOD_ID
+                    PasterDreamAPI.DATA_NAMESPACE
             );
 
     /** 结构结果缓存 */
@@ -98,8 +99,8 @@ public final class RuinAPI {
      * @return {@link RuinBuilder} 实例
      */
     public static RuinBuilder createRuin(String name) {
-        PasterDreamAPI.LOGGER.debug("[RuinAPI] 🏛️ 开始创建遗迹构建器: {}", name);
-        return new RuinBuilder(PasterDreamAPI.MOD_ID, name, REGISTRY);
+        PDDebugLogger.apiDebug("[RuinAPI] 🏛️ 开始创建遗迹构建器: {}", name);
+        return new RuinBuilder(PasterDreamAPI.DATA_NAMESPACE, name, REGISTRY);
     }
 
     /**
@@ -114,15 +115,15 @@ public final class RuinAPI {
      * @throws IllegalStateException 如果对应的结构尚未注册
      */
     public static StructureSetBuilder createRuinSet(String ruinName, String setName) {
-        PasterDreamAPI.LOGGER.debug("[RuinAPI] 🔗 开始创建结构集构建器: ruin={}, setName={}", ruinName, setName);
+        PDDebugLogger.apiDebug("[RuinAPI] 🔗 开始创建结构集构建器: ruin={}, setName={}", ruinName, setName);
         RuinResult result = getRuin(ruinName).orElseThrow(() -> {
             PasterDreamAPI.LOGGER.error("[RuinAPI] ❌ createRuinSet 失败: 找不到结构 [{}]", ruinName);
             return new IllegalStateException(
                     "RuinAPI.createRuinSet: 找不到结构 [" + ruinName + "]，请先调用 createRuin().build()"
             );
         });
-        PasterDreamAPI.LOGGER.debug("[RuinAPI] 找到关联结构 [{}]: structureKey={}", ruinName, result.structureKey());
-        return new StructureSetBuilder(PasterDreamAPI.MOD_ID, ruinName, setName);
+        PDDebugLogger.apiDebug("[RuinAPI] 找到关联结构 [{}]: structureKey={}", ruinName, result.structureKey());
+        return new StructureSetBuilder(PasterDreamAPI.DATA_NAMESPACE, ruinName, setName);
     }
 
     // ======================== 查询方法 ========================
@@ -135,7 +136,7 @@ public final class RuinAPI {
      */
     public static Optional<RuinResult> getRuin(String name) {
         RuinResult result = REGISTERED_RUINS.get(name);
-        PasterDreamAPI.LOGGER.debug("[RuinAPI] 🔍 查询遗迹: {} → {}", name, result != null ? "已找到" : "未找到");
+        PDDebugLogger.apiDebug("[RuinAPI] 🔍 查询遗迹: {} → {}", name, result != null ? "已找到" : "未找到");
         return Optional.ofNullable(result);
     }
 
@@ -146,7 +147,7 @@ public final class RuinAPI {
      */
     public static Map<String, RuinResult> getAllRuins() {
         int count = REGISTERED_RUINS.size();
-        PasterDreamAPI.LOGGER.debug("[RuinAPI] 📊 获取所有已注册遗迹: 共 {} 个", count);
+        PDDebugLogger.apiDebug("[RuinAPI] 📊 获取所有已注册遗迹: 共 {} 个", count);
         return Collections.unmodifiableMap(REGISTERED_RUINS);
     }
 
@@ -158,7 +159,7 @@ public final class RuinAPI {
      */
     public static boolean hasRuin(String name) {
         boolean exists = REGISTERED_RUINS.containsKey(name);
-        PasterDreamAPI.LOGGER.debug("[RuinAPI] 🔍 检查遗迹是否存在: {} → {}", name, exists);
+        PDDebugLogger.apiDebug("[RuinAPI] 🔍 检查遗迹是否存在: {} → {}", name, exists);
         return exists;
     }
 
@@ -173,7 +174,7 @@ public final class RuinAPI {
         if (result != null && result.name() != null) {
             REGISTERED_RUINS.put(result.name(), result);
             int total = REGISTERED_RUINS.size();
-            PasterDreamAPI.LOGGER.debug("[RuinAPI] 📦 已缓存遗迹: {} | 缓存总数: {} | structureKey={} | hasSetKey={}",
+            PDDebugLogger.apiDebug("[RuinAPI] 📦 已缓存遗迹: {} | 缓存总数: {} | structureKey={} | hasSetKey={}",
                     result.name(), total, result.structureKey(), result.hasSetKey());
         } else {
             PasterDreamAPI.LOGGER.warn("[RuinAPI] ⚠️ 尝试缓存 null 或无名遗迹结果");

@@ -8,7 +8,6 @@ import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
 import com.pasterdream.pasterdreammod.api.item.ItemAPI;
 import com.pasterdream.pasterdreammod.api.item.model.MigrationCategory;
 import com.pasterdream.pasterdreammod.api.item.model.ToolSpec.ToolType;
-import com.pasterdream.pasterdreammod.entity.projectile.SpellProjectileEntity;
 import com.pasterdream.pasterdreammod.item.*;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
@@ -25,7 +24,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PlaceOnWaterBlockItem;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.food.FoodProperties;
@@ -134,36 +132,6 @@ public class PDItemsFunctional {
     public static final DeferredItem<Item> GUIDING_DRUG = PDItems.ITEMS.register("guiding_drug",
             () -> new GuidingDrugItem(new Item.Properties()));
 
-    // ==================== 法术物品（梦境炼药锅炼制产出，还原自原版 PasterDream） ====================
-    // 蓄力后松开发射对应法术投射物（SpellProjectileEntity），命中效果见 SpellEffects
-    public static final DeferredItem<Item> LIGHTNING_SPELL = PDItems.ITEMS.register("lightning_spell",
-            () -> new SpellItem(new Item.Properties().stacksTo(8).rarity(Rarity.COMMON),
-                    (level, caster) -> SpellProjectileEntity.shoot(level, caster,
-                            SpellProjectileEntity.SpellType.LIGHTNING),
-                    "item.pasterdream.lightning_spell.desc0"));
-    public static final DeferredItem<Item> POISON_SPELL = PDItems.ITEMS.register("poison_spell",
-            () -> new SpellItem(new Item.Properties().stacksTo(8).rarity(Rarity.COMMON),
-                    (level, caster) -> SpellProjectileEntity.shoot(level, caster,
-                            SpellProjectileEntity.SpellType.POISON),
-                    "item.pasterdream.poison_spell.desc0"));
-    public static final DeferredItem<Item> HEALING_SPELL = PDItems.ITEMS.register("healing_spell",
-            () -> new SpellItem(new Item.Properties().stacksTo(8).rarity(Rarity.COMMON),
-                    (level, caster) -> SpellProjectileEntity.shoot(level, caster,
-                            SpellProjectileEntity.SpellType.HEALING),
-                    "item.pasterdream.healing_spell.desc0",
-                    "item.pasterdream.healing_spell.desc1"));
-    public static final DeferredItem<Item> FURY_SPELL = PDItems.ITEMS.register("fury_spell",
-            () -> new SpellItem(new Item.Properties().stacksTo(8).rarity(Rarity.COMMON),
-                    (level, caster) -> SpellProjectileEntity.shoot(level, caster,
-                            SpellProjectileEntity.SpellType.FURY),
-                    "item.pasterdream.fury_spell.desc0",
-                    "item.pasterdream.fury_spell.desc1",
-                    "item.pasterdream.fury_spell.desc2"));
-    public static final DeferredItem<Item> ICE_SPELL = PDItems.ITEMS.register("ice_spell",
-            () -> new SpellItem(new Item.Properties().stacksTo(8).rarity(Rarity.COMMON),
-                    (level, caster) -> SpellProjectileEntity.shoot(level, caster,
-                            SpellProjectileEntity.SpellType.ICE),
-                    "item.pasterdream.ice_spell.desc0"));
     public static final DeferredItem<Item> HEART_CHOCOLATE_0 = PDItems.ITEMS.register("heart_chocolate_0",
             () -> new HeartChocolate0Item(new Item.Properties()));
     public static final DeferredItem<Item> HEART_CHOCOLATE_1 = PDItems.ITEMS.register("heart_chocolate_1",
@@ -694,6 +662,81 @@ public class PDItemsFunctional {
     public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_DYEDREAM_TREE_ICY =
             PDItems.ITEMS.register("debug_wand_dyedream_tree_icy",
                     () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "dyedream_tree_icy"));
+
+
+    // ==================== 结构方块补全调试水晶 ====================
+    // 以下对应 PDStructureBlock 中尚未有独立调试水晶的结构方块，
+    // 右键复现原结构方块的随机抽号、偏移与旋转逻辑。
+
+    /** 调试水晶 - 染梦水晶球（对应 structure_block_6） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_CRYSTAL_BALL =
+            PDItems.ITEMS.register("debug_wand_crystal_ball",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 6));
+
+    /** 调试水晶 - 染梦浮空石柱（对应 structure_block_8） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_STONE_PILLAR_SKY =
+            PDItems.ITEMS.register("debug_wand_stone_pillar_sky",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 8));
+
+    /** 调试水晶 - 暮影之笼（对应 structure_block_9） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_SHADOW_WORLD_DOOR =
+            PDItems.ITEMS.register("debug_wand_shadow_world_door",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 9));
+
+    /** 调试水晶 - 阴影坟墓（对应 structure_block_10） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_SHADOW_TOMB =
+            PDItems.ITEMS.register("debug_wand_shadow_tomb",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 10));
+
+    /** 调试水晶 - 阴影灯笼链（对应 structure_block_11） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_SHADOW_CHAIN =
+            PDItems.ITEMS.register("debug_wand_shadow_chain",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 11));
+
+    /** 调试水晶 - 坟墓庇护所（对应 structure_block_13） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_SHADOW_SHELTER =
+            PDItems.ITEMS.register("debug_wand_shadow_shelter",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 13));
+
+    /** 调试水晶 - 阴影虫巢（对应 structure_block_14） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_SHADOW_FUNGUS_NEST =
+            PDItems.ITEMS.register("debug_wand_shadow_fungus_nest",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 14));
+
+    /** 调试水晶 - 暗影高炉（对应 structure_block_15） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_SHADOW_FOUNDRY =
+            PDItems.ITEMS.register("debug_wand_shadow_foundry",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 15));
+
+    /** 调试水晶 - 暗影地牢（对应 structure_block_17） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_SHADOW_DUNGEON =
+            PDItems.ITEMS.register("debug_wand_shadow_dungeon",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 17));
+
+    /** 调试水晶 - 阴影蘑菇小屋（对应 structure_block_18） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_SHADOW_FUNGUS_HOUSE =
+            PDItems.ITEMS.register("debug_wand_shadow_fungus_house",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 18));
+
+    /** 调试水晶 - 阴影地下工作室（对应 structure_block_19） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_SHADOW_UNDERGROUND_WORKROOM =
+            PDItems.ITEMS.register("debug_wand_shadow_underground_workroom",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 19));
+
+    /** 调试水晶 - 大风泊树（对应 structure_block_21） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_WINDMOOR_TREE =
+            PDItems.ITEMS.register("debug_wand_windmoor_tree",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 21));
+
+    /** 调试水晶 - 热气球（对应 structure_block_22） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_HOT_AIR_BALLOON =
+            PDItems.ITEMS.register("debug_wand_hot_air_balloon",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 22));
+
+    /** 调试水晶 - 圣诞树（对应 structure_block_23） */
+    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_CHRISTMAS_TREE =
+            PDItems.ITEMS.register("debug_wand_christmas_tree",
+                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 23));
 
 
     // ==================== BOSS 相关物品 ====================

@@ -74,11 +74,12 @@ public class PDItemsMusic {
 
     /**
      * 风之旅途唱片 (wind_journey_disc)
-     * PasterDream - 风之旅途，时长 4240 tick（约 212 秒）
+     * "Wonderful World" by ChakYoun9，风之旅途 BGM
      */
     public static final DeferredItem<PastedreamMusicDiscItem> WIND_JOURNEY_DISC =
             ItemAPI.registerCustom("wind_journey_disc",
-                    () -> new PastedreamMusicDiscItem(PasterDreamMod.MOD_ID, "wind_journey_disc", "wind_journey"));
+                    () -> new PastedreamMusicDiscItem(PasterDreamMod.MOD_ID, "wind_journey_disc", "wind_journey",
+                            "Wonderful World", "ChakYoun9", "Wonderful World"));
 
     /**
      * 风之旅途·其二唱片 (wind_journey_1_disc)
@@ -87,6 +88,24 @@ public class PDItemsMusic {
     public static final DeferredItem<PastedreamMusicDiscItem> WIND_JOURNEY_1_DISC =
             ItemAPI.registerCustom("wind_journey_1_disc",
                     () -> new PastedreamMusicDiscItem(PasterDreamMod.MOD_ID, "wind_journey_1_disc", "wind_journey1"));
+
+    /**
+     * 风之旅途·启程唱片 (wind_journey_departure_disc)
+     * PasterDream - 《Departure》原创音乐，风之旅途 BGM
+     */
+    public static final DeferredItem<PastedreamMusicDiscItem> WIND_JOURNEY_DEPARTURE_DISC =
+            ItemAPI.registerCustom("wind_journey_departure_disc",
+                    () -> new PastedreamMusicDiscItem(PasterDreamMod.MOD_ID, "wind_journey_departure_disc", "wind_journey_departure",
+                            "Departure", "PasterDream 2 OST", "风之旅途"));
+
+    /**
+     * 风之旅途·盛夏光年唱片 (wind_journey_midsummer_disc)
+     * "盛夏光年" by R7CKY，风之旅途 BGM
+     */
+    public static final DeferredItem<PastedreamMusicDiscItem> WIND_JOURNEY_MIDSUMMER_DISC =
+            ItemAPI.registerCustom("wind_journey_midsummer_disc",
+                    () -> new PastedreamMusicDiscItem(PasterDreamMod.MOD_ID, "wind_journey_midsummer_disc", "wind_journey_midsummer",
+                            "盛夏光年", "R7CKY", "盛夏光年"));
 
 
     // ==================== 染梦群系背景音乐唱片（使用 API registerCustom 注册） ====================
@@ -99,6 +118,15 @@ public class PDItemsMusic {
             ItemAPI.registerCustom("dream_meadow_disc",
                     () -> new PastedreamMusicDiscItem(PasterDreamMod.MOD_ID, "dream_meadow_disc", "dream_meadow",
                             "Nocturne in Paris", "Tony Anderson", "Immanuel"));
+
+    /**
+     * 梦幻草原·Daisy 唱片 (dream_meadow_daisy_disc)
+     * "Daisy (Instrumental)" by 花鋏キョウ，染梦密集森林 BGM
+     */
+    public static final DeferredItem<PastedreamMusicDiscItem> DREAM_MEADOW_DAISY_DISC =
+            ItemAPI.registerCustom("dream_meadow_daisy_disc",
+                    () -> new PastedreamMusicDiscItem(PasterDreamMod.MOD_ID, "dream_meadow_daisy_disc", "dream_meadow_daisy",
+                            "Daisy (Instrumental)", "花鋏キョウ", "Daisy"));
 
     /**
      * 梦幻荒原唱片 (dream_heath_disc)
@@ -132,7 +160,9 @@ public class PDItemsMusic {
         ItemAPI.markMigrated(MigrationCategory.MUSIC_DISC,
                 "sweetdream_disc", "snowfalldream_disc", "aaroncos_disc", "dyedream_world_disc",
                 "wind_journey_disc", "wind_journey_1_disc",
-                "dream_meadow_disc", "dream_heath_disc", "dream_taiga_disc", "dream_delta_disc");
+                "wind_journey_departure_disc", "wind_journey_midsummer_disc",
+                "dream_meadow_disc", "dream_meadow_daisy_disc",
+                "dream_heath_disc", "dream_taiga_disc", "dream_delta_disc");
     }
 
 }

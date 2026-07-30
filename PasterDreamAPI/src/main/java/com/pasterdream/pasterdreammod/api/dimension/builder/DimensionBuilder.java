@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 维度配置构建器 —— 采用 Builder 模式链式配置维度类型和维度实例
  * <p>
@@ -573,7 +574,7 @@ public class DimensionBuilder {
 
         if (generateJsonFiles) {
             try {
-                PasterDreamAPI.LOGGER.debug("[DimensionBuilder] ===== 开始生成维度资源文件: {} =====", dimensionName);
+                PDDebugLogger.apiDebug("[DimensionBuilder] ===== 开始生成维度资源文件: {} =====", dimensionName);
 
                 saveDimensionTypeJson();
                 saveDimensionJson();
@@ -583,7 +584,7 @@ public class DimensionBuilder {
                     registerMusic();
                 }
 
-                PasterDreamAPI.LOGGER.debug("[DimensionBuilder] ✅ 维度资源文件生成完成: {}", dimensionName);
+                PDDebugLogger.apiDebug("[DimensionBuilder] ✅ 维度资源文件生成完成: {}", dimensionName);
             } catch (IOException e) {
                 PasterDreamAPI.LOGGER.error("[DimensionBuilder] ❌ 无法生成维度资源文件 [{}]: {}", dimensionName, e.getMessage(), e);
                 throw new RuntimeException("DimensionBuilder: 无法生成维度资源文件 [" + dimensionName + "]", e);
@@ -591,7 +592,7 @@ public class DimensionBuilder {
         } else if (musicName != null) {
             // 即使不生成 JSON 文件，也要注册 SoundEvent
             ApiSoundRegistry.registerDimensionMusic(musicName);
-            PasterDreamAPI.LOGGER.debug("[DimensionBuilder] 已注册背景音乐 SoundEvent: {}.music.{}, 请确保 .ogg 文件存在",
+            PDDebugLogger.apiDebug("[DimensionBuilder] 已注册背景音乐 SoundEvent: {}.music.{}, 请确保 .ogg 文件存在",
                     modId, musicName);
         }
 
@@ -667,7 +668,7 @@ public class DimensionBuilder {
             GSON.toJson(root, writer);
         }
 
-        PasterDreamAPI.LOGGER.debug("[DimensionBuilder] ✅ 已生成 dimension_type JSON → {}", outputFile);
+        PDDebugLogger.apiDebug("[DimensionBuilder] ✅ 已生成 dimension_type JSON → {}", outputFile);
     }
 
     /**
@@ -742,7 +743,7 @@ public class DimensionBuilder {
             GSON.toJson(root, writer);
         }
 
-        PasterDreamAPI.LOGGER.debug("[DimensionBuilder] ✅ 已生成 dimension JSON → {}", outputFile);
+        PDDebugLogger.apiDebug("[DimensionBuilder] ✅ 已生成 dimension JSON → {}", outputFile);
     }
 
     /**
@@ -777,7 +778,7 @@ public class DimensionBuilder {
             GSON.toJson(merged, writer);
         }
 
-        PasterDreamAPI.LOGGER.debug("[DimensionBuilder] ✅ 已更新 sounds.json → {}", outputFile);
+        PDDebugLogger.apiDebug("[DimensionBuilder] ✅ 已更新 sounds.json → {}", outputFile);
     }
 
     /**

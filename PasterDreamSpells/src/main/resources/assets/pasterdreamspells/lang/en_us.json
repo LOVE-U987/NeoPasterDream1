@@ -1,0 +1,37 @@
+{
+  "effect.pasterdreamspells.fury_spell_buff": "Fury Spell",
+  "effect.pasterdreamspells.fury_spell_buff.description": "Greatly increases attack damage, attack speed and movement speed.",
+  "effect.pasterdreamspells.ice_spell_buff": "Frozen",
+  "effect.pasterdreamspells.ice_spell_buff.description": "Encased in ice — unable to move or deal damage.",
+
+  "entity.pasterdreamspells.fury_spell_entity": "Fury Spell Entity",
+  "entity.pasterdreamspells.fury_spell_projectile": "Fury Spell",
+  "entity.pasterdreamspells.healing_spell_entity": "Healing Spell Entity",
+  "entity.pasterdreamspells.healing_spell_projectile": "Healing Spell",
+  "entity.pasterdreamspells.ice_spell_projectile": "Ice Spell",
+  "entity.pasterdreamspells.lightning_spell_projectile": "Lightning Spell",
+  "entity.pasterdreamspells.poison_spell_projectile": "Poison Spell",
+
+  "item.pasterdreamspells.fury_spell": "Fury Spell",
+  "item.pasterdreamspells.fury_spell.desc0": "§7▪ §9Grants brief fury to players in an 8*8 area",
+  "item.pasterdreamspells.fury_spell.desc1": "§7▪ §9Greatly increases attack damage, attack speed and movement speed",
+  "item.pasterdreamspells.fury_spell.desc2": "§7▪ §9Reduces the cooldown of Flash Step and combat skills",
+  "item.pasterdreamspells.healing_spell": "Healing Spell",
+  "item.pasterdreamspells.healing_spell.desc0": "§7▪ §9Creates a healing field in a 5*5 area for 20 seconds",
+  "item.pasterdreamspells.healing_spell.desc1": "§7▪ §9Players and peaceful creatures inside recover 5% of max health per second",
+  "item.pasterdreamspells.ice_spell": "Ice Spell",
+  "item.pasterdreamspells.ice_spell.desc0": "§7▪ §9Freezes entities in a 7*7 area",
+  "item.pasterdreamspells.lightning_spell": "Lightning Spell",
+  "item.pasterdreamspells.lightning_spell.desc0": "§7▪ §9Summons 4 random lightning strikes in a 5*5 area",
+  "item.pasterdreamspells.poison_spell": "Poison Spell",
+  "item.pasterdreamspells.poison_spell.desc0": "§7▪ §9Inflicts Poison IV, Weakness and Slowness on creatures in a 7*7 area",
+
+  "itemGroup.pasterdreamspells": "§4PasterDream丨Spells",
+
+  "subtitle.pasterdreamspells.fury_spell": "Fury field roars",
+  "subtitle.pasterdreamspells.fury_spell_0": "Fury spell hits",
+  "subtitle.pasterdreamspells.healing_spell": "Healing spell soothes",
+  "subtitle.pasterdreamspells.ice_spell": "Ice spell freezes",
+  "subtitle.pasterdreamspells.lightning_spell": "Lightning spell strikes",
+  "subtitle.pasterdreamspells.poison_spell": "Poison spell seeps"
+}

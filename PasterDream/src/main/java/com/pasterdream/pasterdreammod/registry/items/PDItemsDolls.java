@@ -54,14 +54,14 @@ public class PDItemsDolls {
             () -> new UuzDoll0DisplayItem(new Item.Properties()));
 
     /**
-     * 琴雨梦纪念玩偶 (love_u_doll)
+     * LOVE_U拉乌酱玩偶 (love_u_doll)
      * 可放置方块玩偶，右键放置后再次右键可让玩偶抱住手中的物品
      */
     public static final DeferredItem<LoveUDollDisplayItem> LOVE_U_DOLL = PDItems.ITEMS.register("love_u_doll",
             () -> new LoveUDollDisplayItem());
 
     /**
-     * 幼幼紫纪念彩蛋玩偶 (eoul_doll)
+     * EOUL小幽灵玩偶 (eoul_doll)
      * 可放置方块玩偶，右键放置后再次右键可让玩偶抱住手中的物品
      */
     public static final DeferredItem<EoulDollDisplayItem> EOUL_DOLL = PDItems.ITEMS.register("eoul_doll",

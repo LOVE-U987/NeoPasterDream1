@@ -33,15 +33,12 @@ import com.pasterdream.pasterdreammod.entity.mob.TerrorbeakEntity;
 import com.pasterdream.pasterdreammod.entity.mob.ThundercloudEntity;
 import com.pasterdream.pasterdreammod.entity.mob.WeakenessTerrorbeakEntity;
 import com.pasterdream.pasterdreammod.entity.mob.WindKnightEntity;
-import com.pasterdream.pasterdreammod.entity.mob.FurySpellFieldEntity;
-import com.pasterdream.pasterdreammod.entity.mob.HealingSpellFieldEntity;
 import com.pasterdream.pasterdreammod.entity.mob.TerraswordWaveEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.BoneWingFireBallProjectileEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.LightningProjectileEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.MoltengoldWandProjectileEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.PinkeggProjectileEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.ShadowVortexBookProjectileEntity;
-import com.pasterdream.pasterdreammod.entity.projectile.SpellProjectileEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.ShadowMagicballEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.SquealWaveProjectileEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.SquealWaveWandProjectileEntity;
@@ -838,96 +835,6 @@ public class PDEntities {
                             .clientTrackingRange(4)
                             .updateInterval(20)
                             .build("squeal_wave_projectile"));
-
-    // ==================== 法术投射物与立场（还原自原版法术战斗模块） ====================
-
-    /**
-     * 闪电法术投射物 (lightning_spell_projectile)
-     * 由闪电法术物品蓄力施放，命中后在 5*5 区域生成 4 次随机落雷。
-     */
-    public static final Supplier<EntityType<SpellProjectileEntity>> LIGHTNING_SPELL_PROJECTILE =
-            ENTITY_TYPES.register("lightning_spell_projectile",
-                    () -> EntityType.Builder.<SpellProjectileEntity>of(SpellProjectileEntity::new, MobCategory.MISC)
-                            .sized(0.5f, 0.5f)
-                            .clientTrackingRange(4)
-                            .updateInterval(20)
-                            .build("lightning_spell_projectile"));
-
-    /**
-     * 剧毒法术投射物 (poison_spell_projectile)
-     * 命中后对 7*7 区域发动三波剧毒攻势。
-     */
-    public static final Supplier<EntityType<SpellProjectileEntity>> POISON_SPELL_PROJECTILE =
-            ENTITY_TYPES.register("poison_spell_projectile",
-                    () -> EntityType.Builder.<SpellProjectileEntity>of(SpellProjectileEntity::new, MobCategory.MISC)
-                            .sized(0.5f, 0.5f)
-                            .clientTrackingRange(4)
-                            .updateInterval(20)
-                            .build("poison_spell_projectile"));
-
-    /**
-     * 治疗法术投射物 (healing_spell_projectile)
-     * 命中后生成治疗立场实体。
-     */
-    public static final Supplier<EntityType<SpellProjectileEntity>> HEALING_SPELL_PROJECTILE =
-            ENTITY_TYPES.register("healing_spell_projectile",
-                    () -> EntityType.Builder.<SpellProjectileEntity>of(SpellProjectileEntity::new, MobCategory.MISC)
-                            .sized(0.5f, 0.5f)
-                            .clientTrackingRange(4)
-                            .updateInterval(20)
-                            .build("healing_spell_projectile"));
-
-    /**
-     * 狂暴法术投射物 (fury_spell_projectile)
-     * 命中后生成狂暴立场实体。
-     */
-    public static final Supplier<EntityType<SpellProjectileEntity>> FURY_SPELL_PROJECTILE =
-            ENTITY_TYPES.register("fury_spell_projectile",
-                    () -> EntityType.Builder.<SpellProjectileEntity>of(SpellProjectileEntity::new, MobCategory.MISC)
-                            .sized(0.5f, 0.5f)
-                            .clientTrackingRange(4)
-                            .updateInterval(20)
-                            .build("fury_spell_projectile"));
-
-    /**
-     * 冰冻法术投射物 (ice_spell_projectile)
-     * 命中后对 7*7 区域发动 5 波冻结。
-     */
-    public static final Supplier<EntityType<SpellProjectileEntity>> ICE_SPELL_PROJECTILE =
-            ENTITY_TYPES.register("ice_spell_projectile",
-                    () -> EntityType.Builder.<SpellProjectileEntity>of(SpellProjectileEntity::new, MobCategory.MISC)
-                            .sized(0.5f, 0.5f)
-                            .clientTrackingRange(4)
-                            .updateInterval(20)
-                            .build("ice_spell_projectile"));
-
-    /**
-     * 狂暴法术立场 (fury_spell_entity)
-     * 纯展示立场实体，90 tick 后消散。注册名与原版一致。
-     * 尺寸/防火与原版一致：2f x 0.1f，fireImmune
-     */
-    public static final Supplier<EntityType<FurySpellFieldEntity>> FURY_SPELL_ENTITY =
-            ENTITY_TYPES.register("fury_spell_entity",
-                    () -> EntityType.Builder.<FurySpellFieldEntity>of(FurySpellFieldEntity::new, MobCategory.MISC)
-                            .sized(2f, 0.1f)
-                            .fireImmune()
-                            .clientTrackingRange(64 / 16)
-                            .updateInterval(3)
-                            .build("fury_spell_entity"));
-
-    /**
-     * 治疗法术立场 (healing_spell_entity)
-     * 可受击的治疗立场生物，400 tick 内每 tick 治疗 5*5 范围。注册名与原版一致。
-     * 尺寸/防火与原版一致：0.1f x 0.1f，fireImmune
-     */
-    public static final Supplier<EntityType<HealingSpellFieldEntity>> HEALING_SPELL_ENTITY =
-            ENTITY_TYPES.register("healing_spell_entity",
-                    () -> EntityType.Builder.<HealingSpellFieldEntity>of(HealingSpellFieldEntity::new, MobCategory.MONSTER)
-                            .sized(0.1f, 0.1f)
-                            .fireImmune()
-                            .clientTrackingRange(64 / 16)
-                            .updateInterval(3)
-                            .build("healing_spell_entity"));
 
     // ==================== 法杖武器投射物（W2-D 还原自原版法杖战斗模块） ====================
     // 注册名与 pd_porting_manifest.json 的 renames 一致（去 projectile_ 前缀的新版惯例）

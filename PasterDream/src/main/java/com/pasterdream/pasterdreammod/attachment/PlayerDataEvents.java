@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.attachment;
 
+import com.pasterdream.pasterdreammod.api.san.SanData;
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDGameRules;

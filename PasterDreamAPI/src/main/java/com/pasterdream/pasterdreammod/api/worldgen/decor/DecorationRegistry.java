@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 装饰物注册管理中心 —— 统一管理所有装饰物特征的注册与条目追踪
  * <p>
@@ -35,7 +36,7 @@ public class DecorationRegistry {
      * 特征延迟注册器 —— 用于注册 {@link GenericDecorationFeature}
      */
     public static final DeferredRegister<Feature<?>> FEATURES =
-            DeferredRegister.create(Registries.FEATURE, PasterDreamAPI.MOD_ID);
+            DeferredRegister.create(Registries.FEATURE, PasterDreamAPI.DATA_NAMESPACE);
 
     /**
      * 已注册的装饰物条目列表（不可变视图对外暴露）
@@ -56,7 +57,7 @@ public class DecorationRegistry {
      */
     public static void registerCustomGenerator(String key, ICustomDecorationGenerator generator) {
         CUSTOM_GENERATORS.put(key, generator);
-        PasterDreamAPI.LOGGER.debug("[DecorationRegistry] 已注册自定义生成器: {}", key);
+        PDDebugLogger.apiDebug("[DecorationRegistry] 已注册自定义生成器: {}", key);
     }
 
     /**
@@ -117,11 +118,11 @@ public class DecorationRegistry {
                                                        String targetBiome, GenerationStep.Decoration step, int rarity) {
         ResourceKey<ConfiguredFeature<?, ?>> configuredKey = ResourceKey.create(
                 Registries.CONFIGURED_FEATURE,
-                ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.MOD_ID, name)
+                ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.DATA_NAMESPACE, name)
         );
         ResourceKey<PlacedFeature> placedKey = ResourceKey.create(
                 Registries.PLACED_FEATURE,
-                ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.MOD_ID, name)
+                ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.DATA_NAMESPACE, name)
         );
 
         DecorationEntry entry = new DecorationEntry(
@@ -130,7 +131,7 @@ public class DecorationRegistry {
         );
         REGISTERED.add(entry);
 
-        PasterDreamAPI.LOGGER.debug("[DecorationRegistry] 已注册装饰物: {} (类型={}, 群系={}, 稀有度={})",
+        PDDebugLogger.apiDebug("[DecorationRegistry] 已注册装饰物: {} (类型={}, 群系={}, 稀有度={})",
                 name, config.type(), targetBiome, rarity);
 
         return placedKey;
@@ -152,6 +153,6 @@ public class DecorationRegistry {
      */
     public static void clear() {
         REGISTERED.clear();
-        PasterDreamAPI.LOGGER.debug("[DecorationRegistry] 已清除所有装饰物条目");
+        PDDebugLogger.apiDebug("[DecorationRegistry] 已清除所有装饰物条目");
     }
 }

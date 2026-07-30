@@ -13,6 +13,7 @@ PD_BLOCKS = PD_ITEMS_DIR / "PDBlocks.java"
 PD_ITEMS_SUBDIR = PD_ITEMS_DIR / "items"
 PD_BLOCKS_SUBDIR = PD_ITEMS_DIR / "blocks"
 LANG_FILE = ROOT / "PasterDream/src/main/resources/assets/pasterdream/lang/zh_cn.json"
+EN_LANG_FILE = ROOT / "PasterDream/src/main/resources/assets/pasterdream/lang/en_us.json"
 
 # 只匹配字面量完整注册名；排除 "foo_" + i 这类拼接前缀（否则会误报 structure_block_/dreamnotes_）
 REGISTER_PATTERNS = [
@@ -91,6 +92,20 @@ def collect_names_from_files(files):
     return names
 
 
+def check_missing(names, lang_keys, prefix):
+    """检查给定注册名在语言键中是否缺失。"""
+    return sorted(n for n in names if f"{prefix}.{n}" not in lang_keys)
+
+
+def print_missing_section(title, missing):
+    """打印某一类缺失的翻译键。"""
+    if not missing:
+        return
+    print(f"\n[缺失] {title}（共 {len(missing)} 个）:")
+    for name in missing:
+        print(f"  - {name}")
+
+
 def main():
     item_files = [PD_ITEMS] + sorted(PD_ITEMS_SUBDIR.glob("PDItems*.java"))
     block_files = [PD_BLOCKS] + sorted(PD_BLOCKS_SUBDIR.glob("PDBlocks*.java"))
@@ -103,32 +118,39 @@ def main():
     item_names -= block_names
 
     with LANG_FILE.open("r", encoding="utf-8") as f:
-        lang_keys = set(json.load(f).keys())
+        zh_keys = set(json.load(f).keys())
+    with EN_LANG_FILE.open("r", encoding="utf-8") as f:
+        en_keys = set(json.load(f).keys())
 
-    missing_blocks = sorted(n for n in block_names if f"block.pasterdream.{n}" not in lang_keys)
-    missing_items = sorted(n for n in item_names if f"item.pasterdream.{n}" not in lang_keys)
-    has_missing = missing_blocks or missing_items
+    zh_missing_blocks = check_missing(block_names, zh_keys, "block.pasterdream")
+    zh_missing_items = check_missing(item_names, zh_keys, "item.pasterdream")
+    en_missing_blocks = check_missing(block_names, en_keys, "block.pasterdream")
+    en_missing_items = check_missing(item_names, en_keys, "item.pasterdream")
+    en_only_missing_keys = sorted(zh_keys - en_keys)
+
+    has_missing = any([
+        zh_missing_blocks, zh_missing_items,
+        en_missing_blocks, en_missing_items,
+        en_only_missing_keys,
+    ])
 
     print("=" * 60)
     print("语言文件完整性检查结果")
     print("=" * 60)
     print(f"PDItems 注册数: {len(item_names)}")
     print(f"PDBlocks 注册数: {len(block_names)}")
-    print(f"zh_cn.json 键总数: {len(lang_keys)}")
+    print(f"zh_cn.json 键总数: {len(zh_keys)}")
+    print(f"en_us.json 键总数: {len(en_keys)}")
     print("-" * 60)
 
-    if missing_blocks:
-        print(f"\n[缺失] block.pasterdream.* 翻译键（共 {len(missing_blocks)} 个）:")
-        for name in missing_blocks:
-            print(f"  - block.pasterdream.{name}")
-
-    if missing_items:
-        print(f"\n[缺失] item.pasterdream.* 翻译键（PDItems 直接注册，共 {len(missing_items)} 个）:")
-        for name in missing_items:
-            print(f"  - item.pasterdream.{name}")
+    print_missing_section("zh_cn.json block.pasterdream.* 翻译键", zh_missing_blocks)
+    print_missing_section("zh_cn.json item.pasterdream.* 翻译键", zh_missing_items)
+    print_missing_section("en_us.json block.pasterdream.* 翻译键", en_missing_blocks)
+    print_missing_section("en_us.json item.pasterdream.* 翻译键", en_missing_items)
+    print_missing_section("en_us.json 相比 zh_cn.json 缺失的语言键", en_only_missing_keys)
 
     if not has_missing:
-        print("\n✅ 所有注册项均已找到对应的翻译键。")
+        print("\n✅ 所有注册项在中英文语言文件中均已找到对应的翻译键。")
 
     print("-" * 60)
     return 1 if has_missing else 0

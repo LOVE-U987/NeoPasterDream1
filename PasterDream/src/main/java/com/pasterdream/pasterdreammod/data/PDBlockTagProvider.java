@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.data;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.data.ApiBlockTagProvider;
+import com.pasterdream.pasterdreammod.api.doll.DollAPI;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -118,5 +119,11 @@ public class PDBlockTagProvider extends ApiBlockTagProvider {
                 PDBlocks.WINDMOOR_DOOR.get(),
                 PDBlocks.WINDMOOR_TRAPDOOR.get()
         );
+
+        // ---- DollAPI 玩偶方块（木质玩偶，使用斧挖掘） ----
+        var mineableAxe = tag(BlockTags.MINEABLE_WITH_AXE);
+        for (var reg : DollAPI.getRegistrations()) {
+            mineableAxe.add(reg.block().get());
+        }
     }
 }

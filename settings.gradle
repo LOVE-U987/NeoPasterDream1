@@ -13,3 +13,6 @@ rootProject.name = 'PasterDreamParent'
 
 include 'PasterDreamAPI'
 include 'PasterDream'
+include 'PasterDreamSanity'
+include 'PasterDreamMeltDream'
+include 'PasterDreamSpells'

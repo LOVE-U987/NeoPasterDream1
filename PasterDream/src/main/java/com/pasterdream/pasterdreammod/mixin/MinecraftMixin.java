@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * Minecraft 类混合注入
  * <p>
@@ -75,7 +76,7 @@ public class MinecraftMixin {
             Holder<Biome> biomeHolder = player.level().getBiome(player.blockPosition());
             biomeHolder.value().getBackgroundMusic().ifPresent(music -> {
                 if (music.replaceCurrentMusic()) {
-                    PasterDreamMod.LOGGER.debug("[MixinMusic] 使用群系BGM替代创造模式音乐: {}",
+                    PDDebugLogger.mainDebug("[MixinMusic] 使用群系BGM替代创造模式音乐: {}",
                             music.getEvent().value().getLocation());
                     cir.setReturnValue(music);
                 }

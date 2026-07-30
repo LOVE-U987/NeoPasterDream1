@@ -13,6 +13,8 @@ import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -61,10 +63,17 @@ public class PDItemsFoods {
     public static final DeferredItem<Item> DREAM_COTTON_CANDY = PDItems.ITEMS.registerSimpleItem("dream_cotton_candy",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.625f).alwaysEdible().build()));
     public static final DeferredItem<Item> YINHUL_COTTON_CANDY = PDItems.ITEMS.register("yinhul_cotton_candy",
-            () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.75f).alwaysEdible()
-                    .effect(() -> new MobEffectInstance(PDEffects.SAN_INCREASE, 1, 9), 1.0f)
-                    .effect(() -> new MobEffectInstance(PDEffects.MELT_DREAM_ENERGY_INCREASE, 1, 19), 1.0f)
-                    .build())));
+            () -> {
+                FoodProperties.Builder builder = new FoodProperties.Builder()
+                        .nutrition(6).saturationModifier(0.75f).alwaysEdible();
+                // San 相关效果已拆分到 PasterDreamSanity；未安装时不附加该效果
+                BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.fromNamespaceAndPath("pasterdream", "san_increase"))
+                        .ifPresent(holder -> builder.effect(() -> new MobEffectInstance(holder, 1, 9), 1.0f));
+                // 融梦能量效果已拆分到 PasterDreamMeltDream；未安装时不附加该效果
+                BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.fromNamespaceAndPath("pasterdream", "melt_dream_energy_increase"))
+                        .ifPresent(holder -> builder.effect(() -> new MobEffectInstance(holder, 1, 19), 1.0f));
+                return new Item(new Item.Properties().food(builder.build()));
+            });
     public static final DeferredItem<Item> DYEDREAM_FLOWER_TEA = PDItems.ITEMS.register("dyedream_flower_tea",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build()), PDItems.GLASS_CUP::get));
     public static final DeferredItem<Item> DYEDREAM_FRUIT_BUNCAKE = PDItems.ITEMS.registerSimpleItem("dyedream_fruit_buncake",
@@ -123,13 +132,7 @@ public class PDItemsFoods {
             () -> new GlassDrinkItem(new Item.Properties()
                     .craftRemainder(Items.BOWL)
                     .stacksTo(64)
-                    .food(new FoodProperties.Builder()
-                            .nutrition(0)
-                            .saturationModifier(0f)
-                            .alwaysEdible()
-                            .effect(() -> new MobEffectInstance(PDEffects.MELT_DREAM_ENERGY_INCREASE, 1, 0), 1.0f)
-                            .effect(() -> new MobEffectInstance(PDEffects.FONDILLUSION_BUFF.holder(), 6000, 0), 1.0f)
-                            .build()), () -> Items.BOWL) {
+                    .food(buildQueerSoupFood().build()), () -> Items.BOWL) {
                 @Override
                 public int getUseDuration(ItemStack stack, LivingEntity entity) {
                     return 24;
@@ -155,5 +158,23 @@ public class PDItemsFoods {
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(2).saturationModifier(0.1f).alwaysEdible().build()), PDItems.GLASS_CUP::get));
     public static final DeferredItem<Item> SILVER_FOX_COTTON_CANDY = PDItems.ITEMS.registerSimpleItem("silver_fox_cotton_candy",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.75f).alwaysEdible().build()));
+
+    /**
+     * 构建奇异炖菜的食物属性。
+     * <p>
+     * 融梦能量增加效果已拆分到 PasterDreamMeltDream；未安装该附属模组时不附加该效果。
+     *
+     * @return 奇异炖菜食物属性构建器
+     */
+    private static FoodProperties.Builder buildQueerSoupFood() {
+        FoodProperties.Builder builder = new FoodProperties.Builder()
+                .nutrition(0)
+                .saturationModifier(0f)
+                .alwaysEdible()
+                .effect(() -> new MobEffectInstance(PDEffects.FONDILLUSION_BUFF.holder(), 6000, 0), 1.0f);
+        BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.fromNamespaceAndPath("pasterdream", "melt_dream_energy_increase"))
+                .ifPresent(holder -> builder.effect(() -> new MobEffectInstance(holder, 1, 0), 1.0f));
+        return builder;
+    }
 
 }

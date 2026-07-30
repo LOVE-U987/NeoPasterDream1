@@ -36,7 +36,10 @@ public class PDCreativeTabsDisc {
                         output.accept(PDItems.DYEDREAM_WORLD_DISC.get());
                         output.accept(PDItems.WIND_JOURNEY_DISC.get());
                         output.accept(PDItems.WIND_JOURNEY_1_DISC.get());
+                        output.accept(PDItems.WIND_JOURNEY_DEPARTURE_DISC.get());
+                        output.accept(PDItems.WIND_JOURNEY_MIDSUMMER_DISC.get());
                         output.accept(PDItems.DREAM_MEADOW_DISC.get());
+                        output.accept(PDItems.DREAM_MEADOW_DAISY_DISC.get());
                         output.accept(PDItems.DREAM_HEATH_DISC.get());
                         output.accept(PDItems.DREAM_TAIGA_DISC.get());
                         output.accept(PDItems.DREAM_DELTA_DISC.get());

@@ -5,8 +5,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
+
+import net.minecraft.util.RandomSource;
 
 /**
  * 模组背景音乐管理器 —— 自定义维度的群系BGM交叉淡化过渡
@@ -58,6 +63,24 @@ public class ModMusicManager {
         return TARGET_VOLUME * PDClientConfig.BGM_MASTER_VOLUME.get().floatValue();
     }
 
+    /**
+     * 获取指定曲目的实际生效音量。
+     * <p>
+     * 计算方式：目标音量 × 主音量 × 曲目独立音量倍率。
+     * 未配置独立音量的曲目默认倍率为 1.0。
+     *
+     * @param musicName 音乐名称
+     * @return 实际播放音量（0.0 ~ 1.0）
+     */
+    public static float getEffectiveVolume(String musicName) {
+        float trackVolume = 1.0f;
+        Supplier<Double> volumeSupplier = PDClientConfig.getBgmVolume(musicName);
+        if (volumeSupplier != null) {
+            trackVolume = volumeSupplier.get().floatValue();
+        }
+        return TARGET_VOLUME * PDClientConfig.BGM_MASTER_VOLUME.get().floatValue() * trackVolume;
+    }
+
     /** 交叉淡化步数（每步 = 1 个游戏 tick ≈ 50ms，60步 ≈ 3秒） */
     public static final int CROSSFADE_STEPS = 60;
 
@@ -78,6 +101,12 @@ public class ModMusicManager {
 
     /** 上一个 tick 的群系 ID */
     private ResourceLocation previousBiomeId;
+
+    /** 每个群系当前选中的曲目（用于多曲目随机时避免每 tick 重新抽选） */
+    private final Map<ResourceLocation, String> biomeTrackSelection = new HashMap<>();
+
+    /** 曲目随机选择器 */
+    private final RandomSource trackRandom = RandomSource.create();
 
     /**
      * 构造函数 —— 通过依赖注入接收所有子系统
@@ -121,16 +150,31 @@ public class ModMusicManager {
         registerBiomeMusic("biome_dyedream_3", "dream_taiga");
         registerBiomeMusic("biome_dyedream_deep_ocean", "sweetdream_music");
         registerBiomeMusic("biome_dyedream_mushroom_plains", "snowfall_dream_music");
+        registerBiomeMusic("biome_dyedream_dense_forest", "dream_meadow_daisy");
+        registerBiomeMusic("wind_journey_biome_0", "wind_journey_departure", "wind_journey_midsummer");
+        registerBiomeMusic("wind_journey_biome_1", "wind_journey_departure", "wind_journey_midsummer");
     }
 
     /**
-     * 注册群系音乐映射
+     * 注册群系音乐映射（单首曲目）
      *
      * @param biomeId   群系 ID（相对于模组命名空间）
      * @param musicName 音乐注册名称（如 "dream_meadow"）
      */
     public void registerBiomeMusic(String biomeId, String musicName) {
         biomeMusicRegistry.registerBiomeMusic(biomeId, musicName);
+    }
+
+    /**
+     * 注册群系音乐映射（多首曲目随机播放）
+     *
+     * @param biomeId    群系 ID（相对于模组命名空间）
+     * @param musicNames 音乐注册名称列表
+     */
+    public void registerBiomeMusic(String biomeId, String... musicNames) {
+        for (String name : musicNames) {
+            biomeMusicRegistry.registerBiomeMusic(biomeId, name);
+        }
     }
 
     /**
@@ -220,7 +264,9 @@ public class ModMusicManager {
         if (biomeKeyOptional.isEmpty()) return;
         ResourceLocation currentBiomeId = biomeKeyOptional.get().location();
 
-        String musicName = resolveMusicName(currentBiomeId);
+        String candidate = biomeMusicRegistry.getMusicForBiome(currentBiomeId);
+        List<String> candidates = candidate != null ? List.of(candidate) : List.of();
+        String musicName = selectTrack(currentBiomeId, candidates);
         long gameTick = mc.level.getGameTime();
 
         // 当前正在播放的音乐被单独禁用 → 淡出停止
@@ -339,19 +385,33 @@ public class ModMusicManager {
     }
 
     /**
-     * 解析群系对应的有效音乐名称。
+     * 为指定群系选择一首可播放的曲目。
      * <p>
-     * 若群系无映射，或映射的音乐在配置中被单独禁用，则返回 null。
+     * 若群系已缓存选中曲目且该曲目仍可用，则直接复用；否则从候选列表中随机挑选一首。
+     * 多曲目群系（如风之旅途）会在进入群系时随机选定一首，直到离开该群系前保持不变，
+     * 避免每 tick 重新抽选导致 BGM 频繁切换。
      *
-     * @param biomeId 群系 ID
-     * @return 可播放的音乐名称；不可播放时返回 null
+     * @param biomeId   群系 ID
+     * @param candidates 候选曲目列表
+     * @return 可播放的音乐名称；无可用曲目时返回 null
      */
-    private String resolveMusicName(ResourceLocation biomeId) {
-        String name = biomeMusicRegistry.getMusicForBiome(biomeId);
-        if (name == null) {
+    private String selectTrack(ResourceLocation biomeId, List<String> candidates) {
+        if (candidates == null || candidates.isEmpty()) {
             return null;
         }
-        return isBgmEnabled(name) ? name : null;
+        String selected = biomeTrackSelection.get(biomeId);
+        if (selected != null && candidates.contains(selected) && isBgmEnabled(selected)) {
+            return selected;
+        }
+        List<String> enabled = candidates.stream()
+                .filter(this::isBgmEnabled)
+                .toList();
+        if (enabled.isEmpty()) {
+            return null;
+        }
+        selected = enabled.get(trackRandom.nextInt(enabled.size()));
+        biomeTrackSelection.put(biomeId, selected);
+        return selected;
     }
 
     /**

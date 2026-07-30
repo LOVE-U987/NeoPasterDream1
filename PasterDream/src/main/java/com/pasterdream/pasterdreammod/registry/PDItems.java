@@ -105,11 +105,6 @@ public class PDItems {
     public static final DeferredItem<?> FIG = PDItemsFunctional.FIG;
     public static final DeferredItem<?> GLASSJAR = PDItemsFunctional.GLASSJAR;
     public static final DeferredItem<?> GUIDING_DRUG = PDItemsFunctional.GUIDING_DRUG;
-    public static final DeferredItem<?> LIGHTNING_SPELL = PDItemsFunctional.LIGHTNING_SPELL;
-    public static final DeferredItem<?> POISON_SPELL = PDItemsFunctional.POISON_SPELL;
-    public static final DeferredItem<?> HEALING_SPELL = PDItemsFunctional.HEALING_SPELL;
-    public static final DeferredItem<?> FURY_SPELL = PDItemsFunctional.FURY_SPELL;
-    public static final DeferredItem<?> ICE_SPELL = PDItemsFunctional.ICE_SPELL;
     public static final DeferredItem<?> HEART_CHOCOLATE_0 = PDItemsFunctional.HEART_CHOCOLATE_0;
     public static final DeferredItem<?> HEART_CHOCOLATE_1 = PDItemsFunctional.HEART_CHOCOLATE_1;
     public static final DeferredItem<?> HEART_CHOCOLATE_2 = PDItemsFunctional.HEART_CHOCOLATE_2;
@@ -215,6 +210,20 @@ public class PDItems {
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_FANCY = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_FANCY;
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_GLOWING = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_GLOWING;
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_ICY = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_ICY;
+    public static final DeferredItem<?> DEBUG_WAND_CRYSTAL_BALL = PDItemsFunctional.DEBUG_WAND_CRYSTAL_BALL;
+    public static final DeferredItem<?> DEBUG_WAND_STONE_PILLAR_SKY = PDItemsFunctional.DEBUG_WAND_STONE_PILLAR_SKY;
+    public static final DeferredItem<?> DEBUG_WAND_SHADOW_WORLD_DOOR = PDItemsFunctional.DEBUG_WAND_SHADOW_WORLD_DOOR;
+    public static final DeferredItem<?> DEBUG_WAND_SHADOW_TOMB = PDItemsFunctional.DEBUG_WAND_SHADOW_TOMB;
+    public static final DeferredItem<?> DEBUG_WAND_SHADOW_CHAIN = PDItemsFunctional.DEBUG_WAND_SHADOW_CHAIN;
+    public static final DeferredItem<?> DEBUG_WAND_SHADOW_SHELTER = PDItemsFunctional.DEBUG_WAND_SHADOW_SHELTER;
+    public static final DeferredItem<?> DEBUG_WAND_SHADOW_FUNGUS_NEST = PDItemsFunctional.DEBUG_WAND_SHADOW_FUNGUS_NEST;
+    public static final DeferredItem<?> DEBUG_WAND_SHADOW_FOUNDRY = PDItemsFunctional.DEBUG_WAND_SHADOW_FOUNDRY;
+    public static final DeferredItem<?> DEBUG_WAND_SHADOW_DUNGEON = PDItemsFunctional.DEBUG_WAND_SHADOW_DUNGEON;
+    public static final DeferredItem<?> DEBUG_WAND_SHADOW_FUNGUS_HOUSE = PDItemsFunctional.DEBUG_WAND_SHADOW_FUNGUS_HOUSE;
+    public static final DeferredItem<?> DEBUG_WAND_SHADOW_UNDERGROUND_WORKROOM = PDItemsFunctional.DEBUG_WAND_SHADOW_UNDERGROUND_WORKROOM;
+    public static final DeferredItem<?> DEBUG_WAND_WINDMOOR_TREE = PDItemsFunctional.DEBUG_WAND_WINDMOOR_TREE;
+    public static final DeferredItem<?> DEBUG_WAND_HOT_AIR_BALLOON = PDItemsFunctional.DEBUG_WAND_HOT_AIR_BALLOON;
+    public static final DeferredItem<?> DEBUG_WAND_CHRISTMAS_TREE = PDItemsFunctional.DEBUG_WAND_CHRISTMAS_TREE;
     public static final DeferredItem<?> AARONCOS_ARENA_CREATE = PDItemsFunctional.AARONCOS_ARENA_CREATE;
     public static final DeferredItem<?> AARONCOS_ARENA_PORTALS = PDItemsFunctional.AARONCOS_ARENA_PORTALS;
     public static final DeferredItem<?> AARONCOS_HAND_CHEST = PDItemsFunctional.AARONCOS_HAND_CHEST;
@@ -474,7 +483,6 @@ public class PDItems {
     public static final DeferredItem<?> AARONCOS_LEFTHAND_0_SPAWN_EGG = PDItemsSpawnEggs.AARONCOS_LEFTHAND_0_SPAWN_EGG;
     public static final DeferredItem<?> AARONCOS_RIGHTHAND_0_SPAWN_EGG = PDItemsSpawnEggs.AARONCOS_RIGHTHAND_0_SPAWN_EGG;
     public static final DeferredItem<?> TERRASWORD_WAVE_SPAWN_EGG = PDItemsSpawnEggs.TERRASWORD_WAVE_SPAWN_EGG;
-    public static final DeferredItem<?> HEALING_SPELL_ENTITY_SPAWN_EGG = PDItemsSpawnEggs.HEALING_SPELL_ENTITY_SPAWN_EGG;
 
     // --- PDItemsMaterials ---
     public static final DeferredItem<?> TITANIUM_INGOT = PDItemsMaterials.TITANIUM_INGOT;
@@ -705,7 +713,6 @@ public class PDItems {
     public static final DeferredItem<?> EVASION_CLOAK = PDItemsCurios.EVASION_CLOAK;
     public static final DeferredItem<?> TURNBACK_CLOAK = PDItemsCurios.TURNBACK_CLOAK;
     public static final DeferredItem<?> DEGENERATE_BODYS = PDItemsCurios.DEGENERATE_BODYS;
-    public static final DeferredItem<?> WHITE_FLOWER_BODY = PDItemsCurios.WHITE_FLOWER_BODY;
     public static final DeferredItem<?> WIND_KNIGHT_FLAG = PDItemsCurios.WIND_KNIGHT_FLAG;
     public static final DeferredItem<?> TEST_CURIO = PDItemsCurios.TEST_CURIO;
     public static final DeferredItem<?> PALE_BONENEEDLE = PDItemsCurios.PALE_BONENEEDLE;
@@ -717,7 +724,10 @@ public class PDItems {
     public static final DeferredItem<?> DYEDREAM_WORLD_DISC = PDItemsMusic.DYEDREAM_WORLD_DISC;
     public static final DeferredItem<?> WIND_JOURNEY_DISC = PDItemsMusic.WIND_JOURNEY_DISC;
     public static final DeferredItem<?> WIND_JOURNEY_1_DISC = PDItemsMusic.WIND_JOURNEY_1_DISC;
+    public static final DeferredItem<?> WIND_JOURNEY_DEPARTURE_DISC = PDItemsMusic.WIND_JOURNEY_DEPARTURE_DISC;
+    public static final DeferredItem<?> WIND_JOURNEY_MIDSUMMER_DISC = PDItemsMusic.WIND_JOURNEY_MIDSUMMER_DISC;
     public static final DeferredItem<?> DREAM_MEADOW_DISC = PDItemsMusic.DREAM_MEADOW_DISC;
+    public static final DeferredItem<?> DREAM_MEADOW_DAISY_DISC = PDItemsMusic.DREAM_MEADOW_DAISY_DISC;
     public static final DeferredItem<?> DREAM_HEATH_DISC = PDItemsMusic.DREAM_HEATH_DISC;
     public static final DeferredItem<?> DREAM_TAIGA_DISC = PDItemsMusic.DREAM_TAIGA_DISC;
     public static final DeferredItem<?> DREAM_DELTA_DISC = PDItemsMusic.DREAM_DELTA_DISC;

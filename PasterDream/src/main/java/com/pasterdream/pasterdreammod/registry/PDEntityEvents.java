@@ -66,10 +66,6 @@ public class PDEntityEvents {
         // BOSS 实体
         EntityAPI.registerAttributes(event, "aaroncos_lefthand_0");
         EntityAPI.registerAttributes(event, "aaroncos_righthand_0");
-
-        // 法术立场实体（直接注册，非 EntityAPI 管理）
-        event.put(PDEntities.HEALING_SPELL_ENTITY.get(),
-                com.pasterdream.pasterdreammod.entity.mob.HealingSpellFieldEntity.createAttributes().build());
     }
 
     /**

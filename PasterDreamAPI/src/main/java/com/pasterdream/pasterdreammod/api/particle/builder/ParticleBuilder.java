@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 粒子类型构建器 —— 采用 Builder 模式链式配置和注册粒子类型
  * <p>
@@ -62,7 +63,7 @@ public class ParticleBuilder {
         this.modId = modId;
         this.name = name;
         this.texturePath = modId + ":" + name;
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] 创建粒子构建器: modId={}, name={}, 默认纹理={}", modId, name, texturePath);
+        PDDebugLogger.apiDebug("[ParticleBuilder] 创建粒子构建器: modId={}, name={}, 默认纹理={}", modId, name, texturePath);
     }
 
     /**
@@ -75,7 +76,7 @@ public class ParticleBuilder {
      * @return 粒子构建器实例
      */
     public static ParticleBuilder builder(String name) {
-        return new ParticleBuilder(PasterDreamAPI.MOD_ID, name);
+        return new ParticleBuilder(PasterDreamAPI.DATA_NAMESPACE, name);
     }
 
     /**
@@ -88,7 +89,7 @@ public class ParticleBuilder {
      */
     public ParticleBuilder alwaysShow() {
         this.alwaysShow = true;
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] {} → alwaysShow=true", name);
+        PDDebugLogger.apiDebug("[ParticleBuilder] {} → alwaysShow=true", name);
         return this;
     }
 
@@ -100,7 +101,7 @@ public class ParticleBuilder {
      */
     public ParticleBuilder alwaysShow(boolean alwaysShow) {
         this.alwaysShow = alwaysShow;
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] {} → alwaysShow={}", name, alwaysShow);
+        PDDebugLogger.apiDebug("[ParticleBuilder] {} → alwaysShow={}", name, alwaysShow);
         return this;
     }
 
@@ -115,7 +116,7 @@ public class ParticleBuilder {
      */
     public ParticleBuilder texture(String texturePath) {
         this.texturePath = texturePath;
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] {} → texture={}", name, texturePath);
+        PDDebugLogger.apiDebug("[ParticleBuilder] {} → texture={}", name, texturePath);
         return this;
     }
 
@@ -132,7 +133,7 @@ public class ParticleBuilder {
      */
     public ParticleBuilder withGravity(float gravity) {
         this.gravity = gravity;
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] {} → gravity={}", name, gravity);
+        PDDebugLogger.apiDebug("[ParticleBuilder] {} → gravity={}", name, gravity);
         return this;
     }
 
@@ -150,7 +151,7 @@ public class ParticleBuilder {
      */
     public ParticleBuilder generateJson(boolean generate) {
         this.generateJsonFiles = generate;
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] {} → generateJson={}", name, generate);
+        PDDebugLogger.apiDebug("[ParticleBuilder] {} → generateJson={}", name, generate);
         return this;
     }
 
@@ -164,7 +165,7 @@ public class ParticleBuilder {
      */
     public ParticleBuilder basePath(String basePath) {
         this.basePath = basePath;
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] {} → basePath={}", name, basePath);
+        PDDebugLogger.apiDebug("[ParticleBuilder] {} → basePath={}", name, basePath);
         return this;
     }
 
@@ -184,45 +185,45 @@ public class ParticleBuilder {
      */
     @SuppressWarnings("removal")
     public ParticleResult build() {
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] ===== 开始构建粒子: {} =====", name);
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder]   配置: alwaysShow={}, texture={}, gravity={}, generateJson={}",
+        PDDebugLogger.apiDebug("[ParticleBuilder] ===== 开始构建粒子: {} =====", name);
+        PDDebugLogger.apiDebug("[ParticleBuilder]   配置: alwaysShow={}, texture={}, gravity={}, generateJson={}",
                 alwaysShow, texturePath, gravity, generateJsonFiles);
 
         // 注册 SimpleParticleType
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] 注册 SimpleParticleType: {} (alwaysShow={})", name, alwaysShow);
+        PDDebugLogger.apiDebug("[ParticleBuilder] 注册 SimpleParticleType: {} (alwaysShow={})", name, alwaysShow);
         DeferredHolder<net.minecraft.core.particles.ParticleType<?>, SimpleParticleType> holder =
                 ParticleAPI.REGISTRY.register(name, () -> new SimpleParticleType(alwaysShow));
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] ✅ SimpleParticleType 已注册: {} | holder={}", name, holder);
+        PDDebugLogger.apiDebug("[ParticleBuilder] ✅ SimpleParticleType 已注册: {} | holder={}", name, holder);
 
         // 生成资源文件
         if (generateJsonFiles) {
             try {
-                PasterDreamAPI.LOGGER.debug("[ParticleBuilder] ===== 开始生成粒子资源文件: {} =====", name);
+                PDDebugLogger.apiDebug("[ParticleBuilder] ===== 开始生成粒子资源文件: {} =====", name);
 
                 // 生成 particles/{name}.json（粒子定义）
-                PasterDreamAPI.LOGGER.debug("[ParticleBuilder] 生成粒子定义 JSON: {}/{}.json", basePath, name);
+                PDDebugLogger.apiDebug("[ParticleBuilder] 生成粒子定义 JSON: {}/{}.json", basePath, name);
                 saveParticleJson();
 
                 // 生成 textures/particle/{name}.json（纹理元数据）
-                PasterDreamAPI.LOGGER.debug("[ParticleBuilder] 生成粒子纹理元数据: {} (gravity={})", name, gravity);
+                PDDebugLogger.apiDebug("[ParticleBuilder] 生成粒子纹理元数据: {} (gravity={})", name, gravity);
                 saveParticleTextureMetaJson();
 
-                PasterDreamAPI.LOGGER.debug("[ParticleBuilder] ✅ 粒子资源文件生成完成: {}", name);
+                PDDebugLogger.apiDebug("[ParticleBuilder] ✅ 粒子资源文件生成完成: {}", name);
             } catch (IOException e) {
                 PasterDreamAPI.LOGGER.error("[ParticleBuilder] ❌ 无法生成粒子资源文件 [{}]: {}", name, e.getMessage(), e);
                 throw new RuntimeException("ParticleBuilder: 无法生成粒子资源文件 [" + name + "]", e);
             }
         } else {
-            PasterDreamAPI.LOGGER.debug("[ParticleBuilder] ⏭️ 跳过 JSON 文件生成: {} (generateJson=false)", name);
+            PDDebugLogger.apiDebug("[ParticleBuilder] ⏭️ 跳过 JSON 文件生成: {} (generateJson=false)", name);
         }
 
         ParticleResult result = new ParticleResult(name, holder);
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] 创建 ParticleResult: name={}, holder={}", name, holder);
+        PDDebugLogger.apiDebug("[ParticleBuilder] 创建 ParticleResult: name={}, holder={}", name, holder);
 
         // 缓存到 ParticleAPI 中，方便后续查询
         ParticleAPI.cacheParticle(result);
 
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] ✅ 粒子构建完成: {} | result={}", name, result);
+        PDDebugLogger.apiDebug("[ParticleBuilder] ✅ 粒子构建完成: {} | result={}", name, result);
         return result;
     }
 
@@ -247,7 +248,7 @@ public class ParticleBuilder {
             GSON.toJson(root, writer);
         }
 
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] ✅ 已生成粒子定义 JSON → {}", outputFile);
+        PDDebugLogger.apiDebug("[ParticleBuilder] ✅ 已生成粒子定义 JSON → {}", outputFile);
     }
 
     /**
@@ -274,6 +275,6 @@ public class ParticleBuilder {
             GSON.toJson(root, writer);
         }
 
-        PasterDreamAPI.LOGGER.debug("[ParticleBuilder] ✅ 已生成粒子纹理元数据 → {}", outputFile);
+        PDDebugLogger.apiDebug("[ParticleBuilder] ✅ 已生成粒子纹理元数据 → {}", outputFile);
     }
 }

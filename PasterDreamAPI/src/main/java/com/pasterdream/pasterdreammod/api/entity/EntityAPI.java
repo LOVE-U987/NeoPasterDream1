@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.api.entity;
 import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
 import com.pasterdream.pasterdreammod.api.entity.builder.EntityBuilder;
 import com.pasterdream.pasterdreammod.api.entity.skill.EntitySkill;
+import com.pasterdream.pasterdreammod.api.entity.tag.EntityTagRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -26,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 实体注册 API —— 将繁琐的实体注册集中管理，提供高效简洁的注册方式
  * <p>
@@ -65,7 +67,7 @@ public final class EntityAPI {
      * }</pre>
      */
     public static final DeferredRegister<EntityType<?>> REGISTRY =
-            DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, PasterDreamAPI.MOD_ID);
+            DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, PasterDreamAPI.DATA_NAMESPACE);
 
     // ======================== 内部缓存 ========================
 
@@ -93,6 +95,7 @@ public final class EntityAPI {
         ATTRIBUTES_CACHE.clear();
         SPAWN_EGG_COLORS.clear();
         ENTITY_SKILLS.clear();
+        EntityTagRegistry.resetForTesting();
         spawnEggModelsOutputDir = null;
     }
 
@@ -112,8 +115,8 @@ public final class EntityAPI {
      * @return {@link EntityBuilder} 实例
      */
     public static EntityBuilder<?> createEntity(String name) {
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 开始创建实体构建器: {}", name);
-        return new EntityBuilder<>(REGISTRY, PasterDreamAPI.MOD_ID, name);
+        PDDebugLogger.apiDebug("[EntityAPI] 开始创建实体构建器: {}", name);
+        return new EntityBuilder<>(REGISTRY, PasterDreamAPI.DATA_NAMESPACE, name);
     }
 
     // ======================== 属性注册 ========================
@@ -128,20 +131,21 @@ public final class EntityAPI {
      * @param result 之前由 {@link #createEntity(String)} 返回的结果
      * @throws IllegalStateException 如果在 Builder 中未配置属性
      */
+    @SuppressWarnings("unchecked")
     public static void registerAttributes(
             EntityAttributeCreationEvent event,
             EntityResult<?> result) {
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 🔍 查找实体属性: {}", result.name());
+        PDDebugLogger.apiDebug("[EntityAPI] 🔍 查找实体属性: {}", result.name());
         Supplier<AttributeSupplier> supplier = ATTRIBUTES_CACHE.get(result.name());
         if (supplier == null) {
             PasterDreamAPI.LOGGER.error("[EntityAPI] ❌ 未找到实体 [{}] 的属性配置", result.name());
             throw new IllegalStateException(
                     "EntityAPI: 未找到实体 [" + result.name() + "] 的属性配置，请在 Builder 中调用 .attributes()");
         }
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 📊 注册实体属性: {} | entityType={}", result.name(), result.entityType());
+        PDDebugLogger.apiDebug("[EntityAPI] 📊 注册实体属性: {} | entityType={}", result.name(), result.entityType());
         // EntityAttributeCreationEvent 要求 EntityType<? extends LivingEntity>
         event.put((EntityType<? extends net.minecraft.world.entity.LivingEntity>) result.entityType(), supplier.get());
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] ✅ 已注册实体属性: {}", result.name());
+        PDDebugLogger.apiDebug("[EntityAPI] ✅ 已注册实体属性: {}", result.name());
     }
 
     /**
@@ -151,14 +155,15 @@ public final class EntityAPI {
      * @param result   之前由 {@link #createEntity(String)} 返回的结果
      * @param supplier {@link AttributeSupplier} 实例
      */
+    @SuppressWarnings("unchecked")
     public static void registerAttributes(
             EntityAttributeCreationEvent event,
             EntityResult<?> result,
             AttributeSupplier supplier) {
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 📊 注册实体属性（显式）: {} | entityType={}", result.name(), result.entityType());
+        PDDebugLogger.apiDebug("[EntityAPI] 📊 注册实体属性（显式）: {} | entityType={}", result.name(), result.entityType());
         // EntityAttributeCreationEvent 要求 EntityType<? extends LivingEntity>
         event.put((EntityType<? extends net.minecraft.world.entity.LivingEntity>) result.entityType(), supplier);
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] ✅ 已注册实体属性: {}", result.name());
+        PDDebugLogger.apiDebug("[EntityAPI] ✅ 已注册实体属性: {}", result.name());
     }
 
     /**
@@ -170,10 +175,11 @@ public final class EntityAPI {
      * @param entityName 实体注册名称（与 {@link #createEntity(String)} 传入的名称一致）
      * @throws IllegalStateException 如果未找到对应的实体注册结果或属性配置
      */
+    @SuppressWarnings("unchecked")
     public static void registerAttributes(
             EntityAttributeCreationEvent event,
             String entityName) {
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 🔍 按名称查找并注册实体属性: {}", entityName);
+        PDDebugLogger.apiDebug("[EntityAPI] 🔍 按名称查找并注册实体属性: {}", entityName);
         EntityResult<?> result = ENTITY_CACHE.get(entityName);
         if (result == null) {
             PasterDreamAPI.LOGGER.error("[EntityAPI] ❌ 未找到实体 [{}] 的注册结果", entityName);
@@ -185,10 +191,10 @@ public final class EntityAPI {
             throw new IllegalStateException(
                     "EntityAPI: 未找到实体 [" + entityName + "] 的属性配置，请在 Builder 中调用 .attributes()");
         }
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 注册实体属性: {} | entityType={}", entityName, result.entityType());
+        PDDebugLogger.apiDebug("[EntityAPI] 注册实体属性: {} | entityType={}", entityName, result.entityType());
         // EntityAttributeCreationEvent 要求 EntityType<? extends LivingEntity>
         event.put((EntityType<? extends net.minecraft.world.entity.LivingEntity>) result.entityType(), supplier.get());
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] ✅ 已注册实体属性: {}", entityName);
+        PDDebugLogger.apiDebug("[EntityAPI] ✅ 已注册实体属性: {}", entityName);
     }
 
     // ======================== 查询方法 ========================
@@ -201,7 +207,7 @@ public final class EntityAPI {
      */
     public static Optional<EntityType<?>> getEntityType(String name) {
         return Optional.ofNullable(ENTITY_CACHE.get(name)).map(result -> {
-            PasterDreamAPI.LOGGER.debug("[EntityAPI] 🔍 查询实体类型: {} → {}", name, result.entityType());
+            PDDebugLogger.apiDebug("[EntityAPI] 🔍 查询实体类型: {} → {}", name, result.entityType());
             return result.entityType();
         });
     }
@@ -214,7 +220,7 @@ public final class EntityAPI {
      */
     public static Optional<EntityResult<?>> getEntityResult(String name) {
         EntityResult<?> result = ENTITY_CACHE.get(name);
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 🔍 查询实体结果: {} → {}", name, result != null ? "已找到" : "未找到");
+        PDDebugLogger.apiDebug("[EntityAPI] 🔍 查询实体结果: {} → {}", name, result != null ? "已找到" : "未找到");
         return Optional.ofNullable(result);
     }
 
@@ -225,7 +231,7 @@ public final class EntityAPI {
      */
     public static Map<String, EntityResult<?>> getRegisteredEntities() {
         int count = ENTITY_CACHE.size();
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 📊 获取所有已注册实体: 共 {} 个", count);
+        PDDebugLogger.apiDebug("[EntityAPI] 📊 获取所有已注册实体: 共 {} 个", count);
         return Collections.unmodifiableMap(ENTITY_CACHE);
     }
 
@@ -239,7 +245,7 @@ public final class EntityAPI {
      */
     public static Optional<int[]> getSpawnEggColors(String name) {
         int[] colors = SPAWN_EGG_COLORS.get(name);
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 🥚 查询生成蛋颜色: {} → {}", name, colors != null ? "已配置" : "未配置");
+        PDDebugLogger.apiDebug("[EntityAPI] 🥚 查询生成蛋颜色: {} → {}", name, colors != null ? "已配置" : "未配置");
         return Optional.ofNullable(colors);
     }
 
@@ -254,10 +260,10 @@ public final class EntityAPI {
     public static List<EntitySkill> getEntitySkills(String entityName) {
         List<EntitySkill> skills = ENTITY_SKILLS.get(entityName);
         if (skills != null) {
-            PasterDreamAPI.LOGGER.debug("[EntityAPI] 🎯 查询实体技能: {} → {} 个技能", entityName, skills.size());
+            PDDebugLogger.apiDebug("[EntityAPI] 🎯 查询实体技能: {} → {} 个技能", entityName, skills.size());
             return Collections.unmodifiableList(skills);
         }
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 🎯 查询实体技能: {} → 未配置技能", entityName);
+        PDDebugLogger.apiDebug("[EntityAPI] 🎯 查询实体技能: {} → 未配置技能", entityName);
         return Collections.emptyList();
     }
 
@@ -273,12 +279,12 @@ public final class EntityAPI {
         if (skills != null) {
             for (EntitySkill skill : skills) {
                 if (skill.name().equals(skillName)) {
-                    PasterDreamAPI.LOGGER.debug("[EntityAPI] 🎯 查询实体技能: {}[{}] → 已找到", entityName, skillName);
+                    PDDebugLogger.apiDebug("[EntityAPI] 🎯 查询实体技能: {}[{}] → 已找到", entityName, skillName);
                     return Optional.of(skill);
                 }
             }
         }
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 🎯 查询实体技能: {}[{}] → 未找到", entityName, skillName);
+        PDDebugLogger.apiDebug("[EntityAPI] 🎯 查询实体技能: {}[{}] → 未找到", entityName, skillName);
         return Optional.empty();
     }
 
@@ -303,7 +309,7 @@ public final class EntityAPI {
     public static void cacheEntity(EntityResult<?> result) {
         ENTITY_CACHE.put(result.name(), result);
         int total = ENTITY_CACHE.size();
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 📦 已缓存实体: {} | 缓存总数: {} | entityClass={}", result.name(), total, result.entityClass().getSimpleName());
+        PDDebugLogger.apiDebug("[EntityAPI] 📦 已缓存实体: {} | 缓存总数: {} | entityClass={}", result.name(), total, result.entityClass().getSimpleName());
     }
 
     /**
@@ -315,7 +321,7 @@ public final class EntityAPI {
     public static void cacheAttributes(String name, Supplier<AttributeSupplier> attributeSupplier) {
         ATTRIBUTES_CACHE.put(name, attributeSupplier);
         int total = ATTRIBUTES_CACHE.size();
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 📦 已缓存实体属性: {} | 属性缓存总数: {}", name, total);
+        PDDebugLogger.apiDebug("[EntityAPI] 📦 已缓存实体属性: {} | 属性缓存总数: {}", name, total);
     }
 
     /**
@@ -328,7 +334,7 @@ public final class EntityAPI {
     public static void cacheSpawnEgg(String name, int backgroundColor, int highlightColor) {
         SPAWN_EGG_COLORS.put(name, new int[]{backgroundColor, highlightColor});
         int total = SPAWN_EGG_COLORS.size();
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 📦 已缓存生成蛋颜色: {} | bg=#{}, hl=#{} | 颜色缓存总数: {}",
+        PDDebugLogger.apiDebug("[EntityAPI] 📦 已缓存生成蛋颜色: {} | bg=#{}, hl=#{} | 颜色缓存总数: {}",
                 name, Integer.toHexString(backgroundColor), Integer.toHexString(highlightColor), total);
     }
 
@@ -359,7 +365,7 @@ public final class EntityAPI {
             Supplier<? extends EntityType<? extends Mob>> entityType) {
         int[] colors = getSpawnEggColors(entityName).orElseThrow(() -> new IllegalStateException(
                 "Entity [" + entityName + "] 未配置生成蛋颜色，请在 EntityBuilder 中调用 .spawnEgg()"));
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 🥚 注册刷怪蛋: {}_spawn_egg | bg=#{}, hl=#{}",
+        PDDebugLogger.apiDebug("[EntityAPI] 🥚 注册刷怪蛋: {}_spawn_egg | bg=#{}, hl=#{}",
                 entityName, Integer.toHexString(colors[0]), Integer.toHexString(colors[1]));
         return registry.register(entityName + "_spawn_egg", () ->
                 new SpawnEggItem(entityType.get(), colors[0], colors[1], new Item.Properties()));
@@ -383,14 +389,14 @@ public final class EntityAPI {
      * <pre>{@code
      * EntityAPI.setSpawnEggModelsOutputDir(
      *     Path.of("PasterDream", "src", "main", "resources", "assets",
-     *             PasterDreamAPI.MOD_ID, "models", "item"));
+     *             PasterDreamAPI.DATA_NAMESPACE, "models", "item"));
      * }</pre>
      *
      * @param outputDir 输出目录绝对或相对路径
      */
     public static void setSpawnEggModelsOutputDir(Path outputDir) {
         spawnEggModelsOutputDir = outputDir;
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 🗂️ 设置刷怪蛋模型输出目录: {}", outputDir.toAbsolutePath());
+        PDDebugLogger.apiDebug("[EntityAPI] 🗂️ 设置刷怪蛋模型输出目录: {}", outputDir.toAbsolutePath());
     }
 
     /**
@@ -408,7 +414,7 @@ public final class EntityAPI {
                 Files.createDirectories(file.getParent());
                 Files.writeString(file,
                         "{\n  \"parent\": \"minecraft:item/template_spawn_egg\"\n}\n");
-                PasterDreamAPI.LOGGER.debug("[EntityAPI] 🥚 自动生成刷怪蛋模型: {}", file.getFileName());
+                PDDebugLogger.apiDebug("[EntityAPI] 🥚 自动生成刷怪蛋模型: {}", file.getFileName());
             }
         } catch (IOException e) {
             PasterDreamAPI.LOGGER.warn("[EntityAPI] ⚠️ 无法生成刷怪蛋模型文件 [{}]: {}",
@@ -425,10 +431,10 @@ public final class EntityAPI {
     public static void cacheSkills(String entityName, java.util.List<EntitySkill> skills) {
         ENTITY_SKILLS.put(entityName, java.util.List.copyOf(skills));
         int total = ENTITY_SKILLS.size();
-        PasterDreamAPI.LOGGER.debug("[EntityAPI] 📦 已缓存实体技能: {} | 技能数: {} | 技能缓存实体总数: {}",
+        PDDebugLogger.apiDebug("[EntityAPI] 📦 已缓存实体技能: {} | 技能数: {} | 技能缓存实体总数: {}",
                 entityName, skills.size(), total);
         for (EntitySkill skill : skills) {
-            PasterDreamAPI.LOGGER.debug("[EntityAPI]   ├─ 技能: {} | anim={}, damage={}, range={}, cooldown={}",
+            PDDebugLogger.apiDebug("[EntityAPI]   ├─ 技能: {} | anim={}, damage={}, range={}, cooldown={}",
                     skill.name(), skill.animationName(), skill.damage(), skill.range(), skill.cooldownTicks());
         }
     }

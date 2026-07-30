@@ -62,7 +62,7 @@ public class CurioBuilder {
     CurioBuilder(DeferredRegister.Items registry, String name) {
         this.registry = registry;
         this.name = name;
-        this.fullName = PasterDreamAPI.MOD_ID + ":" + name;
+        this.fullName = PasterDreamAPI.DATA_NAMESPACE + ":" + name;
     }
 
     // ======================== 基础属性设置 ========================

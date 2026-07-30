@@ -6,6 +6,7 @@ import com.pasterdream.pasterdreammod.api.particle.ParticleResult;
 import net.minecraft.core.particles.ParticleType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 粒子类型注册类
  * <p>
@@ -272,68 +273,6 @@ public class PDParticles {
             .generateJson(false)
             .build();
 
-    // ==================== 法术粒子（还原自原版法术模块） ====================
-
-    /**
-     * 毒气粒子（poison_gas_particle）
-     * 剧毒法术的大团毒雾（4 帧动画，半透明大尺寸）。
-     */
-    public static final ParticleResult POISON_GAS_PARTICLE = ParticleAPI.createParticle("poison_gas_particle")
-            .alwaysShow(false)
-            .texture("pasterdream:poison_gas_particle_1")
-            .generateJson(false)
-            .build();
-
-    /**
-     * 毒魂粒子（poison_soul_particle）
-     * 剧毒法术上升的毒魂点缀（随机单帧，缓慢上飘）。
-     */
-    public static final ParticleResult POISON_SOUL_PARTICLE = ParticleAPI.createParticle("poison_soul_particle")
-            .alwaysShow(false)
-            .texture("pasterdream:poison_soul_particle")
-            .generateJson(false)
-            .build();
-
-    /**
-     * 狂暴法术粒子（fury_spell_particle）
-     * 狂暴立场的能量符文（10 帧动画）。
-     */
-    public static final ParticleResult FURY_SPELL_PARTICLE = ParticleAPI.createParticle("fury_spell_particle")
-            .alwaysShow(false)
-            .texture("pasterdream:fury_spell_particle_1")
-            .generateJson(false)
-            .build();
-
-    /**
-     * 治疗法术粒子（healing_spell_particle）
-     * 治疗立场的十字光点（8 帧动画，缓慢上升）。
-     */
-    public static final ParticleResult HEALING_SPELL_PARTICLE = ParticleAPI.createParticle("healing_spell_particle")
-            .alwaysShow(false)
-            .texture("pasterdream:healing_spell_particle_1")
-            .generateJson(false)
-            .build();
-
-    /**
-     * 黄色烟雾粒子（yellow_smoke_particle）
-     * 治疗立场的暖黄烟雾（4 帧动画，缓缓下沉）。
-     */
-    public static final ParticleResult YELLOW_SMOKE_PARTICLE = ParticleAPI.createParticle("yellow_smoke_particle")
-            .alwaysShow(false)
-            .texture("pasterdream:yellow_smoke_particle_1")
-            .generateJson(false)
-            .build();
-
-    /**
-     * 雪花粒子 1（snowflake_1_particle）
-     * 冰冻法术的第二种雪花（4 帧动画，下落）。
-     */
-    public static final ParticleResult SNOWFLAKE_1_PARTICLE = ParticleAPI.createParticle("snowflake_1_particle")
-            .alwaysShow(false)
-            .texture("pasterdream:snowflake_1_particle_1")
-            .generateJson(false)
-            .build();
-
     // ==================== 法杖武器与战斗粒子（W2-D，还原自原版 PasterdreamModParticleTypes） ====================
 
     /**
@@ -463,7 +402,7 @@ public class PDParticles {
      * 实际的粒子注册已在静态字段初始化时完成。
      */
     public static void register() {
-        PasterDreamMod.LOGGER.debug("[PDParticles] 粒子注册已通过 ParticleAPI 统一管理，共 {} 个粒子",
+        PDDebugLogger.mainDebug("[PDParticles] 粒子注册已通过 ParticleAPI 统一管理，共 {} 个粒子",
                 ParticleAPI.getRegisteredParticles().size());
     }
 }

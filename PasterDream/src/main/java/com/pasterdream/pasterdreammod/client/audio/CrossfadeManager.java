@@ -6,6 +6,7 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.sounds.SoundEvent;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 交叉淡化管理器 —— 负责群系切换时的音乐交叉淡化过渡
  * <p>
@@ -101,7 +102,7 @@ public class CrossfadeManager {
 
         // 新音乐从零音量开始渐强
         VolumeSoundInstance newSound = VolumeSoundInstance.forMusicFadeIn(soundEvent);
-        newSound.fadeTo(ModMusicManager.getEffectiveVolume(), ModMusicManager.CROSSFADE_STEPS);
+        newSound.fadeTo(ModMusicManager.getEffectiveVolume(newMusicName), ModMusicManager.CROSSFADE_STEPS);
         playbackController.setCurrentSound(newSound);
         playbackController.setCurrentMusicName(newMusicName);
         Minecraft.getInstance().getSoundManager().play(newSound);
@@ -150,11 +151,11 @@ public class CrossfadeManager {
             }
 
             // 原淡出侧改为从当前音量渐强，重新成为当前音乐
-            reversedIn.fadeTo(ModMusicManager.getEffectiveVolume(), ModMusicManager.CROSSFADE_STEPS);
+            reversedIn.fadeTo(ModMusicManager.getEffectiveVolume(reversedInName), ModMusicManager.CROSSFADE_STEPS);
             fadingInSound = reversedIn;
             playbackController.setCurrentSound(reversedIn);
             playbackController.setCurrentMusicName(reversedInName);
-            PasterDreamMod.LOGGER.debug("[CrossfadeManager] 交叉淡化方向反转: {} <-> {}",
+            PDDebugLogger.mainDebug("[CrossfadeManager] 交叉淡化方向反转: {} <-> {}",
                     reversedOutName, reversedInName);
             return;
         }
@@ -169,12 +170,12 @@ public class CrossfadeManager {
         }
 
         VolumeSoundInstance newSound = VolumeSoundInstance.forMusicFadeIn(soundEvent);
-        newSound.fadeTo(ModMusicManager.getEffectiveVolume(), ModMusicManager.CROSSFADE_STEPS);
+        newSound.fadeTo(ModMusicManager.getEffectiveVolume(newMusicName), ModMusicManager.CROSSFADE_STEPS);
         playbackController.setCurrentSound(newSound);
         playbackController.setCurrentMusicName(newMusicName);
         Minecraft.getInstance().getSoundManager().play(newSound);
         fadingInSound = newSound;
-        PasterDreamMod.LOGGER.debug("[CrossfadeManager] 淡入目标重定向: -> {}", newMusicName);
+        PDDebugLogger.mainDebug("[CrossfadeManager] 淡入目标重定向: -> {}", newMusicName);
     }
 
     /**

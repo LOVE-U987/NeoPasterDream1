@@ -121,7 +121,7 @@ public class PDBlockEntities {
                     .build();
 
     /**
-     * 琴雨梦纪念玩偶方块实体类型
+     * LOVE_U拉乌酱玩偶方块实体类型
      * 用于渲染 GeckoLib 3D 模型与抱物状态
      */
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LoveUDollBlockEntity>> LOVE_U_DOLL =
@@ -131,7 +131,7 @@ public class PDBlockEntities {
                     .build();
 
     /**
-     * 幼幼紫纪念玩偶方块实体类型
+     * EOUL小幽灵玩偶方块实体类型
      * 用于渲染 GeckoLib 3D 模型与抱物状态
      */
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EoulDollBlockEntity>> EOUL_DOLL =

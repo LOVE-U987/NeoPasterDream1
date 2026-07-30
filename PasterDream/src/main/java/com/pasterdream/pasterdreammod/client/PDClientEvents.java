@@ -21,6 +21,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 客户端事件处理类
  * <p>
@@ -167,6 +168,8 @@ public class PDClientEvents {
         // 注册自定义维度
         manager.registerCustomDimension(
                 ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dyedream_world"));
+        manager.registerCustomDimension(
+                ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "wind_journey_world"));
 
         // 注册默认群系音乐映射
         manager.initializeDefaultBiomeMusic();
@@ -174,7 +177,7 @@ public class PDClientEvents {
         // 配置完成后再发布
         musicManager = manager;
         musicManagerInitialized = true;
-        PasterDreamMod.LOGGER.info("[PDClientEvents] ModMusicManager 初始化完成");
+        PDDebugLogger.mainInfo("[PDClientEvents] ModMusicManager 初始化完成");
     }
 
     /**

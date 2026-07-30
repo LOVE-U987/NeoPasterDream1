@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 药水效果注册 API —— 将繁琐的药水效果注册集中管理，提供高效简洁的注册方式
  * <p>
@@ -66,7 +67,7 @@ public final class MobEffectAPI {
      * }</pre>
      */
     public static final DeferredRegister<MobEffect> REGISTRY =
-            DeferredRegister.create(Registries.MOB_EFFECT, PasterDreamAPI.MOD_ID);
+            DeferredRegister.create(Registries.MOB_EFFECT, PasterDreamAPI.DATA_NAMESPACE);
 
     /** 已注册的效果结果缓存 */
     private static final Map<String, MobEffectResult> REGISTERED_EFFECTS = new HashMap<>();
@@ -97,7 +98,7 @@ public final class MobEffectAPI {
      * @return {@link MobEffectBuilder} 实例
      */
     public static MobEffectBuilder createEffect(String effectName) {
-        PasterDreamAPI.LOGGER.debug("[MobEffectAPI] 开始创建效果构建器: {}", effectName);
+        PDDebugLogger.apiDebug("[MobEffectAPI] 开始创建效果构建器: {}", effectName);
         return new MobEffectBuilder(effectName);
     }
 
@@ -111,7 +112,7 @@ public final class MobEffectAPI {
      */
     public static Optional<MobEffectResult> getEffect(String effectName) {
         MobEffectResult result = REGISTERED_EFFECTS.get(effectName);
-        PasterDreamAPI.LOGGER.debug("[MobEffectAPI] 🔍 查询效果: {} → {}", effectName, result != null ? "已找到" : "未找到");
+        PDDebugLogger.apiDebug("[MobEffectAPI] 🔍 查询效果: {} → {}", effectName, result != null ? "已找到" : "未找到");
         return Optional.ofNullable(result);
     }
 
@@ -126,7 +127,7 @@ public final class MobEffectAPI {
     public static Optional<MobEffect> getEffectType(String effectName) {
         MobEffectResult result = REGISTERED_EFFECTS.get(effectName);
         MobEffect effect = result != null ? result.effect() : null;
-        PasterDreamAPI.LOGGER.debug("[MobEffectAPI] 🔍 查询效果类型: {} → {}", effectName, effect != null ? effect : "null");
+        PDDebugLogger.apiDebug("[MobEffectAPI] 🔍 查询效果类型: {} → {}", effectName, effect != null ? effect : "null");
         return Optional.ofNullable(effect);
     }
 
@@ -139,10 +140,10 @@ public final class MobEffectAPI {
     public static Optional<Supplier<MobEffect>> getEffectSupplier(String effectName) {
         MobEffectResult result = REGISTERED_EFFECTS.get(effectName);
         if (result != null) {
-            PasterDreamAPI.LOGGER.debug("[MobEffectAPI] 🔍 查询效果 Supplier: {}", effectName);
+            PDDebugLogger.apiDebug("[MobEffectAPI] 🔍 查询效果 Supplier: {}", effectName);
             return Optional.of(result::effect);
         }
-        PasterDreamAPI.LOGGER.debug("[MobEffectAPI] 🔍 查询效果 Supplier: {} → null（未找到）", effectName);
+        PDDebugLogger.apiDebug("[MobEffectAPI] 🔍 查询效果 Supplier: {} → null（未找到）", effectName);
         return Optional.empty();
     }
 
@@ -158,10 +159,10 @@ public final class MobEffectAPI {
         MobEffectResult result = REGISTERED_EFFECTS.get(effectName);
         if (result != null) {
             PasterDreamEffect pde = result.asPasterDreamEffect();
-            PasterDreamAPI.LOGGER.debug("[MobEffectAPI] 🔍 查询 PasterDreamEffect: {} → {}", effectName, pde != null ? "是自定义效果" : "不是自定义效果");
+            PDDebugLogger.apiDebug("[MobEffectAPI] 🔍 查询 PasterDreamEffect: {} → {}", effectName, pde != null ? "是自定义效果" : "不是自定义效果");
             return Optional.ofNullable(pde);
         }
-        PasterDreamAPI.LOGGER.debug("[MobEffectAPI] 🔍 查询 PasterDreamEffect: {} → null（未找到）", effectName);
+        PDDebugLogger.apiDebug("[MobEffectAPI] 🔍 查询 PasterDreamEffect: {} → null（未找到）", effectName);
         return Optional.empty();
     }
 
@@ -172,7 +173,7 @@ public final class MobEffectAPI {
      */
     public static Map<String, MobEffectResult> getRegisteredEffects() {
         int count = REGISTERED_EFFECTS.size();
-        PasterDreamAPI.LOGGER.debug("[MobEffectAPI] 📊 获取所有已注册效果: 共 {} 个", count);
+        PDDebugLogger.apiDebug("[MobEffectAPI] 📊 获取所有已注册效果: 共 {} 个", count);
         return Collections.unmodifiableMap(REGISTERED_EFFECTS);
     }
 
@@ -186,7 +187,7 @@ public final class MobEffectAPI {
     public static void cacheEffect(MobEffectResult result) {
         REGISTERED_EFFECTS.put(result.name(), result);
         int total = REGISTERED_EFFECTS.size();
-        PasterDreamAPI.LOGGER.debug("[MobEffectAPI] 📦 已缓存效果: {} | 缓存总数: {} | holder={}",
+        PDDebugLogger.apiDebug("[MobEffectAPI] 📦 已缓存效果: {} | 缓存总数: {} | holder={}",
                 result.name(), total, result.holder());
     }
 }

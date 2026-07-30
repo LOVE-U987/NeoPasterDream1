@@ -2,9 +2,9 @@ package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.block.entity.GoldenFoxSculptureBlockEntity;
+import com.pasterdream.pasterdreammod.pasterdreamspells.registry.PDSpellsParticles;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
-import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -205,9 +205,9 @@ public class GoldenFoxSculptureBlock extends BaseEntityBlock implements SimpleWa
             double cx = pos.getX() + 0.5;
             double cy = pos.getY() + 0.2;
             double cz = pos.getZ() + 0.5;
-            serverLevel.sendParticles((SimpleParticleType) PDParticles.HEALING_SPELL_PARTICLE.particleType(),
+            serverLevel.sendParticles((SimpleParticleType) PDSpellsParticles.HEALING_SPELL_PARTICLE.particleType(),
                     cx, cy, cz, 12, 0.5, 0.4, 0.5, 0.1);
-            serverLevel.sendParticles((SimpleParticleType) PDParticles.YELLOW_SMOKE_PARTICLE.particleType(),
+            serverLevel.sendParticles((SimpleParticleType) PDSpellsParticles.YELLOW_SMOKE_PARTICLE.particleType(),
                     cx, cy, cz, 12, 0.5, 0.4, 0.5, 0.1);
         }
         level.playSound(null, pos, SoundEvents.FOX_AMBIENT, SoundSource.MASTER, 1.2F, 1.0F);

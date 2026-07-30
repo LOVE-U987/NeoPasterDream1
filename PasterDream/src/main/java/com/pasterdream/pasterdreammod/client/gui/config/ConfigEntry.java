@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.client.gui.config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
@@ -80,6 +81,7 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
 
     public ConfigCategory getCategory() { return category; }
     public int getIndex() { return index; }
+    public T getPendingValue() { return pendingValue; }
     public boolean hasPendingChanges() { return !configValue.get().equals(pendingValue); }
     public boolean isDirtyFromDefault() { return !defaultValue.equals(pendingValue); }
 
@@ -105,7 +107,7 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
      */
     public void resetToDefault() { setPendingValue(defaultValue); }
 
-    protected abstract void setPendingValue(T value);
+    public abstract void setPendingValue(T value);
 
     /**
      * 渲染配置项
@@ -135,10 +137,20 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
         gui.fill(x, y + ConfigStyles.ROW_HEIGHT - 1, x + rowWidth, y + ConfigStyles.ROW_HEIGHT,
                 ConfigStyles.COLOR_DIVIDER);
 
-        // 悬停时左侧强调条：平滑宽度过渡
-        int barWidth = (int) (2 * hoverLerp);
+        // 悬停时顶部能量光：模拟能量从行顶升起
+        if (hoverLerp > 0.01f) {
+            int glowAlpha = (int) (0x33 * hoverLerp);
+            int glowColor = (glowAlpha << 24) | (ConfigStyles.COLOR_ROW_TOP_GLOW & 0x00FFFFFF);
+            gui.fill(x, y, x + rowWidth, y + 1, glowColor);
+        }
+
+        // 悬停时左侧能量条：平滑宽度过渡 + 发光外扩
+        int barWidth = (int) (2 + 2 * hoverLerp);
         if (barWidth > 0) {
-            gui.fill(x, y + 5, x + barWidth, y + ConfigStyles.ROW_HEIGHT - 5, ConfigStyles.COLOR_ROW_ACCENT_BAR);
+            int glowAlpha = (int) (0x22 * hoverLerp);
+            int glowColor = (glowAlpha << 24) | (ConfigStyles.COLOR_ROW_ACCENT_BAR & 0x00FFFFFF);
+            gui.fill(x - 1, y + 4, x + barWidth + 1, y + ConfigStyles.ROW_HEIGHT - 4, glowColor);
+            gui.fill(x, y + 5, x + barWidth - 1, y + ConfigStyles.ROW_HEIGHT - 5, ConfigStyles.COLOR_ROW_ACCENT_BAR);
         }
 
         // 保存变更反馈闪烁
@@ -274,7 +286,7 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
         private void onToggle(boolean value) { setPendingValue(value); }
 
         @Override
-        protected void setPendingValue(Boolean value) {
+        public void setPendingValue(Boolean value) {
             pendingValue = value;
             ((ToggleButton) widgets.get(0)).setValue(value);
         }
@@ -335,7 +347,7 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
         }
 
         @Override
-        protected void setPendingValue(Number value) {
+        public void setPendingValue(Number value) {
             pendingValue = integer ? value.intValue() : value.doubleValue();
             editBox.setValue(formatValue(pendingValue));
             editBox.setValid(true);
@@ -347,6 +359,117 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
         public void save() {
             if (!isValid()) return;
             super.save();
+        }
+    }
+
+    // ========================================================================
+    // 滑条配置项
+    // ========================================================================
+
+    /**
+     * 双精度浮点滑条配置项。
+     * <p>
+     * 用于 BGM 音量等需要在连续范围内调节的数值配置，右侧显示当前百分比。
+     */
+    public static class SliderEntry extends ConfigEntry<Double> {
+
+        private final double min;
+        private final double max;
+        private final Slider slider;
+
+        /**
+         * @param configValue 底层 Double 配置值引用
+         * @param category    所属分类
+         * @param index       全局序号
+         * @param min         滑条最小值
+         * @param max         滑条最大值
+         */
+        public SliderEntry(ModConfigSpec.ConfigValue<Double> configValue, ConfigCategory category,
+                           int index, double min, double max) {
+            super(configValue, category, index);
+            this.min = min;
+            this.max = max;
+            double initialRatio = (configValue.get() - min) / (max - min);
+            this.slider = new Slider(0, 0, ConfigStyles.SLIDER_WIDTH, ConfigStyles.SLIDER_HEIGHT,
+                    Component.empty(), initialRatio);
+            widgets.add(slider);
+        }
+
+        @Override
+        public void setPendingValue(Double value) {
+            pendingValue = value;
+            slider.setValue((value - min) / (max - min));
+        }
+
+        /**
+         * 将滑条比率映射到实际配置值。
+         *
+         * @param ratio 滑条位置（0.0 ~ 1.0）
+         * @return 对应的实际值
+         */
+        private double mapToValue(double ratio) {
+            return min + ratio * (max - min);
+        }
+
+        /**
+         * 自定义滑条控件：轨道 + 已填充段 + 滑块 + 百分比文字。
+         */
+        private class Slider extends AbstractSliderButton {
+
+            Slider(int x, int y, int width, int height, Component message, double value) {
+                super(x, y, width, height, message, value);
+            }
+
+            /**
+             * 设置滑条当前比率位置。
+             *
+             * @param ratio 新的比率位置（0.0 ~ 1.0）
+             */
+            void setValue(double ratio) {
+                this.value = ratio;
+            }
+
+            @Override
+            protected void updateMessage() {
+                // 数值直接绘制在滑条上，无需通过 message 显示
+            }
+
+            @Override
+            protected void applyValue() {
+                pendingValue = mapToValue(value);
+            }
+
+            @Override
+            public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float partialTick) {
+                int trackHeight = 4;
+                int trackY = getY() + (getHeight() - trackHeight) / 2;
+
+                // 轨道背景
+                gui.fill(getX(), trackY, getX() + width, trackY + trackHeight,
+                        ConfigStyles.COLOR_FIELD_BORDER);
+
+                // 已填充段
+                int fillWidth = (int) (width * value);
+                gui.fill(getX(), trackY, getX() + fillWidth, trackY + trackHeight,
+                        ConfigStyles.COLOR_ACCENT);
+
+                // 滑块
+                int thumbSize = getHeight();
+                int thumbX = getX() + fillWidth - thumbSize / 2;
+                int thumbY = getY();
+                // 滑块阴影
+                gui.fill(thumbX + 1, thumbY + 1, thumbX + thumbSize + 1, thumbY + thumbSize + 1,
+                        0x22000000);
+                // 滑块主体
+                gui.fill(thumbX, thumbY, thumbX + thumbSize, thumbY + thumbSize,
+                        ConfigStyles.COLOR_TOGGLE_THUMB);
+
+                // 百分比文字（滑条右侧）
+                String text = String.format("%.0f%%", value * 100);
+                int textX = getX() + width + 5;
+                int textY = getY() + (getHeight() - font.lineHeight) / 2 + 1;
+                gui.drawString(font, text, textX, textY, ConfigStyles.COLOR_VALUE);
+            }
         }
     }
 
@@ -480,7 +603,7 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
     }
 
     // ========================================================================
-    // 自定义开关按钮：紧凑圆角拨杆，去 AI 化
+    // 自定义开关按钮：矩形 MC 风
     // ========================================================================
 
     private static class ToggleButton extends AbstractWidget {
@@ -523,30 +646,40 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
             }
 
             boolean hovered = isMouseOver(mouseX, mouseY);
+
+            // --- 轨道：纯矩形背景 ---
+            int trackY = getY() + 3;
+            int trackH = height - 6;
             int trackColor = value ? ConfigStyles.COLOR_TOGGLE_ON : ConfigStyles.COLOR_TOGGLE_OFF;
-            int trackY = getY() + 4;
-            int trackHeight = height - 8;
+            gui.fill(getX(), trackY, getX() + width, trackY + trackH, trackColor);
 
-            // 轨道：用多层矩形模拟圆角
-            gui.fill(getX() + 3, trackY, getX() + width - 3, trackY + trackHeight, trackColor);
-            gui.fill(getX() + 2, trackY + 1, getX() + width - 2, trackY + trackHeight - 1, trackColor);
-            gui.fill(getX() + 1, trackY + 2, getX() + width - 1, trackY + trackHeight - 2, trackColor);
+            // 悬停时轨道上浮泛光
+            if (hovered) {
+                gui.fill(getX(), trackY, getX() + width, trackY + 1, 0x18FFFFFF);
+                gui.fill(getX(), trackY + trackH - 1, getX() + width, trackY + trackH, 0x08000000);
+            }
 
-            // 滑块
-            int thumbSize = height - 6;
-            int thumbX = getX() + (int) thumbOffset + 2;
-            int thumbY = getY() + (height - thumbSize) / 2;
+            // --- 滑块：纯矩形，MC 按钮式斜角 ---
+            int thumbSize = height - 4;
+            int thumbX = getX() + (int) thumbOffset + 1;
+            int thumbY = getY() + 2;
 
-            // 按下时轻微缩小
+            // 按下时轻微内缩
             int pressOffset = (int) (pressAnim * 1);
             int ts = thumbSize - pressOffset * 2;
             int tx = thumbX + pressOffset;
             int ty = thumbY + pressOffset;
 
-            // 滑块阴影
-            gui.fill(tx + 1, ty + 1, tx + ts + 1, ty + ts + 1, 0x22000000);
+            // 滑块阴影（右下）
+            gui.fill(tx + 1, ty + 1, tx + ts + 1, ty + ts + 1, 0x44000000);
             // 滑块主体
             gui.fill(tx, ty, tx + ts, ty + ts, ConfigStyles.COLOR_TOGGLE_THUMB);
+            // MC 风格左上高光
+            gui.fill(tx, ty, tx + ts, ty + 1, 0x55FFFFFF);
+            gui.fill(tx, ty, tx + 1, ty + ts, 0x55FFFFFF);
+            // MC 风格右下暗角
+            gui.fill(tx, ty + ts - 1, tx + ts, ty + ts, 0x33000000);
+            gui.fill(tx + ts - 1, ty, tx + ts, ty + ts, 0x33000000);
         }
 
         @Override

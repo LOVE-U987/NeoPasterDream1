@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 蓝图 JSON 数据加载器（还原原版 Fix {@code BluePrintLoader}）。
  * <p>
@@ -104,7 +105,7 @@ public final class BluePrintLoader {
                 applyConfig(config);
             }
         });
-        PasterDreamMod.LOGGER.debug("[BluePrintLoader] reload listener registered");
+        PDDebugLogger.mainDebug("[BluePrintLoader] reload listener registered");
     }
 
     /**
@@ -139,7 +140,7 @@ public final class BluePrintLoader {
     public static void applyConfig(Map<ResourceLocation, BluePrint> config) {
         BLUE_PRINT_MAP.clear();
         BLUE_PRINT_MAP.putAll(config);
-        PasterDreamMod.LOGGER.info("[BluePrintLoader] loaded {} blueprint(s)", BLUE_PRINT_MAP.size());
+        PDDebugLogger.mainInfo("[BluePrintLoader] loaded {} blueprint(s)", BLUE_PRINT_MAP.size());
     }
 
     /**

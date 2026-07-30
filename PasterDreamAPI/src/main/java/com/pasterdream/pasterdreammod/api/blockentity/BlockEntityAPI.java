@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 方块实体注册 API —— 集中管理 BlockEntityType 的注册与查询
  * <p>
@@ -39,7 +40,7 @@ public final class BlockEntityAPI {
      * 需要在 {@code PasterDreamMod} 构造函数中通过 {@link #registerAll(IEventBus)} 注册到事件总线。
      */
     public static final DeferredRegister<BlockEntityType<?>> REGISTRY =
-            DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, PasterDreamAPI.MOD_ID);
+            DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, PasterDreamAPI.DATA_NAMESPACE);
 
     /** 已注册方块实体的 DeferredHolder 缓存 */
     private static final Map<String, DeferredHolder<BlockEntityType<?>, ? extends BlockEntityType<?>>> HOLDERS =
@@ -61,7 +62,7 @@ public final class BlockEntityAPI {
             String name, Supplier<BlockEntityType<T>> supplier) {
         DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> holder = REGISTRY.register(name, supplier);
         HOLDERS.put(name, holder);
-        PasterDreamAPI.LOGGER.debug("[BlockEntityAPI] 已注册方块实体: {}", name);
+        PDDebugLogger.apiDebug("[BlockEntityAPI] 已注册方块实体: {}", name);
         return holder;
     }
 
@@ -112,7 +113,7 @@ public final class BlockEntityAPI {
      */
     public static void registerAll(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
-        PasterDreamAPI.LOGGER.debug("[BlockEntityAPI] 已注册方块实体 DeferredRegister 到事件总线");
+        PDDebugLogger.apiDebug("[BlockEntityAPI] 已注册方块实体 DeferredRegister 到事件总线");
     }
 
     /**

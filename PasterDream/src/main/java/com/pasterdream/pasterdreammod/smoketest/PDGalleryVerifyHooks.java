@@ -55,6 +55,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 人工终验辅助：方块总览展台 + 结构目标维度一致性检查 + 夜视维持。
  * <p>
@@ -440,7 +441,7 @@ public final class PDGalleryVerifyHooks {
                 "方块放置失败 <10%（" + failed + "）",
                 failSamples.isEmpty() ? "无失败" : failSamples.toString()));
 
-        PasterDreamMod.LOGGER.info(
+        PDDebugLogger.smoketestInfo(
                 "[PDGallery] gallery origin={} live={}/{} special={}/{} player@{}",
                 origin.toShortString(), placed, liveTotal, specialShown, specialBlocks.size(),
                 player.blockPosition().toShortString());

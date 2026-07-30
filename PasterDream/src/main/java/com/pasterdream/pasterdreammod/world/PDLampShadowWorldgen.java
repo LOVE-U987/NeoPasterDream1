@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.neoforged.neoforge.event.level.LevelEvent;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 灯影世界出生结构：对齐原版 {@code GenerateWorldPr0} 的 lamp_shadow 分支。
  * <p>
@@ -81,7 +82,7 @@ public final class PDLampShadowWorldgen {
                 3);
         data.placed = true;
         data.setDirty();
-        PasterDreamMod.LOGGER.info("[LampShadow] placed shadow_world_spawn at {}", origin.toShortString());
+        PDDebugLogger.mainInfo("[LampShadow] placed shadow_world_spawn at {}", origin.toShortString());
         return true;
     }
 

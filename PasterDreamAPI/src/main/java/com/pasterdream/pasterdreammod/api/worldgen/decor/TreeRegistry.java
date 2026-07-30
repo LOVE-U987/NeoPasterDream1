@@ -33,7 +33,7 @@ public class TreeRegistry {
         public ResourceKey<ConfiguredFeature<?, ?>> configuredKey() {
             return ResourceKey.create(
                     Registries.CONFIGURED_FEATURE,
-                    ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.MOD_ID, name)
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.DATA_NAMESPACE, name)
             );
         }
     }
@@ -59,13 +59,13 @@ public class TreeRegistry {
     /** 默认染梦树（兜底变体）configured_feature 键 */
     public static final ResourceKey<ConfiguredFeature<?, ?>> DEFAULT_TREE = ResourceKey.create(
             Registries.CONFIGURED_FEATURE,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.MOD_ID, "dyedream_tree")
+            ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.DATA_NAMESPACE, "dyedream_tree")
     );
 
     /** random_selector configured_feature 键 */
     public static final ResourceKey<ConfiguredFeature<?, ?>> TREE_SELECTOR = ResourceKey.create(
             Registries.CONFIGURED_FEATURE,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.MOD_ID, "dyedream_tree_selector")
+            ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.DATA_NAMESPACE, "dyedream_tree_selector")
     );
 
     // ==================== Placed Feature ====================
@@ -73,7 +73,7 @@ public class TreeRegistry {
     /** 主入口 placed_feature 键（对应 dyedream_trees.json）*/
     public static final ResourceKey<PlacedFeature> DYEDREAM_TREES = ResourceKey.create(
             Registries.PLACED_FEATURE,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.MOD_ID, "dyedream_trees")
+            ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.DATA_NAMESPACE, "dyedream_trees")
     );
 
 }

@@ -4,6 +4,8 @@ import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
 import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
 import com.pasterdream.pasterdreammod.api.entity.EntityResult;
 import com.pasterdream.pasterdreammod.api.entity.skill.EntitySkill;
+import com.pasterdream.pasterdreammod.api.entity.tag.EntityTag;
+import com.pasterdream.pasterdreammod.api.entity.tag.EntityTagRegistry;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -14,9 +16,12 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 实体配置构建器 —— 采用 Builder 模式链式配置实体类型
  * <p>
@@ -68,6 +73,9 @@ public class EntityBuilder<T extends Entity> {
     /** 实体技能列表 */
     private final List<EntitySkill> skills = new ArrayList<>();
 
+    /** 实体标签集合 */
+    private final Set<EntityTag> tags = EnumSet.noneOf(EntityTag.class);
+
     /**
      * 构造实体构建器
      *
@@ -79,7 +87,7 @@ public class EntityBuilder<T extends Entity> {
         this.registry = registry;
         this.modId = modId;
         this.name = name;
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] 创建实体构建器: modId={}, name={}", modId, name);
+        PDDebugLogger.apiDebug("[EntityBuilder] 创建实体构建器: modId={}, name={}", modId, name);
     }
 
     // ======================== 实体分类 ========================
@@ -95,7 +103,7 @@ public class EntityBuilder<T extends Entity> {
      */
     public EntityBuilder<T> category(MobCategory category) {
         this.category = category;
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] {} → category={}", name, category.getName());
+        PDDebugLogger.apiDebug("[EntityBuilder] {} → category={}", name, category.getName());
         return this;
     }
 
@@ -109,7 +117,7 @@ public class EntityBuilder<T extends Entity> {
     public EntityBuilder<T> size(float width, float height) {
         this.width = width;
         this.height = height;
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] {} → size={}x{}", name, width, height);
+        PDDebugLogger.apiDebug("[EntityBuilder] {} → size={}x{}", name, width, height);
         return this;
     }
 
@@ -126,7 +134,7 @@ public class EntityBuilder<T extends Entity> {
      */
     public EntityBuilder<T> trackingRange(int trackingRange) {
         this.trackingRange = trackingRange;
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] {} → trackingRange={}", name, trackingRange);
+        PDDebugLogger.apiDebug("[EntityBuilder] {} → trackingRange={}", name, trackingRange);
         return this;
     }
 
@@ -141,7 +149,7 @@ public class EntityBuilder<T extends Entity> {
      */
     public EntityBuilder<T> updateInterval(int updateInterval) {
         this.updateInterval = updateInterval;
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] {} → updateInterval={}", name, updateInterval);
+        PDDebugLogger.apiDebug("[EntityBuilder] {} → updateInterval={}", name, updateInterval);
         return this;
     }
 
@@ -156,7 +164,7 @@ public class EntityBuilder<T extends Entity> {
      */
     public EntityBuilder<T> velocityUpdates(boolean velocityUpdates) {
         this.velocityUpdates = velocityUpdates;
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] {} → velocityUpdates={}", name, velocityUpdates);
+        PDDebugLogger.apiDebug("[EntityBuilder] {} → velocityUpdates={}", name, velocityUpdates);
         return this;
     }
 
@@ -174,7 +182,7 @@ public class EntityBuilder<T extends Entity> {
     @SuppressWarnings("unchecked")
     public <X extends Entity> EntityBuilder<X> entityClass(Class<X> entityClass) {
         this.entityClass = (Class<T>) entityClass;
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] {} → entityClass={}", name, entityClass.getSimpleName());
+        PDDebugLogger.apiDebug("[EntityBuilder] {} → entityClass={}", name, entityClass.getSimpleName());
         return (EntityBuilder<X>) this;
     }
 
@@ -192,7 +200,7 @@ public class EntityBuilder<T extends Entity> {
      */
     public EntityBuilder<T> attributes(Supplier<AttributeSupplier.Builder> attributesSupplier) {
         this.attributesSupplier = () -> attributesSupplier.get().build();
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] {} → attributes=已配置（Builder 模式）", name);
+        PDDebugLogger.apiDebug("[EntityBuilder] {} → attributes=已配置（Builder 模式）", name);
         return this;
     }
 
@@ -204,7 +212,7 @@ public class EntityBuilder<T extends Entity> {
      */
     public EntityBuilder<T> attributesBuilt(Supplier<AttributeSupplier> attributesSupplier) {
         this.attributesSupplier = attributesSupplier;
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] {} → attributes=已配置（直接 Supplier）", name);
+        PDDebugLogger.apiDebug("[EntityBuilder] {} → attributes=已配置（直接 Supplier）", name);
         return this;
     }
 
@@ -223,7 +231,7 @@ public class EntityBuilder<T extends Entity> {
     public EntityBuilder<T> spawnEgg(int backgroundColor, int highlightColor) {
         this.spawnEggBackgroundColor = backgroundColor;
         this.spawnEggHighlightColor = highlightColor;
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] {} → spawnEgg=#{}/#{}",
+        PDDebugLogger.apiDebug("[EntityBuilder] {} → spawnEgg=#{}/#{}",
                 name, Integer.toHexString(backgroundColor), Integer.toHexString(highlightColor));
         return this;
     }
@@ -257,7 +265,7 @@ public class EntityBuilder<T extends Entity> {
      */
     public EntityBuilder<T> skill(EntitySkill skill) {
         this.skills.add(skill);
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] {} → 添加技能: {} | skills.count={}", name, skill.name(), this.skills.size());
+        PDDebugLogger.apiDebug("[EntityBuilder] {} → 添加技能: {} | skills.count={}", name, skill.name(), this.skills.size());
         return this;
     }
 
@@ -271,8 +279,48 @@ public class EntityBuilder<T extends Entity> {
         for (EntitySkill skill : skills) {
             this.skills.add(skill);
         }
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] {} → 批量添加技能: {} 个 | skills.count={}", name, skills.length, this.skills.size());
+        PDDebugLogger.apiDebug("[EntityBuilder] {} → 批量添加技能: {} 个 | skills.count={}", name, skills.length, this.skills.size());
         return this;
+    }
+
+    // ======================== 标签 ========================
+
+    /**
+     * 为实体添加一个或多个内置标签
+     * <p>
+     * 标签用于批量归类实体并触发内置行为，例如：
+     * <ul>
+     *   <li>{@link EntityTag#LAMP_SHADOW_MONSTER} — 避免同系列怪物友伤</li>
+     *   <li>{@link EntityTag#SPELL_INVINCIBLE} — 法术实体自动无敌</li>
+     * </ul>
+     * 标签会在 {@link #build()} 时注册到 {@link EntityTagRegistry}。
+     *
+     * @param tags 要添加的标签
+     * @return 当前构建器实例
+     */
+    public EntityBuilder<T> tag(EntityTag... tags) {
+        if (tags != null) {
+            for (EntityTag tag : tags) {
+                if (tag != null) {
+                    this.tags.add(tag);
+                }
+            }
+        }
+        PDDebugLogger.apiDebug("[EntityBuilder] {} → 添加标签: {} | tags.count={}", name,
+                this.tags, this.tags.size());
+        return this;
+    }
+
+    /**
+     * 为实体批量添加多个内置标签
+     * <p>
+     * 与 {@link #tag(EntityTag...)} 等价，便于一次性写入多个标签。
+     *
+     * @param tags 要添加的标签数组
+     * @return 当前构建器实例
+     */
+    public EntityBuilder<T> tags(EntityTag... tags) {
+        return tag(tags);
     }
 
     // ======================== 构建 ========================
@@ -293,10 +341,10 @@ public class EntityBuilder<T extends Entity> {
      * @throws IllegalStateException 如果缺少必要参数
      */
     public EntityResult<T> build() {
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] ===== 开始构建实体: {} =====", name);
+        PDDebugLogger.apiDebug("[EntityBuilder] ===== 开始构建实体: {} =====", name);
         validate();
 
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] 构建 EntityType.Builder: category={}, size={}x{}, tracking={}, interval={}, velocity={}",
+        PDDebugLogger.apiDebug("[EntityBuilder] 构建 EntityType.Builder: category={}, size={}x{}, tracking={}, interval={}, velocity={}",
                 category.getName(), width, height, trackingRange, updateInterval, velocityUpdates);
         EntityType.Builder<T> typeBuilder = EntityType.Builder.<T>of(
                 this::createEntity, category
@@ -306,42 +354,50 @@ public class EntityBuilder<T extends Entity> {
                 .setShouldReceiveVelocityUpdates(velocityUpdates);
 
         String descriptionId = "entity." + modId + "." + name;
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] 注册实体类型: name={}, descriptionId={}", name, descriptionId);
+        PDDebugLogger.apiDebug("[EntityBuilder] 注册实体类型: name={}, descriptionId={}", name, descriptionId);
 
         DeferredHolder<EntityType<?>, EntityType<T>> holder = registry.register(
                 name, () -> typeBuilder.build(descriptionId));
 
         EntityResult<T> result = new EntityResult<>(name, holder, entityClass);
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] 创建 EntityResult: name={}, holder={}, entityClass={}",
+        PDDebugLogger.apiDebug("[EntityBuilder] 创建 EntityResult: name={}, holder={}, entityClass={}",
                 name, holder, entityClass.getSimpleName());
 
         EntityAPI.cacheEntity(result);
 
         if (attributesSupplier != null) {
-            PasterDreamAPI.LOGGER.debug("[EntityBuilder] 缓存实体属性: {}", name);
+            PDDebugLogger.apiDebug("[EntityBuilder] 缓存实体属性: {}", name);
             EntityAPI.cacheAttributes(name, attributesSupplier);
         } else {
-            PasterDreamAPI.LOGGER.debug("[EntityBuilder] 未配置属性，跳过属性缓存: {}", name);
+            PDDebugLogger.apiDebug("[EntityBuilder] 未配置属性，跳过属性缓存: {}", name);
         }
 
         if (spawnEggBackgroundColor != null && spawnEggHighlightColor != null) {
-            PasterDreamAPI.LOGGER.debug("[EntityBuilder] 缓存生成蛋颜色: {}", name);
+            PDDebugLogger.apiDebug("[EntityBuilder] 缓存生成蛋颜色: {}", name);
             EntityAPI.cacheSpawnEgg(name, spawnEggBackgroundColor, spawnEggHighlightColor);
             // 自动生成刷怪蛋模型 JSON 文件（如果已配置输出目录）
             EntityAPI.writeSpawnEggModel(name);
         } else {
-            PasterDreamAPI.LOGGER.debug("[EntityBuilder] 未配置生成蛋颜色，跳过: {}", name);
+            PDDebugLogger.apiDebug("[EntityBuilder] 未配置生成蛋颜色，跳过: {}", name);
         }
 
         // 缓存技能
         if (!skills.isEmpty()) {
-            PasterDreamAPI.LOGGER.debug("[EntityBuilder] 缓存实体技能: {} 个技能", skills.size());
+            PDDebugLogger.apiDebug("[EntityBuilder] 缓存实体技能: {} 个技能", skills.size());
             EntityAPI.cacheSkills(name, skills);
         } else {
-            PasterDreamAPI.LOGGER.debug("[EntityBuilder] 未配置技能，跳过技能缓存: {}", name);
+            PDDebugLogger.apiDebug("[EntityBuilder] 未配置技能，跳过技能缓存: {}", name);
         }
 
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] ✅ 已注册实体: {} (尺寸: {}x{}, 分类: {}, 追踪范围: {})",
+        // 注册标签
+        if (!tags.isEmpty()) {
+            PDDebugLogger.apiDebug("[EntityBuilder] 注册实体标签: {} 个标签", tags.size());
+            EntityTagRegistry.register(result.entityType(), tags.toArray(new EntityTag[0]));
+        } else {
+            PDDebugLogger.apiDebug("[EntityBuilder] 未配置标签，跳过标签注册: {}", name);
+        }
+
+        PDDebugLogger.apiDebug("[EntityBuilder] ✅ 已注册实体: {} (尺寸: {}x{}, 分类: {}, 追踪范围: {})",
                 name, width, height, category.getName(), trackingRange);
 
         return result;
@@ -365,7 +421,7 @@ public class EntityBuilder<T extends Entity> {
             PasterDreamAPI.LOGGER.error("[EntityBuilder] ❌ 验证失败: {} → entityClass 未设置", name);
             throw new IllegalStateException("EntityBuilder: 缺少实体类（entityClass），请调用 .entityClass() 设置");
         }
-        PasterDreamAPI.LOGGER.debug("[EntityBuilder] ✅ 验证通过: {}", name);
+        PDDebugLogger.apiDebug("[EntityBuilder] ✅ 验证通过: {}", name);
     }
 
     /**

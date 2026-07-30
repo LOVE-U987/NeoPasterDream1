@@ -154,12 +154,12 @@ public final class PDStaleCommentVerifyHooks {
     // 3. 配置符号存在性（反驳“配置系统尚未还原 / 尚无对应配置项”类注释）
     // ---------------------------------------------------------------------
     private static void verifyConfigSymbols(Consumer<Result> out) {
-        boolean jitterPresent = false;
+        boolean sanConfigPresent = false;
         boolean banTimePresent = false;
 
         try {
-            var v = PDCommonConfig.LOW_SAN_PICTURE_JITTER;
-            jitterPresent = (v != null);
+            var v = com.pasterdream.pasterdreammod.api.san.SanConfigRegistry.get();
+            sanConfigPresent = (v != null);
         } catch (Throwable ignored) {}
 
         try {
@@ -167,10 +167,10 @@ public final class PDStaleCommentVerifyHooks {
             banTimePresent = (v != null);
         } catch (Throwable ignored) {}
 
-        out.accept(new Result(jitterPresent, "config-low-san-jitter-symbol",
-                jitterPresent
-                        ? "PDCommonConfig.LOW_SAN_PICTURE_JITTER symbol exists (stale '配置系统尚未还原' comment)"
-                        : "LOW_SAN_PICTURE_JITTER config symbol missing"));
+        out.accept(new Result(sanConfigPresent, "config-san-registry-symbol",
+                sanConfigPresent
+                        ? "SanConfigRegistry API exists (LOW_SAN_PICTURE_JITTER moved to PasterDreamSanity)"
+                        : "SanConfigRegistry API missing"));
 
         out.accept(new Result(banTimePresent, "config-ban-time-hourglass-symbol",
                 banTimePresent

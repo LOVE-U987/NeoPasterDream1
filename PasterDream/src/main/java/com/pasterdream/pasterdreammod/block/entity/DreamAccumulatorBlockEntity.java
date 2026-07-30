@@ -40,6 +40,7 @@ import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 蓄梦池方块实体 (Dream Accumulator Block Entity)
  * 使用 GeckoLib 实现动画效果
@@ -179,7 +180,7 @@ public class DreamAccumulatorBlockEntity extends BlockEntity implements GeoBlock
                 .getOptional(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dreamnotes_7"))
                 .orElse(Items.AIR);
         if (notes == Items.AIR) {
-            PasterDreamMod.LOGGER.debug("[DreamAccumulator] dreamnotes_7 未注册，跳过初见馈赠");
+            PDDebugLogger.mainDebug("[DreamAccumulator] dreamnotes_7 未注册，跳过初见馈赠");
             return;
         }
         AdvancementHolder holder = serverPlayer.server.getAdvancements()

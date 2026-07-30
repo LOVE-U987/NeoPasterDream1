@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 菜单类型注册 API —— 集中管理 MenuType 的注册与查询
  * <p>
@@ -37,7 +38,7 @@ public final class MenuAPI {
      * 需要在 {@code PasterDreamMod} 构造函数中通过 {@link #registerAll(IEventBus)} 注册到事件总线。
      */
     public static final DeferredRegister<MenuType<?>> REGISTRY =
-            DeferredRegister.create(Registries.MENU, PasterDreamAPI.MOD_ID);
+            DeferredRegister.create(Registries.MENU, PasterDreamAPI.DATA_NAMESPACE);
 
     /** 已注册菜单类型的 DeferredHolder 缓存 */
     private static final Map<String, DeferredHolder<MenuType<?>, ? extends MenuType<?>>> HOLDERS =
@@ -59,7 +60,7 @@ public final class MenuAPI {
             String name, Supplier<MenuType<T>> supplier) {
         DeferredHolder<MenuType<?>, MenuType<T>> holder = REGISTRY.register(name, supplier);
         HOLDERS.put(name, holder);
-        PasterDreamAPI.LOGGER.debug("[MenuAPI] 已注册菜单: {}", name);
+        PDDebugLogger.apiDebug("[MenuAPI] 已注册菜单: {}", name);
         return holder;
     }
 
@@ -113,7 +114,7 @@ public final class MenuAPI {
      */
     public static void registerAll(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
-        PasterDreamAPI.LOGGER.debug("[MenuAPI] 已注册菜单 DeferredRegister 到事件总线");
+        PDDebugLogger.apiDebug("[MenuAPI] 已注册菜单 DeferredRegister 到事件总线");
     }
 
     /**

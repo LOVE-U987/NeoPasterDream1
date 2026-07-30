@@ -18,6 +18,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.ObjIntConsumer;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 药水效果构建器 —— 采用 Builder 模式链式配置和注册药水效果
  * <p>
@@ -64,7 +65,7 @@ public class MobEffectBuilder {
      */
     public MobEffectBuilder(String name) {
         this.name = name;
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] 创建效果构建器: {}", name);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] 创建效果构建器: {}", name);
     }
 
     /**
@@ -88,7 +89,7 @@ public class MobEffectBuilder {
      */
     public MobEffectBuilder beneficial() {
         this.category = MobEffectCategory.BENEFICIAL;
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] {} → category=BENEFICIAL", name);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] {} → category=BENEFICIAL", name);
         return this;
     }
 
@@ -99,7 +100,7 @@ public class MobEffectBuilder {
      */
     public MobEffectBuilder harmful() {
         this.category = MobEffectCategory.HARMFUL;
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] {} → category=HARMFUL", name);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] {} → category=HARMFUL", name);
         return this;
     }
 
@@ -110,7 +111,7 @@ public class MobEffectBuilder {
      */
     public MobEffectBuilder neutral() {
         this.category = MobEffectCategory.NEUTRAL;
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] {} → category=NEUTRAL", name);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] {} → category=NEUTRAL", name);
         return this;
     }
 
@@ -122,7 +123,7 @@ public class MobEffectBuilder {
      */
     public MobEffectBuilder category(MobEffectCategory category) {
         this.category = category;
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] {} → category={}", name, category.name());
+        PDDebugLogger.apiDebug("[MobEffectBuilder] {} → category={}", name, category.name());
         return this;
     }
 
@@ -136,7 +137,7 @@ public class MobEffectBuilder {
      */
     public MobEffectBuilder color(int color) {
         this.color = color;
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] {} → color=#{}", name, Integer.toHexString(color));
+        PDDebugLogger.apiDebug("[MobEffectBuilder] {} → color=#{}", name, Integer.toHexString(color));
         return this;
     }
 
@@ -151,7 +152,7 @@ public class MobEffectBuilder {
      */
     public MobEffectBuilder instant() {
         this.instant = true;
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] {} → instant=true", name);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] {} → instant=true", name);
         return this;
     }
 
@@ -167,7 +168,7 @@ public class MobEffectBuilder {
      */
     public MobEffectBuilder shaderTexture(ResourceLocation shaderTexture) {
         this.shaderTexture = shaderTexture;
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] {} → shaderTexture={}", name, shaderTexture);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] {} → shaderTexture={}", name, shaderTexture);
         return this;
     }
 
@@ -184,7 +185,7 @@ public class MobEffectBuilder {
      */
     public MobEffectBuilder particleType(ParticleType<?> particleType) {
         this.particleType = particleType;
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] {} → particleType={}", name, particleType);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] {} → particleType={}", name, particleType);
         return this;
     }
 
@@ -200,7 +201,7 @@ public class MobEffectBuilder {
      */
     public MobEffectBuilder onTick(ObjIntConsumer<LivingEntity> onTick) {
         this.onTick = onTick;
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] {} → onTick=已配置", name);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] {} → onTick=已配置", name);
         return this;
     }
 
@@ -212,7 +213,7 @@ public class MobEffectBuilder {
      */
     public MobEffectBuilder onApply(BiConsumer<LivingEntity, Integer> onApply) {
         this.onApply = onApply;
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] {} → onApply=已配置", name);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] {} → onApply=已配置", name);
         return this;
     }
 
@@ -224,7 +225,7 @@ public class MobEffectBuilder {
      */
     public MobEffectBuilder onRemove(BiConsumer<LivingEntity, Integer> onRemove) {
         this.onRemove = onRemove;
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] {} → onRemove=已配置", name);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] {} → onRemove=已配置", name);
         return this;
     }
 
@@ -239,7 +240,7 @@ public class MobEffectBuilder {
     public MobEffectBuilder stackingHandler(
             BiFunction<MobEffectInstance, MobEffectInstance, MobEffectInstance> stackingHandler) {
         this.stackingHandler = stackingHandler;
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] {} → stackingHandler=已配置", name);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] {} → stackingHandler=已配置", name);
         return this;
     }
 
@@ -258,7 +259,7 @@ public class MobEffectBuilder {
      * @return {@link MobEffectResult} 包含效果类型的所有引用信息
      */
     public MobEffectResult build() {
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] ===== 开始构建效果: {} =====", name);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] ===== 开始构建效果: {} =====", name);
         validate();
 
         // 构建 EffectConfig
@@ -272,26 +273,26 @@ public class MobEffectBuilder {
                 .build();
 
         // 注册到 DeferredRegister
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] 注册 MobEffect: {} (category={}, color=#{})",
+        PDDebugLogger.apiDebug("[MobEffectBuilder] 注册 MobEffect: {} (category={}, color=#{})",
                 name, category.name(), Integer.toHexString(color));
         DeferredHolder<MobEffect, MobEffect> holder = MobEffectAPI.REGISTRY.register(
                 name, () -> new PasterDreamEffect(category, color, config)
         );
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] ✅ MobEffect 已注册: {} | holder={} | instant={}", name, holder, instant);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] ✅ MobEffect 已注册: {} | holder={} | instant={}", name, holder, instant);
 
         // 创建结果
         MobEffectResult result = new MobEffectResult(name, holder);
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] 创建 MobEffectResult: name={}, holder={}", name, holder);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] 创建 MobEffectResult: name={}, holder={}", name, holder);
 
         // 缓存到 MobEffectAPI
         MobEffectAPI.cacheEffect(result);
 
         // 如果是瞬时效果，标记为瞬时
         if (instant) {
-            PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] 标记为瞬时效果: {}", name);
+            PDDebugLogger.apiDebug("[MobEffectBuilder] 标记为瞬时效果: {}", name);
         }
 
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] ✅ 效果构建完成: {} | category={}, color=#{}, config=着色器:{} 粒子:{} tick回调:{} 应用回调:{} 移除回调:{} 叠加:{}",
+        PDDebugLogger.apiDebug("[MobEffectBuilder] ✅ 效果构建完成: {} | category={}, color=#{}, config=着色器:{} 粒子:{} tick回调:{} 应用回调:{} 移除回调:{} 叠加:{}",
                 name, category.name(), Integer.toHexString(color),
                 shaderTexture != null ? "✅" : "❌",
                 particleType != null ? "✅" : "❌",
@@ -317,6 +318,6 @@ public class MobEffectBuilder {
             PasterDreamAPI.LOGGER.error("[MobEffectBuilder] ❌ 验证失败: {} → color 未设置", name);
             throw new IllegalStateException("MobEffectBuilder: 缺少效果颜色（color），请调用 .color() 设置");
         }
-        PasterDreamAPI.LOGGER.debug("[MobEffectBuilder] ✅ 验证通过: {}", name);
+        PDDebugLogger.apiDebug("[MobEffectBuilder] ✅ 验证通过: {}", name);
     }
 }

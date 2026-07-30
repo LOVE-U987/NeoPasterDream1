@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 流体注册 API —— 集中管理 Fluid 的注册与查询
  * <p>
@@ -44,7 +45,7 @@ public final class FluidAPI {
      * 需要在 {@code PasterDreamMod} 构造函数中通过 {@link #registerAll(IEventBus)} 注册到事件总线。
      */
     public static final DeferredRegister<Fluid> REGISTRY =
-            DeferredRegister.create(Registries.FLUID, PasterDreamAPI.MOD_ID);
+            DeferredRegister.create(Registries.FLUID, PasterDreamAPI.DATA_NAMESPACE);
 
     /** 已注册流体的 DeferredHolder 缓存 */
     private static final Map<String, DeferredHolder<Fluid, ? extends Fluid>> HOLDERS = new HashMap<>();
@@ -64,7 +65,7 @@ public final class FluidAPI {
     public static <T extends Fluid> DeferredHolder<Fluid, T> register(String name, Supplier<T> supplier) {
         DeferredHolder<Fluid, T> holder = REGISTRY.register(name, supplier);
         HOLDERS.put(name, holder);
-        PasterDreamAPI.LOGGER.debug("[FluidAPI] 已注册流体: {}", name);
+        PDDebugLogger.apiDebug("[FluidAPI] 已注册流体: {}", name);
         return holder;
     }
 
@@ -115,7 +116,7 @@ public final class FluidAPI {
      */
     public static void registerAll(IEventBus modEventBus) {
         REGISTRY.register(modEventBus);
-        PasterDreamAPI.LOGGER.debug("[FluidAPI] 已注册流体 DeferredRegister 到事件总线");
+        PDDebugLogger.apiDebug("[FluidAPI] 已注册流体 DeferredRegister 到事件总线");
     }
 
     /**

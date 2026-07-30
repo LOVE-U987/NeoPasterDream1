@@ -19,6 +19,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 容器/家具/杂项方块组客户端接线（[分区F]，波次 W4）。
  * <p>
@@ -68,7 +69,7 @@ public class PDClientFurniture {
                 context -> new W4GeoBlockRenderer("shadow_trap_0"));
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.TWILIGHT_LANTERN.get(),
                 context -> new W4GeoBlockRenderer("twilight_lantern"));
-        PasterDreamMod.LOGGER.debug("[PDClientFurniture] W4 GeckoLib 方块渲染器注册完成");
+        PDDebugLogger.mainDebug("[PDClientFurniture] W4 GeckoLib 方块渲染器注册完成");
     }
 
     /**
@@ -81,7 +82,7 @@ public class PDClientFurniture {
         event.register(PDMenusFurniture.PICNIC_BASKET.get(), PicnicBasketScreen::new);
         event.register(PDMenusFurniture.SHADOW_DESK.get(), ShadowDeskScreen::new);
         event.register(PDMenusFurniture.WINDMOOR_CRATE.get(), WindmoorCrateScreen::new);
-        PasterDreamMod.LOGGER.debug("[PDClientFurniture] W4 GUI 屏幕绑定完成");
+        PDDebugLogger.mainDebug("[PDClientFurniture] W4 GUI 屏幕绑定完成");
     }
 
     /**
@@ -113,7 +114,7 @@ public class PDClientFurniture {
         registerDisplayItem(event, PDItemsFurniture.class, "shadow_dungeon_portal", PDItemsFurniture.SHADOW_DUNGEON_PORTAL.get());
         registerDisplayItem(event, PDItemsFurniture.class, "shadow_trap_0", PDItemsFurniture.SHADOW_TRAP_0.get());
         registerDisplayItem(event, PDItemsFurniture.class, "twilight_lantern", PDItemsFurniture.TWILIGHT_LANTERN.get());
-        PasterDreamMod.LOGGER.debug("[PDClientFurniture] W4 显示物品客户端扩展注册完成");
+        PDDebugLogger.mainDebug("[PDClientFurniture] W4 显示物品客户端扩展注册完成");
     }
 
     /** 为单个显示物品绑定 GeckoLib 渲染器 */

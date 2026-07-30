@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.DefaultedBlockGeoModel;
 import software.bernie.geckolib.renderer.GeoBlockRenderer;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 蓄梦池方块渲染器 (Dream Accumulator Block Renderer)
  * 使用 GeckoLib 渲染动画方块
@@ -31,7 +32,7 @@ public class DreamAccumulatorBlockRenderer extends GeoBlockRenderer<DreamAccumul
      */
     public DreamAccumulatorBlockRenderer() {
         super(new DefaultedBlockGeoModel<>(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, NAME)));
-        PasterDreamMod.LOGGER.debug("[DreamAccumulatorBlockRenderer] 初始化完成，资源名: {} | 模型=geo/block/{}.geo.json 纹理=textures/block/{}.png 动画=animations/block/{}.animation.json",
+        PDDebugLogger.mainDebug("[DreamAccumulatorBlockRenderer] 初始化完成，资源名: {} | 模型=geo/block/{}.geo.json 纹理=textures/block/{}.png 动画=animations/block/{}.animation.json",
                 NAME, NAME, NAME, NAME);
     }
 }

@@ -28,6 +28,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 亚伦柯斯右手 (Aaroncos Righthand 0) — BOSS 级飞行敌对生物
  * <p>
@@ -102,7 +103,7 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
         if (serverLevel.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY)) {
             PDArenaBossManager.onSpawnAnimationComplete(serverLevel);
         }
-        PasterDreamMod.LOGGER.debug("[AaroncosRighthand0] 召唤动画完成，BOSS 激活");
+        PDDebugLogger.mainDebug("[AaroncosRighthand0] 召唤动画完成，BOSS 激活");
     }
 
     /**

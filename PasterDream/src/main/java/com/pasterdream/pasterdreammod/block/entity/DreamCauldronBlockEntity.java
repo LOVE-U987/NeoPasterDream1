@@ -1,12 +1,14 @@
 package com.pasterdream.pasterdreammod.block.entity;
 
+import com.pasterdream.pasterdreammod.api.util.AddonDetector;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDFluids;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
-import com.pasterdream.pasterdreammod.registry.items.PDItemsFunctional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -39,6 +41,7 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -90,33 +93,57 @@ public class DreamCauldronBlockEntity extends BlockEntity implements GeoBlockEnt
     /** 成品写入时刻（与原版 queueServerWork(59) 一致） */
     private static final int CRAFT_RESULT_TICK = 59;
 
+    /** PasterDreamSpells 法术物品的命名空间 */
+    private static final String SPELLS_MOD_ID = "pasterdreamspells";
+
     /**
-     * 炼药配方（与原版 DreamCauldronRecipePr0Procedure 完全一致）：
+     * 炼药配方（与原版 DreamCauldronRecipePr0Procedure 一致）：
      * 槽 0 = 引导药剂（公共前提），槽 1-3 = 按序匹配的三种材料，产出一种法术物品。
-     * 使用 Supplier 延迟解引用，避免在注册完成前访问注册表。
+     * result 使用 Optional，未安装 PasterDreamSpells 时配方结果为空，炼制不会启动。
      */
     private record CauldronRecipe(Supplier<Item> input1, Supplier<Item> input2,
-                                  Supplier<Item> input3, Supplier<Item> result) {
+                                  Supplier<Item> input3, Optional<Item> result) {
     }
 
-    /** 全部 5 个原版配方 */
-    private static final List<CauldronRecipe> RECIPES = List.of(
-            // 矢车菊 + 红石 + 阴暗云 → 闪电法术
-            new CauldronRecipe(() -> Items.CORNFLOWER, () -> Items.REDSTONE,
-                    () -> PDItems.DARK_CLOUD.get(), () -> PDItemsFunctional.LIGHTNING_SPELL.get()),
-            // 花卉2 + 蜘蛛眼 + 毒马铃薯 → 剧毒法术
-            new CauldronRecipe(() -> PDItems.FLOWER_2.get(), () -> Items.SPIDER_EYE,
-                    () -> Items.POISONOUS_POTATO, () -> PDItemsFunctional.POISON_SPELL.get()),
-            // 金苹果 + 闪烁的西瓜片 + 向日葵 → 治疗法术
-            new CauldronRecipe(() -> Items.GOLDEN_APPLE, () -> Items.GLISTERING_MELON_SLICE,
-                    () -> Items.SUNFLOWER, () -> PDItemsFunctional.HEALING_SPELL.get()),
-            // 绒球葱 + 龙息 + 紫水晶碎片 → 狂暴法术
-            new CauldronRecipe(() -> Items.ALLIUM, () -> Items.DRAGON_BREATH,
-                    () -> Items.AMETHYST_SHARD, () -> PDItemsFunctional.FURY_SPELL.get()),
-            // 兰花 + 雪球 + 冰芽 → 冰冻法术
-            new CauldronRecipe(() -> Items.BLUE_ORCHID, () -> Items.SNOWBALL,
-                    () -> PDItems.ICE_BUD_0.get(), () -> PDItemsFunctional.ICE_SPELL.get())
-    );
+    /**
+     * 动态构建 5 个原版配方。
+     * 当 PasterDreamSpells 未加载时返回空列表，避免引用不存在的法术物品。
+     */
+    private static List<CauldronRecipe> buildRecipes() {
+        if (!AddonDetector.isSpellsLoaded()) {
+            return List.of();
+        }
+        return List.of(
+                // 矢车菊 + 红石 + 阴暗云 → 闪电法术
+                new CauldronRecipe(() -> Items.CORNFLOWER, () -> Items.REDSTONE,
+                        () -> PDItems.DARK_CLOUD.get(), lookupSpellItem("lightning_spell")),
+                // 花卉2 + 蜘蛛眼 + 毒马铃薯 → 剧毒法术
+                new CauldronRecipe(() -> PDItems.FLOWER_2.get(), () -> Items.SPIDER_EYE,
+                        () -> Items.POISONOUS_POTATO, lookupSpellItem("poison_spell")),
+                // 金苹果 + 闪烁的西瓜片 + 向日葵 → 治疗法术
+                new CauldronRecipe(() -> Items.GOLDEN_APPLE, () -> Items.GLISTERING_MELON_SLICE,
+                        () -> Items.SUNFLOWER, lookupSpellItem("healing_spell")),
+                // 绒球葱 + 龙息 + 紫水晶碎片 → 狂暴法术
+                new CauldronRecipe(() -> Items.ALLIUM, () -> Items.DRAGON_BREATH,
+                        () -> Items.AMETHYST_SHARD, lookupSpellItem("fury_spell")),
+                // 兰花 + 雪球 + 冰芽 → 冰冻法术
+                new CauldronRecipe(() -> Items.BLUE_ORCHID, () -> Items.SNOWBALL,
+                        () -> PDItems.ICE_BUD_0.get(), lookupSpellItem("ice_spell"))
+        );
+    }
+
+    /**
+     * 通过 {@link BuiltInRegistries#ITEM} 动态查找 PasterDreamSpells 的法术物品。
+     *
+     * @param path 法术物品注册名（如 "lightning_spell"）
+     * @return 对应物品的 Optional
+     */
+    private static Optional<Item> lookupSpellItem(String path) {
+        return BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath(SPELLS_MOD_ID, path));
+    }
+
+    /** 全部 5 个原版配方（运行时动态构建） */
+    private static final List<CauldronRecipe> RECIPES = buildRecipes();
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -229,6 +256,9 @@ public class DreamCauldronBlockEntity extends BlockEntity implements GeoBlockEnt
         }
         CauldronRecipe matched = null;
         for (CauldronRecipe recipe : RECIPES) {
+            if (recipe.result().isEmpty()) {
+                continue;
+            }
             if (itemHandler.getStackInSlot(1).is(recipe.input1().get())
                     && itemHandler.getStackInSlot(2).is(recipe.input2().get())
                     && itemHandler.getStackInSlot(3).is(recipe.input3().get())) {

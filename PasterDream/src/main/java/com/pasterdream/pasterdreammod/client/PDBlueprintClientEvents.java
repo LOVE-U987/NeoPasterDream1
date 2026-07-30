@@ -8,6 +8,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 蓝图阅览子系统客户端事件（独立于 {@link ClientSetup}，避免共享文件冲突）。
  */
@@ -25,6 +26,6 @@ public final class PDBlueprintClientEvents {
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(PDMenusBlueprint.BLUEPRINT_GUI_0.get(), BlueprintGui0Screen::new);
-        PasterDreamMod.LOGGER.debug("[PDBlueprintClientEvents] registered blueprint_gui_0 → BlueprintGui0Screen");
+        PDDebugLogger.mainDebug("[PDBlueprintClientEvents] registered blueprint_gui_0 → BlueprintGui0Screen");
     }
 }

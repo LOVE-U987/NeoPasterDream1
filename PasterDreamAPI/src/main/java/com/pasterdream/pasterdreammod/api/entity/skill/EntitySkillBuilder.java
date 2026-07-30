@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.api.entity.skill;
 
 import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 实体技能构建器 —— 采用 Builder 模式链式配置技能属性
  * <p>
@@ -40,7 +41,7 @@ public class EntitySkillBuilder {
      */
     public EntitySkillBuilder(String name) {
         this.name = name;
-        PasterDreamAPI.LOGGER.debug("[EntitySkillBuilder] 创建技能构建器: {}", name);
+        PDDebugLogger.apiDebug("[EntitySkillBuilder] 创建技能构建器: {}", name);
     }
 
     // ======================== 动画 ========================
@@ -55,7 +56,7 @@ public class EntitySkillBuilder {
      */
     public EntitySkillBuilder animationName(String animationName) {
         this.animationName = animationName;
-        PasterDreamAPI.LOGGER.debug("[EntitySkillBuilder] {} → animationName={}", name, animationName);
+        PDDebugLogger.apiDebug("[EntitySkillBuilder] {} → animationName={}", name, animationName);
         return this;
     }
 
@@ -69,7 +70,7 @@ public class EntitySkillBuilder {
      */
     public EntitySkillBuilder damage(float damage) {
         this.damage = damage;
-        PasterDreamAPI.LOGGER.debug("[EntitySkillBuilder] {} → damage={}", name, damage);
+        PDDebugLogger.apiDebug("[EntitySkillBuilder] {} → damage={}", name, damage);
         return this;
     }
 
@@ -85,7 +86,7 @@ public class EntitySkillBuilder {
      */
     public EntitySkillBuilder range(float range) {
         this.range = range;
-        PasterDreamAPI.LOGGER.debug("[EntitySkillBuilder] {} → range={}", name, range);
+        PDDebugLogger.apiDebug("[EntitySkillBuilder] {} → range={}", name, range);
         return this;
     }
 
@@ -99,7 +100,7 @@ public class EntitySkillBuilder {
      */
     public EntitySkillBuilder cooldownTicks(int cooldownTicks) {
         this.cooldownTicks = cooldownTicks;
-        PasterDreamAPI.LOGGER.debug("[EntitySkillBuilder] {} → cooldownTicks={} ({}秒)", name, cooldownTicks, cooldownTicks / 20.0);
+        PDDebugLogger.apiDebug("[EntitySkillBuilder] {} → cooldownTicks={} ({}秒)", name, cooldownTicks, cooldownTicks / 20.0);
         return this;
     }
 
@@ -116,7 +117,7 @@ public class EntitySkillBuilder {
      */
     public EntitySkillBuilder particle(String particleName) {
         this.particleName = particleName;
-        PasterDreamAPI.LOGGER.debug("[EntitySkillBuilder] {} → particle={}", name, particleName);
+        PDDebugLogger.apiDebug("[EntitySkillBuilder] {} → particle={}", name, particleName);
         return this;
     }
 
@@ -132,7 +133,7 @@ public class EntitySkillBuilder {
      */
     public EntitySkillBuilder sound(String soundId) {
         this.soundId = soundId;
-        PasterDreamAPI.LOGGER.debug("[EntitySkillBuilder] {} → sound={}", name, soundId);
+        PDDebugLogger.apiDebug("[EntitySkillBuilder] {} → sound={}", name, soundId);
         return this;
     }
 
@@ -145,7 +146,7 @@ public class EntitySkillBuilder {
      * @throws IllegalStateException 如果缺少必要参数
      */
     public EntitySkill build() {
-        PasterDreamAPI.LOGGER.debug("[EntitySkillBuilder] ===== 开始构建技能: {} =====", name);
+        PDDebugLogger.apiDebug("[EntitySkillBuilder] ===== 开始构建技能: {} =====", name);
         validate();
 
         EntitySkill skill = new EntitySkill(
@@ -153,7 +154,7 @@ public class EntitySkillBuilder {
                 cooldownTicks, particleName, soundId
         );
 
-        PasterDreamAPI.LOGGER.debug("[EntitySkillBuilder] ✅ 技能构建完成: {} | damage={}, range={}, cooldown={}tick, anim={}, particle={}, sound={}",
+        PDDebugLogger.apiDebug("[EntitySkillBuilder] ✅ 技能构建完成: {} | damage={}, range={}, cooldown={}tick, anim={}, particle={}, sound={}",
                 name, damage, range, cooldownTicks, animationName,
                 particleName != null ? particleName : "无",
                 soundId != null ? soundId : "无");
@@ -183,6 +184,6 @@ public class EntitySkillBuilder {
             PasterDreamAPI.LOGGER.error("[EntitySkillBuilder] ❌ 验证失败: {} → cooldownTicks 无效: {}", name, cooldownTicks);
             throw new IllegalStateException("EntitySkillBuilder: 冷却时间必须大于 0");
         }
-        PasterDreamAPI.LOGGER.debug("[EntitySkillBuilder] ✅ 验证通过: {}", name);
+        PDDebugLogger.apiDebug("[EntitySkillBuilder] ✅ 验证通过: {}", name);
     }
 }

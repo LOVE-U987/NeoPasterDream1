@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 粒子注册 API —— 将繁琐的粒子类型注册集中管理，提供高效简洁的注册方式
  * <p>
@@ -67,7 +68,7 @@ public final class ParticleAPI {
      * }</pre>
      */
     public static final DeferredRegister<ParticleType<?>> REGISTRY =
-            DeferredRegister.create(Registries.PARTICLE_TYPE, PasterDreamAPI.MOD_ID);
+            DeferredRegister.create(Registries.PARTICLE_TYPE, PasterDreamAPI.DATA_NAMESPACE);
 
     /** 已注册的粒子结果缓存 */
     private static final Map<String, ParticleResult> REGISTERED_PARTICLES = new HashMap<>();
@@ -98,8 +99,8 @@ public final class ParticleAPI {
      * @return {@link ParticleBuilder} 实例
      */
     public static ParticleBuilder createParticle(String particleName) {
-        PasterDreamAPI.LOGGER.debug("[ParticleAPI] 开始创建粒子构建器: {}", particleName);
-        return new ParticleBuilder(PasterDreamAPI.MOD_ID, particleName);
+        PDDebugLogger.apiDebug("[ParticleAPI] 开始创建粒子构建器: {}", particleName);
+        return new ParticleBuilder(PasterDreamAPI.DATA_NAMESPACE, particleName);
     }
 
     // ======================== 查询方法 ========================
@@ -112,7 +113,7 @@ public final class ParticleAPI {
      */
     public static Optional<ParticleResult> getParticle(String particleName) {
         ParticleResult result = REGISTERED_PARTICLES.get(particleName);
-        PasterDreamAPI.LOGGER.debug("[ParticleAPI] 🔍 查询粒子: {} → {}", particleName, result != null ? "已找到" : "未找到");
+        PDDebugLogger.apiDebug("[ParticleAPI] 🔍 查询粒子: {} → {}", particleName, result != null ? "已找到" : "未找到");
         return Optional.ofNullable(result);
     }
 
@@ -127,7 +128,7 @@ public final class ParticleAPI {
     public static Optional<ParticleType<?>> getParticleType(String particleName) {
         ParticleResult result = REGISTERED_PARTICLES.get(particleName);
         ParticleType<?> type = result != null ? result.particleType() : null;
-        PasterDreamAPI.LOGGER.debug("[ParticleAPI] 🔍 查询粒子类型: {} → {}", particleName, type != null ? type : "null");
+        PDDebugLogger.apiDebug("[ParticleAPI] 🔍 查询粒子类型: {} → {}", particleName, type != null ? type : "null");
         return Optional.ofNullable(type);
     }
 
@@ -142,10 +143,10 @@ public final class ParticleAPI {
     public static Optional<Supplier<ParticleType<?>>> getParticleSupplier(String particleName) {
         ParticleResult result = REGISTERED_PARTICLES.get(particleName);
         if (result != null) {
-            PasterDreamAPI.LOGGER.debug("[ParticleAPI] 🔍 查询粒子 Supplier: {}", particleName);
+            PDDebugLogger.apiDebug("[ParticleAPI] 🔍 查询粒子 Supplier: {}", particleName);
             return Optional.of(result::particleType);
         }
-        PasterDreamAPI.LOGGER.debug("[ParticleAPI] 🔍 查询粒子 Supplier: {} → null（未找到）", particleName);
+        PDDebugLogger.apiDebug("[ParticleAPI] 🔍 查询粒子 Supplier: {} → null（未找到）", particleName);
         return Optional.empty();
     }
 
@@ -156,7 +157,7 @@ public final class ParticleAPI {
      */
     public static Map<String, ParticleResult> getRegisteredParticles() {
         int count = REGISTERED_PARTICLES.size();
-        PasterDreamAPI.LOGGER.debug("[ParticleAPI] 📊 获取所有已注册粒子: 共 {} 个", count);
+        PDDebugLogger.apiDebug("[ParticleAPI] 📊 获取所有已注册粒子: 共 {} 个", count);
         return Collections.unmodifiableMap(REGISTERED_PARTICLES);
     }
 
@@ -174,6 +175,6 @@ public final class ParticleAPI {
     public static void cacheParticle(ParticleResult result) {
         REGISTERED_PARTICLES.put(result.name(), result);
         int total = REGISTERED_PARTICLES.size();
-        PasterDreamAPI.LOGGER.debug("[ParticleAPI] 📦 已缓存粒子: {} | 缓存总数: {} | holder={}", result.name(), total, result.holder());
+        PDDebugLogger.apiDebug("[ParticleAPI] 📦 已缓存粒子: {} | 缓存总数: {} | holder={}", result.name(), total, result.holder());
     }
 }

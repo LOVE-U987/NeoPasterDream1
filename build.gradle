@@ -5,6 +5,10 @@
 // 分发约定：玩家只安装一个 jar
 //   ./gradlew :PasterDream:packageMod
 //   → build/dist/pasterdream-<version>.jar  （已内嵌 PasterDreamAPI）
+//
+// 客户端启动：必须使用 PasterDream 的 runClient，避免多子项目歧义
+//   ./gradlew :PasterDream:runClient
+//   （若直接从根目录运行 ./gradlew runClient，也会自动代理到 :PasterDream:runClient）
 
 subprojects {
     tasks.withType(JavaCompile).configureEach {
@@ -16,4 +20,22 @@ tasks.register('packageMod') {
     group = 'distribution'
     description = '构建并收集单一可安装 jar 到 build/dist/（内嵌 API）'
     dependsOn ':PasterDream:packageMod'
+}
+
+tasks.register('runClient') {
+    group = 'PasterDream'
+    description = '启动游戏客户端（代理到 :PasterDream:runClient）'
+    dependsOn ':PasterDream:runClient'
+}
+
+tasks.register('runServer') {
+    group = 'PasterDream'
+    description = '启动游戏服务端（代理到 :PasterDream:runServer）'
+    dependsOn ':PasterDream:runServer'
+}
+
+tasks.register('runData') {
+    group = 'PasterDream'
+    description = '运行数据生成（代理到 :PasterDream:runData）'
+    dependsOn ':PasterDream:runData'
 }

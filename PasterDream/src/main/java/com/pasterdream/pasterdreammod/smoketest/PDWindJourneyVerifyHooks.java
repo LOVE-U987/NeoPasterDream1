@@ -14,7 +14,6 @@ import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsFunctional;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
-import com.pasterdream.pasterdreammod.world.PDSanHelper;
 import com.pasterdream.pasterdreammod.world.WindJourneyEvents;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
@@ -31,6 +30,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
@@ -85,7 +85,7 @@ public final class PDWindJourneyVerifyHooks {
         verifyStructureDatapack(server, out);
         verifyWindKnightLootTable(server, out);
         verifyFlagRegistered(out);
-        out.accept(new Result(true, "PDSanHelper 可加载", PDSanHelper.class.getSimpleName()));
+        out.accept(new Result(true, "san-system-moved", "PDSanHelper 已迁移至 PasterDreamSanity"));
 
         if (player == null) {
             out.accept(new Result(false, "wind-player-skip", "player == null"));
@@ -283,7 +283,7 @@ public final class PDWindJourneyVerifyHooks {
 
         if (s4) {
             player.setItemInHand(InteractionHand.MAIN_HAND,
-                    new ItemStack(PDItemsFunctional.LIGHTNING_SPELL.get()));
+                    new ItemStack(lookupLightningSpell()));
             useBlock(player, level, base);
             out.accept(new Result(true, "祭坛 4 已投闪电法术（待 86t）", "scheduled"));
         } else {
@@ -446,6 +446,17 @@ public final class PDWindJourneyVerifyHooks {
                 "风维开融梦箱授予 treasure_wind_journey",
                 granted ? "granted" : "not granted"));
         level.removeBlock(base, false);
+    }
+
+    /**
+     * 动态查找 PasterDreamSpells 的闪电法术物品。
+     *
+     * @return 闪电法术物品，未注册时返回 Items.AIR
+     */
+    private static Item lookupLightningSpell() {
+        return BuiltInRegistries.ITEM.getOptional(
+                ResourceLocation.fromNamespaceAndPath("pasterdreamspells", "lightning_spell"))
+                .orElse(net.minecraft.world.item.Items.AIR);
     }
 
     // ==================== 移动专项（顺/逆风 + 云块物理 + 跨维清理） ====================

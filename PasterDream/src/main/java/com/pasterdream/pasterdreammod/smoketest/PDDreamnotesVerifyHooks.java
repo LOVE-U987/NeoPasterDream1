@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 寻梦者笔记分区验证钩子（独立于 {@code PDPortingVerifyTest}）。
  * <p>
@@ -79,7 +80,7 @@ public final class PDDreamnotesVerifyHooks {
             results.add(r);
             out.accept(r);
             if (r.pass()) {
-                LOGGER.info(TAG + "PASS {} ({})", r.name(), r.detail());
+                PDDebugLogger.smoketestInfo(TAG + "PASS {} ({})", r.name(), r.detail());
             } else {
                 LOGGER.error(TAG + "FAIL {} ({})", r.name(), r.detail());
             }
@@ -150,8 +151,8 @@ public final class PDDreamnotesVerifyHooks {
         collect.accept(tryCopyNotesE2E(player));
 
         long fail = results.stream().filter(r -> !r.pass()).count();
-        LOGGER.info(TAG + "SUMMARY total={} pass={} fail={}", results.size(), results.size() - fail, fail);
-        LOGGER.info(TAG + "RESULT {}", fail == 0 ? "ALL_PASS" : "HAS_FAILURES");
+        PDDebugLogger.smoketestInfo(TAG + "SUMMARY total={} pass={} fail={}", results.size(), results.size() - fail, fail);
+        PDDebugLogger.smoketestInfo(TAG + "RESULT {}", fail == 0 ? "ALL_PASS" : "HAS_FAILURES");
         return fail == 0;
     }
 

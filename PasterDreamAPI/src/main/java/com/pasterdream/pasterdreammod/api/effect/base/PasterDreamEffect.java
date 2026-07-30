@@ -16,6 +16,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.ObjIntConsumer;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * PasterDream 自定义药水效果基类
  * <p>
@@ -66,7 +67,7 @@ public class PasterDreamEffect extends MobEffect {
     public PasterDreamEffect(MobEffectCategory category, int color, EffectConfig config) {
         super(category, color);
         this.config = config != null ? config : EffectConfig.DEFAULT;
-        PasterDreamAPI.LOGGER.debug("[PasterDreamEffect] 创建效果: category={}, color=#{}", category.name(), Integer.toHexString(color));
+        PDDebugLogger.apiDebug("[PasterDreamEffect] 创建效果: category={}, color=#{}", category.name(), Integer.toHexString(color));
     }
 
     /**
@@ -140,7 +141,7 @@ public class PasterDreamEffect extends MobEffect {
      * @param amplifier 效果等级
      */
     public void onApply(LivingEntity entity, int amplifier) {
-        PasterDreamAPI.LOGGER.debug("[PasterDreamEffect] onApply: effect={}, entity={}, amplifier={}",
+        PDDebugLogger.apiDebug("[PasterDreamEffect] onApply: effect={}, entity={}, amplifier={}",
                 getDescriptionId(), entity, amplifier);
         if (config.onApply != null) {
             config.onApply.accept(entity, amplifier);
@@ -156,7 +157,7 @@ public class PasterDreamEffect extends MobEffect {
      * @param amplifier 效果等级
      */
     public void onRemove(LivingEntity entity, int amplifier) {
-        PasterDreamAPI.LOGGER.debug("[PasterDreamEffect] onRemove: effect={}, entity={}, amplifier={}",
+        PDDebugLogger.apiDebug("[PasterDreamEffect] onRemove: effect={}, entity={}, amplifier={}",
                 getDescriptionId(), entity, amplifier);
         if (config.onRemove != null) {
             config.onRemove.accept(entity, amplifier);
@@ -187,7 +188,7 @@ public class PasterDreamEffect extends MobEffect {
             return config.stackingHandler.apply(existing, newInstance);
         }
         // 默认：新实例覆盖旧实例（原版行为）
-        PasterDreamAPI.LOGGER.debug("[PasterDreamEffect] handleStacking: 使用默认覆盖行为");
+        PDDebugLogger.apiDebug("[PasterDreamEffect] handleStacking: 使用默认覆盖行为");
         return newInstance;
     }
 

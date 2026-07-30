@@ -24,6 +24,7 @@ import com.pasterdream.pasterdreammod.registry.PDFeatures;
 import com.pasterdream.pasterdreammod.registry.PDFluids;
 import com.pasterdream.pasterdreammod.registry.PDFluidsType;
 import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
+import com.pasterdream.pasterdreammod.entity.EntityTagSetup;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDArmorMaterials;
 import com.pasterdream.pasterdreammod.registry.PDMenus;
@@ -41,6 +42,8 @@ import com.pasterdream.pasterdreammod.registry.PDWorldgenRegistries;
 import com.pasterdream.pasterdreammod.worldgen.tree.DyedreamTreePlacers;
 import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationRegistry;
 import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
+import com.pasterdream.pasterdreammod.api.doll.DollAPI;
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.data.DataGenerator;
 import net.neoforged.bus.api.IEventBus;
@@ -83,8 +86,15 @@ public class PasterDreamMod {
      * @param modContainer NeoForge 模组容器
      */
     public PasterDreamMod(IEventBus modEventBus, ModContainer modContainer) {
-        // 统一注册 PasterDreamAPI 模块下所有 DeferredRegister
-        PasterDreamAPI.registerAll(modEventBus);
+        // PasterDreamAPI 已作为独立前置 mod 加载，由其主类 PasterDreamAPIMod 统一注册 API 层 DeferredRegister，
+        // 下游模组不再重复调用 registerAll，避免 "Cannot register DeferredRegister to more than one event bus"。
+
+        // 注册玩偶 API 的 DeferredRegister
+        DollAPI.BLOCK_REGISTRY.register(modEventBus);
+        DollAPI.ITEM_REGISTRY.register(modEventBus);
+
+        // 注册自定义玩偶（玩家皮肤模型，支持抱物）
+        com.pasterdream.pasterdreammod.registry.PDCustomDolls.register();
 
         // 注册 ServerScheduler（已上收至 PasterDreamAPI）
         ServerScheduler.register(NeoForge.EVENT_BUS);
@@ -179,13 +189,12 @@ public class PasterDreamMod {
 
         // ==================== 玩家数据层（属性 / 变量 / 网络 / 规则 / 配置） ====================
 
-        // 注册自定义玩家属性（战技冷却、瞬身术系列、理智光环等 10 项，还原自原版 PasterdreamModAttributes）
-        PDAttributes.ATTRIBUTES.register(modEventBus);
         // 将玩家属性挂接到 EntityType.PLAYER（MOD 总线 EntityAttributeModificationEvent）
+        // 属性本身已在 PasterDreamAPI.registerAll() 中统一注册
         modEventBus.addListener(PDAttributes::addPlayerAttributes);
 
-        // 注册玩家数据附件（San 理智值 / 融梦能量），以 AttachmentType 替代原版 Forge Capability
-        PDAttachments.ATTACHMENT_TYPES.register(modEventBus);
+        // 玩家数据附件（San 理智值 / 融梦能量）已上收至 PasterDreamAPI.registerAll()，
+        // 主模组通过 PDAttachments 兼容门面继续使用。
 
         // 注册网络包（玩家变量 S2C 同步 + 瞬身术/斗篷按键 C2S 消息）
         modEventBus.addListener(PDNetwork::registerPayloads);
@@ -200,14 +209,21 @@ public class PasterDreamMod {
         modContainer.registerConfig(ModConfig.Type.CLIENT, PDClientConfig.SPEC, "PasterDream-Client.toml");
         modContainer.registerConfig(ModConfig.Type.COMMON, PDCommonConfig.SPEC, "PasterDream-Common.toml");
 
+        // 注入调试日志开关（必须在配置文件注册之后，否则 Supplier 读取不到实际值）
+        PDDebugLogger.setApiLogger(PasterDreamAPI.LOGGER);
+        PDDebugLogger.setMainLogger(LOGGER);
+        PDDebugLogger.setMasterEnabled(PDCommonConfig.ENABLE_DEBUG_LOG::get);
+        PDDebugLogger.setApiEnabled(PDCommonConfig.ENABLE_API_DEBUG_LOG::get);
+        PDDebugLogger.setMainEnabled(PDCommonConfig.ENABLE_MAIN_DEBUG_LOG::get);
+        PDDebugLogger.setSmoketestEnabled(PDCommonConfig.ENABLE_SMOKETEST_DEBUG_LOG::get);
+
         // 游戏总线：玩家登录/重生/跨维度/克隆时维护并全量同步玩家数据（对照原版 Capability 生命周期）
         NeoForge.EVENT_BUS.addListener(PlayerDataEvents::onPlayerLoggedIn);
         NeoForge.EVENT_BUS.addListener(PlayerDataEvents::onPlayerRespawn);
         NeoForge.EVENT_BUS.addListener(PlayerDataEvents::onPlayerChangedDimension);
         NeoForge.EVENT_BUS.addListener(PlayerDataEvents::onPlayerClone);
 
-        // 理智环境 tick（SanHelper：含风维 cloudmist 续效）
-        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDSanHelper::onPlayerTick);
+        // 理智环境 tick 已迁移至 PasterDreamSanity 模组
         // 风之旅途：日更风向 / 顺逆风 / 进维文案与主题曲
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.WindJourneyEvents::onLevelTick);
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.WindJourneyEvents::onPlayerTick);
@@ -270,21 +286,24 @@ public class PasterDreamMod {
         // 配置所有实体的伤害免疫规则（替代原先散布在 27 个实体类中的重复 hurt() 逻辑）
         EntityImmunitySetup.setupAllImmunities();
 
+        // 配置实体内置标签（灯影怪物友伤免疫、法术实体无敌等）
+        EntityTagSetup.setup();
+
         // 注意：commonSetup 阶段调用 ModDecorations.generateJson() 可能无法正确编码 BlockPredicate，
         // 如需同步 JSON 文件请在 data 生成阶段或独立任务中执行。
 
         // 输出预期的 BiomeModifier JSON 配置文件列表（用于测试时确认文件是否被正确加载）
-        LOGGER.debug("预期的 BiomeModifier JSON 文件列表:");
-        LOGGER.debug("  - neoforge/biome_modifier/dyedream_ores.json -> 注入矿石 (UNDERGROUND_ORES)");
-        LOGGER.debug("    ├ pasterdream:ore_amber_candy");
-        LOGGER.debug("    ├ pasterdream:ore_dyedreamdust");
-        LOGGER.debug("    └ pasterdream:ore_dyedreamquartz");
-        LOGGER.debug("  - neoforge/biome_modifier/dyedream_vegetation.json -> 注入树木与植被 (TOP_LAYER_MODIFICATION)");
-        LOGGER.debug("    ├ pasterdream:dyedream_trees");
-        LOGGER.debug("    ├ pasterdream:patch_dyedream_buds");
-        LOGGER.debug("    ├ pasterdream:patch_pinkagaric");
-        LOGGER.debug("    └ pasterdream:patch_dyedream_seagrass");
-        LOGGER.debug("目标生物群系标签: #pasterdream:is_dyedream");
-        LOGGER.debug("===== 地形生成系统初始化完成 =====");
+        PDDebugLogger.mainDebug("预期的 BiomeModifier JSON 文件列表:");
+        PDDebugLogger.mainDebug("  - neoforge/biome_modifier/dyedream_ores.json -> 注入矿石 (UNDERGROUND_ORES)");
+        PDDebugLogger.mainDebug("    ├ pasterdream:ore_amber_candy");
+        PDDebugLogger.mainDebug("    ├ pasterdream:ore_dyedreamdust");
+        PDDebugLogger.mainDebug("    └ pasterdream:ore_dyedreamquartz");
+        PDDebugLogger.mainDebug("  - neoforge/biome_modifier/dyedream_vegetation.json -> 注入树木与植被 (TOP_LAYER_MODIFICATION)");
+        PDDebugLogger.mainDebug("    ├ pasterdream:dyedream_trees");
+        PDDebugLogger.mainDebug("    ├ pasterdream:patch_dyedream_buds");
+        PDDebugLogger.mainDebug("    ├ pasterdream:patch_pinkagaric");
+        PDDebugLogger.mainDebug("    └ pasterdream:patch_dyedream_seagrass");
+        PDDebugLogger.mainDebug("目标生物群系标签: #pasterdream:is_dyedream");
+        PDDebugLogger.mainDebug("===== 地形生成系统初始化完成 =====");
     }
 }

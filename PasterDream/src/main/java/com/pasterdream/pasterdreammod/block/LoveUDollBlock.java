@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * 琴雨梦纪念玩偶方块 (Love U Doll Block)
+ * LOVE_U拉乌酱玩偶方块 (Love U Doll Block)
  * <p>
  * 继承 {@link MemorialDollBlock}，绑定 {@link LoveUDollBlockEntity}。
  */
@@ -20,7 +20,7 @@ public class LoveUDollBlock extends MemorialDollBlock {
     public static final MapCodec<LoveUDollBlock> CODEC = simpleCodec(LoveUDollBlock::new);
 
     /**
-     * 构造琴雨梦纪念玩偶方块
+     * 构造LOVE_U拉乌酱玩偶方块
      *
      * @param properties 方块属性
      */

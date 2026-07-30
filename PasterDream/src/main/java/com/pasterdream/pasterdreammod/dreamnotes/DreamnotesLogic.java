@@ -26,6 +26,7 @@ import net.minecraft.world.level.LevelAccessor;
 import java.text.DecimalFormat;
 import java.util.Optional;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 寻梦者笔记 procedure 语义（Pr0/Pr1、翻书音效、经验启发、成就发放）。
  * <p>
@@ -233,7 +234,7 @@ public final class DreamnotesLogic {
                         ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "calle_card_0"))
                 .orElse(Items.AIR);
         if (item == Items.AIR) {
-            PasterDreamMod.LOGGER.debug("[Dreamnotes] calle_card_0 未注册，跳过 notes_9 卡片掉落");
+            PDDebugLogger.mainDebug("[Dreamnotes] calle_card_0 未注册，跳过 notes_9 卡片掉落");
             return;
         }
         ItemStack card = new ItemStack(item);
@@ -275,7 +276,7 @@ public final class DreamnotesLogic {
         AdvancementHolder holder = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
         if (holder == null) {
-            PasterDreamMod.LOGGER.debug("[Dreamnotes] 成就 {} 未注册，跳过授予", path);
+            PDDebugLogger.mainDebug("[Dreamnotes] 成就 {} 未注册，跳过授予", path);
             return false;
         }
         AdvancementProgress progress = player.getAdvancements().getOrStartProgress(holder);

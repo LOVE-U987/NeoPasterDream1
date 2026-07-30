@@ -228,74 +228,12 @@ public class PDEffects {
                             .addAttributeModifier(PDAttributes.SAN_VARIABILITY, modifierId("oppression_buff_0"),
                                     -9.6, AttributeModifier.Operation.ADD_VALUE));
 
-    // ==================== 法术效果（还原自原版法术模块） ====================
-    // 说明：这两个效果的核心是属性修饰符，使用 vanilla 原生的
-    // MobEffect.addAttributeModifier（随效果自动施加/过期自动移除，无需回调），
-    // 因此直接在 MobEffectAPI.REGISTRY 上注册，而非经过 Builder。
-
-    /**
-     * 狂暴法术增益 (fury_spell_buff)
-     * 紫红色有益效果：攻击力 +4、攻击速度 +3、移动速度 +0.05、
-     * SKILLCD/TELEPORTATIONCD -0.3（与原版 FurySpellBuffPr0 一致）。
-     */
-    public static final DeferredHolder<MobEffect, MobEffect> FURY_SPELL_BUFF =
-            MobEffectAPI.REGISTRY.register("fury_spell_buff",
-                    () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0xFFB655EC) {
-                    }
-                            .addAttributeModifier(Attributes.ATTACK_DAMAGE,
-                                    ResourceLocation.fromNamespaceAndPath("pasterdream", "fury_spell_buff_0"),
-                                    4, AttributeModifier.Operation.ADD_VALUE)
-                            .addAttributeModifier(Attributes.MOVEMENT_SPEED,
-                                    ResourceLocation.fromNamespaceAndPath("pasterdream", "fury_spell_buff_1"),
-                                    0.05, AttributeModifier.Operation.ADD_VALUE)
-                            .addAttributeModifier(Attributes.ATTACK_SPEED,
-                                    ResourceLocation.fromNamespaceAndPath("pasterdream", "fury_spell_buff_2"),
-                                    3, AttributeModifier.Operation.ADD_VALUE)
-                            .addAttributeModifier(PDAttributes.SKILLCD, modifierId("fury_spell_buff_3"),
-                                    -0.3, AttributeModifier.Operation.ADD_VALUE)
-                            .addAttributeModifier(PDAttributes.TELEPORTATIONCD, modifierId("fury_spell_buff_4"),
-                                    -0.3, AttributeModifier.Operation.ADD_VALUE));
-
-    /**
-     * 冰冻法术减益 (ice_spell_buff)
-     * 冰蓝色有害效果：移动速度 -1（完全定身）、攻击力 -100（数值与原版一致）。
-     */
-    public static final DeferredHolder<MobEffect, MobEffect> ICE_SPELL_BUFF =
-            MobEffectAPI.REGISTRY.register("ice_spell_buff",
-                    () -> new MobEffect(MobEffectCategory.HARMFUL, 0xFFB8ECF6) {
-                    }
-                            .addAttributeModifier(Attributes.MOVEMENT_SPEED,
-                                    ResourceLocation.fromNamespaceAndPath("pasterdream", "ice_spell_buff_0"),
-                                    -1, AttributeModifier.Operation.ADD_VALUE)
-                            .addAttributeModifier(Attributes.ATTACK_DAMAGE,
-                                    ResourceLocation.fromNamespaceAndPath("pasterdream", "ice_spell_buff_1"),
-                                    -100, AttributeModifier.Operation.ADD_VALUE));
-
     // ════════════════════════════════════════════════════════════════════
     // 以下为 2026-07-26 批量还原的 34 个状态效果
     // 对照原版 init/PasterdreamModMobEffects.java + potion/*.java + procedures/
     // ════════════════════════════════════════════════════════════════════
 
     // ==================== A. 纯属性修饰符型（vanilla addAttributeModifier） ====================
-
-    /**
-     * 振奋 (cheerup_buff) — 原版 CheerupBuffMobEffect
-     * <p>
-     * 有益 0xFFFF7E7A（原 -33158）。San 值高于阈值时获得：
-     * 瞬身术冷却 -0.1、移速 +0.05、攻速 +0.05、战技冷却 -0.1（均为 ADD_VALUE，对应旧 ADDITION）。
-     */
-    public static final DeferredHolder<MobEffect, MobEffect> CHEERUP_BUFF =
-            MobEffectAPI.REGISTRY.register("cheerup_buff",
-                    () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0xFFFF7E7A) {
-                    }
-                            .addAttributeModifier(PDAttributes.TELEPORTATIONCD, modifierId("cheerup_buff_0"),
-                                    -0.1, AttributeModifier.Operation.ADD_VALUE)
-                            .addAttributeModifier(Attributes.MOVEMENT_SPEED, modifierId("cheerup_buff_1"),
-                                    0.05, AttributeModifier.Operation.ADD_VALUE)
-                            .addAttributeModifier(Attributes.ATTACK_SPEED, modifierId("cheerup_buff_2"),
-                                    0.05, AttributeModifier.Operation.ADD_VALUE)
-                            .addAttributeModifier(PDAttributes.SKILLCD, modifierId("cheerup_buff_3"),
-                                    -0.1, AttributeModifier.Operation.ADD_VALUE));
 
     /**
      * 反击 (counterattack_buff) — 原版 CounterattackBuffMobEffect
@@ -338,43 +276,6 @@ public class PDEffects {
                                     4, AttributeModifier.Operation.ADD_VALUE)
                             .addAttributeModifier(Attributes.MOVEMENT_SPEED, modifierId("dreamharp_of_wanderer_buff_2"),
                                     0.01, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
-
-    /**
-     * 疯狂 (insand_buff) — 原版 InsandBuffMobEffect + InsandBuffPr0Procedure
-     * <p>
-     * 有害 0xFF1F0505（原 -14744315）。San 过低时获得。修饰符：
-     * 瞬身术冷却 +2、移速 -30%、攻速 -10%（ADD_MULTIPLIED_BASE）、攻击力 -2、战技冷却 +1、
-     * 实体/方块交互距离 -0.2（对应旧 Forge ENTITY_REACH/BLOCK_REACH）。
-     * 每 tick 按等级触发画面抖动与恐怖生物幻觉（见 {@link #insandTick}）。
-     */
-    public static final DeferredHolder<MobEffect, MobEffect> INSAND_BUFF =
-            MobEffectAPI.REGISTRY.register("insand_buff",
-                    () -> new MobEffect(MobEffectCategory.HARMFUL, 0xFF1F0505) {
-                        @Override
-                        public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-                            insandTick(entity);
-                            return true;
-                        }
-
-                        @Override
-                        public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
-                            return true;
-                        }
-                    }
-                            .addAttributeModifier(PDAttributes.TELEPORTATIONCD, modifierId("insand_buff_0"),
-                                    2, AttributeModifier.Operation.ADD_VALUE)
-                            .addAttributeModifier(Attributes.MOVEMENT_SPEED, modifierId("insand_buff_1"),
-                                    -0.3, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
-                            .addAttributeModifier(Attributes.ATTACK_SPEED, modifierId("insand_buff_2"),
-                                    -0.1, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
-                            .addAttributeModifier(Attributes.ATTACK_DAMAGE, modifierId("insand_buff_3"),
-                                    -2, AttributeModifier.Operation.ADD_VALUE)
-                            .addAttributeModifier(PDAttributes.SKILLCD, modifierId("insand_buff_4"),
-                                    1, AttributeModifier.Operation.ADD_VALUE)
-                            .addAttributeModifier(Attributes.ENTITY_INTERACTION_RANGE, modifierId("insand_buff_5"),
-                                    -0.2, AttributeModifier.Operation.ADD_VALUE)
-                            .addAttributeModifier(Attributes.BLOCK_INTERACTION_RANGE, modifierId("insand_buff_6"),
-                                    -0.2, AttributeModifier.Operation.ADD_VALUE));
 
     /**
      * 休憩 (rest_buff) — 原版 RestBuffMobEffect(fix=1)
@@ -422,73 +323,7 @@ public class PDEffects {
                             .addAttributeModifier(PDAttributes.SAN_VARIABILITY, modifierId("rest_buff_in_dark_0"),
                                     1.2, AttributeModifier.Operation.ADD_VALUE));
 
-    // ==================== C. 瞬时效果型（InstantenousMobEffect，作用于玩家附件数据） ====================
-
-    /**
-     * 精神回复 (san_increase) — 原版 SanVaryMobEffect(true)
-     * 有益 0xADFF2F。瞬时生效：San +((amplifier &amp; 0xff) + 1)。
-     */
-    public static final DeferredHolder<MobEffect, MobEffect> SAN_INCREASE =
-            MobEffectAPI.REGISTRY.register("san_increase",
-                    () -> new InstantenousMobEffect(MobEffectCategory.BENEFICIAL, 0xADFF2F) {
-                        @Override
-                        public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-                            if (entity instanceof ServerPlayer pl) {
-                                PDAttachments.addPlayerSanWithCheck(pl, (amplifier & 0xff) + 1);
-                            }
-                            return true;
-                        }
-                    });
-
-    /**
-     * 精神损伤 (san_decrease) — 原版 SanVaryMobEffect(false)
-     * 有害 0x9B4400。瞬时生效：San -((amplifier &amp; 0xff) + 1)。
-     */
-    public static final DeferredHolder<MobEffect, MobEffect> SAN_DECREASE =
-            MobEffectAPI.REGISTRY.register("san_decrease",
-                    () -> new InstantenousMobEffect(MobEffectCategory.HARMFUL, 0x9B4400) {
-                        @Override
-                        public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-                            if (entity instanceof ServerPlayer pl) {
-                                PDAttachments.addPlayerSanWithCheck(pl, -(amplifier & 0xff) - 1);
-                            }
-                            return true;
-                        }
-                    });
-
-    /**
-     * 融梦能量增加 (melt_dream_energy_increase) — 原版 MeltDreamEnergyVaryMobEffect(true)
-     * 有益 0xADFF2F。瞬时生效：融梦能量 +((amplifier &amp; 0xff) + 1)。
-     */
-    public static final DeferredHolder<MobEffect, MobEffect> MELT_DREAM_ENERGY_INCREASE =
-            MobEffectAPI.REGISTRY.register("melt_dream_energy_increase",
-                    () -> new InstantenousMobEffect(MobEffectCategory.BENEFICIAL, 0xADFF2F) {
-                        @Override
-                        public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-                            if (entity instanceof ServerPlayer pl) {
-                                PDAttachments.addPlayerMeltDreamEnergy(pl, (amplifier & 0xff) + 1);
-                            }
-                            return true;
-                        }
-                    });
-
-    /**
-     * 融梦能量减少 (melt_dream_energy_decrease) — 原版 MeltDreamEnergyVaryMobEffect(false)
-     * 有害 0x9B4400。瞬时生效：融梦能量 -((amplifier &amp; 0xff) + 1)。
-     */
-    public static final DeferredHolder<MobEffect, MobEffect> MELT_DREAM_ENERGY_DECREASE =
-            MobEffectAPI.REGISTRY.register("melt_dream_energy_decrease",
-                    () -> new InstantenousMobEffect(MobEffectCategory.HARMFUL, 0x9B4400) {
-                        @Override
-                        public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-                            if (entity instanceof ServerPlayer pl) {
-                                PDAttachments.addPlayerMeltDreamEnergy(pl, -(amplifier & 0xff) - 1);
-                            }
-                            return true;
-                        }
-                    });
-
-    // ==================== D. Builder 型（tick / 生效 / 移除回调，经 PDEffectEvents 派发） ====================
+    // ==================== C. Builder 型（tick / 生效 / 移除回调，经 PDEffectEvents 派发） ====================
 
     /**
      * 束缚 (bind_buff) — 原版 BindBuffMobEffect
@@ -661,20 +496,6 @@ public class PDEffects {
                     .build();
 
     /**
-     * 不振 (lethargy_buff) — 原版 LethargyBuffMobEffect + LethargyBuffPr0/Pr1Procedure
-     * <p>
-     * 有害 0xFFD3A2A2（原 -2907486）。仅对玩家生效时基础值：
-     * 瞬身冷却 +0.5、移速 -0.01、攻速 -0.1、战技冷却 +0.2；移除时对称撤销。
-     */
-    public static final MobEffectResult LETHARGY_BUFF =
-            MobEffectAPI.createEffect("lethargy_buff")
-                    .harmful()
-                    .color(0xFFD3A2A2)
-                    .onApply((entity, amplifier) -> lethargyShift(entity, 1))
-                    .onRemove((entity, amplifier) -> lethargyShift(entity, -1))
-                    .build();
-
-    /**
      * 机械之翼 (machine_wing_effect) — 原版 MachineWingEffectMobEffect + MachineWingEffectPr0/Pr1Procedure
      * <p>
      * 有益 0xFF374467（原 -13155225）。生效时开启玩家飞行，移除时关闭。
@@ -826,20 +647,6 @@ public class PDEffects {
                     .build();
 
     /**
-     * 恍惚 (trance_buff) — 原版 TranceBuffMobEffect + TranceBuffPr0/Pr1Procedure
-     * <p>
-     * 有害 0xFFBC726D（原 -4427155）。仅对玩家生效时基础值：
-     * 瞬身冷却 +1、移速 -0.02、攻速 -0.2、攻击力 -1、战技冷却 +0.5；移除时对称撤销。
-     */
-    public static final MobEffectResult TRANCE_BUFF =
-            MobEffectAPI.createEffect("trance_buff")
-                    .harmful()
-                    .color(0xFFBC726D)
-                    .onApply((entity, amplifier) -> tranceShift(entity, 1))
-                    .onRemove((entity, amplifier) -> tranceShift(entity, -1))
-                    .build();
-
-    /**
      * 转身衣装 (turnback_cloak_buff) — 原版 TurnbackCloakBuffMobEffect + TurnbackCloakBuffPr0Procedure
      * <p>
      * 有益 0xFFFFFFFF（原 -1）。转身斗篷激活状态：每 tick 生成金辉粒子 + 尘埃粒子
@@ -899,13 +706,6 @@ public class PDEffects {
         if (instance != null) {
             instance.setBaseValue(instance.getBaseValue() + delta);
         }
-    }
-
-    /** 判断实体是否装备了指定 Curios 饰品（对应原版 CuriosApi.findEquippedCurio） */
-    private static boolean hasCurioEquipped(LivingEntity entity, Item item) {
-        return CuriosApi.getCuriosInventory(entity)
-                .map(handler -> handler.findFirstCurio(item).isPresent())
-                .orElse(false);
     }
 
     /** 若属性实例上没有同 ID 修饰符则添加永久修饰符（对应原版 hasModifier + addPermanentModifier） */
@@ -1099,27 +899,6 @@ public class PDEffects {
         shiftBaseValue(entity, PDAttributes.SKILLCD, -0.1 * sign);
     }
 
-    /** 不振基础值批量修改（仅玩家，sign=+1 生效 / -1 撤销） */
-    private static void lethargyShift(LivingEntity entity, int sign) {
-        if (entity instanceof Player) {
-            shiftBaseValue(entity, PDAttributes.TELEPORTATIONCD, 0.5 * sign);
-            shiftBaseValue(entity, Attributes.MOVEMENT_SPEED, -0.01 * sign);
-            shiftBaseValue(entity, Attributes.ATTACK_SPEED, -0.1 * sign);
-            shiftBaseValue(entity, PDAttributes.SKILLCD, 0.2 * sign);
-        }
-    }
-
-    /** 恍惚基础值批量修改（仅玩家，sign=+1 生效 / -1 撤销） */
-    private static void tranceShift(LivingEntity entity, int sign) {
-        if (entity instanceof Player) {
-            shiftBaseValue(entity, PDAttributes.TELEPORTATIONCD, sign);
-            shiftBaseValue(entity, Attributes.MOVEMENT_SPEED, -0.02 * sign);
-            shiftBaseValue(entity, Attributes.ATTACK_SPEED, -0.2 * sign);
-            shiftBaseValue(entity, Attributes.ATTACK_DAMAGE, -sign);
-            shiftBaseValue(entity, PDAttributes.SKILLCD, 0.5 * sign);
-        }
-    }
-
     // ---------- fondillusion_buff（FondillusionBuffPr0Procedure） ----------
 
     /**
@@ -1190,99 +969,6 @@ public class PDEffects {
         AdvancementHolder advancement = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath("pasterdream", path));
         return advancement != null && player.getAdvancements().getOrStartProgress(advancement).isDone();
-    }
-
-    // ---------- insand_buff（InsandBuffPr0Procedure） ----------
-
-    /** 疯狂 tick：画面抖动 + 恐怖生物幻觉召唤（数值/概率与原版一致） */
-    private static void insandTick(LivingEntity entity) {
-        if (entity.level().isClientSide || !entity.isAlive() || !(entity instanceof Player)) {
-            return;
-        }
-        int amplifier = entity.hasEffect(INSAND_BUFF)
-                ? entity.getEffect(INSAND_BUFF).getAmplifier() : 0;
-        double x = entity.getX(), y = entity.getY(), z = entity.getZ();
-        ServerLevel level = entity.level() instanceof ServerLevel sl ? sl : null;
-        if (level == null) {
-            return;
-        }
-        // 画面抖动受 LOW_SAN_PICTURE_JITTER 控制（默认 true）；幻觉召唤不受此配置影响
-        boolean pictureJitter = Boolean.TRUE.equals(PDCommonConfig.LOW_SAN_PICTURE_JITTER.get());
-        if (amplifier == 0) {
-            if (pictureJitter) {
-                jitterRotation(entity, 0.5, 0.5);
-            }
-            if (Math.random() < 0.005) {
-                if (Math.random() < 0.3) {
-                    spawnHallucination(level, PDEntities.TERRORBEAK.get(), x, y, z, true);
-                }
-                if (Math.random() < 0.5) {
-                    spawnHallucination(level, PDEntities.SHADOW_HAND.get(), x, y, z, false);
-                }
-            }
-        } else if (amplifier == 1) {
-            if (pictureJitter) {
-                jitterRotation(entity, 1, 1);
-            }
-            if (Math.random() < 0.01) {
-                if (Math.random() < 0.25) {
-                    spawnHallucination(level, PDEntities.TERRORBEAK.get(), x, y, z, true);
-                }
-                if (Math.random() < 0.5) {
-                    spawnHallucination(level, PDEntities.SHADOW_HAND.get(), x, y, z, false);
-                }
-            }
-        } else if (amplifier == 2) {
-            if (pictureJitter) {
-                jitterRotation(entity, 3, 2);
-            }
-            if (Math.random() < 0.025) {
-                // 装备退化之躯时自损 1 点（虚空伤害，血量>1 才触发）
-                if (hasCurioEquipped(entity, PDItemsCurios.DEGENERATE_BODYS.get())
-                        && entity.getHealth() > 1) {
-                    entity.hurt(entity.damageSources().fellOutOfWorld(), 1);
-                }
-                if (Math.random() < 0.05) {
-                    spawnHallucination(level, PDEntities.TERRORBEAK.get(), x, y, z, true);
-                }
-                if (Math.random() < 0.03) {
-                    spawnHallucination(level, PDEntities.CRAZY_TERRORBEAK.get(), x, y, z, true);
-                }
-                if (Math.random() < 0.5) {
-                    spawnHallucination(level, PDEntities.SHADOW_HAND.get(), x, y, z, false);
-                }
-            }
-        }
-    }
-
-    /** 视角抖动（对应原版 MCreator 旋转抖动模板） */
-    private static void jitterRotation(LivingEntity entity, double yawRange, double pitchRange) {
-        entity.setYRot((float) (entity.getYRot() + Mth.nextDouble(RandomSource.create(), -yawRange, yawRange)));
-        entity.setXRot((float) (entity.getXRot() + Mth.nextDouble(RandomSource.create(), -pitchRange, pitchRange)));
-        entity.setYBodyRot(entity.getYRot());
-        entity.setYHeadRot(entity.getYRot());
-        entity.yRotO = entity.getYRot();
-        entity.xRotO = entity.getXRot();
-        entity.yBodyRotO = entity.getYRot();
-        entity.yHeadRotO = entity.getYRot();
-    }
-
-    /**
-     * 召唤幻觉生物（对应原版空气检测 + MOB_SUMMONED 生成）
-     *
-     * @param checkAbove true 检查 y+2 处为空气（尖喙类），false 检查脚下坐标处为空气（暗影之手）
-     */
-    private static void spawnHallucination(ServerLevel level,
-                                           net.minecraft.world.entity.EntityType<?> type,
-                                           double x, double y, double z, boolean checkAbove) {
-        BlockPos checkPos = BlockPos.containing(x, checkAbove ? y + 2 : y, z);
-        if (level.getBlockState(checkPos).is(Blocks.AIR)) {
-            net.minecraft.world.entity.Entity spawned =
-                    type.spawn(level, BlockPos.containing(x, y, z), MobSpawnType.MOB_SUMMONED);
-            if (spawned != null) {
-                spawned.setYRot(level.getRandom().nextFloat() * 360F);
-            }
-        }
     }
 
     // ---------- rest_buff / rest_buff_in_dark（RestBuffMobEffect.applyEffectTick） ----------

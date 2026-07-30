@@ -158,7 +158,7 @@ public final class ItemAPI {
      * 由 {@link com.pasterdream.pasterdreammod.api.PasterDreamAPI#registerAll} 挂到 mod 总线
      * （亦可显式 {@code ItemAPI.REGISTRY.register(modEventBus)}）。
      */
-    public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(PasterDreamAPI.MOD_ID);
+    public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(PasterDreamAPI.DATA_NAMESPACE);
 
     /**
      * 单例的迁移管理器实例。

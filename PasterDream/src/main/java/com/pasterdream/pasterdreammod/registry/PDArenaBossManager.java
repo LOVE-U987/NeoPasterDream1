@@ -28,6 +28,7 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 亚伦柯斯竞技场 BOSS 战斗管理器 —— 追踪左右手 BOSS 存活状态并生成战利品箱
  * <p>
@@ -112,7 +113,7 @@ public class PDArenaBossManager {
         data.setForceLeaveActive(false);
         data.setForceLeaveGen(data.getForceLeaveGen() + 1);
         data.setDirty();
-        PasterDreamMod.LOGGER.debug("[PDArenaBossManager] ⚔️ 已初始化 BOSS 战斗状态（未召唤）");
+        PDDebugLogger.mainDebug("[PDArenaBossManager] ⚔️ 已初始化 BOSS 战斗状态（未召唤）");
     }
 
     /**
@@ -134,7 +135,7 @@ public class PDArenaBossManager {
             player.displayClientMessage(
                     Component.translatable("arena.pasterdream.loot_opened_leave_via_eye"), true);
         }
-        PasterDreamMod.LOGGER.info("[PDArenaBossManager] 📦 已开箱，取消强制离场倒计时");
+        PDDebugLogger.mainInfo("[PDArenaBossManager] 📦 已开箱，取消强制离场倒计时");
     }
 
     /**
@@ -165,7 +166,7 @@ public class PDArenaBossManager {
         ArenaBossData data = getArenaBossData(arenaLevel);
         data.setPhase(phase);
         data.setDirty();
-        PasterDreamMod.LOGGER.debug("[PDArenaBossManager] 🔄 战斗阶段切换为: {}", phase);
+        PDDebugLogger.mainDebug("[PDArenaBossManager] 🔄 战斗阶段切换为: {}", phase);
     }
 
     /**
@@ -201,7 +202,7 @@ public class PDArenaBossManager {
     public static void onSpawnAnimationComplete(ServerLevel arenaLevel) {
         if (getPhase(arenaLevel) == BossFightPhase.SUMMONING) {
             setPhase(arenaLevel, BossFightPhase.FIGHTING);
-            PasterDreamMod.LOGGER.info("[PDArenaBossManager] ⚔️ BOSS 召唤完成，进入战斗阶段！");
+            PDDebugLogger.mainInfo("[PDArenaBossManager] ⚔️ BOSS 召唤完成，进入战斗阶段！");
         }
     }
 
@@ -231,7 +232,7 @@ public class PDArenaBossManager {
         data.setLeftHandAlive(false);
         data.setDirty();
 
-        PasterDreamMod.LOGGER.debug("[PDArenaBossManager] 💀 左手 BOSS 已死亡");
+        PDDebugLogger.mainDebug("[PDArenaBossManager] 💀 左手 BOSS 已死亡");
 
         // 检测是否两只手都死亡
         if (!data.isLeftHandAlive() && !data.isRightHandAlive()) {
@@ -251,7 +252,7 @@ public class PDArenaBossManager {
         data.setRightHandAlive(false);
         data.setDirty();
 
-        PasterDreamMod.LOGGER.debug("[PDArenaBossManager] 💀 右手 BOSS 已死亡");
+        PDDebugLogger.mainDebug("[PDArenaBossManager] 💀 右手 BOSS 已死亡");
 
         // 检测是否两只手都死亡
         if (!data.isLeftHandAlive() && !data.isRightHandAlive()) {
@@ -274,7 +275,7 @@ public class PDArenaBossManager {
      * @param arenaLevel 竞技场维度服务端世界
      */
     private static void triggerVictorySequence(ServerLevel arenaLevel) {
-        PasterDreamMod.LOGGER.info("[PDArenaBossManager] 🎉 两只手都已死亡，触发胜利序列！");
+        PDDebugLogger.mainInfo("[PDArenaBossManager] 🎉 两只手都已死亡，触发胜利序列！");
 
         // 🏆 切换到 VICTORY 阶段（玩家右键召唤方块离开）
         setPhase(arenaLevel, BossFightPhase.VICTORY);
@@ -331,7 +332,7 @@ public class PDArenaBossManager {
             }
             ArenaBossData d = getArenaBossData(arenaLevel);
             if (!d.isForceLeaveActive() || d.getForceLeaveGen() != gen) {
-                PasterDreamMod.LOGGER.debug(
+                PDDebugLogger.mainDebug(
                         "[PDArenaBossManager] ⏱ 强制离场已取消或代际过期 gen={} current={}",
                         gen, d.getForceLeaveGen());
                 return;
@@ -342,7 +343,7 @@ public class PDArenaBossManager {
             grantUnclaimedChestLoot(arenaLevel);
             teleportAllPlayersToOverworld(arenaLevel);
             cleanupArena(arenaLevel);
-            PasterDreamMod.LOGGER.info("[PDArenaBossManager] ⏱ 胜利倒计时结束，已强制回主并清场");
+            PDDebugLogger.mainInfo("[PDArenaBossManager] ⏱ 胜利倒计时结束，已强制回主并清场");
         });
     }
 
@@ -372,7 +373,7 @@ public class PDArenaBossManager {
         if (arenaLevel.getBlockState(chestPos).is(PDBlocks.AARONCOS_HAND_CHEST.get())) {
             arenaLevel.destroyBlock(chestPos, false);
         }
-        PasterDreamMod.LOGGER.info("[PDArenaBossManager] 📦 强制离场：未开箱战利品已分给 {} 人",
+        PDDebugLogger.mainInfo("[PDArenaBossManager] 📦 强制离场：未开箱战利品已分给 {} 人",
                 recipients.size());
     }
 
@@ -395,7 +396,7 @@ public class PDArenaBossManager {
         AdvancementHolder holder = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
         if (holder == null) {
-            PasterDreamMod.LOGGER.debug("[PDArenaBossManager] 成就 {} 未注册，跳过授予", path);
+            PDDebugLogger.mainDebug("[PDArenaBossManager] 成就 {} 未注册，跳过授予", path);
             return;
         }
         AdvancementProgress progress = player.getAdvancements().getOrStartProgress(holder);
@@ -436,7 +437,7 @@ public class PDArenaBossManager {
                 spawnPos.getY(),
                 spawnPos.getZ() + 0.5,
                 serverPlayer.getYRot(), serverPlayer.getXRot());
-        PasterDreamMod.LOGGER.debug("[PDArenaBossManager] 🚪 已传送玩家 {} 至主世界出生点并切换生存模式",
+        PDDebugLogger.mainDebug("[PDArenaBossManager] 🚪 已传送玩家 {} 至主世界出生点并切换生存模式",
                 serverPlayer.getName().getString());
     }
 
@@ -468,7 +469,7 @@ public class PDArenaBossManager {
         for (Entity entity : entities) {
             entity.discard();
         }
-        PasterDreamMod.LOGGER.debug("[PDArenaBossManager] 🧹 已清理竞技场内 {} 个非玩家实体", entities.size());
+        PDDebugLogger.mainDebug("[PDArenaBossManager] 🧹 已清理竞技场内 {} 个非玩家实体", entities.size());
     }
 
     /**

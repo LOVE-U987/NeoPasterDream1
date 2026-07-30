@@ -4,6 +4,7 @@ import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.curio.CurioAPI;
 import com.pasterdream.pasterdreammod.api.curio.DefaultCurioClientBridge;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 饰品客户端处理器 —— 注册默认桥接并触发渲染器挂接。
  * <p>
@@ -25,9 +26,10 @@ public final class CurioClientHandler {
         CurioAPI.setClientBridge(bridge);
         bridge.registerAll();
 
+
         for (var registration : CurioAPI.getRegisteredCurios()) {
             if (!"none".equals(registration.renderType())) {
-                PasterDreamMod.LOGGER.debug(
+                PDDebugLogger.mainDebug(
                         "[CurioClient] 饰品 {} 配置了渲染类型: {}",
                         registration.fullName(),
                         registration.renderType());

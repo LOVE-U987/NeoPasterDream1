@@ -1,66 +1,39 @@
 package com.pasterdream.pasterdreammod.attachment;
 
-import com.pasterdream.pasterdreammod.PasterDreamMod;
-import com.pasterdream.pasterdreammod.config.PDCommonConfig;
-import com.pasterdream.pasterdreammod.network.MeltDreamEnergyPayload;
-import com.pasterdream.pasterdreammod.network.SanDataPayload;
+import com.pasterdream.pasterdreammod.api.attachment.PDPlayerAttachments;
+import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyConfigRegistry;
+import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyData;
+import com.pasterdream.pasterdreammod.api.network.MeltDreamEnergyPayload;
+import com.pasterdream.pasterdreammod.api.network.SanDataPayload;
+import com.pasterdream.pasterdreammod.api.san.SanConfigRegistry;
+import com.pasterdream.pasterdreammod.api.san.SanData;
 import com.pasterdream.pasterdreammod.registry.PDGameRules;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+
+import java.util.function.Supplier;
 
 /**
- * 玩家数据附件注册与访问工具类
+ * 玩家数据附件兼容门面。
  * <p>
- * 以 NeoForge {@code AttachmentType} 重建原版 Forge Capability 玩家变量层：
- * <ul>
- *   <li>{@link #PLAYER_SAN} — San 理智数据（原版 {@code SanCapability}，
- *       挂接键 {@code pasterdream:pasterdreamsan} 与原版一致），死亡<b>不</b>保留，
- *       重生按游戏规则重置（见 {@link PlayerDataEvents}）</li>
- *   <li>{@link #PLAYER_MELTDREAM_ENERGY} — 融梦能量数据（原版 {@code MeltDreamEnergyCapability}，
- *       挂接键 {@code pasterdream:pasterdreammeltdreamenergy}），死亡保留（copyOnDeath）</li>
- * </ul>
- * 静态工具方法与原版两个 Capability 类的公开静态 API 一一对应（含游戏规则前置检查与自动同步），
- * 供后续 San 系统 / 能量戒指 / 指令等模块调用。
- * <p>
- * 同步策略与原版一致：服务端修改后立即向该玩家发送 S2C 包
- * （{@link SanDataPayload} / {@link MeltDreamEnergyPayload}）；
- * 登录 / 重生 / 跨维度 / 克隆时的全量同步见 {@link PlayerDataEvents}。
+ * 自 1.21.1 重构后，附件类型已上收到 PasterDreamAPI 的 {@link PDPlayerAttachments}，
+ * 本类保留为 PasterDream 主模组内部的兼容入口，所有工具方法行为不变。
+ * 死亡保留策略等细节已在 API 层统一实现。
  */
 public class PDAttachments {
 
-    /** 附件类型延迟注册器 */
-    public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
-            DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, PasterDreamMod.MOD_ID);
+    /**
+     * San 理智数据附件（代理至 API 层）。
+     */
+    public static final Supplier<AttachmentType<SanData>> PLAYER_SAN = PDPlayerAttachments.PLAYER_SAN;
 
     /**
-     * San 理智数据附件
-     * <p>
-     * 不启用 copyOnDeath：死亡时丢弃，由 {@link PlayerDataEvents#onPlayerClone} 按游戏规则
-     * {@code pasterdreamStartSanOnRevive} / {@code pasterdreamSanSystem} 重置（对照原版 clone 逻辑）；
-     * 非死亡克隆由 NeoForge 自动复制。
+     * 融梦能量数据附件（代理至 API 层）。
      */
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<SanData>> PLAYER_SAN =
-            ATTACHMENT_TYPES.register("pasterdreamsan", () ->
-                    AttachmentType.builder(() -> SanData.DEFAULT)
-                            .serialize(SanData.CODEC)
-                            .build());
-
-    /**
-     * 融梦能量数据附件
-     * <p>
-     * 启用 copyOnDeath：死亡与非死亡克隆均完整保留（对照原版 clone 逻辑无条件复制）。
-     */
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<MeltDreamEnergyData>> PLAYER_MELTDREAM_ENERGY =
-            ATTACHMENT_TYPES.register("pasterdreammeltdreamenergy", () ->
-                    AttachmentType.builder(() -> MeltDreamEnergyData.DEFAULT)
-                            .serialize(MeltDreamEnergyData.CODEC)
-                            .copyOnDeath()
-                            .build());
+    public static final Supplier<AttachmentType<MeltDreamEnergyData>> PLAYER_MELTDREAM_ENERGY =
+            PDPlayerAttachments.PLAYER_MELTDREAM_ENERGY;
 
     // ==================== 读取 ====================
 
@@ -111,7 +84,7 @@ public class PDAttachments {
     public static void setPlayerSanWithCheck(Player player, double san) {
         if (player instanceof ServerPlayer sp
                 && sp.level().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM)
-                && Boolean.TRUE.equals(PDCommonConfig.ENABLE_SAN_SYSTEM.get())) {
+                && Boolean.TRUE.equals(SanConfigRegistry.get().enabled().get())) {
             setPlayerSan(sp, san);
         }
     }
@@ -125,7 +98,7 @@ public class PDAttachments {
     public static void addPlayerSanWithCheck(Player player, double san) {
         if (player instanceof ServerPlayer sp
                 && sp.level().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM)
-                && Boolean.TRUE.equals(PDCommonConfig.ENABLE_SAN_SYSTEM.get())) {
+                && Boolean.TRUE.equals(SanConfigRegistry.get().enabled().get())) {
             addPlayerSan(sp, san);
         }
     }
@@ -151,7 +124,7 @@ public class PDAttachments {
      * @param value  新能量值
      */
     public static void setPlayerMeltDreamEnergy(Player player, double value) {
-        if (player instanceof ServerPlayer sp && Boolean.TRUE.equals(PDCommonConfig.ENABLE_MELTDREAM_ENERGY_SYSTEM.get())) {
+        if (player instanceof ServerPlayer sp && Boolean.TRUE.equals(MeltDreamEnergyConfigRegistry.get().enabled().get())) {
             sp.setData(PLAYER_MELTDREAM_ENERGY, sp.getData(PLAYER_MELTDREAM_ENERGY).withEnergy(value));
             syncMeltDreamEnergy(sp);
         }
@@ -164,7 +137,7 @@ public class PDAttachments {
      * @param value  变化量（可为负）
      */
     public static void addPlayerMeltDreamEnergy(Player player, double value) {
-        if (player instanceof ServerPlayer sp && Boolean.TRUE.equals(PDCommonConfig.ENABLE_MELTDREAM_ENERGY_SYSTEM.get())) {
+        if (player instanceof ServerPlayer sp && Boolean.TRUE.equals(MeltDreamEnergyConfigRegistry.get().enabled().get())) {
             sp.setData(PLAYER_MELTDREAM_ENERGY, sp.getData(PLAYER_MELTDREAM_ENERGY).addEnergy(value));
             syncMeltDreamEnergy(sp);
         }
@@ -177,7 +150,7 @@ public class PDAttachments {
      * @param value  true 叠加一层，false 撤销一层
      */
     public static void setPlayerMeltDreamEnergyNoNeedConsume(Player player, boolean value) {
-        if (player instanceof ServerPlayer sp && Boolean.TRUE.equals(PDCommonConfig.ENABLE_MELTDREAM_ENERGY_SYSTEM.get())) {
+        if (player instanceof ServerPlayer sp && Boolean.TRUE.equals(MeltDreamEnergyConfigRegistry.get().enabled().get())) {
             sp.setData(PLAYER_MELTDREAM_ENERGY, sp.getData(PLAYER_MELTDREAM_ENERGY).withNoNeedConsume(value));
             syncMeltDreamEnergy(sp);
         }
@@ -190,7 +163,7 @@ public class PDAttachments {
      * @param value  true 开启，false 关闭
      */
     public static void setPlayerMeltDreamEnergyNoNeedConsumeByCommand(Player player, boolean value) {
-        if (player instanceof ServerPlayer sp && Boolean.TRUE.equals(PDCommonConfig.ENABLE_MELTDREAM_ENERGY_SYSTEM.get())) {
+        if (player instanceof ServerPlayer sp && Boolean.TRUE.equals(MeltDreamEnergyConfigRegistry.get().enabled().get())) {
             sp.setData(PLAYER_MELTDREAM_ENERGY, sp.getData(PLAYER_MELTDREAM_ENERGY).withNoNeedConsumeByCommand(value));
             syncMeltDreamEnergy(sp);
         }
@@ -209,7 +182,7 @@ public class PDAttachments {
     public static boolean consumePlayerMeltDreamEnergy(Player player, double value) {
         MeltDreamEnergyData data = player.getData(PLAYER_MELTDREAM_ENERGY);
         if (player instanceof ServerPlayer sp) {
-            if (!Boolean.TRUE.equals(PDCommonConfig.ENABLE_MELTDREAM_ENERGY_SYSTEM.get())
+            if (!Boolean.TRUE.equals(MeltDreamEnergyConfigRegistry.get().enabled().get())
                     || data.isNoNeedConsume() || sp.isCreative()) {
                 return true;
             }
@@ -240,7 +213,7 @@ public class PDAttachments {
         boolean check = sp.serverLevel().getGameRules().getBoolean(PDGameRules.SAN_CHECK_SYSTEM);
         SanData data = sp.getData(PLAYER_SAN).withSanCheck(check);
         sp.setData(PLAYER_SAN, data);
-        PacketDistributor.sendToPlayer(sp, SanDataPayload.full(data));
+        PacketDistributor.sendToPlayer(sp, SanDataPayload.full(data.sanValue(), data.sanCheck()));
     }
 
     /**

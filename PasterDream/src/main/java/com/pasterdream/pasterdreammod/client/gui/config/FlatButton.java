@@ -26,6 +26,12 @@ public class FlatButton extends AbstractButton {
     private long pressStart;
     /** 悬停平滑过渡（0~1） */
     private float hoverAnim;
+    /** 是否文字左对齐 */
+    private final boolean alignLeft;
+    /** 圆角半径（0 为直角） */
+    private final int cornerRadius;
+    /** 是否显示底部阴影 */
+    private final boolean shadow;
 
     /**
      * @param x          按钮 x 坐标
@@ -42,13 +48,43 @@ public class FlatButton extends AbstractButton {
     public FlatButton(int x, int y, int width, int height, Component message,
                       int normalBg, int hoverBg, int pressedBg, int textColor,
                       Consumer<FlatButton> onPress) {
+        this(x, y, width, height, message, normalBg, hoverBg, pressedBg, textColor,
+                false, 0, false, onPress);
+    }
+
+    /**
+     * @param x            按钮 x 坐标
+     * @param y            按钮 y 坐标
+     * @param width        按钮宽度
+     * @param height       按钮高度
+     * @param message      按钮文本
+     * @param normalBg     常态背景色
+     * @param hoverBg      悬停背景色
+     * @param pressedBg    按下背景色
+     * @param textColor    文字颜色
+     * @param alignLeft    是否左对齐文字
+     * @param cornerRadius 圆角半径
+     * @param shadow       是否显示底部阴影
+     * @param onPress      按下回调
+     */
+    public FlatButton(int x, int y, int width, int height, Component message,
+                      int normalBg, int hoverBg, int pressedBg, int textColor,
+                      boolean alignLeft, int cornerRadius, boolean shadow,
+                      Consumer<FlatButton> onPress) {
         super(x, y, width, height, message);
         this.normalBg = normalBg;
         this.hoverBg = hoverBg;
         this.pressedBg = pressedBg;
         this.textColor = textColor;
+        this.alignLeft = alignLeft;
+        this.cornerRadius = cornerRadius;
+        this.shadow = shadow;
         this.onPress = onPress;
     }
+
+/** 扁平/区分用常量 */
+    private static final int MC_BEVEL_HIGHLIGHT = 0x55FFFFFF;
+    private static final int MC_BEVEL_SHADOW = 0x44000000;
 
     @Override
     protected void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float partialTick) {
@@ -56,16 +92,16 @@ public class FlatButton extends AbstractButton {
 
         // 悬停平滑过渡
         if (hovered && hoverAnim < 1f) {
-            hoverAnim = Math.min(1f, hoverAnim + 0.18f);
+            hoverAnim = Math.min(1f, hoverAnim + 0.22f);
         } else if (!hovered && hoverAnim > 0f) {
-            hoverAnim = Math.max(0f, hoverAnim - 0.12f);
+            hoverAnim = Math.max(0f, hoverAnim - 0.18f);
         }
 
         // 按下动画
-        boolean pressing = pressStart > 0 && System.currentTimeMillis() - pressStart < 150;
-        float pressAnim = pressing ? 1f - (System.currentTimeMillis() - pressStart) / 150f : 0f;
+        boolean pressing = pressStart > 0 && System.currentTimeMillis() - pressStart < 120;
+        float pressAnim = pressing ? 1f - (System.currentTimeMillis() - pressStart) / 120f : 0f;
 
-        // 背景色：根据悬停/按下状态选择
+        // 背景色
         int bg;
         if (pressing) {
             bg = pressedBg;
@@ -75,19 +111,31 @@ public class FlatButton extends AbstractButton {
             bg = normalBg;
         }
 
-        // 按下时轻微内缩效果
+        // 按下时轻微内缩
         int inset = (int) (pressAnim * 1);
-        gui.fill(getX() + inset, getY() + inset, getX() + width - inset, getY() + height - inset, bg);
+        int x0 = getX() + inset;
+        int y0 = getY() + inset;
+        int x1 = getX() + width - inset;
+        int y1 = getY() + height - inset;
 
-        // 顶部细微高光，增强层次感
-        int highlightAlpha = hovered ? 0x22 : 0x11;
-        int highlightColor = (highlightAlpha << 24) | 0xFFFFFF;
-        gui.fill(getX() + inset, getY() + inset, getX() + width - inset, getY() + 1 + inset, highlightColor);
+        // 背景填充
+        gui.fill(x0, y0, x1, y1, bg);
 
-        // 文字居中
+        // MC 风左上高光 + 右下暗角
+        gui.fill(x0, y0, x1, y0 + 1, MC_BEVEL_HIGHLIGHT);
+        gui.fill(x0, y0, x0 + 1, y1, MC_BEVEL_HIGHLIGHT);
+        gui.fill(x0, y1 - 1, x1, y1, MC_BEVEL_SHADOW);
+        gui.fill(x1 - 1, y0, x1, y1, MC_BEVEL_SHADOW);
+
+        // 悬停时额外顶部泛光
+        if (hovered) {
+            gui.fill(x0 + 1, y0 + 1, x1 - 1, y0 + 2, 0x22FFFFFF);
+        }
+
+        // 文字：左对齐或居中
         Font font = Minecraft.getInstance().font;
-        int textX = getX() + (width - font.width(getMessage())) / 2;
-        int textY = getY() + (height - font.lineHeight) / 2 + 1 + inset;
+        int textX = alignLeft ? x0 + 8 : x0 + (width - font.width(getMessage())) / 2;
+        int textY = y0 + (height - font.lineHeight) / 2 + 1;
         gui.drawString(font, getMessage(), textX, textY, textColor);
     }
 

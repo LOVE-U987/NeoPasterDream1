@@ -8,8 +8,9 @@ import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
-import com.pasterdream.pasterdreammod.registry.items.PDItemsFunctional;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -21,6 +22,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -220,7 +222,7 @@ public class WindKnightSpawnblockBlock extends BaseEntityBlock {
         }
 
         if (current.getBlock() == PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get()) {
-            if (player.getMainHandItem().getItem() == PDItemsFunctional.LIGHTNING_SPELL.get()) {
+            if (player.getMainHandItem().getItem() == lookupLightningSpell()) {
                 player.getMainHandItem().shrink(1);
                 if (level instanceof ServerLevel serverLevel) {
                     SpellEffects.lightning(serverLevel, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
@@ -311,5 +313,16 @@ public class WindKnightSpawnblockBlock extends BaseEntityBlock {
         if (!player.level().isClientSide()) {
             player.displayClientMessage(Component.literal(text), true);
         }
+    }
+
+    /**
+     * 动态查找 PasterDreamSpells 的闪电法术物品。
+     *
+     * @return 闪电法术物品，未注册时返回 Items.AIR
+     */
+    private static Item lookupLightningSpell() {
+        return BuiltInRegistries.ITEM.getOptional(
+                ResourceLocation.fromNamespaceAndPath("pasterdreamspells", "lightning_spell"))
+                .orElse(net.minecraft.world.item.Items.AIR);
     }
 }

@@ -8,6 +8,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * HUD 叠加层注册类（仅客户端，MOD 总线）
  * <p>
@@ -44,7 +45,7 @@ public class PDHudLayers {
                 layerId("couldmist_hud"), new CloudmistHudOverlay());
         event.registerAbove(VanillaGuiLayers.PLAYER_HEALTH,
                 layerId("pd_health"), new PlayerHealthHudOverlay());
-        PasterDreamMod.LOGGER.debug(
+        PDDebugLogger.mainDebug(
                 "[PDHudLayers] 注册 HUD 叠加层: meltdreamenergy_bar, san_bar, lose_mind_gui, couldmist_hud, pd_health");
     }
 

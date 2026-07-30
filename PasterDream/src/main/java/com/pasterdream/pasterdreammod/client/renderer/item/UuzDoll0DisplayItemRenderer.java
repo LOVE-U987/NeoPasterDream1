@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.DefaultedBlockGeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 娇小幼幼紫玩偶显示物品渲染器
  * 使用 DefaultedBlockGeoModel 引用方块模型资源
@@ -19,7 +20,7 @@ public class UuzDoll0DisplayItemRenderer extends GeoItemRenderer<UuzDoll0Display
      */
     public UuzDoll0DisplayItemRenderer() {
         super(new DefaultedBlockGeoModel<>(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, NAME)));
-        PasterDreamMod.LOGGER.debug("[UuzDoll0DisplayItemRenderer] 初始化完成，资源名: {} | 模型=geo/block/{}.geo.json 纹理=textures/block/{}.png",
+        PDDebugLogger.mainDebug("[UuzDoll0DisplayItemRenderer] 初始化完成，资源名: {} | 模型=geo/block/{}.geo.json 纹理=textures/block/{}.png",
                 NAME, NAME, NAME);
     }
 }

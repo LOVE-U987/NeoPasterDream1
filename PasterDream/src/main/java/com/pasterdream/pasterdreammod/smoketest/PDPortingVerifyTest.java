@@ -67,6 +67,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 100% 移植完成度验证驱动（PDPortingVerifyTest）。
  * <p>
@@ -342,7 +343,7 @@ public final class PDPortingVerifyTest {
     private static void check(String suite, boolean ok, String what) {
         ASSERTIONS.add(new Assertion(suite, what, ok, ""));
         if (ok) {
-            LOGGER.info(TAG + "PASS [{}] {}", suite, what);
+            PDDebugLogger.smoketestInfo(TAG + "PASS [{}] {}", suite, what);
         } else {
             LOGGER.error(TAG + "FAIL [{}] {}", suite, what);
         }
@@ -351,7 +352,7 @@ public final class PDPortingVerifyTest {
     private static void checkDetail(String suite, boolean ok, String what, String detail) {
         ASSERTIONS.add(new Assertion(suite, what, ok, detail));
         if (ok) {
-            LOGGER.info(TAG + "PASS [{}] {} ({})", suite, what, detail);
+            PDDebugLogger.smoketestInfo(TAG + "PASS [{}] {} ({})", suite, what, detail);
         } else {
             LOGGER.error(TAG + "FAIL [{}] {} ({})", suite, what, detail);
         }
@@ -431,7 +432,7 @@ public final class PDPortingVerifyTest {
         ticks = 0;
         int base = PDSmokeTest.ENABLED ? START_OFFSET_WITH_SMOKE : 60;
         buildTimeline(base);
-        LOGGER.info(TAG + "porting verify timeline started (base tick {}, suites=[{}])",
+        PDDebugLogger.smoketestInfo(TAG + "porting verify timeline started (base tick {}, suites=[{}])",
                 base, selectedSuitesLabel());
     }
 
@@ -853,7 +854,7 @@ public final class PDPortingVerifyTest {
             player.getAbilities().flying = true;
             player.onUpdateAbilities();
             player.teleportTo(target, 0.5, 160, 0.5, 0, 0);
-            LOGGER.info(TAG + "teleported to {}", dimensionPath);
+            PDDebugLogger.smoketestInfo(TAG + "teleported to {}", dimensionPath);
         }
     }
 
@@ -947,7 +948,7 @@ public final class PDPortingVerifyTest {
         countLightning = true;
         BlockPos pos = spellPos(0);
         SpellEffects.lightning(overworld(), pos.getX(), surfaceY(pos), pos.getZ());
-        LOGGER.info(TAG + "lightning spell impact triggered at {}", pos);
+        PDDebugLogger.smoketestInfo(TAG + "lightning spell impact triggered at {}", pos);
     }
 
     private static void spellLightningVerify() {
@@ -985,9 +986,11 @@ public final class PDPortingVerifyTest {
     }
 
     private static void spellHealingVerify() {
-        boolean fieldPresent = !overworld().getEntitiesOfClass(
-                com.pasterdream.pasterdreammod.entity.mob.HealingSpellFieldEntity.class,
-                new net.minecraft.world.phys.AABB(spellPos(2)).inflate(8)).isEmpty();
+        EntityType<?> healingType = BuiltInRegistries.ENTITY_TYPE.getOptional(
+                ResourceLocation.fromNamespaceAndPath("pasterdreamspells", "healing_spell_entity")).orElse(null);
+        boolean fieldPresent = healingType != null && !overworld().getEntitiesOfClass(
+                Entity.class, new net.minecraft.world.phys.AABB(spellPos(2)).inflate(8),
+                e -> e.getType() == healingType).isEmpty();
         check("spells", fieldPresent, "治疗立场实体已生成且存活");
         boolean healed = healPig != null && healPig.getHealth() > 2.0f;
         checkDetail("spells", healed, "治疗立场回血生效",
@@ -1005,11 +1008,13 @@ public final class PDPortingVerifyTest {
     }
 
     private static void spellFuryVerify() {
-        boolean fieldPresent = !overworld().getEntitiesOfClass(
-                com.pasterdream.pasterdreammod.entity.mob.FurySpellFieldEntity.class,
-                new net.minecraft.world.phys.AABB(spellPos(3)).inflate(8)).isEmpty();
+        EntityType<?> furyType = BuiltInRegistries.ENTITY_TYPE.getOptional(
+                ResourceLocation.fromNamespaceAndPath("pasterdreamspells", "fury_spell_entity")).orElse(null);
+        boolean fieldPresent = furyType != null && !overworld().getEntitiesOfClass(
+                Entity.class, new net.minecraft.world.phys.AABB(spellPos(3)).inflate(8),
+                e -> e.getType() == furyType).isEmpty();
         check("spells", fieldPresent, "狂暴立场实体已生成且存活");
-        Holder<MobEffect> buff = holderOf("fury_spell_buff");
+        Holder<MobEffect> buff = spellsHolderOf("fury_spell_buff");
         check("spells", buff != null && player().hasEffect(buff), "玩家获得狂暴法术增益");
     }
 
@@ -1022,7 +1027,7 @@ public final class PDPortingVerifyTest {
     }
 
     private static void spellIceVerify() {
-        Holder<MobEffect> buff = holderOf("ice_spell_buff");
+        Holder<MobEffect> buff = spellsHolderOf("ice_spell_buff");
         boolean frozen = icePig != null && icePig.getTicksFrozen() > 0;
         boolean debuffed = icePig != null && buff != null && icePig.hasEffect(buff);
         check("spells", frozen, "冰冻法术冻结范围内实体（ticksFrozen>0）");
@@ -1122,7 +1127,7 @@ public final class PDPortingVerifyTest {
         int wait = match.map(h -> h.value().getBlastingTick()).orElse(300) + 60;
         at(ticks + 20, PDPortingVerifyTest::blastFurnaceFluidCheck);
         at(ticks + wait, PDPortingVerifyTest::blastFurnaceVerify);
-        LOGGER.info(TAG + "blast furnace placed at {}, verify in {} ticks", furnacePos, wait);
+        PDDebugLogger.smoketestInfo(TAG + "blast furnace placed at {}, verify in {} ticks", furnacePos, wait);
     }
 
     private static ShadowBlastFurnaceBlockEntity furnace() {
@@ -1346,13 +1351,18 @@ public final class PDPortingVerifyTest {
         check("effects-mod", oppOk, "oppression_buff 附加 SAN_VARIABILITY -9.6");
         p.removeEffect(PDEffects.OPPRESSION_BUFF);
 
-        p.addEffect(new MobEffectInstance(PDEffects.FURY_SPELL_BUFF, 200, 0));
+        var furyEffect = spellsHolderOf("fury_spell_buff");
+        if (furyEffect != null) {
+            p.addEffect(new MobEffectInstance(furyEffect, 200, 0));
+        }
         var skill = p.getAttribute(PDAttributes.SKILLCD);
         var tele = p.getAttribute(PDAttributes.TELEPORTATIONCD);
-        boolean furyOk = skill != null && skill.getModifiers().stream().anyMatch(m -> Math.abs(m.amount() + 0.3) < 0.001)
+        boolean furyOk = furyEffect != null && skill != null && skill.getModifiers().stream().anyMatch(m -> Math.abs(m.amount() + 0.3) < 0.001)
                 && tele != null && tele.getModifiers().stream().anyMatch(m -> Math.abs(m.amount() + 0.3) < 0.001);
         check("effects-mod", furyOk, "fury_spell_buff 附加 SKILLCD/TELEPORTATIONCD -0.3");
-        p.removeEffect(PDEffects.FURY_SPELL_BUFF);
+        if (furyEffect != null) {
+            p.removeEffect(furyEffect);
+        }
         p.removeAllEffects();
     }
 
@@ -1516,24 +1526,24 @@ public final class PDPortingVerifyTest {
         // 自适应顺延：动态追加的步骤（高炉验证等）尚未跑完时不收尾
         if (!STEPS.isEmpty()) {
             at(ticks + 40, PDPortingVerifyTest::finish);
-            LOGGER.info(TAG + "finish deferred: {} steps pending", STEPS.size());
+            PDDebugLogger.smoketestInfo(TAG + "finish deferred: {} steps pending", STEPS.size());
             return;
         }
         long pass = ASSERTIONS.stream().filter(Assertion::pass).count();
         long fail = ASSERTIONS.size() - pass;
-        LOGGER.info(TAG + "==================================================");
-        LOGGER.info(TAG + "SUITES: [{}]", selectedSuitesLabel());
-        LOGGER.info(TAG + "SUMMARY: {} passed, {} failed", pass, fail);
+        PDDebugLogger.smoketestInfo(TAG + "==================================================");
+        PDDebugLogger.smoketestInfo(TAG + "SUITES: [{}]", selectedSuitesLabel());
+        PDDebugLogger.smoketestInfo(TAG + "SUMMARY: {} passed, {} failed", pass, fail);
         for (CategoryDiff diff : DIFFS) {
-            LOGGER.info(TAG + "COVERAGE {} {}/{}", diff.category(), diff.present(), diff.expected());
+            PDDebugLogger.smoketestInfo(TAG + "COVERAGE {} {}/{}", diff.category(), diff.present(), diff.expected());
         }
-        LOGGER.info(TAG + (fail == 0 ? "RESULT: ALL PASS" : "RESULT: HAS FAILURES"));
+        PDDebugLogger.smoketestInfo(TAG + (fail == 0 ? "RESULT: ALL PASS" : "RESULT: HAS FAILURES"));
         writeReport(pass, fail);
         if (KEEP_OPEN) {
             refreshPlayerBuffs();
-            LOGGER.info(TAG + "COMPLETE — KEEP_OPEN=true，客户端保持打开供人工观察方块总览/结构；手动关闭窗口结束");
+            PDDebugLogger.smoketestInfo(TAG + "COMPLETE — KEEP_OPEN=true，客户端保持打开供人工观察方块总览/结构；手动关闭窗口结束");
         } else {
-            LOGGER.info(TAG + "COMPLETE");
+            PDDebugLogger.smoketestInfo(TAG + "COMPLETE");
         }
         done = true;
     }
@@ -1565,7 +1575,7 @@ public final class PDPortingVerifyTest {
             }
             Path out = serverRef.getServerDirectory().resolve("pd_verify_report.json");
             Files.writeString(out, GSON.toJson(root), StandardCharsets.UTF_8);
-            LOGGER.info(TAG + "report written: {}", out.toAbsolutePath());
+            PDDebugLogger.smoketestInfo(TAG + "report written: {}", out.toAbsolutePath());
         } catch (Exception e) {
             LOGGER.error(TAG + "report write failed", e);
         }
@@ -1587,6 +1597,14 @@ public final class PDPortingVerifyTest {
     private static Holder<MobEffect> holderOf(String path) {
         return (Holder<MobEffect>) (Holder<?>) BuiltInRegistries.MOB_EFFECT
                 .getHolder(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path))
+                .orElse(null);
+    }
+
+    /** 查询 PasterDreamSpells 注册的效果 */
+    @SuppressWarnings("unchecked")
+    private static Holder<MobEffect> spellsHolderOf(String path) {
+        return (Holder<MobEffect>) (Holder<?>) BuiltInRegistries.MOB_EFFECT
+                .getHolder(ResourceLocation.fromNamespaceAndPath("pasterdreamspells", path))
                 .orElse(null);
     }
 
@@ -1652,7 +1670,7 @@ public final class PDPortingVerifyTest {
                 stopCountdown--;
             } else if (stopCountdown == 0) {
                 stopCountdown = -1;
-                LOGGER.info(TAG + "verify finished, stopping client");
+                PDDebugLogger.smoketestInfo(TAG + "verify finished, stopping client");
                 net.minecraft.client.Minecraft.getInstance().stop();
             }
         }

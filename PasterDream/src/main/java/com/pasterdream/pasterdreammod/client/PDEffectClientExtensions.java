@@ -9,6 +9,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 客户端状态效果扩展注册类 (Effect Client Extensions)
  * <p>
@@ -64,6 +65,6 @@ public class PDEffectClientExtensions {
                 PDEffects.TAILWIND_BUFF.effect(),
                 PDEffects.DEADWIND_BUFF.effect());
 
-        PasterDreamMod.LOGGER.debug("[PDEffectClientExtensions] 注册效果图标隐藏扩展: 5 个（boboji/cloudmist/machine_wing/tailwind/deadwind）");
+        PDDebugLogger.mainDebug("[PDEffectClientExtensions] 注册效果图标隐藏扩展: 5 个（boboji/cloudmist/machine_wing/tailwind/deadwind）");
     }
 }

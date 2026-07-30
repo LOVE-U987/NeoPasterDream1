@@ -46,6 +46,10 @@ public final class ConfigStyles {
     public static final int NUMBER_FIELD_WIDTH = 56;
     /** 数字输入框高度 */
     public static final int NUMBER_FIELD_HEIGHT = 16;
+    /** 滑条宽度 */
+    public static final int SLIDER_WIDTH = 80;
+    /** 滑条高度 */
+    public static final int SLIDER_HEIGHT = 12;
     /** 按钮高度 */
     public static final int BUTTON_HEIGHT = 18;
     /** 分类按钮圆角半径（模拟） */
@@ -67,18 +71,43 @@ public final class ConfigStyles {
     public static final float SAVE_FEEDBACK_MS = 300f;
     /** 屏幕入场淡入持续时间（毫秒） */
     public static final float SCREEN_FADE_IN_MS = 100f;
-    /** 面板级进入动画时长（毫秒） */
-    public static final float SCREEN_ENTER_MS = 220f;
-    /** 面板级退出动画时长（毫秒） */
-    public static final float SCREEN_EXIT_MS = 160f;
-    /** 进入时面板上浮距离（像素） */
-    public static final float SCREEN_ENTER_RISE_PX = 10f;
-    /** 退出时面板下沉距离（像素） */
-    public static final float SCREEN_EXIT_SINK_PX = 8f;
-    /** 进入起始缩放 */
-    public static final float SCREEN_ENTER_SCALE_FROM = 0.96f;
-    /** 退出结束缩放 */
-    public static final float SCREEN_EXIT_SCALE_TO = 0.97f;
+    /** 面板级进入动画时长（毫秒，单区域主体） */
+    public static final float SCREEN_ENTER_MS = 340f;
+    /** 面板级退出动画时长（毫秒，单区域主体） */
+    public static final float SCREEN_EXIT_MS = 240f;
+    /** 分区从近侧滑入/滑出的距离（像素） */
+    public static final float REGION_SLIDE_PX = 52f;
+    /** 分区入场错开延迟（毫秒） */
+    public static final float REGION_STAGGER_MS = 48f;
+    /** 回弹过冲系数（easeOutBack 的 c1，约 1.15 为轻微回弹） */
+    public static final float REGION_OVERSHOOT = 1.15f;
+    /** 面板底壳轻微缩放起点 */
+    public static final float SCREEN_ENTER_SCALE_FROM = 0.97f;
+    /** 面板底壳退出缩放终点 */
+    public static final float SCREEN_EXIT_SCALE_TO = 0.96f;
+    /** 面板退出时下沉像素 */
+    public static final float SCREEN_EXIT_SINK_PX = 12f;
+    /** 面板进入时上升像素 */
+    public static final float SCREEN_ENTER_RISE_PX = 12f;
+    /** 进入起始透明度 */
+    public static final float SCREEN_ENTER_ALPHA_FROM = 0.0f;
+    // 区域索引（决定错开顺序与默认近侧方向）
+    /** 区域：面板底壳 */
+    public static final int REGION_PANEL = 0;
+    /** 区域：左侧导航 */
+    public static final int REGION_SIDEBAR = 1;
+    /** 区域：顶部标题 */
+    public static final int REGION_HEADER = 2;
+    /** 区域：主内容列表 */
+    public static final int REGION_CONTENT = 3;
+    /** 区域：底部按钮 */
+    public static final int REGION_FOOTER = 4;
+    /** 分类切换动画时长（毫秒） */
+    public static final float CATEGORY_TRANSITION_MS = 260f;
+    /** 分类切换时旧页面向左位移（像素） */
+    public static final float CATEGORY_EXIT_SHIFT_PX = 40f;
+    /** 分类切换时新页面从右位移（像素） */
+    public static final float CATEGORY_ENTER_SHIFT_PX = 40f;
     /** 悬停渐变过渡速率（0~1，越大越快） */
     public static final float HOVER_TRANSITION_RATE = 0.55f;
     /** 开关滑块动画阻尼（0~1，越小越滑） */
@@ -87,12 +116,22 @@ public final class ConfigStyles {
     public static final int SCROLLBAR_MIN_HEIGHT = 18;
     /** 滚动条宽度 */
     public static final int SCROLLBAR_WIDTH = 3;
+    /** 扫描线间隔（像素） */
+    public static final int SCANLINE_SPACING = 4;
+    /** 径向渐变模拟层数 */
+    public static final int RADIAL_GRADIENT_LAYERS = 8;
 
     // ==================== 颜色主题：深海梦境，去 AI 化 ====================
 
-    // --- 背景层 ---
+    // --- 背景层（深海 HUD 氛围） ---
     /** 背景主色：极深蓝灰 */
     public static final int COLOR_BG = 0xFF0A0D12;
+    /** 背景径向渐变中心（略亮，模拟水下光晕） */
+    public static final int COLOR_BG_CENTER = 0xFF0E141C;
+    /** 背景径向渐变边缘（压暗） */
+    public static final int COLOR_BG_EDGE = 0xFF06090D;
+    /** 扫描线颜色（极淡） */
+    public static final int COLOR_SCANLINE = 0x06000000;
     /** 侧边栏背景 */
     public static final int COLOR_SIDEBAR_BG = 0xFF0E1218;
     /** 内容区面板背景 */
@@ -131,6 +170,12 @@ public final class ConfigStyles {
     public static final int COLOR_ACCENT_DARK = 0xFF3A9A94;
     /** 强调色柔和 */
     public static final int COLOR_ACCENT_SOFT = 0x334ECDC4;
+    /** 强调色发光（更淡，用于悬停光晕） */
+    public static final int COLOR_ACCENT_GLOW = 0x184ECDC4;
+    /** 分类选中态左侧能量条 */
+    public static final int COLOR_CATEGORY_BAR = 0xFF4ECDC4;
+    /** 分类选中态文字发光 */
+    public static final int COLOR_CATEGORY_GLOW = 0x554ECDC4;
     /** 正面反馈：柔和青绿 */
     public static final int COLOR_SUCCESS = 0xFF5ECF9A;
 
@@ -171,8 +216,10 @@ public final class ConfigStyles {
     public static final int COLOR_CHANGE_FLASH = 0x1A4ECDC4;
     /** 错误提示文字 */
     public static final int COLOR_ERROR_TEXT = 0xFFFF8A8A;
-    /** 行左侧强调条 */
+    /** 行左侧能量条 */
     public static final int COLOR_ROW_ACCENT_BAR = 0xFF4ECDC4;
+    /** 行悬停顶部能量光 */
+    public static final int COLOR_ROW_TOP_GLOW = 0x334ECDC4;
     /** 保存成功绿色闪烁 */
     public static final int COLOR_SAVE_FLASH = 0x225ECF9A;
 

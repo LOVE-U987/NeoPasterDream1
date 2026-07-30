@@ -51,7 +51,7 @@ public final class CurioAPI {
 
     /** 饰品专用注册器 */
     public static final DeferredRegister.Items REGISTRY =
-            DeferredRegister.createItems(PasterDreamAPI.MOD_ID);
+            DeferredRegister.createItems(PasterDreamAPI.DATA_NAMESPACE);
 
     /** 渲染器注册信息缓存：item_full_name -> render_type */
     static final Map<String, String> RENDERER_REGISTRY = new LinkedHashMap<>();

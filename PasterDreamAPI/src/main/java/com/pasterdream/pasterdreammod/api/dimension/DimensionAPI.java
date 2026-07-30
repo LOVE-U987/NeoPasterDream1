@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 维度注册 API —— 将繁琐的维度注册集中管理，提供高效简洁的注册方式
  * <p>
@@ -112,7 +113,7 @@ public final class DimensionAPI {
      * @return {@link DimensionBuilder} 实例
      */
     public static DimensionBuilder createDimension(String dimensionName) {
-        return new DimensionBuilder(PasterDreamAPI.MOD_ID, dimensionName);
+        return new DimensionBuilder(PasterDreamAPI.DATA_NAMESPACE, dimensionName);
     }
 
     // ======================== 工具方法 ========================
@@ -181,7 +182,7 @@ public final class DimensionAPI {
     public static void enableLargeStructureSupport(DimensionResult result) {
         StructureTerrainNegotiator negotiator = StructureTerrainNegotiator.getInstance();
         negotiator.enableDimensionSupport(result.dimensionName());
-        PasterDreamAPI.LOGGER.debug("[DimensionAPI] 🏗️ 已启用维度的大型结构支持: {} ({})",
+        PDDebugLogger.apiDebug("[DimensionAPI] 🏗️ 已启用维度的大型结构支持: {} ({})",
                 result.dimensionName(), result.dimensionTypeId());
     }
 
@@ -193,7 +194,7 @@ public final class DimensionAPI {
     public static void enableLargeStructureSupport(String dimensionId) {
         StructureTerrainNegotiator negotiator = StructureTerrainNegotiator.getInstance();
         negotiator.enableDimensionSupport(dimensionId);
-        PasterDreamAPI.LOGGER.debug("[DimensionAPI] 🏗️ 已启用维度的大型结构支持: {}", dimensionId);
+        PDDebugLogger.apiDebug("[DimensionAPI] 🏗️ 已启用维度的大型结构支持: {}", dimensionId);
     }
 
 }

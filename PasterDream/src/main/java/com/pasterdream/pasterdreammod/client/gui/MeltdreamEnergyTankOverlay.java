@@ -2,9 +2,9 @@ package com.pasterdream.pasterdreammod.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyConfigRegistry;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.config.PDClientConfig;
-import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -40,7 +40,7 @@ public class MeltdreamEnergyTankOverlay implements LayeredDraw.Layer {
             return;
         }
         // 系统关闭或 HUD 关闭时不显示
-        if (!Boolean.TRUE.equals(PDCommonConfig.ENABLE_MELTDREAM_ENERGY_SYSTEM.get())
+        if (!Boolean.TRUE.equals(MeltDreamEnergyConfigRegistry.get().enabled().get())
                 || !PDClientConfig.SHOW_MELTDREAM_ENERGY_HUD.get()) {
             return;
         }

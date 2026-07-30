@@ -47,6 +47,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 import java.util.function.Supplier;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 精铸工坊方块实体 (Weapon Workshop Block Entity)
  * <p>
@@ -300,7 +301,7 @@ public class WeaponWorkshopBlockEntity extends BlockEntity implements GeoBlockEn
         }
         AdvancementHolder holder = serverPlayer.server.getAdvancements().get(ADVENTURE_ADVANCEMENT);
         if (holder == null) {
-            PasterDreamMod.LOGGER.debug("[WeaponWorkshop] 成就 {} 未注册，跳过授予", ADVENTURE_ADVANCEMENT);
+            PDDebugLogger.mainDebug("[WeaponWorkshop] 成就 {} 未注册，跳过授予", ADVENTURE_ADVANCEMENT);
             return;
         }
         AdvancementProgress progress = serverPlayer.getAdvancements().getOrStartProgress(holder);

@@ -24,6 +24,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 竞技场维度事件处理类 —— 处理玩家进入亚伦柯斯竞技场时的初始化逻辑
  * <p>
@@ -126,13 +127,13 @@ public class PDArenaEvents {
             Vec3i size = template.getSize();
             BlockPos centerPos = structurePos.offset(size.getX() - 1, size.getY() - 1, size.getZ() - 1);
 
-            PasterDreamMod.LOGGER.info("[PDArenaEvents] 🔍 结构尺寸: {}, 放置位置: {}, 中心偏移: {}",
+            PDDebugLogger.mainInfo("[PDArenaEvents] 🔍 结构尺寸: {}, 放置位置: {}, 中心偏移: {}",
                     size, structurePos, centerPos);
 
             boolean placed = template.placeInWorld(arenaLevel, structurePos, centerPos,
                     settings, arenaLevel.random, 3);
             if (placed) {
-                PasterDreamMod.LOGGER.info("[PDArenaEvents] 🏟️ 已放置竞技场结构: {} → {}",
+                PDDebugLogger.mainInfo("[PDArenaEvents] 🏟️ 已放置竞技场结构: {} → {}",
                         structureId, structurePos);
             } else {
                 PasterDreamMod.LOGGER.warn("[PDArenaEvents] ⚠️ 结构放置返回 false，可能没有方块被放置");
@@ -162,7 +163,7 @@ public class PDArenaEvents {
             }
         }
 
-        PasterDreamMod.LOGGER.debug("[PDArenaEvents] 🧹 已清除竞技场非玩家实体");
+        PDDebugLogger.mainDebug("[PDArenaEvents] 🧹 已清除竞技场非玩家实体");
     }
 
     /**
@@ -215,7 +216,7 @@ public class PDArenaEvents {
             leftHand.finalizeSpawn(arenaLevel, arenaLevel.getCurrentDifficultyAt(leftHandPos),
                     MobSpawnType.MOB_SUMMONED, null);
             arenaLevel.addFreshEntity(leftHand);
-            PasterDreamMod.LOGGER.info("[PDArenaEvents] 🖐️ 已生成左手 BOSS（召唤状态）: {}", leftHandPos);
+            PDDebugLogger.mainInfo("[PDArenaEvents] 🖐️ 已生成左手 BOSS（召唤状态）: {}", leftHandPos);
         }
 
         // 生成右手 BOSS（召唤状态）
@@ -227,7 +228,7 @@ public class PDArenaEvents {
             rightHand.finalizeSpawn(arenaLevel, arenaLevel.getCurrentDifficultyAt(rightHandPos),
                     MobSpawnType.MOB_SUMMONED, null);
             arenaLevel.addFreshEntity(rightHand);
-            PasterDreamMod.LOGGER.info("[PDArenaEvents] 🤚 已生成右手 BOSS（召唤状态）: {}", rightHandPos);
+            PDDebugLogger.mainInfo("[PDArenaEvents] 🤚 已生成右手 BOSS（召唤状态）: {}", rightHandPos);
         }
 
         // 生成时的召唤粒子效果（两只手同时触发）
@@ -265,7 +266,7 @@ public class PDArenaEvents {
                         spawnTerrorbeakAt(serverLevel, 0, 70, -12);
                     });
         }
-        PasterDreamMod.LOGGER.debug("[PDArenaEvents] 🦅 已调度 Terrorbeak 增援：50/100/150 tick 后各召唤 2 只");
+        PDDebugLogger.mainDebug("[PDArenaEvents] 🦅 已调度 Terrorbeak 增援：50/100/150 tick 后各召唤 2 只");
     }
 
     /**
@@ -284,7 +285,7 @@ public class PDArenaEvents {
         if (terrorbeak != null) {
             terrorbeak.moveTo(x, y, z, serverLevel.random.nextFloat() * 360.0F, 0.0F);
             serverLevel.addFreshEntity(terrorbeak);
-            PasterDreamMod.LOGGER.debug("[PDArenaEvents] 🦅 已生成 Terrorbeak 增援于 ({}, {}, {})", x, y, z);
+            PDDebugLogger.mainDebug("[PDArenaEvents] 🦅 已生成 Terrorbeak 增援于 ({}, {}, {})", x, y, z);
         } else {
             PasterDreamMod.LOGGER.warn("[PDArenaEvents] ⚠️ Terrorbeak 实体创建失败，无法生成增援");
         }
@@ -308,7 +309,7 @@ public class PDArenaEvents {
             if (!level.getBlockState(checkPos).isAir()) {
                 // 找到实心方块，返回其上方一格
                 BlockPos groundPos = checkPos.above();
-                PasterDreamMod.LOGGER.debug("[PDArenaEvents] 📍 找到地面位置: {} -> {}", pos, groundPos);
+                PDDebugLogger.mainDebug("[PDArenaEvents] 📍 找到地面位置: {} -> {}", pos, groundPos);
                 return groundPos;
             }
         }
@@ -328,7 +329,7 @@ public class PDArenaEvents {
     private static void playBossMusic(ServerLevel arenaLevel) {
         arenaLevel.playSound(null, ARENA_CENTER,
                 PDSounds.AARONCOS_MUSIC.get(), SoundSource.WEATHER, 1.0F, 1.0F);
-        PasterDreamMod.LOGGER.debug("[PDArenaEvents] 🎵 已播放亚伦柯斯战斗音乐");
+        PDDebugLogger.mainDebug("[PDArenaEvents] 🎵 已播放亚伦柯斯战斗音乐");
     }
 
 }

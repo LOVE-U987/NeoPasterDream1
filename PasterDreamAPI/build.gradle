@@ -8,22 +8,17 @@ version = mod_version
 group = mod_group_id
 
 base {
-    // 库制品名；玩家分发请用 :PasterDream:packageMod 的合并 jar，不要把本 jar 丢进 mods。
     archivesName = 'PasterDreamAPI'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-// API 不是独立 NeoForge mod（无 neoforge.mods.toml）。
-// jar 仍保留供开发/ Maven 依赖；打 classifier=api，避免与主 mod 发布物混淆。
 tasks.named('jar', Jar).configure {
-    archiveClassifier.set('api')
     manifest {
         attributes(
                 'Implementation-Title': 'PasterDreamAPI',
                 'Implementation-Version': project.version,
-                'Automatic-Module-Name': 'pasterdream.api',
-                'Note': 'Library only — embed via PasterDream jar; do not install into mods/'
+                'Automatic-Module-Name': 'pasterdream.api'
         )
     }
 }
@@ -41,12 +36,32 @@ neoForge {
     addModdingDependenciesTo(sourceSets.test)
 }
 
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            loader_version_range   : loader_version_range,
+            mod_id                 : 'pasterdreamapi',
+            mod_name               : 'PasterDream API',
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
 // test sourceSet 中存放的是示例/工具类，没有 JUnit 测试，
-// 关闭“未发现测试即失败”的校验，避免 build 任务中断
+// 关闭"未发现测试即失败"的校验，避免 build 任务中断
 tasks.named('test', Test).configure {
     failOnNoDiscoveredTests = false
 }

@@ -95,6 +95,39 @@
       }
     ]
   },
+  "wind_journey_departure": {
+    "category": "record",
+    "subtitle": "subtitle.pasterdream.wind_journey_departure",
+    "sounds": [
+      {
+        "name": "pasterdream:music/wind_journey_departure",
+        "stream": true,
+        "volume": 0.3
+      }
+    ]
+  },
+  "wind_journey_midsummer": {
+    "category": "record",
+    "subtitle": "subtitle.pasterdream.wind_journey_midsummer",
+    "sounds": [
+      {
+        "name": "pasterdream:music/wind_journey_midsummer",
+        "stream": true,
+        "volume": 0.06
+      }
+    ]
+  },
+  "dream_meadow_daisy_music": {
+    "category": "record",
+    "subtitle": "subtitle.pasterdream.dream_meadow_daisy_music",
+    "sounds": [
+      {
+        "name": "pasterdream:music/dream_meadow_daisy",
+        "stream": true,
+        "volume": 0.06
+      }
+    ]
+  },
   "music.dream_meadow": {
     "category": "music",
     "subtitle": "subtitle.pasterdream.music.dream_meadow",
@@ -136,6 +169,39 @@
         "name": "pasterdream:music/dream_delta",
         "stream": true,
         "volume": 0.4
+      }
+    ]
+  },
+  "music.wind_journey_departure": {
+    "category": "music",
+    "subtitle": "subtitle.pasterdream.music.wind_journey_departure",
+    "sounds": [
+      {
+        "name": "pasterdream:music/wind_journey_departure",
+        "stream": true,
+        "volume": 0.3
+      }
+    ]
+  },
+  "music.wind_journey_midsummer": {
+    "category": "music",
+    "subtitle": "subtitle.pasterdream.music.wind_journey_midsummer",
+    "sounds": [
+      {
+        "name": "pasterdream:music/wind_journey_midsummer",
+        "stream": true,
+        "volume": 0.3
+      }
+    ]
+  },
+  "music.dream_meadow_daisy": {
+    "category": "music",
+    "subtitle": "subtitle.pasterdream.music.dream_meadow_daisy",
+    "sounds": [
+      {
+        "name": "pasterdream:music/dream_meadow_daisy",
+        "stream": true,
+        "volume": 0.3
       }
     ]
   },

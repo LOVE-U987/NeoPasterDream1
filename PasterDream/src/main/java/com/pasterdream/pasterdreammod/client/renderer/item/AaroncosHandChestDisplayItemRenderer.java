@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.DefaultedBlockGeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 亚伦柯斯之触战利品箱显示物品渲染器
  * <p>
@@ -25,7 +26,7 @@ public class AaroncosHandChestDisplayItemRenderer extends GeoItemRenderer<Aaronc
      */
     public AaroncosHandChestDisplayItemRenderer() {
         super(new DefaultedBlockGeoModel<>(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, NAME)));
-        PasterDreamMod.LOGGER.debug("[AaroncosHandChestDisplayItemRenderer] 初始化完成，资源名: {} | 模型=geo/block/{}.geo.json 纹理=textures/block/{}.png 动画=animations/block/{}.animation.json",
+        PDDebugLogger.mainDebug("[AaroncosHandChestDisplayItemRenderer] 初始化完成，资源名: {} | 模型=geo/block/{}.geo.json 纹理=textures/block/{}.png 动画=animations/block/{}.animation.json",
                 NAME, NAME, NAME, NAME);
     }
 }

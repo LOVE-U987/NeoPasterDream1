@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 实体技能管理器 —— 管理实体的技能注册、冷却、触发和执行
  * <p>
@@ -84,7 +85,7 @@ public class EntitySkillManager {
      */
     public EntitySkillManager(Mob entity) {
         this.entity = entity;
-        PasterDreamAPI.LOGGER.debug("[EntitySkillManager] 创建技能管理器: entity={}", entity);
+        PDDebugLogger.apiDebug("[EntitySkillManager] 创建技能管理器: entity={}", entity);
     }
 
     // ======================== 技能注册 ========================
@@ -98,7 +99,7 @@ public class EntitySkillManager {
     public EntitySkillManager registerSkill(EntitySkill skill) {
         skills.put(skill.name(), skill);
         cooldowns.put(skill.name(), 0);
-        PasterDreamAPI.LOGGER.debug("[EntitySkillManager] 注册技能: {} → {} | 技能总数: {}", entity, skill.name(), skills.size());
+        PDDebugLogger.apiDebug("[EntitySkillManager] 注册技能: {} → {} | 技能总数: {}", entity, skill.name(), skills.size());
         return this;
     }
 
@@ -112,7 +113,7 @@ public class EntitySkillManager {
         for (EntitySkill skill : skillArray) {
             registerSkill(skill);
         }
-        PasterDreamAPI.LOGGER.debug("[EntitySkillManager] 批量注册技能完成: {} 个技能已注册", skillArray.length);
+        PDDebugLogger.apiDebug("[EntitySkillManager] 批量注册技能完成: {} 个技能已注册", skillArray.length);
         return this;
     }
 
@@ -176,7 +177,7 @@ public class EntitySkillManager {
     public boolean tryTriggerSkill(String skillName, @Nullable LivingEntity target) {
         // 检查是否有技能正在执行
         if (skillTimer > 0) {
-            PasterDreamAPI.LOGGER.debug("[EntitySkillManager] 技能 [{}] 触发失败: 有技能正在执行 [{}]", skillName,
+            PDDebugLogger.apiDebug("[EntitySkillManager] 技能 [{}] 触发失败: 有技能正在执行 [{}]", skillName,
                     currentSkill != null ? currentSkill.name() : "unknown");
             return false;
         }
@@ -190,7 +191,7 @@ public class EntitySkillManager {
         // 检查冷却
         int remainingCooldown = cooldowns.getOrDefault(skillName, 0);
         if (remainingCooldown > 0) {
-            PasterDreamAPI.LOGGER.debug("[EntitySkillManager] 技能 [{}] 冷却中: 剩余 {} tick", skillName, remainingCooldown);
+            PDDebugLogger.apiDebug("[EntitySkillManager] 技能 [{}] 冷却中: 剩余 {} tick", skillName, remainingCooldown);
             return false;
         }
 
@@ -206,7 +207,7 @@ public class EntitySkillManager {
      * @param target 技能目标
      */
     protected void startSkill(EntitySkill skill, @Nullable LivingEntity target) {
-        PasterDreamAPI.LOGGER.info("[EntitySkillManager] 🎯 技能触发: {} | 施法者={}, 目标={}", skill.name(), entity, target);
+        PDDebugLogger.apiInfo("[EntitySkillManager] 🎯 技能触发: {} | 施法者={}, 目标={}", skill.name(), entity, target);
 
         currentSkill = skill;
         skillTimer = 1;
@@ -226,7 +227,7 @@ public class EntitySkillManager {
      */
     protected void finishCurrentSkill() {
         if (currentSkill != null) {
-            PasterDreamAPI.LOGGER.info("[EntitySkillManager] ✅ 技能完成: {}", currentSkill.name());
+            PDDebugLogger.apiInfo("[EntitySkillManager] ✅ 技能完成: {}", currentSkill.name());
         }
         skillTimer = 0;
         currentSkill = null;
@@ -243,7 +244,7 @@ public class EntitySkillManager {
      * @param skill 技能定义
      */
     protected void executeSkillEffects(EntitySkill skill) {
-        PasterDreamAPI.LOGGER.debug("[EntitySkillManager] 执行技能效果: {} | damage={}, range={}", skill.name(), skill.damage(), skill.range());
+        PDDebugLogger.apiDebug("[EntitySkillManager] 执行技能效果: {} | damage={}, range={}", skill.name(), skill.damage(), skill.range());
 
         if (!(entity.level() instanceof ServerLevel serverLevel)) return;
 
@@ -271,7 +272,7 @@ public class EntitySkillManager {
             target.hurtMarked = true;
         }
 
-        PasterDreamAPI.LOGGER.info("[EntitySkillManager] 💥 技能 [{}] 对 {} 个目标造成 {} 点伤害", skill.name(), targets.size(), skill.damage());
+        PDDebugLogger.apiInfo("[EntitySkillManager] 💥 技能 [{}] 对 {} 个目标造成 {} 点伤害", skill.name(), targets.size(), skill.damage());
     }
 
     // ======================== 粒子效果 ========================
@@ -305,7 +306,7 @@ public class EntitySkillManager {
             );
         }
 
-        PasterDreamAPI.LOGGER.debug("[EntitySkillManager] ✨ 技能 [{}] 生成粒子: {} (x30)", skill.name(), skill.particleName());
+        PDDebugLogger.apiDebug("[EntitySkillManager] ✨ 技能 [{}] 生成粒子: {} (x30)", skill.name(), skill.particleName());
     }
 
     // ======================== 音效 ========================
@@ -320,7 +321,7 @@ public class EntitySkillManager {
 
         entity.level().playSound(null, entity.blockPosition(),
                 skill.getSoundEvent(), SoundSource.HOSTILE, 1.0f, 1.0f);
-        PasterDreamAPI.LOGGER.debug("[EntitySkillManager] 🔊 技能 [{}] 播放音效: {}", skill.name(), skill.soundId());
+        PDDebugLogger.apiDebug("[EntitySkillManager] 🔊 技能 [{}] 播放音效: {}", skill.name(), skill.soundId());
     }
 
     // ======================== 动画 ========================
@@ -340,7 +341,7 @@ public class EntitySkillManager {
                 procedureAnimatable.setAnimationProcedure(animation);
             }
         }
-        PasterDreamAPI.LOGGER.debug("[EntitySkillManager] 🎬 设置动画: entity={}, animation={}", entity, animation);
+        PDDebugLogger.apiDebug("[EntitySkillManager] 🎬 设置动画: entity={}, animation={}", entity, animation);
     }
 
     // ======================== 查询方法 ========================
