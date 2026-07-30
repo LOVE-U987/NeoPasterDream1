@@ -37,7 +37,7 @@ import top.theillusivec4.curios.api.CuriosApi;
  *       {@link PasterDreamEffect#onApply}/{@link PasterDreamEffect#onRemove}。</li>
  *   <li><b>回避/易伤伤害联动</b>：原版 event/PDEntityEvent 的 {@code LivingDamageEvent} 处理，
  *       1.21.1 对应 {@link LivingDamageEvent.Pre}（护甲结算后、生效前，可改写最终伤害）。</li>
- *   <li><b>免疫牛奶清除</b>：原版 4 个效果重写 {@code getCurativeItems()} 返回空列表；
+ *   <li><b>免疫牛奶清除</b>：原版 6 个效果重写 {@code getCurativeItems()} 返回空列表；
  *       1.21.1 改为在效果实例上清空 NeoForge EffectCure 集合。</li>
  * </ol>
  *
@@ -54,7 +54,7 @@ public final class PDEffectEvents {
     /**
      * 效果添加事件：
      * <ul>
-     *   <li>对 4 个原版"无解药"效果清空治愈途径（禁止牛奶清除）；</li>
+     *   <li>对原版"无解药"效果清空治愈途径（禁止牛奶清除）；</li>
      *   <li>向 {@link PasterDreamEffect} 派发 onApply 回调——
      *       仅在效果确定实际生效时派发（新挂载必然生效；等级提升必然生效，且先按旧等级
      *       派发 onRemove 再按新等级派发 onApply，对应原版 1.20.1 onEffectUpdated 的
@@ -68,12 +68,15 @@ public final class PDEffectEvents {
         if (instance == null) {
             return;
         }
-        // 原版 getCurativeItems() 返回空列表的 4 个效果 → 清空治愈集合（牛奶不可清除）
+        // 原版 getCurativeItems() 返回空列表 → 清空治愈集合（牛奶不可清除）
+        // 含 guard/restrainmove/shadow_spyon/teleportation + oppression + confusion
         MobEffect effect = instance.getEffect().value();
         if (effect == PDEffects.GUARD_BLOCK_BUFF.effect()
                 || effect == PDEffects.RESTRAINMOVE_BLOCK_BUFF.effect()
                 || effect == PDEffects.SHADOW_SPYON_BUFF.effect()
-                || effect == PDEffects.TELEPORTATION_BUFF.effect()) {
+                || effect == PDEffects.TELEPORTATION_BUFF.effect()
+                || effect == PDEffects.OPPRESSION_BUFF.get()
+                || effect == PDEffects.CONFUSION_BUFF.effect()) {
             instance.getCures().clear();
         }
 
@@ -180,6 +183,8 @@ public final class PDEffectEvents {
                 x, y + 0.8, z, 32, 0.3, 0.5, 0.3, 0.1);
         level.sendParticles(ParticleTypes.ELECTRIC_SPARK, x, y + 0.8, z, 24, 0.3, 0.5, 0.3, 0.1);
         player.getPersistentData().putBoolean("evasion", true);
+        // 客户端 playerAnimator 闪避姿势（原版 EvasionAnimationProcedure）
+        com.pasterdream.pasterdreammod.network.PDNetwork.sendEvasionPose(player);
         // 装备任一反击系饰品（反击戒指/转身斗篷/回避斗篷）→ 获得反击效果 2 秒
         // （原版为三段相同 addEffect，效果等价合并为一次判定）
         if (hasCurioEquipped(player, PDItemsCurios.COUNTER_RING.get())

@@ -58,9 +58,10 @@ import java.util.function.Supplier;
  * <ul>
  *   <li>2 号『执剑』→ flareup_buff；8 号『圣杯』→ grail_buff；</li>
  *   <li>3 号附带 rapid_reaction（高速反射，瞬身术 CD -20%）；</li>
- *   <li>原版使用后的全屏物品展示动画（displayItemActivation）为纯客户端渲染调用，此处省略；</li>
+ *   <li>使用后全屏物品展示：S2C {@link com.pasterdream.pasterdreammod.network.ItemActivationPayload}
+ *       → 客户端 {@code GameRenderer#displayItemActivation}（卡 1–9，与原版一致；0 号无）；</li>
  *   <li>1 号原版对范围内所有实体（含掉落物）调用 hurt，此处等价限定为非玩家生物实体；</li>
- *   <li>6 号原版附带 moltengold_wand 投射物坠落特效为纯视觉，可省略；</li>
+ *   <li>6 号熔金杖投射物自上而下坠落为纯视觉（伤害仍由延迟 hurt 结算）；</li>
  *   <li>原版 3/4/5/7 号仅调用服务端 addParticle（实际无可见效果），故不补发粒子。</li>
  * </ul>
  */
@@ -139,9 +140,10 @@ public class CalleCardItem extends Item {
         double y = player.getY();
         double z = player.getZ();
 
-        // 除 0 号外，原版所有卡牌使用时都会挥手
+        // 除 0 号外，原版所有卡牌使用时都会挥手 + 全屏展示
         if (cardId != 0) {
             player.swing(hand, true);
+            com.pasterdream.pasterdreammod.network.PDNetwork.sendItemActivation(player, stack);
         }
 
         switch (cardId) {
@@ -291,8 +293,16 @@ public class CalleCardItem extends Item {
                     }
                 });
             } else if (target.getType().is(EntityTypeTags.UNDEAD)) {
-                // 亡灵生物：引燃 15 秒并延迟 3 tick 造成 20 点火焰伤害
-                // （原版另有 moltengold_wand 投射物坠落特效，该实体未移植，省略）
+                // 亡灵生物：熔金杖投射物坠落 VFX + 引燃 15 秒 + 延迟 3 tick 火焰伤害 20
+                var projectile = new com.pasterdream.pasterdreammod.entity.projectile.MoltengoldWandProjectileEntity(
+                        PDEntities.MOLTENGOLD_WAND_PROJECTILE.get(), level);
+                projectile.setPos(target.getX(), target.getY() + 7, target.getZ());
+                projectile.shoot(0, -1, 0, 1, 0);
+                projectile.setSilent(true);
+                projectile.setBaseDamage(5);
+                // 原版 pierceLevel=1；1.21 基类 setPierceCount 为 protected，坠落单目标可省略
+                projectile.setOwner(player);
+                level.addFreshEntity(projectile);
                 target.igniteForSeconds(15);
                 schedule(level, 3, () -> {
                     if (target.isAlive()) {

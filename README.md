@@ -105,7 +105,8 @@
 | `entity-gallery` | 实体展台 |
 | `twilight-lantern` / `twilight` / `lantern` | 暮影之笼链路（**不在** `all`；见 `docs/todo_暮影之笼流程缺口.md`） |
 | `wind-journey` / `wind` / `third-dream` | 第三梦境风旅核实（**不在** `all`；见 `docs/todo_第三梦境流程缺口.md`） |
-| `wind-lake` / `wind_lake` / `lake` | 水色湖专项：NORMAL+开建筑；VERIFY-only 挂 `safe_lake`；**不在** `all`；正式默认不挂 |
+| `wind-lake` / `wind_lake` / `lake` | 水色湖专项：NORMAL+开建筑；校验正式常驻 `safe_lake`；**不在** `all` |
+| `dyedream` / `dye-dream` / `dream-world` | 染梦专项：狐狸雕像仪式 + flower_12 多方块 + 莲花；**不在** `all` |
 | `second-dream` / `second` / `lamp-shadow` | 第二梦境灯影核实（**不在** `all`；见 `docs/todo_第二梦境流程缺口.md`） |
 | **快捷** `quick` | = `registry,core` |
 | **快捷** `behavior` | = `core,dimensions,spells,content` |
@@ -239,8 +240,15 @@ PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=wind-journey PASTERDREAM_VERIFY_K
 ```
 
 ```bash
-# 水色湖专项（不在 all；NORMAL+开建筑；VERIFY-only 挂 safe_lake；正式默认不挂）
+# 水色湖专项（不在 all；NORMAL+开建筑；校验正式常驻 safe_lake）
 PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=wind-lake PASTERDREAM_VERIFY_KEEP_OPEN=0 \
+  JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
+  sh gradlew :PasterDream:runClient --offline
+```
+
+```bash
+# 染梦世界专项（不在 all；狐狸雕像 + 迷梦冶梦莲多方块）
+PASTERDREAM_VERIFY=1 PASTERDREAM_VERIFY_SUITES=dyedream PASTERDREAM_VERIFY_KEEP_OPEN=0 \
   JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
   sh gradlew :PasterDream:runClient --offline
 ```
@@ -313,7 +321,6 @@ PY
 | 任务 | 优先级 | 描述 |
 | :--- | :-: | :--- |
 | **人工游玩回归** | 🔥 高 | 暗影成就链 · 真影之床抉择 · 工坊手感 · 法杖耗能 · Curios 佩戴 · 唤星裂隙 |
-| **装饰性差异** | 🌙 低 | 卡牌全屏展示动画 · 部分纯 VFX · playerAnimator 资源 |
 | **第三方可选联动** | 🌙 低 | Croptopia 深度；Tetra 待上游 1.21.1 |
 | **新内容设计** | ⏳ 低 | 原版对齐完成后的扩展 |
 

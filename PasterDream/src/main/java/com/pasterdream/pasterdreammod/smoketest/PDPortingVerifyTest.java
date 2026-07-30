@@ -128,6 +128,7 @@ public final class PDPortingVerifyTest {
      *   <li>{@code wind-journey}/{@code wind}/{@code third-dream} — 第三梦境风之旅途流程核实</li>
      *   <li>{@code second-dream}/{@code second}/{@code lamp-shadow} — 第二梦境灯影流程核实</li>
      *   <li>{@code main-flow}/{@code main}/{@code story}/{@code full-flow} — 主干全链路连续流程（染梦→暮影→灯影抉择→竞技场→风旅）；不在 all 默认集合内</li>
+     *   <li>{@code dyedream}/{@code dye-dream}/{@code dream-world} — 染梦世界：狐狸雕像仪式 + 迷梦冶梦莲多方块 + 染梦莲；不在 all</li>
      * </ul>
      * 组合快捷：{@code all}（默认）、{@code quick}=registry+core、
      * {@code behavior}=core+dimensions+spells+content、
@@ -135,7 +136,7 @@ public final class PDPortingVerifyTest {
      * {@code galleries}/{@code visual}=gallery+entity-gallery。
      * <p>
      * 注意：{@code all} <b>不含</b> {@code twilight-lantern} / {@code wind-journey} /
-     * {@code second-dream} / {@code main-flow}
+     * {@code second-dream} / {@code main-flow} / {@code dyedream}
      * （专项缺口核实，默认不进全量，避免与全绿终验语义冲突；
      * 显式 {@code PASTERDREAM_VERIFY_SUITES=…}）。
      */
@@ -155,14 +156,16 @@ public final class PDPortingVerifyTest {
         /** 第三梦境风之旅途专项；不在 all 默认集合内 */
         WIND_JOURNEY("wind-journey", "wind", "third-dream"),
         /**
-         * 风维水色湖专项（非超平坦+开建筑+VERIFY-only 挂 lake）；不在 all。
+         * 风维水色湖专项（非超平坦+开建筑；校验正式常驻 safe_lake 挂接）；不在 all。
          * 见 docs/superpowers/specs/2026-07-29-wind-lake-verify-design.md
          */
         WIND_LAKE("wind-lake", "wind_lake", "lake"),
         /** 第二梦境灯影专项；不在 all 默认集合内 */
         SECOND_DREAM("second-dream", "second", "lamp-shadow"),
         /** 主干全链路连续流程；不在 all 默认集合内 */
-        MAIN_FLOW("main-flow", "main", "story", "full-flow");
+        MAIN_FLOW("main-flow", "main", "story", "full-flow"),
+        /** 染梦世界：狐狸雕像 + flower_12 多方块 + dyedream_lotus；不在 all */
+        DYEDREAM("dyedream", "dye-dream", "dream-world");
 
         private final String[] aliases;
 
@@ -257,7 +260,7 @@ public final class PDPortingVerifyTest {
                     if (!hit) {
                         LogUtils.getLogger().warn("[PDVerify] 未知套件名 '{}'，已忽略（合法: registry,core,dimensions,"
                                 + "spells,content,structures,workshop,struct-dim,gallery,entity-gallery,"
-                                + "twilight-lantern,wind-journey,wind-lake,second-dream,main-flow 及快捷 all/quick/behavior/worldgen/galleries）", token);
+                                + "twilight-lantern,wind-journey,wind-lake,second-dream,main-flow,dyedream 及快捷 all/quick/behavior/worldgen/galleries）", token);
                     }
                 }
             }
@@ -277,6 +280,7 @@ public final class PDPortingVerifyTest {
         all.remove(Suite.WIND_LAKE);
         all.remove(Suite.SECOND_DREAM);
         all.remove(Suite.MAIN_FLOW);
+        all.remove(Suite.DYEDREAM);
         return all;
     }
 
@@ -543,6 +547,13 @@ public final class PDPortingVerifyTest {
             // 对话 ~2.1k t + 入侵 + 抉择 + 竞技场 + 风旅；advance 在 hooks 内同步泵，
             // 时间线只需覆盖 wall 与偶发真实 tick 依赖；给足余量
             cursor = mf + 80;
+        }
+
+        if (suite(Suite.DYEDREAM)) {
+            int dd = cursor;
+            at(dd, PDPortingVerifyTest::refreshPlayerBuffs);
+            at(dd + 2, PDPortingVerifyTest::dyedreamSuite);
+            cursor = dd + 20;
         }
 
         if (suite(Suite.WORKSHOP)) {
@@ -1388,6 +1399,12 @@ public final class PDPortingVerifyTest {
     private static void mainFlowSuite() {
         PDMainFlowVerifyHooks.run(server(), player(), r ->
                 checkDetail("main-flow", r.pass(), r.name(), r.detail()));
+    }
+
+    /** 染梦世界：狐狸雕像仪式 + flower_12 多方块 + dyedream_lotus */
+    private static void dyedreamSuite() {
+        PDDyedreamVerifyHooks.verify(server(), player(), r ->
+                checkDetail("dyedream", r.pass(), r.name(), r.detail()));
     }
 
     // ==================== S17 武器工坊群 ====================
