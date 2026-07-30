@@ -283,7 +283,7 @@ public class PDItemsMaterials {
 
     /**
      * 聚梦法杖原胚 (dream_wand_embryo)
-     * 锻造材料（原版另有右击染梦书桌清空法杖数据的调试行为，随聚梦法杖暂缓移植而省略）
+     * 锻造材料。右击染梦书桌清空法杖数据见 {@code DreamWandItem.clearWandDataOnDesk}（已实现）。
      */
     public static final DeferredItem<Item> DREAM_WAND_EMBRYO =
             ItemAPI.simpleItem("dream_wand_embryo")

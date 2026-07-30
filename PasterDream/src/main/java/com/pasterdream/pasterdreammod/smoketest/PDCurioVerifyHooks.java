@@ -3,9 +3,10 @@ package com.pasterdream.pasterdreammod.smoketest;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.curio.CurioAPI;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
+import com.pasterdream.pasterdreammod.item.CeciliacareCharmItem;
 import com.pasterdream.pasterdreammod.item.Hithard0RingItem;
 import com.pasterdream.pasterdreammod.item.LightButterflyCurioItem;
-import com.pasterdream.pasterdreammod.registry.PDDimensions;
+import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsCurios;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -14,6 +15,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -35,6 +37,7 @@ import java.util.function.Consumer;
  * 覆盖：
  * - 属性加成类（如四叶草：生命 +1、幸运 +6）
  * - 条件触发效果（如光蝴蝶：低亮度夜视；融梦光环戒指：特定维度能量增长）
+ * - 塞西莉亚的加护：高血量不得触发；≤15% 最大生命触发后校验效果与失色返还
  * - 唯一性限制（canEquip 防重复，如 hithard_0_ring）
  * - 基础装备可检测（所有非 test_curio 饰品至少能被 Curios 看到已装备）
  * <p>
@@ -289,32 +292,175 @@ public final class PDCurioVerifyHooks {
     }
 
     // ---------------------------------------------------------------------
-    // 5. 塞西莉亚的加护 tick 安全（不崩溃；不依赖常驻效果标记）
+    // 5. 塞西莉亚的加护：真实场景触发（高血量不得触发；低血量 ≤15% 触发 + 失色返还）
     // ---------------------------------------------------------------------
     private static void testCeciliaTickSafety(ServerPlayer player, Consumer<Result> out) {
         Item it = item("ceciliacare_charm");
+        Item paleItem = item("turn_pale_cecilia");
         if (it == null) {
-            out.accept(new Result(false, "cecilia-tick", "ceciliacare_charm not registered"));
+            out.accept(new Result(false, "cecilia-care", "ceciliacare_charm not registered"));
+            return;
+        }
+        if (paleItem == null) {
+            out.accept(new Result(false, "cecilia-care", "turn_pale_cecilia not registered"));
+            return;
+        }
+        if (!(it instanceof CeciliacareCharmItem charm)) {
+            out.accept(new Result(false, "cecilia-care", "ceciliacare_charm is not CeciliacareCharmItem"));
             return;
         }
 
-        CuriosApi.getCuriosInventory(player).ifPresent(inv -> inv.setEquippedCurio("charm", 0, ItemStack.EMPTY));
-        ItemStack stack = new ItemStack(it);
-        CuriosApi.getCuriosInventory(player).ifPresent(inv -> inv.setEquippedCurio("charm", 0, stack));
-
-        boolean noCrash = true;
-        try {
-            // 直接调用 curioTick（其内部会根据当前生命值决定是否触发）
-            SlotContext ctx = new SlotContext("charm", player, 0, false, true);
-            // CeciliacareCharmItem 的 curioTick 是 package-private 还是 public？用反射以防
-            java.lang.reflect.Method m = it.getClass().getMethod("curioTick", SlotContext.class, ItemStack.class);
-            m.setAccessible(true);
-            m.invoke(it, ctx, stack);
-        } catch (Throwable t) {
-            noCrash = false;
+        float savedHealth = player.getHealth();
+        float maxHp = player.getMaxHealth();
+        if (maxHp <= 0.0f) {
+            out.accept(new Result(false, "cecilia-care", "maxHealth <= 0"));
+            return;
         }
 
-        out.accept(new Result(noCrash, "cecilia-tick", noCrash ? "curioTick executed without crash" : "curioTick threw"));
+        // 预清：槽位、触发效果、瞬身术冷却、背包内残留失色加护
+        clearCeciliaState(player, it, paleItem);
+
+        SlotContext ctx = new SlotContext("charm", player, 0, false, true);
+
+        // --- A. 高血量场景：必须不触发 ---
+        ItemStack highStack = new ItemStack(it);
+        CuriosApi.getCuriosInventory(player).ifPresent(inv -> inv.setEquippedCurio("charm", 0, highStack));
+        player.setHealth(maxHp); // 满血，远高于 15%
+        int paleBeforeHigh = countItem(player, paleItem);
+
+        try {
+            charm.curioTick(ctx, highStack);
+        } catch (Throwable t) {
+            restoreCeciliaState(player, it, paleItem, savedHealth);
+            out.accept(new Result(false, "cecilia-care", "high-hp curioTick threw: " + t.getClass().getSimpleName()));
+            return;
+        }
+
+        // 直接读槽位，避免 findFirstCurio 同 tick 缓存误报
+        boolean stillEquippedHigh = isCurioInSlot(player, "charm", 0, it);
+        int paleAfterHigh = countItem(player, paleItem);
+        boolean highFired = !stillEquippedHigh
+                || paleAfterHigh > paleBeforeHigh
+                || player.hasEffect(MobEffects.DAMAGE_RESISTANCE)
+                || player.hasEffect(MobEffects.REGENERATION);
+        if (highFired) {
+            restoreCeciliaState(player, it, paleItem, savedHealth);
+            out.accept(new Result(false, "cecilia-care",
+                    String.format("FAIL high-hp fired: equipped=%s paleDelta=%d resist=%s regen=%s hp=%.1f/%.1f",
+                            stillEquippedHigh, paleAfterHigh - paleBeforeHigh,
+                            player.hasEffect(MobEffects.DAMAGE_RESISTANCE),
+                            player.hasEffect(MobEffects.REGENERATION),
+                            player.getHealth(), maxHp)));
+            return;
+        }
+
+        // --- B. 低血量场景：必须触发，且效果/失色与描述一致 ---
+        clearCeciliaState(player, it, paleItem);
+        // 预挂瞬身术冷却，验证触发后会被清除
+        player.addEffect(new MobEffectInstance(PDEffects.TELEPORTATION_BUFF.holder(), 200, 0, false, false, true));
+
+        ItemStack lowStack = new ItemStack(it);
+        CuriosApi.getCuriosInventory(player).ifPresent(inv -> inv.setEquippedCurio("charm", 0, lowStack));
+        // 描述：当前生命 ≤ 最大生命 15% 时可被触发（实现：health > max*0.15 则 return）
+        float lowHp = Math.max(1.0f, maxHp * 0.10f);
+        player.setHealth(lowHp);
+        int paleBeforeLow = countItem(player, paleItem);
+
+        try {
+            charm.curioTick(ctx, lowStack);
+        } catch (Throwable t) {
+            restoreCeciliaState(player, it, paleItem, savedHealth);
+            out.accept(new Result(false, "cecilia-care", "low-hp curioTick threw: " + t.getClass().getSimpleName()));
+            return;
+        }
+
+        // 直接读 charm 槽；findFirstCurio 有按 gameTime 的缓存，同 tick 清空后仍可能误报仍装备
+        boolean stillEquippedLow = isCurioInSlot(player, "charm", 0, it);
+        int paleAfterLow = countItem(player, paleItem);
+        boolean gotPale = paleAfterLow > paleBeforeLow;
+
+        MobEffectInstance resist = player.getEffect(MobEffects.DAMAGE_RESISTANCE);
+        MobEffectInstance regen = player.getEffect(MobEffects.REGENERATION);
+        MobEffectInstance speed = player.getEffect(MobEffects.MOVEMENT_SPEED);
+        MobEffectInstance jump = player.getEffect(MobEffects.JUMP);
+
+        // 期望：抗性 amp4 / 再生 amp3 持续 100；移速 amp2 / 跳跃 amp1 持续 200；消耗饰品；给失色；清瞬身冷却
+        boolean resistOk = resist != null && resist.getAmplifier() == 4 && resist.getDuration() >= 90;
+        boolean regenOk = regen != null && regen.getAmplifier() == 3 && regen.getDuration() >= 90;
+        boolean speedOk = speed != null && speed.getAmplifier() == 2 && speed.getDuration() >= 180;
+        boolean jumpOk = jump != null && jump.getAmplifier() == 1 && jump.getDuration() >= 180;
+        boolean tpCleared = !player.hasEffect(PDEffects.TELEPORTATION_BUFF.holder());
+        // 槽位已空即视为消耗成功（curioTick 参数 stack 可能与槽内 copy 非同一引用）
+        boolean consumed = !stillEquippedLow;
+
+        boolean lowOk = consumed && gotPale && resistOk && regenOk && speedOk && jumpOk && tpCleared;
+
+        String detail = String.format(
+                "highOk=true lowHp=%.1f/%.1f consumed=%s stackEmpty=%s pale+%d resist=%s regen=%s speed=%s jump=%s tpCleared=%s",
+                lowHp, maxHp, consumed, lowStack.isEmpty(), paleAfterLow - paleBeforeLow,
+                fmtEffect(resist), fmtEffect(regen), fmtEffect(speed), fmtEffect(jump), tpCleared);
+
+        restoreCeciliaState(player, it, paleItem, savedHealth);
+        out.accept(new Result(lowOk, "cecilia-care", detail));
+    }
+
+    private static void clearCeciliaState(ServerPlayer player, Item charmItem, Item paleItem) {
+        CuriosApi.getCuriosInventory(player).ifPresent(inv -> inv.setEquippedCurio("charm", 0, ItemStack.EMPTY));
+        player.removeEffect(MobEffects.DAMAGE_RESISTANCE);
+        player.removeEffect(MobEffects.REGENERATION);
+        player.removeEffect(MobEffects.MOVEMENT_SPEED);
+        player.removeEffect(MobEffects.JUMP);
+        player.removeEffect(PDEffects.TELEPORTATION_BUFF.holder());
+        removeAllOf(player, paleItem);
+        removeAllOf(player, charmItem);
+    }
+
+    /** 直接读指定 Curios 槽，绕开 findFirstCurio 的同 tick 缓存。 */
+    private static boolean isCurioInSlot(ServerPlayer player, String slotId, int index, Item item) {
+        return CuriosApi.getCuriosInventory(player)
+                .flatMap(inv -> inv.getStacksHandler(slotId))
+                .map(handler -> {
+                    var stacks = handler.getStacks();
+                    if (index < 0 || index >= stacks.getSlots()) {
+                        return false;
+                    }
+                    ItemStack s = stacks.getStackInSlot(index);
+                    return !s.isEmpty() && s.is(item);
+                })
+                .orElse(false);
+    }
+
+    private static void restoreCeciliaState(ServerPlayer player, Item charmItem, Item paleItem, float savedHealth) {
+        clearCeciliaState(player, charmItem, paleItem);
+        float max = player.getMaxHealth();
+        player.setHealth(Math.min(Math.max(1.0f, savedHealth), max > 0 ? max : savedHealth));
+    }
+
+    private static int countItem(ServerPlayer player, Item item) {
+        int n = 0;
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack s = player.getInventory().getItem(i);
+            if (!s.isEmpty() && s.is(item)) {
+                n += s.getCount();
+            }
+        }
+        return n;
+    }
+
+    private static void removeAllOf(ServerPlayer player, Item item) {
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack s = player.getInventory().getItem(i);
+            if (!s.isEmpty() && s.is(item)) {
+                player.getInventory().setItem(i, ItemStack.EMPTY);
+            }
+        }
+    }
+
+    private static String fmtEffect(MobEffectInstance e) {
+        if (e == null) {
+            return "none";
+        }
+        return "amp" + e.getAmplifier() + "/d" + e.getDuration();
     }
 
     // ---------------------------------------------------------------------

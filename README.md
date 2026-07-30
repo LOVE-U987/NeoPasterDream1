@@ -103,11 +103,11 @@
 | `struct-dim` | 结构→维度映射 |
 | `gallery` | 方块总览展台 |
 | `entity-gallery` | 实体展台 |
-| `twilight-lantern` / `twilight` / `lantern` | 暮影之笼链路（**不在** `all`；见 `docs/todo_暮影之笼流程缺口.md`） |
-| `wind-journey` / `wind` / `third-dream` | 第三梦境风旅核实（**不在** `all`；见 `docs/todo_第三梦境流程缺口.md`） |
+| `twilight-lantern` / `twilight` / `lantern` | 暮影之笼链路（**不在** `all`；玩法 `docs/superpowers/游戏流程分析/暮影之笼.md`；开放项 `docs/功能状态.md` §3） |
+| `wind-journey` / `wind` / `third-dream` | 第三梦境风旅核实（**不在** `all`；玩法 `docs/superpowers/游戏流程分析/第三梦境.md`） |
 | `wind-lake` / `wind_lake` / `lake` | 水色湖专项：NORMAL+开建筑；校验正式常驻 `safe_lake`；**不在** `all` |
 | `dyedream` / `dye-dream` / `dream-world` | 染梦专项：狐狸雕像仪式 + flower_12 多方块 + 莲花；**不在** `all` |
-| `second-dream` / `second` / `lamp-shadow` | 第二梦境灯影核实（**不在** `all`；见 `docs/todo_第二梦境流程缺口.md`） |
+| `second-dream` / `second` / `lamp-shadow` | 第二梦境灯影核实（**不在** `all`；玩法 `docs/superpowers/游戏流程分析/第二梦境.md`） |
 | **快捷** `quick` | = `registry,core` |
 | **快捷** `behavior` | = `core,dimensions,spells,content` |
 | **快捷** `worldgen` | = `structures,struct-dim` |

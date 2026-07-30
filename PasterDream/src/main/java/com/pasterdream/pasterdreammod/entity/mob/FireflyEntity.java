@@ -39,7 +39,7 @@ import software.bernie.geckolib.animation.RawAnimation;
  * <ul>
  *   <li>被动小型生物，不会攻击</li>
  *   <li>三维飞行移动（FlyingMoveControl + FlyingPathNavigation + 无重力）</li>
- *   <li>可用玻璃罐捕捉（交互逻辑已预留，待物品移植后启用）</li>
+ *   <li>可用生态玻璃罐捕捉为荧光罐（{@link #mobInteract} 已接线）</li>
  *   <li>免疫摔落伤害</li>
  * </ul>
  * <p>

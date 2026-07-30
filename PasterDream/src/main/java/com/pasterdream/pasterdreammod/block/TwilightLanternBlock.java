@@ -224,6 +224,8 @@ public class TwilightLanternBlock extends BaseEntityBlock {
                 if (player instanceof LivingEntity living && !living.level().isClientSide()) {
                     living.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 140, 0, false, false));
                 }
+                // Neo 增强：再点燃时清零 number，避免上次残留导致刷怪节点无法再次命中
+                W4DataBlockEntity.putDoubleAt(level, pos, "number", 0);
                 W4DataBlockEntity.putBooleanAt(level, pos, "switch", true);
                 ItemStack toRemove = new ItemStack(PDItemsFunctional.MELTDREAM_CRYSTAL_0.get());
                 player.getInventory().clearOrCountMatchingItems(
@@ -279,7 +281,9 @@ public class TwilightLanternBlock extends BaseEntityBlock {
                             });
                         }
                     }
+                    // Neo 增强：事件结束同时清零 number（原版只关 switch）
                     W4DataBlockEntity.putBooleanAt(level, pos, "switch", false);
+                    W4DataBlockEntity.putDoubleAt(level, pos, "number", 0);
                 });
             } else if (!player.level().isClientSide()) {
                 player.displayClientMessage(Component.literal("需要用融梦水晶碎片点燃影灯"), true);

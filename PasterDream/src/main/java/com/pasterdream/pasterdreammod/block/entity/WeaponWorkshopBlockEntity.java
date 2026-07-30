@@ -213,7 +213,7 @@ public class WeaponWorkshopBlockEntity extends BlockEntity implements GeoBlockEn
     private void matchAndCraft() {
         for (ForgeRecipe recipe : RECIPES) {
             if (recipe.result().get() == Items.AIR) {
-                // 产物尚未注册（并行模块未落地），跳过该配方
+                // 防御性：产物 Supplier 解析为 AIR 时跳过该配方
                 continue;
             }
             if (itemHandler.getStackInSlot(0).is(recipe.in0().get())
@@ -290,7 +290,7 @@ public class WeaponWorkshopBlockEntity extends BlockEntity implements GeoBlockEn
 
     /**
      * 授予冒险成就 achievement_adventure_0（原版按钮附带逻辑）；
-     * 成就尚未移植时输出调试日志并跳过
+     * 防御性：holder 缺失时输出调试日志并跳过
      *
      * @param player 玩家
      */

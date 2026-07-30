@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.registry;
 import com.pasterdream.pasterdreammod.api.effect.MobEffectAPI;
 import com.pasterdream.pasterdreammod.api.effect.MobEffectResult;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.entity.mob.WeakenessTerrorbeakEntity;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsArmor;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsCurios;
@@ -874,7 +875,7 @@ public class PDEffects {
     // 私有工具与 procedure 还原逻辑
     // ════════════════════════════════════════════════════════════════════
 
-    /** 风之旅途维度键（维度本体尚未还原，键比较在维度缺失时恒为 false，安全） */
+    /** 风之旅途维度键（防御性：getLevel 为空时键比较恒 false，不进维） */
     private static final ResourceKey<Level> WIND_JOURNEY_WORLD =
             ResourceKey.create(Registries.DIMENSION,
                     ResourceLocation.fromNamespaceAndPath("pasterdream", "wind_journey_world"));
@@ -1133,7 +1134,7 @@ public class PDEffects {
                         && isAdvancementDone(player, "achievement_b_0")
                         && isAdvancementDone(player, "achievement_hide_16")) {
                     ServerLevel windJourney = player.server.getLevel(WIND_JOURNEY_WORLD);
-                    // 风之旅途维度尚未还原时 getLevel 返回 null，静默跳过
+                    // 防御性：维度未加载时 getLevel 为 null，静默跳过
                     if (windJourney != null && player.level().dimension() != WIND_JOURNEY_WORLD) {
                         // 对齐原版 FondillusionBuffPr0 / 灯影床：WIN_GAME + teleport + 能力/效果 + 1032
                         player.connection.send(new ClientboundGameEventPacket(
@@ -1180,9 +1181,12 @@ public class PDEffects {
         if (level == null) {
             return;
         }
+        // 画面抖动受 LOW_SAN_PICTURE_JITTER 控制（默认 true）；幻觉召唤不受此配置影响
+        boolean pictureJitter = Boolean.TRUE.equals(PDCommonConfig.LOW_SAN_PICTURE_JITTER.get());
         if (amplifier == 0) {
-            // 原版受 LOW_SAN_PICTURE_JITTER 配置控制（默认 true；配置系统尚未还原，按默认开启）
-            jitterRotation(entity, 0.5, 0.5);
+            if (pictureJitter) {
+                jitterRotation(entity, 0.5, 0.5);
+            }
             if (Math.random() < 0.005) {
                 if (Math.random() < 0.3) {
                     spawnHallucination(level, PDEntities.TERRORBEAK.get(), x, y, z, true);
@@ -1192,7 +1196,9 @@ public class PDEffects {
                 }
             }
         } else if (amplifier == 1) {
-            jitterRotation(entity, 1, 1);
+            if (pictureJitter) {
+                jitterRotation(entity, 1, 1);
+            }
             if (Math.random() < 0.01) {
                 if (Math.random() < 0.25) {
                     spawnHallucination(level, PDEntities.TERRORBEAK.get(), x, y, z, true);
@@ -1202,7 +1208,9 @@ public class PDEffects {
                 }
             }
         } else if (amplifier == 2) {
-            jitterRotation(entity, 3, 2);
+            if (pictureJitter) {
+                jitterRotation(entity, 3, 2);
+            }
             if (Math.random() < 0.025) {
                 // 装备退化之躯时自损 1 点（虚空伤害，血量>1 才触发）
                 if (hasCurioEquipped(entity, PDItemsCurios.DEGENERATE_BODYS.get())

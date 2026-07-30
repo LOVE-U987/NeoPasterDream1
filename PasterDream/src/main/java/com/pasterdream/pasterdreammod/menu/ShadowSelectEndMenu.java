@@ -138,7 +138,7 @@ public class ShadowSelectEndMenu extends AbstractContainerMenu {
 
     /**
      * 授予成就的全部条件（原版 award remaining criteria 语义）；
-     * 成就未移植时输出调试日志并跳过
+     * 防御性：holder 缺失时打调试日志并跳过（datapack 缺失/命名错误时不崩）
      *
      * @param player 服务端玩家
      * @param path   成就注册路径
@@ -147,7 +147,6 @@ public class ShadowSelectEndMenu extends AbstractContainerMenu {
         AdvancementHolder holder = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
         if (holder == null) {
-            // TODO(成就联动)：对应成就尚未移植，落地后此处自动生效
             PasterDreamMod.LOGGER.debug("[ShadowSelectEnd] 成就 {} 未注册，跳过授予", path);
             return;
         }

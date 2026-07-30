@@ -116,8 +116,8 @@ public class PDCommonConfig {
                 .comment("启用模组进入游戏时的聊天栏公告 默认：true")
                 .define("mod accouocement", true);
         IN_LAMP_SHADOW_GIVE_PALE_BONENEEDLE = builder
-                .comment("进入主题梦境《灯影之下》时是否给予苍白骨针 默认：false")
-                .define("in lamp shadow give pale boneneedle", false);
+                .comment("进入主题梦境《灯影之下》时是否给予苍白骨针 默认：true（对齐图鉴；可关）")
+                .define("in lamp shadow give pale boneneedle", true);
         NO_RETURN_DYEDREAM_CRACK = builder
                 .comment("禁止在使用染梦世界的染梦裂隙向主世界的返程传送 默认：false")
                 .define("no return dyedream crack", false);

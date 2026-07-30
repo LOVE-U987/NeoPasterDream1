@@ -860,7 +860,7 @@ public class PDItemsFunctional {
 
     /**
      * 蓝图·暗影高炉 (blueprint_0)
-     * 暗影高炉多方块结构图纸（暗影高炉系统待移植，蓝图先行落地）
+     * 暗影高炉多方块结构图纸（高炉 BE/菜单/配方/JEI 已落地；手持用于结构校验与铺设）
      */
     public static final DeferredItem<BlueprintItem> BLUEPRINT_0 = PDItems.ITEMS.register("blueprint_0",
             () -> new BlueprintItem("pasterdream:shadow_blast_furnace"));
