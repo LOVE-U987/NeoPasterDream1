@@ -5,6 +5,7 @@ import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesItems;
 import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesLogic;
 import com.pasterdream.pasterdreammod.item.DreamnotesItem;
 import com.pasterdream.pasterdreammod.menu.DreamnotesGui0Menu;
+import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDMenusDreamnotes;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsDreamnotes;
 import net.minecraft.core.BlockPos;
@@ -84,7 +85,11 @@ public final class PDDreamnotesVerifyHooks {
             }
         };
 
-        // 1) 全物品注册
+        // 1) 全物品注册 + PDItems 门面别名初始化完整
+        boolean facadeHolderOk = PDItems.DREAMNOTES_0 != null
+                && PDItems.DREAMNOTES_0 == PDItemsDreamnotes.DREAMNOTES_0;
+        collect.accept(new Result("facade_dreamnotes_0_non_null", facadeHolderOk,
+                facadeHolderOk ? "PDItems alias matches partition holder" : "PDItems.DREAMNOTES_0 null/mismatch"));
         for (int i = 0; i < DreamnotesItems.count(); i++) {
             ResourceLocation id = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dreamnotes_" + i);
             boolean present = BuiltInRegistries.ITEM.containsKey(id);
