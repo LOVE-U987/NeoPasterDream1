@@ -237,6 +237,9 @@ public class PasterDreamMod {
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.WindJourneyEvents::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.WindJourneyEvents::onPlayerChangedDimension);
 
+        // 入睡：rest_buff / dreamnotes_1·8 / 梦愿进染梦 / 普通床+暮影笼进灯影（原版 SleepPr0）
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDSleepEvents::onCanPlayerSleep);
+
         // 监听通用设置事件
         modEventBus.addListener(this::commonSetup);
 
