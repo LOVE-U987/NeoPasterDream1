@@ -27,10 +27,12 @@ import java.util.function.Consumer;
 /**
  * 风之旅途水色湖专项 VERIFY 套件 {@code wind-lake}。
  * <p>
- * 在非超平坦 + 开建筑的测试世界上，临时启用 {@code ground_feature_wind_journey_1}
- *（via {@link PDWindLakeBiomeModifier}），进真实风维强制 gen 并断言：
+ * 在非超平坦 + 开建筑的测试世界上，校验正式常驻挂接的
+ * {@code ground_feature_wind_journey_1}（{@code pasterdream:safe_lake}，经
+ * {@code wind_journey_ground_surface} biome_modifier 注入 biome_0），进真实风维强制 gen 并断言：
  * 不崩 + 扫描到 water + cyan_stone 湖形貌。
  * <p>
+ * 套件门控仍用 {@link PDWindLakeBiomeModifier#isVerifyLakeEnabled()}（建档 NORMAL+structures）；
  * <b>不</b>并入默认 {@code all}；须 {@code PASTERDREAM_VERIFY_SUITES=wind-lake}。
  */
 public final class PDWindLakeVerifyHooks {
@@ -71,7 +73,7 @@ public final class PDWindLakeVerifyHooks {
                         + " gate=" + gate));
         if (!gate) {
             out.accept(new Result(false, "wind_lake.hook_enabled",
-                    "VERIFY-only lake gate off；需要 PASTERDREAM_VERIFY=1 且 SUITES 含 wind-lake"));
+                    "wind-lake 套件门控 off；需要 PASTERDREAM_VERIFY=1 且 SUITES 含 wind-lake"));
             return;
         }
 

@@ -239,7 +239,7 @@ public class ResearchTableBlockEntity extends BlockEntity implements GeoBlockEnt
     }
 
     /**
-     * 判断玩家是否已完成指定成就；成就未移植（查询为 null）时视为未完成
+     * 判断玩家是否已完成指定成就；防御性：holder 为 null 时视为未完成
      *
      * @param player 服务端玩家
      * @param path   成就注册路径

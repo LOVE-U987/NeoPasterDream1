@@ -19,15 +19,23 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
  * 流体注册 API —— 集中管理 Fluid 的注册与查询
  * <p>
  * 采用 Facade 模式 + Builder 模式设计，与 {@link com.pasterdream.pasterdreammod.api.block.BlockAPI} 风格一致。
+ * FluidType 由对称的 {@link FluidTypeAPI} 管理；一站式 Type+source+flowing 见 {@link FluidBuilder#buildPair()}。
  * <p>
  * 使用示例：
  * <pre>{@code
  * FluidAPI.register("meltdream_liquid", MeltdreamLiquidFluid.Source::new);
  *
- * // 或使用 Builder
+ * // Builder：仅 Fluid
  * FluidAPI.createFluid("meltdream_liquid")
  *     .factory(MeltdreamLiquidFluid.Source::new)
  *     .build();
+ *
+ * // Builder：Type + source + flowing
+ * FluidAPI.createFluid("meltdream_liquid")
+ *     .fluidType(MeltdreamLiquidFluidType::new)
+ *     .source(MeltdreamLiquidFluid.Source::new)
+ *     .flowing("flowing_meltdream_liquid", MeltdreamLiquidFluid.Flowing::new)
+ *     .buildPair();
  * }</pre>
  */
 public final class FluidAPI {

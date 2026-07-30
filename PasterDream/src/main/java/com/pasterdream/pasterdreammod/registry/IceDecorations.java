@@ -105,8 +105,8 @@ public class IceDecorations {
     /**
      * 注册方解石之柱装饰物
      * <p>
-     * 对应原 CalcitePillarFeature + CalcitePillarConfiguration，
-     * 使用 API 内置的 PILLAR 类型，方形截面锥形柱体。
+     * 历史曾有专用 CalcitePillarFeature；现使用 API 内置 PILLAR 类型，
+     * 方形截面锥形柱体（巨型柱见 MegaCalcitePillarFeature）。
      */
     public static void registerCalcitePillar() {
         SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()

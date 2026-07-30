@@ -172,7 +172,9 @@ public class ModMusicManager {
      * @param musicNames 音乐注册名称列表
      */
     public void registerBiomeMusic(String biomeId, String... musicNames) {
-        biomeMusicRegistry.registerBiomeMusic(biomeId, musicNames);
+        for (String name : musicNames) {
+            biomeMusicRegistry.registerBiomeMusic(biomeId, name);
+        }
     }
 
     /**
@@ -262,7 +264,8 @@ public class ModMusicManager {
         if (biomeKeyOptional.isEmpty()) return;
         ResourceLocation currentBiomeId = biomeKeyOptional.get().location();
 
-        List<String> candidates = biomeMusicRegistry.getMusicForBiome(currentBiomeId);
+        String candidate = biomeMusicRegistry.getMusicForBiome(currentBiomeId);
+        List<String> candidates = candidate != null ? List.of(candidate) : List.of();
         String musicName = selectTrack(currentBiomeId, candidates);
         long gameTick = mc.level.getGameTime();
 

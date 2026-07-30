@@ -7,16 +7,17 @@ import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
+import com.pasterdream.pasterdreammod.registry.PDGameRules;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsFunctional;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import com.pasterdream.pasterdreammod.world.WindJourneyEvents;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -24,10 +25,15 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -37,6 +43,8 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +54,8 @@ import java.util.function.Consumer;
  * 第三梦境「风之旅途」VERIFY 套件 {@code wind-journey}。
  * <p>
  * 断言代码侧可稳定复现的流程点：structure datapack、Boss loot、云雾出维、
- * 祭坛阶段、雷云落雷、融梦箱宝藏成就。locate 自然生成仍属 P0.5 手测。
+ * 祭坛阶段、雷云落雷、融梦箱宝藏成就、顺/逆风移速修饰符与云块物理。
+ * locate 自然生成仍属 P0.5 手测。
  * <p>
  * <b>不</b>并入默认 {@code all}（与 twilight-lantern 同策略）；须
  * {@code PASTERDREAM_VERIFY_SUITES=wind-journey} 显式开启。
@@ -103,6 +112,7 @@ public final class PDWindJourneyVerifyHooks {
         if (!PDDimensions.isWindJourneyWorld(player.level())) {
             player.teleportTo(wind, ox, 120.0D, oz, yRot, xRot);
         }
+        verifyMovementMechanics(server, player, out);
         verifyBossLootDrop(player, out);
         verifyThundercloudBolts(player, out);
         verifyMeltdreamTreasure(player, out);
@@ -407,5 +417,229 @@ public final class PDWindJourneyVerifyHooks {
         return BuiltInRegistries.ITEM.getOptional(
                 ResourceLocation.fromNamespaceAndPath("pasterdreamspells", "lightning_spell"))
                 .orElse(net.minecraft.world.item.Items.AIR);
+    }
+
+    // ==================== 移动专项（顺/逆风 + 云块物理 + 跨维清理） ====================
+
+    private static final ResourceLocation DEADWIND_SPEED_ID =
+            ResourceLocation.fromNamespaceAndPath("pasterdream", "deadwind_buff_0");
+    private static final ResourceLocation TAILWIND_SPEED_ID =
+            ResourceLocation.fromNamespaceAndPath("pasterdream", "tailwind_buff_0");
+
+    /**
+     * Changelog 组件二/四对应断言：
+     * <ul>
+     *   <li>云块 friction / speedFactor / jumpFactor</li>
+     *   <li>deadwind/tailwind 挂效后 MOVEMENT_SPEED permanent modifier 存在且数值正确</li>
+     *   <li>removeEffect 后 modifier 被 onRemove 清掉</li>
+     *   <li>PlayerTick + 朝向锥触发顺/逆风</li>
+     *   <li>离开风维事件路径清掉效果与 modifier（防残留）</li>
+     * </ul>
+     */
+    private static void verifyMovementMechanics(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
+        verifyCloudPhysics(out);
+
+        // 隔离：清掉可能残留的顺/逆风
+        player.removeEffect(PDEffects.DEADWIND_BUFF.holder());
+        player.removeEffect(PDEffects.TAILWIND_BUFF.holder());
+        stripWindSpeedModifiers(player);
+
+        AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed == null) {
+            out.accept(new Result(false, "move.attr", "MOVEMENT_SPEED == null"));
+            return;
+        }
+        double baseSpeed = speed.getValue();
+
+        // --- deadwind amp0：-0.02 ADD_VALUE ---
+        player.addEffect(new MobEffectInstance(PDEffects.DEADWIND_BUFF.holder(), 200, 0, false, false));
+        boolean deadHas = speed.hasModifier(DEADWIND_SPEED_ID);
+        double deadAmt = deadHas && speed.getModifier(DEADWIND_SPEED_ID) != null
+                ? speed.getModifier(DEADWIND_SPEED_ID).amount() : Double.NaN;
+        boolean deadOk = deadHas && Math.abs(deadAmt - (-0.02)) < 1e-9
+                && speed.getValue() < baseSpeed - 0.001;
+        out.accept(new Result(deadOk, "move.deadwind_mod_amp0",
+                String.format("has=%s amt=%s speed=%.4f→%.4f", deadHas, deadAmt, baseSpeed, speed.getValue())));
+
+        player.removeEffect(PDEffects.DEADWIND_BUFF.holder());
+        boolean deadCleared = !speed.hasModifier(DEADWIND_SPEED_ID)
+                && !player.hasEffect(PDEffects.DEADWIND_BUFF.holder());
+        out.accept(new Result(deadCleared, "move.deadwind_remove_clears",
+                "hasMod=" + speed.hasModifier(DEADWIND_SPEED_ID)
+                        + " hasFx=" + player.hasEffect(PDEffects.DEADWIND_BUFF.holder())));
+
+        // --- tailwind amp0：+0.03 ADD_VALUE ---
+        double base2 = speed.getValue();
+        player.addEffect(new MobEffectInstance(PDEffects.TAILWIND_BUFF.holder(), 200, 0, false, false));
+        boolean tailHas = speed.hasModifier(TAILWIND_SPEED_ID);
+        double tailAmt = tailHas && speed.getModifier(TAILWIND_SPEED_ID) != null
+                ? speed.getModifier(TAILWIND_SPEED_ID).amount() : Double.NaN;
+        boolean tailOk = tailHas && Math.abs(tailAmt - 0.03) < 1e-9
+                && speed.getValue() > base2 + 0.001;
+        out.accept(new Result(tailOk, "move.tailwind_mod_amp0",
+                String.format("has=%s amt=%s speed=%.4f→%.4f", tailHas, tailAmt, base2, speed.getValue())));
+
+        // 顺风 onApply 应互斥清掉逆风（再挂逆风后只剩逆风 mod）
+        player.addEffect(new MobEffectInstance(PDEffects.DEADWIND_BUFF.holder(), 200, 0, false, false));
+        boolean mutex = speed.hasModifier(DEADWIND_SPEED_ID) && !speed.hasModifier(TAILWIND_SPEED_ID)
+                && !player.hasEffect(PDEffects.TAILWIND_BUFF.holder());
+        out.accept(new Result(mutex, "move.deadwind_mutex_tailwind",
+                "deadMod=" + speed.hasModifier(DEADWIND_SPEED_ID)
+                        + " tailMod=" + speed.hasModifier(TAILWIND_SPEED_ID)
+                        + " tailFx=" + player.hasEffect(PDEffects.TAILWIND_BUFF.holder())));
+
+        player.removeEffect(PDEffects.DEADWIND_BUFF.holder());
+        player.removeEffect(PDEffects.TAILWIND_BUFF.holder());
+        stripWindSpeedModifiers(player);
+
+        // --- PlayerTick 朝向锥：风向 0、面朝 0° → 顺风 ---
+        if (!PDDimensions.isWindJourneyWorld(player.level())) {
+            ServerLevel wind = server.getLevel(PDDimensions.WIND_JOURNEY_WORLD_LEVEL_KEY);
+            if (wind != null) {
+                player.teleportTo(wind, player.getX(), 120.0D, player.getZ(),
+                        player.getYRot(), player.getXRot());
+            }
+        }
+        if (PDDimensions.isWindJourneyWorld(player.level())) {
+            ServerLevel windLvl = player.serverLevel();
+            GameRules.IntegerValue rule = windLvl.getGameRules().getRule(PDGameRules.WIND_DIRECTION);
+            int prevDir = rule.get();
+            rule.set(0, server);
+
+            // 清 force NBT（amp0）；清防风
+            player.getPersistentData().putDouble("player_tailwind_force", 0);
+            player.getPersistentData().putDouble("player_deadwind_force", 0);
+            player.removeEffect(PDEffects.WINDPROOF_BUFF.holder());
+            player.removeEffect(PDEffects.DEADWIND_BUFF.holder());
+            player.removeEffect(PDEffects.TAILWIND_BUFF.holder());
+            stripWindSpeedModifiers(player);
+
+            // onPlayerTick 仅在 tickCount % interval == 0 时执行；直接调事件不会推进 tickCount，
+            // 必须把 tickCount 对齐到 interval 倍数，否则整段被跳过（间歇感的测试镜像）。
+            int interval = Math.max(1, com.pasterdream.pasterdreammod.config.PDCommonConfig
+                    .PLAYER_TOTAL_TICK_UPDATE.get());
+            player.tickCount = (player.tickCount / interval) * interval;
+            player.setYRot(0.0F);
+            player.setYHeadRot(0.0F);
+            WindJourneyEvents.onPlayerTick(new PlayerTickEvent.Post(player));
+            boolean tickTail = player.hasEffect(PDEffects.TAILWIND_BUFF.holder())
+                    && speed.hasModifier(TAILWIND_SPEED_ID);
+            out.accept(new Result(tickTail, "move.tick_facing_tailwind",
+                    "fx=" + player.hasEffect(PDEffects.TAILWIND_BUFF.holder())
+                            + " mod=" + speed.hasModifier(TAILWIND_SPEED_ID)
+                            + " dir=0 yRot=0 interval=" + interval
+                            + " tickCount=" + player.tickCount));
+
+            // 背风 180° → 逆风
+            player.removeEffect(PDEffects.TAILWIND_BUFF.holder());
+            player.removeEffect(PDEffects.DEADWIND_BUFF.holder());
+            stripWindSpeedModifiers(player);
+            player.tickCount = (player.tickCount / interval) * interval;
+            player.setYRot(180.0F);
+            player.setYHeadRot(180.0F);
+            WindJourneyEvents.onPlayerTick(new PlayerTickEvent.Post(player));
+            boolean tickDead = player.hasEffect(PDEffects.DEADWIND_BUFF.holder())
+                    && speed.hasModifier(DEADWIND_SPEED_ID);
+            out.accept(new Result(tickDead, "move.tick_facing_deadwind",
+                    "fx=" + player.hasEffect(PDEffects.DEADWIND_BUFF.holder())
+                            + " mod=" + speed.hasModifier(DEADWIND_SPEED_ID)
+                            + " dir=0 yRot=180 tickCount=" + player.tickCount));
+
+            // 防风时 tick 不应再挂风
+            player.removeEffect(PDEffects.DEADWIND_BUFF.holder());
+            player.removeEffect(PDEffects.TAILWIND_BUFF.holder());
+            stripWindSpeedModifiers(player);
+            player.addEffect(new MobEffectInstance(PDEffects.WINDPROOF_BUFF.holder(), 200, 0, false, false));
+            player.tickCount = (player.tickCount / interval) * interval;
+            player.setYRot(0.0F);
+            WindJourneyEvents.onPlayerTick(new PlayerTickEvent.Post(player));
+            boolean proofOk = !player.hasEffect(PDEffects.TAILWIND_BUFF.holder())
+                    && !player.hasEffect(PDEffects.DEADWIND_BUFF.holder())
+                    && !speed.hasModifier(TAILWIND_SPEED_ID)
+                    && !speed.hasModifier(DEADWIND_SPEED_ID);
+            out.accept(new Result(proofOk, "move.windproof_blocks_tick",
+                    "tail=" + player.hasEffect(PDEffects.TAILWIND_BUFF.holder())
+                            + " dead=" + player.hasEffect(PDEffects.DEADWIND_BUFF.holder())));
+            player.removeEffect(PDEffects.WINDPROOF_BUFF.holder());
+
+            rule.set(prevDir, server);
+        } else {
+            out.accept(new Result(false, "move.tick_skip", "not in wind dim"));
+        }
+
+        // --- 跨维清理：挂逆风后模拟离开风维 ---
+        player.addEffect(new MobEffectInstance(PDEffects.DEADWIND_BUFF.holder(), 200, 0, false, false));
+        boolean beforeLeave = speed.hasModifier(DEADWIND_SPEED_ID);
+        WindJourneyEvents.onPlayerChangedDimension(
+                new PlayerEvent.PlayerChangedDimensionEvent(
+                        player,
+                        PDDimensions.WIND_JOURNEY_WORLD_LEVEL_KEY,
+                        Level.OVERWORLD));
+        boolean afterLeave = !player.hasEffect(PDEffects.DEADWIND_BUFF.holder())
+                && !speed.hasModifier(DEADWIND_SPEED_ID);
+        out.accept(new Result(beforeLeave && afterLeave, "move.leave_dim_clears_deadwind",
+                "beforeMod=" + beforeLeave
+                        + " afterFx=" + player.hasEffect(PDEffects.DEADWIND_BUFF.holder())
+                        + " afterMod=" + speed.hasModifier(DEADWIND_SPEED_ID)));
+
+        // 再挂顺风测同样路径
+        player.addEffect(new MobEffectInstance(PDEffects.TAILWIND_BUFF.holder(), 200, 0, false, false));
+        boolean beforeLeaveT = speed.hasModifier(TAILWIND_SPEED_ID);
+        WindJourneyEvents.onPlayerChangedDimension(
+                new PlayerEvent.PlayerChangedDimensionEvent(
+                        player,
+                        PDDimensions.WIND_JOURNEY_WORLD_LEVEL_KEY,
+                        Level.OVERWORLD));
+        boolean afterLeaveT = !player.hasEffect(PDEffects.TAILWIND_BUFF.holder())
+                && !speed.hasModifier(TAILWIND_SPEED_ID);
+        out.accept(new Result(beforeLeaveT && afterLeaveT, "move.leave_dim_clears_tailwind",
+                "beforeMod=" + beforeLeaveT
+                        + " afterFx=" + player.hasEffect(PDEffects.TAILWIND_BUFF.holder())
+                        + " afterMod=" + speed.hasModifier(TAILWIND_SPEED_ID)));
+
+        // 收尾：确保无残留
+        player.removeEffect(PDEffects.DEADWIND_BUFF.holder());
+        player.removeEffect(PDEffects.TAILWIND_BUFF.holder());
+        player.removeEffect(PDEffects.WINDPROOF_BUFF.holder());
+        stripWindSpeedModifiers(player);
+    }
+
+    private static void verifyCloudPhysics(Consumer<Result> out) {
+        Block cloud = PDBlocks.CLOUD.get();
+        Block thick = PDBlocks.THICK_CLOUD.get();
+        // Changelog：cloud friction 0.5 / speed 1.25 / jump 1.1
+        // thick friction 0.55 / speed 1.2 / jump 1.05
+        boolean cloudOk = approx(cloud.getFriction(), 0.5f)
+                && approx(cloud.getSpeedFactor(), 1.25f)
+                && approx(cloud.getJumpFactor(), 1.1f);
+        out.accept(new Result(cloudOk, "move.cloud_physics",
+                String.format("friction=%.3f speed=%.3f jump=%.3f",
+                        cloud.getFriction(), cloud.getSpeedFactor(), cloud.getJumpFactor())));
+
+        boolean thickOk = approx(thick.getFriction(), 0.55f)
+                && approx(thick.getSpeedFactor(), 1.2f)
+                && approx(thick.getJumpFactor(), 1.05f);
+        out.accept(new Result(thickOk, "move.thick_cloud_physics",
+                String.format("friction=%.3f speed=%.3f jump=%.3f",
+                        thick.getFriction(), thick.getSpeedFactor(), thick.getJumpFactor())));
+
+        // 厚云必须保持完整碰撞（default_block，不能 noCollision）
+        var shape = thick.defaultBlockState().getCollisionShape(
+                net.minecraft.world.level.EmptyBlockGetter.INSTANCE, BlockPos.ZERO);
+        boolean solid = !shape.isEmpty();
+        out.accept(new Result(solid, "move.thick_cloud_solid_collision",
+                solid ? "non-empty collision" : "empty collision"));
+    }
+
+    private static boolean approx(float a, float b) {
+        return Math.abs(a - b) < 1e-4f;
+    }
+
+    private static void stripWindSpeedModifiers(ServerPlayer player) {
+        AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed != null) {
+            speed.removeModifier(DEADWIND_SPEED_ID);
+            speed.removeModifier(TAILWIND_SPEED_ID);
+        }
     }
 }

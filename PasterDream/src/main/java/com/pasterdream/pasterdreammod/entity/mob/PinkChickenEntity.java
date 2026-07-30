@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PinkChickenEntity extends Animal {
 
-    /** 食物：染梦果（通过 BuiltInRegistries 获取，兼容新项目尚未注册该物品的情况） */
+    /** 食物：染梦果（BuiltInRegistries 解析；防御性：缺失时不喂食） */
     private static final Item DYEDREAM_FRUIT = BuiltInRegistries.ITEM.get(
             ResourceLocation.parse("pasterdream:dyedream_fruit"));
 
@@ -135,7 +135,7 @@ public class PinkChickenEntity extends Animal {
      * 尝试下粉蛋逻辑（原 PinkChickenPr0Procedure）
      * <p>
      * 每 tick 有 1/12000 概率在脚下生成粉蛋实体（掉落物形式），
-     * 延迟拾取 10 tick。若粉蛋物品尚未注册则跳过。
+     * 延迟拾取 10 tick。防御性：粉蛋解析为 AIR 时跳过。
      */
     private void tryLayPinkEgg() {
         if (this.random.nextInt(12000) == 0 && this.isAlive()) {

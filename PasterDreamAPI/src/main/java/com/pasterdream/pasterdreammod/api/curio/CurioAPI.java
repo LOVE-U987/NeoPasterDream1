@@ -172,7 +172,8 @@ public final class CurioAPI {
      * 以确保 {@link #registerClientRenderers()} 能够正确调用客户端代码。
      * </p>
      * <p>
-     * 一般不需要手动调用，由 {@link CurioClientHandler} 自动完成。
+     * 一般由主模在客户端 setup 中 {@link #setClientBridge} 注入
+     * {@link DefaultCurioClientBridge}（或自定义实现）后调用 {@link #registerClientRenderers()}。
      * </p>
      */
     public interface CurioClientBridge {

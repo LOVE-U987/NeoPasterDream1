@@ -163,22 +163,22 @@ public class PasterDreamMod {
         PDTreeDecorators.TREE_DECORATOR_TYPES.register(modEventBus);
 
         // 注册上游染梦自定义 Trunk/Foliage/Decorator Placer（供 dyedream_tree*.json 引用）
-        DyedreamTreePlacers.TRUNK_PLACERS.register(modEventBus);
-        DyedreamTreePlacers.FOLIAGE_PLACERS.register(modEventBus);
-        DyedreamTreePlacers.TREE_DECORATORS.register(modEventBus);
+        com.pasterdream.pasterdreammod.api.worldgen.decor.TreePlacerAPI.registerAll(
+                modEventBus,
+                DyedreamTreePlacers.TRUNK_PLACERS,
+                DyedreamTreePlacers.FOLIAGE_PLACERS,
+                DyedreamTreePlacers.TREE_DECORATORS);
 
         // 注册自定义 ChunkGenerator 和 BiomeSource 类型（供维度 JSON 引用）
         PDWorldgenRegistries.CHUNK_GENERATORS.register(modEventBus);
         PDWorldgenRegistries.BIOME_SOURCES.register(modEventBus);
 
-        // BiomeModifier 序列化器（dyedream_features 兼容 + wind_lake_verify 门控挂湖）
+        // BiomeModifier 序列化器（dyedream_features + 历史 wind_lake_verify codec 兼容）
         com.pasterdream.pasterdreammod.worldgen.PDBiomeModifiers.BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
 
-        // 注册流体类型
-        PDFluidsType.FLUID_TYPES.register(modEventBus);
-
-        // 显式引用 PDFluids 的静态字段以触发类初始化，确保流体静态字段填充到 FluidAPI.REGISTRY
-        // FluidAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
+        // 显式引用流体 Type / Fluid 静态字段以触发类初始化，填充 FluidTypeAPI / FluidAPI
+        // 二者 DeferredRegister 已由 PasterDreamAPI.registerAll() 统一挂总线
+        Object unusedMeltdreamType = PDFluidsType.MELTDREAM_LIQUID_TYPE;
         Object unusedMeltdreamLiquid = PDFluids.MELTDREAM_LIQUID;
 
         // 配置刷怪蛋模型自动生成输出目录
@@ -277,8 +277,8 @@ public class PasterDreamMod {
      * @param event FML 通用设置事件
      */
     private void commonSetup(final FMLCommonSetupEvent event) {
-        PDDebugLogger.mainDebug("===== PasterDreamMod 地形生成系统初始化 =====");
-        PDDebugLogger.mainDebug("BiomeModifier 序列化器: pasterdream:dyedream_features, pasterdream:wind_lake_verify");
+        LOGGER.debug("===== PasterDreamMod 地形生成系统初始化 =====");
+        LOGGER.debug("BiomeModifier 序列化器: pasterdream:dyedream_features, pasterdream:wind_lake_verify(compat no-op)");
 
         // 注册 API 装饰物（冰刺、冰之门等）
         ModDecorations.register();

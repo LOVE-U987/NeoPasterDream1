@@ -15,15 +15,20 @@ import com.pasterdream.pasterdreammod.registry.items.PDItemsCurios;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -35,13 +40,14 @@ import top.theillusivec4.curios.api.CuriosApi;
  * 以 1.21.1 的 {@code CustomPacketPayload} + {@code PayloadRegistrar} 重建原版
  * SimpleChannel（{@code communication/ChannelEventTracker.java}）中与玩家数据层相关的消息：
  * <ul>
- *   <li>S2C：{@link SanDataPayload}（San 同步）、{@link MeltDreamEnergyPayload}（融梦能量同步）</li>
+ *   <li>S2C：{@link SanDataPayload}（San 同步）、{@link MeltDreamEnergyPayload}（融梦能量同步）、
+ *       {@link ItemActivationPayload}（全屏物品展示）、{@link EvasionPosePayload}（闪避姿势）</li>
  *   <li>C2S：{@link TeleportationPayload}（瞬身术按键）、{@link CloakActivatePayload}（斗篷激活按键）</li>
  * </ul>
  * 由主类构造器 {@code modEventBus.addListener(PDNetwork::registerPayloads)} 接线（MOD 总线）。
  * <p>
  * 注：PayloadRegistrar 默认在主线程执行处理器，无需再手动 enqueueWork；
- * S2C 处理器通过 {@code context.player()} 取本地玩家，不直接引用客户端类，双端类加载安全。
+ * 客户端 VFX 经反射转发至 {@code PDClientVfx}（避免本类静态链接客户端类，专用服可加载）。
  */
 public class PDNetwork {
 
@@ -62,11 +68,93 @@ public class PDNetwork {
         registrar.playToClient(MeltDreamEnergyPayload.TYPE, MeltDreamEnergyPayload.STREAM_CODEC,
                 PDNetwork::handleMeltDreamEnergyOnClient);
 
+        // ==================== S2C：装饰 VFX ====================
+        registrar.playToClient(ItemActivationPayload.TYPE, ItemActivationPayload.STREAM_CODEC,
+                PDNetwork::handleItemActivationOnClient);
+        registrar.playToClient(EvasionPosePayload.TYPE, EvasionPosePayload.STREAM_CODEC,
+                PDNetwork::handleEvasionPoseOnClient);
+
         // ==================== C2S：按键消息 ====================
         registrar.playToServer(TeleportationPayload.TYPE, TeleportationPayload.STREAM_CODEC,
                 PDNetwork::handleTeleportationOnServer);
         registrar.playToServer(CloakActivatePayload.TYPE, CloakActivatePayload.STREAM_CODEC,
                 PDNetwork::handleCloakActivateOnServer);
+    }
+
+    /**
+     * 向玩家客户端下发全屏物品展示动画（原版 displayItemActivation）。
+     *
+     * @param player 目标玩家（须为服务端玩家）
+     * @param item   展示物品
+     */
+    public static void sendItemActivation(Player player, Item item) {
+        if (player instanceof ServerPlayer serverPlayer && item != null) {
+            PacketDistributor.sendToPlayer(serverPlayer, ItemActivationPayload.of(item));
+        }
+    }
+
+    /**
+     * 向玩家客户端下发全屏物品展示动画。
+     *
+     * @param player 目标玩家
+     * @param stack  展示物品栈
+     */
+    public static void sendItemActivation(Player player, ItemStack stack) {
+        if (stack != null && !stack.isEmpty()) {
+            sendItemActivation(player, stack.getItem());
+        }
+    }
+
+    /**
+     * 向玩家客户端启动闪避姿势（playerAnimator evasion）。
+     *
+     * @param player 目标玩家
+     */
+    public static void sendEvasionPose(Player player) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.sendToPlayer(serverPlayer, EvasionPosePayload.INSTANCE);
+        }
+    }
+
+    /**
+     * 客户端：全屏物品展示。
+     *
+     * @param payload 包
+     * @param context 上下文
+     */
+    public static void handleItemActivationOnClient(final ItemActivationPayload payload,
+                                                    final IPayloadContext context) {
+        invokeClientVfx("handleItemActivation", ItemActivationPayload.class, payload);
+    }
+
+    /**
+     * 客户端：闪避姿势。
+     *
+     * @param payload 包
+     * @param context 上下文
+     */
+    public static void handleEvasionPoseOnClient(final EvasionPosePayload payload,
+                                                 final IPayloadContext context) {
+        invokeClientVfx("handleEvasionPose", EvasionPosePayload.class, payload);
+    }
+
+    /**
+     * 反射调用客户端 VFX 落地类（仅 CLIENT 发行版执行）。
+     *
+     * @param method  方法名
+     * @param argType 参数类型
+     * @param arg     参数
+     */
+    private static void invokeClientVfx(String method, Class<?> argType, Object arg) {
+        if (FMLEnvironment.dist != Dist.CLIENT) {
+            return;
+        }
+        try {
+            Class<?> vfx = Class.forName("com.pasterdream.pasterdreammod.client.PDClientVfx");
+            vfx.getMethod(method, argType).invoke(null, arg);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("PDClientVfx." + method + " failed", e);
+        }
     }
 
     /**
@@ -169,6 +257,7 @@ public class PDNetwork {
             applyTeleportationAfterBuffs(player);
         }
         player.getPersistentData().putBoolean("evasion", true);
+        sendEvasionPose(player);
     }
 
     /**

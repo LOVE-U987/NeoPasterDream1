@@ -12,13 +12,13 @@ import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.ModifiableBiomeInfo;
 
 /**
- * VERIFY-only 水色湖挂接：JSON 可常驻 datapack，但 {@link #modify} 仅在
- * {@code PASTERDREAM_VERIFY=1} 且套件含 {@link PDPortingVerifyTest.Suite#WIND_LAKE} 时
- * 向目标 biome 注入 {@code ground_feature_wind_journey_1}。
+ * 历史 VERIFY-only 水色湖挂接序列化器（{@code pasterdream:wind_lake_verify}）。
  * <p>
- * 正式游玩 / 其它 VERIFY 套件路径下为 no-op。
- * 特征本体已改为 {@code pasterdream:safe_lake}（无 getBiome 结冰），仍默认仅 VERIFY 挂接，
- * 正式包是否常驻挂湖另议。
+ * 2026-07-30 起水色湖已常驻：
+ * {@code neoforge/biome_modifier/wind_journey_ground_surface.json} 含
+ * {@code ground_feature_wind_journey_1}（type={@code pasterdream:safe_lake}）。
+ * 本 modifier 保留 codec/注册以免旧 datapack 反序列化失败；{@link #modify} 恒为 no-op，
+ * 避免与正式挂接双重注入。套件门控请用 {@link #isVerifyLakeEnabled()}。
  */
 public record PDWindLakeBiomeModifier(
         HolderSet<Biome> biomes,
@@ -32,7 +32,10 @@ public record PDWindLakeBiomeModifier(
             GenerationStep.Decoration.CODEC.fieldOf("step").forGetter(PDWindLakeBiomeModifier::step)
     ).apply(instance, PDWindLakeBiomeModifier::new));
 
-    /** 与 {@link PDPortingVerifyTest#SELECTED_SUITES} 同源，避免二次解析 env。 */
+    /**
+     * wind-lake 专项套件是否启用（建档 NORMAL+structures、hooks 入口门控）。
+     * 与 {@link PDPortingVerifyTest#SELECTED_SUITES} 同源。
+     */
     public static boolean isVerifyLakeEnabled() {
         return PDPortingVerifyTest.ENABLED
                 && PDPortingVerifyTest.SELECTED_SUITES.contains(PDPortingVerifyTest.Suite.WIND_LAKE);
@@ -40,14 +43,7 @@ public record PDWindLakeBiomeModifier(
 
     @Override
     public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
-        if (phase != Phase.ADD || !isVerifyLakeEnabled()) {
-            return;
-        }
-        if (!this.biomes.contains(biome)) {
-            return;
-        }
-        var generation = builder.getGenerationSettings();
-        this.features.forEach(holder -> generation.addFeature(this.step, holder));
+        // 正式包已常驻挂接 _1；此处不再注入，防止双重 addFeature
     }
 
     @Override

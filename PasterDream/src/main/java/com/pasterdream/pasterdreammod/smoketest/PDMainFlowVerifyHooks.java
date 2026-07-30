@@ -666,7 +666,13 @@ public final class PDMainFlowVerifyHooks {
 	    if (!entered) return;
 
 	    ServerLevel wind = (ServerLevel) player.level();
-	    // 确保 altar 放置在有效高度内（wind height=256）
+	    // 进维落点须已 clamp 到建造范围内（height=256 时 Y≥306 不得顶天）
+	    double entryY = player.getY();
+	    double maxStandY = wind.getMaxBuildHeight() - 2.0;
+	    accept(out, entryY >= wind.getMinBuildHeight() && entryY <= maxStandY,
+	            "进风维落点 Y clamp",
+	            "y=" + entryY + " range=[" + wind.getMinBuildHeight() + "," + maxStandY + "]");
+	    // 祭坛/Boss 手测用中层高度，与进维落点断言无关
 	    if (player.getY() > 200) {
 	        player.teleportTo(wind, player.getX(), 120.0, player.getZ(), player.getYRot(), player.getXRot());
 	    }

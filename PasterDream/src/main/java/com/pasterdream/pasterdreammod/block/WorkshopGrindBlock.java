@@ -240,10 +240,10 @@ public class WorkshopGrindBlock extends BaseEntityBlock {
      * @param hand   主手原胚
      */
     private void finishGrind(Level level, BlockPos pos, Player player, ItemStack hand) {
-        // 成品未注册（法杖模块尚未落地）时不消耗原胚，避免重复强化刷属性
+        // 防御性：成品解析为 AIR 时不消耗原胚，避免异常路径刷属性
         Item resultItem = resolveResult(hand);
         if (resultItem == Items.AIR) {
-            PDDebugLogger.mainDebug("[WorkshopGrind] 原胚 {} 的成品尚未注册，跳过出品",
+            PasterDreamMod.LOGGER.debug("[WorkshopGrind] 原胚 {} 的成品未解析到注册物，跳过出品",
                     BuiltInRegistries.ITEM.getKey(hand.getItem()));
             player.displayClientMessage(Component.literal("无法识别该原胚的成品"), true);
             return;

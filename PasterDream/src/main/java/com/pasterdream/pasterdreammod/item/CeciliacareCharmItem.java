@@ -99,6 +99,9 @@ public class CeciliacareCharmItem extends Item implements ICurioItem {
         }
 
         if (entity instanceof Player player) {
+            // 原版客户端 displayItemActivation（塞西莉娅加护全屏展示）
+            com.pasterdream.pasterdreammod.network.PDNetwork.sendItemActivation(
+                    player, PDItems.CECILIACARE_CHARM.get());
             ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(PDItems.TURN_PALE_CECILIA.get()));
         }
     }

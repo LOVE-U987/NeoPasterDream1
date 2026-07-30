@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.util.DimensionRegionHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -16,16 +17,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.Vec3;
 
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionException;
@@ -139,16 +136,15 @@ public class PDCommands {
             player.sendSystemMessage(Component.literal("§e[PasterDream] 维度 " + dimLocation + " 正在重置，你已被传送回主世界。"));
         }
 
-        Path dimensionPath = server.getWorldPath(LevelResource.ROOT).resolve(dimLocation.getNamespace()).resolve(dimLocation.getPath());
-        Path regionPath = dimensionPath.resolve("region");
+        Path regionPath = DimensionRegionHelper.regionDirectory(server, dimLocation);
 
         if (Files.exists(regionPath)) {
             try {
                 server.executeBlocking(() -> targetLevel.save(null, false, false));
 
-                deleteMcaFiles(regionPath);
-
-                int fileCount = countMcaFiles(regionPath);
+                int fileCount = DimensionRegionHelper.deleteRegionChunkFiles(
+                        regionPath,
+                        file -> PasterDreamMod.LOGGER.warn("[PDCommands] 无法删除区域文件: {}", file));
                 source.sendSuccess(() -> Component.literal("§a已重置维度 " + dimLocation + "，删除了 " + fileCount + " 个区域文件。下次进入将重新生成地形！"), true);
 
                 for (ServerPlayer player : playersInDim) {
@@ -170,52 +166,6 @@ public class PDCommands {
             source.sendSuccess(() -> Component.literal("§e维度 " + dimLocation + " 尚未生成区域数据，无需重置。"), true);
             return 1;
         }
-    }
-
-    /**
-     * 递归删除目录下所有 .mca 和 .mcc 文件
-     *
-     * @param path 目录路径
-     */
-    private static void deleteMcaFiles(Path path) throws IOException {
-        if (!Files.exists(path)) return;
-
-        Files.walkFileTree(path, new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                String fileName = file.getFileName().toString().toLowerCase();
-                if (fileName.endsWith(".mca") || fileName.endsWith(".mcc")) {
-                    try {
-                        Files.delete(file);
-                    } catch (IOException e) {
-                        System.err.println("无法删除文件: " + file + " - " + e.getMessage());
-                    }
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
-    }
-
-    /**
-     * 统计目录下的 .mca 文件数量
-     *
-     * @param path 目录路径
-     * @return .mca 文件数量
-     */
-    private static int countMcaFiles(Path path) throws IOException {
-        if (!Files.exists(path)) return 0;
-
-        int[] count = {0};
-        Files.walkFileTree(path, new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                if (file.getFileName().toString().toLowerCase().endsWith(".mca")) {
-                    count[0]++;
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
-        return count[0];
     }
 
     // ==================== BGM 调试指令 ====================

@@ -150,12 +150,13 @@ import java.util.function.Supplier;
 public final class ItemAPI {
 
     /**
-     * API 专属的物品注册器。
-     * 所有通过本 API 注册的物品都会交由该注册器管理。
-     * 注意：此注册器需要额外在 {@code PasterDreamMod} 构造函数中注册到事件总线：
-     * <pre>{@code
-     * ItemAPI.REGISTRY.register(modEventBus);
-     * }</pre>
+     * API 物品 DeferredRegister（与主模 {@code PDItems.ITEMS} 同为 modid {@code pasterdream}，可并存）。
+     * <p>
+     * <b>收敛约定：</b>新建简单材料/食物/工具/Builder 饰品优先走本 API；
+     * 复杂自定义可用 {@link #registerCustom}；勿与主模对同一 registry name 重复 register。
+     * <p>
+     * 由 {@link com.pasterdream.pasterdreammod.api.PasterDreamAPI#registerAll} 挂到 mod 总线
+     * （亦可显式 {@code ItemAPI.REGISTRY.register(modEventBus)}）。
      */
     public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(PasterDreamAPI.DATA_NAMESPACE);
 

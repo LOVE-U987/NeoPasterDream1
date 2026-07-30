@@ -42,7 +42,7 @@ public class SpellItem extends Item {
         void cast(ServerLevel level, LivingEntity caster);
     }
 
-    /** 施法效果回调，null 表示施法行为尚未实现（不消耗物品） */
+    /** 施法效果回调；null 表示无施法逻辑的扩展位（不消耗物品）。现有五法术均非 null。 */
     @Nullable
     private final SpellCast spellCast;
 
@@ -53,7 +53,7 @@ public class SpellItem extends Item {
      * 构造法术物品
      *
      * @param properties  物品属性（堆叠 8、普通稀有度）
-     * @param spellCast   施法效果回调（null = 尚未实现，施放时不做任何事）
+     * @param spellCast   施法效果回调（null = 扩展位，施放时不做任何事、不消耗）
      * @param tooltipKeys 悬浮提示行翻译键（依序显示）
      */
     public SpellItem(Properties properties, @Nullable SpellCast spellCast, String... tooltipKeys) {
@@ -90,7 +90,7 @@ public class SpellItem extends Item {
             return;
         }
         if (spellCast == null) {
-            // 施法效果尚未接入时不消耗物品
+            // 扩展位：无回调时不消耗
             return;
         }
         spellCast.cast((ServerLevel) level, entity);

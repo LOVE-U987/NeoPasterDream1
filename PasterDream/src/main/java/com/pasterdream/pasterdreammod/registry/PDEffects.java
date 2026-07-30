@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.registry;
 import com.pasterdream.pasterdreammod.api.effect.MobEffectAPI;
 import com.pasterdream.pasterdreammod.api.effect.MobEffectResult;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.entity.mob.WeakenessTerrorbeakEntity;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsArmor;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsCurios;
@@ -681,7 +682,7 @@ public class PDEffects {
     // 私有工具与 procedure 还原逻辑
     // ════════════════════════════════════════════════════════════════════
 
-    /** 风之旅途维度键（维度本体尚未还原，键比较在维度缺失时恒为 false，安全） */
+    /** 风之旅途维度键（防御性：getLevel 为空时键比较恒 false，不进维） */
     private static final ResourceKey<Level> WIND_JOURNEY_WORLD =
             ResourceKey.create(Registries.DIMENSION,
                     ResourceLocation.fromNamespaceAndPath("pasterdream", "wind_journey_world"));
@@ -900,7 +901,14 @@ public class PDEffects {
 
     // ---------- fondillusion_buff（FondillusionBuffPr0Procedure） ----------
 
-    /** 迷梦 tick：主世界高空云雾浓度 + 达成条件后传送风之旅途 */
+    /**
+     * 迷梦 tick：主世界高空云雾浓度 + 达成条件后传送风之旅途。
+     * <p>
+     * 落点 XY 与原版一致；Y 在保留主世界高度的前提下 clamp 到目标维
+     * {@code [minBuildHeight, maxBuildHeight - 2]}。风维 datapack
+     * {@code height=256 / min_y=0}，主世界进维门槛 Y≥306 会超出建造顶，
+     * 原版同写 {@code teleportTo(next, x,y,z)}，Neo 补 clamp 避免顶天/越界。
+     */
     private static void fondillusionTick(LivingEntity entity) {
         if (entity.level().isClientSide || !(entity instanceof Player)) {
             return;
@@ -912,12 +920,13 @@ public class PDEffects {
                         && isAdvancementDone(player, "achievement_b_0")
                         && isAdvancementDone(player, "achievement_hide_16")) {
                     ServerLevel windJourney = player.server.getLevel(WIND_JOURNEY_WORLD);
-                    // 风之旅途维度尚未还原时 getLevel 返回 null，静默跳过
+                    // 防御性：维度未加载时 getLevel 为 null，静默跳过
                     if (windJourney != null && player.level().dimension() != WIND_JOURNEY_WORLD) {
+                        double destY = clampDimensionY(windJourney, player.getY());
                         // 对齐原版 FondillusionBuffPr0 / 灯影床：WIN_GAME + teleport + 能力/效果 + 1032
                         player.connection.send(new ClientboundGameEventPacket(
                                 ClientboundGameEventPacket.WIN_GAME, 0));
-                        player.teleportTo(windJourney, player.getX(), player.getY(), player.getZ(),
+                        player.teleportTo(windJourney, player.getX(), destY, player.getZ(),
                                 player.getYRot(), player.getXRot());
                         player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
                         for (MobEffectInstance effect : player.getActiveEffects()) {
@@ -936,6 +945,23 @@ public class PDEffects {
                 || entity.level().dimension().equals(WIND_JOURNEY_WORLD))) {
             entity.getPersistentData().putDouble("cloudmist_percent", 0);
         }
+    }
+
+    /**
+     * 将落点 Y 夹到维度可站立范围（脚下至少留 1 格建造顶余量）。
+     *
+     * @param level 目标维
+     * @param y     期望高度（通常为主世界进维时的 Y）
+     * @return clamp 后的 Y
+     */
+    private static double clampDimensionY(ServerLevel level, double y) {
+        double min = level.getMinBuildHeight();
+        // maxBuildHeight 为 exclusive 顶；减 2 避免头/眼贴顶或越界
+        double max = level.getMaxBuildHeight() - 2.0D;
+        if (max < min) {
+            return min;
+        }
+        return Mth.clamp(y, min, max);
     }
 
     /** 判断玩家指定成就是否已完成（成就未注册时视为未完成） */

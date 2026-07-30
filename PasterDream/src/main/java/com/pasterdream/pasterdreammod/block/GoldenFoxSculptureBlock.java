@@ -2,35 +2,67 @@ package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.block.entity.GoldenFoxSculptureBlockEntity;
-import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
+import com.pasterdream.pasterdreammod.pasterdreamspells.registry.PDSpellsParticles;
+import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import com.pasterdream.pasterdreammod.registry.PDEntities;
+import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * 狐狸雕像方块 (Golden Fox Sculpture)
- * 使用 GeckoLib 渲染的静态装饰性雕像方块
- * 支持 FACING 水平朝向和 WATERLOGGED 水浸属性
+ * <p>
+ * GeckoLib 静态雕像；支持 FACING / WATERLOGGED。
+ * 右键（原版 {@code GoldenFoxSculpturePr0}）：四角 (±9,0,±9) 均为
+ * {@code flower_12}（迷梦冶梦莲）下半、主手荧光浆果、且日时
+ * {@code dayTime % 24000 ∈ [0,450]} 时消耗浆果与五块，召唤金色狐狸。
  */
 public class GoldenFoxSculptureBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
 
     public static final MapCodec<GoldenFoxSculptureBlock> CODEC = simpleCodec(GoldenFoxSculptureBlock::new);
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+
+    /** 四角花相对雕像的水平偏移（原版 ±9） */
+    public static final int RITUAL_OFFSET = 9;
+
+    /** 日时窗口上限（含）：0…450 ≈ 日出后一小段 */
+    public static final long RITUAL_DAYTIME_MAX = 450L;
 
     // 雕像碰撞箱：中等尺寸，居中对齐
     private static final VoxelShape SHAPE = Block.box(4, 0, 4, 12, 16, 12);
@@ -108,6 +140,94 @@ public class GoldenFoxSculptureBlock extends BaseEntityBlock implements SimpleWa
             world.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
         return super.updateShape(state, facing, facingState, world, currentPos, facingPos);
+    }
+
+    // ==================== 右键仪式（GoldenFoxSculpturePr0） ====================
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+                                              Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (level.isClientSide) {
+            return ItemInteractionResult.SUCCESS;
+        }
+        tryActivateRitual(level, pos, player);
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
+                                               Player player, BlockHitResult hitResult) {
+        if (level.isClientSide) {
+            return InteractionResult.SUCCESS;
+        }
+        tryActivateRitual(level, pos, player);
+        return InteractionResult.SUCCESS;
+    }
+
+    /**
+     * 校验四角迷梦冶梦莲 + 荧光浆果 + 日出窗口，成功则召唤金狐。
+     *
+     * @param level  世界（服务端）
+     * @param pos    雕像坐标
+     * @param player 交互玩家
+     * @return 是否成功召唤
+     */
+    public static boolean tryActivateRitual(Level level, BlockPos pos, Player player) {
+        if (level.isClientSide || player == null) {
+            return false;
+        }
+        ItemStack main = player.getMainHandItem();
+        long tod = level.getDayTime() % 24000L;
+        boolean flowersOk = hasRitualFlowers(level, pos);
+        boolean berryOk = main.is(Items.GLOW_BERRIES);
+        boolean timeOk = tod >= 0L && tod <= RITUAL_DAYTIME_MAX;
+        if (!flowersOk || !berryOk || !timeOk) {
+            if (!player.level().isClientSide()) {
+                player.displayClientMessage(Component.literal("雕像没有反应..."), false);
+            }
+            return false;
+        }
+
+        main.shrink(1);
+        int o = RITUAL_OFFSET;
+        level.destroyBlock(pos.offset(o, 0, o), false);
+        level.destroyBlock(pos.offset(-o, 0, -o), false);
+        level.destroyBlock(pos.offset(o, 0, -o), false);
+        level.destroyBlock(pos.offset(-o, 0, o), false);
+        level.destroyBlock(pos, false);
+
+        if (level instanceof ServerLevel serverLevel) {
+            Entity fox = PDEntities.GOLDEN_FOX.get().spawn(
+                    serverLevel, pos.offset(0, 0, 0), MobSpawnType.MOB_SUMMONED);
+            if (fox != null) {
+                fox.setYRot(level.getRandom().nextFloat() * 360.0F);
+            }
+            double cx = pos.getX() + 0.5;
+            double cy = pos.getY() + 0.2;
+            double cz = pos.getZ() + 0.5;
+            serverLevel.sendParticles((SimpleParticleType) PDSpellsParticles.HEALING_SPELL_PARTICLE.particleType(),
+                    cx, cy, cz, 12, 0.5, 0.4, 0.5, 0.1);
+            serverLevel.sendParticles((SimpleParticleType) PDSpellsParticles.YELLOW_SMOKE_PARTICLE.particleType(),
+                    cx, cy, cz, 12, 0.5, 0.4, 0.5, 0.1);
+        }
+        level.playSound(null, pos, SoundEvents.FOX_AMBIENT, SoundSource.MASTER, 1.2F, 1.0F);
+        level.playSound(null, pos, PDSounds.DING_0.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        return true;
+    }
+
+    /**
+     * 四角是否均为 flower_12（迷梦冶梦莲；双格植物任一 half 的 block 匹配即可）。
+     */
+    public static boolean hasRitualFlowers(Level level, BlockPos center) {
+        int o = RITUAL_OFFSET;
+        return isFlower12(level, center.offset(o, 0, o))
+                && isFlower12(level, center.offset(-o, 0, -o))
+                && isFlower12(level, center.offset(o, 0, -o))
+                && isFlower12(level, center.offset(-o, 0, o));
+    }
+
+    private static boolean isFlower12(Level level, BlockPos pos) {
+        return level.getBlockState(pos).is(PDBlocks.FLOWER_12.get());
     }
 
     // ==================== 方块实体 ====================

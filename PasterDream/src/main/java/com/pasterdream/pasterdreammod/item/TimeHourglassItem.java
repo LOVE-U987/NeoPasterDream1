@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.item;
 
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -31,9 +32,9 @@ import java.util.List;
  * <ul>
  *   <li>对空气使用：世界时间前进 12000 tick（昼夜互换），头顶落下纯视觉闪电并散布粒子，消耗 1 个；</li>
  *   <li>右击带方块实体的方块：该方块实体持久化数据 {@code time} 增加 1,000,000
- *       （用于瞬间完成计时类梦境方块的一个阶段 / 刷新地牢冷却），消耗 1 个。</li>
+ *       （用于瞬间完成计时类梦境方块的一个阶段 / 刷新地牢冷却），消耗 1 个；</li>
+ *   <li>{@link PDCommonConfig#BAN_TIME_HOURGLASS} 为 true 时两路均禁用并提示，不消耗。</li>
  * </ul>
- * 移植说明：原版存在 BAN_TIME_HOURGLASS 通用配置开关，新版尚无对应配置项，暂不移植该禁用逻辑。
  */
 public class TimeHourglassItem extends Item {
 
@@ -55,6 +56,12 @@ public class TimeHourglassItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
+        if (Boolean.TRUE.equals(PDCommonConfig.BAN_TIME_HOURGLASS.get())) {
+            if (!level.isClientSide()) {
+                player.displayClientMessage(Component.literal("§4此物品已被禁用"), true);
+            }
+            return InteractionResultHolder.fail(stack);
+        }
         if (level instanceof ServerLevel serverLevel) {
             double x = player.getX();
             double y = player.getY();
@@ -82,6 +89,13 @@ public class TimeHourglassItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
+        Player player = context.getPlayer();
+        if (Boolean.TRUE.equals(PDCommonConfig.BAN_TIME_HOURGLASS.get())) {
+            if (player != null && !level.isClientSide()) {
+                player.displayClientMessage(Component.literal("§4此物品已被禁用"), true);
+            }
+            return InteractionResult.FAIL;
+        }
         BlockPos pos = context.getClickedPos();
         if (level instanceof ServerLevel serverLevel) {
             BlockEntity blockEntity = serverLevel.getBlockEntity(pos);
