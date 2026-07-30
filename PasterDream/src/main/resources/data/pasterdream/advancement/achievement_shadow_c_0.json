@@ -21,5 +21,6 @@
   },
   "rewards": {
     "experience": 10
-  }
+  },
+  "parent": "pasterdream:achievement_shadow_b_0"
 }

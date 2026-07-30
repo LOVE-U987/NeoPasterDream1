@@ -1,9 +1,11 @@
 package com.pasterdream.pasterdreammod.block;
 
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import net.minecraft.core.BlockPos;
 import java.util.List;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -38,6 +40,8 @@ import net.minecraft.world.level.storage.loot.LootParams;
  * 染梦裂纹方块 —— 染梦维度的入口
  * <p>
  * 当玩家接触此方块时，会被传送到染梦维度（或从染梦维度返回主世界）。
+ * 首次接触授予 {@code achievement_hide_5} 与 {@code achievement_start}
+ * （原版 {@code DyedreamCrackPr1Procedure}）。
  * 方块具有发光效果，作为染梦世界的标志性传送门。
  */
 public class DyedreamCrackBlock extends Block implements SimpleWaterloggedBlock {
@@ -142,13 +146,26 @@ public class DyedreamCrackBlock extends Block implements SimpleWaterloggedBlock 
             return;
         }
 
+        // 原版 DyedreamCrackPr1：首次接触授予 hide_5 + start 与叙事文案
+        tryFirstContactAdvancements(player);
+
         // 确定目标维度
         ResourceKey<Level> targetDimension;
         if (level.dimension().equals(PDDimensions.DYEDREAM_WORLD_LEVEL_KEY)) {
-            // 在染梦维度 → 回主世界
+            // 配置禁止染梦裂隙返程时拦截（原版 NO_RETURN_DYEDREAM_CRACK）
+            if (Boolean.TRUE.equals(PDCommonConfig.NO_RETURN_DYEDREAM_CRACK.get())) {
+                player.displayClientMessage(Component.literal(
+                        "一种神秘的力量阻止了你，或许可以想想通过别的办法回去..."), true);
+                player.setPortalCooldown(TELEPORT_COOLDOWN);
+                return;
+            }
             targetDimension = Level.OVERWORLD;
         } else {
-            // 主世界/其他维度 → 去染梦维度
+            // 原版：主世界侧仅在已完成 achievement_a_0（读笔记习得裂隙知识）后才传送
+            if (!PDAdvancements.has(player, PDAdvancements.A_0)) {
+                player.setPortalCooldown(TELEPORT_COOLDOWN);
+                return;
+            }
             targetDimension = PDDimensions.DYEDREAM_WORLD_LEVEL_KEY;
         }
 
@@ -173,6 +190,25 @@ public class DyedreamCrackBlock extends Block implements SimpleWaterloggedBlock 
 
         // 设置传送冷却时间，防止重复传送
         player.setPortalCooldown(TELEPORT_COOLDOWN);
+    }
+
+    /**
+     * 首次接触裂隙：授予 hide_5 与 start，并发送原版三段紫色叙事（仅一次）。
+     *
+     * @param player 接触裂隙的玩家
+     */
+    private static void tryFirstContactAdvancements(ServerPlayer player) {
+        if (PDAdvancements.has(player, PDAdvancements.HIDE_5)) {
+            return;
+        }
+        player.displayClientMessage(Component.literal(
+                "§5身体从这个奇怪的空洞中穿过，但并没有什么反应。"), false);
+        player.displayClientMessage(Component.literal(
+                "§5你能感觉到这个类似裂隙一样的东西在与这个世界和另外一处地方交互，附近不同的环境可能正是因此而诞生。"), false);
+        player.displayClientMessage(Component.literal(
+                "§5现在可能还不是时候，让我们交给在日夜轮转之间的时光中给予答案。"), false);
+        PDAdvancements.award(player, PDAdvancements.HIDE_5);
+        PDAdvancements.award(player, PDAdvancements.START);
     }
 
     /**

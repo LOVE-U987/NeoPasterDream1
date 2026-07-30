@@ -1,8 +1,0 @@
-{
-  "generated_by": ".trae/tools/verify_resource_closure.py",
-  "json_files": 3569,
-  "registered_blocks_scanned": 230,
-  "registered_items_scanned": 633,
-  "failure_count": 0,
-  "failures": {}
-}

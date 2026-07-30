@@ -113,11 +113,11 @@ public class PasterDreamMod {
         // BlockAPI.REGISTRY 已由 PasterDreamAPI.registerAll() 统一注册，此处避免重复注册
         Object unusedBlocks = PDBlocks.BLOCKS;
 
-        // 注册主模块物品（笔记分区须先填充同一 DeferredRegister）
-        com.pasterdream.pasterdreammod.registry.items.PDItemsDreamnotes.bootstrap();
+        // 初始化 PDItems 门面时会同步加载笔记分区；禁止先 bootstrap 分区，
+        // 否则 PDItems 的 DREAMNOTES_* re-export 会在分区初始化途中读到 null。
+        PDItems.ITEMS.register(modEventBus);
         com.pasterdream.pasterdreammod.registry.PDMenusDreamnotes.bootstrap();
         com.pasterdream.pasterdreammod.data.BluePrintLoader.bootstrap();
-        PDItems.ITEMS.register(modEventBus);
 
         // 注册盔甲材料
         PDArmorMaterials.ARMOR_MATERIALS.register(modEventBus);

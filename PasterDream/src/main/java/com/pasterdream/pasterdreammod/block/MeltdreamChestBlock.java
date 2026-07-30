@@ -2,15 +2,13 @@ package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.block.entity.MeltdreamChestBlockEntity;
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
-import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -220,40 +218,31 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
         chest.setCooldown(player);
         chest.initOpening(player, quality);
 
-        // 7. 维度宝藏成就（原版 MeltdreamChestPr0）
+        // 7. 宝藏成就（原版 MeltdreamChestPr0：先 treasure_start，再按维度）
         if (player instanceof ServerPlayer sp) {
-            awardDimensionTreasure(sp, level);
+            awardTreasureAdvancements(sp, level);
         }
 
         return InteractionResult.CONSUME;
     }
 
     /**
-     * 开箱时按维度授予隐藏宝藏成就（风旅 / 染梦）。
+     * 开箱时授予宝藏树成就（原版 MeltdreamChestPr0Procedure）。
+     * <ol>
+     *   <li>始终尝试 {@code achievement_treasure_start}</li>
+     *   <li>染梦维度 → {@code achievement_treasure_dyedream}</li>
+     *   <li>风旅维度 → {@code achievement_treasure_wind_journey}</li>
+     * </ol>
      *
      * @param player 开箱玩家
      * @param level  箱子所在维度
      */
-    private static void awardDimensionTreasure(ServerPlayer player, Level level) {
+    private static void awardTreasureAdvancements(ServerPlayer player, Level level) {
+        PDAdvancements.award(player, PDAdvancements.TREASURE_START);
         if (PDDimensions.isWindJourneyWorld(level)) {
-            awardAdvancement(player, "achievement_treasure_wind_journey");
+            PDAdvancements.award(player, PDAdvancements.TREASURE_WIND_JOURNEY);
         } else if (PDDimensions.isDyedreamWorld(level)) {
-            awardAdvancement(player, "achievement_treasure_dyedream");
-        }
-    }
-
-    private static void awardAdvancement(ServerPlayer player, String path) {
-        AdvancementHolder holder = player.server.getAdvancements()
-                .get(ResourceLocation.fromNamespaceAndPath("pasterdream", path));
-        if (holder == null) {
-            return;
-        }
-        AdvancementProgress progress = player.getAdvancements().getOrStartProgress(holder);
-        if (progress.isDone()) {
-            return;
-        }
-        for (String criteria : progress.getRemainingCriteria()) {
-            player.getAdvancements().award(holder, criteria);
+            PDAdvancements.award(player, PDAdvancements.TREASURE_DYEDREAM);
         }
     }
 
