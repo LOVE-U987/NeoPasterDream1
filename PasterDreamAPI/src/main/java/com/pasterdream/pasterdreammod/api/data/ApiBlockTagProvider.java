@@ -2,10 +2,12 @@ package com.pasterdream.pasterdreammod.api.data;
 
 import com.pasterdream.pasterdreammod.api.block.BlockAPI;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -47,37 +49,65 @@ public abstract class ApiBlockTagProvider extends BlockTagsProvider {
         addExtraTags(provider);
     }
 
+    /** {@code pasterdream:plantable_on} 标签键 —— 标记可种植地面 */
+    private TagKey<Block> plantableOnTag;
+
     /**
-     * 遍历 BlockAPI configs 写入 mineable 标签。
+     * 获取或创建 {@code plantable_on} 标签键
+     */
+    private TagKey<Block> getPlantableOnTag() {
+        if (plantableOnTag == null) {
+            plantableOnTag = TagKey.create(Registries.BLOCK,
+                    ResourceLocation.fromNamespaceAndPath(modId, "plantable_on"));
+        }
+        return plantableOnTag;
+    }
+
+    /**
+     * 遍历 BlockAPI configs 写入 mineable 标签 + plantable_on 标签。
      */
     protected void addTagsFromBlockConfigs() {
+        boolean plantableInitialized = false;
+
         for (var entry : BlockAPI.getBlockConfigs().entrySet()) {
             String name = entry.getKey();
-            String mineable = entry.getValue().getMineable();
-            if (mineable == null) {
-                continue;
+            var config = entry.getValue();
+            var loc = ResourceLocation.fromNamespaceAndPath(modId, name);
+
+            // 用 ResourceKey 替代 Block 实例，兼容 TagAppender 的 add(ResourceKey) 签名
+            ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, loc);
+
+            // ---- 写入 mineable 标签 ----
+            String mineable = config.getMineable();
+            if (mineable != null) {
+                switch (mineable) {
+                    case "axe" -> tag(BlockTags.MINEABLE_WITH_AXE).add(blockKey);
+                    case "pickaxe" -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(blockKey);
+                    case "shovel" -> tag(BlockTags.MINEABLE_WITH_SHOVEL).add(blockKey);
+                    case "hoe" -> tag(BlockTags.MINEABLE_WITH_HOE).add(blockKey);
+                    default -> onUnknownMineable(name, blockKey, mineable);
+                }
             }
 
-            Block block = BuiltInRegistries.BLOCK.get(
-                    ResourceLocation.fromNamespaceAndPath(modId, name));
-            if (block == null) {
-                continue;
-            }
-
-            switch (mineable) {
-                case "axe" -> tag(BlockTags.MINEABLE_WITH_AXE).add(block);
-                case "pickaxe" -> tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block);
-                case "shovel" -> tag(BlockTags.MINEABLE_WITH_SHOVEL).add(block);
-                case "hoe" -> tag(BlockTags.MINEABLE_WITH_HOE).add(block);
-                default -> onUnknownMineable(name, block, mineable);
+            // ---- 写入 plantable_on 标签 ----
+            if (config.isPlantable()) {
+                if (!plantableInitialized) {
+                    tag(getPlantableOnTag()).addTag(BlockTags.DIRT);
+                    plantableInitialized = true;
+                }
+                tag(getPlantableOnTag()).add(blockKey);
             }
         }
     }
 
     /**
      * 未知 mineable 字符串时的钩子（默认忽略）。
+     *
+     * @param name     方块注册名
+     * @param blockKey 方块的 ResourceKey
+     * @param mineable 未知的挖掘工具标识
      */
-    protected void onUnknownMineable(String name, Block block, String mineable) {
+    protected void onUnknownMineable(String name, ResourceKey<Block> blockKey, String mineable) {
         // no-op
     }
 

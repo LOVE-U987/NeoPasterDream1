@@ -1,7 +1,7 @@
 package com.pasterdream.pasterdreammod.block;
 
-import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.api.worldgen.decor.TreeRegistry;
+import com.pasterdream.pasterdreammod.registry.PDBlockTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -68,10 +68,7 @@ public class DyedreamSaplingBlock extends SaplingBlock {
      */
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.is(PDBlocks.DYEDREAM_GRASS.get())
-            || state.is(PDBlocks.DYEDREAM_DIRT.get())
-            || state.is(PDBlocks.DYEDREAM_SAND.get())
-            || state.is(PDBlocks.DYEDREAM_BLOCK.get());
+        return state.is(PDBlockTags.PLANTABLE_ON);
     }
 
     /**

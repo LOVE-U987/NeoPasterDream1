@@ -26,9 +26,7 @@ public enum ConfigCategory {
     /** 融梦能量设置 */
     MELTDREAM("meltdream"),
     /** 调试日志设置 */
-    DEBUG("debug"),
-    /** 进度限制设置 */
-    PROGRESS("progress");
+    DEBUG("debug");
 
     private final String key;
     private final Component title;

@@ -50,31 +50,6 @@ public class PDCommonConfig {
     /** 关闭并禁止时之沙的功能（默认 false） */
     public static final ModConfigSpec.ConfigValue<Boolean> BAN_TIME_HOURGLASS;
 
-    // ==================== Process（进度限制） ====================
-
-    /** 进度限制总开关（默认 false——关闭后所有进度限制均不生效） */
-    public static final ModConfigSpec.ConfigValue<Boolean> ENABLE_PROCESS_LIMIT;
-    /** 创造模式玩家不受进度限制（默认 true） */
-    public static final ModConfigSpec.ConfigValue<Boolean> CREATIVE_BYPASS_PROCESS_LIMIT;
-    /** 裂隙·传送需知识限制（默认 true） */
-    public static final ModConfigSpec.ConfigValue<Boolean> RESTRICTION_CRACK_TELEPORT;
-    /** 梦境果汁·效果需知识限制（默认 true） */
-    public static final ModConfigSpec.ConfigValue<Boolean> RESTRICTION_DREAMJUICE_EFFECT;
-    /** 暮影之笼·激活需知识限制（默认 true） */
-    public static final ModConfigSpec.ConfigValue<Boolean> RESTRICTION_TWILIGHT_LANTERN;
-    /** 影之床·传送需进度限制（默认 true） */
-    public static final ModConfigSpec.ConfigValue<Boolean> RESTRICTION_SHADOW_BED_TELEPORT;
-    /** 暗影地牢门·开启需进度限制（默认 true） */
-    public static final ModConfigSpec.ConfigValue<Boolean> RESTRICTION_SHADOW_DUNGEON_DOOR;
-    /** 破损传送门·修复需知识限制（默认 true） */
-    public static final ModConfigSpec.ConfigValue<Boolean> RESTRICTION_BROKEN_PORTAL_REPAIR;
-    /** 竞技场传送门·传送需进度限制（默认 true） */
-    public static final ModConfigSpec.ConfigValue<Boolean> RESTRICTION_ARENA_PORTAL_TELEPORT;
-    /** 白色灾厄·战技需天赋限制（默认 true） */
-    public static final ModConfigSpec.ConfigValue<Boolean> RESTRICTION_WHITE_SWORD_SKILL;
-    /** 暗影旋涡·安全施法需天赋限制（默认 true） */
-    public static final ModConfigSpec.ConfigValue<Boolean> RESTRICTION_SHADOW_VORTEX_SAFE_CAST;
-
     // ==================== Debug ====================
 
     /** 调试日志总开关（默认 false） */
@@ -136,42 +111,6 @@ public class PDCommonConfig {
         BAN_TIME_HOURGLASS = builder
                 .comment("关闭并禁止时之沙的功能  默认：false")
                 .define("ban time hourglass", false);
-        builder.pop();
-
-        builder.push("Process");
-        ENABLE_PROCESS_LIMIT = builder
-                .comment("进度限制总开关 默认：false（关闭后所有进度限制均不生效）")
-                .define("enable process limit", false);
-        CREATIVE_BYPASS_PROCESS_LIMIT = builder
-                .comment("创造模式玩家不受进度限制 默认：true")
-                .define("creative bypass process limit", true);
-        RESTRICTION_CRACK_TELEPORT = builder
-                .comment("裂隙·传送需知识限制 默认：true（需要 achievement_a_0 方可传送至染梦维度）")
-                .define("restriction crack teleport", true);
-        RESTRICTION_DREAMJUICE_EFFECT = builder
-                .comment("梦境果汁·效果需知识限制 默认：true（需要 achievement_b_0 方可获得梦愿效果）")
-                .define("restriction dreamjuice effect", true);
-        RESTRICTION_TWILIGHT_LANTERN = builder
-                .comment("暮影之笼·激活需知识限制 默认：true（需要 achievement_hide_8/10 方可激活）")
-                .define("restriction twilight lantern", true);
-        RESTRICTION_SHADOW_BED_TELEPORT = builder
-                .comment("影之床·传送需进度限制 默认：true（需要 achievement_shadow_start 方可传送至灯影世界）")
-                .define("restriction shadow bed teleport", true);
-        RESTRICTION_SHADOW_DUNGEON_DOOR = builder
-                .comment("暗影地牢门·开启需进度限制 默认：true（需要 achievement_shadow_npc_5 方可开门）")
-                .define("restriction shadow dungeon door", true);
-        RESTRICTION_BROKEN_PORTAL_REPAIR = builder
-                .comment("破损传送门·修复需知识限制 默认：true（需要 achievement_hide_14 方可修复）")
-                .define("restriction broken portal repair", true);
-        RESTRICTION_ARENA_PORTAL_TELEPORT = builder
-                .comment("竞技场传送门·传送需进度限制 默认：true（需要 achievement_shadow_d_0 方可进入竞技场）")
-                .define("restriction arena portal teleport", true);
-        RESTRICTION_WHITE_SWORD_SKILL = builder
-                .comment("白色灾厄·战技需天赋限制 默认：true（需要 achievement_talent_light 方可发动白厄剑雨）")
-                .define("restriction white sword skill", true);
-        RESTRICTION_SHADOW_VORTEX_SAFE_CAST = builder
-                .comment("暗影旋涡·安全施法需天赋限制 默认：true（需要 achievement_talent_shadow 方可安全施法）")
-                .define("restriction shadow vortex safe cast", true);
         builder.pop();
 
         builder.push("Debug");

@@ -7,6 +7,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 import top.theillusivec4.curios.api.SlotContext;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -34,11 +36,13 @@ public class Health0NecklaceItem extends Item implements ICurioItem {
 
     @Override
     public boolean canEquip(SlotContext slotContext, ItemStack stack) {
-        if (slotContext.entity() != null) {
-            return top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(slotContext.entity())
-                    .map(handler -> handler.findFirstCurio(stack.getItem()).isEmpty())
-                    .orElse(true);
-        }
-        return true;
+        return CurioHelper.canEquipSingleton(slotContext, stack);
+    }
+
+    @Override
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
+        Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = HashMultimap.create();
+        attributeModifiers.put(Attributes.MAX_HEALTH, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "health"), 2.0, AttributeModifier.Operation.ADD_VALUE));
+        return attributeModifiers;
     }
 }

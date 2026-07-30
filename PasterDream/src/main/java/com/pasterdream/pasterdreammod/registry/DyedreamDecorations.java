@@ -183,6 +183,30 @@ public class DyedreamDecorations {
     }
 
     /**
+     * 注册染梦落叶层地表装饰 —— 在所有染梦群系中散布落叶层
+     * <p>
+     * 使用 SCATTER 类型，在地表随机散布染梦落叶层方块，
+     * 只会生成在完整方块（固体地面）上，形成自然的落叶效果。
+     */
+    public static void registerDyedreamFallenLeaves() {
+        DecorationBuilder.create()
+                .type(DecorationType.SCATTER)
+                .body(PDBlocks.DYEDREAM_FALLEN_LEAVES.get())
+                .clusterSize(6)
+                .checkHang(true)
+                .replaceable(BlockPredicate.anyOf(
+                    BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.CAVE_AIR,
+                        PDBlocks.DYEDREAM_GRASS.get(), PDBlocks.DYEDREAM_DIRT.get(),
+                        PDBlocks.DYEDREAM_SAND.get(), PDBlocks.DYEDREAM_BLOCK.get()),
+                    BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
+                ))
+                .biome("#pasterdream:is_dyedream")
+                .rarity(2)
+                .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
+                .register("dyedream_fallen_leaves");
+    }
+
+    /**
      * 注册粉丁菇森林装饰物 —— biome_dyedream_mushroom_plains 的蘑菇景观
      * <p>
      * 使用 SCATTER 类型，在蘑菇平原上密集散布各种粉色蘑菇变种，

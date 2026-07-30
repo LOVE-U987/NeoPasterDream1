@@ -39,6 +39,7 @@ import com.pasterdream.pasterdreammod.registry.PDPotions;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import com.pasterdream.pasterdreammod.registry.PDTreeDecorators;
 import com.pasterdream.pasterdreammod.registry.PDWorldgenRegistries;
+import com.pasterdream.pasterdreammod.worldgen.PDAaroncosArenaWorldgen;
 import com.pasterdream.pasterdreammod.worldgen.tree.DyedreamTreePlacers;
 import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationRegistry;
 import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
@@ -258,6 +259,9 @@ public class PasterDreamMod {
         // 灯影出生结构（shadow_world_spawn）；Warden→hide_7 / 远古守卫者鳞
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDLampShadowWorldgen::onLevelLoad);
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDEntityDeathEvents::onLivingDeath);
+
+        // 亚伦柯斯竞技场：将遗迹群系注入主世界 MultiNoise 群系源
+        NeoForge.EVENT_BUS.addListener(PDAaroncosArenaWorldgen::onServerStarting);
 
         // 客户端 Tick 事件和极光天幕渲染器通过 @EventBusSubscriber(Dist.CLIENT)
         // 在 PDClientEvents 和 DyeDreamSkyRenderer 中自动注册，避免服务端类加载

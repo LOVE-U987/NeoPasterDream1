@@ -7,11 +7,9 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundPlayerCombatKillPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.CombatTracker;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -29,7 +27,6 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -163,18 +160,13 @@ public final class PDEntityDeathEvents {
             if (killer != null) {
                 List<String> keys = DEATH_MESSAGE_KEYS.get(killer.getType());
                 if (keys != null && !keys.isEmpty()) {
-                    // 清除战斗追踪条目，使原版 getDeathMessage() 返回泛化消息（"玩家死亡"），
-                    // 避免原版 "被射杀" 类措辞与自定义消息同时发出
-                    clearCombatTrackerEntries(serverPlayer);
                     int idx = serverPlayer.getRandom().nextInt(keys.size());
                     Component msg = Component.translatable(keys.get(idx), serverPlayer.getDisplayName());
-                    // 下一 tick：广播聊天消息 + 更新死亡屏幕界面
+                    // 下一 tick 广播自定义死亡消息
                     ServerScheduler.schedule(0, () -> {
-                        if (serverPlayer.getServer() == null) return;
-                        serverPlayer.getServer().getPlayerList().broadcastSystemMessage(msg, false);
-                        // 重发战斗击杀包，使死亡屏幕上的消息替换为自定义内容
-                        serverPlayer.connection.send(
-                                new ClientboundPlayerCombatKillPacket(serverPlayer.getId(), msg));
+                        if (serverPlayer.getServer() != null) {
+                            serverPlayer.getServer().getPlayerList().broadcastSystemMessage(msg, false);
+                        }
                     });
                 }
             }
@@ -236,25 +228,5 @@ public final class PDEntityDeathEvents {
             player.getAdvancements().award(holder, criterion);
         }
         return progress.isDone();
-    }
-
-    /**
-     * 通过反射清除 {@link CombatTracker} 的条目列表，使原版 {@code getDeathMessage()}
-     * 返回泛化消息（而非 "被某某射杀" 等具体措辞），避免与自定义哏式死亡消息冲突。
-     * <p>
-     * Minecraft 1.21.1 的 {@code CombatTracker#entries} 为私有字段且无公开 getter，
-     * 因此使用反射操作。
-     */
-    private static void clearCombatTrackerEntries(ServerPlayer player) {
-        try {
-            Field entriesField = CombatTracker.class.getDeclaredField("entries");
-            entriesField.setAccessible(true);
-            Object entries = entriesField.get(player.getCombatTracker());
-            if (entries instanceof List<?> list) {
-                list.clear();
-            }
-        } catch (Exception e) {
-            PDDebugLogger.mainDebug("[EntityDeath] 清除 CombatTracker 条目失败: {}", e.getMessage());
-        }
     }
 }

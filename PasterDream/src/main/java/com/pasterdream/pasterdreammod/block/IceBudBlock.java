@@ -71,14 +71,12 @@ public class IceBudBlock extends Block implements SimpleWaterloggedBlock {
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         Direction facing = state.getValue(FACING);
-        return switch (facing) {
-            case DOWN -> box(3, 12, 3, 13, 16, 13);
-            case UP -> box(3, 0, 3, 13, 4, 13);
-            case NORTH -> box(3, 3, 12, 13, 13, 16);
-            case SOUTH -> box(3, 3, 0, 13, 13, 4);
-            case WEST -> box(12, 3, 3, 16, 13, 13);
-            case EAST -> box(0, 3, 3, 4, 13, 13);
-        };
+        if (facing == Direction.DOWN) return box(3, 12, 3, 13, 16, 13);
+        if (facing == Direction.UP) return box(3, 0, 3, 13, 4, 13);
+        if (facing == Direction.NORTH) return box(3, 3, 12, 13, 13, 16);
+        if (facing == Direction.SOUTH) return box(3, 3, 0, 13, 13, 4);
+        if (facing == Direction.WEST) return box(12, 3, 3, 16, 13, 13);
+        return box(0, 3, 3, 4, 13, 13);
     }
 
     @Override

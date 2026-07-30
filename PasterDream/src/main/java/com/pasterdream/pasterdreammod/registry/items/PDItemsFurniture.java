@@ -113,6 +113,9 @@ public class PDItemsFurniture {
     /** 破损的暗影地牢传送门（GeckoLib 3D） */
     public static final DeferredItem<BlockItem> BROKEN_SHADOW_DUNGEON_PROTAL = PDItems.ITEMS.register("broken_shadow_dungeon_protal",
             () -> new W4GeoDisplayItem(PDBlocksFurniture.BROKEN_SHADOW_DUNGEON_PROTAL.get(), new Item.Properties()));
+    /** 完整的暗影地牢传送门（GeckoLib 3D） */
+    public static final DeferredItem<BlockItem> SHADOW_DUNGEON_PORTAL = PDItems.ITEMS.register("shadow_dungeon_portal",
+            () -> new W4GeoDisplayItem(PDBlocksFurniture.SHADOW_DUNGEON_PORTAL.get(), new Item.Properties()));
     /** 干裂粘土层·湿润（贴图方块物品） */
     public static final DeferredItem<BlockItem> CLAYPAN_1 =
             PDItems.ITEMS.registerSimpleBlockItem("claypan_1", PDBlocksFurniture.CLAYPAN_1);

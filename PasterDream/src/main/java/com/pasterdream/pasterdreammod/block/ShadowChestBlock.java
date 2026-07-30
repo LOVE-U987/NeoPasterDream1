@@ -62,10 +62,9 @@ public class ShadowChestBlock extends BaseEntityBlock implements SimpleWaterlogg
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case EAST, WEST -> SHAPE_EAST;
-            default -> SHAPE_NORTH;
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.EAST || facing == Direction.WEST) return SHAPE_EAST;
+        return SHAPE_NORTH;
     }
 
     @Override

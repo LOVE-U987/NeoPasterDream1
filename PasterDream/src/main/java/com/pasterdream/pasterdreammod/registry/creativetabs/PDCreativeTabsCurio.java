@@ -4,6 +4,7 @@ import com.pasterdream.pasterdreammod.registry.PDCreativeTabs;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -43,6 +44,9 @@ public class PDCreativeTabsCurio {
                         output.accept(PDItems.RED_DEW_2_RING.get());
                         output.accept(PDItems.RED_DEW_3_RING.get());
                         output.accept(PDItems.COUNTER_RING.get());
+                        // 融梦光环戒指（来自 PasterDreamMeltDream 模块；未安装时不在创造栏显示）
+                        BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdreammeltdream", "meltdream_energy_0_ring"))
+                                .ifPresent(item -> output.accept(new ItemStack(item)));
                         output.accept(PDItems.DARK_ALLLEGORY_CURIO.get());
                         output.accept(PDItems.CECILIACARE_CHARM.get());
                         output.accept(PDItems.CARAPAX_CHARM.get());

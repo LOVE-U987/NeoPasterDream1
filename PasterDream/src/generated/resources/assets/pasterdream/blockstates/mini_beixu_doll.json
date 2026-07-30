@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "pasterdream:custom/mini_beixu_doll_particle"
+    },
+    "facing=north": {
+      "model": "pasterdream:custom/mini_beixu_doll_particle"
+    },
+    "facing=south": {
+      "model": "pasterdream:custom/mini_beixu_doll_particle"
+    },
+    "facing=west": {
+      "model": "pasterdream:custom/mini_beixu_doll_particle"
+    }
+  }
+}

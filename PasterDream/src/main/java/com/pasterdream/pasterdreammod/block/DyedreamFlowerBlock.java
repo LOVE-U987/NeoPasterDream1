@@ -1,7 +1,7 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
-import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import com.pasterdream.pasterdreammod.registry.PDBlockTags;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -49,10 +49,7 @@ public class DyedreamFlowerBlock extends FlowerBlock {
 
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.is(PDBlocks.DYEDREAM_GRASS.get())
-            || state.is(PDBlocks.DYEDREAM_DIRT.get())
-            || state.is(PDBlocks.DYEDREAM_SAND.get())
-            || state.is(PDBlocks.DYEDREAM_BLOCK.get());
+        return state.is(PDBlockTags.PLANTABLE_ON);
     }
 
     @Override

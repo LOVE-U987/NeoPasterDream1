@@ -1,7 +1,6 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
-import com.pasterdream.pasterdreammod.config.PDProcessLimitHelper;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
@@ -86,12 +85,11 @@ public class ShadowBedBlock extends Block implements SimpleWaterloggedBlock, Ent
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case NORTH -> box(0, 0, -6, 16, 9, 24);
-            case EAST -> box(-8, 0, 0, 22, 9, 16);
-            case WEST -> box(-6, 0, 0, 24, 9, 16);
-            default -> box(0, 0, -8, 16, 9, 22);
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.NORTH) return box(0, 0, -6, 16, 9, 24);
+        if (facing == Direction.EAST) return box(-8, 0, 0, 22, 9, 16);
+        if (facing == Direction.WEST) return box(-6, 0, 0, 24, 9, 16);
+        return box(0, 0, -8, 16, 9, 22);
     }
 
     @Override
@@ -149,8 +147,7 @@ public class ShadowBedBlock extends Block implements SimpleWaterloggedBlock, Ent
         boolean notInLampWorld = level.dimension() != PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY;
         if (nightOrThunder || notInLampWorld) {
             if (player instanceof ServerPlayer serverPlayer && serverPlayer.level() instanceof ServerLevel
-                    && (!PDProcessLimitHelper.shouldApplyRestriction(serverPlayer, PDCommonConfig.RESTRICTION_SHADOW_BED_TELEPORT)
-                    || hasAdvancement(serverPlayer, "achievement_shadow_start"))) {
+                    && hasAdvancement(serverPlayer, "achievement_shadow_start")) {
                 PDAttachments.addPlayerSanWithCheck(serverPlayer, -10);
                 if (!hasAdvancement(serverPlayer, "achievement_shadow_a_1")) {
                     awardAdvancement(serverPlayer, "achievement_shadow_a_1");

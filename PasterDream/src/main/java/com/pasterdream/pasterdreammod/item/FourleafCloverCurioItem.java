@@ -1,7 +1,6 @@
 package com.pasterdream.pasterdreammod.item;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -14,7 +13,9 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.network.chat.Component;
 import java.util.List;
-import java.util.UUID;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import net.minecraft.core.Holder;
 
 /**
  * Fourleaf Clover Curio Item (Curio Item)
@@ -25,21 +26,23 @@ public class FourleafCloverCurioItem extends Item implements ICurioItem {
         super(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON));
 }
 
-
     @Override
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, context, list, flag);
         list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7a\u4F18\u79C0 \u2605\u2605"));
         list.add(Component.literal("\u00A77\u00A7o\u54EA\u7247\u53F6\u5B50\u4EE3\u8868\u7740\u5E78\u8FD0\uFF1F"));
-}
+    }
 
     @Override
     public boolean canEquip(SlotContext slotContext, ItemStack stack) {
-        if (slotContext.entity() != null) {
-            return top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(slotContext.entity())
-                    .map(handler -> handler.findFirstCurio(stack.getItem()).isEmpty())
-                    .orElse(true);
-        }
-        return true;
+        return CurioHelper.canEquipSingleton(slotContext, stack);
+    }
+
+    @Override
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
+        Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = HashMultimap.create();
+        attributeModifiers.put(Attributes.MAX_HEALTH, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "health"), 1.0, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.LUCK, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "luck"), 6.0, AttributeModifier.Operation.ADD_VALUE));
+        return attributeModifiers;
     }
 }

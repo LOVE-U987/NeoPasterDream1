@@ -35,7 +35,7 @@ public class PDCreativeTabsSouvenir {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.pasterdream.souvenir_tab"))
                     .icon(() -> new ItemStack(PDItems.MEMENTO_ITEM_01.get()))
-                    .withTabsBefore(PDCreativeTabs.WIND_TAB.getKey())
+                    .withTabsBefore(PDCreativeTabs.FUNCTIONAL_TAB.getKey())
                     .displayItems((parameters, output) -> {
                         output.accept(PDItems.DREAM_COIN_0.get());
                         output.accept(PDItems.DREAM_COIN_1.get());

@@ -82,12 +82,11 @@ public class TrueShadowBedBlock extends Block implements SimpleWaterloggedBlock,
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case NORTH -> box(0, 0, -6, 16, 9, 24);
-            case EAST -> box(-8, 0, 0, 22, 9, 16);
-            case WEST -> box(-6, 0, 0, 24, 9, 16);
-            default -> box(0, 0, -8, 16, 9, 22);
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.NORTH) return box(0, 0, -6, 16, 9, 24);
+        if (facing == Direction.EAST) return box(-8, 0, 0, 22, 9, 16);
+        if (facing == Direction.WEST) return box(-6, 0, 0, 24, 9, 16);
+        return box(0, 0, -8, 16, 9, 22);
     }
 
     @Override

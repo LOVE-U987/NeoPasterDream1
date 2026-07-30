@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.block;
 import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.api.block.HorizontalWaterloggedBlock;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,11 +42,10 @@ public class ChristmasLightsBlock extends HorizontalWaterloggedBlock {
     @Override
     public @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level,
                                         @NotNull BlockPos pos, @NotNull CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case NORTH -> box(0, 0, 15, 16, 16, 16);
-            case EAST -> box(0, 0, 0, 1, 16, 16);
-            case WEST -> box(15, 0, 0, 16, 16, 16);
-            default -> box(0, 0, 0, 16, 16, 1);
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.NORTH) return box(0, 0, 15, 16, 16, 16);
+        if (facing == Direction.EAST) return box(0, 0, 0, 1, 16, 16);
+        if (facing == Direction.WEST) return box(15, 0, 0, 16, 16, 16);
+        return box(0, 0, 0, 16, 16, 1);
     }
 }

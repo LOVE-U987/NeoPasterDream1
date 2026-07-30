@@ -1,6 +1,6 @@
 package com.pasterdream.pasterdreammod.block;
 
-import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import com.pasterdream.pasterdreammod.registry.PDBlockTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -43,7 +43,7 @@ public class Crop1ABlock extends FlowerBlock {
 
     @Override
     public boolean mayPlaceOn(BlockState groundState, BlockGetter level, BlockPos pos) {
-        return groundState.is(PDBlocks.DYEDREAM_DIRT.get()) || groundState.is(PDBlocks.DYEDREAM_GRASS.get());
+        return groundState.is(PDBlockTags.PLANTABLE_ON);
     }
 
     @Override

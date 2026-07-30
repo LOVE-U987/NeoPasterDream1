@@ -176,6 +176,13 @@ public class PDBlocks {
         BlockAPI.putConfig("shadow_blast_furnace", BlockConfig.of().mineable("pickaxe"));
         BlockAPI.putConfig("forced_tower", BlockConfig.of().mineable("pickaxe"));
         BlockAPI.putConfig("dream_spawner_0", BlockConfig.of().mineable("pickaxe"));
+
+        // ========== 可种植地面（Plantable） ==========
+        BlockAPI.putConfig("cyan_moss_stone", BlockConfig.of()
+                .mineable("pickaxe").plantable());
+        BlockAPI.putConfig("white_sand", BlockConfig.of()
+                .mineable("shovel").model("cube_all")
+                .tex("all", "pasterdream:block/white_sand").plantable());
     }
 
     // ==================== 子文件聚合引用 ====================
@@ -555,6 +562,7 @@ public class PDBlocks {
     public static final DeferredBlock<?> TRUE_SHADOW_BED = PDBlocksFurniture.TRUE_SHADOW_BED;
     public static final DeferredBlock<?> BIRDS_NEST = PDBlocksFurniture.BIRDS_NEST;
     public static final DeferredBlock<?> BROKEN_SHADOW_DUNGEON_PROTAL = PDBlocksFurniture.BROKEN_SHADOW_DUNGEON_PROTAL;
+    public static final DeferredBlock<?> SHADOW_DUNGEON_PORTAL = PDBlocksFurniture.SHADOW_DUNGEON_PORTAL;
     public static final DeferredBlock<?> CLAYPAN_1 = PDBlocksFurniture.CLAYPAN_1;
     public static final DeferredBlock<?> DESERT_HERO_TOMB = PDBlocksFurniture.DESERT_HERO_TOMB;
     public static final DeferredBlock<?> GUARD_BLOCK = PDBlocksFurniture.GUARD_BLOCK;

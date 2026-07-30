@@ -43,8 +43,14 @@ public class MeltdreamEnergy0RingItem extends Item implements ICurioItem {
 
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        if (slotContext.entity() instanceof Player pl && pl.tickCount % 20 == 0) {
-            if (APIDimensions.isDyedreamWorld(pl.level()) || APIDimensions.isLampShadowWorld(pl.level())) {
+        if (!(slotContext.entity() instanceof Player pl)) return;
+        if (pl.level().isClientSide) return;
+
+        boolean dyedream = APIDimensions.isDyedreamWorld(pl.level());
+        boolean lampShadow = APIDimensions.isLampShadowWorld(pl.level());
+
+        if (pl.tickCount % 20 == 0) {
+            if (dyedream || lampShadow) {
                 MeltDreamEnergyAPI.addEnergy(pl, 0.0025);
             }
         }

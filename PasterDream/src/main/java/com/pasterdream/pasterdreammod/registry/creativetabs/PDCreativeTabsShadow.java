@@ -55,6 +55,7 @@ public class PDCreativeTabsShadow {
                         output.accept(PDItems.CRACKED_SHADOW_STONE_BRICK.get());
                         output.accept(PDItems.SHADOW_NYLIUM.get());
                         output.accept(PDItems.SHADOW_SHROOMLIGHT.get());
+                        output.accept(PDItems.SHADOW_LIGHT_0.get());
                         output.accept(PDItems.SHADOW_WART_BLOCK.get());
                         output.accept(PDItems.SHADOW_STEM.get());
                         output.accept(PDItems.SHADOW_HYPHAE.get());
@@ -102,9 +103,6 @@ public class PDCreativeTabsShadow {
                         output.accept(PDItems.SHADOW_DUNGEON_KEY_1.get());
                         // 暗影蜡烛
                         output.accept(PDItems.SHADOWCANDLE.get());
-                        // 研究台组（原版 paster_tab_5 设备栏）
-                        output.accept(PDItems.RESEARCH_TABLE.get());
-                        output.accept(PDItems.FORCED_TOWER.get());
                         // 高炉核心与暗影高炉
                         output.accept(PDItems.SHADOW_BLAST_FURNACE_CORE.get());
                         output.accept(PDItems.SHADOW_BLAST_FURNACE.get());
@@ -124,10 +122,6 @@ public class PDCreativeTabsShadow {
                         output.accept(PDItems.AARONCOS_ARENA_PORTALS.get());
                         output.accept(PDItems.AARONCOS_HAND_CHEST.get());
                         output.accept(PDItems.AARONCOSHANDSPAWNBLOCK.get());
-                        // 构梦刷怪笼（原版位于调试栏 paster_tab_8；调试标签属并行分区，
-                        // 与上方 BOSS 生成方块同为地牢/事件机关，暂归本页）
-                        output.accept(PDItems.DREAM_SPAWNER_0.get());
-                        output.accept(PDItems.DREAM_SPAWNER_1.get());
                         // 阴影植被与流体（波次C）
                         output.accept(PDItems.SHADOW_FUNGUS.get());
                         output.accept(PDItems.SHADOW_LIQUID_BUCKET.get());
@@ -138,15 +132,10 @@ public class PDCreativeTabsShadow {
                         output.accept(PDItems.SHADOW_DESK.get());
                         output.accept(PDItems.SHADOW_BRAZIER.get());
                         output.accept(PDItems.BROKEN_SHADOW_DUNGEON_PROTAL.get());
+                        output.accept(PDItems.SHADOW_DUNGEON_PORTAL.get());
                         output.accept(PDItems.SHADOW_TRAP_0.get());
                         output.accept(PDItems.TWILIGHT_LANTERN.get());
                         output.accept(PDItems.GUARD_CRYSTAL.get());
-                        output.accept(PDItems.DESERT_HERO_TOMB.get());
-                        output.accept(PDItems.ECOLOGY_GLASS_JAR.get());
-                        output.accept(PDItems.FIREFLY_GLASS_JAR.get());
-                        output.accept(PDItems.LIGHT_FIREFLY_GLASS_JAR.get());
-                        output.accept(PDItems.PICNIC_BASKET.get());
-                        output.accept(PDItems.BIRDS_NEST.get());
                     })
                     .build());
 }

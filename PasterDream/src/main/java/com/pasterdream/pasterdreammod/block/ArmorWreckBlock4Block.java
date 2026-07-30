@@ -95,10 +95,9 @@ public class ArmorWreckBlock4Block extends DirectionalBlock implements SimpleWat
      */
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case EAST, WEST -> box(4, 0, 0, 12, 16, 16);
-            case UP, DOWN -> box(0, 4, 0, 16, 12, 16);
-            default -> box(0, 0, 4, 16, 16, 12);
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.EAST || facing == Direction.WEST) return box(4, 0, 0, 12, 16, 16);
+        if (facing == Direction.UP || facing == Direction.DOWN) return box(0, 4, 0, 16, 12, 16);
+        return box(0, 0, 4, 16, 16, 12);
     }
 }

@@ -17,6 +17,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
@@ -115,10 +116,13 @@ public final class PDSleepEvents {
                     return;
                 }
                 Level lvl = sp.level();
-                lvl.setBlock(bedBlock, Blocks.AIR.defaultBlockState(), 3);
+                // 保存原方块状态，防止传送后丢失（如阴影床等特殊床类型）
+                BlockState originalState = lvl.getBlockState(bedBlock);
                 lvl.setBlock(bedBlock, Blocks.BLACK_BED.defaultBlockState(), 3);
                 com.pasterdream.pasterdreammod.attachment.PDAttachments.addPlayerSanWithCheck(sp, -10);
                 ShadowBedBlock.teleportToLampShadowWorld(lvl, sp);
+                // 传送完成后恢复原方块状态
+                lvl.setBlock(bedBlock, originalState, 3);
             });
         }
     }

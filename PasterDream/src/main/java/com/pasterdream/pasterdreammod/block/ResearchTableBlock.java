@@ -89,12 +89,11 @@ public class ResearchTableBlock extends BaseEntityBlock {
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         // 原版逐朝向碰撞箱（桌面比 1 格更宽）
-        return switch (state.getValue(FACING)) {
-            case NORTH -> box(-4, 0, 3, 21, 15, 16);
-            case EAST -> box(0, 0, -4, 13, 15, 21);
-            case WEST -> box(3, 0, -5, 16, 15, 20);
-            default -> box(-5, 0, 0, 20, 15, 13);
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.NORTH) return box(-4, 0, 3, 21, 15, 16);
+        if (facing == Direction.EAST) return box(0, 0, -4, 13, 15, 21);
+        if (facing == Direction.WEST) return box(3, 0, -5, 16, 15, 20);
+        return box(-5, 0, 0, 20, 15, 13);
     }
 
     @Override

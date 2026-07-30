@@ -1,10 +1,8 @@
 package com.pasterdream.pasterdreammod.client;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
-import com.pasterdream.pasterdreammod.client.renderer.block.ShadowDungeonPortalGeoModel;
 import com.pasterdream.pasterdreammod.client.renderer.block.W4GeoBlockRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.W4GeoDisplayItemRenderer;
-import software.bernie.geckolib.renderer.GeoBlockRenderer;
 import com.pasterdream.pasterdreammod.client.screen.PicnicBasketScreen;
 import com.pasterdream.pasterdreammod.client.screen.ShadowDeskScreen;
 import com.pasterdream.pasterdreammod.client.screen.WindmoorCrateScreen;
@@ -57,9 +55,12 @@ public class PDClientFurniture {
                 context -> new W4GeoBlockRenderer("picnic_basket"));
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.BIRDS_NEST.get(),
                 context -> new W4GeoBlockRenderer("birds_nest"));
-        // 使用自定义 GeoModel 根据 animation 属性切换破碎/修复纹理与模型
+        // 破损核心使用 broken_shadow_dungeon_protal 模型
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.BROKEN_SHADOW_DUNGEON_PROTAL.get(),
-                context -> new GeoBlockRenderer<>(new ShadowDungeonPortalGeoModel()));
+                context -> new W4GeoBlockRenderer("broken_shadow_dungeon_protal"));
+        // 完整核心使用 shadow_dungeon_portal 模型
+        event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.SHADOW_DUNGEON_PORTAL.get(),
+                context -> new W4GeoBlockRenderer("shadow_dungeon_portal"));
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.DESERT_HERO_TOMB.get(),
                 context -> new W4GeoBlockRenderer("desert_hero_tomb"));
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.GUARD_CRYSTAL.get(),
@@ -109,6 +110,7 @@ public class PDClientFurniture {
         registerDisplayItem(event, PDItemsFurniture.class, "picnic_basket", PDItemsFurniture.PICNIC_BASKET.get());
         registerDisplayItem(event, PDItemsFurniture.class, "birds_nest", PDItemsFurniture.BIRDS_NEST.get());
         registerDisplayItem(event, PDItemsFurniture.class, "broken_shadow_dungeon_protal", PDItemsFurniture.BROKEN_SHADOW_DUNGEON_PROTAL.get());
+        registerDisplayItem(event, PDItemsFurniture.class, "shadow_dungeon_portal", PDItemsFurniture.SHADOW_DUNGEON_PORTAL.get());
         registerDisplayItem(event, PDItemsFurniture.class, "desert_hero_tomb", PDItemsFurniture.DESERT_HERO_TOMB.get());
         registerDisplayItem(event, PDItemsFurniture.class, "guard_crystal", PDItemsFurniture.GUARD_CRYSTAL.get());
         registerDisplayItem(event, PDItemsFurniture.class, "shadow_brazier", PDItemsFurniture.SHADOW_BRAZIER.get());

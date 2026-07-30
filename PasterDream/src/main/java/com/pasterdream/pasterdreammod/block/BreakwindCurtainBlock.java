@@ -66,10 +66,9 @@ public class BreakwindCurtainBlock extends Block implements SimpleWaterloggedBlo
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case EAST, WEST -> SHAPE_EW;
-            default -> SHAPE_NS;
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.EAST || facing == Direction.WEST) return SHAPE_EW;
+        return SHAPE_NS;
     }
 
     @Override

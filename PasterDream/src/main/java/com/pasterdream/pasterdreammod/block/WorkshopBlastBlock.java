@@ -80,12 +80,11 @@ public class WorkshopBlastBlock extends BaseEntityBlock {
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         // 原版逐朝向碰撞箱（炉体 + 烟囱）
-        return switch (state.getValue(FACING)) {
-            case NORTH -> Shapes.or(box(8, 3, 8, 32, 14, 32), box(12, 15, 12, 30, 30, 28));
-            case EAST -> Shapes.or(box(-16, 3, 8, 8, 14, 32), box(-12, 15, 12, 4, 30, 30));
-            case WEST -> Shapes.or(box(8, 3, -16, 32, 14, 8), box(12, 15, -14, 28, 30, 4));
-            default -> Shapes.or(box(-16, 3, -16, 8, 14, 8), box(-14, 15, -12, 4, 30, 4));
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.NORTH) return Shapes.or(box(8, 3, 8, 32, 14, 32), box(12, 15, 12, 30, 30, 28));
+        if (facing == Direction.EAST) return Shapes.or(box(-16, 3, 8, 8, 14, 32), box(-12, 15, 12, 4, 30, 30));
+        if (facing == Direction.WEST) return Shapes.or(box(8, 3, -16, 32, 14, 8), box(12, 15, -14, 28, 30, 4));
+        return Shapes.or(box(-16, 3, -16, 8, 14, 8), box(-14, 15, -12, 4, 30, 4));
     }
 
     @Override

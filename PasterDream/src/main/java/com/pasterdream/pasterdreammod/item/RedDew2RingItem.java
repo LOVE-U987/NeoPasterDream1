@@ -35,18 +35,13 @@ public class RedDew2RingItem extends Item implements ICurioItem {
 
     @Override
     public boolean canEquip(SlotContext slotContext, ItemStack stack) {
-        if (slotContext.entity() != null) {
-            return top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(slotContext.entity())
-                    .map(handler -> handler.findFirstCurio(stack.getItem()).isEmpty())
-                    .orElse(true);
-        }
-        return true;
+        return CurioHelper.canEquipSingleton(slotContext, stack);
     }
 
     @Override
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = HashMultimap.create();
-        attributeModifiers.put(Attributes.MAX_HEALTH, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "health"), 0.5, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.MAX_HEALTH, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "health"), 3.0, AttributeModifier.Operation.ADD_VALUE));
         return attributeModifiers;
     }
 

@@ -134,12 +134,11 @@ public class WeaponTableBlock extends BaseEntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case NORTH -> box(0, 0, -2, 22, 11, 16);
-            case EAST -> box(0, 0, 0, 18, 11, 22);
-            case WEST -> box(-2, 0, -6, 16, 11, 16);
-            default -> box(-6, 0, 0, 16, 11, 18);
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.NORTH) return box(0, 0, -2, 22, 11, 16);
+        if (facing == Direction.EAST) return box(0, 0, 0, 18, 11, 22);
+        if (facing == Direction.WEST) return box(-2, 0, -6, 16, 11, 16);
+        return box(-6, 0, 0, 16, 11, 18);
     }
 
     @Override

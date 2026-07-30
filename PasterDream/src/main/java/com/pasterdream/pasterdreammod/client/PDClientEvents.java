@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
@@ -55,6 +56,15 @@ public class PDClientEvents {
     /** ModMusicManager 是否已初始化（注册自定义维度等），volatile 保证跨线程可见性 */
     private static volatile boolean musicManagerInitialized = false;
 
+    /** 上一次 tick 玩家是否处于竞技场遗迹群系，用于群系进入检测 */
+    private static boolean wasInArenaBiome = false;
+
+    /** 竞技场自言自语文本的冷却结束时间（游戏刻） */
+    private static long arenaWhisperCooldownUntil = 0;
+
+    /** 竞技场自言自语冷却时长：30 秒（600 tick） */
+    private static final long ARENA_WHISPER_COOLDOWN_TICKS = 600;
+
     /**
      * 客户端 Tick 后处理
      * <p>
@@ -83,8 +93,11 @@ public class PDClientEvents {
         // 暂停时不生成环境粒子，避免解冻时一瞬间爆出大量粒子
         if (mc.isPaused()) return;
 
-        // 仅在染梦维度中处理环境粒子
-        if (!PDDimensions.isDyedreamWorld(mc.player.level())) return;
+        boolean isDyedream = PDDimensions.isDyedreamWorld(mc.player.level());
+        boolean isArena = PDDimensions.isAaroncosArenaWorld(mc.player.level());
+
+        // 仅在染梦维度或竞技场维度中处理环境粒子
+        if (!isDyedream && !isArena) return;
 
         var biomeKey = mc.level.getBiome(mc.player.blockPosition()).unwrapKey();
         if (biomeKey.isEmpty()) return;
@@ -92,27 +105,35 @@ public class PDClientEvents {
         currentBiomeKey = biomeKey.get();
         ResourceKey<Biome> currentBiome = currentBiomeKey;
 
-        if (PDBiomes.BIOME_DYEDREAM_0.equals(currentBiome)) {
-            spawnDreamfertiliter(mc);
-        } else if (PDBiomes.BIOME_DYEDREAM_1.equals(currentBiome)) {
-            spawnWhiteStar(mc);
-        } else if (PDBiomes.BIOME_DYEDREAM_2.equals(currentBiome)) {
-            spawnSilver(mc);
-        } else if (PDBiomes.BIOME_DYEDREAM_3.equals(currentBiome)) {
-            spawnSnowflakeGround(mc);
-        } else if (PDBiomes.BIOME_DYEDREAM_DEEP_OCEAN.equals(currentBiome)) {
-            spawnDeepOceanBioluminescence(mc);
-        } else if (PDBiomes.BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(currentBiome)) {
-            spawnMushroomSpores(mc);
-        } else if (PDBiomes.BIOME_DYEDREAM_SHORE.equals(currentBiome)) {
-            spawnShoreSpray(mc);
-        } else if (PDBiomes.BIOME_DYEDREAM_RIVER.equals(currentBiome)) {
-            spawnRiverGlow(mc);
-        } else if (PDBiomes.BIOME_DYEDREAM_DENSE_FOREST.equals(currentBiome)) {
-            spawnForestFireflies(mc);
-        }
+        if (isDyedream) {
+            if (PDBiomes.BIOME_DYEDREAM_0.equals(currentBiome)) {
+                spawnDreamfertiliter(mc);
+            } else if (PDBiomes.BIOME_DYEDREAM_1.equals(currentBiome)) {
+                spawnWhiteStar(mc);
+            } else if (PDBiomes.BIOME_DYEDREAM_2.equals(currentBiome)) {
+                spawnSilver(mc);
+            } else if (PDBiomes.BIOME_DYEDREAM_3.equals(currentBiome)) {
+                spawnSnowflakeGround(mc);
+            } else if (PDBiomes.BIOME_DYEDREAM_DEEP_OCEAN.equals(currentBiome)) {
+                spawnDeepOceanBioluminescence(mc);
+            } else if (PDBiomes.BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(currentBiome)) {
+                spawnMushroomSpores(mc);
+            } else if (PDBiomes.BIOME_DYEDREAM_SHORE.equals(currentBiome)) {
+                spawnShoreSpray(mc);
+            } else if (PDBiomes.BIOME_DYEDREAM_RIVER.equals(currentBiome)) {
+                spawnRiverGlow(mc);
+            } else if (PDBiomes.BIOME_DYEDREAM_DENSE_FOREST.equals(currentBiome)) {
+                spawnForestFireflies(mc);
+            }
 
-        spawnTreeLeaves(mc);
+            spawnTreeLeaves(mc);
+        } else if (isArena) {
+            boolean inArenaBiome = PDBiomes.BIOME_AARONCOS_ARENA.equals(currentBiome);
+            tryShowArenaWhisper(mc, inArenaBiome);
+            if (inArenaBiome) {
+                spawnArenaShadowMist(mc);
+            }
+        }
     }
 
     /**
@@ -552,6 +573,64 @@ public class PDClientEvents {
                     (random.nextDouble() - 0.5) * 0.004,
                     (Math.sin(gameTime * 0.015 + angle * 2) * 0.008),
                     (random.nextDouble() - 0.5) * 0.004
+            );
+        }
+    }
+
+    /**
+     * 尝试显示竞技场遗迹群系的自言自语文本。
+     * <p>
+     * 当玩家刚进入 {@link PDBiomes#BIOME_AARONCOS_ARENA} 且冷却结束时，
+     * 在聊天栏显示“我觉得这里不太对劲...”，使其比 action bar 更持久、更易察觉。
+     * 冷却机制避免反复刷屏；离开群系后重新进入可再次触发。
+     *
+     * @param mc           Minecraft 客户端实例
+     * @param inArenaBiome 当前是否处于竞技场遗迹群系
+     */
+    private static void tryShowArenaWhisper(Minecraft mc, boolean inArenaBiome) {
+        long gameTime = mc.level.getGameTime();
+
+        if (inArenaBiome && !wasInArenaBiome && gameTime >= arenaWhisperCooldownUntil) {
+            mc.player.displayClientMessage(
+                    Component.translatable("message.pasterdream.aaroncos_arena.whisper"),
+                    false);
+            arenaWhisperCooldownUntil = gameTime + ARENA_WHISPER_COOLDOWN_TICKS;
+        }
+
+        wasInArenaBiome = inArenaBiome;
+    }
+
+    /**
+     * 生成竞技场灯影雾气粒子。
+     * <p>
+     * 紫色发光孢子从玩家周围缓缓上浮，模拟灯影能量从 portal 废墟中渗出的效果。
+     * 粒子密度较低，保持“点缀式”氛围，避免像感染类模组一样过度张扬。
+     *
+     * @param mc Minecraft 客户端实例
+     */
+    private static void spawnArenaShadowMist(Minecraft mc) {
+        var random = mc.player.getRandom();
+        if (random.nextFloat() >= 0.07f) return;
+
+        long gameTime = mc.level.getGameTime();
+        double driftX = Math.sin(gameTime * DRIFT_SPEED * 0.4) * DRIFT_RADIUS;
+        double driftZ = Math.cos(gameTime * DRIFT_SPEED * 0.6 + 1.5) * DRIFT_RADIUS;
+
+        SimpleParticleType type = (SimpleParticleType) PDParticles.DREAM_SPORE.holder().get();
+
+        int count = 1 + random.nextInt(2);
+        for (int i = 0; i < count; i++) {
+            double angle = random.nextDouble() * Math.PI * 2;
+            double dist = 2.0 + random.nextDouble() * 16.0;
+
+            mc.level.addParticle(
+                    type,
+                    mc.player.getX() + driftX + Math.cos(angle) * dist,
+                    mc.player.getY() + 0.5 + random.nextDouble() * 4.0,
+                    mc.player.getZ() + driftZ + Math.sin(angle) * dist,
+                    (random.nextDouble() - 0.5) * 0.002,
+                    0.006 + random.nextDouble() * 0.01,
+                    (random.nextDouble() - 0.5) * 0.002
             );
         }
     }

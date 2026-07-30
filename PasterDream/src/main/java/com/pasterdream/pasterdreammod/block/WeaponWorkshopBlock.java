@@ -164,12 +164,11 @@ public class WeaponWorkshopBlock extends BaseEntityBlock {
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         // 原版逐朝向碰撞箱（含 3 格高台面与外扩底座）
-        return switch (state.getValue(FACING)) {
-            case NORTH -> Shapes.or(box(0, 3, -2, 22, 16, 16), box(-16, 0, -32, 64, 3, 16));
-            case EAST -> Shapes.or(box(0, 3, 0, 18, 16, 22), box(0, 0, -16, 48, 3, 64));
-            case WEST -> Shapes.or(box(-2, 3, -6, 16, 16, 16), box(-32, 0, -48, 16, 3, 32));
-            default -> Shapes.or(box(-6, 3, 0, 16, 16, 18), box(-48, 0, 0, 32, 3, 48));
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.NORTH) return Shapes.or(box(0, 3, -2, 22, 16, 16), box(-16, 0, -32, 64, 3, 16));
+        if (facing == Direction.EAST) return Shapes.or(box(0, 3, 0, 18, 16, 22), box(0, 0, -16, 48, 3, 64));
+        if (facing == Direction.WEST) return Shapes.or(box(-2, 3, -6, 16, 16, 16), box(-32, 0, -48, 16, 3, 32));
+        return Shapes.or(box(-6, 3, 0, 16, 16, 18), box(-48, 0, 0, 32, 3, 48));
     }
 
     @Override

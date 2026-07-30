@@ -45,7 +45,6 @@ public class LightButterflyCurioItem extends Item implements ICurioItem {
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         LivingEntity entity = slotContext.entity();
-        if(entity.tickCount % 20 != 0)return;
         Level world = entity.level();
         double x = entity.getX();
         double y = entity.getY();

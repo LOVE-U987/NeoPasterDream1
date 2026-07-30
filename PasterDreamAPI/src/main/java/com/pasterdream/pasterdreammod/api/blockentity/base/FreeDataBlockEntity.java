@@ -58,6 +58,15 @@ public class FreeDataBlockEntity extends BlockEntity {
         return data.copy();
     }
 
+    /**
+     * 清空所有自定义持久化数据，使方块实体回到初始状态。
+     */
+    public void clearData() {
+        this.data = new CompoundTag();
+        setChanged();
+        syncToClient();
+    }
+
     protected void syncToClient() {
         if (level != null && !level.isClientSide()) {
             BlockState state = getBlockState();

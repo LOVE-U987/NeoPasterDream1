@@ -1,0 +1,63 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "scatter",
+    "body_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:dyedream_fallen_leaves"
+      }
+    },
+    "top_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:dyedream_fallen_leaves"
+      }
+    },
+    "min_height": 3,
+    "max_height": 8,
+    "base_width": 2,
+    "top_width": 1,
+    "base_radius": 2,
+    "top_radius": 0,
+    "cluster_size": 6,
+    "y_radius": 4,
+    "irregularity": 0.3,
+    "gate_min_width": 2,
+    "gate_max_width": 6,
+    "pillar_radius": 2,
+    "beam_thickness": 2,
+    "crystal_chance": 0.0,
+    "debris_count": 0,
+    "debris_radius": 0,
+    "decoration_chance": 0.0,
+    "crystal_only_on_top": false,
+    "check_hang": true,
+    "fill_hang": false,
+    "occupied_check": true,
+    "region_check": false,
+    "region_threshold": 0.3,
+    "underground_check": false,
+    "water_required": false,
+    "tilt_intensity": 0.0,
+    "replaceable": {
+      "type": "minecraft:any_of",
+      "predicates": [
+        {
+          "type": "minecraft:matching_blocks",
+          "blocks": [
+            "minecraft:air",
+            "minecraft:cave_air",
+            "pasterdream:dyedream_grass",
+            "pasterdream:dyedream_dirt",
+            "pasterdream:dyedream_sand",
+            "pasterdream:dyedream_block"
+          ]
+        },
+        {
+          "type": "minecraft:replaceable"
+        }
+      ]
+    }
+  }
+}

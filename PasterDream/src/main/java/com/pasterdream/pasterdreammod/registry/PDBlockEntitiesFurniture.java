@@ -139,6 +139,14 @@ public class PDBlockEntitiesFurniture {
                     .validBlock(PDBlocksFurniture.BROKEN_SHADOW_DUNGEON_PROTAL)
                     .build();
 
+    /** 完整的暗影地牢传送门方块实体 */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<W4GeoDataBlockEntity>> SHADOW_DUNGEON_PORTAL =
+            BlockEntityAPI.<W4GeoDataBlockEntity>createBlockEntity("shadow_dungeon_portal")
+                    .factory((pos, state) -> new W4GeoDataBlockEntity(
+                            PDBlockEntitiesFurniture.SHADOW_DUNGEON_PORTAL.get(), pos, state))
+                    .validBlock(PDBlocksFurniture.SHADOW_DUNGEON_PORTAL)
+                    .build();
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<W4DataBlockEntity>> CLAYPAN_1 =
             BlockEntityAPI.<W4DataBlockEntity>createBlockEntity("claypan_1")
                     .factory((pos, state) -> new W4DataBlockEntity(

@@ -1,8 +1,6 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
-import com.pasterdream.pasterdreammod.config.PDCommonConfig;
-import com.pasterdream.pasterdreammod.config.PDProcessLimitHelper;
 import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.W4GeoDataBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
@@ -223,9 +221,7 @@ public class TwilightLanternBlock extends BaseEntityBlock {
         }
 
         // 主世界侧：需要 achievement_hide_8 或 achievement_hide_10
-        if (!PDProcessLimitHelper.shouldApplyRestriction(player, PDCommonConfig.RESTRICTION_TWILIGHT_LANTERN)
-                || hasAdvancement(player, "achievement_hide_8")
-                || hasAdvancement(player, "achievement_hide_10")) {
+        if (hasAdvancement(player, "achievement_hide_8") || hasAdvancement(player, "achievement_hide_10")) {
             if (player.getMainHandItem().getItem() == PDItemsFunctional.MELTDREAM_CRYSTAL_0.get()
                     && !W4DataBlockEntity.getBooleanAt(level, pos, "switch")) {
                 if (player instanceof LivingEntity living && !living.level().isClientSide()) {

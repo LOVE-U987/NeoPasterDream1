@@ -97,10 +97,11 @@ public class DesertHeroTombBlock extends BaseEntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case EAST, WEST -> box(-6, 0, 0, 22, 11, 16);
-            default -> box(0, 0, -6, 16, 11, 22);
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.EAST || facing == Direction.WEST) {
+            return box(-6, 0, 0, 22, 11, 16);
+        }
+        return box(0, 0, -6, 16, 11, 22);
     }
 
     @Override

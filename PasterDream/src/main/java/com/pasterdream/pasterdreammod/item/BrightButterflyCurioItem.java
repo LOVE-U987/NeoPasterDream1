@@ -15,6 +15,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +42,20 @@ public class BrightButterflyCurioItem extends Item implements ICurioItem {
 
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
+        LivingEntity entity = slotContext.entity();
+        if (entity == null) return;
+        net.minecraft.world.level.Level world = entity.level();
+        if (world.isClientSide) return;
+        double x = entity.getX();
+        double y = entity.getY();
+        double z = entity.getZ();
+        if (entity instanceof net.minecraft.world.entity.player.Player pl
+                && world.getMaxLocalRawBrightness(net.minecraft.core.BlockPos.containing(x, y, z)) <= 7) {
+            // Night Vision amp0, 240 ticks (12 seconds)
+            entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.NIGHT_VISION, 240, 0, false, false));
+            // Clear darkness
+            entity.removeEffect(net.minecraft.world.effect.MobEffects.DARKNESS);
+        }
     }
 
 }

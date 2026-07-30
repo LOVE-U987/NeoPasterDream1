@@ -49,6 +49,9 @@ public class BlockConfig {
     @Nullable
     BlockFactory blockFactory;
 
+    /** 是否可种植标记 —— 为 true 时自动加入 pasterdream:plantable_on 标签 */
+    boolean plantableOn;
+
     BlockConfig() {
     }
 
@@ -59,6 +62,9 @@ public class BlockConfig {
     /** @return 挖掘工具类型，如 "axe"/"pickaxe"/"shovel"/"hoe" */
     @Nullable
     public String getMineable() { return mineable; }
+
+    /** @return 是否可种植（自动加入 plantable_on 标签） */
+    public boolean isPlantable() { return plantableOn; }
 
     /** @return 渲染类型，如 "translucent"/"cutout"，可为 null（默认 solid） */
     @Nullable
@@ -167,6 +173,18 @@ public class BlockConfig {
      */
     public BlockConfig blockFactory(BlockFactory factory) {
         this.blockFactory = factory;
+        return this;
+    }
+
+    /**
+     * 标记该方块为可种植地面，自动加入 {@code pasterdream:plantable_on} 标签。
+     * <p>
+     * 花草/树苗/作物将能种植在此方块上。
+     *
+     * @return 当前配置实例
+     */
+    public BlockConfig plantable() {
+        this.plantableOn = true;
         return this;
     }
 

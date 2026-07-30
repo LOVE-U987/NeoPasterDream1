@@ -4,6 +4,7 @@ import com.pasterdream.pasterdreammod.block.AuraBuffBlock;
 import com.pasterdream.pasterdreammod.block.BirdsNestBlock;
 import com.pasterdream.pasterdreammod.block.BrokenShadowDungeonProtalBlock;
 import com.pasterdream.pasterdreammod.block.Claypan1Block;
+import com.pasterdream.pasterdreammod.block.ShadowDungeonPortalBlock;
 import com.pasterdream.pasterdreammod.block.DesertHeroTombBlock;
 import com.pasterdream.pasterdreammod.block.GlassJarBlock;
 import com.pasterdream.pasterdreammod.block.GuardCrystalBlock;
@@ -172,6 +173,11 @@ public class PDBlocksFurniture {
     public static final DeferredBlock<BrokenShadowDungeonProtalBlock> BROKEN_SHADOW_DUNGEON_PROTAL =
             PDBlocks.BLOCKS.registerBlock("broken_shadow_dungeon_protal",
                     BrokenShadowDungeonProtalBlock::new, unbreakableStone());
+
+    /** 完整的暗影地牢传送门（修复后替换得到） */
+    public static final DeferredBlock<ShadowDungeonPortalBlock> SHADOW_DUNGEON_PORTAL =
+            PDBlocks.BLOCKS.registerBlock("shadow_dungeon_portal",
+                    ShadowDungeonPortalBlock::new, unbreakableStone());
 
     /** 干裂粘土层·湿润 (claypan_1)：晾晒转化 claypan_2 */
     public static final DeferredBlock<Claypan1Block> CLAYPAN_1 =

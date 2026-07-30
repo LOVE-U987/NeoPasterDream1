@@ -1,7 +1,10 @@
 package com.pasterdream.pasterdreammod.api.meltdream;
 
 import com.pasterdream.pasterdreammod.api.attachment.PDPlayerAttachments;
+import com.pasterdream.pasterdreammod.api.network.MeltDreamEnergyPayload;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -42,7 +45,7 @@ public final class MeltDreamEnergyAPI {
     }
 
     /**
-     * 设置玩家融梦能量（自动钳制）。
+     * 设置玩家融梦能量（自动钳制），含 S2C 同步。
      *
      * @param player 玩家
      * @param value  新能量值
@@ -51,10 +54,11 @@ public final class MeltDreamEnergyAPI {
         if (player == null) return;
         player.setData(PDPlayerAttachments.PLAYER_MELTDREAM_ENERGY,
                 player.getData(PDPlayerAttachments.PLAYER_MELTDREAM_ENERGY).withEnergy(value));
+        syncToClient(player);
     }
 
     /**
-     * 增减玩家融梦能量（自动钳制）。
+     * 增减玩家融梦能量（自动钳制），含 S2C 同步。
      *
      * @param player 玩家
      * @param delta  变化量
@@ -63,6 +67,20 @@ public final class MeltDreamEnergyAPI {
         if (player == null) return;
         player.setData(PDPlayerAttachments.PLAYER_MELTDREAM_ENERGY,
                 player.getData(PDPlayerAttachments.PLAYER_MELTDREAM_ENERGY).addEnergy(delta));
+        syncToClient(player);
+    }
+
+    /**
+     * 将玩家融梦能量数据同步到客户端。
+     *
+     * @param player 玩家
+     */
+    private static void syncToClient(Player player) {
+        if (player instanceof ServerPlayer sp) {
+            MeltDreamEnergyData data = sp.getData(PDPlayerAttachments.PLAYER_MELTDREAM_ENERGY);
+            PacketDistributor.sendToPlayer(sp,
+                    new MeltDreamEnergyPayload(data.meltDreamEnergy(), data.noNeedConsume()));
+        }
     }
 
     /**

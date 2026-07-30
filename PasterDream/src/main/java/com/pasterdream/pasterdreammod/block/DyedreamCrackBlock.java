@@ -1,7 +1,6 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
-import com.pasterdream.pasterdreammod.config.PDProcessLimitHelper;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import net.minecraft.core.BlockPos;
@@ -82,12 +81,11 @@ public class DyedreamCrackBlock extends Block implements SimpleWaterloggedBlock 
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            default -> box(-13, 3, 7, 13, 29, 9);
-            case NORTH -> box(3, 3, 7, 29, 29, 9);
-            case EAST -> box(7, 3, 3, 9, 29, 29);
-            case WEST -> box(7, 3, -13, 9, 29, 13);
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.NORTH) return box(3, 3, 7, 29, 29, 9);
+        if (facing == Direction.EAST) return box(7, 3, 3, 9, 29, 29);
+        if (facing == Direction.WEST) return box(7, 3, -13, 9, 29, 13);
+        return box(-13, 3, 7, 13, 29, 9);
     }
 
     @Override
@@ -163,8 +161,7 @@ public class DyedreamCrackBlock extends Block implements SimpleWaterloggedBlock 
             targetDimension = Level.OVERWORLD;
         } else {
             // 原版：主世界侧仅在已完成 achievement_a_0（读笔记习得裂隙知识）后才传送
-            if (PDProcessLimitHelper.shouldApplyRestriction(player, PDCommonConfig.RESTRICTION_CRACK_TELEPORT)
-                    && !PDAdvancements.has(player, PDAdvancements.A_0)) {
+            if (!PDAdvancements.has(player, PDAdvancements.A_0)) {
                 player.setPortalCooldown(TELEPORT_COOLDOWN);
                 return;
             }

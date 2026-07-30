@@ -145,12 +145,11 @@ public class WorkshopGrindBlock extends BaseEntityBlock {
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         // 原版逐朝向碰撞箱
-        return switch (state.getValue(FACING)) {
-            case NORTH -> box(-2, 3, 3, 16, 12, 16);
-            case EAST -> box(0, 3, -2, 13, 12, 16);
-            case WEST -> box(3, 3, 0, 16, 12, 18);
-            default -> box(0, 3, 0, 18, 12, 13);
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.NORTH) return box(-2, 3, 3, 16, 12, 16);
+        if (facing == Direction.EAST) return box(0, 3, -2, 13, 12, 16);
+        if (facing == Direction.WEST) return box(3, 3, 0, 16, 12, 18);
+        return box(0, 3, 0, 18, 12, 13);
     }
 
     @Override

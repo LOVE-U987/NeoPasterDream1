@@ -85,9 +85,7 @@ public class PDItemsCurios {
 
     // === Curio 护符 (CHARM) ===
     public static final DeferredItem<Item> FOURLEAF_CLOVER_CURIO = CurioAPI.create("fourleaf_clover_curio").slot(CurioSlot.CHARM)
-            .attribute("minecraft:generic.max_health", "055dac74-49cf-474c-9078-f658a61f7047", 1.0, AttributeModifier.Operation.ADD_VALUE)
-            .attribute("pasterdream:luck", "f723cde2-ecbf-45d1-b985-8670b2f00fd2", 6.0, AttributeModifier.Operation.ADD_VALUE)
-            .tooltip("§a品质：优秀 ★★", "§7§o哪片叶子代表着幸运？")
+            .withItemClass(FourleafCloverCurioItem::new)
             .register();
     public static final DeferredItem<Item> EMBRYO_CHARM = CurioAPI.create("embryo_charm").slot(CurioSlot.CHARM).withItemClass(EmbryoCharmItem::new).register();
     public static final DeferredItem<Item> CARAPAX_CHARM = CurioAPI.create("carapax_charm").slot(CurioSlot.CHARM).withItemClass(CarapaxCharmItem::new).register();

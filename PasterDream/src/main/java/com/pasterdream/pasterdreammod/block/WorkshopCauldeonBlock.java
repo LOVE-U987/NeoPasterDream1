@@ -95,12 +95,11 @@ public class WorkshopCauldeonBlock extends BaseEntityBlock {
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         // 原版逐朝向碰撞箱
-        return switch (state.getValue(FACING)) {
-            case NORTH -> box(1, 3, 2, 9, 15, 15);
-            case EAST -> box(1, 3, 1, 14, 15, 9);
-            case WEST -> box(2, 3, 7, 15, 15, 15);
-            default -> box(7, 3, 1, 15, 15, 14);
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.NORTH) return box(1, 3, 2, 9, 15, 15);
+        if (facing == Direction.EAST) return box(1, 3, 1, 14, 15, 9);
+        if (facing == Direction.WEST) return box(2, 3, 7, 15, 15, 15);
+        return box(7, 3, 1, 15, 15, 14);
     }
 
     @Override

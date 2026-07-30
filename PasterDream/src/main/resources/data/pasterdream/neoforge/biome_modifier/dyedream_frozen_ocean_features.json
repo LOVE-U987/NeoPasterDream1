@@ -2,8 +2,8 @@
   "type": "neoforge:add_features",
   "biomes": "pasterdream:biome_dyedream_3",
   "features": [
-    "pasterdream:ice_spike",
-    "pasterdream:ice_gate"
+    "pasterdream:ice_spike_frozen_ocean",
+    "pasterdream:ice_gate_frozen_ocean"
   ],
   "step": "top_layer_modification"
 }

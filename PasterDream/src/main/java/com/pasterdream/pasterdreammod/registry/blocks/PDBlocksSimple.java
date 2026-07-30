@@ -30,7 +30,7 @@ public class PDBlocksSimple {
             .add("dyedream_dirt", Blocks.DIRT, BlockConfig.of()
                     .mineable("shovel").model("cube_all").tex("all", "pasterdream:block/dyedream_dirt"))
             .add("dyedream_sand", Blocks.SAND, BlockConfig.of()
-                    .mineable("shovel").model("cube_all").tex("all", "pasterdream:block/dyedream_sand"))
+                    .mineable("shovel").model("cube_all").tex("all", "pasterdream:block/dyedream_sand").plantable())
             .add("dyedream_planks", Blocks.OAK_PLANKS, BlockConfig.of()
                     .mineable("axe").model("cube_all").tex("all", "pasterdream:block/dyedream_planks"))
             .add("dyedream_glass", Blocks.GLASS, BlockConfig.of()
@@ -43,7 +43,7 @@ public class PDBlocksSimple {
                     .model("cube_all").tex("all", "pasterdream:block/pinkslime_block"))
             .addCustom("dyedream_block",
                     BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_block"))
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_block").plantable())
             .addCustom("dyedreamquartz_block",
                     BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
                     BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz"))

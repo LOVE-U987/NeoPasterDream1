@@ -1,12 +1,11 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
-import com.pasterdream.pasterdreammod.config.PDCommonConfig;
-import com.pasterdream.pasterdreammod.config.PDProcessLimitHelper;
 import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
 import com.pasterdream.pasterdreammod.block.entity.W4GeoDataBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksDungeon;
+import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksVegetation;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
@@ -26,7 +25,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -156,6 +157,13 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
         return Collections.singletonList(new ItemStack(this));
     }
 
+    @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context,
+                                List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        tooltipComponents.add(Component.literal("§7手持 §e黑金属 §7和 §e影灯 §7修复核心"));
+    }
+
     // ==================== tick 冷却（原 ShadowDungeonPortalBlock） ====================
 
     @Override
@@ -183,13 +191,6 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hitResult) {
-        int anim = state.getValue(ANIMATION);
-
-        if (anim == 2) {
-            // ===== 已修复：地牢传送门交互（原 ShadowDungeonPortalBlock 逻辑） =====
-            return handleFixedInteraction(level, pos, player);
-        }
-
         // ===== 破损状态修复逻辑（原 BrokenShadowDungeonProtalBlock 逻辑） =====
         if (pos.getY() <= 20) {
             if (!player.level().isClientSide()) {
@@ -203,8 +204,7 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
             return InteractionResult.SUCCESS;
         }
 
-        if (!PDProcessLimitHelper.shouldApplyRestriction(player, PDCommonConfig.RESTRICTION_BROKEN_PORTAL_REPAIR)
-                || hasAdvancement(player, "achievement_hide_14")) {
+        if (hasAdvancement(player, "achievement_hide_14")) {
             boolean lightMainMetalOff =
                     player.getMainHandItem().getItem() == PDBlocksVegetation.SHADOW_LIGHT_0.get().asItem()
                             && player.getOffhandItem().getItem() == PDItemsMaterials.BLACKMETAL_INGOT.get();
@@ -213,9 +213,12 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
                             && player.getOffhandItem().getItem() == PDBlocksVegetation.SHADOW_LIGHT_0.get().asItem();
             if (lightMainMetalOff || metalMainLightOff) {
                 startRepair(level, pos, player);
-                // 直接减少主手/副手物品数量，而非在整个容器中搜索
-                player.getMainHandItem().shrink(1);
-                player.getOffhandItem().shrink(1);
+                ItemStack metal = new ItemStack(PDItemsMaterials.BLACKMETAL_INGOT.get());
+                player.getInventory().clearOrCountMatchingItems(
+                        s -> metal.getItem() == s.getItem(), 1, player.inventoryMenu.getCraftSlots());
+                ItemStack light = new ItemStack(PDBlocksVegetation.SHADOW_LIGHT_0.get());
+                player.getInventory().clearOrCountMatchingItems(
+                        s -> light.getItem() == s.getItem(), 1, player.inventoryMenu.getCraftSlots());
             } else if (!player.level().isClientSide()) {
                 player.displayClientMessage(Component.literal("双手持§e黑金属§f和§e影灯§f以修复核心"), true);
             }
@@ -226,7 +229,7 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
         return InteractionResult.SUCCESS;
     }
 
-    /** 修复演出 + 20 tick 后切到 animation=2（已修复） */
+    /** 修复演出 + 20 tick 后替换为完整暗影地牢传送门 */
     private static void startRepair(Level level, BlockPos pos, Player player) {
         // 修复演出：animation=1 + smithing_table 音效 + 末地烛粒子
         setAnimation(level, pos, 1);
@@ -238,9 +241,9 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
                     pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 24, 1, 1, 1, 0.3);
         }
 
-        // 20 tick 后切换到已修复状态（animation=2），不再替换方块
+        // 20 tick 后按原模组方式替换为完整核心方块
         ServerScheduler.schedule(20, () -> {
-            setAnimation(level, pos, 2);
+            level.setBlock(pos, PDBlocksFurniture.SHADOW_DUNGEON_PORTAL.get().defaultBlockState(), 3);
             if (!player.level().isClientSide()) {
                 player.displayClientMessage(Component.literal("核心已修复"), true);
             }
@@ -248,7 +251,7 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
     }
 
     /** 已修复状态的交互逻辑：出口传送 + 地牢生成（原 ShadowDungeonPortalBlock.useWithoutItem） */
-    private static InteractionResult handleFixedInteraction(Level level, BlockPos pos, Player player) {
+    public static InteractionResult handleFixedInteraction(Level level, BlockPos pos, Player player) {
         double x = pos.getX();
         double y = pos.getY();
         double z = pos.getZ();

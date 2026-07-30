@@ -1,6 +1,6 @@
 package com.pasterdream.pasterdreammod.block;
 
-import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import com.pasterdream.pasterdreammod.registry.PDBlockTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
@@ -38,7 +38,6 @@ public class DyedreamCropFlowerBlock extends FlowerBlock {
      */
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.is(PDBlocks.DYEDREAM_DIRT.get())
-                || state.is(PDBlocks.DYEDREAM_GRASS.get());
+        return state.is(PDBlockTags.PLANTABLE_ON);
     }
 }

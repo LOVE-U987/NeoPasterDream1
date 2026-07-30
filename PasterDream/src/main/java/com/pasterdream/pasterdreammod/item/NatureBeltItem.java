@@ -10,6 +10,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 import top.theillusivec4.curios.api.SlotContext;
 
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -44,4 +46,10 @@ public class NatureBeltItem extends Item implements ICurioItem {
         }
     }
 
+    @Override
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
+        Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = HashMultimap.create();
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.SAN_VARIABILITY, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "san_var"), 0.48, AttributeModifier.Operation.ADD_VALUE));
+        return attributeModifiers;
+    }
 }

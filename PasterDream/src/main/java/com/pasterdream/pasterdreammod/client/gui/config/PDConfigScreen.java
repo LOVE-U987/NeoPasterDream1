@@ -251,19 +251,6 @@ public class PDConfigScreen extends Screen {
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.ENABLE_MAIN_DEBUG_LOG, ConfigCategory.DEBUG, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.ENABLE_SMOKETEST_DEBUG_LOG, ConfigCategory.DEBUG, idx++));
 
-        // ==================== Progress (11 items) ====================
-        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.ENABLE_PROCESS_LIMIT, ConfigCategory.PROGRESS, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.CREATIVE_BYPASS_PROCESS_LIMIT, ConfigCategory.PROGRESS, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.RESTRICTION_CRACK_TELEPORT, ConfigCategory.PROGRESS, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.RESTRICTION_DREAMJUICE_EFFECT, ConfigCategory.PROGRESS, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.RESTRICTION_TWILIGHT_LANTERN, ConfigCategory.PROGRESS, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.RESTRICTION_SHADOW_BED_TELEPORT, ConfigCategory.PROGRESS, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.RESTRICTION_SHADOW_DUNGEON_DOOR, ConfigCategory.PROGRESS, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.RESTRICTION_BROKEN_PORTAL_REPAIR, ConfigCategory.PROGRESS, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.RESTRICTION_ARENA_PORTAL_TELEPORT, ConfigCategory.PROGRESS, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.RESTRICTION_WHITE_SWORD_SKILL, ConfigCategory.PROGRESS, idx++));
-        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.RESTRICTION_SHADOW_VORTEX_SAFE_CAST, ConfigCategory.PROGRESS, idx++));
-
         // 统计每个分类的配置数量
         categoryCounts.clear();
         activeCategories.clear();

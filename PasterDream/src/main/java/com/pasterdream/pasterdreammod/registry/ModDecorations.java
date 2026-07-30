@@ -130,6 +130,7 @@ public class ModDecorations {
         DyedreamDecorations.registerCalciteCrystalGarden();
         DyedreamDecorations.registerWarmCrystalSpike();
         DyedreamDecorations.registerPinkagaricForest();
+        DyedreamDecorations.registerDyedreamFallenLeaves();
 
         // 冰雪群系（biome_1 + biome_2）
         IceDecorations.registerIceSpike();

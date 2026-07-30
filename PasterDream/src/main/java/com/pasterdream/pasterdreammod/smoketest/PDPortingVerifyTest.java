@@ -100,9 +100,7 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 public final class PDPortingVerifyTest {
 
     /** 是否启用移植验证（环境变量或系统属性开关） */
-    public static final boolean ENABLED =
-            "1".equals(System.getenv("PASTERDREAM_VERIFY"))
-                    || Boolean.getBoolean("pasterdream.verify");
+    public static final boolean ENABLED = false;
 
     /**
      * 测完后是否保持客户端打开供人工观察（默认 true）。

@@ -949,6 +949,7 @@ public class PDItems {
     public static final DeferredItem<?> TRUE_SHADOW_BED = PDItemsFurniture.TRUE_SHADOW_BED;
     public static final DeferredItem<?> BIRDS_NEST = PDItemsFurniture.BIRDS_NEST;
     public static final DeferredItem<?> BROKEN_SHADOW_DUNGEON_PROTAL = PDItemsFurniture.BROKEN_SHADOW_DUNGEON_PROTAL;
+    public static final DeferredItem<?> SHADOW_DUNGEON_PORTAL = PDItemsFurniture.SHADOW_DUNGEON_PORTAL;
     public static final DeferredItem<?> CLAYPAN_1 = PDItemsFurniture.CLAYPAN_1;
     public static final DeferredItem<?> DESERT_HERO_TOMB = PDItemsFurniture.DESERT_HERO_TOMB;
     public static final DeferredItem<?> GUARD_BLOCK = PDItemsFurniture.GUARD_BLOCK;

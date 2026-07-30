@@ -8,6 +8,9 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 import top.theillusivec4.curios.api.SlotContext;
 
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -34,11 +37,14 @@ public class SeaCharmItem extends Item implements ICurioItem {
 
     @Override
     public boolean canEquip(SlotContext slotContext, ItemStack stack) {
-        if (slotContext.entity() != null) {
-            return top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(slotContext.entity())
-                    .map(handler -> handler.findFirstCurio(stack.getItem()).isEmpty())
-                    .orElse(true);
-        }
-        return true;
+        return CurioHelper.canEquipSingleton(slotContext, stack);
+    }
+
+    @Override
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
+        Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = HashMultimap.create();
+        attributeModifiers.put(NeoForgeMod.SWIM_SPEED, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "swim"), 0.3, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.SAN_VARIABILITY, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "san_var"), 0.96, AttributeModifier.Operation.ADD_VALUE));
+        return attributeModifiers;
     }
 }

@@ -124,12 +124,11 @@ public class ShadowDungeonKeyBlock extends HorizontalDirectionalBlock {
         if (!wallMounted) {
             return SHAPE_FLOOR;
         }
-        return switch (state.getValue(FACING)) {
-            case NORTH -> SHAPE_WALL_NORTH;
-            case EAST -> SHAPE_WALL_EAST;
-            case WEST -> SHAPE_WALL_WEST;
-            default -> SHAPE_WALL_SOUTH;
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.NORTH) return SHAPE_WALL_NORTH;
+        if (facing == Direction.EAST) return SHAPE_WALL_EAST;
+        if (facing == Direction.WEST) return SHAPE_WALL_WEST;
+        return SHAPE_WALL_SOUTH;
     }
 
     /**

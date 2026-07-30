@@ -51,8 +51,12 @@ public class DollRegistryKubeJSEvent implements KubeEvent {
             return this;
         }
 
+        /**
+         * 执行注册（使用 {@link com.pasterdream.pasterdreammod.api.doll.DollBuilder#registerDirect()}，
+         * 绕过 DeferredRegister，因为 KubeJS 启动脚本在注册阶段之后执行）。
+         */
         public void register() {
-            builder.register();
+            builder.registerDirect();
         }
     }
 }

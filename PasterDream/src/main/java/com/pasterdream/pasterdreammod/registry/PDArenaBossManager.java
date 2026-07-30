@@ -5,6 +5,9 @@ import com.pasterdream.pasterdreammod.block.entity.AaroncosHandChestBlockEntity;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import com.pasterdream.pasterdreammod.entity.mob.AaroncosLefthand0Entity;
 import com.pasterdream.pasterdreammod.entity.mob.AaroncosRighthand0Entity;
+import com.pasterdream.pasterdreammod.entity.mob.TerrorbeakEntity;
+import com.pasterdream.pasterdreammod.world.PortalInfectionData;
+import com.pasterdream.pasterdreammod.world.PortalRestorationHandler;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
@@ -96,6 +99,11 @@ public class PDArenaBossManager {
      * 维度持久化数据键名 —— 强制离场代际（作废陈旧 410t 回调）
      */
     private static final String FORCE_LEAVE_GEN_KEY = "ForceLeaveGen";
+
+    /**
+     * 维度持久化数据键名 —— 胜利后玩家返回的传送门位置
+     */
+    private static final String RETURN_PORTAL_POS_KEY = "ReturnPortalPos";
 
     /**
      * 初始化 BOSS 战斗状态（未召唤状态）
@@ -305,8 +313,23 @@ public class PDArenaBossManager {
             player.displayClientMessage(Component.translatable("arena.pasterdream.summon_victory"), true);
         }
 
-        // ⏱ 仅一条离开倒计时（原 handspawn Pr1）；开箱后 cancelForceLeaveOnChestOpen 作废
-        // 未开箱到期：补发背包 + 回主清场；右键之眼始终可提前离
+        // 🌀 确定玩家返回的传送门位置（取主世界中第一个有感染记录的传送门）
+        ServerLevel overworld = arenaLevel.getServer().overworld();
+        PortalInfectionData infectionData = PortalInfectionData.get(overworld);
+        List<BlockPos> portalPositions = infectionData.getPortalPositions();
+        BlockPos returnPortal = portalPositions.isEmpty() ? null : portalPositions.get(0);
+
+        ArenaBossData data = getArenaBossData(arenaLevel);
+        data.setReturnPortalPos(returnPortal);
+        data.setDirty();
+
+        // 🌿 同步启动地形回滚：将主世界中所有被感染的传送门区域恢复为原始地形
+        PortalRestorationHandler.startRestoration(overworld, portalPositions);
+
+        // 🚪 立即将所有玩家从传送门位置送回主世界，与回滚同时开始
+        teleportAllPlayersToOverworld(arenaLevel);
+
+        // ⏱ 保留一条离场倒计时作为兜底：若有玩家因异常未传送，410t 后强制清场
         scheduleVictoryCountdown(arenaLevel);
     }
 
@@ -408,10 +431,11 @@ public class PDArenaBossManager {
     }
 
     /**
-     * 传送单个玩家至主世界出生点并切换为生存模式
+     * 传送单个玩家至主世界对应传送门位置并切换为生存模式。
      * <p>
      * 当玩家在 VICTORY 阶段右键召唤方块时调用；
      * 若箱未开，先把战利品塞进该玩家背包。
+     * 优先使用胜利序列记录的返回传送门位置，无记录时回退到主世界出生点。
      *
      * @param arenaLevel 竞技场维度服务端世界
      * @param player     要传送的玩家
@@ -430,15 +454,28 @@ public class PDArenaBossManager {
             }
         }
         ServerLevel overworld = arenaLevel.getServer().overworld();
-        BlockPos spawnPos = overworld.getSharedSpawnPos();
+        ArenaBossData data = getArenaBossData(arenaLevel);
+        BlockPos returnPortalPos = data.getReturnPortalPos();
+
         serverPlayer.setGameMode(GameType.SURVIVAL);
-        serverPlayer.teleportTo(overworld,
-                spawnPos.getX() + 0.5,
-                spawnPos.getY(),
-                spawnPos.getZ() + 0.5,
-                serverPlayer.getYRot(), serverPlayer.getXRot());
-        PDDebugLogger.mainDebug("[PDArenaBossManager] 🚪 已传送玩家 {} 至主世界出生点并切换生存模式",
-                serverPlayer.getName().getString());
+        if (returnPortalPos != null) {
+            serverPlayer.teleportTo(overworld,
+                    returnPortalPos.getX() + 0.5,
+                    returnPortalPos.getY() + 1.0,
+                    returnPortalPos.getZ() + 0.5,
+                    serverPlayer.getYRot(), serverPlayer.getXRot());
+            PDDebugLogger.mainDebug("[PDArenaBossManager] 🚪 已传送玩家 {} 至返回传送门位置 {} 并切换生存模式",
+                    serverPlayer.getName().getString(), returnPortalPos);
+        } else {
+            BlockPos spawnPos = overworld.getSharedSpawnPos();
+            serverPlayer.teleportTo(overworld,
+                    spawnPos.getX() + 0.5,
+                    spawnPos.getY(),
+                    spawnPos.getZ() + 0.5,
+                    serverPlayer.getYRot(), serverPlayer.getXRot());
+            PDDebugLogger.mainDebug("[PDArenaBossManager] 🚪 已传送玩家 {} 至主世界出生点并切换生存模式",
+                    serverPlayer.getName().getString());
+        }
     }
 
     /**
@@ -511,6 +548,9 @@ public class PDArenaBossManager {
         /** 强制离场代际；每次 schedule / cancel / initialize 递增 */
         private int forceLeaveGen = 0;
 
+        /** 胜利后玩家返回的传送门位置；为 null 时回退到主世界出生点 */
+        private BlockPos returnPortalPos = null;
+
         /**
          * 无参构造器（用于新建 SavedData）
          */
@@ -535,6 +575,10 @@ public class PDArenaBossManager {
                 } catch (IllegalArgumentException e) {
                     this.phase = BossFightPhase.NOT_SUMMONED;
                 }
+            }
+            // 读取返回传送门位置（可选）
+            if (tag.contains(RETURN_PORTAL_POS_KEY, CompoundTag.TAG_LONG)) {
+                this.returnPortalPos = BlockPos.of(tag.getLong(RETURN_PORTAL_POS_KEY));
             }
         }
 
@@ -608,6 +652,14 @@ public class PDArenaBossManager {
             this.forceLeaveGen = forceLeaveGen;
         }
 
+        public BlockPos getReturnPortalPos() {
+            return returnPortalPos;
+        }
+
+        public void setReturnPortalPos(BlockPos returnPortalPos) {
+            this.returnPortalPos = returnPortalPos;
+        }
+
         @Override
         public CompoundTag save(CompoundTag compound, HolderLookup.Provider registryLookup) {
             compound.putBoolean(LEFT_HAND_ALIVE_KEY, this.leftHandAlive);
@@ -615,6 +667,9 @@ public class PDArenaBossManager {
             compound.putString(BOSS_FIGHT_PHASE_KEY, this.phase.name());
             compound.putBoolean(FORCE_LEAVE_ACTIVE_KEY, this.forceLeaveActive);
             compound.putInt(FORCE_LEAVE_GEN_KEY, this.forceLeaveGen);
+            if (this.returnPortalPos != null) {
+                compound.putLong(RETURN_PORTAL_POS_KEY, this.returnPortalPos.asLong());
+            }
             return compound;
         }
     }

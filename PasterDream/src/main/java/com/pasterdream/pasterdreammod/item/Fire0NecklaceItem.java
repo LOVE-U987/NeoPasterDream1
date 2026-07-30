@@ -15,6 +15,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,5 +38,12 @@ public class Fire0NecklaceItem extends Item implements ICurioItem {
         list.add(Component.literal("\u00A77\u25AA \u00A79\u5904\u4E8E\u71C3\u70E7\u72B6\u6001\u4E0B\u83B7\u5F97\u6025\u8FEBI\u6548\u679C"));
 }
 
-
+    @Override
+    public void curioTick(SlotContext slotContext, ItemStack stack) {
+        LivingEntity entity = slotContext.entity();
+        if (entity == null) return;
+        if (!entity.level().isClientSide && entity.isOnFire()) {
+            entity.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 2, 0, false, false, true));
+        }
+    }
 }

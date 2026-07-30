@@ -7,6 +7,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 import top.theillusivec4.curios.api.SlotContext;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -36,11 +38,22 @@ public class AllkindsRingItem extends Item implements ICurioItem {
 
     @Override
     public boolean canEquip(SlotContext slotContext, ItemStack stack) {
-        if (slotContext.entity() != null) {
-            return top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(slotContext.entity())
-                    .map(handler -> handler.findFirstCurio(stack.getItem()).isEmpty())
-                    .orElse(true);
-        }
-        return true;
+        return CurioHelper.canEquipSingleton(slotContext, stack);
+    }
+
+    @Override
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
+        Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = HashMultimap.create();
+        attributeModifiers.put(Attributes.MAX_HEALTH, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "health"), 4.0, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "attack"), 2.0, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.ATTACK_SPEED, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "attack_speed"), 0.1, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "entity_reach"), 0.2, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.BLOCK_INTERACTION_RANGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "block_reach"), 0.5, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "speed_mult"), 0.05, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+        // skillcd -0.05  and skillmult +0.05  and tpcd -0.05  use PDAttributes
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.SKILLCD, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "skillcd"), -0.05, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.SKILLMULTIPLIER, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "skillmult"), 0.05, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.TELEPORTATIONCD, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "tpcd"), -0.05, AttributeModifier.Operation.ADD_VALUE));
+        return attributeModifiers;
     }
 }

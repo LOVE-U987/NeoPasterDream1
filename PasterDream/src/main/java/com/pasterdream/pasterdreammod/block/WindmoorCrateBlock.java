@@ -67,10 +67,9 @@ public class WindmoorCrateBlock extends Block implements EntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case EAST, WEST -> box(2, 0, 0, 14, 8, 16);
-            default -> box(0, 0, 2, 16, 8, 14);
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.EAST || facing == Direction.WEST) return box(2, 0, 0, 14, 8, 16);
+        return box(0, 0, 2, 16, 8, 14);
     }
 
     @Override

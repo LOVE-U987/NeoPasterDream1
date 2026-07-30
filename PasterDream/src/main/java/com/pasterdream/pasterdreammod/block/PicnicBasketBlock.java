@@ -73,10 +73,11 @@ public class PicnicBasketBlock extends BaseEntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case EAST, WEST -> box(3, 0, 0, 13, 9, 16);
-            default -> box(0, 0, 3, 16, 9, 13);
-        };
+        Direction facing = state.getValue(FACING);
+        if (facing == Direction.EAST || facing == Direction.WEST) {
+            return box(3, 0, 0, 13, 9, 16);
+        }
+        return box(0, 0, 3, 16, 9, 13);
     }
 
     @Override

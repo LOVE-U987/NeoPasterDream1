@@ -15,6 +15,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,4 +36,13 @@ public class Rabbit0NecklaceItem extends Item implements ICurioItem {
         list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7f\u666E\u901A \u2605"));
         list.add(Component.literal("\u00A77\u25AA \u00A79\u83B7\u5F97\u8DF3\u8DC3\u63D0\u5347I\u6548\u679C"));
 }
+
+    @Override
+    public void curioTick(SlotContext slotContext, ItemStack stack) {
+        LivingEntity entity = slotContext.entity();
+        if (entity == null) return;
+        if (!entity.level().isClientSide) {
+            entity.addEffect(new MobEffectInstance(MobEffects.JUMP, 2, 0, false, false, true));
+        }
+    }
 }
