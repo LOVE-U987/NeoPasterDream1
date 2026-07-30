@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.worldgen.tree;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.worldgen.decor.TreePlacerAPI;
 import com.pasterdream.pasterdreammod.worldgen.tree.decorator.DyedreamFallenLeavesDecorator;
 import com.pasterdream.pasterdreammod.worldgen.tree.decorator.DyedreamHangingVineDecorator;
 import com.pasterdream.pasterdreammod.worldgen.tree.decorator.DyedreamRootDecorator;
@@ -12,7 +13,6 @@ import com.pasterdream.pasterdreammod.worldgen.tree.trunk.DyedreamColossalTrunkP
 import com.pasterdream.pasterdreammod.worldgen.tree.trunk.DyedreamMegaTrunkPlacer;
 import com.pasterdream.pasterdreammod.worldgen.tree.trunk.DyedreamStraightTrunkPlacer;
 import com.pasterdream.pasterdreammod.worldgen.tree.trunk.DyedreamWorldTreeTrunkPlacer;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.foliageplacers.FoliagePlacerType;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecoratorType;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacerType;
@@ -23,12 +23,13 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  * 染梦树 Placer 与 Decorator 注册中心
  * <p>
  * 集中注册自定义 TrunkPlacer / FoliagePlacer / TreeDecorator 类型，供 configured_feature JSON 引用。
+ * DR 创建走 API {@link TreePlacerAPI}；具体 codec/实现仍为本内容。
  */
 public class DyedreamTreePlacers {
 
-    public static final DeferredRegister<TrunkPlacerType<?>> TRUNK_PLACERS = DeferredRegister.create(Registries.TRUNK_PLACER_TYPE, PasterDreamMod.MOD_ID);
-    public static final DeferredRegister<FoliagePlacerType<?>> FOLIAGE_PLACERS = DeferredRegister.create(Registries.FOLIAGE_PLACER_TYPE, PasterDreamMod.MOD_ID);
-    public static final DeferredRegister<TreeDecoratorType<?>> TREE_DECORATORS = DeferredRegister.create(Registries.TREE_DECORATOR_TYPE, PasterDreamMod.MOD_ID);
+    public static final DeferredRegister<TrunkPlacerType<?>> TRUNK_PLACERS = TreePlacerAPI.trunkPlacers(PasterDreamMod.MOD_ID);
+    public static final DeferredRegister<FoliagePlacerType<?>> FOLIAGE_PLACERS = TreePlacerAPI.foliagePlacers(PasterDreamMod.MOD_ID);
+    public static final DeferredRegister<TreeDecoratorType<?>> TREE_DECORATORS = TreePlacerAPI.treeDecorators(PasterDreamMod.MOD_ID);
 
     // TrunkPlacers
     public static final DeferredHolder<TrunkPlacerType<?>, TrunkPlacerType<DyedreamStraightTrunkPlacer>> STRAIGHT_TRUNK_PLACER =

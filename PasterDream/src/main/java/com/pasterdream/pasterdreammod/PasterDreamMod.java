@@ -153,9 +153,11 @@ public class PasterDreamMod {
         PDTreeDecorators.TREE_DECORATOR_TYPES.register(modEventBus);
 
         // 注册上游染梦自定义 Trunk/Foliage/Decorator Placer（供 dyedream_tree*.json 引用）
-        DyedreamTreePlacers.TRUNK_PLACERS.register(modEventBus);
-        DyedreamTreePlacers.FOLIAGE_PLACERS.register(modEventBus);
-        DyedreamTreePlacers.TREE_DECORATORS.register(modEventBus);
+        com.pasterdream.pasterdreammod.api.worldgen.decor.TreePlacerAPI.registerAll(
+                modEventBus,
+                DyedreamTreePlacers.TRUNK_PLACERS,
+                DyedreamTreePlacers.FOLIAGE_PLACERS,
+                DyedreamTreePlacers.TREE_DECORATORS);
 
         // 注册自定义 ChunkGenerator 和 BiomeSource 类型（供维度 JSON 引用）
         PDWorldgenRegistries.CHUNK_GENERATORS.register(modEventBus);

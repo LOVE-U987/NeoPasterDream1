@@ -1,13 +1,13 @@
 package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.worldgen.decor.TreePlacerAPI;
 import com.pasterdream.pasterdreammod.worldgen.treedecorator.BiomeDyedream0LeaveDecorator;
 import com.pasterdream.pasterdreammod.worldgen.treedecorator.BiomeDyedream0TrunkDecorator;
 import com.pasterdream.pasterdreammod.worldgen.treedecorator.BiomeDyedream1LeaveDecorator;
 import com.pasterdream.pasterdreammod.worldgen.treedecorator.BiomeDyedream1TrunkDecorator;
 import com.pasterdream.pasterdreammod.worldgen.treedecorator.BiomeDyedream2LeaveDecorator;
 import com.pasterdream.pasterdreammod.worldgen.treedecorator.BiomeDyedream2TrunkDecorator;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecoratorType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -36,9 +36,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  */
 public class PDTreeDecorators {
 
-    /** 树装饰器类型注册器 */
+    /** 树装饰器类型注册器（API {@link TreePlacerAPI#treeDecorators}） */
     public static final DeferredRegister<TreeDecoratorType<?>> TREE_DECORATOR_TYPES =
-            DeferredRegister.create(Registries.TREE_DECORATOR_TYPE, PasterDreamMod.MOD_ID);
+            TreePlacerAPI.treeDecorators(PasterDreamMod.MOD_ID);
 
     /** 染梦树 0 号树干装饰器类型（biome_dyedream_0_tree.json 引用） */
     public static final DeferredHolder<TreeDecoratorType<?>, TreeDecoratorType<BiomeDyedream0TrunkDecorator>> BIOME_DYEDREAM_0_TREE_TRUNK_DECORATOR =
