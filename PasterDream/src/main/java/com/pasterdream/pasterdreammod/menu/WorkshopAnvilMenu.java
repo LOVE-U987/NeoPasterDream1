@@ -61,20 +61,23 @@ public class WorkshopAnvilMenu extends AbstractContainerMenu {
      */
     public WorkshopAnvilMenu(int id, Inventory inv, BlockEntity blockEntity) {
         super(PDMenus.WORKSHOP_ANVIL.get(), id);
-        this.blockEntity = (WorkshopAnvilBlockEntity) blockEntity;
+        // 防御：BE 缺失或类型不符时构造为空菜单，stillValid 返回 false 由服务端自动关闭
+        this.blockEntity = blockEntity instanceof WorkshopAnvilBlockEntity wbe ? wbe : null;
         this.level = inv.player.level();
 
-        IItemHandler handler = this.blockEntity.getItemHandler();
+        if (this.blockEntity != null) {
+            IItemHandler handler = this.blockEntity.getItemHandler();
 
-        // 槽位 0：原胚输入（原版坐标 34, 78）
-        this.addSlot(new SlotItemHandler(handler, 0, 34, 78));
-        // 槽位 1：产物输出，仅可取出（原版坐标 124, 78）
-        this.addSlot(new SlotItemHandler(handler, 1, 124, 78) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-        });
+            // 槽位 0：原胚输入（原版坐标 34, 78）
+            this.addSlot(new SlotItemHandler(handler, 0, 34, 78));
+            // 槽位 1：产物输出，仅可取出（原版坐标 124, 78）
+            this.addSlot(new SlotItemHandler(handler, 1, 124, 78) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+            });
+        }
 
         // 玩家背包：3×9 网格，起始 (8, 134)（原版偏移 0+8 / 50+84）
         for (int row = 0; row < 3; row++) {
@@ -94,8 +97,8 @@ public class WorkshopAnvilMenu extends AbstractContainerMenu {
 
     @Override
     public void broadcastChanges() {
-        // 每次广播前刷新小游戏状态（服务端侧）
-        if (!this.level.isClientSide()) {
+        // 每次广播前刷新小游戏状态（服务端侧）；BE 失效时跳过
+        if (!this.level.isClientSide() && this.blockEntity != null) {
             this.number.set(this.blockEntity.getNumber());
             this.score.set(this.blockEntity.getScore());
         }
@@ -108,6 +111,9 @@ public class WorkshopAnvilMenu extends AbstractContainerMenu {
      * @return 目标数字 1..5，未开始为 0
      */
     public int getNumber() {
+        if (this.blockEntity == null) {
+            return 0;
+        }
         return this.level.isClientSide() ? this.number.get() : this.blockEntity.getNumber();
     }
 
@@ -117,6 +123,9 @@ public class WorkshopAnvilMenu extends AbstractContainerMenu {
      * @return 积分（可为负）
      */
     public int getScore() {
+        if (this.blockEntity == null) {
+            return 0;
+        }
         return this.level.isClientSide() ? this.score.get() : this.blockEntity.getScore();
     }
 
@@ -129,6 +138,10 @@ public class WorkshopAnvilMenu extends AbstractContainerMenu {
      */
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        // 防御：BE 已失效（方块被拆除等）或距离过远时拒绝按钮操作
+        if (this.blockEntity == null || !this.stillValid(player)) {
+            return false;
+        }
         if (id == BUTTON_START) {
             this.blockEntity.startGame();
             return true;
@@ -171,6 +184,10 @@ public class WorkshopAnvilMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
+        // 防御：BE 缺失/类型不符时菜单立即失效，由服务端关闭
+        if (this.blockEntity == null) {
+            return false;
+        }
         return AbstractContainerMenu.stillValid(
                 ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
                 player, blockEntity.getBlockState().getBlock());

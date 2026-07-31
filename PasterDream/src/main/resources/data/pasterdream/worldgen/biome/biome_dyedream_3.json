@@ -1,6 +1,6 @@
 {
   "has_precipitation": true,
-  "temperature": 0.7,
+  "temperature": 0.1,
   "downfall": 0.25,
   "carvers": {
     "air": [
@@ -51,20 +51,13 @@
     "underground_water_creature": [],
     "water_creature": [
       {
-        "type": "dolphin",
-        "weight": 20,
-        "minCount": 1,
-        "maxCount": 3
+        "type": "minecraft:glow_squid",
+        "weight": 15,
+        "minCount": 2,
+        "maxCount": 4
       }
     ],
-    "water_ambient": [
-      {
-        "type": "minecraft:tropical_fish",
-        "weight": 25,
-        "minCount": 3,
-        "maxCount": 6
-      }
-    ],
+    "water_ambient": [],
     "misc": []
   },
   "spawn_costs": {}

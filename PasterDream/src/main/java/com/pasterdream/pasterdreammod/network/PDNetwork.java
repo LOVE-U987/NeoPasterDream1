@@ -4,6 +4,7 @@ import com.pasterdream.pasterdreammod.api.network.MeltDreamEnergyPayload;
 
 import com.pasterdream.pasterdreammod.api.network.SanDataPayload;
 
+import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyAPI;
 import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyData;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.api.san.SanData;
@@ -347,6 +348,7 @@ public class PDNetwork {
      *       施加 evasion_cloak_buff 1800 tick</li>
      * </ul>
      * 两者激活时都播放 cloak 与 evasion 音效（NEUTRAL 频道，音量/音调 1）。
+     * 融梦能量不足时不进入冷却也不施加效果（与原版 consumePlayerMeltDreamEnergy 守卫一致）。
      * 原版客户端分支仅做本地音效预播，服务端权威模式下省略
      * （playSound(null,...) 广播已覆盖发起者）。
      *
@@ -362,17 +364,19 @@ public class PDNetwork {
             Item turnbackCloak = PDItemsCurios.TURNBACK_CLOAK.get();
             if (!player.getCooldowns().isOnCooldown(turnbackCloak)) {
                 handler.findFirstCurio(turnbackCloak).ifPresent(slot -> {
-                    // 融梦能量消耗已剥离至附属 mod
-                    if (!world.isClientSide) {
-                        player.getCooldowns().addCooldown(turnbackCloak, 7800);
-                        playCloakActivateSounds(world, x, y, z);
-                        ((ServerLevel) world).sendParticles(
-                                (SimpleParticleType) PDParticles.GOLDEN_PARTICLE.particleType(),
-                                x, y + 1, z, 32, 0.4, 0.5, 0.4, 0.01);
-                        player.addEffect(new MobEffectInstance(
-                                PDEffects.TURNBACK_CLOAK_BUFF.holder(), 2400, 0, false, false));
-                        player.addEffect(new MobEffectInstance(
-                                PDEffects.EVASION_BUFF.holder(), 2400, 5, false, false));
+                    // 消耗 10 点融梦能量，不足则不进入冷却/效果（原版 consumePlayerMeltDreamEnergy 守卫）
+                    if (MeltDreamEnergyAPI.consumeEnergy(player, 10)) {
+                        if (!world.isClientSide) {
+                            player.getCooldowns().addCooldown(turnbackCloak, 7800);
+                            playCloakActivateSounds(world, x, y, z);
+                            ((ServerLevel) world).sendParticles(
+                                    (SimpleParticleType) PDParticles.GOLDEN_PARTICLE.particleType(),
+                                    x, y + 1, z, 32, 0.4, 0.5, 0.4, 0.01);
+                            player.addEffect(new MobEffectInstance(
+                                    PDEffects.TURNBACK_CLOAK_BUFF.holder(), 2400, 0, false, false));
+                            player.addEffect(new MobEffectInstance(
+                                    PDEffects.EVASION_BUFF.holder(), 2400, 5, false, false));
+                        }
                     }
                 });
             }
@@ -380,15 +384,17 @@ public class PDNetwork {
             Item evasionCloak = PDItemsCurios.EVASION_CLOAK.get();
             if (!player.getCooldowns().isOnCooldown(evasionCloak)) {
                 handler.findFirstCurio(evasionCloak).ifPresent(slot -> {
-                    // 融梦能量消耗已剥离至附属 mod
-                    if (!world.isClientSide) {
-                        player.getCooldowns().addCooldown(evasionCloak, 7800);
-                        playCloakActivateSounds(world, x, y, z);
-                        ((ServerLevel) world).sendParticles(
-                                (SimpleParticleType) PDParticles.SILVER_PARTICLE.particleType(),
-                                x, y + 1, z, 32, 0.4, 0.5, 0.4, 0.01);
-                        player.addEffect(new MobEffectInstance(
-                                PDEffects.EVASION_CLOAK_BUFF.holder(), 1800, 0, false, false));
+                    // 消耗 10 点融梦能量，不足则不进入冷却/效果（原版 consumePlayerMeltDreamEnergy 守卫）
+                    if (MeltDreamEnergyAPI.consumeEnergy(player, 10)) {
+                        if (!world.isClientSide) {
+                            player.getCooldowns().addCooldown(evasionCloak, 7800);
+                            playCloakActivateSounds(world, x, y, z);
+                            ((ServerLevel) world).sendParticles(
+                                    (SimpleParticleType) PDParticles.SILVER_PARTICLE.particleType(),
+                                    x, y + 1, z, 32, 0.4, 0.5, 0.4, 0.01);
+                            player.addEffect(new MobEffectInstance(
+                                    PDEffects.EVASION_CLOAK_BUFF.holder(), 1800, 0, false, false));
+                        }
                     }
                 });
             }

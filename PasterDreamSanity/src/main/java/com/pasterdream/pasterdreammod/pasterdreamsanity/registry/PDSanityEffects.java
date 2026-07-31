@@ -300,7 +300,7 @@ public class PDSanityEffects {
      */
     private static boolean hasCurioEquipped(LivingEntity entity, String itemId) {
         Optional<net.minecraft.world.item.Item> optionalItem = BuiltInRegistries.ITEM.getOptional(
-                ResourceLocation.fromNamespaceAndPath("pasterdreamsanity", itemId));
+                ResourceLocation.fromNamespaceAndPath("pasterdream", itemId));
         if (optionalItem.isEmpty()) {
             return false;
         }

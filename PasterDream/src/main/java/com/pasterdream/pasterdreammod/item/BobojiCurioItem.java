@@ -48,10 +48,12 @@ public class BobojiCurioItem extends Item implements ICurioItem {
     @Override
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = HashMultimap.create();
-        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.TELEPORTATIONCONSUME, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "tp_consume_1"), -0.2, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.TELEPORTATIONCONSUME, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "tp_consume_2"), -0.4, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.TELEPORTATIONRANGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "tp_range"), 0.1, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "speed"), 0.05, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+        // modifier id 由槽位 id+索引派生，避免同属性多槽位冲突
+        ResourceLocation slotKey = id.withSuffix("/" + slotContext.index());
+        // 原版为 -0.2（teleportationCd）与 -0.4 两个 consume 修饰符，净效果 -0.6；合并为单一 -0.6 语义等价
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.TELEPORTATIONCONSUME, new AttributeModifier(slotKey.withSuffix("_tp_consume"), -0.6, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.TELEPORTATIONRANGE, new AttributeModifier(slotKey.withSuffix("_tp_range"), 0.1, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(slotKey.withSuffix("_speed"), 0.05, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         return attributeModifiers;
     }
 }

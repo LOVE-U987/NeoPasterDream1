@@ -275,6 +275,10 @@ public class PDRuinsRegistration {
      * </ul>
      * NBT / structure / template_pool / structure_set JSON 均已预置；
      * 0–7 的 structure_set 文件名为 {@code *_set.json}，8–10 与原版同名无后缀。
+     * <p>
+     * 注意：{@code #pasterdream:dyedream_biome} 为<b>结构专用地面群系标签</b>，
+     * 故意只包含 7 个陆地主群系（不含深海/蘑菇平原），使教堂等建筑仅在地面生成。
+     * 与 {@code #pasterdream:is_dyedream}（9 个群系全量标签，用于特征注入）语义不同，勿混用。
      */
     private static void registerDreamChurches() {
         // 配置表：{index, spacing, separation, salt, startHeight}

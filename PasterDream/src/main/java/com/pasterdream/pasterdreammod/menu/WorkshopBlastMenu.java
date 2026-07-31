@@ -58,31 +58,34 @@ public class WorkshopBlastMenu extends AbstractContainerMenu {
      */
     public WorkshopBlastMenu(int id, Inventory inv, BlockEntity blockEntity) {
         super(PDMenus.WORKSHOP_BLAST.get(), id);
-        this.blockEntity = (WorkshopBlastBlockEntity) blockEntity;
+        // 防御：BE 缺失或类型不符时构造为空菜单，stillValid 返回 false 由服务端自动关闭
+        this.blockEntity = blockEntity instanceof WorkshopBlastBlockEntity wbe ? wbe : null;
         this.level = inv.player.level();
 
-        IItemHandler handler = this.blockEntity.getItemHandler();
+        if (this.blockEntity != null) {
+            IItemHandler handler = this.blockEntity.getItemHandler();
 
-        // 槽位 0：原胚输入（原版坐标 79, 23）
-        this.addSlot(new SlotItemHandler(handler, 0, 79, 23));
-        // 槽位 1：镶嵌材料（原版坐标 25, 50）
-        this.addSlot(new SlotItemHandler(handler, 1, 25, 50));
-        // 槽位 2：岩浆桶输入（原版坐标 133, 32；注入由 BE 周期轮询处理）
-        this.addSlot(new SlotItemHandler(handler, 2, 133, 32));
-        // 槽位 3：空桶回收，仅可取出（原版坐标 133, 68）
-        this.addSlot(new SlotItemHandler(handler, 3, 133, 68) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-        });
-        // 槽位 4：产物输出，仅可取出（原版坐标 79, 77）
-        this.addSlot(new SlotItemHandler(handler, 4, 79, 77) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-        });
+            // 槽位 0：原胚输入（原版坐标 79, 23）
+            this.addSlot(new SlotItemHandler(handler, 0, 79, 23));
+            // 槽位 1：镶嵌材料（原版坐标 25, 50）
+            this.addSlot(new SlotItemHandler(handler, 1, 25, 50));
+            // 槽位 2：岩浆桶输入（原版坐标 133, 32；注入由 BE 周期轮询处理）
+            this.addSlot(new SlotItemHandler(handler, 2, 133, 32));
+            // 槽位 3：空桶回收，仅可取出（原版坐标 133, 68）
+            this.addSlot(new SlotItemHandler(handler, 3, 133, 68) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+            });
+            // 槽位 4：产物输出，仅可取出（原版坐标 79, 77）
+            this.addSlot(new SlotItemHandler(handler, 4, 79, 77) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+            });
+        }
 
         // 玩家背包：3×9 网格，起始 (8, 114)（原版偏移 0+8 / 30+84）
         for (int row = 0; row < 3; row++) {
@@ -114,6 +117,9 @@ public class WorkshopBlastMenu extends AbstractContainerMenu {
      * @return 岩浆量（mB）
      */
     public int getFluidAmount() {
+        if (this.blockEntity == null) {
+            return 0;
+        }
         return this.level.isClientSide() ? this.fluidAmount.get() : this.blockEntity.getFluidAmount();
     }
 
@@ -148,6 +154,10 @@ public class WorkshopBlastMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
+        // 防御：BE 缺失/类型不符时菜单立即失效，由服务端关闭
+        if (this.blockEntity == null) {
+            return false;
+        }
         return AbstractContainerMenu.stillValid(
                 ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
                 player, blockEntity.getBlockState().getBlock());

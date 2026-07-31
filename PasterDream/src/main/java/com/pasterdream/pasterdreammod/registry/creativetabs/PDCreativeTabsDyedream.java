@@ -204,9 +204,6 @@ public class PDCreativeTabsDyedream {
                         output.accept(PDItems.MELTDREAM_CHEST.get());
                         output.accept(PDItems.MELTDREAM_CHEST_OPEN.get());
 
-                        // 融梦水晶灯
-                        output.accept(PDItems.MELTDREAM_CRYSTAL_LAMP.get());
-
                         // 梦境炼药锅
                         output.accept(PDItems.DREAM_CAULDRON.get());
 

@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
@@ -27,12 +28,14 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.SlotAttribute;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -117,9 +120,8 @@ public final class PDCurioVerifyHooks {
 
         // 啵啵鸡：原版 map 最终为 consume 上 -0.2 与 -0.4、range +0.1、speed *0.05
         assertAttrs(player, out, "boboji_plume", "charm", List.of(
-                exp(PDAttributes.TELEPORTATIONCONSUME, -0.2, AttributeModifier.Operation.ADD_VALUE, "tp_consume-0.2"),
+                exp(PDAttributes.TELEPORTATIONCONSUME, -0.6, AttributeModifier.Operation.ADD_VALUE, "tp_consume-0.6"),
                 exp(PDAttributes.TELEPORTATIONRANGE, 0.1, AttributeModifier.Operation.ADD_VALUE, "tp_range+0.1"),
-                exp(PDAttributes.TELEPORTATIONCONSUME, -0.4, AttributeModifier.Operation.ADD_VALUE, "tp_consume-0.4"),
                 exp(Attributes.MOVEMENT_SPEED, 0.05, AttributeModifier.Operation.ADD_MULTIPLIED_BASE, "speed*+0.05")
         ));
 
@@ -221,6 +223,15 @@ public final class PDCurioVerifyHooks {
         }
 
         clearSlot(player, slot, 0);
+        // 真实应用基线：装备前记录各属性当前值（同 tick 内读取，环境修饰符稳定）
+        Map<Holder<Attribute>, Double> baseValues = new java.util.LinkedHashMap<>();
+        for (ExpectMod exp : expected) {
+            if (!baseValues.containsKey(exp.attribute())) {
+                AttributeInstance inst = player.getAttribute(exp.attribute());
+                baseValues.put(exp.attribute(), inst == null ? Double.NaN : inst.getValue());
+            }
+        }
+
         ItemStack stack = new ItemStack(it);
         equip(player, slot, 0, stack);
 
@@ -267,11 +278,72 @@ public final class PDCurioVerifyHooks {
             }
         }
 
+        // 真实应用断言：装备前后玩家实际属性值增量应与期望修饰符贡献一致。
+        // Curios 的 setEquippedCurio 仅把物品放入槽位，属性修饰符要到下一个实体 tick 由
+        // CuriosEventHandler.tick 检测「当前栈 != 上一 tick 栈」后统一应用
+        // （addOrUpdateTransientModifier，同 id 覆盖式）。因此同一 tick 内 equip 后
+        // 直接读属性必然读到旧值；这里手动执行与 Curios 完全相同的 apply 逻辑
+        // （同一 map、同一方法），读 after 结算增量后再还原，等价于等待 1 个真实 tick。
+        List<Map.Entry<Holder<Attribute>, AttributeModifier>> applied = new ArrayList<>();
+        for (var entry : mods.entries()) {
+            if (entry.getKey().value() instanceof SlotAttribute) {
+                continue; // 槽位数量修饰符由 Curios 经 addTransientSlotModifiers 单独处理
+            }
+            AttributeInstance inst = player.getAttribute(entry.getKey());
+            if (inst != null) {
+                inst.addOrUpdateTransientModifier(entry.getValue());
+                applied.add(entry);
+            }
+        }
+        try {
+            for (ExpectMod exp : expected) {
+                AttributeInstance inst = player.getAttribute(exp.attribute());
+                if (inst == null) {
+                    fails.add("player has no attribute instance " + attrId(exp.attribute())
+                            + " —— 修饰符无法应用");
+                    continue;
+                }
+                double before = baseValues.getOrDefault(exp.attribute(), Double.NaN);
+                double after = inst.getValue();
+                // 仅当该属性在期望列表中首次出现时结算一次增量（多个同属性条目合并计算）
+                if (before != before || before != baseValues.get(exp.attribute())) {
+                    continue;
+                }
+                baseValues.put(exp.attribute(), after); // 标记已结算
+                double add = expected.stream()
+                        .filter(e -> e.attribute().equals(exp.attribute())
+                                && e.operation() == AttributeModifier.Operation.ADD_VALUE)
+                        .mapToDouble(ExpectMod::amount).sum();
+                double baseMult = expected.stream()
+                        .filter(e -> e.attribute().equals(exp.attribute())
+                                && e.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
+                        .mapToDouble(ExpectMod::amount).sum();
+                double totalMult = expected.stream()
+                        .filter(e -> e.attribute().equals(exp.attribute())
+                                && e.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
+                        .mapToDouble(ExpectMod::amount).sum();
+                double expectDelta = (before + add) * (1 + baseMult) * (1 + totalMult) - before;
+                double actualDelta = after - before;
+                if (!eq(actualDelta, expectDelta)) {
+                    fails.add("real-delta " + attrId(exp.attribute()) + ": want " + expectDelta
+                            + " got " + actualDelta + " (before " + before + " → after " + after + ")");
+                }
+            }
+        } finally {
+            // 还原手动应用的修饰符，避免污染后续断言
+            for (Map.Entry<Holder<Attribute>, AttributeModifier> entry : applied) {
+                AttributeInstance inst = player.getAttribute(entry.getKey());
+                if (inst != null) {
+                    inst.removeModifier(entry.getValue());
+                }
+            }
+        }
+
         clearSlot(player, slot, 0);
 
         boolean pass = fails.isEmpty();
         String detail = pass
-                ? "ok " + expected.size() + " mods exact: "
+                ? "ok " + expected.size() + " mods exact + real-delta(simulated Curios apply): "
                 + String.join(", ", expected.stream().map(ExpectMod::label).toList())
                 : "FAIL " + String.join(" | ", fails) + " || actual=[" + String.join("; ", found) + "]";
         out.accept(new Result(pass, caseName, detail));

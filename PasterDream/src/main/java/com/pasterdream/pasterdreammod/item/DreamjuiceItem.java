@@ -78,12 +78,10 @@ public class DreamjuiceItem extends Item {
 
     /** 判定玩家是否已完成前置成就 achievement_b_0（成就数据缺失时视为未完成，不抛异常） */
     private static boolean hasPrerequisite(ServerPlayer player) {
-        if (!PDAdvancements.isAdvancementLocked(player,
-                ResourceLocation.fromNamespaceAndPath("pasterdream", "achievement_b_0"))) {
+        if (!PDAdvancements.isAdvancementLocked(player, PDAdvancements.B_0)) {
             return true;
         }
-        AdvancementHolder advancement = player.server.getAdvancements()
-                .get(ResourceLocation.fromNamespaceAndPath("pasterdream", "achievement_b_0"));
+        AdvancementHolder advancement = player.server.getAdvancements().get(PDAdvancements.B_0);
         return advancement != null && player.getAdvancements().getOrStartProgress(advancement).isDone();
     }
 }

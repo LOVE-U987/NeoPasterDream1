@@ -51,34 +51,37 @@ public class DreamAccumulatorMenu extends AbstractContainerMenu {
      */
     public DreamAccumulatorMenu(int id, Inventory inv, BlockEntity blockEntity) {
         super(PDMenus.DREAM_ACCUMULATOR.get(), id);
-        this.blockEntity = (DreamAccumulatorBlockEntity) blockEntity;
+        // 防御：BE 缺失或类型不符时构造为空菜单，stillValid 返回 false 由服务端自动关闭
+        this.blockEntity = blockEntity instanceof DreamAccumulatorBlockEntity dae ? dae : null;
         this.level = inv.player.level();
 
-        IItemHandler handler = this.blockEntity.getItemHandler();
+        if (this.blockEntity != null) {
+            IItemHandler handler = this.blockEntity.getItemHandler();
 
-        // 菜单索引 0：吸附剂槽（BE 槽 1，原版坐标 78, 82；原版先添加此槽）
-        this.addSlot(new SlotItemHandler(handler, DreamAccumulatorBlockEntity.SLOT_SORBENT, 78, 82) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return stack.is(PDItems.SORBENT.get().asItem());
-            }
-        });
-        // 菜单索引 1：产物槽（BE 槽 0，原版坐标 78, 28）；取走时重置蓄梦计时
-        this.addSlot(new SlotItemHandler(handler, DreamAccumulatorBlockEntity.SLOT_OUTPUT, 78, 28) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-
-            @Override
-            public void onTake(Player player, ItemStack stack) {
-                super.onTake(player, stack);
-                // 原版槽位消息（changeType 1/2）均触发 DreamAccumulatorPr1：计时归零 + dream1 音效
-                if (!player.level().isClientSide()) {
-                    DreamAccumulatorMenu.this.blockEntity.resetTime();
+            // 菜单索引 0：吸附剂槽（BE 槽 1，原版坐标 78, 82；原版先添加此槽）
+            this.addSlot(new SlotItemHandler(handler, DreamAccumulatorBlockEntity.SLOT_SORBENT, 78, 82) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return stack.is(PDItems.SORBENT.get().asItem());
                 }
-            }
-        });
+            });
+            // 菜单索引 1：产物槽（BE 槽 0，原版坐标 78, 28）；取走时重置蓄梦计时
+            this.addSlot(new SlotItemHandler(handler, DreamAccumulatorBlockEntity.SLOT_OUTPUT, 78, 28) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+
+                @Override
+                public void onTake(Player player, ItemStack stack) {
+                    super.onTake(player, stack);
+                    // 原版槽位消息（changeType 1/2）均触发 DreamAccumulatorPr1：计时归零 + dream1 音效
+                    if (!player.level().isClientSide()) {
+                        DreamAccumulatorMenu.this.blockEntity.resetTime();
+                    }
+                }
+            });
+        }
 
         // 玩家背包：3×9 网格，起始 (8, 124)（原版偏移 0+8 / 40+84）
         for (int row = 0; row < 3; row++) {
@@ -107,7 +110,7 @@ public class DreamAccumulatorMenu extends AbstractContainerMenu {
                 }
                 slot.onQuickCraft(stackInSlot, itemstack);
                 // 补发 onTake 语义：Shift 取走产物同样重置计时
-                if (index == 1 && !player.level().isClientSide()) {
+                if (index == 1 && !player.level().isClientSide() && this.blockEntity != null) {
                     this.blockEntity.resetTime();
                 }
             } else {
@@ -128,6 +131,10 @@ public class DreamAccumulatorMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
+        // 防御：BE 缺失/类型不符时菜单立即失效，由服务端关闭
+        if (this.blockEntity == null) {
+            return false;
+        }
         return AbstractContainerMenu.stillValid(
                 ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
                 player, blockEntity.getBlockState().getBlock());

@@ -218,7 +218,6 @@ public class PDBlocks {
     public static final DeferredBlock<?> DYEDREAMQUARTZ_BLOCK = PDBlocksSimple.DYEDREAMQUARTZ_BLOCK;
     public static final DeferredBlock<?> SMOOTH_DYEDREAMQUARTZ_BLOCK = PDBlocksSimple.SMOOTH_DYEDREAMQUARTZ_BLOCK;
     public static final DeferredBlock<?> BRICKS_DYEDREAMQUARTZ_BLOCK = PDBlocksSimple.BRICKS_DYEDREAMQUARTZ_BLOCK;
-    public static final DeferredBlock<?> MELTDREAM_CRYSTAL_LAMP = PDBlocksSimple.MELTDREAM_CRYSTAL_LAMP;
     public static final DeferredBlock<?> CHISELED_DYEDREAMQUARTZ_BLOCK = PDBlocksSimple.CHISELED_DYEDREAMQUARTZ_BLOCK;
     public static final DeferredBlock<?> DYEDREAM_BUD_BLOCK = PDBlocksSimple.DYEDREAM_BUD_BLOCK;
     public static final DeferredBlock<?> PINKSLIME_BLOCK = PDBlocksSimple.PINKSLIME_BLOCK;

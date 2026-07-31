@@ -49,7 +49,6 @@ public class PDItemsBlocks {
     public static final DeferredItem<BlockItem> DYEDREAMQUARTZ_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("dyedreamquartz_block", PDBlocks.DYEDREAMQUARTZ_BLOCK);
     public static final DeferredItem<BlockItem> SMOOTH_DYEDREAMQUARTZ_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("smooth_dyedreamquartz_block", PDBlocks.SMOOTH_DYEDREAMQUARTZ_BLOCK);
     public static final DeferredItem<BlockItem> BRICKS_DYEDREAMQUARTZ_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("bricks_dyedreamquartz_block", PDBlocks.BRICKS_DYEDREAMQUARTZ_BLOCK);
-    public static final DeferredItem<BlockItem> MELTDREAM_CRYSTAL_LAMP = PDItems.ITEMS.registerSimpleBlockItem("meltdream_crystal_lamp", PDBlocks.MELTDREAM_CRYSTAL_LAMP);
     public static final DeferredItem<BlockItem> CHISELED_DYEDREAMQUARTZ_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("chiseled_dyedreamquartz_block", PDBlocks.CHISELED_DYEDREAMQUARTZ_BLOCK);
     public static final DeferredItem<BlockItem> DYEDREAM_BUD_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("dyedream_bud_block", PDBlocks.DYEDREAM_BUD_BLOCK);
     public static final DeferredItem<BlockItem> PINKSLIME_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("pinkslime_block", PDBlocks.PINKSLIME_BLOCK);

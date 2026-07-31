@@ -141,7 +141,7 @@ public final class PDSanityHelper {
      */
     private static Optional<Item> getWhiteFlowerBody() {
         return BuiltInRegistries.ITEM.getOptional(
-                ResourceLocation.fromNamespaceAndPath("pasterdreamsanity", "white_flower_body"));
+                ResourceLocation.fromNamespaceAndPath("pasterdream", "white_flower_body"));
     }
 
     /**

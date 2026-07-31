@@ -1,6 +1,5 @@
 package com.pasterdream.pasterdreammod.item.armor;
 
-import com.pasterdream.pasterdreammod.client.renderer.armor.MachineWingArmorRenderer;
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.registry.PDArmorMaterials;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
@@ -14,6 +13,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -102,19 +103,16 @@ public class MachineWingItem extends ArmorItem implements GeoItem {
 
     @Override
     public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-        consumer.accept(new GeoRenderProvider() {
-            private MachineWingArmorRenderer renderer;
-
-            @Override
-            public <E extends net.minecraft.world.entity.LivingEntity> net.minecraft.client.model.HumanoidModel<?> getGeoArmorRenderer(
-                    E livingEntity, ItemStack itemStack,
-                    net.minecraft.world.entity.EquipmentSlot equipmentSlot,
-                    net.minecraft.client.model.HumanoidModel<E> original) {
-                if (this.renderer == null) {
-                    this.renderer = new MachineWingArmorRenderer();
-                }
-                return this.renderer;
-            }
-        });
+        // 仅客户端物理环境才创建渲染器：经反射调用客户端专属提供者，避免 common 类硬链客户端类
+        if (FMLEnvironment.dist != Dist.CLIENT) {
+            return;
+        }
+        try {
+            Class<?> providers = Class.forName(
+                    "com.pasterdream.pasterdreammod.client.renderer.armor.WingRenderProviders");
+            consumer.accept((GeoRenderProvider) providers.getMethod("machineWing").invoke(null));
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("WingRenderProviders.machineWing 反射调用失败", e);
+        }
     }
 }

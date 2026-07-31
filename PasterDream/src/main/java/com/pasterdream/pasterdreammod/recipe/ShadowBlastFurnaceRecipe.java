@@ -126,6 +126,21 @@ public class ShadowBlastFurnaceRecipe implements Recipe<SingleRecipeInput> {
     }
 
     /**
+     * 标记为特殊配方
+     * <p>1.21 起 Mojang 移除了 {@code RecipeBookCategory} 注册表，客户端配方书
+     * {@code ClientRecipeBook#categorizeAndGroupRecipes} 只识别原版 RecipeType，
+     * 自定义配方类型必然归入 UNKNOWN 并触发 "Unknown recipe category" 警告。
+     * 重写 {@code isSpecial()} 返回 true 可让客户端与服务端配方书跳过该配方，
+     * 从而消除警告（暗影高炉配方已由 JEI 分类展示，无需进入原版配方书）。</p>
+     *
+     * @return 恒为 true
+     */
+    @Override
+    public boolean isSpecial() {
+        return true;
+    }
+
+    /**
      * 获取副产物概率
      *
      * @return 概率（0-1）

@@ -264,7 +264,7 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
      *   <li>利用梯度噪声检测自然形成的宽度变化</li>
      *   <li>深度：地表高度减去 3~5 格随机深度</li>
      *   <li>河床替换为 {@link PDBlocks#DYEDREAM_SAND} 染梦沙</li>
-     *   <li>河岸点缀 {@link PDBlocks#MELTDREAM_CRYSTAL_LAMP} 融梦水晶灯</li>
+     *   <li>河岸点缀 {@link PDBlocks#DYEDREAM_LARTERN} 染梦水晶灯</li>
      * </ul>
      *
      * @param chunkAccess    区块访问
@@ -388,7 +388,7 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
                             && chunkAccess.getBlockState(mutablePos.above()).isAir()) {
                         // 在水晶灯下方垫一个基础方块防止悬空
                         chunkAccess.setBlockState(mutablePos.above(),
-                                PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), false);
+                                PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), false);
                     }
                 }
             }

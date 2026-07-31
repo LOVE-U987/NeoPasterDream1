@@ -61,53 +61,56 @@ public class ResearchTableMenu extends AbstractContainerMenu {
      */
     public ResearchTableMenu(int id, Inventory inv, BlockEntity blockEntity) {
         super(PDMenus.RESEARCH_TABLE.get(), id);
-        this.blockEntity = (ResearchTableBlockEntity) blockEntity;
+        // 防御：BE 缺失或类型不符时构造为空菜单，stillValid 返回 false 由服务端自动关闭
+        this.blockEntity = blockEntity instanceof ResearchTableBlockEntity rte ? rte : null;
         this.level = inv.player.level();
 
-        IItemHandler handler = this.blockEntity.getItemHandler();
+        if (this.blockEntity != null) {
+            IItemHandler handler = this.blockEntity.getItemHandler();
 
-        // 槽位 0：笔与墨（原版坐标 175, 19）
-        this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_PEN, 175, 19) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return stack.is(PDItems.PEN_AND_INK.get().asItem());
-            }
-        });
-        // 槽位 1：寻梦者笔记（原版坐标 40, 28，按 dreamnotes 标签过滤）
-        this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_NOTES, 40, 28) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return stack.is(ResearchTableBlockEntity.DREAMNOTES_TAG);
-            }
-        });
-        // 槽位 2：羊皮纸（原版坐标 40, 46）
-        this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_PERGAMYN, 40, 46) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return stack.is(PDItems.PERGAMYN.get().asItem());
-            }
-        });
-        // 槽位 3：复制产物，仅可取出（原版坐标 139, 37）
-        this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_COPY_RESULT, 139, 37) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-        });
-        // 槽位 4：未知笔记（原版坐标 40, 82）
-        this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_UNKNOWN, 40, 82) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return stack.is(PDItems.UNKNOWNNOTES_0.get().asItem());
-            }
-        });
-        // 槽位 5：研究产物，仅可取出（原版坐标 139, 82）
-        this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_STUDY_RESULT, 139, 82) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-        });
+            // 槽位 0：笔与墨（原版坐标 175, 19）
+            this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_PEN, 175, 19) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return stack.is(PDItems.PEN_AND_INK.get().asItem());
+                }
+            });
+            // 槽位 1：寻梦者笔记（原版坐标 40, 28，按 dreamnotes 标签过滤）
+            this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_NOTES, 40, 28) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return stack.is(ResearchTableBlockEntity.DREAMNOTES_TAG);
+                }
+            });
+            // 槽位 2：羊皮纸（原版坐标 40, 46）
+            this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_PERGAMYN, 40, 46) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return stack.is(PDItems.PERGAMYN.get().asItem());
+                }
+            });
+            // 槽位 3：复制产物，仅可取出（原版坐标 139, 37）
+            this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_COPY_RESULT, 139, 37) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+            });
+            // 槽位 4：未知笔记（原版坐标 40, 82）
+            this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_UNKNOWN, 40, 82) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return stack.is(PDItems.UNKNOWNNOTES_0.get().asItem());
+                }
+            });
+            // 槽位 5：研究产物，仅可取出（原版坐标 139, 82）
+            this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_STUDY_RESULT, 139, 82) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+            });
+        }
 
         // 玩家背包：3×9 网格，起始 (23, 124)（原版偏移 15+8 / 40+84）
         for (int row = 0; row < 3; row++) {
@@ -130,6 +133,10 @@ public class ResearchTableMenu extends AbstractContainerMenu {
      */
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        // 防御：BE 已失效（方块被拆除等）或距离过远时拒绝按钮操作
+        if (this.blockEntity == null || !this.stillValid(player)) {
+            return false;
+        }
         if (id == BUTTON_COPY) {
             this.blockEntity.copyNotes(player);
             return true;
@@ -172,6 +179,10 @@ public class ResearchTableMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
+        // 防御：BE 缺失/类型不符时菜单立即失效，由服务端关闭
+        if (this.blockEntity == null) {
+            return false;
+        }
         return AbstractContainerMenu.stillValid(
                 ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
                 player, blockEntity.getBlockState().getBlock());

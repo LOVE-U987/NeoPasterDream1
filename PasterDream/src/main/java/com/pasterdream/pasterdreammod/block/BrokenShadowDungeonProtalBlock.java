@@ -192,6 +192,10 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hitResult) {
+        // 交互入口统一 server-only：世界修改/schedule/扣物品仅服务端执行
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
         // ===== 破损状态修复逻辑（原 BrokenShadowDungeonProtalBlock 逻辑） =====
         if (pos.getY() <= 20) {
             if (!player.level().isClientSide()) {
@@ -205,7 +209,7 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
             return InteractionResult.SUCCESS;
         }
 
-        if (hasAdvancement(player, "achievement_hide_14")) {
+        if (hasAdvancement(player, PDAdvancements.HIDE_14.getPath())) {
             boolean lightMainMetalOff =
                     player.getMainHandItem().getItem() == PDBlocksVegetation.SHADOW_LIGHT_0.get().asItem()
                             && player.getOffhandItem().getItem() == PDItemsMaterials.BLACKMETAL_INGOT.get();
@@ -253,6 +257,10 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
 
     /** 已修复状态的交互逻辑：出口传送 + 地牢生成（原 ShadowDungeonPortalBlock.useWithoutItem） */
     public static InteractionResult handleFixedInteraction(Level level, BlockPos pos, Player player) {
+        // 交互入口统一 server-only：世界修改/schedule/扣物品仅服务端执行
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
         double x = pos.getX();
         double y = pos.getY();
         double z = pos.getZ();
@@ -324,9 +332,9 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
             if (enterDungeon) {
                 ServerScheduler.schedule(60, () -> {
                     if (entity instanceof ServerPlayer sp
-                            && hasAdvancement(sp, "achievement_shadow_b_0")
-                            && !hasAdvancement(sp, "achievement_shadow_c_0")) {
-                        awardAdvancement(sp, "achievement_shadow_c_0");
+                            && hasAdvancement(sp, PDAdvancements.SHADOW_B_0.getPath())
+                            && !hasAdvancement(sp, PDAdvancements.SHADOW_C_0.getPath())) {
+                        awardAdvancement(sp, PDAdvancements.SHADOW_C_0.getPath());
                     }
                     ServerScheduler.schedule(1, () -> teleport(entity, tx, ty, tz));
                 });
@@ -356,10 +364,10 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
         level.setBlock(BlockPos.containing(x, y - 56, z), PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0.get().defaultBlockState(), 3);
         level.setBlock(BlockPos.containing(x, y - 65, z), PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0.get().defaultBlockState(), 3);
         level.setBlock(BlockPos.containing(x, y - 67, z + 3), PDBlocksDungeon.SHADOWDUNGEONDOOR_2.get().defaultBlockState(), 3);
-        // 清场
+        // 清场（排除玩家，避免多人模式下被踢出世界）
         Vec3 center = new Vec3(x, y - 42, z);
         for (Entity entity : level.getEntitiesOfClass(Entity.class,
-                new AABB(center, center).inflate(44 / 2d), e -> true)) {
+                new AABB(center, center).inflate(44 / 2d), e -> !(e instanceof Player))) {
             if (!entity.level().isClientSide()) {
                 entity.discard();
             }

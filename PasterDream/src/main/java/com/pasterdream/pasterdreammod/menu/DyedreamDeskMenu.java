@@ -4,6 +4,7 @@ import com.pasterdream.pasterdreammod.api.menu.SimpleContainerMenu;
 import com.pasterdream.pasterdreammod.block.entity.DyedreamDeskBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDMenus;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
@@ -41,13 +42,16 @@ public class DyedreamDeskMenu extends SimpleContainerMenu {
      */
     public DyedreamDeskMenu(int id, Inventory inv, BlockEntity blockEntity) {
         super(PDMenus.DYEDREAM_DESK.get(), id, 1);
-        this.blockEntity = (DyedreamDeskBlockEntity) blockEntity;
+        // 防御：BE 缺失或类型不符时构造为空菜单，stillValid 返回 false 由服务端自动关闭
+        this.blockEntity = blockEntity instanceof DyedreamDeskBlockEntity dbe ? dbe : null;
         bindBlockEntity(this.blockEntity);
 
-        IItemHandler handler = this.blockEntity.getItemHandler();
+        if (this.blockEntity != null) {
+            IItemHandler handler = this.blockEntity.getItemHandler();
 
-        // 书桌展示槽位：1 格，位置 (79, 26)
-        this.addSlot(new SlotItemHandler(handler, 0, 79, 26));
+            // 书桌展示槽位：1 格，位置 (79, 26)
+            this.addSlot(new SlotItemHandler(handler, 0, 79, 26));
+        }
         addPlayerInventory(inv, 84);
     }
 
@@ -58,5 +62,16 @@ public class DyedreamDeskMenu extends SimpleContainerMenu {
      */
     public DyedreamDeskBlockEntity getBlockEntity() {
         return blockEntity;
+    }
+
+    /**
+     * 校验玩家是否仍可操作该菜单
+     *
+     * @param player 玩家
+     * @return BE 缺失/类型不符时菜单立即失效，由服务端关闭
+     */
+    @Override
+    public boolean stillValid(Player player) {
+        return this.blockEntity != null && super.stillValid(player);
     }
 }

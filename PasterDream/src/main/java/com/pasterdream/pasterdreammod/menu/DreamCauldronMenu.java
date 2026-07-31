@@ -61,33 +61,36 @@ public class DreamCauldronMenu extends AbstractContainerMenu {
      */
     public DreamCauldronMenu(int id, Inventory inv, BlockEntity blockEntity) {
         super(PDMenus.DREAM_CAULDRON.get(), id);
-        this.blockEntity = (DreamCauldronBlockEntity) blockEntity;
+        // 防御：BE 缺失或类型不符时构造为空菜单，stillValid 返回 false 由服务端自动关闭
+        this.blockEntity = blockEntity instanceof DreamCauldronBlockEntity dce ? dce : null;
         this.level = inv.player.level();
 
-        IItemHandler handler = this.blockEntity.getItemHandler();
+        if (this.blockEntity != null) {
+            IItemHandler handler = this.blockEntity.getItemHandler();
 
-        // 槽位 0：引导药剂（原版坐标 17, 50）
-        this.addSlot(new SlotItemHandler(handler, 0, 17, 50));
-        // 槽位 1-3：炼药材料（原版坐标 61/89/117, 19）
-        this.addSlot(new SlotItemHandler(handler, 1, 61, 19));
-        this.addSlot(new SlotItemHandler(handler, 2, 89, 19));
-        this.addSlot(new SlotItemHandler(handler, 3, 117, 19));
-        // 槽位 4：液体桶输入（原版坐标 170, 23）
-        this.addSlot(new SlotItemHandler(handler, 4, 170, 23));
-        // 槽位 5：空桶回收，仅可取出（原版坐标 170, 77）
-        this.addSlot(new SlotItemHandler(handler, 5, 170, 77) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-        });
-        // 槽位 6：成品输出，仅可取出（原版坐标 89, 50）
-        this.addSlot(new SlotItemHandler(handler, 6, 89, 50) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-        });
+            // 槽位 0：引导药剂（原版坐标 17, 50）
+            this.addSlot(new SlotItemHandler(handler, 0, 17, 50));
+            // 槽位 1-3：炼药材料（原版坐标 61/89/117, 19）
+            this.addSlot(new SlotItemHandler(handler, 1, 61, 19));
+            this.addSlot(new SlotItemHandler(handler, 2, 89, 19));
+            this.addSlot(new SlotItemHandler(handler, 3, 117, 19));
+            // 槽位 4：液体桶输入（原版坐标 170, 23）
+            this.addSlot(new SlotItemHandler(handler, 4, 170, 23));
+            // 槽位 5：空桶回收，仅可取出（原版坐标 170, 77）
+            this.addSlot(new SlotItemHandler(handler, 5, 170, 77) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+            });
+            // 槽位 6：成品输出，仅可取出（原版坐标 89, 50）
+            this.addSlot(new SlotItemHandler(handler, 6, 89, 50) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+            });
+        }
 
         // 玩家背包：3×9 网格，起始 (18, 114)（原版偏移）
         for (int row = 0; row < 3; row++) {
@@ -108,8 +111,8 @@ public class DreamCauldronMenu extends AbstractContainerMenu {
 
     @Override
     public void broadcastChanges() {
-        // 每次广播前刷新液体量（服务端侧）
-        if (!this.level.isClientSide()) {
+        // 每次广播前刷新液体量（服务端侧）；BE 失效时跳过
+        if (!this.level.isClientSide() && this.blockEntity != null) {
             this.fluidAmount.set(this.blockEntity.getFluidAmount());
         }
         super.broadcastChanges();
@@ -121,6 +124,9 @@ public class DreamCauldronMenu extends AbstractContainerMenu {
      * @return 液体量（mB）
      */
     public int getFluidAmount() {
+        if (this.blockEntity == null) {
+            return 0;
+        }
         return this.level.isClientSide() ? this.fluidAmount.get() : this.blockEntity.getFluidAmount();
     }
 
@@ -143,6 +149,10 @@ public class DreamCauldronMenu extends AbstractContainerMenu {
      */
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        // 防御：BE 已失效（方块被拆除等）或距离过远时拒绝按钮操作
+        if (this.blockEntity == null || !this.stillValid(player)) {
+            return false;
+        }
         if (id == BUTTON_CRAFT) {
             this.blockEntity.tryStartCraft(player);
             return true;
@@ -181,6 +191,10 @@ public class DreamCauldronMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
+        // 防御：BE 缺失/类型不符时菜单立即失效，由服务端关闭
+        if (this.blockEntity == null) {
+            return false;
+        }
         return AbstractContainerMenu.stillValid(
                 ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
                 player, blockEntity.getBlockState().getBlock());

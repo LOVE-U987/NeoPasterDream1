@@ -47,8 +47,7 @@ import java.util.List;
 public class WhiteSwordItem extends SwordItem {
 
     /** 光明天赋成就 ID（白厄剑雨的施放门槛） */
-    private static final ResourceLocation TALENT_LIGHT_ADVANCEMENT =
-            ResourceLocation.fromNamespaceAndPath("pasterdream", "achievement_talent_light");
+    private static final ResourceLocation TALENT_LIGHT_ADVANCEMENT = PDAdvancements.TALENT_LIGHT;
 
     /** 与既有 ItemAPI 注册等值的 tier：耐久 1771 / 挖速 2 / 伤害加成 8 / 附魔 10 */
     private static final SimpleTier TIER = new SimpleTier(

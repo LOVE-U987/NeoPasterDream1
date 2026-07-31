@@ -12,6 +12,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * PasterDreamSanity 模组主类。
@@ -45,6 +46,11 @@ public class PasterDreamSanityMod {
         // 使用 ConfigTracker 注册并捕获 ModConfig 引用，以便主模组配置界面保存到 TOML
         commonModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.COMMON, PDSanityConfig.SPEC, modContainer, "pasterdreamsanity-common.toml");
         PDAddonConfigRegistry.registerCommonConfig(MOD_ID, commonModConfig);
+
+        // 理智环境 tick（San 逐 tick 变化 + 低/高 San 效果 + 环境 SAN_VARIABILITY 修饰符刷新）：
+        // 主模组已注释迁移至此模块，此处必须挂到游戏总线，否则 San 值永不变动（饰品的
+        // SAN_VARIABILITY 属性无人消费）。挂在 NeoForge.EVENT_BUS（PlayerTickEvent.Post 为游戏总线事件）。
+        NeoForge.EVENT_BUS.addListener(PDSanityHelper::onPlayerTick);
 
         modEventBus.addListener(this::onCommonSetup);
 

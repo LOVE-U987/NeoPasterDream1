@@ -43,8 +43,10 @@ public class DukeCoinCurioItem extends Item implements ICurioItem {
     @Override
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = HashMultimap.create();
-        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.LUCK, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "luck"), 7.0, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.TELEPORTATIONCD, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "tpcd"), 7.0, AttributeModifier.Operation.ADD_VALUE));
+        // modifier id 由槽位 id+索引派生，避免同属性多槽位冲突
+        ResourceLocation slotKey = id.withSuffix("/" + slotContext.index());
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.LUCK, new AttributeModifier(slotKey.withSuffix("_luck"), 7.0, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.TELEPORTATIONCD, new AttributeModifier(slotKey.withSuffix("_tpcd"), 7.0, AttributeModifier.Operation.ADD_VALUE));
         return attributeModifiers;
     }
 }

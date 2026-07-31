@@ -22,12 +22,12 @@ public class DyedreamDecorations {
     /**
      * 注册染梦水晶簇装饰物 —— biome_dyedream_0 地表散布的发光水晶
      * <p>
-     * 使用 SCATTER 类型，在染梦平原地表散布融梦水晶灯和染梦花蕾，
+     * 使用 SCATTER 类型，在染梦平原地表散布染梦水晶灯和染梦花蕾，
      * 形成闪烁发光的水晶点缀效果。
      */
     public static void registerDyedreamCrystalCluster() {
         SimpleWeightedRandomList<BlockState> crystalBodyList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 40)
+                .add(PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 40)
                 .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 30)
                 .add(PDBlocks.DYEDREAM_BUD_1.get().defaultBlockState(), 20)
                 .add(PDBlocks.DYEDREAM_BUD_2.get().defaultBlockState(), 10)
@@ -58,7 +58,7 @@ public class DyedreamDecorations {
         DecorationBuilder.create()
                 .type(DecorationType.PILLAR)
                 .body(PDBlocks.DYEDREAMQUARTZ_BLOCK.get())
-                .top(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get())
+                .top(PDBlocks.DYEDREAM_LARTERN.get())
                 .crystal(0.2f, BlockStateProvider.simple(PDBlocks.DYEDREAM_BUD_0.get()))
                 .debris(PDBlocks.DYEDREAMQUARTZ_BLOCK.get(), 4, 2)
                 .height(6, 12)
@@ -78,14 +78,14 @@ public class DyedreamDecorations {
     /**
      * 注册浮空云岛装饰物 —— biome_dyedream_0 的浮空结构
      * <p>
-     * 使用 BLOB 类型，由云朵方块构成浮空岛屿，底部挂着融梦水晶灯，
+     * 使用 BLOB 类型，由云朵方块构成浮空岛屿，底部挂着染梦水晶灯，
      * 形成神秘的空中漂浮景观。
      */
     public static void registerFloatingCloudIsland() {
         SimpleWeightedRandomList<BlockState> cloudBodyList = SimpleWeightedRandomList.<BlockState>builder()
                 .add(PDBlocks.CLOUD.get().defaultBlockState(), 70)
                 .add(PDBlocks.THICK_CLOUD.get().defaultBlockState(), 25)
-                .add(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 5)
+                .add(PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 5)
                 .build();
 
         DecorationBuilder.create()
@@ -123,7 +123,7 @@ public class DyedreamDecorations {
                 .build();
 
         SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 60)
+                .add(PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 60)
                 .add(PDBlocks.DYEDREAM_BUD_1.get().defaultBlockState(), 25)
                 .add(PDBlocks.DYEDREAM_BUD_2.get().defaultBlockState(), 15)
                 .build();
@@ -166,7 +166,7 @@ public class DyedreamDecorations {
         DecorationBuilder.create()
                 .type(DecorationType.SPIKE)
                 .body(new WeightedStateProvider(spikeBodyList))
-                .top(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get())
+                .top(PDBlocks.DYEDREAM_LARTERN.get())
                 .crystal(0.25f, new WeightedStateProvider(crystalList))
                 .height(10, 20)
                 .radius(3, 0)
@@ -222,7 +222,7 @@ public class DyedreamDecorations {
                 .build();
 
         SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 50)
+                .add(PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 50)
                 .add(PDBlocks.DYEDREAM_BUD_1.get().defaultBlockState(), 30)
                 .add(PDBlocks.DYEDREAM_BUD_2.get().defaultBlockState(), 20)
                 .build();

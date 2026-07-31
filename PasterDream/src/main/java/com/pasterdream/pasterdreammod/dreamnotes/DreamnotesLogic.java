@@ -75,40 +75,40 @@ public final class DreamnotesLogic {
         double y = entity.getY();
         double z = entity.getZ();
         switch (noteId) {
-            case 1 -> tryUnlock(world, x, y, z, entity, "achievement_a_0", "achievement_start",
+            case 1 -> tryUnlock(world, x, y, z, entity, PDAdvancements.A_0, PDAdvancements.START,
                     "你习得了新的知识 关于§a[染梦裂隙]§f，新的进度已解锁", true);
-            case 2 -> tryUnlock(world, x, y, z, entity, "achievement_b_0", "achievement_a_0",
+            case 2 -> tryUnlock(world, x, y, z, entity, PDAdvancements.B_0, PDAdvancements.A_0,
                     "你习得了新的知识 关于§a[染梦世界]§f，新的进度已解锁", true);
-            case 3 -> tryUnlock(world, x, y, z, entity, "achievement_hide_0", "achievement_start",
+            case 3 -> tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_0, PDAdvancements.START,
                     "你习得了新的知识 关于§a[粉红史莱姆]§f，新的进度已解锁", true);
-            case 4 -> tryUnlock(world, x, y, z, entity, "achievement_a_1", "achievement_start",
+            case 4 -> tryUnlock(world, x, y, z, entity, PDAdvancements.A_1, PDAdvancements.START,
                     "你习得了新的知识 关于§a[苍白雪莲]§f，新的进度已解锁", true);
-            case 5 -> tryUnlock(world, x, y, z, entity, "achievement_hide_3", "achievement_a_1",
+            case 5 -> tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_3, PDAdvancements.A_1,
                     "你习得了新的知识 关于§a[苍白骨针]§f，新的进度已解锁", true);
-            case 6 -> tryUnlock(world, x, y, z, entity, "achievement_c_2", "achievement_start",
+            case 6 -> tryUnlock(world, x, y, z, entity, PDAdvancements.C_2, PDAdvancements.START,
                     "你习得了新的知识 关于§a[衍梦肥泥]§f，新的进度已解锁", true);
-            case 7 -> tryUnlock(world, x, y, z, entity, "achievement_c_3", "achievement_b_0",
+            case 7 -> tryUnlock(world, x, y, z, entity, PDAdvancements.C_3, PDAdvancements.B_0,
                     "你习得了新的知识 关于§a[蓄梦池]§f，新的进度已解锁", true);
             case 8 -> onUseNote8(world, x, y, z, entity, stack);
             case 9 -> onUseNote9(world, x, y, z, entity, stack);
-            case 10 -> tryUnlock(world, x, y, z, entity, "achievement_hide_11", "achievement_shadow_start",
+            case 10 -> tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_11, PDAdvancements.SHADOW_START,
                     "你习得了新的知识 关于§a[沉淀阴影]§f，新的进度已解锁", true);
-            case 11 -> tryUnlock(world, x, y, z, entity, "achievement_hide_12", "achievement_hide_11",
+            case 11 -> tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_12, PDAdvancements.HIDE_11,
                     "你习得了新的知识 关于§a[阴影游记]§f，新的进度已解锁", true);
             case 12 -> {
-                if (tryUnlock(world, x, y, z, entity, "achievement_hide_14", "achievement_hide_13",
+                if (tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_14, PDAdvancements.HIDE_13,
                         "你习得了新的知识 关于§a[暗影地牢]§f，新的进度已解锁", true)) {
                     msg(entity, "你学会了修复暗影地牢的方法", false);
                 }
             }
             case 13 -> {
-                if (tryUnlock(world, x, y, z, entity, "achievement_hide_15", "achievement_hide_14",
+                if (tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_15, PDAdvancements.HIDE_14,
                         "你习得了新的知识 关于§a[恐惧]§f，新的进度已解锁", true)) {
                     msg(entity, "黑暗双手的掌心向你敞开", false);
                 }
             }
             case 14 -> {
-                if (tryUnlock(world, x, y, z, entity, "achievement_hide_16", "achievement_b_0",
+                if (tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_16, PDAdvancements.B_0,
                         "你习得了新的知识 关于§a[无翼鸟也有展翅的梦]§f，新的进度已解锁", true)) {
                     msg(entity, "天空的云层将可以被你撕裂", false);
                 }
@@ -136,10 +136,10 @@ public final class DreamnotesLogic {
     }
 
     private static void onUseNote8(Level world, double x, double y, double z, Entity entity, ItemStack stack) {
-        boolean hide8 = isDone(entity, "achievement_hide_8");
-        boolean hide7 = isDone(entity, "achievement_hide_7");
+        boolean hide8 = isDone(entity, PDAdvancements.HIDE_8);
+        boolean hide7 = isDone(entity, PDAdvancements.HIDE_7);
         if (!hide8 && hide7) {
-            if (awardAllCriteria(entity, "achievement_hide_8")) {
+            if (awardAllCriteria(entity, PDAdvancements.HIDE_8)) {
                 msg(entity, "你习得了新的知识 关于§a[阴影中的潜藏者]§f，新的进度已解锁", false);
                 playChallenge(world, x, y, z);
                 if (writeCoords(world, entity, stack)) {
@@ -149,22 +149,22 @@ public final class DreamnotesLogic {
                 }
                 grantNotesExpup(entity);
             }
-        } else if (isDone(entity, "achievement_hide_8")) {
+        } else if (isDone(entity, PDAdvancements.HIDE_8)) {
             // 已解锁后再读：刷新为当前最近据点
             writeCoords(world, entity, stack);
         }
     }
 
     private static void onUseNote9(Level world, double x, double y, double z, Entity entity, ItemStack stack) {
-        boolean hide10 = isDone(entity, "achievement_hide_10");
-        boolean b0 = isDone(entity, "achievement_b_0");
+        boolean hide10 = isDone(entity, PDAdvancements.HIDE_10);
+        boolean b0 = isDone(entity, PDAdvancements.B_0);
         if (hide10 && b0) {
             if (writeCoords(world, entity, stack)) {
                 msg(entity, "笔记的背面刻印这一个坐标", false);
             }
         }
         if (!hide10 && b0) {
-            if (awardAllCriteria(entity, "achievement_hide_10")) {
+            if (awardAllCriteria(entity, PDAdvancements.HIDE_10)) {
                 msg(entity, "你习得了新的知识 关于§a[侵染教堂]§f，新的进度已解锁", false);
                 playChallenge(world, x, y, z);
                 DreamnotesData.putBoolean(stack, "switch", true);
@@ -191,7 +191,7 @@ public final class DreamnotesLogic {
      * @return 本次是否成功新解锁
      */
     private static boolean tryUnlock(Level world, double x, double y, double z, Entity entity,
-                                     String unlock, String prereq, String message, boolean expup) {
+                                     ResourceLocation unlock, ResourceLocation prereq, String message, boolean expup) {
         if (isDone(entity, unlock) || !isDone(entity, prereq)) {
             return false;
         }
@@ -258,27 +258,25 @@ public final class DreamnotesLogic {
         }
     }
 
-    public static boolean isDone(Entity entity, String path) {
+    public static boolean isDone(Entity entity, ResourceLocation path) {
         if (!(entity instanceof ServerPlayer player)) {
             return false;
         }
-        if (!PDAdvancements.isAdvancementLocked(player, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path))) {
+        if (!PDAdvancements.isAdvancementLocked(player, path)) {
             return true;
         }
-        AdvancementHolder holder = player.server.getAdvancements()
-                .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
+        AdvancementHolder holder = player.server.getAdvancements().get(path);
         if (holder == null) {
             return false;
         }
         return player.getAdvancements().getOrStartProgress(holder).isDone();
     }
 
-    private static boolean awardAllCriteria(Entity entity, String path) {
+    private static boolean awardAllCriteria(Entity entity, ResourceLocation path) {
         if (!(entity instanceof ServerPlayer player)) {
             return false;
         }
-        AdvancementHolder holder = player.server.getAdvancements()
-                .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
+        AdvancementHolder holder = player.server.getAdvancements().get(path);
         if (holder == null) {
             PDDebugLogger.mainDebug("[Dreamnotes] 成就 {} 未注册，跳过授予", path);
             return false;

@@ -44,16 +44,18 @@ public class AllkindsRingItem extends Item implements ICurioItem {
     @Override
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = HashMultimap.create();
-        attributeModifiers.put(Attributes.MAX_HEALTH, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "health"), 4.0, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "attack"), 2.0, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(Attributes.ATTACK_SPEED, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "attack_speed"), 0.1, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "entity_reach"), 0.2, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(Attributes.BLOCK_INTERACTION_RANGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "block_reach"), 0.5, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "speed_mult"), 0.05, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+        // modifier id 由槽位 id+索引派生，避免同属性多槽位冲突
+        ResourceLocation slotKey = id.withSuffix("/" + slotContext.index());
+        attributeModifiers.put(Attributes.MAX_HEALTH, new AttributeModifier(slotKey.withSuffix("_health"), 4.0, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(slotKey.withSuffix("_attack"), 2.0, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.ATTACK_SPEED, new AttributeModifier(slotKey.withSuffix("_attack_speed"), 0.1, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(slotKey.withSuffix("_entity_reach"), 0.2, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.BLOCK_INTERACTION_RANGE, new AttributeModifier(slotKey.withSuffix("_block_reach"), 0.5, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(slotKey.withSuffix("_speed_mult"), 0.05, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         // skillcd -0.05  and skillmult +0.05  and tpcd -0.05  use PDAttributes
-        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.SKILLCD, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "skillcd"), -0.05, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.SKILLMULTIPLIER, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "skillmult"), 0.05, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.TELEPORTATIONCD, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "tpcd"), -0.05, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.SKILLCD, new AttributeModifier(slotKey.withSuffix("_skillcd"), -0.05, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.SKILLMULTIPLIER, new AttributeModifier(slotKey.withSuffix("_skillmult"), 0.05, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.TELEPORTATIONCD, new AttributeModifier(slotKey.withSuffix("_tpcd"), -0.05, AttributeModifier.Operation.ADD_VALUE));
         return attributeModifiers;
     }
 }

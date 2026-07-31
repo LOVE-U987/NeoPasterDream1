@@ -54,7 +54,6 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import org.jetbrains.annotations.Nullable;
 
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
-import com.pasterdream.pasterdreammod.config.PDClientConfig;
 /**
  * 客户端设置类
  * 负责注册客户端特有的渲染器、屏幕、粒子和维度特效
@@ -87,9 +86,8 @@ public class ClientSetup {
             CurioClientHandler.init();
             PDDebugLogger.mainDebug("[ClientSetup] 饰品身体渲染器初始化完成");
 
-            // 根据客户端配置同步内嵌 UI 资源包状态（ENABLE_MOD_UI 关闭时自动卸载）
-            PDPackHandler.applyPackState(PDClientConfig.ENABLE_MOD_UI.get());
-            PDDebugLogger.mainDebug("[ClientSetup] 内嵌 UI 资源包状态已同步：{}", PDClientConfig.ENABLE_MOD_UI.get());
+            // 内嵌 UI 资源包状态同步已移至 PDPackHandler.onPlayerLogin（玩家登录后执行）：
+            // FMLClientSetup 阶段 PackRepository 尚未就绪，早期调用会静默无效。
 
             // 注册模组配置界面：在 Mod 列表点击“配置”按钮时打开 PDConfigScreen
             ModList.get().getModContainerById(PasterDreamMod.MOD_ID).ifPresent(container ->

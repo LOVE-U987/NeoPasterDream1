@@ -11,7 +11,7 @@
     "top_block": {
       "type": "simple_state_provider",
       "state": {
-        "Name": "pasterdream:meltdream_crystal_lamp"
+        "Name": "pasterdream:dyedream_lartern"
       }
     },
     "min_height": 6,

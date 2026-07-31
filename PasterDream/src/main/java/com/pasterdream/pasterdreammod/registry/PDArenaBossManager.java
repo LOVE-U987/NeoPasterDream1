@@ -106,6 +106,18 @@ public class PDArenaBossManager {
     private static final String RETURN_PORTAL_POS_KEY = "ReturnPortalPos";
 
     /**
+     * 玩家持久化数据键名 —— 离场冷却截止 gameTime。
+     * <p>
+     * 胜利/离场传送会把玩家送到主世界返回传送门正上方，传送门为无碰撞半砖，
+     * 玩家下落穿过时 {@code entityInside} 会再次传送进竞技场并重新初始化
+     * BOSS 遗迹（胜利→立即重进循环 bug）。冷却期内传送门对离场玩家不响应。
+     */
+    public static final String ARENA_EXIT_COOLDOWN_KEY = "pd_arena_exit_cooldown";
+
+    /** 离场冷却时长（tick）：100 tick = 5 秒，足够玩家离开返回传送门 */
+    private static final long ARENA_EXIT_COOLDOWN_TICKS = 100;
+
+    /**
      * 初始化 BOSS 战斗状态（未召唤状态）
      * <p>
      * 玩家进入竞技场时调用，初始化为未召唤状态。
@@ -456,6 +468,11 @@ public class PDArenaBossManager {
         ServerLevel overworld = arenaLevel.getServer().overworld();
         ArenaBossData data = getArenaBossData(arenaLevel);
         BlockPos returnPortalPos = data.getReturnPortalPos();
+
+        // 离场冷却：返回传送门就在主世界脚下，玩家下落穿过时会再次触发 entityInside 进竞技场，
+        // 冷却期内传送门不响应，避免「胜利→传送回→立即重进→竞技场重新初始化」循环
+        serverPlayer.getPersistentData().putLong(ARENA_EXIT_COOLDOWN_KEY,
+                arenaLevel.getGameTime() + ARENA_EXIT_COOLDOWN_TICKS);
 
         serverPlayer.setGameMode(GameType.SURVIVAL);
         if (returnPortalPos != null) {

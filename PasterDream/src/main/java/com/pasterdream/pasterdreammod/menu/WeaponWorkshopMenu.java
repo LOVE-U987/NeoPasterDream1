@@ -56,24 +56,27 @@ public class WeaponWorkshopMenu extends AbstractContainerMenu {
      */
     public WeaponWorkshopMenu(int id, Inventory inv, BlockEntity blockEntity) {
         super(PDMenus.WEAPON_WORKSHOP.get(), id);
-        this.blockEntity = (WeaponWorkshopBlockEntity) blockEntity;
+        // 防御：BE 缺失或类型不符时构造为空菜单，stillValid 返回 false 由服务端自动关闭
+        this.blockEntity = blockEntity instanceof WeaponWorkshopBlockEntity wwe ? wwe : null;
         this.level = inv.player.level();
 
-        IItemHandler handler = this.blockEntity.getItemHandler();
+        if (this.blockEntity != null) {
+            IItemHandler handler = this.blockEntity.getItemHandler();
 
-        // 槽位 0-4：锻造材料（原版坐标 12/30/48/66/84, 18）
-        for (int slot = 0; slot < 5; slot++) {
-            this.addSlot(new SlotItemHandler(handler, slot, 12 + slot * 18, 18));
-        }
-        // 槽位 5：强化石（原版坐标 138, 18）
-        this.addSlot(new SlotItemHandler(handler, 5, 138, 18));
-        // 槽位 6：产物输出，仅可取出（原版坐标 138, 63）
-        this.addSlot(new SlotItemHandler(handler, 6, 138, 63) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
+            // 槽位 0-4：锻造材料（原版坐标 12/30/48/66/84, 18）
+            for (int slot = 0; slot < 5; slot++) {
+                this.addSlot(new SlotItemHandler(handler, slot, 12 + slot * 18, 18));
             }
-        });
+            // 槽位 5：强化石（原版坐标 138, 18）
+            this.addSlot(new SlotItemHandler(handler, 5, 138, 18));
+            // 槽位 6：产物输出，仅可取出（原版坐标 138, 63）
+            this.addSlot(new SlotItemHandler(handler, 6, 138, 63) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+            });
+        }
 
         // 玩家背包：3×9 网格，起始 (13, 104)（原版偏移 5+8 / 20+84）
         for (int row = 0; row < 3; row++) {
@@ -97,6 +100,10 @@ public class WeaponWorkshopMenu extends AbstractContainerMenu {
      */
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        // 防御：BE 已失效（方块被拆除等）或距离过远时拒绝按钮操作
+        if (this.blockEntity == null || !this.stillValid(player)) {
+            return false;
+        }
         if (id == BUTTON_FORGE) {
             this.blockEntity.tryForge(player);
             return true;
@@ -135,6 +142,10 @@ public class WeaponWorkshopMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
+        // 防御：BE 缺失/类型不符时菜单立即失效，由服务端关闭
+        if (this.blockEntity == null) {
+            return false;
+        }
         return AbstractContainerMenu.stillValid(
                 ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
                 player, blockEntity.getBlockState().getBlock());

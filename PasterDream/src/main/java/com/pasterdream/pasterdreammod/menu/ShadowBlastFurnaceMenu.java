@@ -62,38 +62,41 @@ public class ShadowBlastFurnaceMenu extends AbstractContainerMenu {
      */
     public ShadowBlastFurnaceMenu(int id, Inventory inv, BlockEntity blockEntity) {
         super(PDMenus.SHADOW_BLAST_FURNACE.get(), id);
-        this.blockEntity = (ShadowBlastFurnaceBlockEntity) blockEntity;
+        // 防御：BE 缺失或类型不符时构造为空菜单，stillValid 返回 false 由服务端自动关闭
+        this.blockEntity = blockEntity instanceof ShadowBlastFurnaceBlockEntity sbf ? sbf : null;
         this.level = inv.player.level();
 
-        IItemHandler handler = this.blockEntity.getItemHandler();
+        if (this.blockEntity != null) {
+            IItemHandler handler = this.blockEntity.getItemHandler();
 
-        // 槽位 0：冶炼输入（原版坐标 25, 24）
-        this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_INPUT, 25, 24));
-        // 槽位 1：梦魇燃料（原版坐标 25, 69）
-        this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_FUEL, 25, 69));
-        // 槽位 2：主产物，仅可取出（原版坐标 61, 105）
-        this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_RESULT, 61, 105) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-        });
-        // 槽位 3：副产物，仅可取出（原版坐标 97, 105）
-        this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_BY_RESULT, 97, 105) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-        });
-        // 槽位 4：暗影液体桶输入（原版坐标 133, 24）
-        this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_BUCKET_IN, 133, 24));
-        // 槽位 5：空桶回收，仅可取出（原版坐标 133, 69）
-        this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_BUCKET_OUT, 133, 69) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-        });
+            // 槽位 0：冶炼输入（原版坐标 25, 24）
+            this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_INPUT, 25, 24));
+            // 槽位 1：梦魇燃料（原版坐标 25, 69）
+            this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_FUEL, 25, 69));
+            // 槽位 2：主产物，仅可取出（原版坐标 61, 105）
+            this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_RESULT, 61, 105) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+            });
+            // 槽位 3：副产物，仅可取出（原版坐标 97, 105）
+            this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_BY_RESULT, 97, 105) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+            });
+            // 槽位 4：暗影液体桶输入（原版坐标 133, 24）
+            this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_BUCKET_IN, 133, 24));
+            // 槽位 5：空桶回收，仅可取出（原版坐标 133, 69）
+            this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_BUCKET_OUT, 133, 69) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+            });
+        }
 
         // 玩家背包：3×9 网格，起始 (8, 134)（原版偏移 0+8 / 50+84）
         for (int row = 0; row < 3; row++) {
@@ -113,8 +116,8 @@ public class ShadowBlastFurnaceMenu extends AbstractContainerMenu {
 
     @Override
     public void broadcastChanges() {
-        // 每次广播前刷新进度与液量（服务端侧）
-        if (!this.level.isClientSide()) {
+        // 每次广播前刷新进度与液量（服务端侧）；BE 失效时跳过
+        if (!this.level.isClientSide() && this.blockEntity != null) {
             this.blastingTime.set(this.blockEntity.getBlastingTime());
             this.needBlastingTime.set(this.blockEntity.getNeedBlastingTime());
             this.fluidAmount.set(this.blockEntity.getFluidAmount());
@@ -128,6 +131,9 @@ public class ShadowBlastFurnaceMenu extends AbstractContainerMenu {
      * @return 已冶炼 tick 数
      */
     public int getBlastingTime() {
+        if (this.blockEntity == null) {
+            return 0;
+        }
         return this.level.isClientSide() ? this.blastingTime.get() : this.blockEntity.getBlastingTime();
     }
 
@@ -137,6 +143,9 @@ public class ShadowBlastFurnaceMenu extends AbstractContainerMenu {
      * @return 总时长（tick），未在冶炼为 0
      */
     public int getNeedBlastingTime() {
+        if (this.blockEntity == null) {
+            return 0;
+        }
         return this.level.isClientSide() ? this.needBlastingTime.get() : this.blockEntity.getNeedBlastingTime();
     }
 
@@ -146,6 +155,9 @@ public class ShadowBlastFurnaceMenu extends AbstractContainerMenu {
      * @return 液量（mB）
      */
     public int getFluidAmount() {
+        if (this.blockEntity == null) {
+            return 0;
+        }
         return this.level.isClientSide() ? this.fluidAmount.get() : this.blockEntity.getFluidAmount();
     }
 
@@ -189,6 +201,10 @@ public class ShadowBlastFurnaceMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
+        // 防御：BE 缺失/类型不符时菜单立即失效，由服务端关闭
+        if (this.blockEntity == null) {
+            return false;
+        }
         return AbstractContainerMenu.stillValid(
                 ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
                 player, blockEntity.getBlockState().getBlock());

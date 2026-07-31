@@ -918,8 +918,8 @@ public class PDEffects {
                 entity.getPersistentData().putDouble("cloudmist_percent", (entity.getY() - 260) * 2);
                 if (entity.getY() >= 306 && entity instanceof ServerPlayer player
                         && (player.isCreative()
-                            || (isAdvancementDone(player, "achievement_b_0")
-                                && isAdvancementDone(player, "achievement_hide_16")))) {
+                            || (isAdvancementDone(player, PDAdvancements.B_0.getPath())
+                                && isAdvancementDone(player, PDAdvancements.HIDE_16.getPath())))) {
                     ServerLevel windJourney = player.server.getLevel(WIND_JOURNEY_WORLD);
                     // 防御性：维度未加载时 getLevel 为 null，静默跳过
                     if (windJourney != null && player.level().dimension() != WIND_JOURNEY_WORLD) {
@@ -1080,9 +1080,9 @@ public class PDEffects {
         if (entity instanceof Player player && !player.level().isClientSide) {
             player.displayClientMessage(Component.literal("§5影子归于平息..."), false);
         }
-        if (entity instanceof ServerPlayer player && !isAdvancementDone(player, "achievement_shadow_npc_3")) {
+        if (entity instanceof ServerPlayer player && !isAdvancementDone(player, PDAdvancements.SHADOW_NPC_3.getPath())) {
             AdvancementHolder advancement = player.server.getAdvancements()
-                    .get(ResourceLocation.fromNamespaceAndPath("pasterdream", "achievement_shadow_npc_3"));
+                    .get(PDAdvancements.SHADOW_NPC_3);
             if (advancement != null) {
                 AdvancementProgress progress = player.getAdvancements().getOrStartProgress(advancement);
                 if (!progress.isDone()) {

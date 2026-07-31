@@ -154,7 +154,7 @@ public class IceDecorations {
                 .build();
 
         SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 55)
+                .add(PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 55)
                 .add(PDBlocks.ICE_BUD_0.get().defaultBlockState(), 30)
                 .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 15)
                 .build();

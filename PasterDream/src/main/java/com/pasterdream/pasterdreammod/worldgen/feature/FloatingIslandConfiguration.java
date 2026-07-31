@@ -36,12 +36,12 @@ public record FloatingIslandConfiguration(
         boolean decorateVines
 ) implements FeatureConfiguration {
 
-    /** 默认方块权重条目：方解石 60%，云朵 25%，染梦石英块 10%，融梦水晶灯 5% */
+    /** 默认方块权重条目：方解石 60%，云朵 25%，染梦石英块 10%，染梦水晶灯 5% */
     public static final List<WeightedBlockEntry> DEFAULT_WEIGHTS = List.of(
             new WeightedBlockEntry(net.minecraft.world.level.block.Blocks.CALCITE, 60),
             new WeightedBlockEntry(com.pasterdream.pasterdreammod.registry.PDBlocks.CLOUD.get(), 25),
             new WeightedBlockEntry(com.pasterdream.pasterdreammod.registry.PDBlocks.DYEDREAMQUARTZ_BLOCK.get(), 10),
-            new WeightedBlockEntry(com.pasterdream.pasterdreammod.registry.PDBlocks.MELTDREAM_CRYSTAL_LAMP.get(), 5)
+            new WeightedBlockEntry(com.pasterdream.pasterdreammod.registry.PDBlocks.DYEDREAM_LARTERN.get(), 5)
     );
 
     /** 默认配置 —— 适用于染梦世界多数群系 */

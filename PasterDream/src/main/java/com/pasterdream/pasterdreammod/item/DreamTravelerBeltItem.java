@@ -42,8 +42,10 @@ public class DreamTravelerBeltItem extends Item implements ICurioItem {
     @Override
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = HashMultimap.create();
-        attributeModifiers.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "speed"), 0.03, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
-        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.TELEPORTATIONCD, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "tpcd"), -0.1, AttributeModifier.Operation.ADD_VALUE));
+        // modifier id 由槽位 id+索引派生，避免同属性多槽位冲突
+        ResourceLocation slotKey = id.withSuffix("/" + slotContext.index());
+        attributeModifiers.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(slotKey.withSuffix("_speed"), 0.03, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.TELEPORTATIONCD, new AttributeModifier(slotKey.withSuffix("_tpcd"), -0.1, AttributeModifier.Operation.ADD_VALUE));
         return attributeModifiers;
     }
 }

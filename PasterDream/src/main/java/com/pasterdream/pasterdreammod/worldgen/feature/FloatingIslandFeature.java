@@ -214,7 +214,7 @@ public class FloatingIslandFeature extends Feature<FloatingIslandConfiguration> 
      * 在大型岛屿底部生成倒垂水晶簇
      * <p>
      * 水晶从岛屿底面（最低层）向下延伸，形成钟乳石状结构。
-     * 使用融梦水晶灯作为晶体主体，生命水晶块作为尖端装饰。
+     * 使用染梦水晶灯作为晶体主体，生命水晶块作为尖端装饰。
      *
      * @param level     世界生成级别访问
      * @param random    随机数源
@@ -254,7 +254,7 @@ public class FloatingIslandFeature extends Feature<FloatingIslandConfiguration> 
             int crystalLength = random.nextIntBetweenInclusive(1, MAX_CRYSTAL_LENGTH);
             Block crystalBlock = random.nextFloat() < 0.3f
                     ? PDBlocks.LIFE_CRYSTAL.get()
-                    : PDBlocks.MELTDREAM_CRYSTAL_LAMP.get();
+                    : PDBlocks.DYEDREAM_LARTERN.get();
 
             for (int drop = 1; drop <= crystalLength; drop++) {
                 BlockPos crystalPos = new BlockPos(spikeX, bottomY - drop, spikeZ);
@@ -266,7 +266,7 @@ public class FloatingIslandFeature extends Feature<FloatingIslandConfiguration> 
                 }
 
                 if (drop == crystalLength && random.nextFloat() < 0.25f) {
-                    // 尖端使用生命水晶或融梦水晶灯
+                    // 尖端使用生命水晶或染梦水晶灯
                     level.setBlock(crystalPos, PDBlocks.LIFE_CRYSTAL.get().defaultBlockState(), 3);
                 } else {
                     level.setBlock(crystalPos, crystalBlock.defaultBlockState(), 3);
@@ -285,7 +285,7 @@ public class FloatingIslandFeature extends Feature<FloatingIslandConfiguration> 
                     sidePos = new BlockPos(spikeX, bottomY - 1, spikeZ + sideOffset);
                 }
                 if (level.getBlockState(sidePos).isAir() && !allPlaced.contains(sidePos)) {
-                    level.setBlock(sidePos, PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 3);
+                    level.setBlock(sidePos, PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 3);
                     allPlaced.add(sidePos);
                 }
             }

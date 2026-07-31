@@ -36,12 +36,19 @@ public class AngelBlockItemItem extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        InteractionResultHolder<ItemStack> result = super.use(level, player, hand);
+        ItemStack stack = player.getItemInHand(hand);
         BlockPos below = BlockPos.containing(player.getX(), player.getY() - 1, player.getZ());
-        if (level.getBlockState(below).getBlock() == Blocks.AIR) {
-            level.setBlock(below, PDBlocks.ANGEL_BLOCK.get().defaultBlockState(), 3);
-            result.getObject().shrink(1);
+        if (level.getBlockState(below).getBlock() != Blocks.AIR) {
+            return super.use(level, player, hand);
         }
-        return result;
+        // 服务端权威：仅服务端放置方块并消耗物品，避免幽灵方块与双端不同步；
+        // 客户端命中条件时返回 consume，以触发服务端再次执行 use
+        if (!level.isClientSide()) {
+            level.setBlock(below, PDBlocks.ANGEL_BLOCK.get().defaultBlockState(), 3);
+            if (!player.getAbilities().instabuild) {
+                stack.shrink(1);
+            }
+        }
+        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
 }

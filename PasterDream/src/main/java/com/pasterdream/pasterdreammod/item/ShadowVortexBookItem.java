@@ -42,8 +42,7 @@ import java.util.List;
 public class ShadowVortexBookItem extends Item {
 
     /** 暗影天赋成就 ID */
-    private static final ResourceLocation TALENT_SHADOW_ADVANCEMENT =
-            ResourceLocation.fromNamespaceAndPath("pasterdream", "achievement_talent_shadow");
+    private static final ResourceLocation TALENT_SHADOW_ADVANCEMENT = PDAdvancements.TALENT_SHADOW;
 
     public ShadowVortexBookItem(Properties properties) {
         super(properties.stacksTo(1));

@@ -41,8 +41,10 @@ public class FourleafCloverCurioItem extends Item implements ICurioItem {
     @Override
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = HashMultimap.create();
-        attributeModifiers.put(Attributes.MAX_HEALTH, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "health"), 1.0, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.LUCK, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "luck"), 6.0, AttributeModifier.Operation.ADD_VALUE));
+        // modifier id 由槽位 id+索引派生，避免同属性多槽位冲突
+        ResourceLocation slotKey = id.withSuffix("/" + slotContext.index());
+        attributeModifiers.put(Attributes.MAX_HEALTH, new AttributeModifier(slotKey.withSuffix("_health"), 1.0, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.LUCK, new AttributeModifier(slotKey.withSuffix("_luck"), 6.0, AttributeModifier.Operation.ADD_VALUE));
         return attributeModifiers;
     }
 }

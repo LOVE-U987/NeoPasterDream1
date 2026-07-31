@@ -4,6 +4,7 @@ import com.pasterdream.pasterdreammod.api.menu.SimpleContainerMenu;
 import com.pasterdream.pasterdreammod.block.entity.ShadowChestBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDMenus;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.IItemHandler;
 
@@ -35,13 +36,16 @@ public class ShadowChestMenu extends SimpleContainerMenu {
      */
     public ShadowChestMenu(int id, Inventory inv, BlockEntity blockEntity) {
         super(PDMenus.SHADOW_CHEST.get(), id, 15);
-        this.blockEntity = (ShadowChestBlockEntity) blockEntity;
+        // 防御：BE 缺失或类型不符时构造为空菜单，stillValid 返回 false 由服务端自动关闭
+        this.blockEntity = blockEntity instanceof ShadowChestBlockEntity sce ? sce : null;
         bindBlockEntity(this.blockEntity);
 
-        IItemHandler handler = this.blockEntity.getItemHandler();
+        if (this.blockEntity != null) {
+            IItemHandler handler = this.blockEntity.getItemHandler();
 
-        // 影之箱库存槽位: 5×3 网格 (索引 0-14)
-        addContainerGrid(handler, 5, 3, 43, 15);
+            // 影之箱库存槽位: 5×3 网格 (索引 0-14)
+            addContainerGrid(handler, 5, 3, 43, 15);
+        }
         // 玩家背包 (索引 15-50)，快捷栏 y=142
         addPlayerInventory(inv, 84);
     }
@@ -53,5 +57,16 @@ public class ShadowChestMenu extends SimpleContainerMenu {
      */
     public ShadowChestBlockEntity getBlockEntity() {
         return blockEntity;
+    }
+
+    /**
+     * 校验玩家是否仍可操作该菜单
+     *
+     * @param player 玩家
+     * @return BE 缺失/类型不符时菜单立即失效，由服务端关闭
+     */
+    @Override
+    public boolean stillValid(Player player) {
+        return this.blockEntity != null && super.stillValid(player);
     }
 }

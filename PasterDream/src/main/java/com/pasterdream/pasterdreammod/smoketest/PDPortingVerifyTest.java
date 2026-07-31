@@ -99,8 +99,10 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 @EventBusSubscriber(modid = PasterDreamMod.MOD_ID)
 public final class PDPortingVerifyTest {
 
-    /** 是否启用移植验证（环境变量或系统属性开关） */
-    public static final boolean ENABLED = false;
+    /** 是否启用移植验证（环境变量或系统属性开关）：PASTERDREAM_VERIFY=1 或 -Dpasterdream.verify=true */
+    public static final boolean ENABLED =
+            "1".equals(System.getenv("PASTERDREAM_VERIFY"))
+                    || Boolean.getBoolean("pasterdream.verify");
 
     /**
      * 测完后是否保持客户端打开供人工观察（默认 true）。
@@ -170,7 +172,14 @@ public final class PDPortingVerifyTest {
         /** 主干全链路连续流程；不在 all 默认集合内 */
         MAIN_FLOW("main-flow", "main", "story", "full-flow"),
         /** 染梦世界：狐狸雕像 + flower_12 多方块 + dyedream_lotus；不在 all */
-        DYEDREAM("dyedream", "dye-dream", "dream-world");
+        DYEDREAM("dyedream", "dye-dream", "dream-world"),
+        /**
+         * BOSS 胜利离场冷却：胜利传送后返回传送门不得立即重进竞技场，冷却过期后恢复；
+         * 不在 all。见 docs/archive 审查后 BOSS 循环重进 bug 修复。
+         */
+        ARENA_EXIT("arena-exit", "arena_exit", "boss-exit"),
+        /** San 逐 tick 变化：SAN_VARIABILITY 属性被消费、San 随时间变动；不在 all */
+        SAN_TICK("san-tick", "santick", "san");
 
         private final String[] aliases;
 
@@ -265,7 +274,8 @@ public final class PDPortingVerifyTest {
                     if (!hit) {
                         LogUtils.getLogger().warn("[PDVerify] 未知套件名 '{}'，已忽略（合法: registry,core,dimensions,"
                                 + "spells,content,structures,workshop,struct-dim,gallery,entity-gallery,"
-                                + "twilight-lantern,wind-journey,wind-lake,second-dream,shadow-intrude,main-flow,dyedream 及快捷 all/quick/behavior/worldgen/galleries）", token);
+                                + "twilight-lantern,wind-journey,wind-lake,second-dream,shadow-intrude,main-flow,"
+                                + "dyedream,arena-exit,san-tick 及快捷 all/quick/behavior/worldgen/galleries）", token);
                     }
                 }
             }
@@ -287,6 +297,8 @@ public final class PDPortingVerifyTest {
         all.remove(Suite.SHADOW_INTRUDE);
         all.remove(Suite.MAIN_FLOW);
         all.remove(Suite.DYEDREAM);
+        all.remove(Suite.ARENA_EXIT);
+        all.remove(Suite.SAN_TICK);
         return all;
     }
 
@@ -568,6 +580,21 @@ public final class PDPortingVerifyTest {
             at(dd, PDPortingVerifyTest::refreshPlayerBuffs);
             at(dd + 2, PDPortingVerifyTest::dyedreamSuite);
             cursor = dd + 20;
+        }
+
+        if (suite(Suite.ARENA_EXIT)) {
+            int ae = cursor;
+            at(ae, PDPortingVerifyTest::refreshPlayerBuffs);
+            at(ae + 2, PDPortingVerifyTest::arenaExitSuite);
+            cursor = ae + 20;
+        }
+
+        if (suite(Suite.SAN_TICK)) {
+            int st = cursor;
+            at(st, PDPortingVerifyTest::refreshPlayerBuffs);
+            at(st + 2, PDPortingVerifyTest::sanTickSuite);
+            // hooks 内 schedule 40t 观察窗口 + 收尾；给余量
+            cursor = st + 60;
         }
 
         if (suite(Suite.WORKSHOP)) {
@@ -1437,6 +1464,20 @@ public final class PDPortingVerifyTest {
                 checkDetail("dyedream", r.pass(), r.name(), r.detail()));
     }
 
+    // ==================== BOSS 胜利离场冷却专项（arena-exit） ====================
+
+    private static void arenaExitSuite() {
+        PDArenaExitVerifyHooks.verify(server(), player(), r ->
+                checkDetail("arena-exit", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== San 逐 tick 变化专项（san-tick） ====================
+
+    private static void sanTickSuite() {
+        PDSanityTickVerifyHooks.verify(server(), player(), r ->
+                checkDetail("san-tick", r.pass(), r.name(), r.detail()));
+    }
+
     // ==================== S17 武器工坊群 ====================
 
     private static void workshopSuite() {
@@ -1645,14 +1686,17 @@ public final class PDPortingVerifyTest {
             if (!ENABLED) {
                 return;
             }
-            // 内嵌 UI 资源包激活断言（双模同开时也执行；只跑一次）
+            // 内嵌 UI 资源包激活断言（双模同开时也执行；只跑一次）。
+            // 激活状态应与 ENABLE_MOD_UI 配置一致：PDPackHandler 在玩家登录后按配置同步，
+            // ENABLE_MOD_UI=true 时资源包应已选入（首次同步会触发一次资源包重载）。
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (!packChecked && mc.level != null) {
                 packChecked = true;
                 List<String> selected = new ArrayList<>(mc.getResourcePackRepository().getSelectedIds());
                 boolean present = selected.stream().anyMatch(id -> id.contains("paster_vanilla_ui"));
-                checkDetail("client", present, "内嵌 UI 资源包 paster_vanilla_ui 已激活",
-                        "已选资源包: " + selected);
+                boolean wantActive = com.pasterdream.pasterdreammod.config.PDClientConfig.ENABLE_MOD_UI.get();
+                checkDetail("client", present == wantActive, "内嵌 UI 资源包 paster_vanilla_ui 激活状态与配置一致",
+                        "已选资源包: " + selected + " (ENABLE_MOD_UI=" + wantActive + ")");
             }
             if (PDSmokeTest.ENABLED) {
                 return;

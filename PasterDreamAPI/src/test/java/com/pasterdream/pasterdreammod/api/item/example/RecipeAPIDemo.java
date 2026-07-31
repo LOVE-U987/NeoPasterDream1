@@ -244,8 +244,8 @@ public class RecipeAPIDemo {
             "pasterdream:dyedreamquartz_block"
         ));
 
-        save("meltdream_crystal_lamp", RecipeGenerator.generateStonecutting(
-            "pasterdream:meltdream_crystal_lamp", 1,
+        save("dyedream_lartern", RecipeGenerator.generateStonecutting(
+            "pasterdream:dyedream_lartern", 1,
             "pasterdream:dyedreamquartz_block"
         ));
 

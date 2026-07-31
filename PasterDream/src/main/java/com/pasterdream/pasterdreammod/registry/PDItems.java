@@ -240,7 +240,6 @@ public class PDItems {
     public static final DeferredItem<?> DYEDREAMQUARTZ_BLOCK = PDItemsBlocks.DYEDREAMQUARTZ_BLOCK;
     public static final DeferredItem<?> SMOOTH_DYEDREAMQUARTZ_BLOCK = PDItemsBlocks.SMOOTH_DYEDREAMQUARTZ_BLOCK;
     public static final DeferredItem<?> BRICKS_DYEDREAMQUARTZ_BLOCK = PDItemsBlocks.BRICKS_DYEDREAMQUARTZ_BLOCK;
-    public static final DeferredItem<?> MELTDREAM_CRYSTAL_LAMP = PDItemsBlocks.MELTDREAM_CRYSTAL_LAMP;
     public static final DeferredItem<?> CHISELED_DYEDREAMQUARTZ_BLOCK = PDItemsBlocks.CHISELED_DYEDREAMQUARTZ_BLOCK;
     public static final DeferredItem<?> DYEDREAM_BUD_BLOCK = PDItemsBlocks.DYEDREAM_BUD_BLOCK;
     public static final DeferredItem<?> PINKSLIME_BLOCK = PDItemsBlocks.PINKSLIME_BLOCK;

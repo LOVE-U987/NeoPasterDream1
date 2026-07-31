@@ -153,7 +153,7 @@ public class BlockApiDemo {
         BlockLootAPI.selfDropAll(
                 "dyedream_block", "dyedream_dirt", "dyedream_sand",
                 "dyedream_grass", "dyedream_grass_block", "dyedream_stone", "dyedream_cobblestone",
-                "polished_dyedream_block", "meltdream_crystal_lamp",
+                "polished_dyedream_block", "dyedream_lartern",
                 "dyedreamquartz_block", "dyedream_bud_block",
                 "carved_dyedream_quartz", "carved_dyedream_bud"
         );

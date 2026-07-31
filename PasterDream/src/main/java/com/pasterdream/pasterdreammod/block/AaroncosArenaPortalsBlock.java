@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.registry.PDArenaBossManager;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.world.ArenaInfectionUtils;
@@ -126,6 +127,13 @@ public class AaroncosArenaPortalsBlock extends SlabBlock {
         }
 
         if (level.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY)) {
+            return;
+        }
+
+        // 刚从竞技场返回（胜利/离场传送）的玩家在冷却期内不响应传送：
+        // 胜利传送会把人送到本传送门正上方，下落穿过无碰撞方块时不得立即再次进竞技场
+        if (player.getPersistentData().getLong(PDArenaBossManager.ARENA_EXIT_COOLDOWN_KEY)
+                > player.level().getGameTime()) {
             return;
         }
 

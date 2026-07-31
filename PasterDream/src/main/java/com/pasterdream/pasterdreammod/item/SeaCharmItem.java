@@ -43,8 +43,10 @@ public class SeaCharmItem extends Item implements ICurioItem {
     @Override
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = HashMultimap.create();
-        attributeModifiers.put(NeoForgeMod.SWIM_SPEED, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "swim"), 0.3, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.SAN_VARIABILITY, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "san_var"), 0.96, AttributeModifier.Operation.ADD_VALUE));
+        // modifier id 由槽位 id+索引派生，避免同属性多槽位冲突
+        ResourceLocation slotKey = id.withSuffix("/" + slotContext.index());
+        attributeModifiers.put(NeoForgeMod.SWIM_SPEED, new AttributeModifier(slotKey.withSuffix("_swim"), 0.3, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(com.pasterdream.pasterdreammod.registry.PDAttributes.SAN_VARIABILITY, new AttributeModifier(slotKey.withSuffix("_san_var"), 0.96, AttributeModifier.Operation.ADD_VALUE));
         return attributeModifiers;
     }
 }

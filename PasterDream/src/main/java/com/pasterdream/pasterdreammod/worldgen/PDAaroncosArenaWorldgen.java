@@ -25,17 +25,20 @@ import java.util.Optional;
  * 亚伦柯斯竞技场主世界生成器。
  * <p>
  * 不再把竞技场群系注入主世界的 MultiNoise 群系源（避免 /locate 在大范围内搜索导致卡死），
- * 而是在服务器启动时，在出生点附近寻找合适地表，直接放置遗迹结构，并用 {@link FillBiomeCommand}
+ * 而是在服务器启动时，在距离出生点 {@link #MIN_SPAWN_DISTANCE} ~ {@link #MAX_SPAWN_DISTANCE}
+ * 的世界随机位置寻找合适地表，直接放置遗迹结构，并用 {@link FillBiomeCommand}
  * 将周围区域设置为 {@code pasterdream:aaroncos_arena_biome}。
  * <p>
  * 每个世界仅放置一次，位置记录在 {@link PDAaroncosArenaSpawnData} 中。
  */
 public class PDAaroncosArenaWorldgen {
 
-    /** 在出生点附近搜索合适位置的最大半径（方块） */
-    private static final int SPAWN_SEARCH_RADIUS = 128;
-    /** 搜索时的步进（方块），越大越快但可能错过平坦点 */
-    private static final int SEARCH_STEP = 4;
+    /** 遗迹离出生点的最小距离（方块），避免出生点附近生成 */
+    private static final int MIN_SPAWN_DISTANCE = 2000;
+    /** 遗迹离出生点的最大距离（方块） */
+    private static final int MAX_SPAWN_DISTANCE = 10000;
+    /** 随机搜索尝试次数；配合中心点陆地预检，失败概率极低 */
+    private static final int RANDOM_ATTEMPTS = 32;
     /** 遗迹结构底座允许的最大高度差，超过则认为不够平坦 */
     private static final int MAX_TERRAIN_VARIATION = 6;
     /** 遗迹结构在 X/Z 方向上的占地尺寸（来自 NBT 的 size） */
@@ -44,9 +47,19 @@ public class PDAaroncosArenaWorldgen {
     private static final int BASE_BURIAL_BLOCKS = 18;
     /** 群系覆盖半径（方块），决定竞技场群系范围 */
     private static final int BIOME_RADIUS = 48;
+    /** 地表高度至少高出海平面多少格才视为陆地候选（避免遗迹生成在深海/水下） */
+    private static final int MIN_LAND_HEIGHT_ABOVE_SEA = 3;
+    /**
+     * 启动时预生成远处 chunk 的状态。
+     * <p>
+     * 使用 {@link ChunkStatus#FEATURES} 而非 FULL：特征（含树/高度图）已完成，
+     * 但跳过最耗时的光照阶段；搜索平坦度、取地表高度、放置结构均不受影响，
+     * 可显著降低服务器启动时的地形生成开销。
+     */
+    private static final ChunkStatus PREGEN_CHUNK_STATUS = ChunkStatus.FEATURES;
 
     /**
-     * 服务器启动时，在主世界出生点附近生成唯一一座竞技场遗迹及其群系。
+     * 服务器启动时，在主世界随机位置生成唯一一座竞技场遗迹及其群系。
      *
      * @param event 服务器启动中事件
      */
@@ -65,9 +78,9 @@ public class PDAaroncosArenaWorldgen {
         }
 
         BlockPos spawnPos = overworld.getSharedSpawnPos();
-        BlockPos targetPos = findFlatSurfaceNearSpawn(overworld, spawnPos);
+        BlockPos targetPos = findRandomFlatSurface(overworld, spawnPos);
         if (targetPos == null) {
-            PasterDreamMod.LOGGER.warn("[PDAaroncosArenaWorldgen] 未能在出生点附近找到合适的竞技场遗迹位置");
+            PasterDreamMod.LOGGER.warn("[PDAaroncosArenaWorldgen] 未能在世界中找到合适的竞技场遗迹位置");
             return;
         }
 
@@ -81,40 +94,46 @@ public class PDAaroncosArenaWorldgen {
         spawnData.setCenter(targetPos);
         ArenaRuinInfection.start(overworld, targetPos);
 
-        PasterDreamMod.LOGGER.info("[PDAaroncosArenaWorldgen] 已在出生点附近 {} 生成竞技场遗迹与群系", targetPos.toShortString());
+        PasterDreamMod.LOGGER.info("[PDAaroncosArenaWorldgen] 已在世界随机位置 {} 生成竞技场遗迹与群系", targetPos.toShortString());
     }
 
     /**
-     * 在出生点附近寻找相对平坦的地表位置。
+     * 在世界中寻找相对平坦的陆地地表位置。
      * <p>
-     * 以出生点为中心向外螺旋搜索，检测 21x21 范围内的高度差，
-     * 找到第一个高度差不超过 {@link #MAX_TERRAIN_VARIATION} 的位置。
+     * 以出生点为圆心，在 {@link #MIN_SPAWN_DISTANCE} ~ {@link #MAX_SPAWN_DISTANCE} 的
+     * 随机距离与随机方向上抽取候选点，检测 21x21 范围内的高度差
+     * 不超过 {@link #MAX_TERRAIN_VARIATION}，且地表高于海平面，避免生成在海洋/水下。
      *
      * @param level    主世界
      * @param spawnPos 世界出生点
      * @return 适合放置遗迹的方块位置；找不到则返回 null
      */
-    private static BlockPos findFlatSurfaceNearSpawn(ServerLevel level, BlockPos spawnPos) {
+    private static BlockPos findRandomFlatSurface(ServerLevel level, BlockPos spawnPos) {
         RandomSource random = level.getRandom();
+        int minLandY = level.getSeaLevel() + MIN_LAND_HEIGHT_ABOVE_SEA;
 
-        for (int radius = 0; radius <= SPAWN_SEARCH_RADIUS; radius += SEARCH_STEP) {
-            int attempts = Math.max(1, radius / SEARCH_STEP * 4);
-            for (int i = 0; i < attempts; i++) {
-                double angle = random.nextDouble() * Math.PI * 2;
-                int dx = (int) Math.round(Math.cos(angle) * radius);
-                int dz = (int) Math.round(Math.sin(angle) * radius);
-                int x = spawnPos.getX() + dx;
-                int z = spawnPos.getZ() + dz;
+        for (int i = 0; i < RANDOM_ATTEMPTS; i++) {
+            double angle = random.nextDouble() * Math.PI * 2;
+            int distance = MIN_SPAWN_DISTANCE + random.nextInt(MAX_SPAWN_DISTANCE - MIN_SPAWN_DISTANCE + 1);
+            int dx = (int) Math.round(Math.cos(angle) * distance);
+            int dz = (int) Math.round(Math.sin(angle) * distance);
+            int x = spawnPos.getX() + dx;
+            int z = spawnPos.getZ() + dz;
 
-                // 预生成该位置的 chunk（若尚未生成）
-                level.getChunk(x >> 4, z >> 4, ChunkStatus.FULL, true);
+            // 预生成该位置的 chunk（跳过光照，见 PREGEN_CHUNK_STATUS）
+            level.getChunk(x >> 4, z >> 4, PREGEN_CHUNK_STATUS, true);
 
-                if (isFlatSurface(level, x, z)) {
-                    int surfaceY = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
-                    // 底座埋入 BASE_BURIAL_BLOCKS 格：结构原点 Y = 地表 Y - 埋入格数 - 1
-                    return new BlockPos(x, surfaceY - BASE_BURIAL_BLOCKS - 1, z);
-                }
+            int surfaceY = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+            // 中心点陆地预检：排除海洋/水下地形（WORLD_SURFACE 在水面上方返回水面高度），
+            // 避免对海洋区域做昂贵的 21x21 平坦度采样
+            if (surfaceY < minLandY) {
+                continue;
             }
+            if (!isFlatSurface(level, x, z)) {
+                continue;
+            }
+            // 底座埋入 BASE_BURIAL_BLOCKS 格：结构原点 Y = 地表 Y - 埋入格数 - 1
+            return new BlockPos(x, surfaceY - BASE_BURIAL_BLOCKS - 1, z);
         }
         return null;
     }
@@ -140,8 +159,8 @@ public class PDAaroncosArenaWorldgen {
                 int sampleX = x + dx;
                 int sampleZ = z + dz;
 
-                // 确保 chunk 已生成
-                level.getChunk(sampleX >> 4, sampleZ >> 4, ChunkStatus.FULL, true);
+                // 确保 chunk 已生成（跳过光照）
+                level.getChunk(sampleX >> 4, sampleZ >> 4, PREGEN_CHUNK_STATUS, true);
 
                 int y = level.getHeight(Heightmap.Types.WORLD_SURFACE, sampleX, sampleZ);
                 minY = Math.min(minY, y);
@@ -214,6 +233,9 @@ public class PDAaroncosArenaWorldgen {
 
     /**
      * 强制生成指定矩形区域内的所有 chunk。
+     * <p>
+     * 生成到 {@link #PREGEN_CHUNK_STATUS}（跳过光照）：修改生物群系只需
+     * chunk 存在且已包含 biome 数据，无需完整光照。
      *
      * @param level 主世界
      * @param from  区域一角
@@ -227,7 +249,7 @@ public class PDAaroncosArenaWorldgen {
 
         for (int cx = minChunkX; cx <= maxChunkX; cx++) {
             for (int cz = minChunkZ; cz <= maxChunkZ; cz++) {
-                level.getChunk(cx, cz, ChunkStatus.FULL, true);
+                level.getChunk(cx, cz, PREGEN_CHUNK_STATUS, true);
             }
         }
     }

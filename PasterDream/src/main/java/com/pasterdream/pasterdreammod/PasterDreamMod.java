@@ -36,6 +36,7 @@ import com.pasterdream.pasterdreammod.entity.damage.EntityImmunitySetup;
 
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDPotions;
+import com.pasterdream.pasterdreammod.registry.PDRegistrySanityCheck;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import com.pasterdream.pasterdreammod.registry.PDTreeDecorators;
 import com.pasterdream.pasterdreammod.registry.PDWorldgenRegistries;
@@ -296,6 +297,10 @@ public class PasterDreamMod {
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.debug("===== PasterDreamMod 地形生成系统初始化 =====");
         LOGGER.debug("BiomeModifier 序列化器: pasterdream:dyedream_features, pasterdream:wind_lake_verify(compat no-op)");
+
+        // 注册表人口断言（M8）：注册阶段已结束，校验各分区锚点条目与类别人口，
+        // 新分区漏在构造器显式引用时能立即在日志中暴露
+        PDRegistrySanityCheck.verify();
 
         // 注册 API 装饰物（冰刺、冰之门等）
         ModDecorations.register();

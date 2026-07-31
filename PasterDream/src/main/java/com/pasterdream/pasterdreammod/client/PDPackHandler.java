@@ -12,6 +12,7 @@ import net.minecraft.server.packs.repository.PackSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 
 import java.util.List;
@@ -42,6 +43,30 @@ public final class PDPackHandler {
             PasterDreamMod.MOD_ID, "packs/paster_vanilla_ui");
 
     private PDPackHandler() {
+    }
+
+    /** 是否已完成首次资源包同步（进入世界后执行一次；FMLClientSetup 阶段 PackRepository 未就绪） */
+    private static boolean packSynced = false;
+
+    /**
+     * 玩家进入世界后首次同步内嵌 UI 资源包状态。
+     * <p>
+     * 不能在 {@code FMLClientSetupEvent} 阶段同步：彼时 Minecraft 的 PackRepository
+     * （AddPackFindersEvent 注册 + Options 加载时序）尚未完全就绪，applyPackState 调用会
+     * 静默无效（options.txt 从不写入 PACK_ID）。改在玩家登录后同步一次，
+     * 保证进世界时资源包按 ENABLE_MOD_UI 配置正确加载。
+     *
+     * @param event 客户端玩家登录事件
+     */
+    @SubscribeEvent
+    public static void onPlayerLogin(ClientPlayerNetworkEvent.LoggingIn event) {
+        if (packSynced) {
+            return;
+        }
+        packSynced = true;
+        PasterDreamMod.LOGGER.info("[PDPackHandler] 首次同步内嵌 UI 资源包状态：ENABLE_MOD_UI={}",
+                PDClientConfig.ENABLE_MOD_UI.get());
+        applyPackState(PDClientConfig.ENABLE_MOD_UI.get());
     }
 
     /**

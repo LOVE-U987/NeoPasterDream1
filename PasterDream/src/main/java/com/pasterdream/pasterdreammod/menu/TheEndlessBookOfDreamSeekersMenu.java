@@ -50,20 +50,23 @@ public class TheEndlessBookOfDreamSeekersMenu extends SimpleContainerMenu {
      */
     public TheEndlessBookOfDreamSeekersMenu(int id, Inventory inv, BlockEntity blockEntity) {
         super(PDMenus.THE_ENDLESS_BOOK_OF_DREAM_SEEKERS.get(), id, 2);
-        this.blockEntity = (TheEndlessBookOfDreamSeekersBlockEntity) blockEntity;
+        // 防御：BE 缺失或类型不符时构造为空菜单，stillValid 返回 false 由服务端自动关闭
+        this.blockEntity = blockEntity instanceof TheEndlessBookOfDreamSeekersBlockEntity eb ? eb : null;
         bindBlockEntity(this.blockEntity);
 
-        IItemHandler handler = this.blockEntity.getItemHandler();
+        if (this.blockEntity != null) {
+            IItemHandler handler = this.blockEntity.getItemHandler();
 
-        // 展示槽：原版 (115, 26)，仅可取出
-        this.addSlot(new SlotItemHandler(handler, TheEndlessBookOfDreamSeekersBlockEntity.SLOT_DISPLAY, 115, 26) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return false;
-            }
-        });
-        // 导入槽：原版 (43, 26)
-        this.addSlot(new SlotItemHandler(handler, TheEndlessBookOfDreamSeekersBlockEntity.SLOT_IMPORT, 43, 26));
+            // 展示槽：原版 (115, 26)，仅可取出
+            this.addSlot(new SlotItemHandler(handler, TheEndlessBookOfDreamSeekersBlockEntity.SLOT_DISPLAY, 115, 26) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false;
+                }
+            });
+            // 导入槽：原版 (43, 26)
+            this.addSlot(new SlotItemHandler(handler, TheEndlessBookOfDreamSeekersBlockEntity.SLOT_IMPORT, 43, 26));
+        }
 
         addPlayerInventory(inv, 84);
     }
@@ -83,6 +86,10 @@ public class TheEndlessBookOfDreamSeekersMenu extends SimpleContainerMenu {
      */
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        // 防御：BE 已失效（方块被拆除等）或距离过远时拒绝按钮操作
+        if (this.blockEntity == null || !this.stillValid(player)) {
+            return false;
+        }
         if (id == BUTTON_IMPORT) {
             if (!player.level().isClientSide()) {
                 this.blockEntity.importFromSlot();
@@ -90,5 +97,16 @@ public class TheEndlessBookOfDreamSeekersMenu extends SimpleContainerMenu {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 校验玩家是否仍可操作该菜单
+     *
+     * @param player 玩家
+     * @return BE 缺失/类型不符时菜单立即失效，由服务端关闭
+     */
+    @Override
+    public boolean stillValid(Player player) {
+        return this.blockEntity != null && super.stillValid(player);
     }
 }

@@ -1,7 +1,6 @@
 package com.pasterdream.pasterdreammod.pasterdreamspells.registry;
 
 import com.pasterdream.pasterdreammod.api.attribute.APIAttributes;
-import com.pasterdream.pasterdreammod.api.effect.MobEffectAPI;
 import com.pasterdream.pasterdreammod.pasterdreamspells.PasterDreamSpellsMod;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -32,7 +31,7 @@ public class PDSpellsEffects {
      * 战技冷却 / 瞬身冷却 -0.3（与原版 FurySpellBuffPr0 一致）。
      */
     public static final DeferredHolder<MobEffect, MobEffect> FURY_SPELL_BUFF =
-            MobEffectAPI.REGISTRY.register("fury_spell_buff",
+            MOB_EFFECTS.register("fury_spell_buff",
                     () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0xFFB655EC) {
                     }
                             .addAttributeModifier(Attributes.ATTACK_DAMAGE,
@@ -54,7 +53,7 @@ public class PDSpellsEffects {
      * 冰蓝色有害效果：移动速度 -1（完全定身）、攻击力 -100（数值与原版一致）。
      */
     public static final DeferredHolder<MobEffect, MobEffect> ICE_SPELL_BUFF =
-            MobEffectAPI.REGISTRY.register("ice_spell_buff",
+            MOB_EFFECTS.register("ice_spell_buff",
                     () -> new MobEffect(MobEffectCategory.HARMFUL, 0xFFB8ECF6) {
                     }
                             .addAttributeModifier(Attributes.MOVEMENT_SPEED,

@@ -193,6 +193,13 @@ public class DollBuilder {
      * 适用于在 KubeJS 启动脚本等已过注册阶段的场景调用。
      * 与 {@link #register()} 不同，此方法不依赖 DeferredRegister，
      * 而是通过 {@link BuiltInRegistries} 直接写入，确保注册始终生效。
+     * <p>
+     * <b>时序限制（重要）</b>：NeoForge 在注册阶段结束后会锁定/冻结内置注册表，
+     * 此后任何 {@code Registry.register} 写入都会抛出 {@link IllegalStateException}。
+     * 因此 {@code registerDirect} 仅可在注册表尚未冻结的时机调用（例如 KubeJS
+     * 启动脚本、{@code FMLCommonSetupEvent} 之前）。若在游戏运行中（服务器已启动）
+     * 调用将失败并抛出带此说明的异常，请改用 {@link #register()}（DeferredRegister 路径，
+     * 需在模组构造阶段调用）。
      *
      * @return 注册结果 {@link DollResult}
      */
@@ -216,13 +223,16 @@ public class DollBuilder {
                 ? this.itemProperties
                 : new Item.Properties();
 
-        System.out.println("[[DollBuilder-DEBUG]] registerDirect CALLED for " + name + " at " + id);
-
-        // 直接注册方块
+        // 直接注册方块（注册表已锁定/冻结时给出可行动的明确错误）
         DollBlock dollBlock;
         try {
             dollBlock = new DollBlock(blockProps);
             Registry.register(BuiltInRegistries.BLOCK, id, dollBlock);
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException(
+                    "[DollBuilder] registerDirect 无法在注册表锁定后注册方块 " + id
+                            + "（NeoForge 注册阶段已结束）；请在 KubeJS 启动脚本/注册阶段内调用，"
+                            + "或改用 DollBuilder#register() 走 DeferredRegister 路径", e);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -233,6 +243,11 @@ public class DollBuilder {
         try {
             DollDisplayItem displayItem = new DollDisplayItem(dollBlock, itemProps);
             Registry.register(BuiltInRegistries.ITEM, id, displayItem);
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException(
+                    "[DollBuilder] registerDirect 无法在注册表锁定后注册物品 " + id
+                            + "（NeoForge 注册阶段已结束）；请在 KubeJS 启动脚本/注册阶段内调用，"
+                            + "或改用 DollBuilder#register() 走 DeferredRegister 路径", e);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -244,6 +259,11 @@ public class DollBuilder {
             BlockEntityType<DollBlockEntity> beType = BlockEntityType.Builder.of(DollBlockEntity::new, dollBlock).build(null);
             ResourceKey<BlockEntityType<?>> beKey = ResourceKey.create(Registries.BLOCK_ENTITY_TYPE, id);
             Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, beKey, beType);
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException(
+                    "[DollBuilder] registerDirect 无法在注册表锁定后注册方块实体 " + id
+                            + "（NeoForge 注册阶段已结束）；请在 KubeJS 启动脚本/注册阶段内调用，"
+                            + "或改用 DollBuilder#register() 走 DeferredRegister 路径", e);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -261,7 +281,6 @@ public class DollBuilder {
             generateKubeJsAssets(namespace, name);
         }
 
-        System.out.println("[[DollBuilder-DEBUG]] registerDirect COMPLETED for " + name);
         return result;
     }
 

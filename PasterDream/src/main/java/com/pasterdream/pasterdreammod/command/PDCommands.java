@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.util.DimensionRegionHelper;
+import com.pasterdream.pasterdreammod.world.PDAaroncosArenaSpawnData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -16,7 +17,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -34,6 +37,8 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
  * 指令列表：
  * <ul>
  *   <li>{@code /pasterdream dimension reset <dimension_id>} —— 重置指定维度（踢出玩家、删除 region 文件）</li>
+ *   <li>{@code /pasterdream arena locate} —— 显示主世界竞技场遗迹坐标与距离（遗迹为手动放置，/locate 无法定位）</li>
+ *   <li>{@code /pasterdream arena tp} —— 传送到主世界竞技场遗迹附近</li>
  * </ul>
  */
 public class PDCommands {
@@ -62,6 +67,19 @@ public class PDCommands {
                                             return 0;
                                         })
                                 )
+                        )
+                        .then(Commands.literal("arena")
+                                .then(Commands.literal("locate")
+                                        .executes(context -> arenaLocate(context.getSource()))
+                                )
+                                .then(Commands.literal("tp")
+                                        .executes(context -> arenaTp(context.getSource()))
+                                )
+                                .executes(context -> {
+                                    context.getSource().sendFailure(
+                                            Component.literal("§c用法: /pasterdream arena <locate|tp>"));
+                                    return 0;
+                                })
                         )
                         .then(Commands.literal("bgm")
                                 .then(Commands.literal("debug")
@@ -166,6 +184,84 @@ public class PDCommands {
             source.sendSuccess(() -> Component.literal("§e维度 " + dimLocation + " 尚未生成区域数据，无需重置。"), true);
             return 1;
         }
+    }
+
+    // ==================== 竞技场遗迹定位指令 ====================
+
+    /** 遗迹底座埋入地下的方块数（与 PDAaroncosArenaWorldgen.BASE_BURIAL_BLOCKS 一致） */
+    private static final int ARENA_BASE_BURIAL_BLOCKS = 18;
+
+    /**
+     * 获取主世界竞技场遗迹中心（未生成时返回 null）。
+     *
+     * @param source 指令来源
+     * @return 遗迹中心坐标；主世界未加载或尚未生成时返回 null
+     */
+    private static BlockPos getArenaCenter(CommandSourceStack source) {
+        MinecraftServer server = source.getServer();
+        ServerLevel overworld = server.getLevel(Level.OVERWORLD);
+        if (overworld == null) {
+            source.sendFailure(Component.literal("§c主世界未加载！"));
+            return null;
+        }
+        return PDAaroncosArenaSpawnData.get(overworld).getCenter();
+    }
+
+    /**
+     * 定位指令：显示主世界竞技场遗迹坐标与距离。
+     * <p>
+     * 遗迹由服务器启动时手动放置（非结构管理器登记），/locate 无法定位，故提供本指令。
+     *
+     * @param source 指令来源
+     * @return 操作结果状态码
+     */
+    private static int arenaLocate(CommandSourceStack source) {
+        BlockPos center = getArenaCenter(source);
+        if (center == null) {
+            source.sendFailure(Component.literal("§c竞技场遗迹尚未生成！（服务器启动时未找到合适的放置位置）"));
+            return 0;
+        }
+        // 中心 Y 为结构原点（地表下埋入 +1），此处换算成地表坐标展示
+        int surfaceY = center.getY() + ARENA_BASE_BURIAL_BLOCKS + 1;
+
+        if (source.getEntity() instanceof ServerPlayer player) {
+            int dist = (int) Math.sqrt(player.blockPosition().distSqr(center));
+            source.sendSuccess(() -> Component.literal(
+                    String.format("§a竞技场遗迹位于 §e[%d, %d, %d]§a，距离你约 §e%d §a格。§7使用 /pasterdream arena tp 可直接传送",
+                            center.getX(), surfaceY, center.getZ(), dist)), true);
+        } else {
+            source.sendSuccess(() -> Component.literal(
+                    String.format("§a竞技场遗迹位于 §e[%d, %d, %d]", center.getX(), surfaceY, center.getZ())), true);
+        }
+        return 1;
+    }
+
+    /**
+     * 传送指令：把玩家传送到主世界竞技场遗迹附近的地表。
+     *
+     * @param source 指令来源
+     * @return 操作结果状态码
+     */
+    private static int arenaTp(CommandSourceStack source) {
+        if (!(source.getEntity() instanceof ServerPlayer player)) {
+            source.sendFailure(Component.literal("§c此指令只能由玩家执行！"));
+            return 0;
+        }
+        BlockPos center = getArenaCenter(source);
+        if (center == null) {
+            source.sendFailure(Component.literal("§c竞技场遗迹尚未生成！（服务器启动时未找到合适的放置位置）"));
+            return 0;
+        }
+
+        MinecraftServer server = source.getServer();
+        ServerLevel overworld = server.getLevel(Level.OVERWORLD);
+        // 预生成遗迹所在 chunk，确保能取得正确地表高度
+        overworld.getChunk(center.getX() >> 4, center.getZ() >> 4, ChunkStatus.FULL, true);
+        int surfaceY = overworld.getHeight(Heightmap.Types.WORLD_SURFACE, center.getX(), center.getZ());
+
+        player.teleportTo(overworld, center.getX() + 0.5, surfaceY + 2, center.getZ() + 0.5, player.getYRot(), player.getXRot());
+        source.sendSuccess(() -> Component.literal("§a已传送到竞技场遗迹附近！"), true);
+        return 1;
     }
 
     // ==================== BGM 调试指令 ====================

@@ -7,7 +7,7 @@
       "entries": [
         {
           "data": {
-            "Name": "pasterdream:meltdream_crystal_lamp"
+            "Name": "pasterdream:dyedream_lartern"
           },
           "weight": 40
         },
@@ -34,7 +34,7 @@
     "top_block": {
       "type": "simple_state_provider",
       "state": {
-        "Name": "pasterdream:meltdream_crystal_lamp"
+        "Name": "pasterdream:dyedream_lartern"
       }
     },
     "min_height": 1,

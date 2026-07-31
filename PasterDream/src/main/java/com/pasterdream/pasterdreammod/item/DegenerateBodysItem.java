@@ -49,10 +49,12 @@ public class DegenerateBodysItem extends Item implements ICurioItem {
     @Override
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = HashMultimap.create();
-        attributeModifiers.put(Attributes.MAX_HEALTH, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "health"), -4.0, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "entity_reach"), 0.2, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(Attributes.BLOCK_INTERACTION_RANGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "block_reach"), 1.0, AttributeModifier.Operation.ADD_VALUE));
-        attributeModifiers.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath("pasterdream", "attack"), 2.0, AttributeModifier.Operation.ADD_VALUE));
+        // modifier id 由槽位 id+索引派生，避免同属性多槽位冲突
+        ResourceLocation slotKey = id.withSuffix("/" + slotContext.index());
+        attributeModifiers.put(Attributes.MAX_HEALTH, new AttributeModifier(slotKey.withSuffix("_health"), -4.0, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(slotKey.withSuffix("_entity_reach"), 0.2, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.BLOCK_INTERACTION_RANGE, new AttributeModifier(slotKey.withSuffix("_block_reach"), 1.0, AttributeModifier.Operation.ADD_VALUE));
+        attributeModifiers.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(slotKey.withSuffix("_attack"), 2.0, AttributeModifier.Operation.ADD_VALUE));
         return attributeModifiers;
     }
 }

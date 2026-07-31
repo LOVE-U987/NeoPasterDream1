@@ -44,7 +44,7 @@ public class ModDecorations {
                 .build();
 
         SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 70)
+                .add(PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 70)
                 .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 30)
                 .build();
 
@@ -81,7 +81,7 @@ public class ModDecorations {
                 .build();
 
         SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 70)
+                .add(PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 70)
                 .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 30)
                 .build();
 

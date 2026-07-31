@@ -267,8 +267,8 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
      * 向存货中填入战利品 —— 根据品质决定掉落策略
      * <ul>
      *   <li>普通品质 (1)：8 个随机食物，第 9 格空（不放水晶）</li>
-     *   <li>稀有品质 (2)：第 1 格唱片 + 第 2~7 格随机稀有材料，第 9 格空（不放水晶）</li>
-     *   <li>传说品质 (3)：前 8 格空，第 9 格固定 1 个融梦水晶碎片</li>
+     *   <li>稀有品质 (2)：第 1 格唱片 + 第 2~7 格随机稀有材料，第 9 格空（不放水晶），50% 概率额外掉一个玩偶</li>
+     *   <li>传说品质 (3)：前 8 格随机传说物品（其中 1 格替换为玩偶），第 9 格固定 1 个融梦水晶碎片</li>
      * </ul>
      *
      * @param handler 存货处理器（9 格）
@@ -279,17 +279,14 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
      */
     private static void fillItems(ItemStackHandler handler, LootEntry[] pool, RandomSource random, Player player, int quality) {
         if (quality == 3) {
-            // 传说品质：第 9 格固定 1 个融梦水晶碎片，前 8 格掉落传说稀有度物品
+            // 传说品质：第 9 格固定 1 个融梦水晶碎片（弹出时生成水晶实体），前 8 格掉落传说稀有度物品
             for (int i = 0; i < 8; i++) {
-                handler.setStackInSlot(i, ItemStack.EMPTY);
+                handler.setStackInSlot(i, rollFromPool(pool, random));
             }
             handler.setStackInSlot(8, new ItemStack(PDItems.MELTDREAM_CRYSTAL_0.get()));
-            // 额外：尝试在随机前 8 格中掉落一个玩偶（优先玩家未拥有的）
-            ItemStack doll = rollDoll(player, random);
-            if (!doll.isEmpty()) {
-                int slot = random.nextInt(8);
-                handler.setStackInSlot(slot, doll);
-            }
+            // 额外：将前 8 格中的随机 1 格替换为玩偶（优先玩家未拥有的）
+            int dollSlot = random.nextInt(8);
+            handler.setStackInSlot(dollSlot, rollDoll(player, random));
         } else if (quality == 1) {
             // 普通品质：8 个随机食物，不放融梦水晶碎片
             for (int i = 0; i < 8; i++) {
@@ -305,17 +302,14 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
             handler.setStackInSlot(8, ItemStack.EMPTY);
             // 额外：稀有品质有 50% 概率额外掉落一个玩偶（优先玩家未拥有的）
             if (random.nextFloat() < 0.5f) {
-                ItemStack doll = rollDoll(player, random);
-                if (!doll.isEmpty()) {
-                    int slot = 1 + random.nextInt(8);
-                    handler.setStackInSlot(slot, doll);
-                }
+                int slot = 1 + random.nextInt(8);
+                handler.setStackInSlot(slot, rollDoll(player, random));
             }
         }
     }
 
     /**
-     * 从所有 10 张唱片中随机选取一张 —— 优先选玩家尚未拥有的，
+     * 从所有 13 张唱片中随机选取一张 —— 优先选玩家尚未拥有的，
      * 若全部拥有则全池随机
      *
      * @param player 打开宝箱的玩家
@@ -330,7 +324,10 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
                 PDItems.DYEDREAM_WORLD_DISC.get(),
                 PDItems.WIND_JOURNEY_DISC.get(),
                 PDItems.WIND_JOURNEY_1_DISC.get(),
+                PDItems.WIND_JOURNEY_DEPARTURE_DISC.get(),
+                PDItems.WIND_JOURNEY_MIDSUMMER_DISC.get(),
                 PDItems.DREAM_MEADOW_DISC.get(),
+                PDItems.DREAM_MEADOW_DAISY_DISC.get(),
                 PDItems.DREAM_HEATH_DISC.get(),
                 PDItems.DREAM_TAIGA_DISC.get(),
                 PDItems.DREAM_DELTA_DISC.get()
@@ -345,23 +342,21 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
 
     /**
      * 从所有玩偶/雕像中随机选取一个 —— 优先选玩家尚未拥有的，
-     * 若全部拥有则不额外掉落。
+     * 若全部拥有则回退全池随机（与唱片 {@link #rollDisc} 逻辑完全一致）。
      * <p>包含原版注册玩偶与 {@link DollAPI} 动态注册的自定义玩偶。</p>
      *
      * @param player 打开宝箱的玩家
      * @param random 随机数源
-     * @return 选中的玩偶 ItemStack，若已全部拥有则返回空
+     * @return 选中的玩偶 ItemStack
      */
     private static ItemStack rollDoll(Player player, net.minecraft.util.RandomSource random) {
         List<Item> allDolls = getAllDolls();
-        // 筛选玩家背包中未拥有的玩偶
+        // 筛选玩家背包中未拥有的玩偶，全部拥有则回退全池随机
         List<Item> unowned = allDolls.stream()
                 .filter(doll -> player.getInventory().countItem(doll) <= 0)
                 .toList();
-        if (unowned.isEmpty()) {
-            return ItemStack.EMPTY;
-        }
-        return new ItemStack(unowned.get(random.nextInt(unowned.size())));
+        List<Item> pool = unowned.isEmpty() ? allDolls : unowned;
+        return new ItemStack(pool.get(random.nextInt(pool.size())));
     }
 
     /**

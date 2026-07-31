@@ -22,9 +22,11 @@ import net.minecraft.world.phys.Vec3;
 
 import com.pasterdream.pasterdreammod.block.AaroncosArenaPortalsBlock;
 import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
+import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesItems;
 import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesLogic;
 import com.pasterdream.pasterdreammod.entity.mob.ShadowNpc0Entity;
 import com.pasterdream.pasterdreammod.entity.mob.WindKnightEntity;
+import com.pasterdream.pasterdreammod.menu.DreamnotesGui0Menu;
 import com.pasterdream.pasterdreammod.menu.ShadowSelectEndMenu;
 import com.pasterdream.pasterdreammod.registry.PDArenaBossManager;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
@@ -38,6 +40,7 @@ import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -60,9 +63,9 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
  */
 public final class PDMainFlowVerifyHooks {
 
-    /** 白花胸针已拆分到 PasterDreamSanity；测试时通过注册表动态获取 */
+    /** 白花胸针已拆分到 PasterDreamSanity（注册在 pasterdream 命名空间）；测试时通过注册表动态获取 */
     private static final Supplier<Item> WHITE_FLOWER_BODY = () ->
-            BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdreamsanity", "white_flower_body"))
+            BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdream", "white_flower_body"))
                     .orElseThrow(() -> new IllegalStateException("white_flower_body 未注册，PasterDreamSanity 是否已加载？"));
 
     /**
@@ -182,6 +185,37 @@ public final class PDMainFlowVerifyHooks {
     private static void useBlock(ServerPlayer player, ServerLevel level, BlockPos pos) {
         BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false);
         level.getBlockState(pos).useWithoutItem(level, player, hit);
+    }
+
+    /**
+     * 真实路径驱动：手持 {@code dreamnotes_N} 物品并调用 {@code ItemStack.use}，
+     * 等价服务端处理右键笔记（含打开笔记 GUI + 触发成就逻辑），校验 GUI 打开后关闭。
+     * <p>
+     * 取代旧实现直接调用 {@code DreamnotesLogic.onUse} 的夹具式直调，
+     * 保证笔记 use → 成就链路任一真实触发点损坏时套件能够变红。
+     *
+     * @param player 服务端玩家
+     * @param level  当前维度
+     * @param noteId 笔记序号 1..14
+     * @param out    结果输出
+     * @param label  断言标签
+     */
+    private static void useDreamnote(ServerPlayer player, ServerLevel level, int noteId,
+                                     Consumer<Result> out, String label) {
+        Item noteItem = DreamnotesItems.byId(noteId);
+        accept(out, noteItem != null, label + " 物品已注册", String.valueOf(noteItem));
+        if (noteItem == null) {
+            return;
+        }
+        ItemStack stack = new ItemStack(noteItem);
+        player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+        stack.use(level, player, InteractionHand.MAIN_HAND);
+        // 真实 use 会打开笔记 GUI；校验后关闭，避免残留界面干扰后续流程
+        boolean guiOpened = player.containerMenu instanceof DreamnotesGui0Menu;
+        accept(out, guiOpened, label + " 笔记 GUI 打开", player.containerMenu.getClass().getSimpleName());
+        if (guiOpened) {
+            player.closeContainer();
+        }
     }
 
     private static boolean hasAdvancement(ServerPlayer player, String path) {
@@ -341,32 +375,29 @@ public final class PDMainFlowVerifyHooks {
 	    ow.setBlock(base.below(), Blocks.STONE.defaultBlockState(), 3);
 	    ow.setBlock(base, PDBlocks.DYEDREAM_CRACK.get().defaultBlockState(), 3);
 
-	    // 笔记：公开入口 DreamnotesLogic.onUse(noteId, world, entity, stack)
+	    // 真实路径：手持 dreamnotes_N 调用 ItemStack.use（等价服务端右键笔记），
+	    // 取代旧的 DreamnotesLogic.onUse 直调，避免主链假绿。
 	    // case 1→a_0（父 start），2→b_0（父 a_0），14→hide_16（父 b_0）
-	    ItemStack noteStack = ItemStack.EMPTY; // onUse 内主要用 entity；stack 可 EMPTY
-	    DreamnotesLogic.onUse(1, ow, player, noteStack);
-	    acceptHard(out, hasAdvancement(player, "achievement_a_0"), "dreamnotes_1 → a_0", "true path");
+	    useDreamnote(player, ow, 1, out, "dreamnotes_1");
+	    acceptHard(out, hasAdvancement(player, "achievement_a_0"), "dreamnotes_1 → a_0", "true use path");
 	    setFlag("a_0", hasAdvancement(player, "achievement_a_0"));
 
-	    // 踩裂隙进染梦
+	    // 踩裂隙进染梦：真实移动触发 Block#entityInside（等价走进裂隙）
 	    player.setPortalCooldown(0);
 	    player.teleportTo(ow, base.getX() + 0.5, base.getY() + 0.1, base.getZ() + 0.5,
 	            player.getYRot(), player.getXRot());
-	    BlockState crack = ow.getBlockState(base);
-	    if (crack.getBlock() instanceof com.pasterdream.pasterdreammod.block.DyedreamCrackBlock block) {
-	        block.entityInside(crack, ow, base, player);
-	    }
+	    player.move(MoverType.SELF, Vec3.ZERO); // 零位移仍触发 tryCheckInsideBlocks → entityInside
 	    boolean inDye = player.level().dimension().equals(PDDimensions.DYEDREAM_WORLD_LEVEL_KEY);
 	    acceptHard(out, inDye, "裂隙进染梦", "dim=" + player.level().dimension().location());
 
 	    ServerLevel dye = (ServerLevel) player.level();
-	    DreamnotesLogic.onUse(2, dye, player, noteStack); // b_0
-	    acceptHard(out, hasAdvancement(player, "achievement_b_0"), "dreamnotes_2 → b_0", "true path");
+	    useDreamnote(player, dye, 2, out, "dreamnotes_2"); // b_0
+	    acceptHard(out, hasAdvancement(player, "achievement_b_0"), "dreamnotes_2 → b_0", "true use path");
 	    setFlag("b_0", hasAdvancement(player, "achievement_b_0"));
 
-	    DreamnotesLogic.onUse(14, dye, player, noteStack); // hide_16
+	    useDreamnote(player, dye, 14, out, "dreamnotes_14"); // hide_16
 	    acceptHard(out, hasAdvancement(player, "achievement_hide_16"),
-	            "dreamnotes_14 → hide_16", "禁止直接 grant");
+	            "dreamnotes_14 → hide_16", "true use path（禁止直接 grant）");
 	    setFlag("hide_16", hasAdvancement(player, "achievement_hide_16"));
 
 	    // 回主（裂隙或 ensureOverworld）

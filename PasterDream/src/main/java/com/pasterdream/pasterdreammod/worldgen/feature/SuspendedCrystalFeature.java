@@ -20,7 +20,7 @@ import java.util.List;
  * 生成逻辑：
  * <ol>
  *   <li>检测周围 12 格半径内是否有足够大的空间（空气占比 > 50%）</li>
- *   <li>在中心生成一根 3~8 格高的主水晶柱（meltdream_crystal_lamp）</li>
+ *   <li>在中心生成一根 3~8 格高的主水晶柱（dyedream_lartern）</li>
  *   <li>在主柱周围 2~4 格半径处生成 3~5 个小型悬浮水晶</li>
  *   <li>小水晶高度 1~3 格，使用 life_crystal 和 windrunner_crystal_ore</li>
  * </ol>
@@ -95,7 +95,7 @@ public class SuspendedCrystalFeature extends Feature<NoneFeatureConfiguration> {
             BlockPos crystalPos = new BlockPos(origin.getX(), ceilingY - i, origin.getZ());
             if (crystalPos.getY() < level.getMinBuildHeight()) break;
             if (!level.getBlockState(crystalPos).isAir()) break;
-            level.setBlock(crystalPos, PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 3);
+            level.setBlock(crystalPos, PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 3);
             placedAny = true;
         }
 
@@ -132,7 +132,7 @@ public class SuspendedCrystalFeature extends Feature<NoneFeatureConfiguration> {
             Block crystalBlock = switch (random.nextInt(3)) {
                 case 0 -> PDBlocks.LIFE_CRYSTAL.get();
                 case 1 -> PDBlocks.WINDRUNNER_CRYSTAL_ORE.get();
-                default -> PDBlocks.MELTDREAM_CRYSTAL_LAMP.get();
+                default -> PDBlocks.DYEDREAM_LARTERN.get();
             };
 
             // 小水晶高度
@@ -150,7 +150,7 @@ public class SuspendedCrystalFeature extends Feature<NoneFeatureConfiguration> {
             BlockPos tipPos = new BlockPos(sx, sy - satHeight, sz);
             if (tipPos.getY() >= level.getMinBuildHeight() && level.getBlockState(tipPos).isAir()
                     && random.nextFloat() < 0.4f) {
-                level.setBlock(tipPos, PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 3);
+                level.setBlock(tipPos, PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 3);
             }
         }
 

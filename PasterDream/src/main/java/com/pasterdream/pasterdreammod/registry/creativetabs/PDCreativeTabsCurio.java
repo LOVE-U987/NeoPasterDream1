@@ -44,8 +44,8 @@ public class PDCreativeTabsCurio {
                         output.accept(PDItems.RED_DEW_2_RING.get());
                         output.accept(PDItems.RED_DEW_3_RING.get());
                         output.accept(PDItems.COUNTER_RING.get());
-                        // 融梦光环戒指（来自 PasterDreamMeltDream 模块；未安装时不在创造栏显示）
-                        BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdreammeltdream", "meltdream_energy_0_ring"))
+                        // 融梦光环戒指（注册在 pasterdream 命名空间；未安装时不在创造栏显示）
+                        BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdream", "meltdream_energy_0_ring"))
                                 .ifPresent(item -> output.accept(new ItemStack(item)));
                         output.accept(PDItems.DARK_ALLLEGORY_CURIO.get());
                         output.accept(PDItems.CECILIACARE_CHARM.get());
@@ -73,8 +73,8 @@ public class PDCreativeTabsCurio {
                         output.accept(PDItems.LIGHT_BUTTERFLY_CURIO.get());
                         output.accept(PDItems.ICESHADOW_CURIO.get());
                         output.accept(PDItems.DEGENERATE_BODYS.get());
-                        // 白花胸针已拆分到 PasterDreamSanity；未安装时不在创造栏显示
-                        BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdreamsanity", "white_flower_body"))
+                        // 白花胸针已拆分到 PasterDreamSanity（注册在 pasterdream 命名空间）；未安装时不在创造栏显示
+                        BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdream", "white_flower_body"))
                                 .ifPresent(item -> output.accept(new ItemStack(item)));
                         output.accept(PDItems.WORLDTREE_SEEDPOD.get());
                         output.accept(PDItems.HIYORI_HEAD.get());

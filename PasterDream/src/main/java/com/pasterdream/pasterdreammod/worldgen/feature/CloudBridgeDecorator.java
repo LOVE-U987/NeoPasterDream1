@@ -157,7 +157,7 @@ public final class CloudBridgeDecorator {
                 tempPos.set(bx + perpX, bridgeY + yOffset + 1, bz + perpZ);
                 if (canPlaceAt(level, tempPos, placedSet)) {
                     BlockState decorState = random.nextFloat() < GLOW_CRYSTAL_CHANCE
-                            ? PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState()
+                            ? PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState()
                             : PDBlocks.CLOUD.get().defaultBlockState();
                     level.setBlock(tempPos, decorState, 3);
                     if (placedSet != null) {
@@ -226,7 +226,7 @@ public final class CloudBridgeDecorator {
             if (dy == pillarHeight && random.nextFloat() < 0.6f) {
                 pillarPos.set(x, bridgeY + dy + 1, z);
                 if (canPlaceAt(level, pillarPos, placedSet)) {
-                    level.setBlock(pillarPos, PDBlocks.MELTDREAM_CRYSTAL_LAMP.get().defaultBlockState(), 3);
+                    level.setBlock(pillarPos, PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 3);
                     if (placedSet != null) {
                         placedSet.add(pillarPos.immutable());
                     }
