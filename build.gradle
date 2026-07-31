@@ -22,6 +22,20 @@ tasks.register('packageMod') {
     dependsOn ':PasterDream:packageMod'
 }
 
+// 一键打包全部模组：主模组（内嵌 API）+ 三个独立附属模组
+tasks.register('packageAll') {
+    group = 'distribution'
+    description = '打包全部模组到 build/dist/（主模组内嵌 API，附属模组独立 jar）'
+    dependsOn ':PasterDream:packageMod'
+    dependsOn ':PasterDreamMeltDream:packageMod'
+    dependsOn ':PasterDreamSanity:packageMod'
+    dependsOn ':PasterDreamSpells:packageMod'
+    doLast {
+        def out = layout.buildDirectory.dir('dist').get().asFile
+        logger.lifecycle("packageAll → ${out.listFiles()?.collect { it.name }}")
+    }
+}
+
 tasks.register('runClient') {
     group = 'PasterDream'
     description = '启动游戏客户端（代理到 :PasterDream:runClient）'

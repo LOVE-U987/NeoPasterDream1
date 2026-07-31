@@ -26,9 +26,9 @@ ordering="NONE"
 side="BOTH"
 
 [[dependencies.pasterdreamsanity]]
-modId="pasterdreamapi"
+modId="pasterdream"
 type="required"
 versionRange="[${mod_version},)"
 ordering="AFTER"
 side="BOTH"
-reason="依赖 PasterDreamAPI 提供的 San 值数据附件与网络同步"
+reason="需要 PasterDream 主模组提供 PasterDreamAPI（San 值数据附件与网络同步）"

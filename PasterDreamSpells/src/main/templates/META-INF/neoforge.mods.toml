@@ -26,12 +26,12 @@ ordering="NONE"
 side="BOTH"
 
 [[dependencies.pasterdreamspells]]
-modId="pasterdreamapi"
+modId="pasterdream"
 type="required"
 versionRange="[${mod_version},)"
 ordering="AFTER"
 side="BOTH"
-reason="依赖 PasterDreamAPI 提供的法术与投射物 API"
+reason="需要 PasterDream 主模组提供 PasterDreamAPI（法术与投射物 API）"
 
 [[dependencies.pasterdreamspells]]
 modId="pasterdreamsanity"
