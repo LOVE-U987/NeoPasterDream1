@@ -27,9 +27,9 @@ import java.util.stream.Stream;
  * <p>
  * 群系分配逻辑（与 JSON 中 biomes 列表顺序一致）：
  * <ol>
- *   <li>大陆性噪声 < -0.35 → 深海群系（biomes[0]）</li>
+ *   <li>大陆性噪声 < -0.45 → 深海群系（biomes[0]）</li>
  *   <li>大陆性噪声 < -0.3 → 浅海群系（biomes[1]）</li>
- *   <li>大陆性噪声 < -0.05 → 海岸群系（biomes[2]）</li>
+ *   <li>大陆性噪声 < -0.12 → 海岸群系（biomes[2]）</li>
  *   <li>蘑菇平原独立噪声命中 → 蘑菇平原群系（biomes[7]）</li>
  *   <li>温度噪声 < -0.35 → 雪原群系（biomes[6]）</li>
  *   <li>山脊噪声 > 0.3 且湿度较高 → 密林群系（biomes[5]）</li>
@@ -50,7 +50,7 @@ public class DyedreamBiomeSource extends BiomeSource {
     );
 
     /** 大陆性噪声深海判定阈值 */
-    private static final double DEEP_OCEAN_THRESHOLD = -0.35;
+    private static final double DEEP_OCEAN_THRESHOLD = -0.45;
 
     /**
      * 大陆性噪声浅海判定阈值
@@ -61,8 +61,13 @@ public class DyedreamBiomeSource extends BiomeSource {
      */
     private static final double SHALLOW_OCEAN_THRESHOLD = -0.3;
 
-    /** 大陆性噪声海岸判定阈值 */
-    private static final double SHORE_THRESHOLD = -0.05;
+    /**
+     * 大陆性噪声海岸判定阈值
+     * <p>
+     * 与浅海阈值（-0.3）拉开足够间隔（0.18），确保海岸群系形成可被
+     * /locate biome 命中的连续斑块，避免群系带过窄导致采样遗漏。
+     */
+    private static final double SHORE_THRESHOLD = -0.12;
 
     /** 丘陵山脊阈值 */
     private static final double HILLS_RIDGE_THRESHOLD = 0.3;
@@ -238,10 +243,11 @@ public class DyedreamBiomeSource extends BiomeSource {
      */
     private @NotNull Holder<Biome> computeBiome(int bx, int by, int bz, Climate.Sampler sampler) {
         Climate.TargetPoint target = sampler.sample(bx >> 2, by >> 2, bz >> 2);
-        double continentalness = target.continentalness();
-        double ridges = target.weirdness();
-        double temperature = target.temperature();
-        double humidity = target.humidity();
+        // TargetPoint 内部经 quantizeCoord（×10000）量化，必须先转回原始 float 值再与阈值比较
+        double continentalness = Climate.unquantizeCoord(target.continentalness());
+        double ridges = Climate.unquantizeCoord(target.weirdness());
+        double temperature = Climate.unquantizeCoord(target.temperature());
+        double humidity = Climate.unquantizeCoord(target.humidity());
 
         // 深海
         if (continentalness < DEEP_OCEAN_THRESHOLD) {

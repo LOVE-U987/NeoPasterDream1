@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.registry;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.ruin.RuinAPI;
 import com.pasterdream.pasterdreammod.api.ruin.RuinResult;
+import com.pasterdream.pasterdreammod.worldgen.structure.AaroncosArenaPortalStructure;
 import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 
 import java.util.LinkedHashMap;
@@ -222,30 +223,35 @@ public class PDRuinsRegistration {
     }
 
     /**
-     * 注册竞技场入口结构 —— aaroncos_arena_portals
+     * 注册主世界竞技场入口结构 —— aaroncos_arena_portals
      * <p>
-     * 在 biome_shadow_0 生物群系地表下 4 格生成，使用 beard_thin 地形适应，
-     * NBT 结构文件为 {@code structure/aaroncos_arena_portals.nbt}。
-     * 结构集配置：spacing=31, separation=16, salt=1674438385
+     * 使用 {@link AaroncosArenaPortalStructure} 自定义结构类（组合 JigsawStructure），
+     * 通过 structure_set 正常随机生成，但<b>每世界仅生成一次</b>：
+     * 第一个候选点生成成功后记录坐标并"关门"，后续候选点不再生成；
+     * 生成时由 {@link com.pasterdream.pasterdreammod.worldgen.PDAaroncosArenaWorldgen}
+     * 分帧刷写竞技场群系 {@code aaroncos_arena_biome} 并启动遗迹感染。
+     * <p>
+     * 结构集配置：spacing=256, separation=128, salt=901277331（预置 JSON）。
+     * 灯影世界的 {@code aaroncos_arena_portal}（单数，biome_shadow_0）不受影响，照常生成。
      */
     private static void registerAaroncosArenaPortal() {
         RuinResult result = RuinAPI.createRuin("aaroncos_arena_portals")
-                .biomeTag("pasterdream:biome_shadow_0")
+                .biomeTag("minecraft:is_overworld")
                 .templatePool("pasterdream:aaroncos_arena_portals")
-                .structureClass(JigsawStructure.class)
-                .codec(JigsawStructure.CODEC)
+                .structureClass(AaroncosArenaPortalStructure.class)
+                .codec(AaroncosArenaPortalStructure.CODEC)
                 .terrainAdaptation("beard_thin")
                 .step("surface_structures")
                 .size(1)
-                .startHeight(-4)
+                .startHeight(24)
                 .generateJson(false)
                 .build();
         REGISTERED_STRUCTURES.put("aaroncos_arena_portals", result);
 
         RuinAPI.createRuinSet("aaroncos_arena_portals", "aaroncos_arena_portals_set")
-                .spacing(31)
-                .separation(16)
-                .salt(1674438385)
+                .spacing(256)
+                .separation(128)
+                .salt(901277331)
                 .generateJson(false)
                 .build();
     }

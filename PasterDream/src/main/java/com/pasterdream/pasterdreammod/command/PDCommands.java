@@ -188,9 +188,6 @@ public class PDCommands {
 
     // ==================== 竞技场遗迹定位指令 ====================
 
-    /** 遗迹底座埋入地下的方块数（与 PDAaroncosArenaWorldgen.BASE_BURIAL_BLOCKS 一致） */
-    private static final int ARENA_BASE_BURIAL_BLOCKS = 18;
-
     /**
      * 获取主世界竞技场遗迹中心（未生成时返回 null）。
      *
@@ -210,7 +207,8 @@ public class PDCommands {
     /**
      * 定位指令：显示主世界竞技场遗迹坐标与距离。
      * <p>
-     * 遗迹由服务器启动时手动放置（非结构管理器登记），/locate 无法定位，故提供本指令。
+     * 遗迹由结构集正常随机生成且每世界仅一座（非 /locate 可搜的常规登记结构时用本指令），
+     * 坐标直接从存档记录读取。
      *
      * @param source 指令来源
      * @return 操作结果状态码
@@ -218,20 +216,18 @@ public class PDCommands {
     private static int arenaLocate(CommandSourceStack source) {
         BlockPos center = getArenaCenter(source);
         if (center == null) {
-            source.sendFailure(Component.literal("§c竞技场遗迹尚未生成！（服务器启动时未找到合适的放置位置）"));
+            source.sendFailure(Component.literal("§c竞技场遗迹尚未生成！（结构尚未在世界中被探索生成）"));
             return 0;
         }
-        // 中心 Y 为结构原点（地表下埋入 +1），此处换算成地表坐标展示
-        int surfaceY = center.getY() + ARENA_BASE_BURIAL_BLOCKS + 1;
 
         if (source.getEntity() instanceof ServerPlayer player) {
             int dist = (int) Math.sqrt(player.blockPosition().distSqr(center));
             source.sendSuccess(() -> Component.literal(
                     String.format("§a竞技场遗迹位于 §e[%d, %d, %d]§a，距离你约 §e%d §a格。§7使用 /pasterdream arena tp 可直接传送",
-                            center.getX(), surfaceY, center.getZ(), dist)), true);
+                            center.getX(), center.getY(), center.getZ(), dist)), true);
         } else {
             source.sendSuccess(() -> Component.literal(
-                    String.format("§a竞技场遗迹位于 §e[%d, %d, %d]", center.getX(), surfaceY, center.getZ())), true);
+                    String.format("§a竞技场遗迹位于 §e[%d, %d, %d]", center.getX(), center.getY(), center.getZ())), true);
         }
         return 1;
     }
@@ -249,7 +245,7 @@ public class PDCommands {
         }
         BlockPos center = getArenaCenter(source);
         if (center == null) {
-            source.sendFailure(Component.literal("§c竞技场遗迹尚未生成！（服务器启动时未找到合适的放置位置）"));
+            source.sendFailure(Component.literal("§c竞技场遗迹尚未生成！（结构尚未在世界中被探索生成）"));
             return 0;
         }
 

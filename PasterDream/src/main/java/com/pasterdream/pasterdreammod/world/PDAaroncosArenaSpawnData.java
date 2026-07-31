@@ -11,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * 亚伦柯斯竞技场遗迹生成记录。
  * <p>
- * 用于标记当前主世界是否已经放置过竞技场遗迹（随机位置，每世界仅一座），并记录遗迹中心坐标，
- * 供服务器重启后恢复遗迹感染（{@link ArenaRuinInfection}）使用。
- * 每个世界仅放置一次，防止服务器重启后重复生成。
+ * 主世界竞技场遗迹由结构集正常随机生成且每世界仅生成一座
+ * （关门逻辑见 {@code AaroncosArenaPortalStructure}）；本类记录遗迹中心坐标，
+ * 供服务器重启后恢复遗迹感染（{@link ArenaRuinInfection}）及 /pasterdream arena 定位使用。
  */
 public class PDAaroncosArenaSpawnData extends SavedData {
 
@@ -67,6 +67,18 @@ public class PDAaroncosArenaSpawnData extends SavedData {
     public void markPlaced() {
         if (!this.placed) {
             this.placed = true;
+            setDirty();
+        }
+    }
+
+    /**
+     * 回滚已放置标记。
+     * <p>
+     * 结构候选点生成失败（如落在海洋）时调用，允许后续候选点重新尝试生成。
+     */
+    public void rollback() {
+        if (this.placed) {
+            this.placed = false;
             setDirty();
         }
     }

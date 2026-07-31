@@ -297,7 +297,8 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
                 // 采样大陆性噪声传入河流检测（河流检测使用大陆性判断海洋/陆地）
                 Climate.TargetPoint target = randomState.sampler().sample(
                         worldX >> 2, seaLevel >> 2, worldZ >> 2);
-                double continentalness = target.continentalness();
+                // TargetPoint 值为量化 long（×10000），转回原始 float 再比较
+                double continentalness = Climate.unquantizeCoord(target.continentalness());
                 isRiver[dx][dz] = dyedreamSource.isRiverAt(worldX, worldZ, continentalness);
                 if (isRiver[dx][dz]) {
                     riverThreshold++;
@@ -477,7 +478,8 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
                 // 通过噪声检测判定是否为河流位置（不依赖群系）
                 Climate.TargetPoint target = randomState.sampler().sample(
                         worldX >> 2, seaLevel >> 2, worldZ >> 2);
-                double continentalness = target.continentalness();
+                // TargetPoint 值为量化 long（×10000），转回原始 float 再比较
+                double continentalness = Climate.unquantizeCoord(target.continentalness());
                 if (!dyedreamSource.isRiverAt(worldX, worldZ, continentalness)) {
                     continue;
                 }
