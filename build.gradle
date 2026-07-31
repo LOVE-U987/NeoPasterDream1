@@ -16,24 +16,37 @@ subprojects {
     }
 }
 
+// 打包产物自动归档任务：将 build/dist 下的 jar 移动到项目根目录的 打包产物/ 文件夹
+def distScript = rootProject.file('.trae/tools/dist_to_folder.py')
+tasks.register('deployDist', Exec) {
+    group = 'distribution'
+    description = '归档 build/dist 产物到 打包产物/（自动）'
+    workingDir = rootProject.projectDir
+    commandLine 'python', distScript.absolutePath
+    onlyIf { distScript.exists() }
+}
+
 tasks.register('packageMod') {
     group = 'distribution'
-    description = '构建并收集单一可安装 jar 到 build/dist/（内嵌 API）'
+    description = '构建并收集单一可安装 jar 到 build/dist/（内嵌 API）并归档到 打包产物/'
     dependsOn ':PasterDream:packageMod'
+    dependsOn tasks.named('deployDist')
 }
 
 // 一键打包全部模组：主模组（内嵌 API）+ 三个独立附属模组
 tasks.register('packageAll') {
     group = 'distribution'
-    description = '打包全部模组到 build/dist/（主模组内嵌 API，附属模组独立 jar）'
+    description = '打包全部模组到 build/dist/（主模组内嵌 API，附属模组独立 jar）并归档到 打包产物/'
     dependsOn ':PasterDream:packageMod'
     dependsOn ':PasterDreamMeltDream:packageMod'
     dependsOn ':PasterDreamSanity:packageMod'
     dependsOn ':PasterDreamSpells:packageMod'
-    doLast {
-        def out = layout.buildDirectory.dir('dist').get().asFile
-        logger.lifecycle("packageAll → ${out.listFiles()?.collect { it.name }}")
-    }
+    dependsOn tasks.named('deployDist')
+}
+
+// 强制归档任务在全部子模块打包完成后才执行，避免移动空产物
+tasks.named('deployDist').configure {
+    mustRunAfter ':PasterDream:packageMod', ':PasterDreamMeltDream:packageMod', ':PasterDreamSanity:packageMod', ':PasterDreamSpells:packageMod'
 }
 
 tasks.register('runClient') {

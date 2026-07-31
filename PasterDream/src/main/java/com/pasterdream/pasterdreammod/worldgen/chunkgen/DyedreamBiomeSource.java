@@ -28,7 +28,7 @@ import java.util.stream.Stream;
  * 群系分配逻辑（与 JSON 中 biomes 列表顺序一致）：
  * <ol>
  *   <li>大陆性噪声 < -0.35 → 深海群系（biomes[0]）</li>
- *   <li>大陆性噪声 < -0.19 → 浅海群系（biomes[1]）</li>
+ *   <li>大陆性噪声 < -0.3 → 浅海群系（biomes[1]）</li>
  *   <li>大陆性噪声 < -0.05 → 海岸群系（biomes[2]）</li>
  *   <li>蘑菇平原独立噪声命中 → 蘑菇平原群系（biomes[7]）</li>
  *   <li>温度噪声 < -0.35 → 雪原群系（biomes[6]）</li>
@@ -52,8 +52,14 @@ public class DyedreamBiomeSource extends BiomeSource {
     /** 大陆性噪声深海判定阈值 */
     private static final double DEEP_OCEAN_THRESHOLD = -0.35;
 
-    /** 大陆性噪声浅海判定阈值 */
-    private static final double SHALLOW_OCEAN_THRESHOLD = -0.19;
+    /**
+     * 大陆性噪声浅海判定阈值
+     * <p>
+     * 与 {@link DyedreamNoises#ISLAND_THRESHOLD}（-0.3）严格对齐：
+     * 噪声值低于此阈值的位置地形恒为水下（isIsland = false），
+     * 避免"浅海群系区域被地形判定为陆地、长出沙地"的阈值错位问题。
+     */
+    private static final double SHALLOW_OCEAN_THRESHOLD = -0.3;
 
     /** 大陆性噪声海岸判定阈值 */
     private static final double SHORE_THRESHOLD = -0.05;
