@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.entity.mob;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.advancements.AdvancementHolder;
@@ -391,6 +392,9 @@ public class ShadowNpc0Entity extends GeckoLibMobEntity {
     }
 
     private static boolean isAdvDone(ServerPlayer player, String path) {
+        if (!PDAdvancements.isAdvancementLocked(player, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path))) {
+            return true;
+        }
         AdvancementHolder holder = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
         if (holder == null) {

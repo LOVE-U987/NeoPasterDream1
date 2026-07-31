@@ -14,10 +14,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 
 import static com.pasterdream.pasterdreammod.PasterDreamMod.LOGGER;
@@ -31,6 +35,7 @@ import static com.pasterdream.pasterdreammod.PasterDreamMod.LOGGER;
 public class DollBuilder {
 
     private final String name;
+    private String namespace = PasterDreamMod.MOD_ID;
     private ResourceLocation model;
     private ResourceLocation texture;
     private ResourceLocation holdingModel;
@@ -46,6 +51,17 @@ public class DollBuilder {
      */
     DollBuilder(String name) {
         this.name = name;
+    }
+
+    /**
+     * 设置注册命名空间
+     *
+     * @param namespace 命名空间（如 "kubejs" 或 "pasterdream"）
+     * @return 当前 Builder
+     */
+    public DollBuilder namespace(String namespace) {
+        this.namespace = namespace;
+        return this;
     }
 
     /**
@@ -182,8 +198,9 @@ public class DollBuilder {
      */
     public DollResult registerDirect() {
         Objects.requireNonNull(name, "[DollBuilder] name 不能为空");
+        Objects.requireNonNull(namespace, "[DollBuilder] namespace 不能为空");
 
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, name);
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(namespace, name);
         ResourceLocation modelLoc = this.model != null ? this.model : defaultModel(name);
         ResourceLocation textureLoc = this.texture != null ? this.texture : defaultTexture(name);
         ResourceLocation holdingLoc = this.holdingModel != null ? this.holdingModel : defaultHoldingModel(name);
@@ -238,8 +255,60 @@ public class DollBuilder {
         DollResult result = new DollResult(name, deferredBlock, deferredItem, deferredBe, config);
         DollAPI.putRegistration(name, result);
 
+        // 非本模组命名空间时，自动生成 KubeJS 资源目录下的 blockstates 与 item model，
+        // 避免方块/物品因缺少 JSON 而显示紫黑占位。
+        if (!PasterDreamMod.MOD_ID.equals(namespace)) {
+            generateKubeJsAssets(namespace, name);
+        }
+
         System.out.println("[[DollBuilder-DEBUG]] registerDirect COMPLETED for " + name);
         return result;
+    }
+
+    /**
+     * 为 KubeJS 等外部命名空间自动生成必要的 JSON 资源文件。
+     * <p>
+     * 文件生成到 {@code <游戏目录>/kubejs/assets/<namespace>/} 下：
+     * <ul>
+     *     <li>{@code blockstates/<name>.json} — 引用 PasterDream 通用粒子模型</li>
+     *     <li>{@code models/item/<name>.json} — 引用 PasterDream 通用显示设置</li>
+     * </ul>
+     *
+     * @param namespace 命名空间
+     * @param name      注册名
+     */
+    private static void generateKubeJsAssets(String namespace, String name) {
+        Path assetsDir = FMLPaths.GAMEDIR.get().resolve("kubejs/assets").resolve(namespace);
+        Path blockstatesDir = assetsDir.resolve("blockstates");
+        Path modelsItemDir = assetsDir.resolve("models/item");
+
+        try {
+            Files.createDirectories(blockstatesDir);
+            Files.createDirectories(modelsItemDir);
+
+            String blockstateJson = """
+                    {
+                      "variants": {
+                        "facing=north": { "model": "pasterdream:custom/doll_generic_particle" },
+                        "facing=east": { "model": "pasterdream:custom/doll_generic_particle", "y": 90 },
+                        "facing=south": { "model": "pasterdream:custom/doll_generic_particle", "y": 180 },
+                        "facing=west": { "model": "pasterdream:custom/doll_generic_particle", "y": 270 }
+                      }
+                    }
+                    """;
+            Files.writeString(blockstatesDir.resolve(name + ".json"), blockstateJson);
+
+            String itemModelJson = """
+                    {
+                      "parent": "pasterdream:displaysettings/doll_generic.item"
+                    }
+                    """;
+            Files.writeString(modelsItemDir.resolve(name + ".json"), itemModelJson);
+
+            LOGGER.info("[DollBuilder] 为 {}:{} 生成 KubeJS 资源文件", namespace, name);
+        } catch (IOException e) {
+            LOGGER.error("[DollBuilder] 为 {}:{} 生成 KubeJS 资源文件失败", namespace, name, e);
+        }
     }
 
     private static ResourceLocation defaultModel(String name) {

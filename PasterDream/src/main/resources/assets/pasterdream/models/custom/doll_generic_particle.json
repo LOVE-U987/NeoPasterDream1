@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/doll_generic.item",
+  "textures": {
+    "particle": "pasterdream:block/cloud"
+  }
+}

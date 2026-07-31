@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "pasterdream:custom/wuyu_doll_particle"
+    },
+    "facing=north": {
+      "model": "pasterdream:custom/wuyu_doll_particle"
+    },
+    "facing=south": {
+      "model": "pasterdream:custom/wuyu_doll_particle"
+    },
+    "facing=west": {
+      "model": "pasterdream:custom/wuyu_doll_particle"
+    }
+  }
+}

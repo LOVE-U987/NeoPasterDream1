@@ -6,12 +6,13 @@
 
 1. [前置条件](#1-前置条件)
 2. [快速上手](#2-快速上手)
-3. [注册一个完整玩偶](#3-注册一个完整玩偶)
-4. [设置中文名](#4-设置中文名)
-5. [资源文件准备](#5-资源文件准备)
-6. [真实案例：注册幻胧玩偶](#6-真实案例注册幻胧玩偶)
-7. [新模型 vs 旧模型](#7-新模型-vs-旧模型)
-8. [常见问题](#8-常见问题)
+3. [可用 API 方法](#3-可用-api-方法)
+4. [资源文件准备](#4-资源文件准备)
+5. [设置中文名](#5-设置中文名)
+6. [真实案例：注册 New Skin 1 玩偶](#6-真实案例注册-new-skin-1-玩偶)
+7. [进阶：完整 registerDoll](#7-进阶完整-registerdoll)
+8. [命名空间与创造栏](#8-命名空间与创造栏)
+9. [常见问题](#9-常见问题)
 
 ---
 
@@ -41,7 +42,7 @@
 
 ### 脚本目录
 
-玩偶注册脚本必须放在 **`kubejs/startup_scripts/`** 目录下（启动阶段注册用）：
+玩偶注册脚本必须放在 **`kubejs/startup_scripts/`** 目录下，并且使用 `StartupEvents.registry('block', ...)` 事件：
 
 ```
 kubejs/
@@ -51,6 +52,7 @@ kubejs/
 ```
 
 > 放到 `server_scripts/` 或 `client_scripts/` 都不会在正确的注册阶段执行，玩偶不会出现在游戏中。
+> 也不能在 `StartupEvents.init` 中调用，因为此时方块/物品注册表已经冻结。
 
 ---
 
@@ -59,134 +61,73 @@ kubejs/
 创建 `kubejs/startup_scripts/my_doll.js`，内容如下：
 
 ```js
-PasterDreamEvents.dollRegistry(event => {
-    event.create("my_doll")
-        .model("kubejs:geo/block/my_doll.geo.json")
-        .texture("kubejs:textures/block/my_doll.png")
-        .canHoldItems(true)
-        .register();
+StartupEvents.registry('block', event => {
+    const DollAPI = Java.loadClass('com.pasterdream.pasterdreammod.api.doll.DollAPI');
+
+    DollAPI.registerDollWithSkin(
+        'kubejs',                               // 命名空间
+        'my_doll',                              // 注册名
+        'kubejs:textures/block/my_doll.png',    // 皮肤纹理路径
+        true                                    // 是否允许抱物
+    );
 });
 ```
 
-然后在 `kubejs/assets/kubejs/` 下准备好对应的资源文件（详见[第 5 节](#5-资源文件准备)），重启游戏即可。
+然后在 `kubejs/assets/kubejs/textures/block/` 下放置 `my_doll.png`，重启游戏即可。
 
-### JS Builder 可用方法
-
-| 方法 | 说明 |
-|------|------|
-| `model(path)` | 基础模型路径，默认 `pasterdream:geo/block/<name>.geo.json` |
-| `texture(path)` | 皮肤纹理路径，默认 `pasterdream:textures/block/<name>.png` |
-| `canHoldItems(bool)` | 是否允许抱物，默认 `false` |
-| `holdingModel(path)` | 抱物模型路径，默认 `pasterdream:geo/block/<name>_holding.geo.json` |
-| `register()` | 执行注册（最后必须调用） |
-
-> 对比 Java API，JS Builder 不支持 `legacy()`、`itemProperties()`、`blockProperties()` 方法。
-> 如果你需要旧模型，请使用 Java API 注册。KubeJS 默认使用新模型工作流。
+游戏启动后：
+- 用 `/give @s kubejs:my_doll` 获取玩偶
+- 玩偶会自动显示在 **PasterDream 纪念品创造栏**
 
 ---
 
-## 3. 注册一个完整玩偶
+## 3. 可用 API 方法
 
-完整玩偶的注册脚本通常包含以下要素，这里以注册一个可爱的"棉花云"玩偶为例：
+### `DollAPI.registerDollWithSkin(namespace, name, skinTexture, canHoldItems)`
 
-```js
-// kubejs/startup_scripts/cotton_cloud_doll.js
-PasterDreamEvents.dollRegistry(event => {
-    // 1. 创建玩偶，命名为 cotton_cloud_doll（snake_case）
-    const doll = event.create("cotton_cloud_doll");
-    
-    // 2. 指定模型路径（必须指向 .geo.json 文件）
-    doll.model("kubejs:geo/block/cotton_cloud_doll.geo.json");
-    
-    // 3. 指定皮肤纹理路径（必须指向 .png 文件）
-    doll.texture("kubejs:textures/block/cotton_cloud_doll.png");
-    
-    // 4. 开启抱物功能后，按默认规则会自动寻找 _holding.geo.json
-    doll.canHoldItems(true);
-    
-    // 5. 也可以显式指定抱物模型路径
-    doll.holdingModel("kubejs:geo/block/cotton_cloud_doll_holding.geo.json");
-    
-    // 6. 注册（必须调用）
-    doll.register();
-});
-```
+最简注册方式，复用模组内置的 `eoul_doll` 模型和抱物模型。
 
-可以链式调用写在一行：
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `namespace` | `string` | 注册命名空间，如 `"kubejs"` |
+| `name` | `string` | 玩偶注册名，snake_case |
+| `skinTexture` | `string` | 皮肤纹理路径，如 `"kubejs:textures/block/my_doll.png"` |
+| `canHoldItems` | `boolean` | 是否允许抱物 |
 
-```js
-PasterDreamEvents.dollRegistry(event => {
-    event.create("cotton_cloud_doll")
-        .model("kubejs:geo/block/cotton_cloud_doll.geo.json")
-        .texture("kubejs:textures/block/cotton_cloud_doll.png")
-        .canHoldItems(true)
-        .register();
-});
-```
+### `DollAPI.registerDoll(namespace, name, model, texture, canHoldItems, holdingModel)`
 
-### 不抱物的玩偶
+完整注册方式，可指定自定义 GeckoLib 模型。
 
-如果不想要抱物功能，删掉 `canHoldItems` 即可：
-
-```js
-PasterDreamEvents.dollRegistry(event => {
-    event.create("simple_doll")
-        .model("kubejs:geo/block/simple_doll.geo.json")
-        .texture("kubejs:textures/block/simple_doll.png")
-        .register();
-});
-```
-
-此时不需要提供 `<name>_holding.geo.json`。
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `namespace` | `string` | 注册命名空间 |
+| `name` | `string` | 玩偶注册名 |
+| `model` | `string\|null` | 基础模型路径，传 `null` 使用默认路径 |
+| `texture` | `string\|null` | 皮肤纹理路径，传 `null` 使用默认路径 |
+| `canHoldItems` | `boolean` | 是否允许抱物 |
+| `holdingModel` | `string\|null` | 抱物模型路径，不需要可传 `null` |
 
 ---
 
-## 4. 设置中文名
+## 4. 资源文件准备
 
-玩偶注册后默认显示注册名（如 `block.pasterdream.my_doll`），需要在语言文件中添加翻译。
+### 使用 `registerDollWithSkin`（推荐）
 
-### 方式一：KubeJS 语言事件（推荐）
-
-在同一个 `startup_scripts/` 或 `client_scripts/` 中：
-
-```js
-// kubejs/client_scripts/doll_lang.js
-ClientEvents.lang('zh_cn', event => {
-    event.add('block.pasterdream.cotton_cloud_doll', '棉花云玩偶');
-    event.add('item.pasterdream.cotton_cloud_doll', '棉花云玩偶');
-});
-```
-
-```js
-ClientEvents.lang('en_us', event => {
-    event.add('block.pasterdream.cotton_cloud_doll', 'Cotton Cloud Doll');
-    event.add('item.pasterdream.cotton_cloud_doll', 'Cotton Cloud Doll');
-});
-```
-
-### 方式二：直接修改资源包
-
-如果你在制作资源包，可以在 `assets/pasterdream/lang/zh_cn.json` 中添加：
-
-```json
-{
-  "block.pasterdream.cotton_cloud_doll": "棉花云玩偶",
-  "item.pasterdream.cotton_cloud_doll": "棉花云玩偶"
-}
-```
-
-> 注意：用 KubeJS 注册的玩偶**注册命名空间固定为 `pasterdream`**，所以语言键是 `pasterdream.cotton_cloud_doll`，不是 `kubejs.cotton_cloud_doll`。
-
----
-
-## 5. 资源文件准备
-
-玩偶注册除了脚本，还需要对应的模型和纹理文件。
-
-### 目录结构
+只需要准备皮肤纹理：
 
 ```
-kubejs/assets/pasterdream/
+kubejs/assets/kubejs/textures/block/
+└── my_doll.png          ← 皮肤纹理（64×64，类似玩家皮肤布局）
+```
+
+模型会自动使用模组内置的 `pasterdream:geo/block/eoul_doll.geo.json`。
+
+### 使用 `registerDoll` 自定义模型
+
+需要准备完整的模型和纹理：
+
+```
+kubejs/assets/mypack/
 ├── geo/
 │   └── block/
 │       ├── my_doll.geo.json          ← 基础模型（必选）
@@ -196,135 +137,157 @@ kubejs/assets/pasterdream/
         └── my_doll.png               ← 皮肤纹理（必选）
 ```
 
-> 是的，路径前缀必须是 `pasterdream`（因为注册命名空间是 `pasterdream`），即使你是通过 KubeJS 注册的。
-
-### 快捷提示
-
-- 模型文件用 **Blockbench** 制作，导出为 GeckoLib 格式（`.geo.json`）
-- 纹理尺寸建议 **64×64**（复制玩家皮肤布局）
-- **模型和纹理文件名**必须与注册名的 snake_case 一致
-
-### 命名空间说明
-
-通过 KubeJS 注册的玩偶，命名空间固定为 `pasterdream`。所以：
-- 脚本中 `model()` / `texture()` 的路径如果省略命名空间，默认也是 `pasterdream`
-- 例如 `.model("pasterdream:geo/block/my_doll.geo.json")` 和 `.model("geo/block/my_doll.geo.json")` 等价
-
-> 如果你把资源文件放到 `kubejs/assets/kubejs/` 下，就需要显式指定 `"kubejs:geo/block/..."`。
+> 模型文件用 **Blockbench** 制作，导出为 GeckoLib 格式（`.geo.json`）。
+> 如果你没有自己的模型，可以从模组复制 `eoul_doll.geo.json` 和 `eoul_doll_holding.geo.json` 作为模板。
 
 ---
 
-## 6. 真实案例：注册幻胧玩偶
+## 5. 设置中文名
 
-以下是一个完整的真实案例，使用模组内置的玩家皮肤模型和抱物模型：
+玩偶注册后默认显示注册名（如 `block.kubejs.my_doll`），需要在语言文件中添加翻译。
+
+### 方式一：KubeJS 语言事件（推荐）
+
+创建 `kubejs/client_scripts/doll_lang.js`：
+
+```js
+ClientEvents.lang('zh_cn', event => {
+    event.add('block.kubejs.my_doll', '我的玩偶');
+    event.add('item.kubejs.my_doll', '我的玩偶');
+});
+```
+
+```js
+ClientEvents.lang('en_us', event => {
+    event.add('block.kubejs.my_doll', 'My Doll');
+    event.add('item.kubejs.my_doll', 'My Doll');
+});
+```
+
+### 方式二：直接修改资源包
+
+如果你在制作资源包，可以在 `assets/kubejs/lang/zh_cn.json` 中添加：
+
+```json
+{
+  "block.kubejs.my_doll": "我的玩偶",
+  "item.kubejs.my_doll": "我的玩偶"
+}
+```
+
+> 语言键的命名空间必须和注册时传入的 `namespace` 一致。
+
+### 添加悬浮描述
+
+`DollDisplayItem` 会自动读取 `item.<namespace>.<name>.desc` 作为灰色悬浮提示。例如：
+
+```js
+ClientEvents.lang('zh_cn', event => {
+    event.add('item.kubejs.my_doll.desc', '这是一行灰色的物品描述');
+});
+```
+
+不需要额外代码，添加语言键即可生效。
+
+---
+
+## 6. 真实案例：注册 New Skin 1 玩偶
 
 ### 第一步：准备纹理
 
-把 `phantom_daze.png`（64×64 皮肤纹理）放到：
-```
-kubejs/assets/pasterdream/textures/block/phantom_daze.png
-```
+把 `New Skin 1.png` 重命名为 `new_skin_1.png`，放到：
 
-### 第二步：准备模型
-
-把 `phantom_daze.geo.json` 和 `phantom_daze_holding.geo.json` 放到：
 ```
-kubejs/assets/pasterdream/geo/block/
+kubejs/assets/pasterdream/textures/block/new_skin_1.png
 ```
 
-如果你没有自己的模型，可以**从模组原文件复制**：
-- `PasterDream/src/main/resources/assets/pasterdream/geo/block/eoul_doll.geo.json`
-- `PasterDream/src/main/resources/assets/pasterdream/geo/block/eoul_doll_holding.geo.json`
+> 也可以放到 `kubejs/assets/kubejs/textures/block/new_skin_1.png`，此时脚本里的路径要改成 `kubejs:textures/block/new_skin_1.png`。
 
-复制后重命名为 `phantom_daze.geo.json` 和 `phantom_daze_holding.geo.json` 即可。
+### 第二步：写注册脚本
 
-### 第三步：写注册脚本
+创建 `kubejs/startup_scripts/new_skin_1_doll.js`：
 
 ```js
-// kubejs/startup_scripts/phantom_daze_doll.js
-PasterDreamEvents.dollRegistry(event => {
-    event.create("phantom_daze")
-        .model("pasterdream:geo/block/phantom_daze.geo.json")
-        .texture("pasterdream:textures/block/phantom_daze.png")
-        .holdingModel("pasterdream:geo/block/phantom_daze_holding.geo.json")
-        .canHoldItems(true)
-        .register();
+StartupEvents.registry('block', event => {
+    const DollAPI = Java.loadClass('com.pasterdream.pasterdreammod.api.doll.DollAPI');
+
+    DollAPI.registerDollWithSkin(
+        'kubejs',
+        'new_skin_1',
+        'pasterdream:textures/block/new_skin_1.png',
+        true
+    );
 });
-
-// 也可以直接用默认路径（资源放在约定位置时）：
-// PasterDreamEvents.dollRegistry(event => {
-//     event.create("phantom_daze")
-//         .canHoldItems(true)
-//         .register();
-// });
 ```
 
-> 如果资源文件放在 `kubejs/assets/pasterdream/` 的标准路径下，甚至可以省略 `model()` 和 `texture()`——API 会自动寻找默认位置。
+### 第三步：添加语言
 
-### 第四步：添加语言
+创建 `kubejs/client_scripts/new_skin_1_lang.js`（文件名需与脚本对应）：
 
 ```js
-// kubejs/client_scripts/phantom_daze_lang.js
 ClientEvents.lang('zh_cn', event => {
-    event.add('block.pasterdream.phantom_daze', '小大幻翼');
-    event.add('item.pasterdream.phantom_daze', '小大幻翼');
+    event.add('block.kubejs.new_skin_1', '新皮肤 1 玩偶');
+    event.add('item.kubejs.new_skin_1', '新皮肤 1 玩偶');
+    event.add('item.kubejs.new_skin_1.desc', '由 KubeJS 注册的自定义皮肤玩偶');
 });
 ```
 
-### 第五步：重启游戏
+### 第四步：重启游戏
 
 重启后：
-- 用 `/give @s pasterdream:phantom_daze` 获取玩偶
-- 摆放后右键手持物品→玩偶抱物
-- 空手右键→取下物品
+- 用 `/give @s kubejs:new_skin_1` 获取玩偶
+- 在 **PasterDream 纪念品创造栏** 找到该玩偶
+- 摆放后右键手持物品 → 玩偶抱物
+- 空手右键 → 取下物品
 
 ---
 
-## 7. 新模型 vs 旧模型
+## 7. 进阶：完整 registerDoll
 
-### 新模型（KubeJS 默认）
-
-通过 KubeJS 注册的玩偶**默认使用新模型**（`DollModelType.NEW`），特点：
-
-- 可以通过 `model()` 和 `texture()` 显式指定任意路径
-- 支持双层皮肤纹理（64×64 类似玩家皮肤的布局）
-- 支持通过 `holdingModel()` 自定义抱物模型
+如果你想使用自己的 GeckoLib 模型，或者使用旧模型，可以用完整版：
 
 ```js
-// 新模型（默认）
-PasterDreamEvents.dollRegistry(event => {
-    event.create("my_new_doll")
-        .model("mypack:geo/block/custom_model.geo.json")
-        .texture("mypack:textures/block/custom_skin.png")
-        .canHoldItems(true)
-        .register();
+StartupEvents.registry('block', event => {
+    const DollAPI = Java.loadClass('com.pasterdream.pasterdreammod.api.doll.DollAPI');
+
+    DollAPI.registerDoll(
+        'kubejs',
+        'custom_doll',
+        'kubejs:geo/block/custom_doll.geo.json',
+        'kubejs:textures/block/custom_doll.png',
+        true,
+        'kubejs:geo/block/custom_doll_holding.geo.json'
+    );
 });
 ```
 
-### 旧模型（仅 Java API 支持）
+---
 
-KubeJS 的 JS Builder 目前不提供 `.legacy()` 方法。
-如果你需要使用旧模型工作流，请通过 Java API 注册。
+## 8. 命名空间与创造栏
+
+- 玩偶注册时传入的 `namespace` 决定了物品的 ID，如 `kubejs:new_skin_1`。
+- 无论使用哪个命名空间，`PDCreativeTabsSouvenir` 都会自动把所有 DollAPI 注册的玩偶收集到 **PasterDream 纪念品创造栏**。
+- 当命名空间不是 `pasterdream` 时，API 会自动在 `kubejs/assets/<namespace>/` 下生成必要的 `blockstates/<name>.json` 和 `models/item/<name>.json`，避免方块/物品显示紫黑占位。
 
 ---
 
-## 8. 常见问题
+## 9. 常见问题
 
 ### Q：脚本写了但玩偶不出现
 
 排查顺序：
 
 1. **是否放对目录** → 必须 `kubejs/startup_scripts/`
-2. **是否有 KubeJS + Rhino** → 看日志有没有 `[PasterDream] KubeJS 插件已初始化`
-3. **模型/纹理文件是否存在** → 检查 `kubejs/assets/pasterdream/` 下的路径
-4. **文件命名是否正确** → 注册名和文件名必须一致（注册 `my_doll` → 模型 `my_doll.geo.json`）
-5. **语法错误** → 看日志是否有 JS 报错
+2. **是否使用正确事件** → 必须是 `StartupEvents.registry('block', ...)`
+3. **是否有 KubeJS + Rhino** → 看日志有没有 `[PasterDream] KubeJS 插件已初始化`
+4. **是否报错 `Registry is already frozen`** → 说明写到了 `StartupEvents.init` 等太晚的事件
+5. **纹理文件是否存在** → 检查 `kubejs/assets/<namespace>/textures/block/` 下的路径
+6. **语法错误** → 看日志是否有 JS 报错
 
-### Q：报错 "Cannot read properties of undefined (reading 'dollRegistry')"
+### Q：用旧教程里的 `PasterDreamEvents.dollRegistry` 为什么不工作
 
-这说明 `PasterDreamEvents` 没有注册成功。原因：
-- KubeJS 插件没有加载 → 检查 KubeJS / Rhino 版本是否兼容
-- PasterDream 版本太旧 → 更新到支持 DollAPI 的版本
+`PasterDreamEvents.dollRegistry` 事件机制在当前版本存在问题，已弃用。
+请改用本文档中的 `StartupEvents.registry('block', ...)` + `DollAPI.registerDollWithSkin()` 方案。
 
 ### Q：纹理显示为紫黑方块
 
@@ -336,12 +299,10 @@ KubeJS 的 JS Builder 目前不提供 `.legacy()` 方法。
 
 - 检查 `canHoldItems(true)` 是否设置
 - 检查抱物模型是否存在且有 `bb_main` 骨骼
-- 检查抱物模型路径是否正确
 
 ### Q：玩偶用手拿的时候旋转不对
 
-玩偶的物品显示由内置的 `displaysettings/doll_default.item` 控制，默认已配置好手持/展示柜/头顶的显示参数。
-你不需要手动设置物品模型 JSON——`PDBlockModelProvider` 会自动帮你生成。
+内置的 `pasterdream:displaysettings/doll_generic.item` 已配置好手持/展示柜/头顶的显示参数。不需要手动设置。
 
 ---
 

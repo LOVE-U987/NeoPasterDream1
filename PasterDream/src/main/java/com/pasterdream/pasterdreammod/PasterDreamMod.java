@@ -260,8 +260,10 @@ public class PasterDreamMod {
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDLampShadowWorldgen::onLevelLoad);
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDEntityDeathEvents::onLivingDeath);
 
-        // 亚伦柯斯竞技场：将遗迹群系注入主世界 MultiNoise 群系源
+        // 亚伦柯斯竞技场：服务器启动时在出生点附近放置遗迹并设置群系
         NeoForge.EVENT_BUS.addListener(PDAaroncosArenaWorldgen::onServerStarting);
+        // 服务器停止时复位遗迹感染运行状态，避免跨存档残留
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.ArenaRuinInfection::onServerStopped);
 
         // 客户端 Tick 事件和极光天幕渲染器通过 @EventBusSubscriber(Dist.CLIENT)
         // 在 PDClientEvents 和 DyeDreamSkyRenderer 中自动注册，避免服务端类加载

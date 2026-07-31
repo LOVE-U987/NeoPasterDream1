@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.pasterdreamspells;
 
+import com.pasterdream.pasterdreammod.api.config.PDAddonConfigRegistry;
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 import com.pasterdream.pasterdreammod.pasterdreamspells.client.PDSpellsClientSetup;
 import com.pasterdream.pasterdreammod.pasterdreamspells.config.PDSpellsConfig;
@@ -12,6 +13,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -30,6 +32,9 @@ public class PasterDreamSpellsMod {
     /** 法术系统附属模组 ID */
     public static final String MOD_ID = "pasterdreamspells";
 
+    /** 通用配置的 ModConfig 引用，供配置界面持久化保存 */
+    public static ModConfig commonModConfig;
+
     /**
      * 构造函数。
      *
@@ -47,7 +52,9 @@ public class PasterDreamSpellsMod {
         Object unusedSpellsParticles = PDSpellsParticles.POISON_GAS_PARTICLE;
         PDSpellsSounds.SOUND_EVENTS.register(modEventBus);
 
-        modContainer.registerConfig(ModConfig.Type.COMMON, PDSpellsConfig.SPEC);
+        // 使用 ConfigTracker 注册并捕获 ModConfig 引用，以便主模组配置界面保存到 TOML
+        commonModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.COMMON, PDSpellsConfig.SPEC, modContainer, "pasterdreamspells-common.toml");
+        PDAddonConfigRegistry.registerCommonConfig(MOD_ID, commonModConfig);
 
         // 客户端事件注册（替代已弃用的 @EventBusSubscriber(bus = Bus.MOD, value = Dist.CLIENT)）
         if (FMLEnvironment.dist == Dist.CLIENT) {

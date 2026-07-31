@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.block.entity;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.menu.DreamAccumulatorMenu;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
@@ -183,9 +184,15 @@ public class DreamAccumulatorBlockEntity extends BlockEntity implements GeoBlock
             PDDebugLogger.mainDebug("[DreamAccumulator] dreamnotes_7 未注册，跳过初见馈赠");
             return;
         }
-        AdvancementHolder holder = serverPlayer.server.getAdvancements()
-                .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "achievement_c_3"));
-        boolean done = holder != null && serverPlayer.getAdvancements().getOrStartProgress(holder).isDone();
+        boolean done;
+        if (!PDAdvancements.isAdvancementLocked(serverPlayer,
+                ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "achievement_c_3"))) {
+            done = true;
+        } else {
+            AdvancementHolder holder = serverPlayer.server.getAdvancements()
+                    .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "achievement_c_3"));
+            done = holder != null && serverPlayer.getAdvancements().getOrStartProgress(holder).isDone();
+        }
         if (!done && !serverPlayer.getInventory().contains(new ItemStack(notes))) {
             serverPlayer.closeContainer();
             ItemStack gift = new ItemStack(notes);

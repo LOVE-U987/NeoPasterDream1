@@ -1,7 +1,7 @@
 package com.pasterdream.pasterdreammod.block;
 
-import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
@@ -195,6 +195,9 @@ public class ShadowBedBlock extends Block implements SimpleWaterloggedBlock, Ent
 
     /** 成就完成度查询（缺失时降级 false） */
     static boolean hasAdvancement(ServerPlayer player, String name) {
+        if (!PDAdvancements.isAdvancementLocked(player, ResourceLocation.fromNamespaceAndPath("pasterdream", name))) {
+            return true;
+        }
         AdvancementHolder holder = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath("pasterdream", name));
         return holder != null && player.getAdvancements().getOrStartProgress(holder).isDone();

@@ -256,6 +256,7 @@ public class PDBlocksWindJourney {
                     .instrument(NoteBlockInstrument.BASEDRUM)
                     .sound(SoundType.CALCITE)
                     .strength(1f, 10f)
+                    .lightLevel(state -> 8)
                     .noOcclusion()
                     .randomTicks()
                     .isRedstoneConductor((bs, br, bp) -> false));

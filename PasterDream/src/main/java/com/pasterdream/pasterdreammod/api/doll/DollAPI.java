@@ -4,6 +4,7 @@ import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.block.DollBlock;
 import com.pasterdream.pasterdreammod.block.entity.DollBlockEntity;
 import com.pasterdream.pasterdreammod.item.DollDisplayItem;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -52,6 +53,59 @@ public final class DollAPI {
      */
     public static DollBuilder create(String name) {
         return new DollBuilder(name);
+    }
+
+    /**
+     * KubeJS 专用便捷注册方法
+     * <p>
+     * 绕过 DeferredRegister 与自定义事件，直接在启动脚本中调用即可注册玩偶。
+     * 所有路径参数均为字符串，方法内部会解析为 {@link ResourceLocation}。
+     *
+     * @param namespace    注册命名空间（如 "kubejs"）
+     * @param name         玩偶注册名
+     * @param model        模型路径字符串（可传 null 使用默认路径）
+     * @param texture      纹理路径字符串（可传 null 使用默认路径）
+     * @param canHoldItems 是否允许抱物
+     * @param holdingModel 抱物模型路径字符串（可传 null）
+     * @return 注册结果 {@link DollResult}
+     */
+    public static DollResult registerDoll(String namespace, String name, String model, String texture, boolean canHoldItems, String holdingModel) {
+        DollBuilder builder = create(name).namespace(namespace);
+        if (model != null) {
+            builder.model(ResourceLocation.parse(model));
+        }
+        if (texture != null) {
+            builder.texture(ResourceLocation.parse(texture));
+        }
+        builder.canHoldItems(canHoldItems);
+        if (holdingModel != null) {
+            builder.holdingModel(ResourceLocation.parse(holdingModel));
+        }
+        return builder.registerDirect();
+    }
+
+    /**
+     * 使用默认 eoul_doll 模型快速注册自定义皮肤玩偶
+     * <p>
+     * 只需提供命名空间、注册名和皮肤纹理路径，即可复用模组内置的玩偶骨骼与抱物模型。
+     * 适合 KubeJS 玩家仅想替换皮肤、不想自己制作 GeckoLib 模型的场景。
+     *
+     * @param namespace    注册命名空间（如 "kubejs"）
+     * @param name         玩偶注册名
+     * @param skinTexture  皮肤纹理路径字符串（如 "pasterdream:textures/block/new_skin_1.png"）
+     * @param canHoldItems 是否允许抱物
+     * @return 注册结果 {@link DollResult}
+     */
+    public static DollResult registerDollWithSkin(String namespace, String name, String skinTexture, boolean canHoldItems) {
+        String holdingModel = canHoldItems ? "pasterdream:geo/block/eoul_doll_holding.geo.json" : null;
+        return registerDoll(
+                namespace,
+                name,
+                "pasterdream:geo/block/eoul_doll.geo.json",
+                skinTexture,
+                canHoldItems,
+                holdingModel
+        );
     }
 
     /**

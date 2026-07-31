@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.pasterdreamspells.config;
 
+import com.pasterdream.pasterdreammod.api.config.PDAddonConfigRegistry;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
@@ -33,7 +34,20 @@ public class PDSpellsConfig {
                 .defineInRange("spell cooldown multiplier", 1.0D, 0.0D, Double.MAX_VALUE);
         builder.pop();
 
+        // 向主模组配置界面注册本模组配置项
+        registerConfigScreenEntries();
+
         SPEC = builder.build();
+    }
+
+    /**
+     * 将本模组的配置项注册到 PasterDreamAPI 的附属配置注册表，
+     * 供主模组配置界面统一展示与保存。
+     */
+    private static void registerConfigScreenEntries() {
+        PDAddonConfigRegistry.registerBooleanEntry("pasterdreamspells", "spells_system", ENABLE_SPELL_SYSTEM, "enable_spell_system");
+        PDAddonConfigRegistry.registerDoubleEntry("pasterdreamspells", "spells_system", SPELL_COST_MULTIPLIER, 0.0D, Double.MAX_VALUE, "spell_cost_multiplier");
+        PDAddonConfigRegistry.registerDoubleEntry("pasterdreamspells", "spells_system", SPELL_COOLDOWN_MULTIPLIER, 0.0D, Double.MAX_VALUE, "spell_cooldown_multiplier");
     }
 
     private PDSpellsConfig() {

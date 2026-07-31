@@ -13,6 +13,10 @@ public enum ConfigCategory {
 
     /** 客户端 HUD 显示配置 */
     HUD("hud"),
+    /** 系统级总开关配置 */
+    SYSTEM("system"),
+    /** 进度锁总控配置 */
+    ADVANCEMENT_LOCK("advancement_lock"),
     /** 通用基础游戏机制配置 */
     BASIC("basic"),
     /** 性能与更新频率配置 */
@@ -21,10 +25,16 @@ public enum ConfigCategory {
     BAN("ban"),
     /** 背景音乐配置 */
     BGM("bgm"),
-    /** San 精神值设置 */
+    /** San 精神值 HUD 显示设置 */
     SAN("san"),
-    /** 融梦能量设置 */
+    /** 融梦能量 HUD 显示设置 */
     MELTDREAM("meltdream"),
+    /** San 精神值系统设置（PasterDreamSanity 附属模组） */
+    SANITY_SYSTEM("sanity_system"),
+    /** 融梦能量系统设置（PasterDreamMeltDream 附属模组） */
+    MELTDREAM_SYSTEM("meltdream_system"),
+    /** 法术系统设置（PasterDreamSpells 附属模组） */
+    SPELLS_SYSTEM("spells_system"),
     /** 调试日志设置 */
     DEBUG("debug");
 

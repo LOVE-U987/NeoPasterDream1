@@ -54,8 +54,8 @@ public class PDBlocksSimple {
                     BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
                     BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz_brick"))
             .addCustom("meltdream_crystal_lamp",
-                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).lightLevel(s -> 15).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/meltdream_crystal_lamp").renderType("translucent"))
+                    DyedreamLarternBlock.larternProps(),
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/meltdream_crystal_lamp").renderType("translucent").blockFactory(DyedreamLarternBlock::new))
             .add("chiseled_dyedreamquartz_block", Blocks.STONE, BlockConfig.of()
                     .mineable("pickaxe").model("cube_column").tex("end", "pasterdream:block/dyedreamquartz_chiseled_top").tex("side", "pasterdream:block/dyedreamquartz_chiseled_side"))
             .addCustom("dyedream_bud_block",

@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.block.entity;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDArenaBossManager;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;
@@ -185,6 +186,9 @@ public class AaroncosHandChestBlockEntity extends BlockEntity implements GeoBloc
     }
 
     private static boolean hasAdvancement(ServerPlayer player, String path) {
+        if (!PDAdvancements.isAdvancementLocked(player, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path))) {
+            return true;
+        }
         AdvancementHolder h = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
         return h != null && player.getAdvancements().getOrStartProgress(h).isDone();

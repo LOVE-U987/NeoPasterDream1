@@ -42,8 +42,11 @@ public final class PDBiomes {
     /** 染梦密林 */
     public static final ResourceKey<Biome> BIOME_DYEDREAM_DENSE_FOREST = create("biome_dyedream_dense_forest");
 
-    /** 亚伦柯斯竞技场遗迹群系（灯影渗出的 BOSS 传送门废墟） */
+    /** 亚伦柯斯竞技场遗迹群系（主世界 BOSS 传送门废墟，灯影渗出的暗色区域） */
     public static final ResourceKey<Biome> BIOME_AARONCOS_ARENA = create("aaroncos_arena_biome");
+
+    /** 亚伦柯斯竞技场维度群系（对齐原模组：虚空竞技场使用的浅色群系，无粒子） */
+    public static final ResourceKey<Biome> BIOME_AARONCOS_ARENA_DIM = create("aaroncos_arena_dim_biome");
 
     /**
      * 创建模组命名空间下的群系 ResourceKey

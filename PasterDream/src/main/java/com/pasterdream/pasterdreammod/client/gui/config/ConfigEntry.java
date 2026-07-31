@@ -53,12 +53,25 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
      */
     @SuppressWarnings("unchecked")
     protected ConfigEntry(ModConfigSpec.ConfigValue<T> configValue, ConfigCategory category, int index) {
+        this(configValue, category, index, null);
+    }
+
+    /**
+     * @param configValue            底层配置值引用
+     * @param category               所属分类
+     * @param index                  全局序号，用于入场动画错峰
+     * @param translationKeyOverride 翻译键后缀覆盖值；为 null 时根据配置 path 自动生成
+     */
+    @SuppressWarnings("unchecked")
+    protected ConfigEntry(ModConfigSpec.ConfigValue<T> configValue, ConfigCategory category, int index, @Nullable String translationKeyOverride) {
         this.minecraft = Minecraft.getInstance();
         this.font = minecraft.font;
         this.configValue = configValue;
         this.category = category;
         this.index = index;
-        this.translationKey = buildTranslationKey(configValue.getPath());
+        this.translationKey = translationKeyOverride != null && !translationKeyOverride.isBlank()
+                ? translationKeyOverride
+                : buildTranslationKey(configValue.getPath());
         this.label = Component.translatable("gui.pasterdream.config." + translationKey);
         this.tooltip = Component.translatable("gui.pasterdream.config." + translationKey + ".tooltip");
         this.defaultValue = configValue.get();
@@ -278,7 +291,11 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
     public static class BooleanEntry extends ConfigEntry<Boolean> {
 
         public BooleanEntry(ModConfigSpec.ConfigValue<Boolean> configValue, ConfigCategory category, int index) {
-            super(configValue, category, index);
+            this(configValue, category, index, null);
+        }
+
+        public BooleanEntry(ModConfigSpec.ConfigValue<Boolean> configValue, ConfigCategory category, int index, @Nullable String translationKey) {
+            super(configValue, category, index, translationKey);
             widgets.add(new ToggleButton(0, 0, ConfigStyles.TOGGLE_WIDTH, ConfigStyles.TOGGLE_HEIGHT,
                     Component.empty(), this::onToggle, pendingValue));
         }
@@ -305,7 +322,12 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
 
         public NumberEntry(ModConfigSpec.ConfigValue<Number> configValue, ConfigCategory category,
                            int index, double min, double max) {
-            super(configValue, category, index);
+            this(configValue, category, index, min, max, null);
+        }
+
+        public NumberEntry(ModConfigSpec.ConfigValue<Number> configValue, ConfigCategory category,
+                           int index, double min, double max, @Nullable String translationKey) {
+            super(configValue, category, index, translationKey);
             this.min = min;
             this.max = max;
             this.integer = configValue.get() instanceof Integer;
@@ -386,7 +408,20 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
          */
         public SliderEntry(ModConfigSpec.ConfigValue<Double> configValue, ConfigCategory category,
                            int index, double min, double max) {
-            super(configValue, category, index);
+            this(configValue, category, index, min, max, null);
+        }
+
+        /**
+         * @param configValue            底层 Double 配置值引用
+         * @param category               所属分类
+         * @param index                  全局序号
+         * @param min                    滑条最小值
+         * @param max                    滑条最大值
+         * @param translationKeyOverride 翻译键后缀覆盖值；为 null 时根据配置 path 自动生成
+         */
+        public SliderEntry(ModConfigSpec.ConfigValue<Double> configValue, ConfigCategory category,
+                           int index, double min, double max, @Nullable String translationKeyOverride) {
+            super(configValue, category, index, translationKeyOverride);
             this.min = min;
             this.max = max;
             double initialRatio = (configValue.get() - min) / (max - min);

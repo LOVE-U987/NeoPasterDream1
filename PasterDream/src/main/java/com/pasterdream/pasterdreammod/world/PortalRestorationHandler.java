@@ -27,6 +27,7 @@ public final class PortalRestorationHandler {
      * <p>
      * 将指定传送门的所有记录合并为一个待恢复队列，按每 tick 固定数量逐步还原。
      * 所有记录恢复完毕后自动从 {@link PortalInfectionData} 中清理。
+     * 回滚开始时同步停止遗迹持续感染，避免与回滚互相拉锯。
      *
      * @param level          主世界服务端世界
      * @param portalPositions 需要回滚的传送门位置列表
@@ -35,6 +36,9 @@ public final class PortalRestorationHandler {
         if (portalPositions.isEmpty()) {
             return;
         }
+
+        // 停止遗迹持续感染，防止回滚过程中地形再次被灯影化
+        ArenaRuinInfection.stop();
 
         PortalInfectionData data = PortalInfectionData.get(level);
         List<PendingRestore> pending = new ArrayList<>();

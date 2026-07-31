@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.item;
 
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.entity.projectile.ShadowVortexBookProjectileEntity;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
 import com.pasterdream.pasterdreammod.registry.PDItems;
@@ -94,6 +95,9 @@ public class ShadowVortexBookItem extends Item {
      * 判断玩家是否已达成暗影天赋成就（缺失成就时按未达成处理）
      */
     private static boolean hasShadowTalent(ServerPlayer player) {
+        if (!PDAdvancements.isAdvancementLocked(player, TALENT_SHADOW_ADVANCEMENT)) {
+            return true;
+        }
         AdvancementHolder advancement = player.server.getAdvancements().get(TALENT_SHADOW_ADVANCEMENT);
         return advancement != null && player.getAdvancements().getOrStartProgress(advancement).isDone();
     }

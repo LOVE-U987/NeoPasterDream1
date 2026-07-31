@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.pasterdreamsanity.config;
 
+import com.pasterdream.pasterdreammod.api.config.PDAddonConfigRegistry;
 import com.pasterdream.pasterdreammod.api.san.ISanSystemConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -71,7 +72,28 @@ public class PDSanityConfig implements ISanSystemConfig {
                 .defineInRange("tick update interval", 5, 1, Integer.MAX_VALUE);
         builder.pop();
 
+        // 向主模组配置界面注册本模组配置项
+        registerConfigScreenEntries();
+
         SPEC = builder.build();
+    }
+
+    /**
+     * 将本模组的配置项注册到 PasterDreamAPI 的附属配置注册表，
+     * 供主模组配置界面统一展示与保存。
+     */
+    private static void registerConfigScreenEntries() {
+        PDAddonConfigRegistry.registerBooleanEntry("pasterdreamsanity", "sanity_system", ENABLE_SAN_SYSTEM, "enable_san_system");
+        PDAddonConfigRegistry.registerBooleanEntry("pasterdreamsanity", "sanity_system", ENABLE_LOW_SAN_DEBUFF, "enable_low_san_debuff");
+        PDAddonConfigRegistry.registerBooleanEntry("pasterdreamsanity", "sanity_system", OVERWORLD_NIGHT_LOWERS_SAN, "overworld_night_lowers_san");
+        PDAddonConfigRegistry.registerBooleanEntry("pasterdreamsanity", "sanity_system", NETHER_LOWERS_SAN, "nether_lowers_san");
+        PDAddonConfigRegistry.registerBooleanEntry("pasterdreamsanity", "sanity_system", END_LOWERS_SAN, "end_lowers_san");
+        PDAddonConfigRegistry.registerBooleanEntry("pasterdreamsanity", "sanity_system", RAIN_LOWERS_SAN, "rain_lowers_san");
+        PDAddonConfigRegistry.registerBooleanEntry("pasterdreamsanity", "sanity_system", THUNDER_LOWERS_SAN, "thunder_lowers_san");
+        PDAddonConfigRegistry.registerIntegerEntry("pasterdreamsanity", "sanity_system", RECOVER_INTERVAL, 1, Integer.MAX_VALUE, "sanity_recover_interval");
+        PDAddonConfigRegistry.registerDoubleEntry("pasterdreamsanity", "sanity_system", RECOVER_AMOUNT, 0.0D, Double.MAX_VALUE, "sanity_recover_amount");
+        PDAddonConfigRegistry.registerDoubleEntry("pasterdreamsanity", "sanity_system", CHEERUP_THRESHOLD, 0.0D, Double.MAX_VALUE, "sanity_cheerup_threshold");
+        PDAddonConfigRegistry.registerIntegerEntry("pasterdreamsanity", "sanity_system", TICK_UPDATE_INTERVAL, 1, Integer.MAX_VALUE, "sanity_tick_update_interval");
     }
 
     private PDSanityConfig() {

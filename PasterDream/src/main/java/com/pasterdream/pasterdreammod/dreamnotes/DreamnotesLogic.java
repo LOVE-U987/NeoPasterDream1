@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.dreamnotes;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.worldgen.PDShadowDoorLocator;
 import net.minecraft.advancements.AdvancementHolder;
@@ -260,6 +261,9 @@ public final class DreamnotesLogic {
     public static boolean isDone(Entity entity, String path) {
         if (!(entity instanceof ServerPlayer player)) {
             return false;
+        }
+        if (!PDAdvancements.isAdvancementLocked(player, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path))) {
+            return true;
         }
         AdvancementHolder holder = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));

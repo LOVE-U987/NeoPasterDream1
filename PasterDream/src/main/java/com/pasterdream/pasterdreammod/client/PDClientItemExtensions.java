@@ -123,9 +123,11 @@ public class PDClientItemExtensions {
         PDDebugLogger.mainDebug("[PDClientItemExtensions] 注册显示物品: aaroncoshandspawnblock → AaroncosHandSpawnBlockDisplayItemRenderer（GeckoLib 3D）");
 
         // ==================== DollAPI 注册的玩偶物品 ====================
-        for (var reg : com.pasterdream.pasterdreammod.api.doll.DollAPI.getRegistrations()) {
+        var dollRegs = com.pasterdream.pasterdreammod.api.doll.DollAPI.getRegistrations();
+        PasterDreamMod.LOGGER.info("[PDClientItemExtensions] 发现 {} 个已注册玩偶，准备注册物品渲染器", dollRegs.size());
+        for (var reg : dollRegs) {
             registerDisplayItem(event, reg.item().get(), new com.pasterdream.pasterdreammod.client.renderer.item.DollItemRenderer());
-            PDDebugLogger.mainDebug("[PDClientItemExtensions] 注册玩偶显示物品: {} → DollItemRenderer", reg.name());
+            PasterDreamMod.LOGGER.info("[PDClientItemExtensions] 注册玩偶显示物品: {} → DollItemRenderer", reg.name());
         }
     }
 

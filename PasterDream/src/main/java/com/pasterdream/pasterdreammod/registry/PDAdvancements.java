@@ -1,12 +1,14 @@
 package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
  * 成就（Advancement）ID 常量与授予/查询工具。
@@ -119,8 +121,45 @@ public final class PDAdvancements {
         if (player == null || advId == null) {
             return false;
         }
+        if (!isAdvancementLocked(player, advId)) {
+            return true;
+        }
         AdvancementHolder holder = player.server.getAdvancements().get(advId);
         return holder != null && player.getAdvancements().getOrStartProgress(holder).isDone();
+    }
+
+    /**
+     * 判断指定进度是否对玩家锁定（考虑总开关、创造模式绕过、单个进度开关）。
+     *
+     * @param player 服务端玩家
+     * @param advId  进度 ID
+     * @return true 表示需要检查真实进度；false 表示直接放行
+     */
+    public static boolean isAdvancementLocked(ServerPlayer player, ResourceLocation advId) {
+        if (!PDCommonConfig.ENABLE_ADVANCEMENT_LOCK.get()) {
+            return false;
+        }
+        if (PDCommonConfig.CREATIVE_BYPASS_ADVANCEMENT_LOCK.get() && player.isCreative()) {
+            return false;
+        }
+        ModConfigSpec.ConfigValue<Boolean> lock = PDCommonConfig.ADVANCEMENT_LOCKS.get(advId);
+        return lock == null || lock.get();
+    }
+
+    /**
+     * 判断进度锁总开关是否生效（忽略单个进度开关）。
+     * <p>
+     * 用于不方便传入进度 ID 的场景；若需要按进度精确控制，请使用
+     * {@link #isAdvancementLocked(ServerPlayer, ResourceLocation)}。
+     *
+     * @param player 服务端玩家
+     * @return true 表示总开关开启且非创造模式绕过
+     */
+    public static boolean isAdvancementLocked(ServerPlayer player) {
+        if (!PDCommonConfig.ENABLE_ADVANCEMENT_LOCK.get()) {
+            return false;
+        }
+        return !(PDCommonConfig.CREATIVE_BYPASS_ADVANCEMENT_LOCK.get() && player.isCreative());
     }
 
     /**

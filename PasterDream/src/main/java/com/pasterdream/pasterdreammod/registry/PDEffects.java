@@ -3,8 +3,8 @@ package com.pasterdream.pasterdreammod.registry;
 import com.pasterdream.pasterdreammod.api.effect.MobEffectAPI;
 import com.pasterdream.pasterdreammod.api.effect.MobEffectResult;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
-import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.entity.mob.WeakenessTerrorbeakEntity;
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsArmor;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsCurios;
 import net.minecraft.advancements.AdvancementHolder;
@@ -967,6 +967,9 @@ public class PDEffects {
 
     /** 判断玩家指定成就是否已完成（成就未注册时视为未完成） */
     private static boolean isAdvancementDone(ServerPlayer player, String path) {
+        if (!PDAdvancements.isAdvancementLocked(player, ResourceLocation.fromNamespaceAndPath("pasterdream", path))) {
+            return true;
+        }
         AdvancementHolder advancement = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath("pasterdream", path));
         return advancement != null && player.getAdvancements().getOrStartProgress(advancement).isDone();

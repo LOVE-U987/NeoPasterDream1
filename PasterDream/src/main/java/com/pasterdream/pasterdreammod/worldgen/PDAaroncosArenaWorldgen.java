@@ -1,49 +1,52 @@
 package com.pasterdream.pasterdreammod.worldgen;
 
-import com.google.common.base.Suppliers;
-import com.mojang.datafixers.util.Pair;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.registry.PDBiomes;
+import com.pasterdream.pasterdreammod.world.ArenaRuinInfection;
+import com.pasterdream.pasterdreammod.world.PDAaroncosArenaSpawnData;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.commands.FillBiomeCommand;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.BiomeGenerationSettings;
-import net.minecraft.world.level.biome.BiomeSource;
-import net.minecraft.world.level.biome.Climate;
-import net.minecraft.world.level.biome.FeatureSorter;
-import net.minecraft.world.level.biome.MultiNoiseBiomeSource;
-import net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterList;
-import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
-import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.Optional;
 
 /**
- * 亚伦柯斯竞技场主世界群系注入器
+ * 亚伦柯斯竞技场主世界生成器。
  * <p>
- * 将 {@code pasterdream:aaroncos_arena_biome} 注入主世界的 MultiNoise 群系源，
- * 使包含 BOSS 传送门废墟的遗迹群系能在主世界自然生成。
- * 群系参数使用较窄的气候区间，确保其生成范围小巧而稀有，同时保证 /locate 可搜到。
+ * 不再把竞技场群系注入主世界的 MultiNoise 群系源（避免 /locate 在大范围内搜索导致卡死），
+ * 而是在服务器启动时，在出生点附近寻找合适地表，直接放置遗迹结构，并用 {@link FillBiomeCommand}
+ * 将周围区域设置为 {@code pasterdream:aaroncos_arena_biome}。
  * <p>
- * 注入时机：{@link ServerStartingEvent}，在主世界维度与结构状态都已创建后执行，
- * 同时刷新 {@link ChunkGeneratorStructureState} 使结构生成系统能识别新群系。
+ * 每个世界仅放置一次，位置记录在 {@link PDAaroncosArenaSpawnData} 中。
  */
 public class PDAaroncosArenaWorldgen {
 
+    /** 在出生点附近搜索合适位置的最大半径（方块） */
+    private static final int SPAWN_SEARCH_RADIUS = 128;
+    /** 搜索时的步进（方块），越大越快但可能错过平坦点 */
+    private static final int SEARCH_STEP = 4;
+    /** 遗迹结构底座允许的最大高度差，超过则认为不够平坦 */
+    private static final int MAX_TERRAIN_VARIATION = 6;
+    /** 遗迹结构在 X/Z 方向上的占地尺寸（来自 NBT 的 size） */
+    private static final int STRUCTURE_FOOTPRINT = 21;
+    /** 遗迹底座埋入地下的方块数（18 格左右，使遗迹大部分沉于地下，仅露出顶部） */
+    private static final int BASE_BURIAL_BLOCKS = 18;
+    /** 群系覆盖半径（方块），决定竞技场群系范围 */
+    private static final int BIOME_RADIUS = 48;
+
     /**
-     * 主世界群系注入入口
-     * <p>
-     * 仅在主世界为 {@link NoiseBasedChunkGenerator} 且使用 {@link MultiNoiseBiomeSource} 时执行。
+     * 服务器启动时，在主世界出生点附近生成唯一一座竞技场遗迹及其群系。
      *
      * @param event 服务器启动中事件
      */
@@ -53,119 +56,179 @@ public class PDAaroncosArenaWorldgen {
             return;
         }
 
-        ServerChunkCache chunkSource = overworld.getChunkSource();
-        ChunkGenerator generator = chunkSource.getGenerator();
-        if (!(generator instanceof NoiseBasedChunkGenerator)) {
-            PasterDreamMod.LOGGER.debug("[PDAaroncosArenaWorldgen] 主世界生成器不是 NoiseBasedChunkGenerator，跳过注入");
+        PDAaroncosArenaSpawnData spawnData = PDAaroncosArenaSpawnData.get(overworld);
+        if (spawnData.isPlaced()) {
+            // 重启后：恢复遗迹持续感染（若已记录中心坐标）
+            ArenaRuinInfection.start(overworld, spawnData.getCenter());
+            PasterDreamMod.LOGGER.info("[PDAaroncosArenaWorldgen] 当前世界已放置过竞技场遗迹，跳过放置");
             return;
         }
 
-        BiomeSource source = generator.getBiomeSource();
-        if (!(source instanceof MultiNoiseBiomeSource)) {
-            PasterDreamMod.LOGGER.debug("[PDAaroncosArenaWorldgen] 主世界群系源不是 MultiNoiseBiomeSource，跳过注入");
+        BlockPos spawnPos = overworld.getSharedSpawnPos();
+        BlockPos targetPos = findFlatSurfaceNearSpawn(overworld, spawnPos);
+        if (targetPos == null) {
+            PasterDreamMod.LOGGER.warn("[PDAaroncosArenaWorldgen] 未能在出生点附近找到合适的竞技场遗迹位置");
             return;
         }
 
-        Registry<Biome> biomeRegistry = event.getServer().registryAccess().registryOrThrow(Registries.BIOME);
-        Holder<Biome> arenaBiome = biomeRegistry.getHolderOrThrow(PDBiomes.BIOME_AARONCOS_ARENA);
-
-        // 以原版 OVERWORLD 预设为基础，追加竞技场群系条目
-        // 使用 knownPresets() 获取 ResourceKey<Biome> 形式的原版参数列表，再转换为 Holder
-        Climate.ParameterList<ResourceKey<Biome>> overworldKeyParams = MultiNoiseBiomeSourceParameterList.knownPresets()
-                .get(MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD);
-        List<Pair<Climate.ParameterPoint, Holder<Biome>>> values = new ArrayList<>(overworldKeyParams.values().size() + 1);
-        for (Pair<Climate.ParameterPoint, ResourceKey<Biome>> entry : overworldKeyParams.values()) {
-            values.add(Pair.of(entry.getFirst(), biomeRegistry.getHolderOrThrow(entry.getSecond())));
+        if (!placeArenaStructure(overworld, targetPos)) {
+            PasterDreamMod.LOGGER.warn("[PDAaroncosArenaWorldgen] 竞技场遗迹结构放置失败");
+            return;
         }
-        values.add(Pair.of(createArenaParameterPoint(), arenaBiome));
-        Climate.ParameterList<Holder<Biome>> newParams = new Climate.ParameterList<>(values);
-        MultiNoiseBiomeSource newSource = MultiNoiseBiomeSource.createFromList(newParams);
 
-        try {
-            // 替换生成器的群系源并刷新特征排序缓存
-            injectBiomeSource(generator, newSource);
+        setArenaBiome(overworld, targetPos);
+        spawnData.markPlaced();
+        spawnData.setCenter(targetPos);
+        ArenaRuinInfection.start(overworld, targetPos);
 
-            // 重建结构生成状态，使 aaroncos_arena_portals 结构能在新群系中生成
-            ChunkGeneratorStructureState oldState = chunkSource.getGeneratorState();
-            int oldStructureSetCount = oldState.possibleStructureSets().size();
-            ChunkGeneratorStructureState newState = generator.createState(
-                    overworld.registryAccess().lookupOrThrow(Registries.STRUCTURE_SET),
-                    oldState.randomState(),
-                    overworld.getSeed()
-            );
-            injectGeneratorState(chunkSource, newState);
-
-            PasterDreamMod.LOGGER.info("[PDAaroncosArenaWorldgen] 已将亚伦柯斯竞技场群系注入主世界，当前群系数: {}，可生成结构集: {} -> {}",
-                    newSource.possibleBiomes().size(), oldStructureSetCount, newState.possibleStructureSets().size());
-        } catch (Exception e) {
-            PasterDreamMod.LOGGER.error("[PDAaroncosArenaWorldgen] 注入亚伦柯斯竞技场群系失败", e);
-        }
+        PasterDreamMod.LOGGER.info("[PDAaroncosArenaWorldgen] 已在出生点附近 {} 生成竞技场遗迹与群系", targetPos.toShortString());
     }
 
     /**
-     * 创建竞技场群系的气候参数点
+     * 在出生点附近寻找相对平坦的地表位置。
      * <p>
-     * 使用极窄的 continentalness / erosion / weirdness 区间，使群系在主世界中呈
-     * 小而离散的分布；区间保留一定宽度，避免 /locate 在默认搜索半径内找不到该群系。
+     * 以出生点为中心向外螺旋搜索，检测 21x21 范围内的高度差，
+     * 找到第一个高度差不超过 {@link #MAX_TERRAIN_VARIATION} 的位置。
      *
-     * @return 竞技场群系的气候参数点
+     * @param level    主世界
+     * @param spawnPos 世界出生点
+     * @return 适合放置遗迹的方块位置；找不到则返回 null
      */
-    private static Climate.ParameterPoint createArenaParameterPoint() {
-        return Climate.parameters(
-                Climate.Parameter.span(-0.05F, 0.05F),   // temperature：温带核心，更窄以缩小群系
-                Climate.Parameter.span(-0.05F, 0.05F),   // humidity：中等湿度核心，更窄以缩小群系
-                Climate.Parameter.span(-0.04F, 0.04F),   // continentalness：极窄内陆点，显著缩小群系
-                Climate.Parameter.span(-0.04F, 0.04F),   // erosion：极窄低侵蚀点，显著缩小群系
-                Climate.Parameter.point(0.0F),            // depth：地表
-                Climate.Parameter.span(-0.04F, 0.04F),   // weirdness：极窄山谷点，显著缩小群系
-                0.0F                                     // offset：无偏移补偿
-        );
+    private static BlockPos findFlatSurfaceNearSpawn(ServerLevel level, BlockPos spawnPos) {
+        RandomSource random = level.getRandom();
+
+        for (int radius = 0; radius <= SPAWN_SEARCH_RADIUS; radius += SEARCH_STEP) {
+            int attempts = Math.max(1, radius / SEARCH_STEP * 4);
+            for (int i = 0; i < attempts; i++) {
+                double angle = random.nextDouble() * Math.PI * 2;
+                int dx = (int) Math.round(Math.cos(angle) * radius);
+                int dz = (int) Math.round(Math.sin(angle) * radius);
+                int x = spawnPos.getX() + dx;
+                int z = spawnPos.getZ() + dz;
+
+                // 预生成该位置的 chunk（若尚未生成）
+                level.getChunk(x >> 4, z >> 4, ChunkStatus.FULL, true);
+
+                if (isFlatSurface(level, x, z)) {
+                    int surfaceY = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+                    // 底座埋入 BASE_BURIAL_BLOCKS 格：结构原点 Y = 地表 Y - 埋入格数 - 1
+                    return new BlockPos(x, surfaceY - BASE_BURIAL_BLOCKS - 1, z);
+                }
+            }
+        }
+        return null;
     }
 
     /**
-     * 通过反射替换 ChunkGenerator 的 biomeSource 与 featuresPerStep
+     * 判断指定位置的地表是否足够平坦。
+     * <p>
+     * 采样以 (x, z) 为中心的 {@link #STRUCTURE_FOOTPRINT} x {@link #STRUCTURE_FOOTPRINT} 区域，
+     * 计算地表高度的最小值与最大值之差。
      *
-     * @param generator 目标区块生成器
-     * @param newSource 新的群系源
-     * @throws Exception 反射操作异常
+     * @param level 主世界
+     * @param x     中心 X
+     * @param z     中心 Z
+     * @return true 若高度差不超过 {@link #MAX_TERRAIN_VARIATION}
      */
-    private static void injectBiomeSource(ChunkGenerator generator, BiomeSource newSource) throws Exception {
-        Field biomeSourceField = ChunkGenerator.class.getDeclaredField("biomeSource");
-        biomeSourceField.setAccessible(true);
-        biomeSourceField.set(generator, newSource);
+    private static boolean isFlatSurface(ServerLevel level, int x, int z) {
+        int half = STRUCTURE_FOOTPRINT / 2;
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
 
-        Field generationSettingsGetterField = ChunkGenerator.class.getDeclaredField("generationSettingsGetter");
-        generationSettingsGetterField.setAccessible(true);
-        @SuppressWarnings("unchecked")
-        Function<Holder<Biome>, BiomeGenerationSettings> getter =
-                (Function<Holder<Biome>, BiomeGenerationSettings>) generationSettingsGetterField.get(generator);
+        for (int dx = -half; dx <= half; dx += 4) {
+            for (int dz = -half; dz <= half; dz += 4) {
+                int sampleX = x + dx;
+                int sampleZ = z + dz;
 
-        Field featuresPerStepField = ChunkGenerator.class.getDeclaredField("featuresPerStep");
-        featuresPerStepField.setAccessible(true);
-        Supplier<List<FeatureSorter.StepFeatureData>> newFeaturesPerStep = Suppliers.memoize(
-                () -> FeatureSorter.buildFeaturesPerStep(
-                        List.copyOf(newSource.possibleBiomes()),
-                        biomeHolder -> getter.apply(biomeHolder).features(),
-                        true
-                )
-        );
-        featuresPerStepField.set(generator, newFeaturesPerStep);
+                // 确保 chunk 已生成
+                level.getChunk(sampleX >> 4, sampleZ >> 4, ChunkStatus.FULL, true);
+
+                int y = level.getHeight(Heightmap.Types.WORLD_SURFACE, sampleX, sampleZ);
+                minY = Math.min(minY, y);
+                maxY = Math.max(maxY, y);
+
+                if (maxY - minY > MAX_TERRAIN_VARIATION) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
-     * 通过反射替换 ServerChunkCache 中 ChunkMap 的 chunkGeneratorState
+     * 在目标位置放置竞技场遗迹结构 NBT。
      *
-     * @param chunkSource 主世界区块缓存
-     * @param newState    新的结构生成状态
-     * @throws Exception 反射操作异常
+     * @param level     主世界
+     * @param targetPos 结构原点位置
+     * @return true 若放置成功
      */
-    private static void injectGeneratorState(ServerChunkCache chunkSource, ChunkGeneratorStructureState newState) throws Exception {
-        Field chunkMapField = ServerChunkCache.class.getDeclaredField("chunkMap");
-        chunkMapField.setAccessible(true);
-        Object chunkMap = chunkMapField.get(chunkSource);
+    private static boolean placeArenaStructure(ServerLevel level, BlockPos targetPos) {
+        ResourceLocation structureId = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "aaroncos_arena_portals");
+        Optional<StructureTemplate> templateOpt = level.getStructureManager().get(structureId);
+        if (templateOpt.isEmpty() || templateOpt.get().getSize().getX() <= 0) {
+            return false;
+        }
 
-        Field generatorStateField = chunkMap.getClass().getDeclaredField("chunkGeneratorState");
-        generatorStateField.setAccessible(true);
-        generatorStateField.set(chunkMap, newState);
+        StructureTemplate template = templateOpt.get();
+        StructurePlaceSettings settings = new StructurePlaceSettings()
+                .setRotation(net.minecraft.world.level.block.Rotation.NONE)
+                .setMirror(net.minecraft.world.level.block.Mirror.NONE)
+                .setIgnoreEntities(false);
+
+        return template.placeInWorld(level, targetPos, targetPos, settings, level.random, 3);
+    }
+
+    /**
+     * 将遗迹周围区域设置成亚伦柯斯竞技场群系。
+     * <p>
+     * 使用 {@link FillBiomeCommand#fill} 批量替换生物群系，并同步给客户端。
+     *
+     * @param level     主世界
+     * @param centerPos 遗迹中心位置
+     */
+    private static void setArenaBiome(ServerLevel level, BlockPos centerPos) {
+        Holder<Biome> arenaBiome = level.registryAccess().lookupOrThrow(Registries.BIOME)
+                .getOrThrow(PDBiomes.BIOME_AARONCOS_ARENA);
+
+        BlockPos from = centerPos.offset(-BIOME_RADIUS, -BIOME_RADIUS, -BIOME_RADIUS);
+        BlockPos to = centerPos.offset(BIOME_RADIUS, BIOME_RADIUS, BIOME_RADIUS);
+
+        // 预先生成群系覆盖范围内的所有 chunk，避免 fill 因 unloaded chunk 失败
+        ensureChunksGenerated(level, from, to);
+
+        // 临时放宽 /fillbiome 的体积限制，确保大半径群系能一次设置成功
+        int originalLimit = level.getGameRules().getInt(GameRules.RULE_COMMAND_MODIFICATION_BLOCK_LIMIT);
+        level.getGameRules().getRule(GameRules.RULE_COMMAND_MODIFICATION_BLOCK_LIMIT).set(1_000_000, level.getServer());
+
+        var result = FillBiomeCommand.fill(level, from, to, arenaBiome);
+
+        // 恢复原限制
+        level.getGameRules().getRule(GameRules.RULE_COMMAND_MODIFICATION_BLOCK_LIMIT).set(originalLimit, level.getServer());
+
+        if (result.right().isPresent()) {
+            PasterDreamMod.LOGGER.warn("[PDAaroncosArenaWorldgen] 设置竞技场群系失败: {}", result.right().get().getMessage());
+        } else if (result.left().isPresent()) {
+            PasterDreamMod.LOGGER.info("[PDAaroncosArenaWorldgen] 成功设置竞技场群系，共修改 {} 个 biome 位置", result.left().get());
+        }
+    }
+
+    /**
+     * 强制生成指定矩形区域内的所有 chunk。
+     *
+     * @param level 主世界
+     * @param from  区域一角
+     * @param to    区域对角
+     */
+    private static void ensureChunksGenerated(ServerLevel level, BlockPos from, BlockPos to) {
+        int minChunkX = from.getX() >> 4;
+        int minChunkZ = from.getZ() >> 4;
+        int maxChunkX = to.getX() >> 4;
+        int maxChunkZ = to.getZ() >> 4;
+
+        for (int cx = minChunkX; cx <= maxChunkX; cx++) {
+            for (int cz = minChunkZ; cz <= maxChunkZ; cz++) {
+                level.getChunk(cx, cz, ChunkStatus.FULL, true);
+            }
+        }
     }
 }

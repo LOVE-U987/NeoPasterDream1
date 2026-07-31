@@ -397,8 +397,8 @@ public class ClientSetup {
     /**
      * 注册亚伦柯斯竞技场维度特殊效果
      * <p>
-     * 采用无天空盒（SkyType.NONE）+ 深紫雾色，营造灯影能量渗出的异界废墟氛围。
-     * 雾色与 {@code aaroncos_arena_biome.json} 中的 fog_color 保持一致。
+     * 对齐原模组 {@code AaroncosArenaWorldDimension}：无天空盒（SkyType.NONE）+ 灰色雾，
+     * 雾色取原模组配置的 (0.2, 0.2, 0.2)，与主世界遗迹区的暗色 {@code aaroncos_arena_biome} 区分开。
      */
     private static void registerAaroncosArenaEffects(RegisterDimensionSpecialEffectsEvent event) {
         ResourceLocation arenaId = ResourceLocation.fromNamespaceAndPath(
@@ -412,8 +412,8 @@ public class ClientSetup {
                 ) {
                     @Override
                     public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float sunHeight) {
-                        // 深紫雾色（RGB 17, 6, 28），与 biome JSON 的 fog_color 1118481 一致
-                        return new Vec3(0.066, 0.024, 0.109);
+                        // 灰色雾色（对齐原模组 AaroncosArenaWorldDimension）
+                        return new Vec3(0.2, 0.2, 0.2);
                     }
 
                     @Override

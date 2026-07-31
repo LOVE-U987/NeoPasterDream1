@@ -31,6 +31,11 @@ public class DollRegistryKubeJSEvent implements KubeEvent {
             this.builder = DollAPI.create(name);
         }
 
+        public DollJSBuilder namespace(String namespace) {
+            builder.namespace(namespace);
+            return this;
+        }
+
         public DollJSBuilder model(String model) {
             builder.model(ResourceLocation.parse(model));
             return this;

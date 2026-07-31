@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.world;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.advancements.AdvancementHolder;
@@ -16,6 +17,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.damagesource.CombatEntry;
+import net.minecraft.world.damagesource.CombatTracker;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
@@ -27,6 +31,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +40,7 @@ import java.util.Map;
  * <ul>
  *   <li>Warden → 附近玩家（需 achievement_start、未 hide_7）授 hide_7 + 文案/效果；无 silentsdelight 时掉 sculk_heart</li>
  *   <li>ElderGuardian → elder_guardian_scale</li>
- *   <li>模组怪物击杀玩家 → 随机播放一条诙谐自定义死亡消息</li>
+ *   <li>模组怪物击杀玩家 → 随机选取一条诙谐自定义死亡消息，替换原版死亡提示</li>
  * </ul>
  */
 public final class PDEntityDeathEvents {
@@ -128,6 +133,42 @@ public final class PDEntityDeathEvents {
                     "death.pasterdream.aaroncos.1"))
     );
 
+    /**
+     * CombatTracker 内部的 entries 列表，用于注入自定义死亡消息。
+     */
+    private static final Field COMBAT_ENTRIES_FIELD;
+
+    static {
+        try {
+            COMBAT_ENTRIES_FIELD = CombatTracker.class.getDeclaredField("entries");
+            COMBAT_ENTRIES_FIELD.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException("无法找到 CombatTracker.entries 字段", e);
+        }
+    }
+
+    /**
+     * 包装 DamageSource，使其返回指定的死亡消息文本。
+     * 用于覆盖原版“玩家被 X 杀死了”的提示。
+     */
+    private static class CustomMessageDamageSource extends DamageSource {
+        private final Component message;
+
+        /**
+         * @param original 原始伤害源，保留其 DamageType
+         * @param message  要显示的自定义死亡消息
+         */
+        public CustomMessageDamageSource(DamageSource original, Component message) {
+            super(original.typeHolder());
+            this.message = message;
+        }
+
+        @Override
+        public Component getLocalizedDeathMessage(LivingEntity entity) {
+            return this.message;
+        }
+    }
+
     public static void onLivingDeath(LivingDeathEvent event) {
         LivingEntity entity = event.getEntity();
         Level level = entity.level();
@@ -154,7 +195,7 @@ public final class PDEntityDeathEvents {
             server.addFreshEntity(drop);
         }
 
-        // —— 玩家被模组怪物击杀 → 哏式死亡消息 ——
+        // —— 玩家被模组怪物击杀 → 用自定义消息替换原版死亡消息 ——
         if (entity instanceof ServerPlayer serverPlayer) {
             Entity killer = event.getSource().getEntity();
             if (killer != null) {
@@ -162,14 +203,31 @@ public final class PDEntityDeathEvents {
                 if (keys != null && !keys.isEmpty()) {
                     int idx = serverPlayer.getRandom().nextInt(keys.size());
                     Component msg = Component.translatable(keys.get(idx), serverPlayer.getDisplayName());
-                    // 下一 tick 广播自定义死亡消息
-                    ServerScheduler.schedule(0, () -> {
-                        if (serverPlayer.getServer() != null) {
-                            serverPlayer.getServer().getPlayerList().broadcastSystemMessage(msg, false);
-                        }
-                    });
+                    overrideDeathMessage(serverPlayer, event.getSource(), msg);
                 }
             }
+        }
+    }
+
+    /**
+     * 将玩家的 CombatTracker 替换为只包含一条自定义消息的记录，
+     * 从而让原版死亡广播直接显示自定义文本。
+     *
+     * @param player   死亡玩家
+     * @param original 原始伤害源，用于保留 DamageType
+     * @param message  要显示的死亡消息
+     */
+    @SuppressWarnings("unchecked")
+    private static void overrideDeathMessage(ServerPlayer player, DamageSource original, Component message) {
+        CombatTracker tracker = player.getCombatTracker();
+        try {
+            List<CombatEntry> entries = (List<CombatEntry>) COMBAT_ENTRIES_FIELD.get(tracker);
+            entries.clear();
+            entries.add(new CombatEntry(
+                    new CustomMessageDamageSource(original, message),
+                    0.0F, null, 0.0F));
+        } catch (IllegalAccessException e) {
+            PDDebugLogger.mainDebug("[EntityDeath] 无法替换死亡消息: {}", e.getMessage());
         }
     }
 
@@ -209,6 +267,9 @@ public final class PDEntityDeathEvents {
     }
 
     private static boolean isDone(ServerPlayer player, String path) {
+        if (!PDAdvancements.isAdvancementLocked(player, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path))) {
+            return true;
+        }
         AdvancementHolder holder = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
         return holder != null && player.getAdvancements().getOrStartProgress(holder).isDone();

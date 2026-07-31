@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.pasterdreamsanity;
 
+import com.pasterdream.pasterdreammod.api.config.PDAddonConfigRegistry;
 import com.pasterdream.pasterdreammod.api.san.SanConfigRegistry;
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 import com.pasterdream.pasterdreammod.pasterdreamsanity.config.PDSanityConfig;
@@ -8,6 +9,7 @@ import com.pasterdream.pasterdreammod.pasterdreamsanity.registry.PDSanityItems;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
@@ -25,6 +27,9 @@ public class PasterDreamSanityMod {
     /** San 值系统附属模组 ID */
     public static final String MOD_ID = "pasterdreamsanity";
 
+    /** 通用配置的 ModConfig 引用，供配置界面持久化保存 */
+    public static ModConfig commonModConfig;
+
     /**
      * 构造函数。
      *
@@ -37,7 +42,9 @@ public class PasterDreamSanityMod {
         PDSanityItems.ITEMS.register(modEventBus);
         PDSanityEffects.MOB_EFFECTS.register(modEventBus);
 
-        modContainer.registerConfig(ModConfig.Type.COMMON, PDSanityConfig.SPEC);
+        // 使用 ConfigTracker 注册并捕获 ModConfig 引用，以便主模组配置界面保存到 TOML
+        commonModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.COMMON, PDSanityConfig.SPEC, modContainer, "pasterdreamsanity-common.toml");
+        PDAddonConfigRegistry.registerCommonConfig(MOD_ID, commonModConfig);
 
         modEventBus.addListener(this::onCommonSetup);
 

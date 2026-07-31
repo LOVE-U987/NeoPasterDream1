@@ -123,13 +123,15 @@ public final class RendererRegistry {
         count++;
 
         // ==================== DollAPI 注册的玩偶 ====================
-        for (var reg : com.pasterdream.pasterdreammod.api.doll.DollAPI.getRegistrations()) {
+        var dollRegs = com.pasterdream.pasterdreammod.api.doll.DollAPI.getRegistrations();
+        PasterDreamMod.LOGGER.info("[RendererRegistry] 发现 {} 个已注册玩偶，准备注册方块实体渲染器", dollRegs.size());
+        for (var reg : dollRegs) {
             if (reg.config().modelType() == com.pasterdream.pasterdreammod.api.doll.DollModelType.LEGACY) {
                 event.registerBlockEntityRenderer(reg.blockEntityType().get(), context -> new LegacyDollBlockRenderer(reg.name()));
             } else {
                 event.registerBlockEntityRenderer(reg.blockEntityType().get(), DollBlockRenderer::new);
             }
-            PDDebugLogger.mainDebug("[RendererRegistry] 注册玩偶方块实体渲染器: {}", reg.name());
+            PasterDreamMod.LOGGER.info("[RendererRegistry] 注册玩偶方块实体渲染器: {}", reg.name());
             count++;
         }
 

@@ -1,6 +1,10 @@
 package com.pasterdream.pasterdreammod.config;
 
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * PasterDream 主模组通用配置（PasterDream-Common.toml）。
@@ -18,6 +22,15 @@ public class PDCommonConfig {
 
     /** 染梦裂隙自然生成（默认 true） */
     public static final ModConfigSpec.ConfigValue<Boolean> DYEDREAM_CRACK_GENERATE;
+
+    // ==================== Advancement Lock ====================
+
+    /** 进度锁总开关（默认 true） */
+    public static final ModConfigSpec.ConfigValue<Boolean> ENABLE_ADVANCEMENT_LOCK;
+    /** 创造模式玩家不受进度锁限制（默认 true） */
+    public static final ModConfigSpec.ConfigValue<Boolean> CREATIVE_BYPASS_ADVANCEMENT_LOCK;
+    /** 各进度独立锁：Key 为成就 ID，Value 为是否启用该成就锁 */
+    public static final Map<ResourceLocation, ModConfigSpec.ConfigValue<Boolean>> ADVANCEMENT_LOCKS = new LinkedHashMap<>();
 
     // ==================== Basic ====================
 
@@ -68,6 +81,25 @@ public class PDCommonConfig {
         DYEDREAM_CRACK_GENERATE = builder
                 .comment("染梦裂隙自然生成（如非特别需要勿关，会影响游戏正常流程） 默认：true")
                 .define("dyedream crack generate", true);
+        builder.pop();
+
+        builder.push("Advancement Lock");
+        ENABLE_ADVANCEMENT_LOCK = builder
+                .comment("进度锁总开关（关闭后，模组内依赖进度的交互/传送/功能限制将全部放行） 默认：true")
+                .define("enable advancement lock", true);
+        CREATIVE_BYPASS_ADVANCEMENT_LOCK = builder
+                .comment("创造模式玩家不受进度锁限制（开启后，创造模式玩家可直接使用所有受进度限制的功能） 默认：true")
+                .define("creative bypass advancement lock", true);
+
+        // 各进度独立锁：关闭后该特定进度不再产生限制
+        for (String advPath : getAllAdvancementPaths()) {
+            ResourceLocation advId = ResourceLocation.fromNamespaceAndPath("pasterdream", advPath);
+            String key = advPath + " lock";
+            ModConfigSpec.ConfigValue<Boolean> value = builder
+                    .comment("进度锁：" + advPath + "（关闭后该进度不再限制相关功能） 默认：true")
+                    .define(key, true);
+            ADVANCEMENT_LOCKS.put(advId, value);
+        }
         builder.pop();
 
         builder.push("Basic");
@@ -129,5 +161,48 @@ public class PDCommonConfig {
         builder.pop();
 
         SPEC = builder.build();
+    }
+
+    /**
+     * 获取所有受独立进度锁控制的成就路径列表。
+     * <p>
+     * 顺序决定配置界面展示顺序，与 {@link PDAdvancements} 中的常量一一对应。
+     *
+     * @return 成就路径数组
+     */
+    private static String[] getAllAdvancementPaths() {
+        return new String[]{
+                // 主线 / 显示
+                "achievement_start",
+                "achievement_a_0", "achievement_a_1",
+                "achievement_b_0", "achievement_b_1", "achievement_b_2", "achievement_b_3",
+                "achievement_c_0", "achievement_c_1", "achievement_c_2", "achievement_c_3", "achievement_c_4",
+                "achievement_d_0",
+                "achievement_end_0",
+                "achievement_nether_0",
+                "achievement_adventure_0",
+                "achievement_special_0",
+                // 灯影 / 影之抉择
+                "achievement_shadow_start",
+                "achievement_shadow_a_0", "achievement_shadow_a_1",
+                "achievement_shadow_b_0",
+                "achievement_shadow_c_0",
+                "achievement_shadow_d_0",
+                "achievement_shadow_e_0",
+                "achievement_talent_light",
+                "achievement_talent_shadow",
+                "achievement_shadow_npc_0", "achievement_shadow_npc_1", "achievement_shadow_npc_2",
+                "achievement_shadow_npc_3", "achievement_shadow_npc_4", "achievement_shadow_npc_5",
+                // 宝藏树
+                "achievement_treasure_start",
+                "achievement_treasure_dyedream",
+                "achievement_treasure_wind_journey",
+                // 隐藏追踪
+                "achievement_hide_0", "achievement_hide_1", "achievement_hide_2", "achievement_hide_3",
+                "achievement_hide_4", "achievement_hide_5", "achievement_hide_6", "achievement_hide_7",
+                "achievement_hide_8", "achievement_hide_9", "achievement_hide_10", "achievement_hide_11",
+                "achievement_hide_12", "achievement_hide_13", "achievement_hide_14", "achievement_hide_15",
+                "achievement_hide_16"
+        };
     }
 }

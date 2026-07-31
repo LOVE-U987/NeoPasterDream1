@@ -1,0 +1,6 @@
+{
+  "parent": "pasterdream:displaysettings/phantom_daze.item",
+  "textures": {
+    "particle": "pasterdream:block/cloud"
+  }
+}

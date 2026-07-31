@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.item;
 
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.entity.projectile.WhiteSwordRainProjectileEntity;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
@@ -173,6 +174,9 @@ public class WhiteSwordItem extends SwordItem {
      * @return true 表示已达成
      */
     private static boolean hasLightTalent(ServerPlayer player) {
+        if (!PDAdvancements.isAdvancementLocked(player, TALENT_LIGHT_ADVANCEMENT)) {
+            return true;
+        }
         AdvancementHolder advancement = player.server.getAdvancements().get(TALENT_LIGHT_ADVANCEMENT);
         return advancement != null && player.getAdvancements().getOrStartProgress(advancement).isDone();
     }

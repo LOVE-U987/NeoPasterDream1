@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.client.gui.config;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.toml.TomlWriter;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.config.PDAddonConfigRegistry;
 import com.pasterdream.pasterdreammod.api.util.AddonDetector;
 import com.pasterdream.pasterdreammod.client.PDPackHandler;
 import com.pasterdream.pasterdreammod.config.PDClientConfig;
@@ -15,6 +16,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -24,8 +26,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * PasterDream 原生 Screen 配置界面
@@ -81,6 +85,22 @@ public class PDConfigScreen extends Screen {
     private float scrollbarHoverLerp;
     /** 是否正在滚动条上悬停 */
     private boolean scrollbarHovered;
+    /** 侧边栏滚动当前偏移 */
+    private int sidebarScrollOffset;
+    /** 侧边栏滚动目标偏移（惯性滚动用） */
+    private float targetSidebarScrollOffset;
+    /** 侧边栏最大可滚动距离 */
+    private int sidebarMaxScroll;
+    /** 侧边栏滚动条是否正在被拖动 */
+    private boolean sidebarScrollbarDragging;
+    /** 侧边栏滚动条拖动起始鼠标 Y */
+    private int sidebarDragStartMouseY;
+    /** 侧边栏滚动条拖动起始偏移 */
+    private int sidebarDragStartOffset;
+    /** 侧边栏滚动条悬停过渡 */
+    private float sidebarScrollbarHoverLerp;
+    /** 侧边栏滚动条是否悬停 */
+    private boolean sidebarScrollbarHovered;
     /** 屏幕淡入进度（0~1） */
     private float screenFadeIn;
     /** 屏幕淡入是否已完成 */
@@ -164,6 +184,19 @@ public class PDConfigScreen extends Screen {
         allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.LOADING_GUI_TIPS, ConfigCategory.HUD, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.PASTER_HEALTH_HUD, ConfigCategory.HUD, idx++));
 
+        // ==================== System (1 item) ====================
+        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.DYEDREAM_CRACK_GENERATE, ConfigCategory.SYSTEM, idx++));
+
+        // ==================== Advancement Lock (2 + N items) ====================
+        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.ENABLE_ADVANCEMENT_LOCK, ConfigCategory.ADVANCEMENT_LOCK, idx++));
+        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.CREATIVE_BYPASS_ADVANCEMENT_LOCK, ConfigCategory.ADVANCEMENT_LOCK, idx++));
+        // 每个进度的独立锁开关
+        for (Map.Entry<ResourceLocation, ModConfigSpec.ConfigValue<Boolean>> e : PDCommonConfig.ADVANCEMENT_LOCKS.entrySet()) {
+            String advPath = e.getKey().getPath();
+            String translationKey = "advancement_lock_" + advPath;
+            allEntries.add(new ConfigEntry.BooleanEntry(e.getValue(), ConfigCategory.ADVANCEMENT_LOCK, idx++, translationKey));
+        }
+
         // ==================== San HUD 设置 (6 items，仅 PasterDreamSanity 安装时显示) ====================
         boolean sanityLoaded = AddonDetector.isSanityLoaded();
         if (sanityLoaded) {
@@ -245,6 +278,9 @@ public class PDConfigScreen extends Screen {
                 PDClientConfig.BGM_DREAM_MEADOW_DAISY, PDClientConfig.BGM_DREAM_MEADOW_DAISY_VOLUME, "dream_meadow_daisy",
                 () -> { saveLoadedConfig(PasterDreamMod.clientModConfig); }));
 
+        // ==================== 附属模组系统设置（动态，仅安装时显示） ====================
+        idx = buildAddonEntries(idx);
+
         // ==================== Debug (4 items) ====================
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.ENABLE_DEBUG_LOG, ConfigCategory.DEBUG, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.ENABLE_API_DEBUG_LOG, ConfigCategory.DEBUG, idx++));
@@ -262,6 +298,63 @@ public class PDConfigScreen extends Screen {
         for (ConfigCategory c : ConfigCategory.values()) {
             if (categoryCounts.getOrDefault(c, 0) > 0) activeCategories.add(c);
         }
+    }
+
+    /**
+     * 构建附属模组配置项，从 {@link PDAddonConfigRegistry} 读取已注册条目。
+     * <p>
+     * 仅当对应模组已安装（Gradle 开关启用）时，注册表中才会有数据，
+     * 因此无需额外判断 AddonDetector，空列表自然不产生分类按钮。
+     *
+     * @param startIndex 当前全局序号起点
+     * @return 追加条目后的下一个全局序号
+     */
+    @SuppressWarnings("unchecked")
+    private int buildAddonEntries(int startIndex) {
+        int idx = startIndex;
+
+        for (PDAddonConfigRegistry.Entry entry : PDAddonConfigRegistry.getEntries()) {
+            ConfigCategory category = mapCategoryKey(entry.categoryKey());
+            if (category == null) continue;
+
+            String translationKey = entry.translationKey();
+            switch (entry.type()) {
+                case BOOLEAN -> {
+                    ModConfigSpec.ConfigValue<Boolean> value = (ModConfigSpec.ConfigValue<Boolean>) entry.value();
+                    allEntries.add(new ConfigEntry.BooleanEntry(value, category, idx++, translationKey));
+                }
+                case INTEGER -> {
+                    ModConfigSpec.ConfigValue<Integer> value = (ModConfigSpec.ConfigValue<Integer>) entry.value();
+                    allEntries.add(new ConfigEntry.NumberEntry(
+                            (ModConfigSpec.ConfigValue<Number>) (ModConfigSpec.ConfigValue<?>) value,
+                            category, idx++, entry.min(), entry.max(), translationKey));
+                }
+                case DOUBLE -> {
+                    ModConfigSpec.ConfigValue<Double> value = (ModConfigSpec.ConfigValue<Double>) entry.value();
+                    allEntries.add(new ConfigEntry.NumberEntry(
+                            (ModConfigSpec.ConfigValue<Number>) (ModConfigSpec.ConfigValue<?>) value,
+                            category, idx++, entry.min(), entry.max(), translationKey));
+                }
+            }
+        }
+
+        return idx;
+    }
+
+    /**
+     * 将注册表中的分类键映射为 {@link ConfigCategory} 枚举。
+     *
+     * @param categoryKey 注册表中的分类键，如 {@code "sanity_system"}
+     * @return 对应的分类枚举；无法映射时返回 null
+     */
+    @Nullable
+    private static ConfigCategory mapCategoryKey(String categoryKey) {
+        return switch (categoryKey) {
+            case "sanity_system" -> ConfigCategory.SANITY_SYSTEM;
+            case "meltdream_system" -> ConfigCategory.MELTDREAM_SYSTEM;
+            case "spells_system" -> ConfigCategory.SPELLS_SYSTEM;
+            default -> null;
+        };
     }
 
     /**
@@ -316,7 +409,46 @@ public class PDConfigScreen extends Screen {
             addRenderableWidget(btn);
             y += ConfigStyles.CATEGORY_BUTTON_HEIGHT + ConfigStyles.CATEGORY_BUTTON_GAP;
         }
+        recalculateSidebarScrollBounds();
+        updateSidebarButtonPositions();
         updateCategoryButtonStyles();
+    }
+
+    /**
+     * 根据当前侧边栏滚动偏移更新分类按钮的实际 Y 坐标。
+     */
+    private void updateSidebarButtonPositions() {
+        int baseY = listTop + 2;
+        for (int i = 0; i < categoryButtons.size(); i++) {
+            FlatButton btn = (FlatButton) categoryButtons.get(i);
+            int rawY = baseY + i * (ConfigStyles.CATEGORY_BUTTON_HEIGHT + ConfigStyles.CATEGORY_BUTTON_GAP);
+            btn.setY(rawY - sidebarScrollOffset);
+        }
+    }
+
+    /**
+     * 获取侧边栏按钮区域顶部 Y 坐标。
+     */
+    private int getSidebarButtonsTop() {
+        return panelTop + 8 + font.lineHeight + 7;
+    }
+
+    /**
+     * 获取侧边栏按钮区域底部 Y 坐标。
+     */
+    private int getSidebarButtonsBottom() {
+        return panelBottom - 16;
+    }
+
+    /**
+     * 重新计算侧边栏滚动边界。
+     */
+    private void recalculateSidebarScrollBounds() {
+        int totalH = categoryButtons.size() * ConfigStyles.CATEGORY_BUTTON_HEIGHT
+                + Math.max(0, categoryButtons.size() - 1) * ConfigStyles.CATEGORY_BUTTON_GAP;
+        int visibleH = listBottom - listTop;
+        sidebarMaxScroll = Math.max(0, totalH - visibleH);
+        targetSidebarScrollOffset = Math.max(0, Math.min(sidebarMaxScroll, targetSidebarScrollOffset));
     }
 
     private void buildFooterButtons() {
@@ -472,6 +604,15 @@ public class PDConfigScreen extends Screen {
             scrollOffset = (int) Math.round(targetScrollOffset);
         }
 
+        // 侧边栏惯性滚动同步
+        recalculateSidebarScrollBounds();
+        if (Math.abs(targetSidebarScrollOffset - sidebarScrollOffset) > 0.1f) {
+            sidebarScrollOffset += (int) Math.round((targetSidebarScrollOffset - sidebarScrollOffset) * 0.22f);
+        } else {
+            sidebarScrollOffset = (int) Math.round(targetSidebarScrollOffset);
+        }
+        updateSidebarButtonPositions();
+
         // 6. 主内容区（底 + 列表 + 滚动条）：从右侧滑入 / 向右滑出
         gui.pose().pushPose();
         applyRegionSlide(gui, ConfigStyles.REGION_CONTENT, 1, 0);
@@ -615,6 +756,11 @@ public class PDConfigScreen extends Screen {
         int titleLineY = panelTop + 8 + font.lineHeight + 3;
         gui.fill(panelLeft + 10, titleLineY, panelLeft + 10 + 36, titleLineY + 1, ConfigStyles.COLOR_ACCENT);
 
+        // 侧边栏内容区启用裁剪，避免按钮过多时溢出到底部提示区
+        int buttonsTop = getSidebarButtonsTop();
+        int buttonsBottom = getSidebarButtonsBottom();
+        gui.enableScissor(panelLeft, buttonsTop, sidebarRight, buttonsBottom);
+
         // 更新反光条目标位置
         // 使用 activeCategories 索引而非 enum ordinal，避免跳过空分类时索引错位
         int selectedIndex = activeCategories.indexOf(selectedCategory);
@@ -636,11 +782,56 @@ public class PDConfigScreen extends Screen {
             btn.render(gui, mouseX, mouseY, 0);
         }
 
+        gui.disableScissor();
+
+        // 侧边栏滚动条
+        renderSidebarScrollbar(gui, mouseX, mouseY, buttonsTop, buttonsBottom);
+
         // 底部提示
         int total = allEntries.size();
         Component totalHint = Component.translatable(LANG_PREFIX + ".total", total);
         int hintY = panelBottom - 12;
         gui.drawString(font, totalHint, panelLeft + 10, hintY, ConfigStyles.COLOR_HINT);
+    }
+
+    /**
+     * 渲染侧边栏滚动条。
+     *
+     * @param buttonsTop    按钮区域顶部
+     * @param buttonsBottom 按钮区域底部
+     */
+    private void renderSidebarScrollbar(GuiGraphics gui, int mouseX, int mouseY, int buttonsTop, int buttonsBottom) {
+        int totalH = categoryButtons.size() * ConfigStyles.CATEGORY_BUTTON_HEIGHT
+                + Math.max(0, categoryButtons.size() - 1) * ConfigStyles.CATEGORY_BUTTON_GAP;
+        int visibleH = buttonsBottom - buttonsTop;
+        if (totalH <= visibleH) return;
+
+        int scrollbarX = sidebarRight - ConfigStyles.SCROLLBAR_WIDTH - 3;
+        int scrollbarTrackH = visibleH;
+        float ratio = (float) visibleH / totalH;
+        int scrollbarThumbH = Math.max(ConfigStyles.SCROLLBAR_MIN_HEIGHT, (int) (scrollbarTrackH * ratio));
+        float scrollRatio = (float) sidebarScrollOffset / sidebarMaxScroll;
+        int scrollbarThumbY = buttonsTop + (int) (scrollRatio * (scrollbarTrackH - scrollbarThumbH));
+
+        // 轨道
+        gui.fill(scrollbarX, buttonsTop, scrollbarX + ConfigStyles.SCROLLBAR_WIDTH, buttonsTop + scrollbarTrackH,
+                ConfigStyles.COLOR_SCROLLBAR_TRACK);
+
+        // 悬停检测
+        boolean hovered = mouseX >= scrollbarX && mouseX < scrollbarX + ConfigStyles.SCROLLBAR_WIDTH + 4
+                && mouseY >= scrollbarThumbY && mouseY < scrollbarThumbY + scrollbarThumbH;
+        if (hovered && sidebarScrollbarHoverLerp < 1f) {
+            sidebarScrollbarHoverLerp = Math.min(1f, sidebarScrollbarHoverLerp + 0.15f);
+        } else if (!hovered && sidebarScrollbarHoverLerp > 0f) {
+            sidebarScrollbarHoverLerp = Math.max(0f, sidebarScrollbarHoverLerp - 0.08f);
+        }
+        sidebarScrollbarHovered = hovered;
+
+        int thumbColor = sidebarScrollbarHovered
+                ? ConfigStyles.COLOR_SCROLLBAR_THUMB_HOVER
+                : ConfigStyles.COLOR_SCROLLBAR_THUMB;
+        gui.fill(scrollbarX, scrollbarThumbY, scrollbarX + ConfigStyles.SCROLLBAR_WIDTH, scrollbarThumbY + scrollbarThumbH,
+                thumbColor);
     }
 
     /**
@@ -858,6 +1049,12 @@ public class PDConfigScreen extends Screen {
             targetScrollOffset = (float) Math.max(0, Math.min(maxScroll, targetScrollOffset - scrollY * 28));
             return true;
         }
+        // 侧边栏滚轮滚动
+        if (mouseX >= panelLeft && mouseX < sidebarRight && mouseY >= panelTop && mouseY < panelBottom) {
+            targetSidebarScrollOffset = (float) Math.max(0, Math.min(sidebarMaxScroll,
+                    targetSidebarScrollOffset - scrollY * 28));
+            return true;
+        }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
@@ -865,6 +1062,10 @@ public class PDConfigScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         // 进入编排未完成 / 正在退出时屏蔽交互
         if (closing || getRegionRawProgress(ConfigStyles.REGION_FOOTER) < 0.98f) return true;
+
+        // 侧边栏滚动条拖动开始
+        if (handleSidebarScrollbarClick(mouseX, mouseY, button)) return true;
+
         for (AbstractWidget widget : categoryButtons) {
             if (widget.mouseClicked(mouseX, mouseY, button)) return true;
         }
@@ -917,6 +1118,10 @@ public class PDConfigScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (sidebarScrollbarDragging) {
+            sidebarScrollbarDragging = false;
+            return true;
+        }
         if (focusedListener != null) return focusedListener.mouseReleased(mouseX, mouseY, button);
         // 传递给展开的 BgmGroupEntry
         for (Object entry : visibleEntries) {
@@ -928,6 +1133,10 @@ public class PDConfigScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (sidebarScrollbarDragging) {
+            updateSidebarScrollFromDrag((int) mouseY);
+            return true;
+        }
         if (focusedListener != null) return focusedListener.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         // 传递给展开的 BgmGroupEntry
         for (Object entry : visibleEntries) {
@@ -935,6 +1144,63 @@ public class PDConfigScreen extends Screen {
                 return true;
         }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    /**
+     * 处理侧边栏滚动条点击，开始拖动。
+     *
+     * @return 如果点击落在滚动条上则返回 true
+     */
+    private boolean handleSidebarScrollbarClick(double mouseX, double mouseY, int button) {
+        if (button != 0 || sidebarMaxScroll <= 0) return false;
+        int[] geom = getSidebarScrollbarGeometry();
+        int thumbX = geom[0];
+        int thumbY = geom[1];
+        int thumbW = geom[2];
+        int thumbH = geom[3];
+        if (mouseX >= thumbX && mouseX < thumbX + thumbW && mouseY >= thumbY && mouseY < thumbY + thumbH) {
+            sidebarScrollbarDragging = true;
+            sidebarDragStartMouseY = (int) mouseY;
+            sidebarDragStartOffset = sidebarScrollOffset;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 根据拖动更新侧边栏滚动偏移。
+     */
+    private void updateSidebarScrollFromDrag(int mouseY) {
+        if (sidebarMaxScroll <= 0) return;
+        int[] geom = getSidebarScrollbarGeometry();
+        int trackTop = geom[4];
+        int trackBottom = geom[5];
+        int thumbH = geom[3];
+        int trackH = trackBottom - trackTop;
+        int dragDelta = mouseY - sidebarDragStartMouseY;
+        float ratio = (float) dragDelta / Math.max(1, trackH - thumbH);
+        targetSidebarScrollOffset = Math.max(0, Math.min(sidebarMaxScroll,
+                sidebarDragStartOffset + ratio * sidebarMaxScroll));
+    }
+
+    /**
+     * 获取侧边栏滚动条几何信息。
+     *
+     * @return [thumbX, thumbY, thumbW, thumbH, trackTop, trackBottom]
+     */
+    private int[] getSidebarScrollbarGeometry() {
+        int buttonsTop = getSidebarButtonsTop();
+        int buttonsBottom = getSidebarButtonsBottom();
+        int totalH = categoryButtons.size() * ConfigStyles.CATEGORY_BUTTON_HEIGHT
+                + Math.max(0, categoryButtons.size() - 1) * ConfigStyles.CATEGORY_BUTTON_GAP;
+        int visibleH = buttonsBottom - buttonsTop;
+        int scrollbarX = sidebarRight - ConfigStyles.SCROLLBAR_WIDTH - 3;
+        int scrollbarTrackH = visibleH;
+        float ratio = (float) visibleH / totalH;
+        int scrollbarThumbH = Math.max(ConfigStyles.SCROLLBAR_MIN_HEIGHT, (int) (scrollbarTrackH * ratio));
+        float scrollRatio = sidebarMaxScroll <= 0 ? 0f : (float) sidebarScrollOffset / sidebarMaxScroll;
+        int scrollbarThumbY = buttonsTop + (int) (scrollRatio * (scrollbarTrackH - scrollbarThumbH));
+        return new int[]{scrollbarX, scrollbarThumbY, ConfigStyles.SCROLLBAR_WIDTH + 4, scrollbarThumbH, buttonsTop, buttonsBottom};
     }
 
     @Override
@@ -1016,6 +1282,14 @@ public class PDConfigScreen extends Screen {
         // 持久化配置到 TOML 文件（configValue.set() 仅修改内存值，须通过 ILoadedConfig.save() 写入磁盘）
         saveLoadedConfig(PasterDreamMod.clientModConfig);
         saveLoadedConfig(PasterDreamMod.commonModConfig);
+
+        // 持久化附属模组 COMMON 配置，按 modId 去重避免重复写入
+        Set<String> savedAddonConfigs = new HashSet<>();
+        for (PDAddonConfigRegistry.Entry entry : PDAddonConfigRegistry.getEntries()) {
+            if (savedAddonConfigs.add(entry.modId())) {
+                saveLoadedConfig(PDAddonConfigRegistry.getCommonConfig(entry.modId()));
+            }
+        }
         PDDebugLogger.mainDebug("[PDConfigScreen] 配置文件已持久化到磁盘");
 
         saveFeedbackStart = System.currentTimeMillis();

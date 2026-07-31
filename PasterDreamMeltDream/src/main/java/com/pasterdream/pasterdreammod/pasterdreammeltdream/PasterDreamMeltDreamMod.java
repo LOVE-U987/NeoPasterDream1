@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.pasterdreammeltdream;
 
+import com.pasterdream.pasterdreammod.api.config.PDAddonConfigRegistry;
 import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyConfigRegistry;
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 import com.pasterdream.pasterdreammod.pasterdreammeltdream.config.PDMeltDreamConfig;
@@ -8,6 +9,7 @@ import com.pasterdream.pasterdreammod.pasterdreammeltdream.registry.PDMeltDreamI
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
@@ -25,6 +27,9 @@ public class PasterDreamMeltDreamMod {
     /** 融梦能量系统附属模组 ID */
     public static final String MOD_ID = "pasterdreammeltdream";
 
+    /** 通用配置的 ModConfig 引用，供配置界面持久化保存 */
+    public static ModConfig commonModConfig;
+
     /**
      * 构造函数。
      *
@@ -39,7 +44,9 @@ public class PasterDreamMeltDreamMod {
         // 该注册表已由 PasterDreamAPI 主类注册到 API 的事件总线，此处不再重复注册。
         // 效果条目通过 MobEffectAPI.REGISTRY.register() 直接注册到共享注册表。
 
-        modContainer.registerConfig(ModConfig.Type.COMMON, PDMeltDreamConfig.SPEC);
+        // 使用 ConfigTracker 注册并捕获 ModConfig 引用，以便主模组配置界面保存到 TOML
+        commonModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.COMMON, PDMeltDreamConfig.SPEC, modContainer, "pasterdreammeltdream-common.toml");
+        PDAddonConfigRegistry.registerCommonConfig(MOD_ID, commonModConfig);
 
         modEventBus.addListener(this::onCommonSetup);
 

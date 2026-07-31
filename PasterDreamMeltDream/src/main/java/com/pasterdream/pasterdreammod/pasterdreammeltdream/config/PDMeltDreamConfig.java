@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.pasterdreammeltdream.config;
 
+import com.pasterdream.pasterdreammod.api.config.PDAddonConfigRegistry;
 import com.pasterdream.pasterdreammod.api.meltdream.IMeltDreamEnergySystemConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -55,7 +56,24 @@ public class PDMeltDreamConfig implements IMeltDreamEnergySystemConfig {
                 .defineInRange("chest max energy", 1000.0D, 0.0D, Double.MAX_VALUE);
         builder.pop();
 
+        // 向主模组配置界面注册本模组配置项
+        registerConfigScreenEntries();
+
         SPEC = builder.build();
+    }
+
+    /**
+     * 将本模组的配置项注册到 PasterDreamAPI 的附属配置注册表，
+     * 供主模组配置界面统一展示与保存。
+     */
+    private static void registerConfigScreenEntries() {
+        PDAddonConfigRegistry.registerBooleanEntry("pasterdreammeltdream", "meltdream_system", ENABLE_MELTDREAM_SYSTEM, "enable_meltdream_system");
+        PDAddonConfigRegistry.registerIntegerEntry("pasterdreammeltdream", "meltdream_system", RECOVER_INTERVAL, 1, Integer.MAX_VALUE, "meltdream_recover_interval");
+        PDAddonConfigRegistry.registerDoubleEntry("pasterdreammeltdream", "meltdream_system", RECOVER_AMOUNT, 0.0D, Double.MAX_VALUE, "meltdream_recover_amount");
+        PDAddonConfigRegistry.registerDoubleEntry("pasterdreammeltdream", "meltdream_system", CHEST_GENERATION_MULTIPLIER, 0.0D, Double.MAX_VALUE, "meltdream_chest_generation_multiplier");
+        PDAddonConfigRegistry.registerDoubleEntry("pasterdreammeltdream", "meltdream_system", CHEST_HURT_MULTIPLIER, 0.0D, Double.MAX_VALUE, "meltdream_chest_hurt_multiplier");
+        PDAddonConfigRegistry.registerDoubleEntry("pasterdreammeltdream", "meltdream_system", CHEST_KILL_MULTIPLIER, 0.0D, Double.MAX_VALUE, "meltdream_chest_kill_multiplier");
+        PDAddonConfigRegistry.registerDoubleEntry("pasterdreammeltdream", "meltdream_system", CHEST_MAX_ENERGY, 0.0D, Double.MAX_VALUE, "meltdream_chest_max_energy");
     }
 
     private PDMeltDreamConfig() {

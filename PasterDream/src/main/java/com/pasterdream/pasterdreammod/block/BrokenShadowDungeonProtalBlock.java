@@ -9,6 +9,7 @@ import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksVegetation;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
@@ -401,6 +402,9 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
     private static boolean hasAdvancement(Player player, String name) {
         if (!(player instanceof ServerPlayer serverPlayer) || !(serverPlayer.level() instanceof ServerLevel)) {
             return false;
+        }
+        if (!PDAdvancements.isAdvancementLocked(serverPlayer, ResourceLocation.fromNamespaceAndPath("pasterdream", name))) {
+            return true;
         }
         AdvancementHolder holder = serverPlayer.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath("pasterdream", name));

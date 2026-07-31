@@ -36,5 +36,13 @@ public final class PDCustomDolls {
                 .holdingModel(ResourceLocation.fromNamespaceAndPath("pasterdream", "geo/block/mini_beixu_doll_holding.geo.json"))
                 .canHoldItems(true)
                 .register();
+
+        // 雾於酱玩偶：独立模型（复制 eoul_doll 骨骼），仅替换皮肤纹理
+        DollAPI.create("wuyu_doll")
+                .model(ResourceLocation.fromNamespaceAndPath("pasterdream", "geo/block/wuyu_doll.geo.json"))
+                .texture(ResourceLocation.fromNamespaceAndPath("pasterdream", "textures/block/wuyu_doll.png"))
+                .holdingModel(ResourceLocation.fromNamespaceAndPath("pasterdream", "geo/block/wuyu_doll_holding.geo.json"))
+                .canHoldItems(true)
+                .register();
     }
 }

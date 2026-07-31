@@ -2,6 +2,8 @@ package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.block.entity.MeltdreamChestBlockEntity;
+import com.pasterdream.pasterdreammod.api.doll.DollAPI;
+import com.pasterdream.pasterdreammod.api.doll.DollResult;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
@@ -40,6 +42,7 @@ import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -300,6 +303,14 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
                 handler.setStackInSlot(i, rollFromPool(pool, random));
             }
             handler.setStackInSlot(8, ItemStack.EMPTY);
+            // 额外：稀有品质有 50% 概率额外掉落一个玩偶（优先玩家未拥有的）
+            if (random.nextFloat() < 0.5f) {
+                ItemStack doll = rollDoll(player, random);
+                if (!doll.isEmpty()) {
+                    int slot = 1 + random.nextInt(8);
+                    handler.setStackInSlot(slot, doll);
+                }
+            }
         }
     }
 
@@ -333,19 +344,16 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
     }
 
     /**
-     * 从三个玩偶/雕像中随机选取一个 —— 优先选玩家尚未拥有的，
-     * 若全部拥有则不额外掉落
+     * 从所有玩偶/雕像中随机选取一个 —— 优先选玩家尚未拥有的，
+     * 若全部拥有则不额外掉落。
+     * <p>包含原版注册玩偶与 {@link DollAPI} 动态注册的自定义玩偶。</p>
      *
      * @param player 打开宝箱的玩家
      * @param random 随机数源
      * @return 选中的玩偶 ItemStack，若已全部拥有则返回空
      */
     private static ItemStack rollDoll(Player player, net.minecraft.util.RandomSource random) {
-        List<Item> allDolls = List.of(
-                PDItems.QIN_DOLL_0.get(),
-                PDItems.LITTLE_PURPLE_DOLL_0.get(),
-                PDItems.GOLDEN_FOX_SCULPTURE.get()
-        );
+        List<Item> allDolls = getAllDolls();
         // 筛选玩家背包中未拥有的玩偶
         List<Item> unowned = allDolls.stream()
                 .filter(doll -> player.getInventory().countItem(doll) <= 0)
@@ -354,6 +362,27 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
             return ItemStack.EMPTY;
         }
         return new ItemStack(unowned.get(random.nextInt(unowned.size())));
+    }
+
+    /**
+     * 获取所有可掉落的玩偶/雕像物品列表。
+     * <p>合并 PDItems 中注册的旧玩偶与 {@link DollAPI} 注册的自定义玩偶。</p>
+     *
+     * @return 玩偶物品列表
+     */
+    private static List<Item> getAllDolls() {
+        List<Item> dolls = new ArrayList<>();
+        // 原版注册的旧玩偶/雕像
+        dolls.add(PDItems.QIN_DOLL_0.get());
+        dolls.add(PDItems.LITTLE_PURPLE_DOLL_0.get());
+        dolls.add(PDItems.GOLDEN_FOX_SCULPTURE.get());
+        dolls.add(PDItems.LOVE_U_DOLL.get());
+        dolls.add(PDItems.EOUL_DOLL.get());
+        // DollAPI 动态注册的自定义玩偶（phantom_daze、mini_beixu_doll、wuyu_doll 等）
+        for (DollResult result : DollAPI.getRegistrations()) {
+            dolls.add(result.item().get());
+        }
+        return dolls;
     }
 
     // ==================== 刻调度（已移除 — 由 BlockEntity.serverTick 接管） ====================

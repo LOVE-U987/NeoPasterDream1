@@ -70,6 +70,9 @@ public final class LampShadowEvents {
     }
 
     private static boolean hasAdvancement(ServerPlayer player, String name) {
+        if (!PDAdvancements.isAdvancementLocked(player, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, name))) {
+            return true;
+        }
         AdvancementHolder holder = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, name));
         return holder != null && player.getAdvancements().getOrStartProgress(holder).isDone();

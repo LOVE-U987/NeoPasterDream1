@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.block.entity;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.menu.ResearchTableMenu;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;
@@ -246,6 +247,9 @@ public class ResearchTableBlockEntity extends BlockEntity implements GeoBlockEnt
      * @return 是否已完成
      */
     private boolean isAdvancementDone(ServerPlayer player, String path) {
+        if (!PDAdvancements.isAdvancementLocked(player, ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path))) {
+            return true;
+        }
         AdvancementHolder holder = player.server.getAdvancements()
                 .get(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path));
         if (holder == null) {
