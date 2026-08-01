@@ -40,7 +40,9 @@ public final class PDClientVfx {
      * @param payload 空载荷（保留参数与 handler 签名一致）
      */
     public static void handleEvasionPose(EvasionPosePayload payload) {
-        // 字面量 modId：不可写 PDPlayerAnimation.XXX，否则 getstatic 会在 isLoaded 之前加载该类
+        // 类加载守卫：playeranimator 未安装时绝不能加载 PDPlayerAnimation（其方法体含 playerAnim 硬符号，加载即 NoClassDefFoundError）。
+        // 故必须用字面量 modId 判断（不可写 PDPlayerAnimation.XXX，否则 getstatic 会先加载该类）。
+        // 此检查与 startEvasionPose() 内部 isAvailable() 并非冗余：内层仅在类已加载后防 API 误用，外层才是真正的加载门禁。
         if (!ModList.get().isLoaded("playeranimator")) {
             return;
         }
