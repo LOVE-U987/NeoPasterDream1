@@ -150,6 +150,24 @@ public class PDSanityEffects {
                         }
                     });
 
+    /**
+     * 精神损伤 (san_decrease)。
+     * <p>
+     * 有害效果 0x9B4400。瞬时生效：San 值 -((amplifier &amp; 0xff) + 1)。
+     * 对照原版 {@code SanVaryMobEffect(false)}；语言键已在主模 assets 中。
+     */
+    public static final DeferredHolder<MobEffect, MobEffect> SAN_DECREASE =
+            MobEffectAPI.REGISTRY.register("san_decrease",
+                    () -> new InstantenousMobEffect(MobEffectCategory.HARMFUL, 0x9B4400) {
+                        @Override
+                        public boolean applyEffectTick(net.minecraft.world.entity.LivingEntity entity, int amplifier) {
+                            if (entity instanceof net.minecraft.server.level.ServerPlayer pl) {
+                                SanHelper.addPlayerSanWithCheck(pl, -(amplifier & 0xff) - 1);
+                            }
+                            return true;
+                        }
+                    });
+
     private PDSanityEffects() {
     }
 

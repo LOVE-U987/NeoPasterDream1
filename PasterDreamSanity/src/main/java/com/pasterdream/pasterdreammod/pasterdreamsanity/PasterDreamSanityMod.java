@@ -40,7 +40,9 @@ public class PasterDreamSanityMod {
     public PasterDreamSanityMod(IEventBus modEventBus, ModContainer modContainer) {
         // PasterDreamAPI 已作为独立前置 mod 加载，由其主类 PasterDreamAPIMod 统一注册 API 层 DeferredRegister。
 
-        PDSanityItems.ITEMS.register(modEventBus);
+        PDSanityItems.init(modEventBus);
+        // cheerup/insand 等挂在 PDSanityEffects.MOB_EFFECTS；san_increase/decrease 挂在
+        // MobEffectAPI.REGISTRY（类加载时 register）。两者都需在构造期触达。
         PDSanityEffects.MOB_EFFECTS.register(modEventBus);
 
         // 使用 ConfigTracker 注册并捕获 ModConfig 引用，以便主模组配置界面保存到 TOML

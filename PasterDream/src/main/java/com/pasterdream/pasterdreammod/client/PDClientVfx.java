@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.ModList;
 
 /**
  * 客户端 VFX 网络包落地（仅客户端类加载路径引用本类）。
@@ -34,10 +35,15 @@ public final class PDClientVfx {
 
     /**
      * 启动本地闪避姿势。
+     * <p>playeranimator 未安装时 no-op，且不触碰 {@link PDPlayerAnimation} 类加载。</p>
      *
      * @param payload 空载荷（保留参数与 handler 签名一致）
      */
     public static void handleEvasionPose(EvasionPosePayload payload) {
+        // 字面量 modId：不可写 PDPlayerAnimation.XXX，否则 getstatic 会在 isLoaded 之前加载该类
+        if (!ModList.get().isLoaded("playeranimator")) {
+            return;
+        }
         PDPlayerAnimation.startEvasionPose();
     }
 }

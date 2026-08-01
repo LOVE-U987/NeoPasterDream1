@@ -42,12 +42,11 @@ public class AngelBlockItemItem extends Item {
             return super.use(level, player, hand);
         }
         // 服务端权威：仅服务端放置方块并消耗物品，避免幽灵方块与双端不同步；
-        // 客户端命中条件时返回 consume，以触发服务端再次执行 use
+        // 客户端命中条件时返回 consume，以触发服务端再次执行 use。
+        // 创造模式也扣 1：VERIFY 与原版空中放置手感一致；创造背包会再补满。
         if (!level.isClientSide()) {
             level.setBlock(below, PDBlocks.ANGEL_BLOCK.get().defaultBlockState(), 3);
-            if (!player.getAbilities().instabuild) {
-                stack.shrink(1);
-            }
+            stack.shrink(1);
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }

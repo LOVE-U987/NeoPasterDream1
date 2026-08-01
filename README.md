@@ -437,12 +437,12 @@ PY
 
 ## 📦 安装与打包
 
-本仓库两个子模块，**发布给玩家时只装一个 jar**（再加下方运行时依赖）：
+本仓库多子模块，**发布给玩家时只装一个 jar**（再加下方运行时依赖）：
 
 | 产物 | 说明 |
 | :--- | :--- |
-| `build/dist/pasterdream-<version>.jar` | **本模组**可安装包；已**内嵌** `PasterDreamAPI`（无独立 `mods.toml`） |
-| `PasterDreamAPI` 带 `api` classifier 的 jar | 仅开发/依赖用，**不要**丢进 `mods/` |
+| `build/dist/pasterdream-<version>.jar` | **本模组**可安装包；Jar-in-Jar **内嵌** `PasterDreamAPI` + `PasterDreamSanity` + `PasterDreamMeltDream` + `PasterDreamSpells`（由 `enable*=true` 控制） |
+| 各附属 / API 独立 jar | 仅开发或模块化发行用；**已内嵌时不要**再丢进 `mods/`（会重复加载） |
 
 ### 玩家 / 整合包需一并安装的依赖
 
@@ -543,7 +543,7 @@ JAVA_HOME=/usr/lib/jvm/java-21-openjdk sh gradlew packageMod
 | **与原版 PasterDream 有何区别？** | 原版是 1.20.1 Forge + MCreator。新帕斯特之梦在 1.21.1 NeoForge 下使用原生 API 完全重写。 |
 | **美术风格会改变吗？**             | \*\*不会。\*\*原版作者的纹理、模型和视觉设计是我们珍视的遗产，将完整保留。                           |
 | **现在可以玩吗？** | **可以。** 四维度主路径、工作站、笔记/卡牌/法杖与 62 成就均已接通；详见差距报告终验表。 |
-| **要装几个 jar？** | **一个。** `packageMod` 产出的 `pasterdream-*.jar`（已内嵌 API）。不要再装 `PasterDreamAPI`。 |
+| **要装几个 jar？** | **一个。** `packageMod` 产出的 `pasterdream-*.jar`（已内嵌 API + Sanity/MeltDream/Spells）。不要再单独装附属或 `PasterDreamAPI`。 |
 | **怎么快速去自定义维度？** | 见上文「快捷切换维度」；或用裂隙/传送水晶等正式入口。 |
 | **存档会损坏吗？** | 染梦等维度通过裂隙/物品进入，不改写主世界生成。未来更新尽量向后兼容。 |
 | **支持多人联机吗？** | **完全兼容**多人服务器。 |

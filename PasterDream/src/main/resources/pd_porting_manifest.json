@@ -1468,7 +1468,31 @@
     ],
     "_comment_tabs": "原版 10 个顺序标签页（paster_tab_0-9，含拼写异体 paser_tab_4）在新版刻意重构为 11 个主题标签页（armor/curio/debug/disc/dyedream/entity/food/shadow/souvenir/weapon/wind），不作一一对应",
     "items": [
+      "fury_spell",
+      "healing_spell",
+      "healing_spell_entity_spawn_egg",
+      "ice_spell",
+      "lightning_spell",
+      "poison_spell",
       "shadow_magicball_spawn_egg"
-    ]
+    ],
+    "entities": [
+      "fury_spell_entity",
+      "fury_spell_projectile",
+      "healing_spell_entity",
+      "healing_spell_projectile",
+      "ice_spell_projectile",
+      "lightning_spell_projectile",
+      "poison_spell_projectile"
+    ],
+    "sounds": [
+      "fury_spell",
+      "fury_spell_0",
+      "healing_spell",
+      "ice_spell",
+      "lightning_spell",
+      "poison_spell"
+    ],
+    "_comment_submods": "法术物品/实体/音效已拆至 pasterdreamspells 命名空间；healing_spell_entity_spawn_egg 原版有蛋但新版场域实体不提供刷怪蛋。主模 registry diff 只扫 pasterdream 命名空间，故从期望中排除。"
   }
 }

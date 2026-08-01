@@ -271,8 +271,9 @@ public final class PDSmokeTest {
         check(missingItems == 0, "all 29 phase2 block items registered (missing " + missingItems + ")");
 
         for (String id : SPELL_ITEM_IDS) {
+            // 法术卷轴已拆至 pasterdreamspells 命名空间
             check(BuiltInRegistries.ITEM.containsKey(
-                            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, id)),
+                            ResourceLocation.fromNamespaceAndPath("pasterdreamspells", id)),
                     "spell item registered: " + id);
         }
         for (String id : List.of("dream_cauldron", "guiding_drug", "meltdream_liquid_bucket", "dark_cloud")) {

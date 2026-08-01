@@ -218,13 +218,18 @@ public final class PDEntityGalleryVerifyHooks {
         PDGalleryVerifyHooks.ensureNightVision(player);
         player.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
 
-        // 注册表规模（本模组实体）
+        // 注册表规模：主模 pasterdream + 法术子模 pasterdreamspells（法术实体已拆出）
         int modEntities = 0;
+        int spellEntities = 0;
         for (var e : BuiltInRegistries.ENTITY_TYPE.entrySet()) {
-            if (PasterDreamMod.MOD_ID.equals(e.getKey().location().getNamespace())) {
+            String ns = e.getKey().location().getNamespace();
+            if (PasterDreamMod.MOD_ID.equals(ns)) {
                 modEntities++;
+            } else if ("pasterdreamspells".equals(ns)) {
+                spellEntities++;
             }
         }
+        int totalEntities = modEntities + spellEntities;
 
         out.accept(detail(spawnEggs.size() >= 30,
                 "刷怪蛋收集 " + spawnEggs.size(),
@@ -241,17 +246,21 @@ public final class PDEntityGalleryVerifyHooks {
                         && cageFail <= Math.max(2, livingTypes.size() / 5),
                 "活体玻璃笼 " + caged + "/" + livingTypes.size(),
                 cageFail == 0 ? "全部入笼" : "fail=" + cageFail + " " + cageFailSamples));
-        out.accept(detail(modEntities >= 50,
-                "模组实体注册 " + modEntities,
+        // 主模约 44 + 法术子模约 7；合计仍应 ≥ 原版 50 量级
+        out.accept(detail(totalEntities >= 50,
+                "模组实体注册 " + totalEntities,
                 "origin=" + origin.toShortString()
                         + " eggs=" + spawnEggs.size()
                         + " noEgg=" + noEggEntities.size()
-                        + " living=" + livingTypes.size()));
+                        + " living=" + livingTypes.size()
+                        + " main=" + modEntities
+                        + " spells=" + spellEntities));
 
         PDDebugLogger.smoketestInfo(
-                "[PDEntityGallery] origin={} eggs={}/{} barrels={} paper={}/{} caged={}/{} modEntities={}",
+                "[PDEntityGallery] origin={} eggs={}/{} barrels={} paper={}/{} caged={}/{} entities={}/{}+{}",
                 origin.toShortString(), filledEggStacks, spawnEggs.size(), eggBarrelPlaced,
-                paperStacks, noEggEntities.size(), caged, livingTypes.size(), modEntities);
+                paperStacks, noEggEntities.size(), caged, livingTypes.size(),
+                totalEntities, modEntities, spellEntities);
         return origin;
     }
 

@@ -118,15 +118,15 @@ tasks.named('jar', Jar).configure {
 
 // 产出到统一 dist 目录，便于发布/拷贝到游戏 mods
 // 附属模组不内嵌 PasterDreamAPI，运行时依赖 PasterDream 主模组提供
-tasks.register('packageMod', Copy) {
+tasks.register('packageThin', Copy) {
     group = 'distribution'
-    description = '打包可安装 jar 到 build/dist/（依赖 PasterDream 主模组提供 API）'
+    description = '打包附属 thin jar 到 build/dist/（模块化发行；勿与已内嵌附属的主包同装）'
     dependsOn tasks.named('jar')
     from tasks.named('jar').flatMap { it.archiveFile }
     into rootProject.layout.buildDirectory.dir('dist')
     doLast {
         def out = rootProject.layout.buildDirectory.dir('dist').get().asFile
-        logger.lifecycle("packageMod → ${out.listFiles()?.collect { it.name }}")
+        logger.lifecycle("packageThin → ${out.listFiles()?.collect { it.name }}")
     }
 }
 

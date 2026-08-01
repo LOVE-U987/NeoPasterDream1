@@ -86,6 +86,14 @@ public class ClientSetup {
             CurioClientHandler.init();
             PDDebugLogger.mainDebug("[ClientSetup] 饰品身体渲染器初始化完成");
 
+            // playeranimator 为 optional：仅在场时再触达 PDPlayerAnimation（类上有硬依赖符号）。
+            // 判断必须用字面量 modId，不可写 PDPlayerAnimation.常量——否则 getstatic 会先加载该类。
+            if (ModList.get().isLoaded("playeranimator")) {
+                PDPlayerAnimation.bootstrapIfPresent();
+            } else {
+                PDDebugLogger.mainDebug("[ClientSetup] 未检测到 playeranimator，跳过闪避姿势集成");
+            }
+
             // 内嵌 UI 资源包状态同步已移至 PDPackHandler.onPlayerLogin（玩家登录后执行）：
             // FMLClientSetup 阶段 PackRepository 尚未就绪，早期调用会静默无效。
 

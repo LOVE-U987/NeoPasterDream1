@@ -40,9 +40,10 @@ public class PasterDreamMeltDreamMod {
         // PasterDreamAPI 已作为独立前置 mod 加载，由其主类 PasterDreamAPIMod 统一注册 API 层 DeferredRegister。
 
         PDMeltDreamItems.ITEMS.register(modEventBus);
-        // PDMeltDreamEffects.MOB_EFFECTS 引用的是 MobEffectAPI.REGISTRY（API 共享注册表），
-        // 该注册表已由 PasterDreamAPI 主类注册到 API 的事件总线，此处不再重复注册。
-        // 效果条目通过 MobEffectAPI.REGISTRY.register() 直接注册到共享注册表。
+        // PDMeltDreamEffects 的条目挂在 MobEffectAPI.REGISTRY（API 共享、pasterdream 命名空间）上，
+        // 注册表本身已由 PasterDreamAPI 挂到事件总线；此处必须触发类初始化，
+        // 否则 DeferredHolder 静态字段不会执行 register()，效果会整段缺失。
+        PDMeltDreamEffects.init();
 
         // 使用 ConfigTracker 注册并捕获 ModConfig 引用，以便主模组配置界面保存到 TOML
         commonModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.COMMON, PDMeltDreamConfig.SPEC, modContainer, "pasterdreammeltdream-common.toml");

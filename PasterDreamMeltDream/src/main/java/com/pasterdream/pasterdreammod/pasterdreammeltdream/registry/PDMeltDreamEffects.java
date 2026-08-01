@@ -58,4 +58,12 @@ public class PDMeltDreamEffects {
 
     private PDMeltDreamEffects() {
     }
+
+    /**
+     * 触发类初始化，确保 {@link #MELT_DREAM_ENERGY_INCREASE}/{@link #MELT_DREAM_ENERGY_DECREASE}
+     * 已提交到 {@link MobEffectAPI#REGISTRY}。由 {@code PasterDreamMeltDreamMod} 在构造时调用。
+     */
+    public static void init() {
+        // 触达静态字段即可；无额外逻辑
+    }
 }

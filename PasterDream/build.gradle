@@ -145,14 +145,19 @@ dependencies {
     jarJar project(':PasterDreamAPI')
 
     // ======================== 附属模组（条件加载，由 enable* 开关控制） ========================
+    // 开发期 implementation 进 classpath；发布期 jarJar 一并内嵌，避免玩家漏装附属。
+    // 单独发行附属 thin jar 用各子模块 :packageThin（勿与本 fat 主包同时丢进 mods/）。
     if (meltDreamEnabled == 'true') {
         implementation project(':PasterDreamMeltDream')
+        jarJar project(':PasterDreamMeltDream')
     }
     if (sanityEnabled == 'true') {
         implementation project(':PasterDreamSanity')
+        jarJar project(':PasterDreamSanity')
     }
     if (spellsEnabled == 'true') {
         implementation project(':PasterDreamSpells')
+        jarJar project(':PasterDreamSpells')
     }
 
     // 使 PasterDream 的 test sourceSet 能够访问 PasterDreamAPI 的 test sourceSet（gen/example 类）
@@ -184,9 +189,9 @@ dependencies {
     localRuntime "maven.modrinth:sk9knFPE:${rhino_version}"
 }
 
-// ======================== 分发：PasterDream 内嵌 PasterDreamAPI ========================
-// PasterDreamAPI 以 Jar-in-Jar 方式内嵌在主模组 jar 中。
-// 玩家只需安装一个 pasterdream-<version>.jar，API 会自动加载。
+// ======================== 分发：主模内嵌 API + 附属（JiJ） ========================
+// PasterDreamAPI 与 enable*=true 的附属均以 Jar-in-Jar 打进主模 jar。
+// 玩家安装一个 pasterdream-<version>.jar 即可加载 API / Sanity / MeltDream / Spells。
 tasks.named('jar', Jar).configure {
     manifest {
         attributes(
@@ -200,13 +205,17 @@ tasks.named('jar', Jar).configure {
 // 产出到统一 dist 目录，便于发布/拷贝到游戏 mods
 tasks.register('packageMod', Copy) {
     group = 'distribution'
-    description = '打包可安装 jar 到 build/dist/（已内嵌 PasterDreamAPI）'
+    description = '打包可安装 jar 到 build/dist/（内嵌 API + enable*=true 的附属模组）'
     dependsOn tasks.named('jar')
     from tasks.named('jar').flatMap { it.archiveFile }
     into rootProject.layout.buildDirectory.dir('dist')
     doLast {
         def out = rootProject.layout.buildDirectory.dir('dist').get().asFile
-        logger.lifecycle("packageMod → ${out.listFiles()?.collect { it.name }}（已内嵌 PasterDreamAPI）")
+        def embedded = ['PasterDreamAPI']
+        if (meltDreamEnabled == 'true') embedded << 'PasterDreamMeltDream'
+        if (sanityEnabled == 'true') embedded << 'PasterDreamSanity'
+        if (spellsEnabled == 'true') embedded << 'PasterDreamSpells'
+        logger.lifecycle("packageMod → ${out.listFiles()?.collect { it.name }}（已内嵌: ${embedded.join(', ')}）")
     }
 }
 

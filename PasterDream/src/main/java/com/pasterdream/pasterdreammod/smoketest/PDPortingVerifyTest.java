@@ -1131,8 +1131,12 @@ public final class PDPortingVerifyTest {
 
     private static void blastFurnaceSetup() {
         ServerLevel level = overworld();
-        BlockPos base = player().blockPosition().offset(8, 0, 8);
-        furnacePos = new BlockPos(base.getX(), surfaceY(base) + 1, base.getZ());
+        // 放在世界原点附近固定位置，避免后续维度/展台把玩家拉走后区块卸载导致 BE 停 tick、
+        // 验证时 getBlockEntity 重建空库存（实测：液体桶已吸入但终验输入/产物皆空）。
+        BlockPos base = BlockPos.ZERO;
+        furnacePos = new BlockPos(base.getX() + 4, Math.max(surfaceY(base), 64) + 1, base.getZ() + 4);
+        level.getChunk(furnacePos);
+        level.setChunkForced(furnacePos.getX() >> 4, furnacePos.getZ() >> 4, true);
         level.setBlock(furnacePos, PDBlocks.SHADOW_BLAST_FURNACE.get().defaultBlockState(), 3);
         if (!(level.getBlockEntity(furnacePos) instanceof ShadowBlastFurnaceBlockEntity furnace)) {
             check("blast", false, "暗影高炉方块实体已创建");
@@ -1169,17 +1173,25 @@ public final class PDPortingVerifyTest {
     }
 
     private static void blastFurnaceVerify() {
+        ServerLevel level = overworld();
         ShadowBlastFurnaceBlockEntity furnace = furnace();
         if (furnace == null) {
             check("blast", false, "暗影高炉冶炼产物验证（BE 缺失）");
+            if (furnacePos != null) {
+                level.setChunkForced(furnacePos.getX() >> 4, furnacePos.getZ() >> 4, false);
+            }
             return;
         }
         ItemStack result = furnace.getItemHandler().getStackInSlot(ShadowBlastFurnaceBlockEntity.SLOT_RESULT);
         ItemStack input = furnace.getItemHandler().getStackInSlot(ShadowBlastFurnaceBlockEntity.SLOT_INPUT);
         checkDetail("blast", result.is(itemOf("blackmetal_grain")),
                 "暗影高炉端到端冶炼：锈黑金属粒 → 黑金属粒",
-                "产物槽: " + result + "，输入槽: " + input);
-        overworld().removeBlock(furnacePos, false);
+                "产物槽: " + result + "，输入槽: " + input
+                        + "，progress=" + furnace.getBlastingTime()
+                        + "/" + furnace.getNeedBlastingTime()
+                        + "，work=" + furnace.getWorkRecipeId());
+        level.removeBlock(furnacePos, false);
+        level.setChunkForced(furnacePos.getX() >> 4, furnacePos.getZ() >> 4, false);
     }
 
     // ==================== S10 法杖投射物实例化扫掠 ====================
