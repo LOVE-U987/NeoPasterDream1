@@ -32,10 +32,10 @@ public class MoltengoldWandItem extends AbstractChargeWandItem {
     public void appendHoverText(ItemStack stack, TooltipContext context,
                                 List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("§2法术伤害：5"));
-        tooltip.add(Component.literal("§2法球动能：1.5"));
-        tooltip.add(Component.literal("§2施法冷却：1秒"));
-        tooltip.add(Component.literal("§2施法消耗：§f魔法石"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.moltengold_wand.damage"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.moltengold_wand.kinetic"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.moltengold_wand.cooldown"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.moltengold_wand.cost"));
     }
 
     @Override

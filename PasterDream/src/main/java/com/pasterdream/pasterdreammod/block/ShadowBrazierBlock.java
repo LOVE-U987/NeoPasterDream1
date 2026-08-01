@@ -159,8 +159,8 @@ public class ShadowBrazierBlock extends BaseEntityBlock {
                 for (Entity entity : level.getEntitiesOfClass(Entity.class,
                         new AABB(center, center).inflate(25 / 2d), e -> true)) {
                     if (entity instanceof Player player && !player.level().isClientSide()) {
-                        player.displayClientMessage(Component.literal("火盆燃尽熄灭，坠落在地上破碎"), false);
-                        player.displayClientMessage(Component.literal("在火盆的夹层里掉落出一把钥匙"), false);
+                        player.displayClientMessage(Component.translatable("message.pasterdream.shadow_brazier.burned_out"), false);
+                        player.displayClientMessage(Component.translatable("message.pasterdream.shadow_brazier.key_dropped"), false);
                     }
                 }
                 ServerScheduler.schedule(5, () -> {
@@ -207,8 +207,8 @@ public class ShadowBrazierBlock extends BaseEntityBlock {
             W4DataBlockEntity.putBooleanAt(level, pos, "switch", true);
             level.updateNeighborsAt(pos, level.getBlockState(pos).getBlock());
             if (!player.level().isClientSide()) {
-                player.displayClientMessage(Component.literal("火盆被点燃，但带来的并不是光明..."), false);
-                player.displayClientMessage(Component.literal("阴影从四周蔓延开来"), false);
+                player.displayClientMessage(Component.translatable("message.pasterdream.shadow_brazier.lit"), false);
+                player.displayClientMessage(Component.translatable("message.pasterdream.shadow_brazier.shadow_spread"), false);
             }
             player.swing(InteractionHand.MAIN_HAND, true);
             if (!level.isClientSide()) {
@@ -225,7 +225,7 @@ public class ShadowBrazierBlock extends BaseEntityBlock {
                 }
             });
         } else if (!player.level().isClientSide()) {
-            player.displayClientMessage(Component.literal("需要用阴影蜡烛点燃火盆"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.shadow_brazier.need_candle"), true);
         }
         return InteractionResult.SUCCESS;
     }

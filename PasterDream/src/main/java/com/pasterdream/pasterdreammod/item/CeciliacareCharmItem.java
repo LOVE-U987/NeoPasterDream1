@@ -46,12 +46,12 @@ public class CeciliacareCharmItem extends Item implements ICurioItem {
     @Override
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, context, list, flag);
-        list.add(Component.literal("品质：§5上古 ★★★★★"));
-        list.add(Component.literal("§7■ §9当前生命值低于最大生命值的15%时可被触发"));
-        list.add(Component.literal("§7■ §9获得5秒的无敌时间"));
-        list.add(Component.literal("§7■ §9并在5秒内快速恢复生命 10秒内增加移速和跳跃高度"));
-        list.add(Component.literal("§7■ §9立刻重置瞬身术的cd时间"));
-        list.add(Component.literal("§7§o--我会守护你，直到永远..."));
+        list.add(Component.translatable("tooltip.pasterdream.ceciliacare_charm.quality"));
+        list.add(Component.translatable("tooltip.pasterdream.ceciliacare_charm.trigger"));
+        list.add(Component.translatable("tooltip.pasterdream.ceciliacare_charm.invincible"));
+        list.add(Component.translatable("tooltip.pasterdream.ceciliacare_charm.regen"));
+        list.add(Component.translatable("tooltip.pasterdream.ceciliacare_charm.reset_cd"));
+        list.add(Component.translatable("tooltip.pasterdream.ceciliacare_charm.lore"));
     }
 
     @Override

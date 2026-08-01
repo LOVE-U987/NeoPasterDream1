@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/yi_xing_zhe_fang_kuai_",
-    "up": "pasterdream:block/yi_xing_zhe_fang_kuai_",
-    "north": "pasterdream:block/yi_xing_zhe_fang_kuai_",
-    "east": "pasterdream:block/yi_xing_zhe_fang_kuai_",
-    "south": "pasterdream:block/yi_xing_zhe_fang_kuai_",
-    "west": "pasterdream:block/yi_xing_zhe_fang_kuai_",
-    "particle": "pasterdream:block/yi_xing_zhe_fang_kuai_"
+    "down": "pasterdream:block/restrainmove_block",
+    "up": "pasterdream:block/restrainmove_block",
+    "north": "pasterdream:block/restrainmove_block",
+    "east": "pasterdream:block/restrainmove_block",
+    "south": "pasterdream:block/restrainmove_block",
+    "west": "pasterdream:block/restrainmove_block",
+    "particle": "pasterdream:block/restrainmove_block"
   },
   "render_type": "solid"
 }

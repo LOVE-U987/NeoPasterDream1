@@ -62,9 +62,9 @@ public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
 
 ### 4. 战利品表 JSON 问题
 
-**路径**（NeoForge 1.21.1）：
+**路径**（NeoForge 1.21.1 — **单数 `loot_table`，不是 `loot_tables`！**）：
 ```
-src/main/resources/data/<modid>/loot_tables/blocks/<block_name>.json
+src/main/resources/data/<modid>/loot_table/blocks/<block_name>.json
 ```
 
 **标准格式**：
@@ -92,7 +92,7 @@ src/main/resources/data/<modid>/loot_tables/blocks/<block_name>.json
 
 **常见错误**：
 - ❌ 空数组：`"functions": [], "conditions": []` —— 会导致解析失败
-- ❌ 路径错误：使用 `loot_table` 单数形式（1.21.1 应使用 `loot_tables` 复数）
+- ❌ 路径错误：使用 `loot_tables` 复数形式 —— **1.21.1 应使用 `loot_table` 单数**（用错路径游戏静默忽略，无任何报错）
 - ❌ 文件名不匹配：大小写或拼写错误
 
 ## 完整修复流程
@@ -122,7 +122,7 @@ public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
 ### Step 3: 验证战利品表 JSON（可选）
 
 如果使用 JSON 而非 Java 覆写，确保：
-1. 路径正确
+1. 路径正确：`data/<modid>/loot_table/blocks/<block_name>.json`（**1.21 单数 `loot_table`**）
 2. 无空数组
 3. 文件名匹配方块注册名
 
@@ -172,6 +172,7 @@ public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
 2. **继承 FlowerBlock 时务必覆写 getDrops()**：避免原版逻辑干扰
 3. **使用 Java 覆写而非 JSON**：对于简单自掉落，Java 代码更可靠
 4. **批量生成 JSON 时使用验证脚本**：确保无空数组等格式错误
+5. **优先使用 BlockAPI 注册**：`SimpleBlockBuilder` 自动使用 `SelfDropBlock`（`api/block/SelfDropBlock.java`），实现"战利品表优先、空则自掉落"的混合策略，无需手动处理
 
 ## 参考案例
 

@@ -246,12 +246,12 @@ public final class PDEntityDeathEvents {
             if (!awardAll(sp, "achievement_hide_7")) {
                 continue;
             }
-            sp.displayClientMessage(Component.literal(
-                    "§5你眼前的事物突然模糊了起来，黑暗的迷雾慢慢的覆盖了你的瞳孔。"), false);
-            sp.displayClientMessage(Component.literal(
-                    "§5脑海里闪过一些不属于自己的记忆，随之感受到了强烈的疲惫感。"), false);
-            sp.displayClientMessage(Component.literal(
-                    "§5你回想到了曾经也有过类似的感觉，也许应该躺到床上休息一下..."), false);
+            sp.displayClientMessage(Component.translatable(
+                    "message.pasterdream.entity_death.blur.1"), false);
+            sp.displayClientMessage(Component.translatable(
+                    "message.pasterdream.entity_death.blur.2"), false);
+            sp.displayClientMessage(Component.translatable(
+                    "message.pasterdream.entity_death.blur.3"), false);
             sp.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 140, 0, false, false));
             ServerScheduler.schedule(20, () -> {
                 if (!sp.isAlive() || sp.level().isClientSide()) {

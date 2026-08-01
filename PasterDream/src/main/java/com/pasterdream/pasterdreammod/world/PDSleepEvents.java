@@ -141,11 +141,9 @@ public final class PDSleepEvents {
             return;
         }
         ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(PDItemsDreamnotes.DREAMNOTES_1.get()));
-        player.displayClientMessage(Component.literal(
-                "§5你在睡梦中惊醒，背后冒出了些许冷汗，你回忆起自己梦见了往日探索中遇见的奇怪裂隙，在慢慢靠近并凝视着你。"), false);
-        player.displayClientMessage(Component.literal(
-                "§5你拿起附近的材料迅速地把这些梦境记录下来，在这之后你就失去了对这段梦境的记忆。"), false);
-        player.displayClientMessage(Component.literal("§5我必须知道发生了什么..."), false);
+        player.displayClientMessage(Component.translatable("message.pasterdream.sleep.wake_startle"), false);
+        player.displayClientMessage(Component.translatable("message.pasterdream.sleep.record_dream"), false);
+        player.displayClientMessage(Component.translatable("message.pasterdream.sleep.must_know"), false);
     }
 
     /**
@@ -161,11 +159,9 @@ public final class PDSleepEvents {
             return;
         }
         ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(PDItemsDreamnotes.DREAMNOTES_8.get()));
-        player.displayClientMessage(Component.literal(
-                "§5你在睡梦中惊醒，背后冒出了些许冷汗，你回忆起自己梦见了往日探索中遇见的奇怪裂隙，在慢慢靠近并凝视着你。"), false);
-        player.displayClientMessage(Component.literal(
-                "§5你拿起附近的材料迅速地把这些梦境记录下来，在这之后你就失去了对这段梦境的记忆。"), false);
-        player.displayClientMessage(Component.literal("§5我必须知道发生了什么..."), false);
+        player.displayClientMessage(Component.translatable("message.pasterdream.sleep.wake_startle"), false);
+        player.displayClientMessage(Component.translatable("message.pasterdream.sleep.record_dream"), false);
+        player.displayClientMessage(Component.translatable("message.pasterdream.sleep.must_know"), false);
     }
 
     /**

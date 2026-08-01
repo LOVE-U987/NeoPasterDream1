@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/an_ying_xuan_wo_"
+    "layer0": "pasterdream:item/shadow_vortex"
   },
   "display": {
     "thirdperson_righthand": {

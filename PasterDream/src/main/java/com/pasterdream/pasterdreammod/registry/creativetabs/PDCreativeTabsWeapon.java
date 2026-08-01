@@ -11,25 +11,53 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 
 
 /**
- * 武器工具创造模式标签页注册。
+ * 盔甲装备和武器工具创造模式标签页注册。
+ * 由原「盔甲装备」(armor_tab) 与「武器工具」(weapon_tab) 两栏合并而成。
  *
  * @see PDCreativeTabs
  */
 public class PDCreativeTabsWeapon {
 
 
-    // ==================== 7. 武器工具 ====================
+    // ==================== 7. 盔甲装备和武器工具 ====================
 
     /**
-     * 武器工具标签页
-     * 包含所有武器、工具、升级套件及基础材料
+     * 盔甲装备和武器工具标签页
+     * 包含所有盔甲套装、武器、工具、升级套件及基础材料
      */
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> WEAPON_TAB = PDCreativeTabs.TABS.register("weapon_tab",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.pasterdream.weapon_tab"))
                     .icon(() -> new ItemStack(PDItems.MOLTENGOLD_SWORD.get()))
-                    .withTabsBefore(PDCreativeTabs.ARMOR_TAB.getKey())
+                    .withTabsBefore(PDCreativeTabs.SOUVENIR_TAB.getKey())
                     .displayItems((parameters, output) -> {
+                        // ===== 盔甲套装（原 armor_tab 并入）=====
+                        // 铜盔甲套装
+                        output.accept(PDItems.COPPER_ARMOR_HELMET.get());
+                        output.accept(PDItems.COPPER_ARMOR_CHESTPLATE.get());
+                        output.accept(PDItems.COPPER_ARMOR_LEGGINGS.get());
+                        output.accept(PDItems.COPPER_ARMOR_BOOTS.get());
+                        // 钛盔甲套装
+                        output.accept(PDItems.TITANIUM_ARMOR_HELMET.get());
+                        output.accept(PDItems.TITANIUM_ARMOR_CHESTPLATE.get());
+                        output.accept(PDItems.TITANIUM_ARMOR_LEGGINGS.get());
+                        output.accept(PDItems.TITANIUM_ARMOR_BOOTS.get());
+                        // 潜声盔甲套装
+                        output.accept(PDItems.SCULK_ARMOR_HELMET.get());
+                        output.accept(PDItems.SCULK_ARMOR_CHESTPLATE.get());
+                        output.accept(PDItems.SCULK_ARMOR_LEGGINGS.get());
+                        output.accept(PDItems.SCULK_ARMOR_BOOTS.get());
+                        // 染梦盔甲套装
+                        output.accept(PDItems.DYEDREAM_ARMOR_HELMET.get());
+                        output.accept(PDItems.DYEDREAM_ARMOR_CHESTPLATE.get());
+                        output.accept(PDItems.DYEDREAM_ARMOR_LEGGINGS.get());
+                        output.accept(PDItems.DYEDREAM_ARMOR_BOOTS.get());
+                        // QYM盔甲套装
+                        output.accept(PDItems.QIN_ARMOR_HELMET.get());
+                        output.accept(PDItems.QIN_ARMOR_CHESTPLATE.get());
+                        output.accept(PDItems.QIN_ARMOR_LEGGINGS.get());
+                        output.accept(PDItems.QIN_ARMOR_BOOTS.get());
+
                         // 基础材料
                         output.accept(PDItems.TITANIUM_INGOT.get());
                         output.accept(PDItems.TITANIUM_NUGGET.get());
@@ -104,6 +132,9 @@ public class PDCreativeTabsWeapon {
                         output.accept(PDItems.TRUE_TIDE_SWORD.get());
                         output.accept(PDItems.TRUEST_MOLTENGOLD_SWORD.get());
                         output.accept(PDItems.WHITE_SWORD.get());
+                        // 染梦剑类（原染梦维度栏移入）
+                        output.accept(PDItems.DYEDREAM_SWORD_0.get());
+                        output.accept(PDItems.DYEDREAM_SWORD.get());
 
                         // 镐类/锤类工具
                         output.accept(PDItems.COPPER_PICKAXE.get());
@@ -111,6 +142,10 @@ public class PDCreativeTabsWeapon {
                         output.accept(PDItems.SHADOW_EROSION_PICKAXE.get());
                         output.accept(PDItems.TITANIUM_PICKAXE.get());
                         output.accept(PDItems.TRUE_MOLTENGOLD_PICKAXE.get());
+                        // 染梦/融梦镐锤（原染梦维度栏移入）
+                        output.accept(PDItems.DYEDREAM_PICKAXE.get());
+                        output.accept(PDItems.DYEDREAM_HAMMER.get());
+                        output.accept(PDItems.MELTDREAM_PICKAXE.get());
 
                         // 其他工具
                         output.accept(PDItems.COPPER_AXE.get());

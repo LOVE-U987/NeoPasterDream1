@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/qu_pi_feng_bo_mu_",
-    "up": "pasterdream:block/qu_pi_feng_bo_mu_",
-    "north": "pasterdream:block/qu_pi_feng_bo_mu_",
-    "east": "pasterdream:block/qu_pi_feng_bo_mu_",
-    "south": "pasterdream:block/qu_pi_feng_bo_mu_",
-    "west": "pasterdream:block/qu_pi_feng_bo_mu_",
-    "particle": "pasterdream:block/qu_pi_feng_bo_mu_"
+    "down": "pasterdream:block/stripped_windmoor_log",
+    "up": "pasterdream:block/stripped_windmoor_log",
+    "north": "pasterdream:block/stripped_windmoor_log",
+    "east": "pasterdream:block/stripped_windmoor_log",
+    "south": "pasterdream:block/stripped_windmoor_log",
+    "west": "pasterdream:block/stripped_windmoor_log",
+    "particle": "pasterdream:block/stripped_windmoor_log"
   },
   "render_type": "solid"
 }

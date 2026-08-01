@@ -33,8 +33,8 @@ public class ExcavatorItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("§f右键使用以使前方5*5*20范围内的石头和深板岩被挖掘"));
-        tooltip.add(Component.literal("§f仅限创造模式！生存慎用！"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.excavator.desc"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.excavator.warning"));
     }
 
     @Override

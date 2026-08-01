@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/zhi_yan_jin_zhang_"
+    "layer0": "pasterdream:item/moltengold_wand"
   },
   "display": {
     "thirdperson_righthand": {

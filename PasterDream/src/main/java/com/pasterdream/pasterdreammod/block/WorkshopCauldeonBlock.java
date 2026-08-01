@@ -138,7 +138,7 @@ public class WorkshopCauldeonBlock extends BaseEntityBlock {
         }
         ItemStack hand = player.getMainHandItem();
         if (!hand.is(EMBRYO_ITEMS) || PasterItemData.getDouble(hand, "process") != 2) {
-            player.displayClientMessage(Component.literal("用于冷却待淬火的原胚"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.workshop_cauldeon.cool_down"), true);
             return InteractionResult.SUCCESS;
         }
         // 原版把主手整组原胚交给全局暂存并原地强化，随后整组弹出为掉落物
@@ -157,7 +157,7 @@ public class WorkshopCauldeonBlock extends BaseEntityBlock {
             serverLevel.sendParticles(ParticleTypes.SMOKE, x + 0.5, y + 1, z + 0.5, 3, 0.3, 0.5, 0.3, 0.05);
         }
         PasterItemData.putDouble(stash, "process", 3);
-        stash.set(DataComponents.CUSTOM_NAME, Component.literal("未完成原胚（待打磨）"));
+        stash.set(DataComponents.CUSTOM_NAME, Component.translatable("message.pasterdream.embryo.pending_polish"));
         if (level instanceof ServerLevel serverLevel) {
             ItemEntity drop = new ItemEntity(serverLevel,
                     pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, stash);

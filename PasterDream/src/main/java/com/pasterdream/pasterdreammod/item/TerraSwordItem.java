@@ -135,7 +135,7 @@ public class TerraSwordItem extends SwordItem {
         // 原版通用配置：ban terra sword
         if (PDCommonConfig.BAN_TERRA_SWORD.get()) {
             if (entity instanceof Player player) {
-                player.displayClientMessage(Component.literal("§4此物品已被禁用"), true);
+                player.displayClientMessage(Component.translatable("tooltip.pasterdream.terra_sword.disabled"), true);
             }
             return;
         }
@@ -194,13 +194,13 @@ public class TerraSwordItem extends SwordItem {
                                 List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
         // 原版 appendHoverText 逐行还原
-        tooltip.add(Component.literal("战技：§a泰拉剑技"));
-        tooltip.add(Component.literal("§7▪ §9技能开启后共可向自身朝向挥出3次剑气"));
-        tooltip.add(Component.literal("§7▪ §9对剑气途径范围的所有敌人造成伤害并小幅击飞"));
-        tooltip.add(Component.literal("§7▪ §9剑气造成2+当前攻击力*0.7点伤害"));
-        tooltip.add(Component.literal("§7▪ §9第三段剑气受到的的属性攻击力加成翻倍"));
-        tooltip.add(Component.literal("§7▪ §9冷却时间：5秒"));
-        tooltip.add(Component.literal("§7▪ §4融梦能量消耗：0.3"));
-        tooltip.add(Component.literal("§7右键以强化下3次攻击为剑气攻击"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.terra_sword.skill_name"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.terra_sword.three_waves"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.terra_sword.area_damage"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.terra_sword.damage"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.terra_sword.third_boost"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.terra_sword.cooldown"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.terra_sword.energy_cost"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.terra_sword.use_hint"));
     }
 }

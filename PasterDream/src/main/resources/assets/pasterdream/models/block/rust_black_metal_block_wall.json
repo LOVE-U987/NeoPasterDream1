@@ -1,8 +1,8 @@
 {
   "parent": "block/template_wall_side",
   "textures": {
-    "wall": "pasterdream:block/xiu_shi_jin_shu_kuai_",
-    "particle": "pasterdream:block/xiu_shi_jin_shu_kuai_"
+    "wall": "pasterdream:block/rust_black_metal_block",
+    "particle": "pasterdream:block/rust_black_metal_block"
   },
   "render_type": "cutout"
 }

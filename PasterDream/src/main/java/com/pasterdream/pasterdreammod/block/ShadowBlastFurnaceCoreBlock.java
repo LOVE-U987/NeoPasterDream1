@@ -55,8 +55,8 @@ public class ShadowBlastFurnaceCoreBlock extends Block {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("在完成多方块结构时"));
-        tooltip.add(Component.literal("使用对应蓝图右击此核心以进行搭建"));
+        tooltip.add(Component.translatable("message.pasterdream.shadow_furnace_core.tooltip_1"));
+        tooltip.add(Component.translatable("message.pasterdream.shadow_furnace_core.tooltip_2"));
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ShadowBlastFurnaceCoreBlock extends Block {
      */
     private void tryAssemble(Level level, BlockPos pos, Player player) {
         if (!player.getMainHandItem().is(PDItems.BLUEPRINT_0.get().asItem())) {
-            player.displayClientMessage(Component.literal("缺少蓝图 请手持蓝图点击核心"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.multiblock.lack_blueprint"), true);
             return;
         }
         Block[] parts = {
@@ -109,7 +109,7 @@ public class ShadowBlastFurnaceCoreBlock extends Block {
         for (int[] cell : STRUCTURE) {
             BlockPos target = pos.offset(cell[0], cell[1], cell[2]);
             if (level.getBlockState(target).getBlock() != parts[cell[3]]) {
-                player.displayClientMessage(Component.literal("多方块结构不完整"), true);
+                player.displayClientMessage(Component.translatable("message.pasterdream.multiblock.incomplete"), true);
                 return;
             }
         }

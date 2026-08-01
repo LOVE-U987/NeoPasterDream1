@@ -35,9 +35,9 @@ player.getCooldowns().addCooldown(this, 40);
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.literal("\u00A77\u25AA \u00A79\u4F7F\u7528\u540E\u5E78\u8FD0+10\u6301\u7EED3\u5206\u949F"));
-        tooltipComponents.add(Component.literal("\u00A77Aerolite_Dust\u7684\u4E13\u5C5E\u9057\u7269"));
-        tooltipComponents.add(Component.literal("\u00A76PasterDream\u521B\u4F5C\u8005 \u5F00\u53D1\u8005"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.memento_item_01.effect"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.memento_item_01.relic"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.memento_item_01.author"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }

@@ -48,12 +48,14 @@ ResourceKey<StructureSet> setKey = resultWithSet.setKey();
 
 ## 前置条件
 
-在 `PasterDreamMod` 构造函数中注册 RuinAPI 的 REGISTRY：
+在 `PasterDreamMod` 构造函数中注册 RuinAPI 的 REGISTRY（或调用统一入口）：
 
 ```java
 public PasterDreamMod(IEventBus modEventBus) {
-    // ... 其他注册器 ...
-    RuinAPI.REGISTRY.register(modEventBus);
+    // 方式一：统一注册（推荐，包含所有 API）
+    PasterDreamAPI.registerAll(modEventBus);
+    // 方式二：单独注册
+    // RuinAPI.REGISTRY.register(modEventBus);
 }
 ```
 
@@ -63,29 +65,36 @@ public PasterDreamMod(IEventBus modEventBus) {
 RuinAPI                             ← Facade 门面
   ├── createRuin(name)              ← 工厂方法 → RuinBuilder
   ├── createRuinSet(ruinName, setName) ← 结构集工厂 → StructureSetBuilder
-  ├── getRuin(name)                 ← 查询 RuinResult
+  ├── getRuin(name)                 ← 查询 RuinResult → Optional
   ├── getAllRuins()                 ← 所有已注册结构
-  └── hasRuin(name)                 ← 判断是否已注册
+  ├── hasRuin(name)                 ← 判断是否已注册
+  ├── printStructureDiagnostics()   ← 打印所有结构生成诊断报告
+  ├── printStructureDiagnostics(name) ← 打印指定结构诊断
+  ├── assessTerrain(name, chunkX, chunkZ, level) ← 评估地形是否适合放置
+  ├── reportPlacement(name, success, reason)     ← 报告放置结果
+  └── getPlacementRecord(name)      ← 获取放置统计记录
 
 RuinBuilder                         ← Builder 构建器
-  ├── biomeTag(String)              ← 生物群系标签
+  ├── biomeTag(String)              ← 生物群系标签（自动加 #）
   ├── templatePool(String)          ← 起始模板池
   ├── structureClass(Class)         ← 结构类
-  ├── codec(MapCodec)               ← 结构 MapCodec
+  ├── codec(MapCodec)               ← 结构 MapCodec（必须）
   ├── terrainAdaptation(String)     ← 地形适应
-  ├── step(String)                  ← 生成阶段
-  ├── size(int)                     ← 扩展大小
-  ├── startHeight(int)              ← 起始高度
+  ├── step(String)                  ← 生成阶段（默认 surface_structures）
+  ├── size(int)                     ← 扩展大小（默认 7）
+  ├── startHeight(int)              ← 起始高度（默认 0）
   ├── extraFields(JsonObject)       ← 自定义额外 JSON 字段
-  ├── generateJson(boolean)         ← 是否自动生成 JSON
+  ├── largeStructure(TerrainRequirements) ← ★ 标记为大型结构（地形协商）
+  ├── withTerrainPlatform(int flatRadius) ← ★ 大型结构快捷方法（平地平台）
+  ├── generateJson(boolean)         ← 是否自动生成 JSON（默认 true）
   ├── basePath(String)              ← 资源文件基础路径
   └── build()                       ← 注册 + 生成 JSON → RuinResult
 
 StructureSetBuilder                 ← 结构集 Builder
-  ├── spacing(int)                  ← 间距（区块数）
-  ├── separation(int)               ← 分离值（区块数）
-  ├── salt(int)                     ← 随机种子盐值
-  ├── placementType(String)         ← 放置类型（默认 random_spread）
+  ├── spacing(int)                  ← 间距（区块数，默认 32）
+  ├── separation(int)               ← 分离值（区块数，默认 8）
+  ├── salt(int)                     ← 随机种子盐值（默认 0）
+  ├── placementType(String)         ← 放置类型（默认 minecraft:random_spread）
   ├── generateJson(boolean)         ← 是否自动生成 JSON
   ├── basePath(String)              ← 资源文件基础路径
   └── build()                       ← 生成 JSON → RuinResult（带 setKey）
@@ -95,9 +104,11 @@ RuinResult                          ← Record 结果
   ├── typeKey()                     → ResourceKey<StructureType<?>>
   ├── structureKey()                → ResourceKey<Structure>（用于 JSON 引用）
   ├── setKey()                      → ResourceKey<StructureSet>（可能为 null）
+  ├── terrainRequirements()         → TerrainRequirements / null（大型结构用）
   ├── hasSetKey()                   → boolean
+  ├── isLargeStructure()            → boolean（是否为大型结构）
   ├── withSetKey(setName, modId)    → 新的 RuinResult（带结构集 Key）
-  └── of(modId, name)               → 静态工厂（初始结果）
+  └── of(modId, name[, terrainRequirements]) → 静态工厂
 ```
 
 ## Builder 配置参考
@@ -115,6 +126,8 @@ RuinResult                          ← Record 结果
 | `size(int)` | 大小 | 结构扩展大小（默认 7） | ❌ |
 | `startHeight(int)` | 高度 | 起始生成高度（默认 0） | ❌ |
 | `extraFields(JsonObject)` | JSON | 自定义额外 JSON 字段 | ❌ |
+| `largeStructure(TerrainRequirements)` | 地形需求 | ★ 标记为大型结构，build() 时注册到地形协商器 | ❌ |
+| `withTerrainPlatform(int)` | 平地半径 | ★ 大型结构快捷方法：平地平台，自动计算 blend 半径 | ❌ |
 | `generateJson(boolean)` | bool | 是否自动生成 JSON（默认 true） | ❌ |
 | `basePath(String)` | 路径 | 资源文件基础路径（默认 `src/main/resources`） | ❌ |
 
@@ -207,6 +220,8 @@ RuinResult custom = RuinAPI.createRuin("custom_ruins")
 
 ### 仅手动生成模板池（不通过 Builder）
 
+`TemplatePoolGenerator` 位于 `PasterDreamAPI/src/test/`（测试辅助类），也可直接手写模板池 JSON：
+
 ```java
 // 直接使用 TemplatePoolGenerator 单独生成模板池 JSON
 new TemplatePoolGenerator("pasterdream", "dyedream_ruins_pool")
@@ -217,16 +232,72 @@ new TemplatePoolGenerator("pasterdream", "dyedream_ruins_pool")
     .saveToFile("src/main/resources");
 ```
 
+## 大型结构（LargeStructure）支持
+
+通过 `largeStructure()` 或快捷方法 `withTerrainPlatform()` 将遗迹标记为大型结构，维度生成区块时地形协商器会自动平整地形，避免结构悬空或断层。
+
+```java
+// 方式一：完整地形需求配置
+TerrainRequirements reqs = TerrainRequirements.builder()
+    .requiredFlatRadius(24)          // 需要的平地半径（格）
+    .terrainBlendRadius(12)          // 地形渐变半径
+    .build();
+
+RuinResult arena = RuinAPI.createRuin("mega_arena")
+    .biomeTag("pasterdream:is_dyedream")
+    .templatePool("pasterdream:mega_arena_pool")
+    .structureClass(MegaArenaStructure.class)
+    .codec(MegaArenaStructure.CODEC)
+    .largeStructure(reqs)            // ★ 标记为大型结构
+    .build();
+
+// 方式二：快捷方法（平地平台）
+RuinResult tower = RuinAPI.createRuin("wind_tower")
+    .biomeTag("pasterdream:is_wind_journey")
+    .templatePool("pasterdream:wind_tower_pool")
+    .structureClass(WindTowerStructure.class)
+    .codec(WindTowerStructure.CODEC)
+    .withTerrainPlatform(16)         // 16 格平地平台，blend 半径自动 = max(5, 16/3)
+    .build();
+
+// 大型结构 + 维度联动（在 PDDimensions 中）
+DimensionAPI.enableLargeStructureSupport(dyedreamWorld);   // 该维度生成时自动协商地形
+```
+
+> `TerrainRequirements` 来自 `api/dimension/terrain/` 包，Builder 模式配置。
+
+### 结构诊断与地形评估
+
+```java
+// 打印所有结构的生成诊断报告（成功/失败率、失败原因）
+RuinAPI.printStructureDiagnostics();
+
+// 打印指定结构诊断
+RuinAPI.printStructureDiagnostics("mega_arena");
+
+// 评估某区块地形是否适合放置结构
+TerrainAssessment assessment = RuinAPI.assessTerrain("mega_arena", chunkX, chunkZ, level);
+
+// 报告放置结果（通常由结构生成逻辑调用）
+RuinAPI.reportPlacement("mega_arena", true, "");
+
+// 获取放置统计记录
+StructurePlacementRecord record = RuinAPI.getPlacementRecord("mega_arena");
+```
+
 ## 生成的 JSON 文件
 
 ```
-src/main/resources/
-└── data/{modId}/
+PasterDream/src/main/resources/
+└── data/pasterdream/
     └── worldgen/
-        ├── structure/{name}.json                  ← 结构定义
-        ├── structure_set/{setName}.json           ← 结构集配置
-        └── template_pool/{name}_pool.json         ← 模板池定义
+        ├── structure/{name}.json              ← 结构定义（RuinBuilder 生成）
+        ├── structure_set/{setName}.json       ← 结构集配置（StructureSetBuilder 生成）
+        └── template_pool/{name}_pool.json     ← 模板池骨架（RuinBuilder 生成，elements 为空数组，需自行补充元素）
 ```
+
+> ⚠️ **注意**：`RuinBuilder.build()` 生成 structure JSON + template_pool JSON（**elements 为空数组**，池元素需开发者自行补充）；
+> `StructureSetBuilder.build()` 生成 structure_set JSON，并返回带 `setKey` 的新 `RuinResult`（原结果不变）。
 
 ### structure/{name}.json 格式
 
@@ -306,10 +377,11 @@ data/pasterdream/structure/dyedream_ruins/ruin_2.nbt
 
 ## 引用文件
 
-- [RuinAPI.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/ruin/RuinAPI.java) — 门面类
-- [RuinBuilder.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/ruin/builder/RuinBuilder.java) — 结构构建器
-- [StructureSetBuilder.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/ruin/builder/StructureSetBuilder.java) — 结构集构建器
-- [RuinResult.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/ruin/RuinResult.java) — 结果类
-- [StructureTypeGenerator.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/ruin/gen/StructureTypeGenerator.java) — structure JSON 生成器
-- [StructureSetGenerator.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/ruin/gen/StructureSetGenerator.java) — structure_set JSON 生成器
-- [TemplatePoolGenerator.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/ruin/gen/TemplatePoolGenerator.java) — template_pool JSON 生成器
+- [RuinAPI.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/ruin/RuinAPI.java) — 门面类
+- [RuinBuilder.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/ruin/builder/RuinBuilder.java) — 结构构建器
+- [StructureSetBuilder.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/ruin/builder/StructureSetBuilder.java) — 结构集构建器
+- [RuinResult.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/ruin/RuinResult.java) — 结果类
+- [TemplatePoolGenerator.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/test/java/com/pasterdream/pasterdreammod/api/ruin/gen/TemplatePoolGenerator.java) — template_pool JSON 生成器（test 目录测试辅助）
+- [StructureTerrainNegotiator.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/dimension/terrain/StructureTerrainNegotiator.java) — 地形协商器
+- [TerrainRequirements.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/dimension/terrain/TerrainRequirements.java) — 地形需求配置
+- [PDRuinsRegistration.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDRuinsRegistration.java) — 结构注册示例

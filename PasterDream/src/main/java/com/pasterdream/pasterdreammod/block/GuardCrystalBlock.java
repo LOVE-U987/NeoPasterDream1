@@ -171,7 +171,7 @@ public class GuardCrystalBlock extends BaseEntityBlock {
                 for (Entity entity : level.getEntitiesOfClass(Entity.class,
                         new AABB(center, center).inflate(range / 2d), e -> true)) {
                     if (entity instanceof Player p && !p.level().isClientSide()) {
-                        p.displayClientMessage(Component.literal("“守护者”已被破坏，范围内地形将可被改造"), false);
+                        p.displayClientMessage(Component.translatable("message.pasterdream.guard_crystal.guardian_destroyed"), false);
                     }
                 }
                 if (!level.isClientSide()) {

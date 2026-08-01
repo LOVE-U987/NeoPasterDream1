@@ -1,17 +1,29 @@
 package com.pasterdream.pasterdreammod.api.worldgen.decor;
 
+import com.pasterdream.pasterdreammod.api.ruin.RuinAPI;
+import com.pasterdream.pasterdreammod.api.ruin.RuinResult;
 import com.pasterdream.pasterdreammod.api.worldgen.WorldGenUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.structure.Structure;
 
+import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 统一装饰物特征 —— 根据 {@link DecorationType} 通过策略模式分派到不同生成器
@@ -50,6 +62,10 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
      */
     @Override
     public boolean place(FeaturePlaceContext<DecorationConfig> context) {
+        // 遗迹避让规则（默认开启）：遗迹四周（±1 区块）不再生成任何地物
+        if (context.config().avoidRuins() && isNearRegisteredRuin(context.level(), context.origin())) {
+            return false;
+        }
         DecorationPlacer placer = placers.get(context.config().type());
         if (placer == null) {
             return false;
@@ -102,23 +118,38 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
             return false;
         }
 
+        // 区域认领 + 重定位：认领柱体占据空间，冲突时在附近寻找无重叠位置
+        ClaimResult claim = null;
+        if (config.claimCheck()) {
+            int claimRadius = (Math.max(effectiveBaseWidth, config.topWidth()) + 1) / 2;
+            claim = claimRegionWithRelocation(level, config, origin, claimRadius,
+                bottomY - groundY, topY - groundY);
+            if (claim == null) {
+                return false;
+            }
+        }
+        BlockPos effectiveOrigin = claim != null ? claim.origin() : origin;
+        int effectiveGroundY = claim != null ? claim.groundY() : groundY;
+        int effectiveBottomY = effectiveGroundY + (bottomY - groundY);
+        int effectiveTopY = effectiveGroundY + (topY - groundY);
+
         Set<BlockPos> placedPositions = new HashSet<>();
         boolean placedAny = false;
 
-        for (int y = bottomY; y <= topY; y++) {
-            float progress = (float) (y - bottomY) / (float) totalHeight;
-            int currentWidth = calcPillarWidth(effectiveBaseWidth, config.topWidth(), progress, y, groundY);
+        for (int y = effectiveBottomY; y <= effectiveTopY; y++) {
+            float progress = (float) (y - effectiveBottomY) / (float) totalHeight;
+            int currentWidth = calcPillarWidth(effectiveBaseWidth, config.topWidth(), progress, y, effectiveGroundY);
             int halfSize = currentWidth / 2;
 
             for (int dx = -halfSize; dx < currentWidth - halfSize; dx++) {
                 for (int dz = -halfSize; dz < currentWidth - halfSize; dz++) {
-                    BlockPos placePos = new BlockPos(origin.getX() + dx, y, origin.getZ() + dz);
+                    BlockPos placePos = new BlockPos(effectiveOrigin.getX() + dx, y, effectiveOrigin.getZ() + dz);
 
                     if (!WorldGenUtils.isReplaceable(level, config.replaceable(), placePos)) {
                         continue;
                     }
 
-                    if (y >= groundY) {
+                    if (y >= effectiveGroundY) {
                         boolean supported = hasSupport(level, config.replaceable(), placePos, placedPositions);
                         if (!supported) {
                             if (config.fillHang()) {
@@ -138,9 +169,9 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
                     boolean canPlaceCrystal = config.oreBlock() != null && random.nextFloat() < config.crystalChance();
                     if (config.crystalOnlyOnTop()) {
                         boolean hasBlockAbove = false;
-                        if (y < topY) {
-                            float nextProgress = (float) (y + 1 - bottomY) / (float) totalHeight;
-                            int nextWidth = calcPillarWidth(effectiveBaseWidth, config.topWidth(), nextProgress, y + 1, groundY);
+                        if (y < effectiveTopY) {
+                            float nextProgress = (float) (y + 1 - effectiveBottomY) / (float) totalHeight;
+                            int nextWidth = calcPillarWidth(effectiveBaseWidth, config.topWidth(), nextProgress, y + 1, effectiveGroundY);
                             int nextHalfSize = nextWidth / 2;
                             hasBlockAbove = dx >= -nextHalfSize && dx < nextWidth - nextHalfSize
                                 && dz >= -nextHalfSize && dz < nextWidth - nextHalfSize;
@@ -149,7 +180,7 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
                             canPlaceCrystal = false;
                         }
                     }
-                    if (y >= groundY && isSurfaceBlock && canPlaceCrystal) {
+                    if (y >= effectiveGroundY && isSurfaceBlock && canPlaceCrystal) {
                         state = config.oreBlock().getState(random, placePos);
                     } else {
                         state = config.bodyBlock().getState(random, placePos);
@@ -163,9 +194,13 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
         }
 
         if (config.debrisCount() > 0 && config.debrisBlock() != null) {
-            placedAny |= scatterDebris(level, random, config, origin.getX(), origin.getZ(), groundY);
+            placedAny |= scatterDebris(level, random, config, effectiveOrigin.getX(), effectiveOrigin.getZ(), effectiveGroundY);
         }
 
+        // 生成失败时释放认领，避免残留无效占用
+        if (!placedAny && claim != null) {
+            RegionClaimManager.release(claim.handle());
+        }
         return placedAny;
     }
 
@@ -214,6 +249,20 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
         }
 
         BlockPos adjustedOrigin = new BlockPos(origin.getX(), groundY, origin.getZ());
+        int xRadius = Math.max(1, config.baseRadius());
+        int yRadius = Math.max(1, config.yRadius());
+
+        // 区域认领 + 重定位：认领团块椭球空间，冲突时在附近寻找无重叠位置
+        ClaimResult claim = null;
+        if (config.claimCheck()) {
+            claim = claimRegionWithRelocation(level, config, origin, xRadius, -yRadius, yRadius);
+            if (claim == null) {
+                return false;
+            }
+        }
+        if (claim != null) {
+            adjustedOrigin = new BlockPos(claim.origin().getX(), claim.groundY(), claim.origin().getZ());
+        }
 
         List<BlockPos> placedList = new ArrayList<>();
         Set<BlockPos> placedSet = new HashSet<>();
@@ -230,8 +279,6 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
         };
 
         int clusterSize = config.clusterSize();
-        int xRadius = Math.max(1, config.baseRadius());
-        int yRadius = Math.max(1, config.yRadius());
         float irregularity = config.irregularity();
         BlockPredicate replaceable = config.replaceable();
 
@@ -258,6 +305,9 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
         }
 
         if (placedSet.isEmpty()) {
+            if (claim != null) {
+                RegionClaimManager.release(claim.handle());
+            }
             return false;
         }
 
@@ -271,6 +321,9 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
         }
 
         if (finalPositions.isEmpty()) {
+            if (claim != null) {
+                RegionClaimManager.release(claim.handle());
+            }
             return false;
         }
 
@@ -384,6 +437,20 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
             return false;
         }
 
+        // 区域认领 + 重定位：认领尖刺占据空间，冲突时在附近寻找无重叠位置
+        ClaimResult claim = null;
+        if (config.claimCheck()) {
+            claim = claimRegionWithRelocation(level, config, origin, config.baseRadius(),
+                bottomY - groundY, topY - groundY);
+            if (claim == null) {
+                return false;
+            }
+        }
+        BlockPos effectiveOrigin = claim != null ? claim.origin() : origin;
+        int effectiveGroundY = claim != null ? claim.groundY() : groundY;
+        int effectiveBottomY = effectiveGroundY + (bottomY - groundY);
+        int effectiveTopY = effectiveGroundY + (topY - groundY);
+
         boolean placedAny = false;
         BlockPos topCenterPos = null;
 
@@ -396,12 +463,12 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
             tiltDirZ = (random.nextFloat() - 0.5f) * 2;
         }
 
-        for (int y = bottomY; y <= topY; y++) {
-            float progress = (float) (y - bottomY) / (float) totalHeight;
+        for (int y = effectiveBottomY; y <= effectiveTopY; y++) {
+            float progress = (float) (y - effectiveBottomY) / (float) totalHeight;
             float currentRadius = config.baseRadius() + (config.topRadius() - config.baseRadius()) * progress;
 
-            if (y < groundY) {
-                float undergroundBias = 1.0f + (groundY - y) * 0.3f;
+            if (y < effectiveGroundY) {
+                float undergroundBias = 1.0f + (effectiveGroundY - y) * 0.3f;
                 currentRadius = Math.min(config.baseRadius() + 0.5f, currentRadius * undergroundBias);
             }
 
@@ -413,8 +480,8 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
                 accumulatedDz += (random.nextFloat() - 0.5f) * layerTilt * 0.6f + tiltDirZ * layerTilt * 0.15f;
             }
 
-            int centerX = origin.getX() + Math.round(accumulatedDx);
-            int centerZ = origin.getZ() + Math.round(accumulatedDz);
+            int centerX = effectiveOrigin.getX() + Math.round(accumulatedDx);
+            int centerZ = effectiveOrigin.getZ() + Math.round(accumulatedDz);
 
             for (int dx = -radius; dx <= radius; dx++) {
                 for (int dz = -radius; dz <= radius; dz++) {
@@ -434,7 +501,7 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
                         continue;
                     }
 
-                    if (y > groundY) {
+                    if (y > effectiveGroundY) {
                         boolean supported = hasSupport(level, config.replaceable(), placePos, null);
                         if (!supported) {
                             if (config.fillHang()) {
@@ -451,11 +518,11 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
                     boolean canPlaceCrystal = config.oreBlock() != null && random.nextFloat() < config.crystalChance();
                     if (config.crystalOnlyOnTop()) {
                         boolean hasBlockAbove = false;
-                        if (y < topY) {
-                            float nextProgress = (float) (y + 1 - bottomY) / (float) totalHeight;
+                        if (y < effectiveTopY) {
+                            float nextProgress = (float) (y + 1 - effectiveBottomY) / (float) totalHeight;
                             float nextRadius = config.baseRadius() + (config.topRadius() - config.baseRadius()) * nextProgress;
-                            if (y + 1 < groundY) {
-                                float undergroundBias = 1.0f + (groundY - (y + 1)) * 0.3f;
+                            if (y + 1 < effectiveGroundY) {
+                                float undergroundBias = 1.0f + (effectiveGroundY - (y + 1)) * 0.3f;
                                 nextRadius = Math.min(config.baseRadius() + 0.5f, nextRadius * undergroundBias);
                             }
                             int nextR = Math.max(0, Math.round(nextRadius));
@@ -475,7 +542,7 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
                     level.setBlock(placePos, state, 3);
                     placedAny = true;
 
-                    if (y == topY && dx == 0 && dz == 0) {
+                    if (y == effectiveTopY && dx == 0 && dz == 0) {
                         topCenterPos = placePos;
                     }
                 }
@@ -487,6 +554,10 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
             level.setBlock(topCenterPos, snowState, 3);
         }
 
+        // 生成失败时释放认领，避免残留无效占用
+        if (!placedAny && claim != null) {
+            RegionClaimManager.release(claim.handle());
+        }
         return placedAny;
     }
 
@@ -541,6 +612,52 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
             return false;
         }
 
+        // 区域认领 + 重定位：批量认领（左柱 + 右柱 + 横梁），冲突时在附近寻找无重叠位置
+        BlockPos effectiveOrigin = origin;
+        RegionClaimManager.ClaimHandle claimHandle = null;
+        if (config.claimCheck()) {
+            ResourceLocation dimension = level.getLevel().dimension().location();
+            for (BlockPos candidate : buildRelocationCandidates(origin)) {
+                int candLeftX = candidate.getX() - halfWidth;
+                int candRightX = candidate.getX() + halfWidth;
+                int candLeftGroundY = WorldGenUtils.findGroundY(level, config.replaceable(),
+                    candLeftX, candidate.getY(), candidate.getZ(), 8);
+                int candRightGroundY = WorldGenUtils.findGroundY(level, config.replaceable(),
+                    candRightX, candidate.getY(), candidate.getZ(), 8);
+                int candCenterGroundY = WorldGenUtils.findGroundY(level, config.replaceable(),
+                    candidate.getX(), candidate.getY(), candidate.getZ(), 8);
+                if (candLeftGroundY == Integer.MIN_VALUE || candRightGroundY == Integer.MIN_VALUE
+                    || candCenterGroundY == Integer.MIN_VALUE) {
+                    continue;
+                }
+                int candBaseY = Math.min(candLeftGroundY, candRightGroundY);
+                int candTopY = candBaseY + height;
+                int candBeamStartY = candTopY - beamThick * 3;
+                List<RegionClaimManager.ClaimArea> areas = List.of(
+                    new RegionClaimManager.ClaimArea(candLeftX, candidate.getZ(), radius, candBaseY, candTopY),
+                    new RegionClaimManager.ClaimArea(candRightX, candidate.getZ(), radius, candBaseY, candTopY),
+                    new RegionClaimManager.ClaimArea(candidate.getX(), candidate.getZ(), halfWidth + radius, candBeamStartY, candTopY));
+                RegionClaimManager.ClaimHandle handle = RegionClaimManager.tryClaim(dimension, areas);
+                if (handle == null) {
+                    continue;
+                }
+                claimHandle = handle;
+                effectiveOrigin = candidate;
+                leftX = candLeftX;
+                rightX = candRightX;
+                leftGroundY = candLeftGroundY;
+                rightGroundY = candRightGroundY;
+                centerGroundY = candCenterGroundY;
+                baseY = candBaseY;
+                topY = candTopY;
+                beamStartY = candBeamStartY;
+                break;
+            }
+            if (claimHandle == null) {
+                return false;
+            }
+        }
+
         Set<BlockPos> placedPositions = new HashSet<>();
         boolean placedAny = false;
 
@@ -550,9 +667,9 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
                 ? radius + 1
                 : Math.max(1, radius - (int) (progress * (radius > 1 ? 1 : 0)));
 
-            boolean placedLeft = placeGatePillar(level, random, config, leftX, origin.getZ(), origin,
+            boolean placedLeft = placeGatePillar(level, random, config, leftX, effectiveOrigin.getZ(), effectiveOrigin,
                 y, currentRadius, baseY, topY, placedPositions);
-            boolean placedRight = placeGatePillar(level, random, config, rightX, origin.getZ(), origin,
+            boolean placedRight = placeGatePillar(level, random, config, rightX, effectiveOrigin.getZ(), effectiveOrigin,
                 y, currentRadius, baseY, topY, placedPositions);
             if (placedLeft || placedRight) {
                 placedAny = true;
@@ -562,7 +679,7 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
                 int beamHalf = halfWidth + radius;
                 for (int bx = -beamHalf; bx <= beamHalf; bx++) {
                     for (int bz = -beamThick / 2; bz <= beamThick / 2; bz++) {
-                        BlockPos beamPos = new BlockPos(origin.getX() + bx, y, origin.getZ() + bz);
+                        BlockPos beamPos = new BlockPos(effectiveOrigin.getX() + bx, y, effectiveOrigin.getZ() + bz);
 
                         if (!WorldGenUtils.isReplaceable(level, config.replaceable(), beamPos)) {
                             continue;
@@ -579,7 +696,7 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
                         BlockState beamState = isSpan
                             ? (config.topBlock() != null ? config.topBlock() : config.bodyBlock()).getState(random, beamPos)
                             : config.bodyBlock().getState(random, beamPos);
-                        if (safeSetBlock(level, origin, beamPos, beamState, 3)) {
+                        if (safeSetBlock(level, effectiveOrigin, beamPos, beamState, 3)) {
                             placedPositions.add(beamPos);
                             placedAny = true;
                         }
@@ -592,18 +709,22 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
             int dx = random.nextInt(halfWidth + radius + 3) - (halfWidth + radius + 3) / 2;
             int dz = random.nextInt(radius + 3) - (radius + 3) / 2;
             int dy = random.nextInt(height / 3);
-            BlockPos decoPos = new BlockPos(origin.getX() + dx, baseY + dy + 1, origin.getZ() + dz);
+            BlockPos decoPos = new BlockPos(effectiveOrigin.getX() + dx, baseY + dy + 1, effectiveOrigin.getZ() + dz);
             if (hasSupport(level, config.replaceable(), decoPos, placedPositions)
                 && WorldGenUtils.isReplaceable(level, config.replaceable(), decoPos)
                 && random.nextFloat() < config.decorationChance()) {
                 BlockState state = config.bodyBlock().getState(random, decoPos);
-                if (safeSetBlock(level, origin, decoPos, state, 3)) {
+                if (safeSetBlock(level, effectiveOrigin, decoPos, state, 3)) {
                     placedPositions.add(decoPos);
                     placedAny = true;
                 }
             }
         }
 
+        // 生成失败时释放认领，避免残留无效占用
+        if (!placedAny && claimHandle != null) {
+            RegionClaimManager.release(claimHandle);
+        }
         return placedAny;
     }
 
@@ -701,6 +822,15 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
                 continue;
             }
 
+            // 防叠罗汉：regionCheck 开启时，检查放置点及其正下方是否已被其他装饰物占用。
+            // 大型装饰物（柱/尖刺/门框等）顶面为实心方块且不在 replaceable 配置内，
+            // 此时 isAreaOccupied 判定占用 → 跳过，避免小型装饰物长在大型装饰物顶部。
+            if (config.regionCheck()
+                && WorldGenUtils.isAreaOccupied(level, config.replaceable(),
+                    scatterX, scatterZ, scatterGroundY - 1, scatterGroundY, 0, config.regionThreshold())) {
+                continue;
+            }
+
             BlockPos placePos = new BlockPos(scatterX, scatterGroundY, scatterZ);
 
             if (!WorldGenUtils.isReplaceable(level, config.replaceable(), placePos)) {
@@ -710,6 +840,18 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
             if (config.checkHang()) {
                 boolean supported = hasSupport(level, config.replaceable(), placePos, null);
                 if (!supported) {
+                    continue;
+                }
+            }
+
+            // 逐点区域认领：认领放置点单格薄层（仅地表一层）。
+            // 认领失败说明该点已被其他地物认领 → 跳过，换下一个散布点（天然重定位）。
+            // 薄层认领保证：高大装饰物的上部（横梁/树冠/云层）不会阻挡其下方地表植被生成。
+            RegionClaimManager.ClaimHandle pointHandle = null;
+            if (config.claimCheck()) {
+                pointHandle = RegionClaimManager.tryClaim(level.getLevel().dimension().location(),
+                    scatterX, scatterZ, 0, scatterGroundY, scatterGroundY);
+                if (pointHandle == null) {
                     continue;
                 }
             }
@@ -773,17 +915,32 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
             return false;
         }
 
+        // 区域认领 + 重定位：认领水下结构占据空间，冲突时在附近寻找无重叠位置
+        ClaimResult claim = null;
+        if (config.claimCheck()) {
+            int claimRadius = (Math.max(effectiveBaseWidth, config.topWidth()) + 1) / 2;
+            claim = claimRegionWithRelocation(level, config, origin, claimRadius,
+                bottomY - groundY, topY - groundY);
+            if (claim == null) {
+                return false;
+            }
+        }
+        BlockPos effectiveOrigin = claim != null ? claim.origin() : origin;
+        int effectiveGroundY = claim != null ? claim.groundY() : groundY;
+        int effectiveBottomY = effectiveGroundY + (bottomY - groundY);
+        int effectiveTopY = effectiveGroundY + (topY - groundY);
+
         Set<BlockPos> placedPositions = new HashSet<>();
         boolean placedAny = false;
 
-        for (int y = bottomY; y <= topY; y++) {
-            float progress = (float) (y - bottomY) / (float) totalHeight;
-            int currentWidth = calcPillarWidth(effectiveBaseWidth, config.topWidth(), progress, y, groundY);
+        for (int y = effectiveBottomY; y <= effectiveTopY; y++) {
+            float progress = (float) (y - effectiveBottomY) / (float) totalHeight;
+            int currentWidth = calcPillarWidth(effectiveBaseWidth, config.topWidth(), progress, y, effectiveGroundY);
             int halfSize = currentWidth / 2;
 
             for (int dx = -halfSize; dx < currentWidth - halfSize; dx++) {
                 for (int dz = -halfSize; dz < currentWidth - halfSize; dz++) {
-                    BlockPos placePos = new BlockPos(origin.getX() + dx, y, origin.getZ() + dz);
+                    BlockPos placePos = new BlockPos(effectiveOrigin.getX() + dx, y, effectiveOrigin.getZ() + dz);
 
                     BlockState existingState = level.getBlockState(placePos);
                     boolean isAirOrWater = existingState.isAir()
@@ -793,7 +950,7 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
                         continue;
                     }
 
-                    if (y >= groundY) {
+                    if (y >= effectiveGroundY) {
                         boolean supported = hasSupport(level, config.replaceable(), placePos, placedPositions);
                         if (!supported) {
                             if (config.fillHang()) {
@@ -813,9 +970,9 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
                     boolean canPlaceCrystal = config.oreBlock() != null && random.nextFloat() < config.crystalChance();
                     if (config.crystalOnlyOnTop()) {
                         boolean hasBlockAbove = false;
-                        if (y < topY) {
-                            float nextProgress = (float) (y + 1 - bottomY) / (float) totalHeight;
-                            int nextWidth = calcPillarWidth(effectiveBaseWidth, config.topWidth(), nextProgress, y + 1, groundY);
+                        if (y < effectiveTopY) {
+                            float nextProgress = (float) (y + 1 - effectiveBottomY) / (float) totalHeight;
+                            int nextWidth = calcPillarWidth(effectiveBaseWidth, config.topWidth(), nextProgress, y + 1, effectiveGroundY);
                             int nextHalfSize = nextWidth / 2;
                             hasBlockAbove = dx >= -nextHalfSize && dx < nextWidth - nextHalfSize
                                 && dz >= -nextHalfSize && dz < nextWidth - nextHalfSize;
@@ -824,7 +981,7 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
                             canPlaceCrystal = false;
                         }
                     }
-                    if (y >= groundY && isSurfaceBlock && canPlaceCrystal) {
+                    if (y >= effectiveGroundY && isSurfaceBlock && canPlaceCrystal) {
                         state = config.oreBlock().getState(random, placePos);
                     } else {
                         state = config.bodyBlock().getState(random, placePos);
@@ -838,9 +995,13 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
         }
 
         if (config.debrisCount() > 0 && config.debrisBlock() != null) {
-            placedAny |= scatterDebris(level, random, config, origin.getX(), origin.getZ(), groundY);
+            placedAny |= scatterDebris(level, random, config, effectiveOrigin.getX(), effectiveOrigin.getZ(), effectiveGroundY);
         }
 
+        // 生成失败时释放认领，避免残留无效占用
+        if (!placedAny && claim != null) {
+            RegionClaimManager.release(claim.handle());
+        }
         return placedAny;
     }
 
@@ -1023,5 +1184,175 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
             }
         }
         return placedAny;
+    }
+
+    // ======================== 遗迹避让 ========================
+
+    /** 遗迹扫描区块半径（3x3 区块，约 16~32 格的避让范围） */
+    private static final int RUIN_SCAN_CHUNK_RADIUS = 1;
+
+    /** 已注册遗迹结构的 ResourceKey 缓存（懒加载，注册完成后首次使用时生成） */
+    @Nullable
+    private static volatile Set<ResourceKey<Structure>> registeredRuinKeys;
+
+    /**
+     * 获取所有已注册遗迹结构的 ResourceKey 集合（懒加载缓存）
+     * <p>
+     * 通过 {@link RuinAPI#getAllRuins()} 获取当前模组注册的全部遗迹结构，
+     * 仅在首次调用时解析并缓存，避免每次地物生成都遍历注册缓存。
+     *
+     * @return 遗迹结构的 ResourceKey 集合（可能为空）
+     */
+    private static Set<ResourceKey<Structure>> getRegisteredRuinKeys() {
+        Set<ResourceKey<Structure>> keys = registeredRuinKeys;
+        if (keys == null) {
+            keys = RuinAPI.getAllRuins().values().stream()
+                .map(RuinResult::structureKey)
+                .collect(Collectors.toUnmodifiableSet());
+            registeredRuinKeys = keys;
+        }
+        return keys;
+    }
+
+    /**
+     * 检查指定位置是否靠近已注册的遗迹结构
+     * <p>
+     * 原理：遗迹生成时会将自身引用写入其覆盖的每个区块（structure references），
+     * 因此只需检查目标位置所在区块及其周围 ±1 区块是否引用了已注册的遗迹。
+     * FEATURES 生成阶段保证 ±1 区块已至少完成结构引用生成，查询安全不越界。
+     *
+     * @param level  世界生成级别访问
+     * @param origin 地物生成原点
+     * @return true 表示附近存在遗迹，应跳过生成
+     */
+    private boolean isNearRegisteredRuin(WorldGenLevel level, BlockPos origin) {
+        Set<ResourceKey<Structure>> ruinKeys = getRegisteredRuinKeys();
+        if (ruinKeys.isEmpty()) {
+            return false;
+        }
+
+        Registry<Structure> structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        Set<Structure> ruinStructures = ruinKeys.stream()
+            .map(structureRegistry::get)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+        if (ruinStructures.isEmpty()) {
+            return false;
+        }
+
+        int originChunkX = origin.getX() >> 4;
+        int originChunkZ = origin.getZ() >> 4;
+
+        for (int dx = -RUIN_SCAN_CHUNK_RADIUS; dx <= RUIN_SCAN_CHUNK_RADIUS; dx++) {
+            for (int dz = -RUIN_SCAN_CHUNK_RADIUS; dz <= RUIN_SCAN_CHUNK_RADIUS; dz++) {
+                ChunkAccess chunk = getChunkForStructureCheck(level, originChunkX + dx, originChunkZ + dz);
+                if (chunk == null || !chunk.hasAnyStructureReferences()) {
+                    continue;
+                }
+                for (Structure structure : chunk.getAllReferences().keySet()) {
+                    if (ruinStructures.contains(structure)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 获取用于结构引用检查的区块（保证不越界、不触发额外加载）
+     * <p>
+     * 世界生成期间（{@link WorldGenRegion}）只查询生成步骤保证可用的区块，
+     * 避免触发 "Requested chunk unavailable during world generation" 崩溃；
+     * 非世界生成场景（如 {@code /place} 命令直接放置）使用非阻塞查询，未就绪返回 null。
+     *
+     * @param level  世界生成级别访问
+     * @param chunkX 区块 X 坐标
+     * @param chunkZ 区块 Z 坐标
+     * @return 目标区块，若不可用则返回 null
+     */
+    @Nullable
+    private ChunkAccess getChunkForStructureCheck(WorldGenLevel level, int chunkX, int chunkZ) {
+        if (level instanceof WorldGenRegion region && region.hasChunk(chunkX, chunkZ)) {
+            return level.getChunk(chunkX, chunkZ, ChunkStatus.STRUCTURE_REFERENCES, true);
+        }
+        if (!(level instanceof WorldGenRegion)) {
+            return level.getChunk(chunkX, chunkZ, ChunkStatus.STRUCTURE_REFERENCES, false);
+        }
+        return null;
+    }
+
+    // ======================== 区域认领（防叠罗汉） ========================
+
+    /** 认领冲突时螺旋搜索的最大偏移距离（格） */
+    private static final int MAX_RELOCATE_DISTANCE = 8;
+
+    /**
+     * 认领结果 —— 记录实际生成原点、认领点地面高度与认领句柄
+     *
+     * @param origin  实际生成原点（认领成功的位置，可能已偏移）
+     * @param groundY 认领点的地面高度（用于后续生成基准）
+     * @param handle  认领句柄（生成失败时用于释放）
+     */
+    private record ClaimResult(BlockPos origin, int groundY, RegionClaimManager.ClaimHandle handle) {}
+
+    /**
+     * 认领生成区域；若目标区域已被其他地物认领，则螺旋向外搜索附近（±8 格）
+     * 无重叠的替代位置重新认领。
+     * <p>
+     * 认领的垂直范围以相对地面的偏移表示，每个候选点会重新探测自身地面高度，
+     * 保证认领范围与实际生成范围一致。垂直分层共存由 {@link RegionClaimManager}
+     * 的「水平重叠 && 垂直重叠」冲突判定保证。
+     *
+     * @param level            世界生成级别访问
+     * @param config           装饰物配置
+     * @param origin           原始生成原点
+     * @param horizontalRadius 认领水平半径（含）
+     * @param relMinY          认领最低 Y 相对地面偏移（含，负值=地下）
+     * @param relMaxY          认领最高 Y 相对地面偏移（含，正值=地上）
+     * @return 认领结果；所有候选位置均冲突或不可用时返回 null
+     */
+    @Nullable
+    private ClaimResult claimRegionWithRelocation(WorldGenLevel level, DecorationConfig config,
+                                                  BlockPos origin, int horizontalRadius,
+                                                  int relMinY, int relMaxY) {
+        ResourceLocation dimension = level.getLevel().dimension().location();
+        for (BlockPos candidate : buildRelocationCandidates(origin)) {
+            int groundY = WorldGenUtils.findGroundY(level, config.replaceable(),
+                candidate.getX(), candidate.getY(), candidate.getZ(), 10);
+            if (groundY == Integer.MIN_VALUE) {
+                continue;
+            }
+            RegionClaimManager.ClaimHandle handle = RegionClaimManager.tryClaim(dimension,
+                candidate.getX(), candidate.getZ(), horizontalRadius,
+                groundY + relMinY, groundY + relMaxY);
+            if (handle != null) {
+                return new ClaimResult(candidate, groundY, handle);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 构建认领重定位候选点序列：原点 + 以原点为中心、距离 1~{@link #MAX_RELOCATE_DISTANCE}
+     * 的螺旋环上的全部位置（按距离从近到远排列，优先选择更接近原点的位置）。
+     *
+     * @param origin 原始生成原点
+     * @return 候选点列表（首个为原点本身）
+     */
+    private List<BlockPos> buildRelocationCandidates(BlockPos origin) {
+        List<BlockPos> candidates = new ArrayList<>();
+        candidates.add(origin);
+        for (int dist = 1; dist <= MAX_RELOCATE_DISTANCE; dist++) {
+            for (int dx = -dist; dx <= dist; dx++) {
+                for (int dz = -dist; dz <= dist; dz++) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) != dist) {
+                        continue;
+                    }
+                    candidates.add(new BlockPos(origin.getX() + dx, origin.getY(), origin.getZ() + dz));
+                }
+            }
+        }
+        return candidates;
     }
 }

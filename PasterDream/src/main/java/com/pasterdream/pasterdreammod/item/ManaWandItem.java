@@ -74,7 +74,7 @@ public class ManaWandItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context,
                                 List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("§7▪§b 魔法金属风格"));
-        tooltip.add(Component.literal("§7按住[§fctrl§7]右键空气以清空法杖数据"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.mana_wand.style"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.mana_wand.clear_hint"));
     }
 }

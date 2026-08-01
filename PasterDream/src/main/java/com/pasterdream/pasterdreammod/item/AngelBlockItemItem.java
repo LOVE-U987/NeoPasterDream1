@@ -31,7 +31,7 @@ public class AngelBlockItemItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
         // 原版即为硬编码中文提示
-        tooltip.add(Component.literal("在空中使用以在脚下生成一个天使方块"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.angel_block_item.desc"));
     }
 
     @Override

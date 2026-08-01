@@ -1,7 +1,7 @@
 {
   "parent": "block/button_pressed",
   "textures": {
-    "texture": "pasterdream:block/feng_bo_mu_ban_"
+    "texture": "pasterdream:block/windmoor_planks"
   },
   "render_type": "cutout"
 }

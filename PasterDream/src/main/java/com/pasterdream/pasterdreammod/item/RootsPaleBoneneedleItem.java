@@ -61,9 +61,9 @@ public class RootsPaleBoneneedleItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("§7让你从梦中清醒...并回到标记的位置"));
-        tooltip.add(Component.literal("§7潜行右击以设置标记点"));
-        tooltip.add(Component.literal("§7如未设置标记将默认返回重生点"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.roots_pale_boneneedle.desc"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.roots_pale_boneneedle.set_mark"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.roots_pale_boneneedle.default_respawn"));
     }
 
     /** 潜行右击方块：记录标记坐标 */
@@ -85,7 +85,7 @@ public class RootsPaleBoneneedleItem extends Item {
             });
             serverLevel.sendParticles((SimpleParticleType) PDParticles.DUST_0_PARTICLE.particleType(),
                     pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 64, 1, 1, 1, 0.15);
-            player.displayClientMessage(Component.literal("已记录坐标点"), true);
+            player.displayClientMessage(Component.translatable("tooltip.pasterdream.roots_pale_boneneedle.mark_set"), true);
             serverLevel.playSound(null, pos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.NEUTRAL, 1.0f, 1.0f);
             player.getCooldowns().addCooldown(this, 20);
         }

@@ -1,6 +1,6 @@
 {
   "parent": "pasterdream:displaysettings/shadow_brazier.item",
   "textures": {
-    "particle": "pasterdream:block/yin_ying_"
+    "particle": "pasterdream:block/shadow"
   }
 }

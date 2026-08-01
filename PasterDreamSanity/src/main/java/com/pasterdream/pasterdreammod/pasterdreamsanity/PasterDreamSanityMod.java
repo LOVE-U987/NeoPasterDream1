@@ -66,5 +66,12 @@ public class PasterDreamSanityMod {
      */
     private void onCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> SanConfigRegistry.register(PDSanityConfig.getInstance()));
+        // TODO: 临时诊断日志，RegisterEvent 之后确认绑定状态
+        com.pasterdream.pasterdreammod.api.PasterDreamAPI.LOGGER.error("[SANITY-DEBUG] CommonSetup: CHEERUP_BUFF isBound={}, 注册表containsKey={}, holder={}",
+                PDSanityEffects.CHEERUP_BUFF.isBound(),
+                net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.containsKey(
+                        net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("pasterdream", "cheerup_buff")),
+                net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.getHolder(
+                        net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("pasterdream", "cheerup_buff")));
     }
 }

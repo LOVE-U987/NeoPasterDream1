@@ -37,7 +37,7 @@ public class TurnPaleCeciliaItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("§7或许我们应该亲手将它浸泡于融梦涌泉"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.turn_pale_cecilia.lore"));
     }
 
     /**

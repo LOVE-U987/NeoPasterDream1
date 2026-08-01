@@ -25,8 +25,8 @@ public class PoppingCandyItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.literal("\u00A77\u98DF\u7528\u540E\u83B7\u5F97\u6548\u679C:"));
-        tooltipComponents.add(Component.literal("\u00A77\u25AA \u00A79\u8DF3\u8DC3\u63D0\u5347IV (0:20)"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.popping_candy.on_eat"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.popping_candy.effect"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }

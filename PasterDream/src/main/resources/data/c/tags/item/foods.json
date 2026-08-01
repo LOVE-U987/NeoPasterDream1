@@ -1,19 +1,28 @@
 {
   "replace": false,
   "values": [
+    "pasterdream:amber_candy",
     "pasterdream:bacone_egg",
     "pasterdream:berry_buncake",
+    "pasterdream:bread_slice",
     "pasterdream:bubble_gum",
+    "pasterdream:cake_base",
     "pasterdream:candy_cane",
     "pasterdream:chocolate",
     "pasterdream:chocolate_matcha_cake",
     "pasterdream:cream_buncake",
+    "pasterdream:dough",
     "pasterdream:dream_cotton_candy",
     "pasterdream:dyedream_fruit_buncake",
     "pasterdream:dyedream_popsicle",
+    "pasterdream:eggdough",
+    "pasterdream:fig",
     "pasterdream:fried_egg",
     "pasterdream:gingerbread_man",
     "pasterdream:glow_berry_buncake",
+    "pasterdream:heart_chocolate_0",
+    "pasterdream:heart_chocolate_1",
+    "pasterdream:heart_chocolate_2",
     "pasterdream:jellyfish_jello",
     "pasterdream:jellyfish_mud",
     "pasterdream:legend_dragon_horn_ice_cream",
@@ -21,6 +30,7 @@
     "pasterdream:melon_buncake",
     "pasterdream:odd_bacone_egg",
     "pasterdream:pineapple_love_sea",
+    "pasterdream:popping_candy",
     "pasterdream:potato_buncake",
     "pasterdream:pumpkin_buncake",
     "pasterdream:queer_soup",
@@ -29,6 +39,6 @@
     "pasterdream:silver_fox_cotton_candy",
     "pasterdream:stuffed_wafer_cookies",
     "pasterdream:swiss_roll",
-    "pasterdream:yinhul_cotton_candy"
+    "pasterdream:wafer_biscuit"
   ]
 }

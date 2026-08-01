@@ -788,54 +788,54 @@ public class PDItemsFunctional {
             () -> new CalleCardItem(0));
     public static final DeferredItem<CalleCardItem> CALLE_CARD_1 = PDItems.ITEMS.register("calle_card_1",
             () -> new CalleCardItem(1,
-                    "§6『墓园』",
-                    "§f▪ §7使用卡牌时：",
-                    "§7▪ §9对以自身为中心 5*5范围内的所有敌人造成100点魔法伤害",
-                    "§7▪ §9此效果不对玩家生效"));
+                    "tooltip.pasterdream.calle_card.name.1",
+                    "tooltip.pasterdream.calle_card.usage",
+                    "tooltip.pasterdream.calle_card.desc.1.0",
+                    "tooltip.pasterdream.calle_card.desc.1.1"));
     public static final DeferredItem<CalleCardItem> CALLE_CARD_2 = PDItems.ITEMS.register("calle_card_2",
             () -> new CalleCardItem(2,
-                    "§6『执剑』",
-                    "§f▪ §7使用卡牌时：",
-                    "§7▪ §9获得怒气爆发效果 持续120秒"));
+                    "tooltip.pasterdream.calle_card.name.2",
+                    "tooltip.pasterdream.calle_card.usage",
+                    "tooltip.pasterdream.calle_card.desc.2.0"));
     public static final DeferredItem<CalleCardItem> CALLE_CARD_3 = PDItems.ITEMS.register("calle_card_3",
             () -> new CalleCardItem(3,
-                    "§6『疾行』",
-                    "§f▪ §7使用卡牌时：",
-                    "§7▪ §9获得速度III 跳跃提升I效果 持续120秒",
-                    "§7▪ §9持续期间获得高速反射 瞬身术的冷却时间-20%"));
+                    "tooltip.pasterdream.calle_card.name.3",
+                    "tooltip.pasterdream.calle_card.usage",
+                    "tooltip.pasterdream.calle_card.desc.3.0",
+                    "tooltip.pasterdream.calle_card.desc.3.1"));
     public static final DeferredItem<CalleCardItem> CALLE_CARD_4 = PDItems.ITEMS.register("calle_card_4",
             () -> new CalleCardItem(4,
-                    "§6『守护』",
-                    "§f▪ §7使用卡牌时：",
-                    "§7▪ §9获得20点伤害吸收和抗性提升I效果 持续120秒"));
+                    "tooltip.pasterdream.calle_card.name.4",
+                    "tooltip.pasterdream.calle_card.usage",
+                    "tooltip.pasterdream.calle_card.desc.4.0"));
     public static final DeferredItem<CalleCardItem> CALLE_CARD_5 = PDItems.ITEMS.register("calle_card_5",
             () -> new CalleCardItem(5,
-                    "§6『对立』",
-                    "§f▪ §7使用卡牌时：",
-                    "§7▪ §9当前生命值与已损失生命值互换"));
+                    "tooltip.pasterdream.calle_card.name.5",
+                    "tooltip.pasterdream.calle_card.usage",
+                    "tooltip.pasterdream.calle_card.desc.5.0"));
     public static final DeferredItem<CalleCardItem> CALLE_CARD_6 = PDItems.ITEMS.register("calle_card_6",
             () -> new CalleCardItem(6,
-                    "§6『罪恶』",
-                    "§f▪ §7使用卡牌时：",
-                    "§7▪ §9对以自身为中心 引燃19*19范围内的所有亡灵生物15秒并造成20点火焰伤害",
-                    "§7▪ §9如果此实体为僵尸村民 则不会受到伤害且转化为村民"));
+                    "tooltip.pasterdream.calle_card.name.6",
+                    "tooltip.pasterdream.calle_card.usage",
+                    "tooltip.pasterdream.calle_card.desc.6.0",
+                    "tooltip.pasterdream.calle_card.desc.6.1"));
     public static final DeferredItem<CalleCardItem> CALLE_CARD_7 = PDItems.ITEMS.register("calle_card_7",
             () -> new CalleCardItem(7,
-                    "§6『平衡』",
-                    "§f▪ §7使用卡牌时：",
-                    "§7▪ §9当前自身拥有的部分药水效果的等级翻倍 但持续时间缩短至一半",
-                    "§7▪ §9仅对部分有等级加成的效果生效"));
+                    "tooltip.pasterdream.calle_card.name.7",
+                    "tooltip.pasterdream.calle_card.usage",
+                    "tooltip.pasterdream.calle_card.desc.7.0",
+                    "tooltip.pasterdream.calle_card.desc.7.1"));
     public static final DeferredItem<CalleCardItem> CALLE_CARD_8 = PDItems.ITEMS.register("calle_card_8",
             () -> new CalleCardItem(8,
-                    "§6『圣杯』",
-                    "§f▪ §7使用卡牌时：",
-                    "§7▪ §9获得圣杯效果 持续120秒"));
+                    "tooltip.pasterdream.calle_card.name.8",
+                    "tooltip.pasterdream.calle_card.usage",
+                    "tooltip.pasterdream.calle_card.desc.8.0"));
     public static final DeferredItem<CalleCardItem> CALLE_CARD_9 = PDItems.ITEMS.register("calle_card_9",
             () -> new CalleCardItem(9,
-                    "§6『混乱』",
-                    "§f▪ §7使用卡牌时：",
-                    "§7▪ §9对以自身为中心 7*7范围内的所有敌人陷入混乱并失去行动能力 持续10秒",
-                    "§7▪ §9此效果不对玩家生效"));
+                    "tooltip.pasterdream.calle_card.name.9",
+                    "tooltip.pasterdream.calle_card.usage",
+                    "tooltip.pasterdream.calle_card.desc.9.0",
+                    "tooltip.pasterdream.calle_card.desc.9.1"));
 
     /**
      * 深海秘宝 / 染梦深海秘宝 (deep_treasure_0 / deep_treasure_1)

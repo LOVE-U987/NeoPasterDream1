@@ -27,13 +27,13 @@ public class CradleInOnesArmsItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.literal("\u00A77\u25AA \u00A79\u5BF912*12\u533A\u57DF\u8303\u56F4\u5185\u751F\u6210\u72D0\u706B\u7ACB\u573A"));
-        tooltipComponents.add(Component.literal("\u00A77\u25AA \u00A79\u4F7F\u9664\u73A9\u5BB6\u5916\u7684\u751F\u7269\u53D7\u523020%\u7684\u6613\u4F24\u548C\u7F13\u6162\u6548\u679C"));
-        tooltipComponents.add(Component.literal("\u00A77\u25AA \u00A79\u7ED9\u4E88\u73A9\u5BB6\u751F\u547D\u6062\u590D"));
-        tooltipComponents.add(Component.literal("\u00A77\u25AA \u00A79\u6301\u7EED\u65F6\u95F4 20\u79D2"));
-        tooltipComponents.add(Component.literal("\u00A7f\u25AA \u00A74\u878D\u68A6\u80FD\u91CF -5"));
-        tooltipComponents.add(Component.literal("\u00A77\u25AA \u00A79\u51B7\u5374\u65F6\u95F4 8 \u79D2"));
-        tooltipComponents.add(Component.literal("\u00A7o\u00A77 -- Alirea\u5B9A\u5236\u7269\u54C1"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.cradle_in_ones_arms.foxfire"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.cradle_in_ones_arms.vulnerable"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.cradle_in_ones_arms.regen"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.cradle_in_ones_arms.duration"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.cradle_in_ones_arms.energy_cost"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.cradle_in_ones_arms.cooldown"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.cradle_in_ones_arms.alirea"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }

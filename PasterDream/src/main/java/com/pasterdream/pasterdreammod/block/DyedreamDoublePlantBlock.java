@@ -10,7 +10,9 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.core.BlockPos;
 
 import java.util.Collections;
@@ -49,9 +51,15 @@ public class DyedreamDoublePlantBlock extends DoublePlantBlock {
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        // 只有下半部分参与掉落
         if (state.getValue(HALF) != DoubleBlockHalf.LOWER) {
             return Collections.emptyList();
         }
-        return List.of(new ItemStack(this));
+        // 仅使用剪刀等相关工具破坏时掉落自身，空手或其他工具破坏不掉落
+        ItemStack tool = params.getParameter(LootContextParams.TOOL);
+        if (tool != null && !tool.isEmpty() && tool.getItem() instanceof ShearsItem) {
+            return List.of(new ItemStack(this));
+        }
+        return Collections.emptyList();
     }
 }

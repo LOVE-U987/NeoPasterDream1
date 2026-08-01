@@ -31,9 +31,9 @@ public class PaperPlaneItem extends Item implements ICurioItem {
     @Override
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, context, list, flag);
-        list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7f\u666E\u901A \u2605"));
-        list.add(Component.literal("\u00A77\u25AA \u00A79\u589E\u5927\u98CE\u5411\u5BF9\u81EA\u8EAB\u7684\u5F71\u54CD"));
-        list.add(Component.literal("\u00A77\u00A7o-- \u6211\u4EEC\u6240\u901D\u53BB\u7684\u7AE5\u5E74\u65F6\u5149"));
+        list.add(Component.translatable("tooltip.pasterdream.paper_plane.quality"));
+        list.add(Component.translatable("tooltip.pasterdream.paper_plane.effect_1"));
+        list.add(Component.translatable("tooltip.pasterdream.paper_plane.flavor_1"));
     }
 
     /**

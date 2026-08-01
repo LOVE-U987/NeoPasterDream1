@@ -10,6 +10,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -63,7 +64,7 @@ public class PDCommands {
                                         )
                                         .executes(context -> {
                                             context.getSource().sendFailure(
-                                                    Component.literal("§c用法: /pasterdream dimension reset <dimension_id>"));
+                                                    Component.translatable("message.pasterdream.command.usage_dimension_reset"));
                                             return 0;
                                         })
                                 )
@@ -77,7 +78,7 @@ public class PDCommands {
                                 )
                                 .executes(context -> {
                                     context.getSource().sendFailure(
-                                            Component.literal("§c用法: /pasterdream arena <locate|tp>"));
+                                            Component.translatable("message.pasterdream.command.usage_arena"));
                                     return 0;
                                 })
                         )
@@ -98,7 +99,7 @@ public class PDCommands {
                                 )
                                 .executes(context -> {
                                     context.getSource().sendFailure(
-                                            Component.literal("§c用法: /pasterdream bgm <debug|play|list>"));
+                                            Component.translatable("message.pasterdream.command.usage_bgm"));
                                     return 0;
                                 })
                         )
@@ -131,7 +132,7 @@ public class PDCommands {
         ServerLevel targetLevel = server.getLevel(dimKey);
 
         if (targetLevel == null) {
-            source.sendFailure(Component.literal("§c维度 " + dimLocation + " 不存在或未加载！"));
+            source.sendFailure(Component.translatable("message.pasterdream.command.dimension_not_found", dimLocation));
             return 0;
         }
 
@@ -144,14 +145,14 @@ public class PDCommands {
 
         ServerLevel overworld = server.getLevel(Level.OVERWORLD);
         if (overworld == null) {
-            source.sendFailure(Component.literal("§c主世界未加载！"));
+            source.sendFailure(Component.translatable("message.pasterdream.command.overworld_not_loaded"));
             return 0;
         }
 
         for (ServerPlayer player : playersInDim) {
             BlockPos spawnPos = overworld.getSharedSpawnPos();
             player.teleportTo(overworld, spawnPos.getX() + 0.5, spawnPos.getY() + 1, spawnPos.getZ() + 0.5, player.getYRot(), player.getXRot());
-            player.sendSystemMessage(Component.literal("§e[PasterDream] 维度 " + dimLocation + " 正在重置，你已被传送回主世界。"));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.command.dimension_reset_teleport", dimLocation));
         }
 
         Path regionPath = DimensionRegionHelper.regionDirectory(server, dimLocation);
@@ -163,25 +164,25 @@ public class PDCommands {
                 int fileCount = DimensionRegionHelper.deleteRegionChunkFiles(
                         regionPath,
                         file -> PasterDreamMod.LOGGER.warn("[PDCommands] 无法删除区域文件: {}", file));
-                source.sendSuccess(() -> Component.literal("§a已重置维度 " + dimLocation + "，删除了 " + fileCount + " 个区域文件。下次进入将重新生成地形！"), true);
+                source.sendSuccess(() -> Component.translatable("message.pasterdream.command.dimension_reset_success", dimLocation, fileCount), true);
 
                 for (ServerPlayer player : playersInDim) {
-                    player.sendSystemMessage(Component.literal("§a维度 " + dimLocation + " 已重置，你可以重新进入！"));
+                    player.sendSystemMessage(Component.translatable("message.pasterdream.command.dimension_reset_reenter", dimLocation));
                 }
 
                 return 1;
             } catch (IOException | CompletionException e) {
-                source.sendFailure(Component.literal("§c重置维度时出错: " + e.getMessage()));
+                source.sendFailure(Component.translatable("message.pasterdream.command.dimension_reset_error", e.getMessage()));
                 PasterDreamMod.LOGGER.error("[PDCommands] 重置维度 {} 时发生 IO/执行异常", dimLocation, e);
                 return 0;
             } catch (Exception e) {
                 // 兜底：捕获未预期异常，防止命令执行中断影响服务端稳定性
-                source.sendFailure(Component.literal("§c重置维度时出错: " + e.getMessage()));
+                source.sendFailure(Component.translatable("message.pasterdream.command.dimension_reset_error", e.getMessage()));
                 PasterDreamMod.LOGGER.error("[PDCommands] 重置维度 {} 时发生未预期异常", dimLocation, e);
                 return 0;
             }
         } else {
-            source.sendSuccess(() -> Component.literal("§e维度 " + dimLocation + " 尚未生成区域数据，无需重置。"), true);
+            source.sendSuccess(() -> Component.translatable("message.pasterdream.command.dimension_no_region", dimLocation), true);
             return 1;
         }
     }
@@ -198,7 +199,7 @@ public class PDCommands {
         MinecraftServer server = source.getServer();
         ServerLevel overworld = server.getLevel(Level.OVERWORLD);
         if (overworld == null) {
-            source.sendFailure(Component.literal("§c主世界未加载！"));
+            source.sendFailure(Component.translatable("message.pasterdream.command.overworld_not_loaded"));
             return null;
         }
         return PDAaroncosArenaSpawnData.get(overworld).getCenter();
@@ -216,18 +217,17 @@ public class PDCommands {
     private static int arenaLocate(CommandSourceStack source) {
         BlockPos center = getArenaCenter(source);
         if (center == null) {
-            source.sendFailure(Component.literal("§c竞技场遗迹尚未生成！（结构尚未在世界中被探索生成）"));
+            source.sendFailure(Component.translatable("message.pasterdream.command.arena_not_generated"));
             return 0;
         }
 
         if (source.getEntity() instanceof ServerPlayer player) {
             int dist = (int) Math.sqrt(player.blockPosition().distSqr(center));
-            source.sendSuccess(() -> Component.literal(
-                    String.format("§a竞技场遗迹位于 §e[%d, %d, %d]§a，距离你约 §e%d §a格。§7使用 /pasterdream arena tp 可直接传送",
-                            center.getX(), center.getY(), center.getZ(), dist)), true);
+            source.sendSuccess(() -> Component.translatable("message.pasterdream.command.arena_locate_player",
+                    center.getX(), center.getY(), center.getZ(), dist), true);
         } else {
-            source.sendSuccess(() -> Component.literal(
-                    String.format("§a竞技场遗迹位于 §e[%d, %d, %d]", center.getX(), center.getY(), center.getZ())), true);
+            source.sendSuccess(() -> Component.translatable("message.pasterdream.command.arena_locate",
+                    center.getX(), center.getY(), center.getZ()), true);
         }
         return 1;
     }
@@ -240,12 +240,12 @@ public class PDCommands {
      */
     private static int arenaTp(CommandSourceStack source) {
         if (!(source.getEntity() instanceof ServerPlayer player)) {
-            source.sendFailure(Component.literal("§c此指令只能由玩家执行！"));
+            source.sendFailure(Component.translatable("message.pasterdream.command.player_only"));
             return 0;
         }
         BlockPos center = getArenaCenter(source);
         if (center == null) {
-            source.sendFailure(Component.literal("§c竞技场遗迹尚未生成！（结构尚未在世界中被探索生成）"));
+            source.sendFailure(Component.translatable("message.pasterdream.command.arena_not_generated"));
             return 0;
         }
 
@@ -256,7 +256,7 @@ public class PDCommands {
         int surfaceY = overworld.getHeight(Heightmap.Types.WORLD_SURFACE, center.getX(), center.getZ());
 
         player.teleportTo(overworld, center.getX() + 0.5, surfaceY + 2, center.getZ() + 0.5, player.getYRot(), player.getXRot());
-        source.sendSuccess(() -> Component.literal("§a已传送到竞技场遗迹附近！"), true);
+        source.sendSuccess(() -> Component.translatable("message.pasterdream.command.arena_tp_success"), true);
         return 1;
     }
 
@@ -266,11 +266,12 @@ public class PDCommands {
             "dream_meadow", "dream_heath", "dream_taiga", "dream_delta"
     };
 
-    private static final java.util.Map<String, String> BGM_NAMES = java.util.Map.of(
-            "dream_meadow", "梦幻草原",
-            "dream_heath", "梦幻荒原",
-            "dream_taiga", "梦幻雪林",
-            "dream_delta", "梦幻三角洲"
+    /** 群系 BGM 显示名 → 语言键（值改经语言文件本地化，避免中英文本写死在代码里） */
+    private static final java.util.Map<String, String> BGM_KEYS = java.util.Map.of(
+            "dream_meadow", "message.pasterdream.command.bgm_name.dream_meadow",
+            "dream_heath", "message.pasterdream.command.bgm_name.dream_heath",
+            "dream_taiga", "message.pasterdream.command.bgm_name.dream_taiga",
+            "dream_delta", "message.pasterdream.command.bgm_name.dream_delta"
     );
 
     /**
@@ -278,7 +279,7 @@ public class PDCommands {
      */
     private static int bgmDebug(CommandSourceStack source) {
         if (!(source.getEntity() instanceof ServerPlayer player)) {
-            source.sendFailure(Component.literal("§c此指令只能由玩家执行！"));
+            source.sendFailure(Component.translatable("message.pasterdream.command.player_only"));
             return 0;
         }
 
@@ -289,30 +290,40 @@ public class PDCommands {
         var biome = player.level().getBiome(player.blockPosition()).value();
         var musicOpt = biome.getBackgroundMusic();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("§6=== [PasterDream BGM 调试] ===\n");
-        sb.append("§e当前位置: ").append(player.blockPosition().toShortString()).append("\n");
-        sb.append("§e当前维度: ").append(player.level().dimension().location()).append("\n");
-        sb.append("§e当前群系: ").append(biomeId != null ? biomeId : "§c未知").append("\n");
-        sb.append("§e群系温度: ").append(biome.getBaseTemperature()).append("\n");
+        MutableComponent msg = Component.translatable("message.pasterdream.command.bgm_debug_header")
+                .append(Component.literal("\n"))
+                .append(Component.translatable("message.pasterdream.command.bgm_debug_pos", player.blockPosition().toShortString()))
+                .append(Component.literal("\n"))
+                .append(Component.translatable("message.pasterdream.command.bgm_debug_dim", player.level().dimension().location()))
+                .append(Component.literal("\n"))
+                .append(Component.translatable("message.pasterdream.command.bgm_debug_biome",
+                        biomeId != null ? biomeId : Component.translatable("message.pasterdream.command.unknown")))
+                .append(Component.literal("\n"))
+                .append(Component.translatable("message.pasterdream.command.bgm_debug_temp", biome.getBaseTemperature()));
 
         if (musicOpt.isPresent()) {
             var music = musicOpt.get();
-            sb.append("§a音乐配置: 存在 ✓\n");
-            sb.append("  §7Sound: §f").append(music.getEvent().value().getLocation()).append("\n");
-            sb.append("  §7MinDelay: §f").append(music.getMinDelay()).append(" tick (").append(music.getMinDelay() / 20).append("s)\n");
-            sb.append("  §7MaxDelay: §f").append(music.getMaxDelay()).append(" tick (").append(music.getMaxDelay() / 20).append("s)\n");
-            sb.append("  §7ReplaceCurrent: §f").append(music.replaceCurrentMusic()).append("\n");
+            msg.append(Component.literal("\n"))
+                    .append(Component.translatable("message.pasterdream.command.bgm_debug_music_exists"))
+                    .append(Component.literal("\n"))
+                    .append(Component.translatable("message.pasterdream.command.bgm_debug_music_sound", music.getEvent().value().getLocation()))
+                    .append(Component.literal("\n"))
+                    .append(Component.translatable("message.pasterdream.command.bgm_debug_music_min_delay", music.getMinDelay(), music.getMinDelay() / 20))
+                    .append(Component.literal("\n"))
+                    .append(Component.translatable("message.pasterdream.command.bgm_debug_music_max_delay", music.getMaxDelay(), music.getMaxDelay() / 20))
+                    .append(Component.literal("\n"))
+                    .append(Component.translatable("message.pasterdream.command.bgm_debug_music_replace", music.replaceCurrentMusic()));
 
             PDDebugLogger.mainInfo("[BGMDebug] 玩家 {} 在群系 {}，音乐配置: event={}, minDelay={}, maxDelay={}, replace={}",
                     player.getName().getString(), biomeId,
                     music.getEvent().value().getLocation(), music.getMinDelay(), music.getMaxDelay(), music.replaceCurrentMusic());
         } else {
-            sb.append("§c音乐配置: 不存在 ✗\n");
+            msg.append(Component.literal("\n"))
+                    .append(Component.translatable("message.pasterdream.command.bgm_debug_music_missing"));
             PDDebugLogger.mainInfo("[BGMDebug] 玩家 {} 在群系 {}，无音乐配置", player.getName().getString(), biomeId);
         }
 
-        source.sendSuccess(() -> Component.literal(sb.toString()), true);
+        source.sendSuccess(() -> msg, true);
         return 1;
     }
 
@@ -321,7 +332,7 @@ public class PDCommands {
      */
     private static int bgmPlay(CommandSourceStack source, String biome) {
         if (!(source.getEntity() instanceof ServerPlayer player)) {
-            source.sendFailure(Component.literal("§c此指令只能由玩家执行！"));
+            source.sendFailure(Component.translatable("message.pasterdream.command.player_only"));
             return 0;
         }
 
@@ -331,15 +342,17 @@ public class PDCommands {
         var soundEvent = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.get(soundLocation);
 
         if (soundEvent == null) {
-            source.sendFailure(Component.literal("§c未找到声音事件: " + soundLocation));
+            source.sendFailure(Component.translatable("message.pasterdream.command.bgm_sound_not_found", soundLocation));
             PDDebugLogger.mainInfo("[BGMDebug] 尝试播放 BGM 失败: {} 未注册", soundLocation);
             return 0;
         }
 
         player.playNotifySound(soundEvent, net.minecraft.sounds.SoundSource.MUSIC, 1.0F, 1.0F);
 
-        String displayName = BGM_NAMES.getOrDefault(biome, biome);
-        source.sendSuccess(() -> Component.literal("§a正在播放 BGM: " + displayName + " (" + soundLocation + ")"), true);
+        Component displayName = BGM_KEYS.containsKey(biome)
+                ? Component.translatable(BGM_KEYS.get(biome))
+                : Component.literal(biome);
+        source.sendSuccess(() -> Component.translatable("message.pasterdream.command.bgm_play", displayName, soundLocation), true);
         PDDebugLogger.mainInfo("[BGMDebug] 已为玩家 {} 播放 BGM: {}", player.getName().getString(), soundLocation);
         return 1;
     }
@@ -348,8 +361,7 @@ public class PDCommands {
      * 调试指令：列出所有已注册的BGM声音事件
      */
     private static int bgmList(CommandSourceStack source) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("§6=== [PasterDream BGM 清单] ===\n");
+        MutableComponent msg = Component.translatable("message.pasterdream.command.bgm_list_header");
 
         int found = 0;
         for (String biome : BGM_BIOMES) {
@@ -357,17 +369,20 @@ public class PDCommands {
             ResourceLocation soundLocation = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, soundName);
             var soundEvent = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.get(soundLocation);
 
-            String displayName = BGM_NAMES.getOrDefault(biome, biome);
+            Component displayName = Component.translatable(BGM_KEYS.get(biome));
             if (soundEvent != null) {
-                sb.append("§a✓ ").append(displayName).append(" §7(").append(soundLocation).append(")\n");
+                msg.append(Component.literal("\n"))
+                        .append(Component.translatable("message.pasterdream.command.bgm_list_registered", displayName, soundLocation));
                 found++;
             } else {
-                sb.append("§c✗ ").append(displayName).append(" §7(").append(soundLocation).append(") 未注册\n");
+                msg.append(Component.literal("\n"))
+                        .append(Component.translatable("message.pasterdream.command.bgm_list_missing", displayName, soundLocation));
             }
         }
-        sb.append("§e已注册: ").append(found).append(" / ").append(BGM_BIOMES.length);
+        msg.append(Component.literal("\n"))
+                .append(Component.translatable("message.pasterdream.command.bgm_list_summary", found, BGM_BIOMES.length));
 
-        source.sendSuccess(() -> Component.literal(sb.toString()), true);
+        source.sendSuccess(() -> msg, true);
 
         PDDebugLogger.mainInfo("[BGMDebug] BGM 清单: {}/{} 已注册", found, BGM_BIOMES.length);
         return 1;

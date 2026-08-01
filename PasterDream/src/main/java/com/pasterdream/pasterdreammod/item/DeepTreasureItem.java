@@ -70,7 +70,7 @@ public class DeepTreasureItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("§7飞溅的浪花将我们推向远方"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.deep_treasure.lore"));
     }
 
     @Override

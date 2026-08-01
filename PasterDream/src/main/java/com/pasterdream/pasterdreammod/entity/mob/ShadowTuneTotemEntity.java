@@ -144,7 +144,7 @@ public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity {
         if (this.level().isClientSide()) return;
 
         // 立即：向 64 格内玩家广播"暗影符文塔正在蓄能"
-        broadcastToNearbyPlayers(64, Component.literal("§5暗影符文塔正在蓄能"));
+        broadcastToNearbyPlayers(64, Component.translatable("message.pasterdream.shadow_tune.charging"));
         // 启动倒计时
         skillTick = 0;
     }
@@ -161,7 +161,7 @@ public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity {
 
         // 300 tick (15s): 广播即将爆破
         if (skillTick == 300) {
-            broadcastToNearbyPlayers(64, Component.literal("§4暗影符文塔即将发生爆破"));
+            broadcastToNearbyPlayers(64, Component.translatable("message.pasterdream.shadow_tune.detonation_soon"));
         }
 
         // 400 tick (20s): 播放 skill 动画 + 音效

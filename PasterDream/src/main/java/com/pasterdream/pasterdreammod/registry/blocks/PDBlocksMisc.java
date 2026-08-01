@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.registry.blocks;
 import com.pasterdream.pasterdreammod.block.CalleCardBlock;
 import com.pasterdream.pasterdreammod.block.ChristmasLightsBlock;
 import com.pasterdream.pasterdreammod.block.ClayPot0Block;
+import com.pasterdream.pasterdreammod.block.ClaypanPlateBlock;
 import com.pasterdream.pasterdreammod.block.DreamSpawner1Block;
 import com.pasterdream.pasterdreammod.block.DyedreamCropFlowerBlock;
 import com.pasterdream.pasterdreammod.block.FigVineBlock;
@@ -65,13 +66,13 @@ public class PDBlocksMisc {
                 .isRedstoneConductor((bs, br, bp) -> false);
     }
 
-    /** 陶盘 0 号（claypan_1 带方块实体逻辑，移交 GUI 波次） */
-    public static final DeferredBlock<Block> CLAYPAN_0 = PDBlocks.BLOCKS.registerBlock("claypan_0",
-            Block::new, claypanProps());
+    /** 陶盘 0 号（claypan_1 带方块实体逻辑，移交 GUI 波次）—— 3 像素高薄盘碰撞箱 */
+    public static final DeferredBlock<ClaypanPlateBlock> CLAYPAN_0 = PDBlocks.BLOCKS.registerBlock("claypan_0",
+            ClaypanPlateBlock::new, claypanProps());
 
-    /** 陶盘 2 号 */
-    public static final DeferredBlock<Block> CLAYPAN_2 = PDBlocks.BLOCKS.registerBlock("claypan_2",
-            Block::new, claypanProps());
+    /** 陶盘 2 号 —— 3 像素高薄盘碰撞箱 */
+    public static final DeferredBlock<ClaypanPlateBlock> CLAYPAN_2 = PDBlocks.BLOCKS.registerBlock("claypan_2",
+            ClaypanPlateBlock::new, claypanProps());
 
     /** 凯尔卡牌方块（收集系统地面卡牌，右键交互移交收集波次） */
     public static final DeferredBlock<CalleCardBlock> CALLE_CARD_BLOCK = PDBlocks.BLOCKS.registerBlock("calle_card_block",

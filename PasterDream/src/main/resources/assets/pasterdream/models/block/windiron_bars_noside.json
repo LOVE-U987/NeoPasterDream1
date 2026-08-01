@@ -1,7 +1,7 @@
 {
   "parent": "block/template_glass_pane_noside",
   "textures": {
-    "pane": "pasterdream:block/ning_feng_tie_lan_gan_"
+    "pane": "pasterdream:block/windiron_bars"
   },
   "render_type": "cutout_mipped"
 }

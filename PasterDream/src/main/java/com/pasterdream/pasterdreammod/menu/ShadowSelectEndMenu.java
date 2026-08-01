@@ -101,13 +101,13 @@ public class ShadowSelectEndMenu extends AbstractContainerMenu {
         playShadowDoor(player);
         giveItem(player, new ItemStack(PDItems.SHADOW_HILT.get().asItem()));
         ServerScheduler.schedule(80, () ->
-                player.displayClientMessage(Component.literal("无名：看来你已经做出了选择"), false));
+                player.displayClientMessage(Component.translatable("message.pasterdream.shadow_select.nameless_1"), false));
         ServerScheduler.schedule(140, () ->
-                player.displayClientMessage(Component.literal("无名：如果你想战胜祂 阻止祂 接纳祂 还是融入祂"), false));
+                player.displayClientMessage(Component.translatable("message.pasterdream.shadow_select.nameless_2"), false));
         ServerScheduler.schedule(200, () ->
-                player.displayClientMessage(Component.literal("无名：就请在这片灯影中寻找吧 寻找亚伦柯斯双手的眼睛"), false));
+                player.displayClientMessage(Component.translatable("message.pasterdream.shadow_select.nameless_3"), false));
         ServerScheduler.schedule(260, () ->
-                player.displayClientMessage(Component.literal("§a在此维度中寻找四根手指组成的类似手的遗迹，并进入中间的传送门"), false));
+                player.displayClientMessage(Component.translatable("message.pasterdream.shadow_select.hint_dark"), false));
     }
 
     /**
@@ -120,7 +120,7 @@ public class ShadowSelectEndMenu extends AbstractContainerMenu {
         grantAdvancement(player, "achievement_shadow_d_0");
         grantAdvancement(player, "achievement_talent_light");
         playShadowDoor(player);
-        player.displayClientMessage(Component.literal("§7一块闪耀着白光的水晶出现在了你的手里"), false);
+        player.displayClientMessage(Component.translatable("message.pasterdream.shadow_select.crystal_received"), false);
         giveItem(player, new ItemStack(PDItems.WHITE_CRYSTAL.get().asItem()));
     }
 

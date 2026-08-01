@@ -78,10 +78,10 @@ public class PlayerDataEvents {
      */
     private static void handleLoginAnnouncementAndStarter(ServerPlayer player) {
         if (Boolean.TRUE.equals(PDCommonConfig.MOD_ACCOUOCEMENT.get())) {
-            player.displayClientMessage(Component.literal("§7■ §fPasterDream Mod 《帕斯特之梦》"), false);
-            player.displayClientMessage(Component.literal("§7■ §fNeoPasterDream · 染梦之境（NeoForge 1.21.1 重写）"), false);
-            player.displayClientMessage(Component.literal("§7■ §f如有问题或建议请联系维护者"), false);
-            player.displayClientMessage(Component.literal("§7■ §f按[§eC§f]可以使用§b瞬身术"), false);
+            player.displayClientMessage(Component.translatable("message.pasterdream.player_data.announcement_1"), false);
+            player.displayClientMessage(Component.translatable("message.pasterdream.player_data.announcement_2"), false);
+            player.displayClientMessage(Component.translatable("message.pasterdream.player_data.announcement_3"), false);
+            player.displayClientMessage(Component.translatable("message.pasterdream.player_data.announcement_4"), false);
         }
 
         if (!PDAdvancements.has(player, PDAdvancements.HIDE_6)) {

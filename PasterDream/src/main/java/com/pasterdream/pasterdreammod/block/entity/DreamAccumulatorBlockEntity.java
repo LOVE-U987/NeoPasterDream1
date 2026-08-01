@@ -200,7 +200,7 @@ public class DreamAccumulatorBlockEntity extends BlockEntity implements GeoBlock
                 serverPlayer.drop(gift, false);
             }
             serverPlayer.displayClientMessage(
-                    Component.literal("你发现了一张寻梦者笔记，并收进了你的背包"), false);
+                    Component.translatable("message.pasterdream.dream_accumulator.note_found"), false);
         }
     }
 

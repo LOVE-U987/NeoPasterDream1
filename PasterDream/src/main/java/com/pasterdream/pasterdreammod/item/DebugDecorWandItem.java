@@ -36,7 +36,7 @@ public class DebugDecorWandItem extends Item {
         BlockHitResult blockHitResult;
         HitResult hitResult = player.pick(200.0D, 0.0F, false);
         if (hitResult.getType() == HitResult.Type.MISS) {
-            player.sendSystemMessage(Component.literal("§c没有瞄准任何方块！"));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_decor_wand.no_target"));
             return InteractionResultHolder.fail(player.getItemInHand(hand));
         }
         if (hitResult instanceof BlockHitResult) {
@@ -58,7 +58,7 @@ public class DebugDecorWandItem extends Item {
                 .orElse(null);
 
         if (configuredFeature == null) {
-            player.sendSystemMessage(Component.literal("§c未找到特征: " + featureName));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_decor_wand.feature_not_found", featureName));
             return InteractionResultHolder.fail(player.getItemInHand(hand));
         }
 
@@ -70,9 +70,9 @@ public class DebugDecorWandItem extends Item {
         );
 
         if (success) {
-            player.sendSystemMessage(Component.literal("§a已放置: §f" + featureName + " §a于 " + targetPos.toShortString()));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_decor_wand.placed", featureName, targetPos.toShortString()));
         } else {
-            player.sendSystemMessage(Component.literal("§e放置失败: §f" + featureName + " §e于 " + targetPos.toShortString()));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_decor_wand.place_failed", featureName, targetPos.toShortString()));
         }
 
         player.getCooldowns().addCooldown(this, 5);

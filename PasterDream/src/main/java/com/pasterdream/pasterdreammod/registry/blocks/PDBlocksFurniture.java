@@ -199,9 +199,9 @@ public class PDBlocksFurniture {
             PDBlocks.BLOCKS.registerBlock("guard_block",
                     p -> new AuraBuffBlock(PDEffects.GUARD_BLOCK_BUFF::holder, 16,
                             () -> PDBlockEntitiesFurniture.GUARD_BLOCK.get(),
-                            List.of("§4不可破坏",
-                                    "§7在规则§epasterdreamDebugmode§7处于关闭状态时",
-                                    "限制方块NBT:range边长范围内玩家的破坏和放置行为"), p),
+                            List.of("tooltip.pasterdream.guard_block.indestructible",
+                                    "tooltip.pasterdream.guard_block.debug_rule.1",
+                                    "tooltip.pasterdream.guard_block.debug_rule.2"), p),
                     BlockBehaviour.Properties.of()
                             .instrument(NoteBlockInstrument.BASEDRUM)
                             .sound(SoundType.STONE)
@@ -212,8 +212,8 @@ public class PDBlocksFurniture {
             PDBlocks.BLOCKS.registerBlock("restrainmove_block",
                     p -> new AuraBuffBlock(PDEffects.RESTRAINMOVE_BLOCK_BUFF::holder, 0,
                             () -> PDBlockEntitiesFurniture.RESTRAINMOVE_BLOCK.get(),
-                            List.of("§7在规则§epasterdreamDebugmode§7处于关闭状态时",
-                                    "限制方块NBT:range边长范围内玩家的瞬身术 跳跃提升 飞行行为"), p),
+                            List.of("tooltip.pasterdream.restrainmove_block.debug_rule.1",
+                                    "tooltip.pasterdream.restrainmove_block.debug_rule.2"), p),
                     BlockBehaviour.Properties.of()
                             .instrument(NoteBlockInstrument.BASEDRUM)
                             .sound(SoundType.STONE)

@@ -27,10 +27,10 @@ public class TerraCharmItem extends Item implements ICurioItem {
     @Override
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, context, list, flag);
-        list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7d\u53F2\u8BD7 \u2605\u2605\u2605\u2605\u2605\u2605"));
-        list.add(Component.literal("\u00A77\u25AA \u00A79\u5927\u5730\u4E4B\u5203\u6218\u6280\u7684\u51B7\u5374\u65F6\u95F4-60%"));
-        list.add(Component.literal("\u00A77\u25AA \u00A79\u5251\u6C14\u7684\u653B\u51FB\u529B\u5C5E\u6027\u52A0\u6210\u500D\u7387+30%"));
-        list.add(Component.literal("\u00A77\u25AA \u00A79\u6CF0\u62C9\u5251\u6280\u6D88\u8017\u7684\u878D\u68A6\u80FD\u91CF-0.2"));
+        list.add(Component.translatable("tooltip.pasterdream.terra_charm.quality"));
+        list.add(Component.translatable("tooltip.pasterdream.terra_charm.effect_1"));
+        list.add(Component.translatable("tooltip.pasterdream.terra_charm.effect_2"));
+        list.add(Component.translatable("tooltip.pasterdream.terra_charm.effect_3"));
 }
 
 }

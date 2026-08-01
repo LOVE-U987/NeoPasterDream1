@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/gong_fang_duan_lu_"
+    "layer0": "pasterdream:item/workshop_blast"
   },
   "render_type": "translucent"
 }

@@ -29,23 +29,27 @@ ParticleResult sparkle = ParticleAPI.createParticle("sparkle")
 // ====== 2. 在 ClientSetup.java 中注册 Provider ======
 @SubscribeEvent
 public static void registerParticles(RegisterParticleProvidersEvent event) {
-    ParticleAPI.registerProviderSprite(event, "sparkle",
-            (SpriteSet spriteSet) -> new SparkleParticle.Provider(spriteSet));
+    ParticleAPI.getParticle("sparkle").ifPresent(result ->
+        event.registerSpriteSet(
+            (SimpleParticleType) result.particleType(),
+            SparkleParticle.Provider::new));
 }
 
 // ====== 3. 在代码中生成粒子 ======
-ParticleType<?> type = ParticleAPI.getParticleType("sparkle");
-level.addParticle(type, x, y, z, vx, vy, vz);
+ParticleAPI.getParticleType("sparkle").ifPresent(type ->
+    level.addParticle(type, x, y, z, vx, vy, vz));
 ```
 
 ## 前置条件
 
-在 `PasterDreamMod` 构造函数中注册 ParticleAPI 的 REGISTRY：
+在 `PasterDreamMod` 构造函数中注册 ParticleAPI 的 REGISTRY（或调用统一入口）：
 
 ```java
 public PasterDreamMod(IEventBus modEventBus) {
-    // ... 其他注册器 ...
-    ParticleAPI.REGISTRY.register(modEventBus);
+    // 方式一：统一注册（推荐，包含所有 API）
+    PasterDreamAPI.registerAll(modEventBus);
+    // 方式二：单独注册
+    // ParticleAPI.REGISTRY.register(modEventBus);
 }
 ```
 
@@ -54,10 +58,9 @@ public PasterDreamMod(IEventBus modEventBus) {
 ```
 ParticleAPI                        ← Facade 门面
   ├── createParticle(name)         ← 工厂方法 → ParticleBuilder
-  ├── registerProviderSprite()     ← Provider 注册（SpriteSet）
-  ├── getParticle(name)            ← 查询 ParticleResult
-  ├── getParticleType(name)        ← 查询 ParticleType
-  ├── getParticleSupplier(name)    ← 查询 ParticleType Supplier
+  ├── getParticle(name)            ← 查询 ParticleResult → Optional
+  ├── getParticleType(name)        ← 查询 ParticleType → Optional
+  ├── getParticleSupplier(name)    ← 查询 ParticleType Supplier → Optional
   └── getRegisteredParticles()     ← 所有已注册粒子的不可变视图
 
 ParticleBuilder                    ← Builder 构建器
@@ -138,10 +141,17 @@ ParticleResult crystal = ParticleAPI.createParticle("crystal_particle")
     .texture("pasterdream:crystal_particle")
     .build();
 
-// 自定义纹理添加帧（手动生成器）
-new ParticleGenerator("pasterdream", "crystal_particle")
-    .withFrames("pasterdream:crystal_particle", 4)  // 生成 4 帧
-    .saveToFile("src/main/resources");
+// 多帧动画：在 particles/{name}.json 的 textures 数组中列出所有帧
+// 手动编辑 data/../assets/pasterdream/particles/crystal_particle.json：
+// {
+//   "textures": [
+//     "pasterdream:crystal_particle_1",
+//     "pasterdream:crystal_particle_2",
+//     "pasterdream:crystal_particle_3",
+//     "pasterdream:crystal_particle_4"
+//   ]
+// }
+// 对应纹理 PNG 放在 textures/particle/ 下
 ```
 
 ### 复杂粒子 — 物理掉落物
@@ -154,11 +164,11 @@ ParticleResult leaf = ParticleAPI.createParticle("falling_leaf")
     .build();
 
 // 查询并使用
-ParticleType<?> leafType = ParticleAPI.getParticleType("falling_leaf");
-level.addParticle(leafType, x, y, z,
-    random.nextGaussian() * 0.02,
-    -0.05,
-    random.nextGaussian() * 0.02);
+ParticleAPI.getParticleType("falling_leaf").ifPresent(leafType ->
+    level.addParticle(leafType, x, y, z,
+        random.nextGaussian() * 0.02,
+        -0.05,
+        random.nextGaussian() * 0.02));
 ```
 
 ## 生成的 JSON 文件
@@ -204,23 +214,26 @@ assets/{modId}/textures/particle/{name}.png    ← 粒子纹理图片
 
 ## Provider 注册说明
 
-在使用 `ParticleAPI.registerProviderSprite()` 时，粒子名称必须与 `createParticle()` 传入的名称一致。API 内部会通过缓存查找已注册的粒子类型，如果找不到会发出警告。
+客户端在 `RegisterParticleProvidersEvent` 中注册 Provider，**没有** `ParticleAPI.registerProviderSprite()` 方法（已移除）。请直接通过 `ParticleAPI.getParticle()` 查询结果并使用事件的 `registerSpriteSet`：
 
 ```java
 @SubscribeEvent
 public static void registerParticles(RegisterParticleProvidersEvent event) {
-    // ✅ 正确：名称匹配
-    ParticleAPI.registerProviderSprite(event, "sparkle", SparkleParticle.Provider::new);
+    // ✅ 正确：通过 API 查询后直接注册
+    ParticleAPI.getParticle("sparkle").ifPresent(result ->
+        event.registerSpriteSet((SimpleParticleType) result.particleType(), SparkleParticle.Provider::new));
 
-    // ⚠️ 警告：名称不匹配（找不到 sparkle_miss）
-    ParticleAPI.registerProviderSprite(event, "sparkle_miss", SomeProvider::new);
+    // ⚠️ 未注册的名称查询会返回 empty Optional，静默跳过
+    ParticleAPI.getParticle("sparkle_miss").ifPresent(result -> { /* 不会执行 */ });
 }
 ```
 
+> 粒子名称必须与 `createParticle()` 传入的名称一致（内部缓存按名称查询）。
+
 ## 引用文件
 
-- [ParticleAPI.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/particle/ParticleAPI.java) — 门面类
-- [ParticleBuilder.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/particle/builder/ParticleBuilder.java) — 构建器
-- [ParticleResult.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/particle/ParticleResult.java) — 结果类
-- [ParticleGenerator.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/particle/gen/ParticleGenerator.java) — 粒子定义 JSON 生成器
-- [ParticleTextureGenerator.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/particle/gen/ParticleTextureGenerator.java) — 粒子纹理元数据生成器
+- [ParticleAPI.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/particle/ParticleAPI.java) — 门面类
+- [ParticleBuilder.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/particle/builder/ParticleBuilder.java) — 构建器
+- [ParticleResult.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/particle/ParticleResult.java) — 结果类
+- [PDParticles.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDParticles.java) — 粒子注册示例
+- [SparkleParticle.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDream/src/main/java/com/pasterdream/pasterdreammod/client/particle/SparkleParticle.java) — 粒子类示例（主模块 client/particle/）

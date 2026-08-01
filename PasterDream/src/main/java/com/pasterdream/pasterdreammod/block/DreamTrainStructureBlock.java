@@ -37,7 +37,7 @@ public class DreamTrainStructureBlock extends Block {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
-            player.sendSystemMessage(Component.literal("§6列车即将到站，请做好准备..."));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.dream_train.arriving"));
         }
         return InteractionResult.SUCCESS;
     }

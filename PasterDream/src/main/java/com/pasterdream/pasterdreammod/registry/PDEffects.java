@@ -1027,8 +1027,8 @@ public class PDEffects {
                     data.putBoolean("shadow_intrude", true);
                     data.putBoolean("shadow_intrude_end", false);
                     if (entity instanceof Player player) {
-                        player.displayClientMessage(Component.literal("§5你感到一丝凉意，眼前被笼罩了一层黑雾"), false);
-                        player.displayClientMessage(Component.literal("§5附近的的影子开始蠕动"), false);
+                        player.displayClientMessage(Component.translatable("message.pasterdream.effect.shadow_intrude_start_1"), false);
+                        player.displayClientMessage(Component.translatable("message.pasterdream.effect.shadow_intrude_start_2"), false);
                     }
                     entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0, false, false));
                     level.playSound(null, BlockPos.containing(x, y, z), PDSounds.SHADOW_DOOR.get(),
@@ -1078,7 +1078,7 @@ public class PDEffects {
         data.putBoolean("shadow_intrude", false);
         data.putBoolean("shadow_intrude_end", false);
         if (entity instanceof Player player && !player.level().isClientSide) {
-            player.displayClientMessage(Component.literal("§5影子归于平息..."), false);
+            player.displayClientMessage(Component.translatable("message.pasterdream.effect.shadow_intrude_calm_1"), false);
         }
         if (entity instanceof ServerPlayer player && !isAdvancementDone(player, PDAdvancements.SHADOW_NPC_3.getPath())) {
             AdvancementHolder advancement = player.server.getAdvancements()
@@ -1091,8 +1091,8 @@ public class PDEffects {
                     }
                 }
             }
-            player.displayClientMessage(Component.literal("§7你对这些暗影生物会来到这里感到疑惑"), false);
-            player.displayClientMessage(Component.literal("§7或许我们应该再去找一次无名..."), false);
+            player.displayClientMessage(Component.translatable("message.pasterdream.effect.shadow_intrude_calm_2"), false);
+            player.displayClientMessage(Component.translatable("message.pasterdream.effect.shadow_intrude_calm_3"), false);
             entity.removeEffect(SHADOW_SPYON_BUFF.holder());
         }
     }

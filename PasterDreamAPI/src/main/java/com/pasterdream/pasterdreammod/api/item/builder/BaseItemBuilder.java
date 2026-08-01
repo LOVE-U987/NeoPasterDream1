@@ -154,7 +154,10 @@ public abstract class BaseItemBuilder<T extends BaseItemBuilder<T>> {
                                         List<Component> tooltip, TooltipFlag flag) {
                 super.appendHoverText(stack, context, tooltip, flag);
                 for (String line : lines) {
-                    tooltip.add(Component.literal(line));
+                    // 语言键（tooltip. 开头）走可翻译组件，其余保持原样
+                    tooltip.add(line.startsWith("tooltip.")
+                            ? Component.translatable(line)
+                            : Component.literal(line));
                 }
             }
         };

@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/jie_gou_sheng_cheng_kuai_",
-    "up": "pasterdream:block/jie_gou_sheng_cheng_kuai_",
-    "north": "pasterdream:block/jie_gou_sheng_cheng_kuai_",
-    "east": "pasterdream:block/jie_gou_sheng_cheng_kuai_",
-    "south": "pasterdream:block/jie_gou_sheng_cheng_kuai_",
-    "west": "pasterdream:block/jie_gou_sheng_cheng_kuai_",
-    "particle": "pasterdream:block/jie_gou_sheng_cheng_kuai_"
+    "down": "pasterdream:block/structure_generate_block",
+    "up": "pasterdream:block/structure_generate_block",
+    "north": "pasterdream:block/structure_generate_block",
+    "east": "pasterdream:block/structure_generate_block",
+    "south": "pasterdream:block/structure_generate_block",
+    "west": "pasterdream:block/structure_generate_block",
+    "particle": "pasterdream:block/structure_generate_block"
   },
   "render_type": "translucent"
 }

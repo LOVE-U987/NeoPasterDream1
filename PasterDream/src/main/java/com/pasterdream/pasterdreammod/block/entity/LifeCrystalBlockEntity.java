@@ -239,8 +239,8 @@ public class LifeCrystalBlockEntity extends BlockEntity implements GeoBlockEntit
                             SoundSource.BLOCKS, 1.0f, 0.5f);
                     // 发送消息
                     player.displayClientMessage(
-                            net.minecraft.network.chat.Component.literal(
-                                    "生命水晶破碎并涌入你的体内 §a最大生命值+2"),
+                            net.minecraft.network.chat.Component.translatable(
+                                    "message.pasterdream.life_crystal.absorbed"),
                             false);
                 }
                 // 清除方块

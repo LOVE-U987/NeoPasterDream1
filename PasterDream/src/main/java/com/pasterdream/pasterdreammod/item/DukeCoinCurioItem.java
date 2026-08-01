@@ -31,7 +31,7 @@ public class DukeCoinCurioItem extends Item implements ICurioItem {
     @Override
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, context, list, flag);
-        list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7a\u4F18\u79C0 \u2605\u2605"));
+        list.add(Component.translatable("tooltip.pasterdream.duke_coin_curio.quality"));
         list.add(Component.literal("\u00A77\u00A7o-- 7 Days to Die"));
 }
 

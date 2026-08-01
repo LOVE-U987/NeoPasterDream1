@@ -184,7 +184,7 @@ public class GoldenFoxSculptureBlock extends BaseEntityBlock implements SimpleWa
         boolean timeOk = tod >= 0L && tod <= RITUAL_DAYTIME_MAX;
         if (!flowersOk || !berryOk || !timeOk) {
             if (!player.level().isClientSide()) {
-                player.displayClientMessage(Component.literal("雕像没有反应..."), false);
+                player.displayClientMessage(Component.translatable("message.pasterdream.golden_fox.no_reaction"), false);
             }
             return false;
         }

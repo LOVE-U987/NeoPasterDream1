@@ -1,8 +1,8 @@
 {
   "parent": "block/cross",
   "textures": {
-    "cross": "pasterdream:block/wu_hua_guo_teng_",
-    "particle": "pasterdream:block/wu_hua_guo_teng_"
+    "cross": "pasterdream:block/fig_vine",
+    "particle": "pasterdream:block/fig_vine"
   },
   "render_type": "cutout"
 }

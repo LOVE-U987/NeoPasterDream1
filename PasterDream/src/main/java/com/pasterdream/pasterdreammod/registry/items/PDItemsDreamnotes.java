@@ -26,35 +26,35 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 public final class PDItemsDreamnotes {
 
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_0 = reg(0, List.of(
-            "§6开发者名单", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_0.title", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_1 = reg(1, List.of(
-            "§e染梦裂隙", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_1.title", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_2 = reg(2, List.of(
-            "§e染梦世界", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_2.title", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_3 = reg(3, List.of(
-            "§e粉红史莱姆", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_3.title", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_4 = reg(4, List.of(
-            "§e苍白雪莲", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_4.title", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_5 = reg(5, List.of(
-            "§e苍白骨针", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_5.title", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_6 = reg(6, List.of(
-            "§e衍梦肥泥", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_6.title", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_7 = reg(7, List.of(
-            "§e蓄梦池", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_7.title", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_8 = reg(8, List.of(
-            "§e阴影中的潜藏者", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_8.title", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_9 = reg(9, List.of(
-            "§e侵染教堂", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_9.title", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_10 = reg(10, List.of(
-            "§e沉淀阴影", "§7by §f琴雨梦", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_10.title", "tooltip.pasterdream.dreamnotes.author", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_11 = reg(11, List.of(
-            "§e阴影游记", "by 琴雨梦", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_11.title", "tooltip.pasterdream.dreamnotes.author", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_12 = reg(12, List.of(
-            "§e暗影地牢", "by 琴雨梦", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_12.title", "tooltip.pasterdream.dreamnotes.author", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_13 = reg(13, List.of(
-            "§e恐惧", "by 琴雨梦", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_13.title", "tooltip.pasterdream.dreamnotes.author", "tooltip.pasterdream.dreamnotes.hint"));
     public static final DeferredItem<DreamnotesItem> DREAMNOTES_14 = reg(14, List.of(
-            "§e无翼鸟也有展翅的梦", "by 琴雨梦", "§7展开以阅读笔记内容"));
+            "tooltip.pasterdream.dreamnotes_14.title", "tooltip.pasterdream.dreamnotes.author", "tooltip.pasterdream.dreamnotes.hint"));
 
     private static DeferredItem<DreamnotesItem> reg(int id, List<String> tips) {
         return PDItems.ITEMS.register("dreamnotes_" + id, () -> new DreamnotesItem(id, tips));

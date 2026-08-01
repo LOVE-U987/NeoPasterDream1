@@ -85,18 +85,18 @@ public class PastedreamMusicDiscItem extends Item {
         if (Screen.hasShiftDown()) {
             // Shift 展开模式：显示详细元数据
             if (trackTitle != null) {
-                tooltip.add(Component.literal("§7曲名: §f" + trackTitle));
+                tooltip.add(Component.translatable("tooltip.pasterdream.pastedream_music_disc.track_title", trackTitle));
             }
             if (trackArtist != null) {
-                tooltip.add(Component.literal("§7作者: §f" + trackArtist));
+                tooltip.add(Component.translatable("tooltip.pasterdream.pastedream_music_disc.track_artist", trackArtist));
             }
             if (trackAlbum != null) {
-                tooltip.add(Component.literal("§7专辑: §f" + trackAlbum));
+                tooltip.add(Component.translatable("tooltip.pasterdream.pastedream_music_disc.track_album", trackAlbum));
             }
         } else {
             // 非 Shift 模式：提示按 Shift 查看更多
             if (trackTitle != null || trackArtist != null || trackAlbum != null) {
-                tooltip.add(Component.literal("§7按住 §eShift §7查看唱片信息"));
+                tooltip.add(Component.translatable("tooltip.pasterdream.pastedream_music_disc.shift_hint"));
             }
         }
     }

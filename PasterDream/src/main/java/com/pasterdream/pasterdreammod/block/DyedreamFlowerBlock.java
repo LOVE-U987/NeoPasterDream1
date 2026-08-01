@@ -11,11 +11,14 @@ import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -54,6 +57,11 @@ public class DyedreamFlowerBlock extends FlowerBlock {
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-        return List.of(new ItemStack(this));
+        // 仅使用剪刀等相关工具破坏时掉落自身，空手或其他工具破坏不掉落
+        ItemStack tool = params.getParameter(LootContextParams.TOOL);
+        if (tool != null && !tool.isEmpty() && tool.getItem() instanceof ShearsItem) {
+            return List.of(new ItemStack(this));
+        }
+        return Collections.emptyList();
     }
 }

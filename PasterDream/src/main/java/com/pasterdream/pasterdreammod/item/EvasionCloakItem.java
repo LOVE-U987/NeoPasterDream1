@@ -27,12 +27,12 @@ public class EvasionCloakItem extends Item implements ICurioItem {
     @Override
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, context, list, flag);
-        list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7c\u4F20\u8BF4 \u2605\u2605\u2605\u2605\u2605\u2605\u2605"));
-        list.add(Component.literal("\u00A77\u25AA \u00A7f\u9ED8\u8BA4\u6309[\u00A7bZ\u00A7f]\u542F\u7528\u8863\u88C5"));
-        list.add(Component.literal("\u00A77\u25AA \u00A79\u8863\u88C5\u542F\u7528\u540E\u53EF\u4EE5\u572890\u79D2\u5185\u77AC\u8EAB\u672F\u7684\u56DE\u907F\u65F6\u95F4\u5EF6\u957F\u81F30.6\u79D2"));
-        list.add(Component.literal("\u00A77\u25AA \u00A79\u6210\u529F\u56DE\u907F\u4F24\u5BB3\u540E\u83B7\u5F97 \u53CD\u51FBI\uFF080:02\uFF09"));
-        list.add(Component.literal("\u00A77\u25AA \u00A79\u51B7\u5374\u65F6\u95F4\uFF1A300\u79D2"));
-        list.add(Component.literal("\u00A77\u25AA \u00A74\u878D\u68A6\u80FD\u91CF\u6D88\u8017\uFF1A10"));
+        list.add(Component.translatable("tooltip.pasterdream.evasion_cloak.quality"));
+        list.add(Component.translatable("tooltip.pasterdream.evasion_cloak.effect_1"));
+        list.add(Component.translatable("tooltip.pasterdream.evasion_cloak.effect_2"));
+        list.add(Component.translatable("tooltip.pasterdream.evasion_cloak.effect_3"));
+        list.add(Component.translatable("tooltip.pasterdream.evasion_cloak.effect_4"));
+        list.add(Component.translatable("tooltip.pasterdream.evasion_cloak.effect_5"));
 }
 
 }

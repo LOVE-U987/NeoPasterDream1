@@ -60,7 +60,7 @@ public class PDItemsMaterials {
      */
     public static final DeferredItem<Item> MAGIC_STONE =
             ItemAPI.simpleItem("magic_stone")
-                    .tooltip("§7§o哪个法师的兜里不会踹几块魔法石呢？")
+                    .tooltip("tooltip.pasterdream.magic_stone.flavor")
                     .build();
 
     /**
@@ -288,7 +288,7 @@ public class PDItemsMaterials {
     public static final DeferredItem<Item> DREAM_WAND_EMBRYO =
             ItemAPI.simpleItem("dream_wand_embryo")
                     .stacksTo(1)
-                    .tooltip("§7未加工原胚", "§7需要在精铸工坊内完成后续锻造")
+                    .tooltip("tooltip.pasterdream.dream_wand_embryo.raw", "tooltip.pasterdream.dream_wand_embryo.workbench")
                     .build();
 
 }

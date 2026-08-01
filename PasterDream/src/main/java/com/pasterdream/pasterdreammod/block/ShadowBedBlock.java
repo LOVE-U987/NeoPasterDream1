@@ -154,10 +154,10 @@ public class ShadowBedBlock extends Block implements SimpleWaterloggedBlock, Ent
                 }
                 teleportToLampShadowWorld(level, player);
             } else if (!player.level().isClientSide()) {
-                player.displayClientMessage(Component.literal("缺少灯影之下的进度"), true);
+                player.displayClientMessage(Component.translatable("message.pasterdream.shadow_bed.lack_progress"), true);
             }
         } else if (!player.level().isClientSide()) {
-            player.displayClientMessage(Component.literal("你只能在夜晚或雷暴中入眠"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.shadow_bed.night_only"), true);
         }
         player.swing(InteractionHand.MAIN_HAND, true);
         return InteractionResult.SUCCESS;

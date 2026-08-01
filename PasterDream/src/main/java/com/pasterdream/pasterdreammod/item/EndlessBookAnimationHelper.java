@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.item;
 
+import com.pasterdream.pasterdreammod.api.util.BookLocalization;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -131,6 +132,8 @@ public class EndlessBookAnimationHelper {
         }
 
         if (!book.isEmpty()) {
+            // 结构成书本地化保险：无论书来自展示槽还是战利品表，都确保书页随语言切换
+            BookLocalization.localize(book);
             if (!player.getInventory().add(book)) {
                 ItemEntity drop = new ItemEntity(level,
                         player.getX(), player.getY(), player.getZ(), book);

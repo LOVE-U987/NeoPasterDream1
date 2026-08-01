@@ -217,7 +217,7 @@ public class WorkshopBlastBlockEntity extends BlockEntity implements MenuProvide
         if (!result.isEmpty()) {
             WeaponWorkshopVariables.weaponWorkshopItem = result;
             PasterItemData.putDouble(result, "process", 1);
-            result.set(DataComponents.CUSTOM_NAME, Component.literal("未完工原胚（待锤炼）"));
+            result.set(DataComponents.CUSTOM_NAME, Component.translatable("message.pasterdream.embryo.pending_forge"));
             result.setCount(1);
             itemHandler.setStackInSlot(SLOT_RESULT, result);
         }

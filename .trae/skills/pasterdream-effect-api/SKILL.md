@@ -28,20 +28,21 @@ MobEffectResult dreamwish = MobEffectAPI.createEffect("dreamwish_buff")
     .build();
 
 // ====== 在其他地方获取效果引用 ======
-MobEffectResult result = MobEffectAPI.getEffect("dreamwish_buff");
-if (result != null) {
+MobEffectAPI.getEffect("dreamwish_buff").ifPresent(result -> {
     MobEffect effect = result.effect();              // 获取 MobEffect 实例
-}
+});
 ```
 
 ## 前置条件
 
-在 `PasterDreamMod` 构造函数中注册 MobEffectAPI 的 REGISTRY：
+在 `PasterDreamMod` 构造函数中注册 MobEffectAPI 的 REGISTRY（或调用统一入口）：
 
 ```java
 public PasterDreamMod(IEventBus modEventBus) {
-    // ... 其他注册器 ...
-    MobEffectAPI.REGISTRY.register(modEventBus);
+    // 方式一：统一注册（推荐，包含所有 API）
+    PasterDreamAPI.registerAll(modEventBus);
+    // 方式二：单独注册
+    // MobEffectAPI.REGISTRY.register(modEventBus);
 }
 ```
 
@@ -211,27 +212,29 @@ public class PDPotions {
 }
 ```
 
-## 效果查询
+## 效果查询（查询方法均返回 Optional）
 
 ```java
 // 通过名称查询 MobEffectResult
-MobEffectResult result = MobEffectAPI.getEffect("dreamwish_buff");
-if (result != null) {
+MobEffectAPI.getEffect("dreamwish_buff").ifPresent(result -> {
     MobEffect effect = result.effect();
-}
+});
 
-// 直接获取 MobEffect 引用（无结果时返回 null）
-MobEffect effect = MobEffectAPI.getEffectType("dreamwish_buff");
+// 直接获取 MobEffect 引用
+MobEffectAPI.getEffectType("dreamwish_buff").ifPresent(effect -> {
+    // 使用效果
+});
 
 // 获取 Supplier 形式（延迟获取）
-Supplier<MobEffect> supplier = MobEffectAPI.getEffectSupplier("dreamwish_buff");
+MobEffectAPI.getEffectSupplier("dreamwish_buff").ifPresent(supplier -> {
+    Supplier<MobEffect> s = supplier;
+});
 
 // 获取 PasterDreamEffect 强类型引用（可访问自定义配置）
-PasterDreamEffect pde = MobEffectAPI.getPasterDreamEffect("dreamwish_buff");
-if (pde != null) {
+MobEffectAPI.getPasterDreamEffect("dreamwish_buff").ifPresent(pde -> {
     ResourceLocation shader = pde.getShaderTexture();
     ParticleType<?> particle = pde.getEffectParticleType();
-}
+});
 
 // 获取所有已注册效果
 Map<String, MobEffectResult> all = MobEffectAPI.getRegisteredEffects();

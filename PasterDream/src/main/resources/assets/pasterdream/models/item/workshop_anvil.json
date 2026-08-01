@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/gong_fang_tie_zhen_"
+    "layer0": "pasterdream:item/workshop_anvil"
   },
   "render_type": "translucent"
 }

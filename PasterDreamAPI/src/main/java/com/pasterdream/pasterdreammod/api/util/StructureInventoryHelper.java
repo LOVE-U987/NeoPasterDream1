@@ -61,15 +61,33 @@ public final class StructureInventoryHelper {
      * @return 是否从任一格式载入了数据（含空列表）
      */
     public static boolean loadItemHandler(ItemStackHandler handler, CompoundTag tag, HolderLookup.Provider registries) {
+        boolean loaded;
         if (tag.contains(TAG_INVENTORY, Tag.TAG_COMPOUND)) {
             handler.deserializeNBT(registries, tag.getCompound(TAG_INVENTORY));
-            return true;
-        }
-        if (tag.contains(TAG_ITEMS, Tag.TAG_LIST)) {
+            loaded = true;
+        } else if (tag.contains(TAG_ITEMS, Tag.TAG_LIST)) {
             loadVanillaItems(handler, tag.getList(TAG_ITEMS, Tag.TAG_COMPOUND), registries);
-            return true;
+            loaded = true;
+        } else {
+            loaded = false;
         }
-        return false;
+        // 结构成书本地化：确保任意加载路径下书页都随语言切换
+        localizeBooks(handler);
+        return loaded;
+    }
+
+    /**
+     * 对容器内所有 {@code written_book} 执行本地化重建（书页 → 可翻译组件）。
+     *
+     * @param handler 已加载库存的处理器
+     */
+    public static void localizeBooks(ItemStackHandler handler) {
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                BookLocalization.localize(stack);
+            }
+        }
     }
 
     /**
@@ -196,6 +214,8 @@ public final class StructureInventoryHelper {
         ItemStack stack = new ItemStack(Items.WRITTEN_BOOK, count);
         stack.set(DataComponents.WRITTEN_BOOK_CONTENT,
                 new WrittenBookContent(Filterable.passThrough(title), author, generation, List.copyOf(pages), resolved));
+        // 结构成书本地化：书页重建为可翻译组件（随语言切换中/英文）
+        BookLocalization.localize(stack);
         return stack;
     }
 
@@ -276,6 +296,7 @@ public final class StructureInventoryHelper {
         for (int i = 0; i < handler.getSlots(); i++) {
             handler.setStackInSlot(i, buffer.getItem(i));
         }
+        localizeBooks(handler);
         clearLootTable.run();
         if (player instanceof ServerPlayer serverPlayer) {
             net.minecraft.advancements.CriteriaTriggers.GENERATE_LOOT.trigger(serverPlayer, lootTable);

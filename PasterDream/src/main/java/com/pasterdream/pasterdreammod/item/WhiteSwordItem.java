@@ -185,13 +185,13 @@ public class WhiteSwordItem extends SwordItem {
                                 List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
         // 原版 appendHoverText 逐行还原
-        tooltip.add(Component.literal("战技：§f白厄剑雨"));
-        tooltip.add(Component.literal("§7▪ §9技能开启时标记在视点方向8格外的位置"));
-        tooltip.add(Component.literal("§7▪ §9在直径为7的区域释放多轮剑雨"));
-        tooltip.add(Component.literal("§7▪ §9每发剑雨造成3+攻击力属性值*0.4点伤害并将其束缚"));
-        tooltip.add(Component.literal("§7▪ §9且每发有12%的概率使暗影生物沉默10秒"));
-        tooltip.add(Component.literal("§7▪ §9对BOSS类暗影生物概率减半"));
-        tooltip.add(Component.literal("§7▪ §9冷却时间：4.2秒"));
-        tooltip.add(Component.literal("§7▪ §4融梦能量消耗：0.1"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.white_sword.skill_name"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.white_sword.mark"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.white_sword.rain_area"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.white_sword.damage"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.white_sword.silence"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.white_sword.boss_half"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.white_sword.cooldown"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.white_sword.energy_cost"));
     }
 }

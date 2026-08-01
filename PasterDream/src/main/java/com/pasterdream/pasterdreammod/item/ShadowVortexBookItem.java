@@ -142,7 +142,7 @@ public class ShadowVortexBookItem extends Item {
         } else {
             WandSupport.applyTaggedCooldown(player, WandSupport.MAGIC_TAG, 1000);
             player.hurt(level.damageSources().generic(), 5);
-            player.displayClientMessage(Component.literal("你使用这本书的时候遭到了反噬"), true);
+            player.displayClientMessage(Component.translatable("tooltip.pasterdream.shadow_vortex_book.backlash"), true);
         }
     }
 }

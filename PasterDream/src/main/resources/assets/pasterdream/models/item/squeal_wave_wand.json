@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/hun_xiao_fa_zhang_"
+    "layer0": "pasterdream:item/squeal_wave_wand"
   },
   "display": {
     "thirdperson_righthand": {

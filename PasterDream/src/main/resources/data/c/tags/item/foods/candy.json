@@ -1,10 +1,11 @@
 {
   "replace": false,
   "values": [
+    "pasterdream:amber_candy",
     "pasterdream:bubble_gum",
     "pasterdream:candy_cane",
     "pasterdream:dream_cotton_candy",
-    "pasterdream:silver_fox_cotton_candy",
-    "pasterdream:yinhul_cotton_candy"
+    "pasterdream:popping_candy",
+    "pasterdream:silver_fox_cotton_candy"
   ]
 }

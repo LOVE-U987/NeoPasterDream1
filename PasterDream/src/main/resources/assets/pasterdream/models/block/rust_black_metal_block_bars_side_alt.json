@@ -1,8 +1,8 @@
 {
   "parent": "block/template_glass_pane_side_alt",
   "textures": {
-    "edge": "pasterdream:block/xiu_shi_jin_shu_lan_gan_",
-    "pane": "pasterdream:block/xiu_shi_jin_shu_lan_gan_"
+    "edge": "pasterdream:block/rust_black_metal_bars",
+    "pane": "pasterdream:block/rust_black_metal_bars"
   },
   "render_type": "cutout"
 }

@@ -1,8 +1,11 @@
 {
   "replace": false,
   "values": [
+    "pasterdream:blackmetal_grain",
+    "pasterdream:dyedream_bud_nugget",
     "pasterdream:dyedream_nugget",
     "pasterdream:moltengold_nugget",
+    "pasterdream:rust_black_metal_grain",
     "pasterdream:titanium_nugget"
   ]
 }

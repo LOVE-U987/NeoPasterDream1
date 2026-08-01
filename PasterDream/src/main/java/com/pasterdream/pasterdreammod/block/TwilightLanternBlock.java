@@ -247,13 +247,13 @@ public class TwilightLanternBlock extends BaseEntityBlock {
                     }
                     if (!player.level().isClientSide()) {
                         player.displayClientMessage(
-                                Component.literal("§8诡异的灯笼突然剧烈抖动，黑色的阴影从灯芯里流出。"), false);
+                                Component.translatable("message.pasterdream.twilight_lantern.shadow_flows"), false);
                     }
                 });
                 ServerScheduler.schedule(55, () -> {
                     if (!player.level().isClientSide()) {
                         player.displayClientMessage(
-                                Component.literal("§8阴影化为实物，四周传来空洞的回响。"), false);
+                                Component.translatable("message.pasterdream.twilight_lantern.shadow_materialize"), false);
                     }
                     if (!level.isClientSide()) {
                         level.playSound(null, pos, PDSounds.SHADOW_MUSIC_0.get(), SoundSource.MUSIC, 1, 1);
@@ -268,14 +268,14 @@ public class TwilightLanternBlock extends BaseEntityBlock {
                                 new AABB(center, center).inflate(54 / 2d), e -> true)) {
                             if (nearby instanceof Player p && !p.level().isClientSide()) {
                                 p.displayClientMessage(
-                                        Component.literal("§8阴影不再从四周向外涌出，暮影之笼也逐渐归为平静。"), false);
+                                        Component.translatable("message.pasterdream.twilight_lantern.cage_calm"), false);
                             }
                             ServerScheduler.schedule(60, () -> {
                                 if (nearby instanceof Player p && !p.level().isClientSide()) {
                                     p.displayClientMessage(
-                                            Component.literal("§5“躺上去吧，在寂静的夜晚，在这亭笼之下”"), false);
+                                            Component.translatable("message.pasterdream.twilight_lantern.lie_down"), false);
                                     p.displayClientMessage(
-                                            Component.literal("§5已可以与暮影之笼发生共鸣"), true);
+                                            Component.translatable("message.pasterdream.twilight_lantern.resonate"), true);
                                 }
                             });
                             ServerScheduler.schedule(100, () -> {
@@ -290,10 +290,10 @@ public class TwilightLanternBlock extends BaseEntityBlock {
                     W4DataBlockEntity.putDoubleAt(level, pos, "number", 0);
                 });
             } else if (!player.level().isClientSide()) {
-                player.displayClientMessage(Component.literal("需要用融梦水晶碎片点燃影灯"), true);
+                player.displayClientMessage(Component.translatable("message.pasterdream.twilight_lantern.need_shard"), true);
             }
         } else if (!player.level().isClientSide()) {
-            player.displayClientMessage(Component.literal("你尚未知晓如何激活影灯"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.twilight_lantern.unknown_activation"), true);
         }
         return InteractionResult.SUCCESS;
     }

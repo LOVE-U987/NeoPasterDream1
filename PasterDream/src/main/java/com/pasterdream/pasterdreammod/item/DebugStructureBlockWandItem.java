@@ -56,13 +56,13 @@ public class DebugStructureBlockWandItem extends Item {
 
         PDStructureBlock.Spec spec = PDStructureBlock.SPECS.get(index);
         if (spec == null) {
-            player.sendSystemMessage(Component.literal("§c未找到结构方块规格: " + index));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.spec_not_found", index));
             return InteractionResultHolder.fail(itemStack);
         }
 
         HitResult hitResult = player.pick(100.0D, 1.0F, false);
         if (hitResult.getType() != HitResult.Type.BLOCK) {
-            player.sendSystemMessage(Component.literal("§c没有瞄准任何方块"));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.no_target"));
             return InteractionResultHolder.fail(itemStack);
         }
 
@@ -86,7 +86,7 @@ public class DebugStructureBlockWandItem extends Item {
             ResourceLocation structureId = ResourceLocation.fromNamespaceAndPath("pasterdream", placement.template());
             StructureTemplate template = serverLevel.getStructureManager().getOrCreate(structureId);
             if (template == null) {
-                player.sendSystemMessage(Component.literal("§c未找到结构: " + structureId));
+                player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.structure_not_found", structureId));
                 continue;
             }
 
@@ -101,9 +101,9 @@ public class DebugStructureBlockWandItem extends Item {
         }
 
         if (placedCount > 0) {
-            player.sendSystemMessage(Component.literal("§a已放置结构方块 §f" + index + " §a的随机结果于 " + targetPos.toShortString()));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.structure_block_placed", index, targetPos.toShortString()));
         } else {
-            player.sendSystemMessage(Component.literal("§e结构方块 §f" + index + " §e未匹配到可放置模板"));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.structure_block_no_template", index));
         }
         return InteractionResultHolder.success(itemStack);
     }
@@ -112,12 +112,12 @@ public class DebugStructureBlockWandItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         PDStructureBlock.Spec spec = PDStructureBlock.SPECS.get(index);
         if (spec != null) {
-            tooltipComponents.add(Component.literal("§7复现结构方块: §f" + index));
+            tooltipComponents.add(Component.translatable("tooltip.pasterdream.debug_structure_block_wand.reproduce", index));
             for (String line : spec.tooltip()) {
-                tooltipComponents.add(Component.literal(line));
+                tooltipComponents.add(Component.translatable(line));
             }
         }
-        tooltipComponents.add(Component.literal("§7右键点击方块在§e外侧§7生成"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.debug_structure_wand.right_click"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }

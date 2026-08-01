@@ -250,7 +250,7 @@ public class WeaponWorkshopBlockEntity extends BlockEntity implements GeoBlockEn
         WeaponWorkshopVariables.weaponWorkshopItem = stash;
         if (stash.is(EMBRYO_ITEMS)) {
             stash.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME,
-                    Component.literal("未完工原胚（待煅烧）"));
+                    Component.translatable("message.pasterdream.embryo.pending_calcine"));
         }
         ItemStack enhanceStone = itemHandler.getStackInSlot(SLOT_ENHANCE);
         if (enhanceStone.is(PDItems.ENHANCE_STONE_0.get().asItem())) {

@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -173,6 +174,32 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
         if (level == null) return;
         playerCooldowns.put(player.getUUID(), level.getGameTime() + COOLDOWN_DURATION);
         setChanged();
+    }
+
+    /**
+     * 将玩家冷却映射序列化到指定 NBT 标签（仅冷却数据，不含库存/状态机）。
+     * <p>
+     * 供 BlockEntity 存档与"掉落物携带冷却"两处复用：
+     * 方块被破坏（含 TNT）时，掉落物仅携带冷却数据，重放后冷却依然生效，
+     * 从而无法通过"挖掘/TNT → 重放"绕过冷却限制。
+     * <p>
+     * 注意：必须补写 {@code id} 字段 —— {@code BLOCK_ENTITY_DATA} 组件使用
+     * {@code CustomData.CODEC_WITH_ID} 持久化，NBT 缺少 {@code id} 会在物品存档时
+     * 抛出 {@code "Missing id for entity"} 导致崩溃。
+     *
+     * @param tag 目标 NBT 标签
+     */
+    public void saveCooldownsToTag(CompoundTag tag) {
+        // BLOCK_ENTITY_DATA 组件要求 id 字段（方块实体注册 ID），缺失会导致物品存档崩溃
+        tag.putString("id", BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(this.getType()).toString());
+        ListTag cooldownList = new ListTag();
+        for (Map.Entry<UUID, Long> entry : playerCooldowns.entrySet()) {
+            CompoundTag entryTag = new CompoundTag();
+            entryTag.putString(TAG_COOLDOWN_UUID, entry.getKey().toString());
+            entryTag.putLong(TAG_COOLDOWN_TIME, entry.getValue());
+            cooldownList.add(entryTag);
+        }
+        tag.put(TAG_COOLDOWNS, cooldownList);
     }
 
     // ==================== 状态机 API ====================
@@ -500,15 +527,8 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
         tag.putInt(TAG_QUALITY, quality);
         tag.putBoolean(TAG_POP_COMPLETE, popComplete);
 
-        // 持久化冷却映射
-        ListTag cooldownList = new ListTag();
-        for (Map.Entry<UUID, Long> entry : playerCooldowns.entrySet()) {
-            CompoundTag entryTag = new CompoundTag();
-            entryTag.putString(TAG_COOLDOWN_UUID, entry.getKey().toString());
-            entryTag.putLong(TAG_COOLDOWN_TIME, entry.getValue());
-            cooldownList.add(entryTag);
-        }
-        tag.put(TAG_COOLDOWNS, cooldownList);
+        // 持久化冷却映射（复用冷却专用序列化方法）
+        saveCooldownsToTag(tag);
     }
 
     @Override

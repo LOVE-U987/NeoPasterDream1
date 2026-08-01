@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/shi_se_gou_meng_shua_guai_long_",
-    "up": "pasterdream:block/shi_se_gou_meng_shua_guai_long_",
-    "north": "pasterdream:block/shi_se_gou_meng_shua_guai_long_",
-    "east": "pasterdream:block/shi_se_gou_meng_shua_guai_long_",
-    "south": "pasterdream:block/shi_se_gou_meng_shua_guai_long_",
-    "west": "pasterdream:block/shi_se_gou_meng_shua_guai_long_",
-    "particle": "pasterdream:block/shi_se_gou_meng_shua_guai_long_"
+    "down": "pasterdream:block/dream_spawner_stone",
+    "up": "pasterdream:block/dream_spawner_stone",
+    "north": "pasterdream:block/dream_spawner_stone",
+    "east": "pasterdream:block/dream_spawner_stone",
+    "south": "pasterdream:block/dream_spawner_stone",
+    "west": "pasterdream:block/dream_spawner_stone",
+    "particle": "pasterdream:block/dream_spawner_stone"
   },
   "render_type": "cutout"
 }

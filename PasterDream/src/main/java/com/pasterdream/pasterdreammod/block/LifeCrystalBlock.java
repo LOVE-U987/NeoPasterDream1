@@ -167,7 +167,7 @@ public class LifeCrystalBlock extends BaseEntityBlock implements SimpleWaterlogg
             AttributeInstance attr = livingEntity.getAttribute(Attributes.MAX_HEALTH);
             if (attr != null && attr.hasModifier(MODIFIER_ID)) {
                 player.displayClientMessage(
-                        net.minecraft.network.chat.Component.literal("你已经吸收过生命水晶了！"),
+                        net.minecraft.network.chat.Component.translatable("message.pasterdream.life_crystal.already_absorbed"),
                         false);
                 return InteractionResult.SUCCESS;
             }

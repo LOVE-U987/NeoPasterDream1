@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/huan_xing_lie_xi_item"
+    "layer0": "pasterdream:item/starcall_crack"
   },
   "render_type": "translucent"
 }

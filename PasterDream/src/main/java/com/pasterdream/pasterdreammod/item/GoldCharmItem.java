@@ -27,8 +27,8 @@ public class GoldCharmItem extends Item implements ICurioItem {
     @Override
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, context, list, flag);
-        list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7f\u666E\u901A \u2605"));
-        list.add(Component.literal("\u00A77\u25AA \u00A79\u4F7F\u732A\u7075\u4FDD\u6301\u4E2D\u7ACB"));
+        list.add(Component.translatable("tooltip.pasterdream.gold_charm.quality"));
+        list.add(Component.translatable("tooltip.pasterdream.gold_charm.effect_1"));
 }
 
 }

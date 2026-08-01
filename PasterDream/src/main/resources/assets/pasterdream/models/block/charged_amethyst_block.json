@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/ying_neng_zi_shui_jing_kuai_",
-    "up": "pasterdream:block/ying_neng_zi_shui_jing_kuai_",
-    "north": "pasterdream:block/ying_neng_zi_shui_jing_kuai_",
-    "east": "pasterdream:block/ying_neng_zi_shui_jing_kuai_",
-    "south": "pasterdream:block/ying_neng_zi_shui_jing_kuai_",
-    "west": "pasterdream:block/ying_neng_zi_shui_jing_kuai_",
-    "particle": "pasterdream:block/ying_neng_zi_shui_jing_kuai_"
+    "down": "pasterdream:block/charged_amethyst_block",
+    "up": "pasterdream:block/charged_amethyst_block",
+    "north": "pasterdream:block/charged_amethyst_block",
+    "east": "pasterdream:block/charged_amethyst_block",
+    "south": "pasterdream:block/charged_amethyst_block",
+    "west": "pasterdream:block/charged_amethyst_block",
+    "particle": "pasterdream:block/charged_amethyst_block"
   },
   "render_type": "translucent"
 }

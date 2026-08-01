@@ -31,9 +31,9 @@ public class AllkindsRingItem extends Item implements ICurioItem {
     @Override
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, context, list, flag);
-        list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7c\u4F20\u8BF4 \u2605\u2605\u2605\u2605\u2605\u2605\u2605"));
-        list.add(Component.literal("\u00A77\u00A7o\u805A\u4E07\u8C61\u4E4B\u529B \u94F8\u4EE5\u6B64\u6212"));
-        list.add(Component.literal("\u00A77\u00A7o-- \u65AF\u5353\u8D1D\u8389\u25AA\u9EDB\u6B27\u6069"));
+        list.add(Component.translatable("tooltip.pasterdream.allkinds_ring.quality"));
+        list.add(Component.translatable("tooltip.pasterdream.allkinds_ring.flavor_1"));
+        list.add(Component.translatable("tooltip.pasterdream.allkinds_ring.flavor_2"));
 }
 
     @Override

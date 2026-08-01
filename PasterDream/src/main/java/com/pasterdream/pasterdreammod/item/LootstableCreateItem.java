@@ -52,8 +52,8 @@ public class LootstableCreateItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("§7潜行右击容器方块以使其增加战利品表"));
-        tooltip.add(Component.literal("§7战利品表："));
+        tooltip.add(Component.translatable("tooltip.pasterdream.lootstable_create.sneak_hint"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.lootstable_create.table_label"));
         tooltip.add(Component.literal(themeLine));
     }
 
@@ -69,7 +69,7 @@ public class LootstableCreateItem extends Item {
             if (blockEntity instanceof RandomizableContainerBlockEntity container) {
                 container.setLootTable(lootTable);
                 container.setChanged();
-                player.displayClientMessage(Component.literal("战利品已生成"), true);
+                player.displayClientMessage(Component.translatable("tooltip.pasterdream.lootstable_create.generated"), true);
             }
         }
         return InteractionResult.SUCCESS;

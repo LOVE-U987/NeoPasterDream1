@@ -131,13 +131,13 @@ public class ShadowDungeonDoorBlock extends Block {
                 destroyDoorGroup(level, pos, true);
             } else {
                 player.displayClientMessage(
-                        Component.literal("需要在本层寻找暗影地牢钥匙以打开大门"), true);
+                        Component.translatable("message.pasterdream.shadow_dungeon_door.need_key"), true);
             }
         } else {
             if (player instanceof ServerPlayer sp && hasAdvancement(sp, "achievement_shadow_npc_5")) {
                 destroyDoorGroup(level, pos, false);
             } else {
-                player.displayClientMessage(Component.literal("大门紧闭不开"), true);
+                player.displayClientMessage(Component.translatable("message.pasterdream.shadow_dungeon_door.locked"), true);
             }
         }
         return InteractionResult.SUCCESS;

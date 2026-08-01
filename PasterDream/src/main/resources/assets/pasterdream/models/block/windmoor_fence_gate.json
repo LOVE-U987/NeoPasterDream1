@@ -1,7 +1,7 @@
 {
   "parent": "block/template_fence_gate",
   "textures": {
-    "texture": "pasterdream:block/feng_bo_mu_ban_"
+    "texture": "pasterdream:block/windmoor_planks"
   },
   "render_type": "cutout"
 }

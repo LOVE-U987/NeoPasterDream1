@@ -34,9 +34,9 @@ public class PDBlocksDungeon {
                     .strength(-1.0f, 3600000.0f)
                     .lightLevel((bs) -> 0));
 
-    /** 暗影地牢砖 1 — 带顶底花纹砖（不可破坏，竞技场墙体） */
-    public static final DeferredBlock<Block> SHADOW_DUNGEON_BLOCK_1 = PDBlocks.BLOCKS.registerBlock("shadow_dungeon_block_1",
-            Block::new, BlockBehaviour.Properties.of()
+    /** 暗影地牢砖 1 — 带顶底花纹砖（不可破坏，竞技场墙体，带轴向状态） */
+    public static final DeferredBlock<ShadowDungeonBlock1Block> SHADOW_DUNGEON_BLOCK_1 = PDBlocks.BLOCKS.registerBlock("shadow_dungeon_block_1",
+            ShadowDungeonBlock1Block::new, BlockBehaviour.Properties.of()
                     .instrument(NoteBlockInstrument.BASEDRUM)
                     .sound(SoundType.STONE)
                     .strength(-1.0f, 3600000.0f));
@@ -154,9 +154,9 @@ public class PDBlocksDungeon {
                     .noOcclusion()
                     .isRedstoneConductor((bs, br, bp) -> false));
 
-    /** 暗影蜡烛 — 发光等级13，易破坏 */
-    public static final DeferredBlock<Block> SHADOWCANDLE = PDBlocks.BLOCKS.registerBlock("shadowcandle",
-            Block::new, BlockBehaviour.Properties.of()
+    /** 暗影蜡烛 — 发光等级13，易破坏，细长蜡烛碰撞箱 (6,0,6,10,8,10) */
+    public static final DeferredBlock<ShadowcandleBlock> SHADOWCANDLE = PDBlocks.BLOCKS.registerBlock("shadowcandle",
+            ShadowcandleBlock::new, BlockBehaviour.Properties.of()
                     .instrument(NoteBlockInstrument.BASEDRUM)
                     .sound(SoundType.CANDLE)
                     .strength(0.1f, 0.0f)

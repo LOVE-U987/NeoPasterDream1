@@ -45,11 +45,11 @@ public class TimeHourglassItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("§7对空气使用以跳跃世界时间更替昼夜"));
-        tooltip.add(Component.literal("§7潜行对部分计时梦境方块使用以瞬时完成一个阶段"));
-        tooltip.add(Component.literal("§7可以刷新地牢冷却"));
-        tooltip.add(Component.literal("§7潜行右击方块以使用"));
-        tooltip.add(Component.literal("§7§o-- 沙漏将会记得 我们所遗忘的时光"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.time_hourglass.advance_day"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.time_hourglass.finish_stage"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.time_hourglass.refresh_cooldown"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.time_hourglass.use_hint"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.time_hourglass.lore"));
     }
 
     /** 对空气使用：跳跃世界时间 12000 tick，并在使用者上方生成纯视觉闪电 */
@@ -58,7 +58,7 @@ public class TimeHourglassItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (Boolean.TRUE.equals(PDCommonConfig.BAN_TIME_HOURGLASS.get())) {
             if (!level.isClientSide()) {
-                player.displayClientMessage(Component.literal("§4此物品已被禁用"), true);
+                player.displayClientMessage(Component.translatable("tooltip.pasterdream.time_hourglass.disabled"), true);
             }
             return InteractionResultHolder.fail(stack);
         }
@@ -92,7 +92,7 @@ public class TimeHourglassItem extends Item {
         Player player = context.getPlayer();
         if (Boolean.TRUE.equals(PDCommonConfig.BAN_TIME_HOURGLASS.get())) {
             if (player != null && !level.isClientSide()) {
-                player.displayClientMessage(Component.literal("§4此物品已被禁用"), true);
+                player.displayClientMessage(Component.translatable("tooltip.pasterdream.time_hourglass.disabled"), true);
             }
             return InteractionResult.FAIL;
         }

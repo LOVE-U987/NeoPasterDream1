@@ -4,7 +4,6 @@ import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
-import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -47,15 +46,16 @@ import java.util.List;
 /**
  * 真·影之床（true_shadow_bed）
  * <p>
- * 忠实还原原版 {@code TrueShadowBedBlock + TrueShadowBedPr0Procedure}：
- * <ul>
- *   <li>夜晚/雷暴时右键：床上方 2 格若是激活（key=true）的暮影之笼，
- *       且玩家已达成 achievement_hide_9——理智 -10 并传送至 lamp_shadow_world；</li>
- *   <li>白天提示只能夜晚入眠；</li>
- *   <li>在 lamp_shadow_world 中：已达成 achievement_shadow_npc_5 且未达成
- *       achievement_shadow_d_0 的玩家，打开影之抉择菜单
- *       （ShadowSelectEndMenu，主线程已注册）。</li>
- * </ul>
+ * 入眠交互与 {@link ShadowBedBlock} 完全一致：
+ * 夜晚/雷暴且不在灯影世界时右键——已达成 achievement_shadow_start 的玩家
+ * 理智 -10、补授 achievement_shadow_a_1，并传送至 lamp_shadow_world
+ * （原 WorldSpawnPr1Procedure：0,100,0 为空气时落点 (0.5,104,0.5)，
+ * 否则 (0.5,154,0.5)）；未达成则提示缺少进度；白天提示只能夜晚入眠。
+ * <p>
+ * 保留灯影世界内的独有特性：已达成 achievement_shadow_npc_5 且未达成
+ * achievement_shadow_d_0 的玩家，打开影之抉择菜单
+ * （ShadowSelectEndMenu，主线程已注册）。
+ * <p>
  * 不可破坏木床，FACING+WATERLOGGED，床形碰撞箱。
  */
 public class TrueShadowBedBlock extends Block implements SimpleWaterloggedBlock, EntityBlock {
@@ -135,25 +135,26 @@ public class TrueShadowBedBlock extends Block implements SimpleWaterloggedBlock,
         return Collections.singletonList(new ItemStack(this));
     }
 
-    // ==================== 入眠交互（原 TrueShadowBedPr0Procedure） ====================
+    // ==================== 入眠交互（与 ShadowBedBlock 完全一致） ====================
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hitResult) {
-        player.swing(InteractionHand.MAIN_HAND, true);
-
-        if (!level.isDay() || level.getLevelData().isThundering()) {
-            BlockPos lanternPos = pos.above(2);
-            if (level.getBlockState(lanternPos).getBlock() == PDBlocksFurniture.TWILIGHT_LANTERN.get()
-                    && W4DataBlockEntity.getBooleanAt(level, lanternPos, "key")
-                    && player instanceof ServerPlayer serverPlayer
-                    && serverPlayer.level() instanceof ServerLevel
-                    && ShadowBedBlock.hasAdvancement(serverPlayer, "achievement_hide_9")) {
+        boolean nightOrThunder = !level.isDay() || level.getLevelData().isThundering();
+        boolean notInLampWorld = level.dimension() != PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY;
+        if (nightOrThunder || notInLampWorld) {
+            if (player instanceof ServerPlayer serverPlayer && serverPlayer.level() instanceof ServerLevel
+                    && ShadowBedBlock.hasAdvancement(serverPlayer, "achievement_shadow_start")) {
                 PDAttachments.addPlayerSanWithCheck(serverPlayer, -10);
-                ShadowBedBlock.teleportToLampShadowWorld(level, serverPlayer);
+                if (!ShadowBedBlock.hasAdvancement(serverPlayer, "achievement_shadow_a_1")) {
+                    ShadowBedBlock.awardAdvancement(serverPlayer, "achievement_shadow_a_1");
+                }
+                ShadowBedBlock.teleportToLampShadowWorld(level, player);
+            } else if (!player.level().isClientSide()) {
+                player.displayClientMessage(Component.translatable("message.pasterdream.shadow_bed.lack_progress"), true);
             }
         } else if (!player.level().isClientSide()) {
-            player.displayClientMessage(Component.literal("你只能在夜晚或雷暴中入眠"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.shadow_bed.night_only"), true);
         }
 
         // 灯影世界中：影之抉择（ShadowSelectEnd GUI）
@@ -176,6 +177,7 @@ public class TrueShadowBedBlock extends Block implements SimpleWaterloggedBlock,
                 }
             }, bedPos);
         }
+        player.swing(InteractionHand.MAIN_HAND, true);
         return InteractionResult.SUCCESS;
     }
 

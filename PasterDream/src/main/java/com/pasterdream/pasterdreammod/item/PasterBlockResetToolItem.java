@@ -25,7 +25,7 @@ public class PasterBlockResetToolItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tip, TooltipFlag flag) {
         super.appendHoverText(stack, ctx, tip, flag);
-        tip.add(Component.literal("未完工"));
+        tip.add(Component.translatable("tooltip.pasterdream.paster_block_reset_tool.unfinished"));
     }
 
     @Override
@@ -43,7 +43,7 @@ public class PasterBlockResetToolItem extends Item {
             W4DataBlockEntity.putBooleanAt(level, pos, "switch", false);
             level.sendBlockUpdated(pos, level.getBlockState(pos), level.getBlockState(pos), 3);
             level.playSound(null, pos, PDSounds.DING_0.get(), SoundSource.NEUTRAL, 1f, 1f);
-            player.displayClientMessage(Component.literal("§e方块数据已重置"), false);
+            player.displayClientMessage(Component.translatable("tooltip.pasterdream.paster_block_reset_tool.reset_done"), false);
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
     }

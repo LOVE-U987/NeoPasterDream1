@@ -1,9 +1,11 @@
 {
   "replace": false,
   "values": [
+    "pasterdream:bread_slice",
     "pasterdream:gingerbread_man",
     "pasterdream:ricecake",
     "pasterdream:sandwich",
-    "pasterdream:stuffed_wafer_cookies"
+    "pasterdream:stuffed_wafer_cookies",
+    "pasterdream:wafer_biscuit"
   ]
 }

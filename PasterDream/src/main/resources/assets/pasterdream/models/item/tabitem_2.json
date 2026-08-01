@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/chuang_zao_lan__lian_dong__"
+    "layer0": "pasterdream:item/creative_tab_link"
   }
 }

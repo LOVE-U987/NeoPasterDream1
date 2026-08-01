@@ -125,7 +125,7 @@ public class DreamWandItem extends TieredItem {
         PasterItemData.putBoolean(stack, "switch", false);
         if (!level.isClientSide()) {
             level.playSound(null, pos, PDSounds.DREAM1.get(), SoundSource.NEUTRAL, 1, 1);
-            player.displayClientMessage(Component.literal("法杖数据已清空"), true);
+            player.displayClientMessage(Component.translatable("tooltip.pasterdream.dream_wand.data_cleared"), true);
         }
     }
 
@@ -133,7 +133,7 @@ public class DreamWandItem extends TieredItem {
     public void appendHoverText(ItemStack stack, TooltipContext context,
                                 List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("§7▪§d 帕斯特之梦风格"));
-        tooltip.add(Component.literal("§7按住[§fctrl§7]右键空气以清空法杖数据"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.dream_wand.style"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.dream_wand.clear_hint"));
     }
 }

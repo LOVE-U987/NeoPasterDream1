@@ -50,6 +50,8 @@ import java.util.stream.Stream;
  * @param regionThreshold   区域重叠阈值（0~1）
  * @param undergroundCheck  是否启用地下空间检测
  * @param waterRequired     是否必须在水中
+ * @param avoidRuins        是否避开遗迹生成（遗迹四周不生成地物，默认开启）
+ * @param claimCheck        是否启用区域认领（防止地物互相重叠，默认开启）
  * @param replaceable       可被替换的方块判定条件
  * @param tiltIntensity     尖刺倾斜程度（0=垂直，越大越倾斜）
  * @param customGeneratorKey 自定义生成器键（CUSTOM 类型专用）
@@ -85,6 +87,8 @@ public record DecorationConfig(
     float regionThreshold,
     boolean undergroundCheck,
     boolean waterRequired,
+    boolean avoidRuins,
+    boolean claimCheck,
     @Nullable BlockPredicate replaceable,
     float tiltIntensity,
     String customGeneratorKey
@@ -130,6 +134,8 @@ public record DecorationConfig(
             prefix.add("region_threshold", Codec.FLOAT.encodeStart(ops, config.regionThreshold()));
             prefix.add("underground_check", Codec.BOOL.encodeStart(ops, config.undergroundCheck()));
             prefix.add("water_required", Codec.BOOL.encodeStart(ops, config.waterRequired()));
+            prefix.add("avoid_ruins", Codec.BOOL.encodeStart(ops, config.avoidRuins()));
+            prefix.add("claim_check", Codec.BOOL.encodeStart(ops, config.claimCheck()));
             prefix.add("tilt_intensity", Codec.FLOAT.encodeStart(ops, config.tiltIntensity()));
             if (config.replaceable() != null) {
                 prefix.add("replaceable", BlockPredicate.CODEC.encodeStart(ops, config.replaceable()));
@@ -172,6 +178,10 @@ public record DecorationConfig(
             DataResult<Float> regionThreshold = decodeOptional(ops, input, "region_threshold", Codec.FLOAT, 0.3f);
             DataResult<Boolean> undergroundCheck = decodeOptional(ops, input, "underground_check", Codec.BOOL, false);
             DataResult<Boolean> waterRequired = decodeOptional(ops, input, "water_required", Codec.BOOL, false);
+            // 遗迹避让默认开启：旧 JSON 未配置该字段时同样生效
+            DataResult<Boolean> avoidRuins = decodeOptional(ops, input, "avoid_ruins", Codec.BOOL, true);
+            // 区域认领默认开启：旧 JSON 未配置该字段时同样生效
+            DataResult<Boolean> claimCheck = decodeOptional(ops, input, "claim_check", Codec.BOOL, true);
             DataResult<Float> tiltIntensity = decodeOptional(ops, input, "tilt_intensity", Codec.FLOAT, 0.0f);
             DataResult<BlockPredicate> replaceable = decodeOptional(ops, input, "replaceable", BlockPredicate.CODEC, null);
             DataResult<String> customGeneratorKey = decodeOptional(ops, input, "custom_generator_key", Codec.STRING, "");
@@ -191,7 +201,8 @@ public record DecorationConfig(
                 checkHang.getOrThrow(), fillHang.getOrThrow(),
                 occupiedCheck.getOrThrow(), regionCheck.getOrThrow(),
                 regionThreshold.getOrThrow(), undergroundCheck.getOrThrow(),
-                waterRequired.getOrThrow(), replaceable.getOrThrow(), tiltIntensity.getOrThrow(),
+                waterRequired.getOrThrow(), avoidRuins.getOrThrow(), claimCheck.getOrThrow(),
+                replaceable.getOrThrow(), tiltIntensity.getOrThrow(),
                 customGeneratorKey.getOrThrow()
             ));
         }
@@ -203,7 +214,7 @@ public record DecorationConfig(
                 "cluster_size", "y_radius", "irregularity", "gate_min_width", "gate_max_width",
                 "pillar_radius", "beam_thickness", "crystal_chance", "debris_count", "debris_radius",
                 "decoration_chance", "crystal_only_on_top", "check_hang", "fill_hang", "occupied_check", "region_check",
-                "region_threshold", "underground_check", "water_required", "tilt_intensity",
+                "region_threshold", "underground_check", "water_required", "avoid_ruins", "claim_check", "tilt_intensity",
                 "replaceable",
                 "custom_generator_key"
             ).map(ops::createString);

@@ -52,7 +52,7 @@ public class AngelWingItem extends ArmorItem implements GeoItem {
             return;
         }
         if (Boolean.TRUE.equals(PDCommonConfig.BAN_ALL_THE_WINGS.get())) {
-            player.displayClientMessage(Component.literal("§4此物品已被禁用"), true);
+            player.displayClientMessage(Component.translatable("tooltip.pasterdream.angel_wing.disabled"), true);
             return;
         }
         if (Math.random() >= 0.4 && level instanceof ServerLevel serverLevel) {
@@ -82,8 +82,8 @@ public class AngelWingItem extends ArmorItem implements GeoItem {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tip, TooltipFlag flag) {
         super.appendHoverText(stack, ctx, tip, flag);
-        tip.add(Component.literal("§7▪ §9装备后获得飞行能力"));
-        tip.add(Component.literal("§7▪ §9免疫摔落伤害"));
+        tip.add(Component.translatable("tooltip.pasterdream.angel_wing.flight"));
+        tip.add(Component.translatable("tooltip.pasterdream.angel_wing.fall_immune"));
     }
 
     @Override

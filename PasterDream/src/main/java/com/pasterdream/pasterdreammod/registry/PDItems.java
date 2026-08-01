@@ -630,7 +630,6 @@ public class PDItems {
     public static final DeferredItem<?> CHOCOLATE_MATCHA_CAKE = PDItemsFoods.CHOCOLATE_MATCHA_CAKE;
     public static final DeferredItem<?> CREAM_BUNCAKE = PDItemsFoods.CREAM_BUNCAKE;
     public static final DeferredItem<?> DREAM_COTTON_CANDY = PDItemsFoods.DREAM_COTTON_CANDY;
-    public static final DeferredItem<?> YINHUL_COTTON_CANDY = PDItemsFoods.YINHUL_COTTON_CANDY;
     public static final DeferredItem<?> DYEDREAM_FLOWER_TEA = PDItemsFoods.DYEDREAM_FLOWER_TEA;
     public static final DeferredItem<?> DYEDREAM_FRUIT_BUNCAKE = PDItemsFoods.DYEDREAM_FRUIT_BUNCAKE;
     public static final DeferredItem<?> DYEDREAM_JUICE = PDItemsFoods.DYEDREAM_JUICE;

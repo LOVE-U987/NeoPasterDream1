@@ -27,14 +27,14 @@ public class TrueMoltengoldWandItem extends AbstractChargeWandItem {
     public void appendHoverText(ItemStack stack, TooltipContext context,
                                 List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("法术技能：§6唤星"));
-        tooltip.add(Component.literal("§7▪ §9法球攻击到敌人或落地时 如空间充足将会在原地释放唤星照明"));
-        tooltip.add(Component.literal("§7▪ §9如空间充足且露天 则有20%的概率在天空释放唤星裂隙"));
-        tooltip.add(Component.literal("§7▪ §9唤星裂隙以每0.5秒/次向地面发射火球 唤星裂隙持续时间10s"));
-        tooltip.add(Component.literal("§2法术伤害：7"));
-        tooltip.add(Component.literal("§2法球动能：1.6"));
-        tooltip.add(Component.literal("§2施法冷却：1秒"));
-        tooltip.add(Component.literal("§2施法消耗：§f魔法石"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.true_moltengold_wand.skill_name"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.true_moltengold_wand.illumination"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.true_moltengold_wand.rift_sky"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.true_moltengold_wand.rift_behavior"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.true_moltengold_wand.damage"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.true_moltengold_wand.kinetic"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.true_moltengold_wand.cooldown"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.true_moltengold_wand.cost"));
     }
 
     @Override

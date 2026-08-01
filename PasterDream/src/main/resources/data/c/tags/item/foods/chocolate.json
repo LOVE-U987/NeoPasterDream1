@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "pasterdream:chocolate"
+    "pasterdream:chocolate",
+    "pasterdream:heart_chocolate_0",
+    "pasterdream:heart_chocolate_1",
+    "pasterdream:heart_chocolate_2"
   ]
 }

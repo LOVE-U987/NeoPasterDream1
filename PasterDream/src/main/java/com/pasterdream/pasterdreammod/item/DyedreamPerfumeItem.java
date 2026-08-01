@@ -62,10 +62,10 @@ public class DyedreamPerfumeItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.literal("\u00A77\u996E\u7528\u540E\u83B7\u5F97\u6548\u679C:"));
-        tooltipComponents.add(Component.literal("\u00A77\u25AA \u00A79\u8BA9\u8718\u871B\u8FDC\u79BB\u4F60 (1:00)"));
-        tooltipComponents.add(Component.literal("\u00A77\u25AA \u00A79\u6E05\u7A7A\u672A\u7761\u7720\u7D2F\u8BA1\u91CF\u8868"));
-        tooltipComponents.add(Component.literal("\u00A77\u00A7o\u5F53\u4F60\u5728\u601D\u8003\u4E3A\u4EC0\u4E48\u9999\u6C34\u8981\u7528\u6765\u559D\u65F6 \u6216\u8BB8\u5E94\u8BE5\u5148\u8003\u8651\u4F60\u73B0\u5728\u6B63\u5728\u505A\u68A6\uFF1F"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.dyedream_perfume.on_drink"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.dyedream_perfume.effect.spider"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.dyedream_perfume.effect.sleep"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.dyedream_perfume.desc"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }

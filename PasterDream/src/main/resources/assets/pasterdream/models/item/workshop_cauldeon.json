@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/gong_fang_leng_que_pen_"
+    "layer0": "pasterdream:item/workshop_cauldeon"
   },
   "render_type": "translucent"
 }

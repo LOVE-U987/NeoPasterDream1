@@ -175,7 +175,6 @@ public class PDCreativeTabsDyedream {
                         output.accept(PDItems.DREAM_COTTON_CANDY.get());
                         output.accept(PDItems.MELTDREAM_CRYSTAL_0.get());
                         output.accept(PDItems.MELTDREAM_ELIXIR_BOTTLE.get());
-                        output.accept(PDItems.MELTDREAM_PICKAXE.get());
                         output.accept(PDItems.DYEDREAM_FRUIT.get());
                         output.accept(PDItems.DYEDREAM_JUICE.get());
                         // 杂项补全：梦境果汁（原版装备栏 tab_3，饮用后获得梦愿效果）
@@ -184,10 +183,6 @@ public class PDCreativeTabsDyedream {
                         output.accept(PDItems.UNCOOKED_DYEDREAM_FLOWER_TEA.get());
                         output.accept(PDItems.DYEDREAM_POPSICLE.get());
                         output.accept(PDItems.DYEDREAM_FRUIT_BUNCAKE.get());
-                        output.accept(PDItems.DYEDREAM_SWORD_0.get());
-                        output.accept(PDItems.DYEDREAM_SWORD.get());
-                        output.accept(PDItems.DYEDREAM_PICKAXE.get());
-                        output.accept(PDItems.DYEDREAM_HAMMER.get());
                         output.accept(PDItems.DYEDREAM_COROLLA.get());
 
                         // Phase 1: 移植方块

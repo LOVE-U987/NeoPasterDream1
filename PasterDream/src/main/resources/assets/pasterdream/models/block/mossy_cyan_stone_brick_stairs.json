@@ -1,9 +1,9 @@
 {
   "parent": "block/stairs",
   "textures": {
-    "bottom": "pasterdream:block/tai_cang_qing_yan_zhuan_",
-    "top": "pasterdream:block/tai_cang_qing_yan_zhuan_",
-    "side": "pasterdream:block/tai_cang_qing_yan_zhuan_"
+    "bottom": "pasterdream:block/mossy_cyan_stone_bricks",
+    "top": "pasterdream:block/mossy_cyan_stone_bricks",
+    "side": "pasterdream:block/mossy_cyan_stone_bricks"
   },
   "render_type": "cutout"
 }

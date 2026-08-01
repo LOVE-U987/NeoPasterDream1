@@ -84,9 +84,13 @@ neoForge {
     }
 
     def apiProject = project(':PasterDreamAPI')
+    def mainProject = project(':PasterDream')
     mods {
         "pasterdreamspells" {
             sourceSet(sourceSets.main)
+        }
+        "pasterdream" {
+            sourceSet(mainProject.sourceSets.main)
         }
         "pasterdreamapi" {
             sourceSet(apiProject.sourceSets.main)

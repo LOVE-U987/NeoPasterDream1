@@ -286,8 +286,8 @@ public class GoldenFoxEntity extends GeckoLibMobEntity {
                     }
 
                     serverLevel.players().forEach(p ->
-                            p.sendSystemMessage(Component.literal(
-                                    "金色狐狸在完成了你许下的愿望之后消失了...")));
+                            p.sendSystemMessage(Component.translatable(
+                                    "message.pasterdream.golden_fox.disappear")));
                 });
     }
 

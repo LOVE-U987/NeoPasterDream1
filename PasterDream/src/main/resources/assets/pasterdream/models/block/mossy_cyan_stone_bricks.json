@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/tai_cang_qing_yan_zhuan_",
-    "up": "pasterdream:block/tai_cang_qing_yan_zhuan_",
-    "north": "pasterdream:block/tai_cang_qing_yan_zhuan_",
-    "east": "pasterdream:block/tai_cang_qing_yan_zhuan_",
-    "south": "pasterdream:block/tai_cang_qing_yan_zhuan_",
-    "west": "pasterdream:block/tai_cang_qing_yan_zhuan_",
-    "particle": "pasterdream:block/tai_cang_qing_yan_zhuan_"
+    "down": "pasterdream:block/mossy_cyan_stone_bricks",
+    "up": "pasterdream:block/mossy_cyan_stone_bricks",
+    "north": "pasterdream:block/mossy_cyan_stone_bricks",
+    "east": "pasterdream:block/mossy_cyan_stone_bricks",
+    "south": "pasterdream:block/mossy_cyan_stone_bricks",
+    "west": "pasterdream:block/mossy_cyan_stone_bricks",
+    "particle": "pasterdream:block/mossy_cyan_stone_bricks"
   },
   "render_type": "solid"
 }

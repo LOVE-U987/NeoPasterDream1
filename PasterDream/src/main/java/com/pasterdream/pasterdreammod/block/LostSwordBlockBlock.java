@@ -117,7 +117,7 @@ public class LostSwordBlockBlock extends Block implements EntityBlock {
                 level.playSound(null, pos, SoundEvents.DEEPSLATE_BREAK, SoundSource.NEUTRAL, 1, 1);
             }
         } else if (!player.level().isClientSide()) {
-            player.displayClientMessage(Component.literal("你的力气不足以拔出这柄剑"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.lost_sword.not_strong_enough"), true);
         }
         return InteractionResult.SUCCESS;
     }

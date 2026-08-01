@@ -25,8 +25,8 @@ public class RedDew0Item extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.literal("\u00A77\u996E\u7528\u540E\u83B7\u5F97\u6548\u679C:"));
-        tooltipComponents.add(Component.literal("\u00A77\u25AA \u00A79\u77AC\u95F4\u6CBB\u7597I"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.red_dew_0.on_drink"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.red_dew_0.instant_heal"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }

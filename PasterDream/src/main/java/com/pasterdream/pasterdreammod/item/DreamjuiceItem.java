@@ -56,7 +56,7 @@ public class DreamjuiceItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("§7甜美而梦幻的味道 让你交融与梦"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.dreamjuice.desc"));
     }
 
     @Override
@@ -70,7 +70,7 @@ public class DreamjuiceItem extends Item {
                 serverLevel.playSound(null, BlockPos.containing(player.getX(), player.getY(), player.getZ()),
                         DREAM1_SOUND, SoundSource.PLAYERS, 0.1f, 1.0f);
             } else {
-                player.displayClientMessage(Component.literal("你尚未了解前置知识"), false);
+                player.displayClientMessage(Component.translatable("tooltip.pasterdream.dreamjuice.no_prereq"), false);
             }
         }
         return result;

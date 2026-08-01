@@ -61,7 +61,7 @@ public final class WindJourneyEvents {
         if (!event.getTo().equals(PDDimensions.WIND_JOURNEY_WORLD_LEVEL_KEY)) {
             return;
         }
-        player.displayClientMessage(Component.literal("§4本主题梦境尚未完工"), false);
+        player.displayClientMessage(Component.translatable("message.pasterdream.wind_journey.not_finished"), false);
     }
 
     /**
@@ -114,7 +114,7 @@ public final class WindJourneyEvents {
                     return;
                 }
                 String name = WIND_DIR_NAMES[Mth.clamp(broadcastDir, 0, 7)];
-                Component msg = Component.literal("§7§o朝阳升起... 呼啸的风正吹往 §a" + name);
+                Component msg = Component.translatable("message.pasterdream.wind_journey.wind_blows", name);
                 for (ServerPlayer player : serverLevel.players()) {
                     player.displayClientMessage(msg, false);
                 }

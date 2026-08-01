@@ -23,9 +23,9 @@ public class ShadowBreathItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7b\u7CBE\u826F \u2605\u2605\u2605"));
-        tooltipComponents.add(Component.literal("\u00A77\u25AA \u00A79\u5728\u7CBE\u795E\u503C\u5206\u522B\u4F4E\u4E8E60/40/20\u65F6"));
-        tooltipComponents.add(Component.literal("\u00A77\u25AA \u00A79\u589E\u52A01/2/4\u70B9\u653B\u51FB\u529B"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.shadow_breath.quality"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.shadow_breath.effect_1"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.shadow_breath.effect_2"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }

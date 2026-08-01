@@ -1,9 +1,9 @@
 {
   "parent": "block/slab_top",
   "textures": {
-    "bottom": "pasterdream:block/cang_qing_yan_zhuan_",
-    "top": "pasterdream:block/cang_qing_yan_zhuan_",
-    "side": "pasterdream:block/cang_qing_yan_zhuan_"
+    "bottom": "pasterdream:block/cyan_stone_bricks",
+    "top": "pasterdream:block/cyan_stone_bricks",
+    "side": "pasterdream:block/cyan_stone_bricks"
   },
   "render_type": "cutout"
 }

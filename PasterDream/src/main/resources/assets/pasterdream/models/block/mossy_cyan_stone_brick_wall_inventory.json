@@ -1,8 +1,8 @@
 {
   "parent": "block/wall_inventory",
   "textures": {
-    "wall": "pasterdream:block/tai_cang_qing_yan_zhuan_",
-    "particle": "pasterdream:block/tai_cang_qing_yan_zhuan_"
+    "wall": "pasterdream:block/mossy_cyan_stone_bricks",
+    "particle": "pasterdream:block/mossy_cyan_stone_bricks"
   },
   "render_type": "cutout"
 }

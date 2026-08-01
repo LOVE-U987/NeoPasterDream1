@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/wu_hua_guo_teng_"
+    "layer0": "pasterdream:item/fig_vine"
   },
   "render_type": "translucent"
 }

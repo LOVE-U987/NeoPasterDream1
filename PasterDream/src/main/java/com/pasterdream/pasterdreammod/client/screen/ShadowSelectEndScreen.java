@@ -30,12 +30,12 @@ public class ShadowSelectEndScreen extends AbstractContainerScreen<ShadowSelectE
     /** "黑暗"按钮纹理（82×174 双帧） */
     private static final ResourceLocation DARK_BUTTON_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID,
-                    "textures/screens/atlas/imagebutton_hei_an_an_niu.png");
+                    "textures/screens/atlas/imagebutton_dark_button.png");
 
     /** "光明"按钮纹理（82×174 双帧） */
     private static final ResourceLocation LIGHT_BUTTON_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID,
-                    "textures/screens/atlas/imagebutton_guang_ming_an_niu.png");
+                    "textures/screens/atlas/imagebutton_light_button.png");
 
     /**
      * 构造影之抉择 GUI 屏幕
@@ -55,11 +55,11 @@ public class ShadowSelectEndScreen extends AbstractContainerScreen<ShadowSelectE
         super.init();
         // "黑暗"按钮（原版 leftPos+48, topPos+54, 82×87）
         this.addRenderableWidget(new TwoFrameImageButton(this.leftPos + 48, this.topPos + 54,
-                DARK_BUTTON_TEXTURE, Component.literal("黑暗"),
+                DARK_BUTTON_TEXTURE, Component.translatable("message.pasterdream.shadow_select.dark"),
                 () -> sendButtonClick(ShadowSelectEndMenu.BUTTON_DARK)));
         // "光明"按钮（原版 leftPos+183, topPos+52, 82×87）
         this.addRenderableWidget(new TwoFrameImageButton(this.leftPos + 183, this.topPos + 52,
-                LIGHT_BUTTON_TEXTURE, Component.literal("光明"),
+                LIGHT_BUTTON_TEXTURE, Component.translatable("message.pasterdream.shadow_select.light"),
                 () -> sendButtonClick(ShadowSelectEndMenu.BUTTON_LIGHT)));
     }
 

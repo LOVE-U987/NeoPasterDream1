@@ -153,8 +153,8 @@ public class DyedreamCrackBlock extends Block implements SimpleWaterloggedBlock 
         if (level.dimension().equals(PDDimensions.DYEDREAM_WORLD_LEVEL_KEY)) {
             // 配置禁止染梦裂隙返程时拦截（原版 NO_RETURN_DYEDREAM_CRACK）
             if (Boolean.TRUE.equals(PDCommonConfig.NO_RETURN_DYEDREAM_CRACK.get())) {
-                player.displayClientMessage(Component.literal(
-                        "一种神秘的力量阻止了你，或许可以想想通过别的办法回去..."), true);
+                player.displayClientMessage(Component.translatable(
+                        "message.pasterdream.dyedream_crack.blocked"), true);
                 player.setPortalCooldown(TELEPORT_COOLDOWN);
                 return;
             }
@@ -200,12 +200,12 @@ public class DyedreamCrackBlock extends Block implements SimpleWaterloggedBlock 
         if (PDAdvancements.has(player, PDAdvancements.HIDE_5)) {
             return;
         }
-        player.displayClientMessage(Component.literal(
-                "§5身体从这个奇怪的空洞中穿过，但并没有什么反应。"), false);
-        player.displayClientMessage(Component.literal(
-                "§5你能感觉到这个类似裂隙一样的东西在与这个世界和另外一处地方交互，附近不同的环境可能正是因此而诞生。"), false);
-        player.displayClientMessage(Component.literal(
-                "§5现在可能还不是时候，让我们交给在日夜轮转之间的时光中给予答案。"), false);
+        player.displayClientMessage(Component.translatable(
+                "message.pasterdream.dyedream_crack.first_contact.1"), false);
+        player.displayClientMessage(Component.translatable(
+                "message.pasterdream.dyedream_crack.first_contact.2"), false);
+        player.displayClientMessage(Component.translatable(
+                "message.pasterdream.dyedream_crack.first_contact.3"), false);
         PDAdvancements.award(player, PDAdvancements.HIDE_5);
         PDAdvancements.award(player, PDAdvancements.START);
     }

@@ -72,7 +72,7 @@ public class AuraBuffBlock extends Block implements EntityBlock {
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(stack, context, list, flag);
         for (String line : tooltip) {
-            list.add(Component.literal(line));
+            list.add(Component.translatable(line));
         }
     }
 

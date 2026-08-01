@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:block/xiu_shi_jin_shu_lan_gan_"
+    "layer0": "pasterdream:block/rust_black_metal_bars"
   },
   "render_type": "cutout"
 }

@@ -162,7 +162,7 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
     public void appendHoverText(ItemStack stack, Item.TooltipContext context,
                                 List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        tooltipComponents.add(Component.literal("§7手持 §e黑金属 §7和 §e影灯 §7修复核心"));
+        tooltipComponents.add(Component.translatable("message.pasterdream.broken_dungeon.repair_tooltip"));
     }
 
     // ==================== tick 冷却（原 ShadowDungeonPortalBlock） ====================
@@ -199,7 +199,7 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
         // ===== 破损状态修复逻辑（原 BrokenShadowDungeonProtalBlock 逻辑） =====
         if (pos.getY() <= 20) {
             if (!player.level().isClientSide()) {
-                player.displayClientMessage(Component.literal("地牢的结构被破坏，传送门没有反应"), false);
+                player.displayClientMessage(Component.translatable("message.pasterdream.broken_dungeon.structure_broken"), false);
             }
             return InteractionResult.SUCCESS;
         }
@@ -225,11 +225,11 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
                 player.getInventory().clearOrCountMatchingItems(
                         s -> light.getItem() == s.getItem(), 1, player.inventoryMenu.getCraftSlots());
             } else if (!player.level().isClientSide()) {
-                player.displayClientMessage(Component.literal("双手持§e黑金属§f和§e影灯§f以修复核心"), true);
+                player.displayClientMessage(Component.translatable("message.pasterdream.broken_dungeon.hold_to_repair"), true);
             }
         } else if (!player.level().isClientSide()) {
             player.displayClientMessage(
-                    Component.literal("缺少知识 你还不理解这个核心的工作原理和修复方法"), true);
+                    Component.translatable("message.pasterdream.broken_dungeon.lack_knowledge"), true);
         }
         return InteractionResult.SUCCESS;
     }
@@ -250,7 +250,7 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
         ServerScheduler.schedule(20, () -> {
             level.setBlock(pos, PDBlocksFurniture.SHADOW_DUNGEON_PORTAL.get().defaultBlockState(), 3);
             if (!player.level().isClientSide()) {
-                player.displayClientMessage(Component.literal("核心已修复"), true);
+                player.displayClientMessage(Component.translatable("message.pasterdream.broken_dungeon.repaired"), true);
             }
         });
     }
@@ -268,7 +268,7 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
         if (player.getMainHandItem().getItem() == PDItemsMaterials.TABITEM_1.get()) {
             W4DataBlockEntity.putBooleanAt(level, pos, "exit", true);
             if (!player.level().isClientSide()) {
-                player.displayClientMessage(Component.literal("已设置为出口！"), false);
+                player.displayClientMessage(Component.translatable("message.pasterdream.broken_dungeon.exit_set"), false);
             }
             return InteractionResult.SUCCESS;
         }
@@ -307,10 +307,10 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
             } else if (!player.level().isClientSide()) {
                 long remain = (long) (1800 - W4DataBlockEntity.getDoubleAt(level, pos, "time"));
                 player.displayClientMessage(
-                        Component.literal("地牢刷新冷却中 剩余：" + remain + "秒"), true);
+                        Component.translatable("message.pasterdream.broken_dungeon.cooldown", remain), true);
             }
         } else if (!player.level().isClientSide()) {
-            player.displayClientMessage(Component.literal("遗迹结构不完整"), false);
+            player.displayClientMessage(Component.translatable("message.pasterdream.broken_dungeon.structure_incomplete"), false);
         }
         return InteractionResult.SUCCESS;
     }

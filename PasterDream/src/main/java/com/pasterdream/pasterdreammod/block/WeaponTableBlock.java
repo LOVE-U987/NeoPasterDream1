@@ -170,7 +170,7 @@ public class WeaponTableBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
         if (!player.getMainHandItem().is(PDItems.BLUEPRINT_1.get().asItem())) {
-            player.displayClientMessage(Component.literal("缺少蓝图 请手持蓝图点击核心"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.multiblock.lack_blueprint"), true);
             return InteractionResult.SUCCESS;
         }
         if (CHECK_LAYOUT.isEmpty()) {
@@ -182,7 +182,7 @@ public class WeaponTableBlock extends BaseEntityBlock {
         if (complete) {
             WeaponWorkshopBlock.placeWorkshop(level, player, pos.getX(), pos.getY() + 1, pos.getZ());
         } else {
-            player.displayClientMessage(Component.literal("多方块结构不完整"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.multiblock.incomplete"), true);
         }
         return InteractionResult.SUCCESS;
     }

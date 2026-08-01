@@ -246,10 +246,13 @@ public class PDConfigScreen extends Screen {
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.BAN_FIRE_NECKLACE, ConfigCategory.BAN, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.BAN_TIME_HOURGLASS, ConfigCategory.BAN, idx++));
 
-        // ==================== BGM (9 个可折叠分组) ====================
+        // ==================== BGM (11 个可折叠分组 + 2 个切换设置) ====================
         allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.BGM_MASTER_ENABLED, ConfigCategory.BGM, idx++));
         allEntries.add(new ConfigEntry.SliderEntry(PDClientConfig.BGM_MASTER_VOLUME,
                 ConfigCategory.BGM, idx++, 0.0d, 1.0d));
+        allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.BGM_USE_SONG_COMPLETE_MODE, ConfigCategory.BGM, idx++));
+        allEntries.add(new ConfigEntry.NumberEntry((ModConfigSpec.ConfigValue<Number>) (ModConfigSpec.ConfigValue<?>) PDClientConfig.BGM_SONG_INTERVAL_SECONDS,
+                ConfigCategory.BGM, idx++, 30, 60));
         allEntries.add(new BgmGroupEntry(ConfigCategory.BGM, idx++,
                 PDClientConfig.BGM_DYEDREAM_WORLD, PDClientConfig.BGM_DYEDREAM_WORLD_VOLUME, "dyedream_world",
                 () -> { saveLoadedConfig(PasterDreamMod.clientModConfig); }));

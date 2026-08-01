@@ -22,10 +22,10 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class LoopRestartManager {
 
-    private final int sameBiomeMinInterval;
-    private final int sameBiomeMaxInterval;
-    private final int crossBiomeMinInterval;
-    private final int crossBiomeMaxInterval;
+    private int sameBiomeMinInterval;
+    private int sameBiomeMaxInterval;
+    private int crossBiomeMinInterval;
+    private int crossBiomeMaxInterval;
 
     /** 是否在等待循环间隔 */
     private boolean isWaiting = false;
@@ -58,6 +58,25 @@ public class LoopRestartManager {
      */
     public void markBiomeChanged() {
         this.biomeChangedDuringPlay = true;
+    }
+
+    /**
+     * 动态调整重播间隔范围（tick 数）。
+     * <p>
+     * 由客户端 BGM 管理器根据「完整播放+间隔」模式的配置实时同步，
+     * 便于在不重建对象的情况下让配置即时生效。
+     *
+     * @param sameBiomeMinInterval  同群系最小间隔（tick）
+     * @param sameBiomeMaxInterval  同群系最大间隔（tick）
+     * @param crossBiomeMinInterval 群系切换后最小间隔（tick）
+     * @param crossBiomeMaxInterval 群系切换后最大间隔（tick）
+     */
+    public void setIntervalRange(int sameBiomeMinInterval, int sameBiomeMaxInterval,
+                                 int crossBiomeMinInterval, int crossBiomeMaxInterval) {
+        this.sameBiomeMinInterval = sameBiomeMinInterval;
+        this.sameBiomeMaxInterval = sameBiomeMaxInterval;
+        this.crossBiomeMinInterval = crossBiomeMinInterval;
+        this.crossBiomeMaxInterval = crossBiomeMaxInterval;
     }
 
     /**

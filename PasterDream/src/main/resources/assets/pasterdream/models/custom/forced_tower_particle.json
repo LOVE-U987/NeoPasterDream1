@@ -1,6 +1,6 @@
 {
   "parent": "pasterdream:displaysettings/forced_tower.item",
   "textures": {
-    "particle": "pasterdream:block/zhi_yan_jin_kuai_"
+    "particle": "pasterdream:block/moltengold_block"
   }
 }

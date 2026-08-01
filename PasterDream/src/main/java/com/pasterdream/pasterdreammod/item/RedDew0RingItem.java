@@ -30,7 +30,7 @@ public class RedDew0RingItem extends Item implements ICurioItem {
     @Override
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, context, list, flag);
-        list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7f\u666E\u901A \u2605"));
+        list.add(Component.translatable("tooltip.pasterdream.red_dew0_ring.quality"));
 }
 
     @Override

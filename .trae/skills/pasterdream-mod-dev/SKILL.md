@@ -1,6 +1,6 @@
 ---
 name: "pasterdream-mod-dev"
-description: "PasterDream NeoForge 1.21.1 模组开发指南。提供项目结构、注册系统、实体系统、物品系统等的开发规范，以及常见崩溃问题的解决方案。Invoke when developing or modifying PasterDream mod features, creating new items/blocks/entities, fixing crashes, or when needing to understand the mod's architecture."
+description: "PasterDream NeoForge 1.21.1 模组开发指南。提供多模块项目结构、注册系统、BlockAPI、实体系统、物品系统等的开发规范，以及常见崩溃问题的解决方案。Invoke when developing or modifying PasterDream mod features, creating new items/blocks/entities, fixing crashes, or when needing to understand the mod's architecture."
 ---
 
 # PasterDream NeoForge 1.21.1 模组开发指南
@@ -13,7 +13,7 @@ description: "PasterDream NeoForge 1.21.1 模组开发指南。提供项目结�
 
 | 类型 | 判断标准 | 核心注意点 |
 |------|---------|-----------|
-| **普通方块** | 无方向、无特殊功能 | 使用 `registerSimpleBlock()` |
+| **普通方块** | 无方向、无特殊功能 | 使用 `registerSimpleBlock()` 或 BlockAPI |
 | **方向性方块** | 有 facing 属性 | 必须创建 `HorizontalDirectionalBlock` 子类 |
 | **TESR 方块** ⚠️ | 原模组有 TileEntity | 必须替换 `builtin/entity` 模型 |
 | **GeckoLib 方块** | 有 .geo.json 模型 | 需要 TileEntity 和特殊渲染器 |
@@ -22,19 +22,14 @@ description: "PasterDream NeoForge 1.21.1 模组开发指南。提供项目结�
 ```bash
 # 在原模组中查找
 ls libs/FixPasterDream-main/src/main/java/net/pasterdream/block/display/
-# 或检查 displaysettings
-ls libs/FixPasterDream-main/src/main/resources/assets/pasterdream/models/displaysettings/
 ```
 
 ### ⚠️ 第二步：纹理文件用途必须正确
-
-**这是渲染问题的最大根源！**
 
 | 纹理类型 | 路径 | 用途 | 错误后果 |
 |---------|------|------|---------|
 | **方块纹理** | `textures/block/*.png` | 可平铺的材质 | 用于方块六面贴图 |
 | **物品图标** | `textures/item/*.png` | 单个小图标 | 用于背包/手持显示 |
-| **精灵表** | `textures/block/*.png` | 多子图大图 | 原模组专用，一般不直接使用 |
 
 **❌ 典型错误**：把物品图标当方块纹理用 → 显示为"展开图"
 
@@ -58,46 +53,80 @@ ls libs/FixPasterDream-main/src/main/resources/assets/pasterdream/models/display
 - **项目路径**: `c:\Users\97128\Documents\GitHub\NeoPasterDream1`
 - **原模组参考**: `libs/FixPasterDream-main/` (只读)
 
-## 核心理念
-
-1. **不看代码，只看效果**: 参考原模组呈现效果，但不直接复制或修改原代码
-2. **重新实现，思路不同**: 相同效果，用不同技术方案
-3. **MCreator 代码不可移植**: 原模组是 MCreator 生成，必须重写
-
-## 项目结构
+## 多模块项目结构
 
 ```
 NeoPasterDream1/
-├── src/main/java/com/pasterdream/pasterdreammod/
-│   ├── PasterDreamMod.java          # 主模组类
-│   ├── block/                        # 方块类
-│   ├── entity/                       # 实体类
-│   ├── item/                         # 物品类
-│   ├── client/renderer/              # 渲染器
-│   └── registry/                     # 注册系统
-│       ├── PDBlocks.java             # 方块注册
-│       ├── PDItems.java              # 物品注册
-│       ├── PDEntities.java           # 实体注册
-│       ├── PDBlockEntities.java      # 方块实体注册
-│       ├── PDCreativeTabs.java       # 创造模式标签注册
-│       ├── PDEffects.java            # 状态效果注册（BUFF/DEBUFF）
-│       ├── PDDimensions.java         # 维度注册
-│       ├── PDStructures.java         # 结构/遗迹注册
-│       ├── PDAdvancements.java       # 成就引用常量
-│       └── PDLootTables.java         # 战利品表引用常量
-├── src/main/resources/
-│   ├── assets/pasterdream/
-│   │   ├── textures/                 # 纹理文件
-│   │   ├── geo/                      # GeckoLib 模型
-│   │   └── animations/               # GeckoLib 动画
-│   └── data/pasterdream/
-│       ├── advancements/             # 成就 JSON（手动编写）
-│       └── loot_tables/              # 战利品表 JSON（手动编写）
-│           ├── blocks/
-│           ├── entities/
-│           └── chests/
-└── libs/FixPasterDream-main/         # 原模组（只读参考）
+├── PasterDreamAPI/                     # API 模块（独立前置 modid: pasterdreamapi）
+│   └── src/main/java/com/pasterdream/pasterdreammod/api/
+│       ├── block/          # BlockAPI + SimpleBlockBuilder/VariantSetBuilder/BatchBlockBuilder
+│       ├── blockentity/    # BlockEntityAPI + BlockEntityBuilder
+│       ├── item/           # ItemAPI + 4 个 Builder + Spec 模型
+│       ├── entity/         # EntityAPI + EntityBuilder + skill/tag/anim
+│       ├── particle/       # ParticleAPI + ParticleBuilder
+│       ├── effect/         # MobEffectAPI + MobEffectBuilder
+│       ├── dimension/      # DimensionAPI + DimensionBuilder + terrain/
+│       ├── ruin/           # RuinAPI + RuinBuilder + StructureSetBuilder
+│       ├── menu/           # MenuAPI + MenuBuilder
+│       ├── fluid/          # FluidAPI + FluidTypeAPI + FluidBuilder
+│       ├── curio/          # CurioAPI + CurioBuilder
+│       ├── audio/          # BgmAPI（背景音乐系统）
+│       ├── san/            # SanAPI（理智系统）
+│       ├── meltdream/      # MeltDreamEnergyAPI（融梦能量系统）
+│       ├── spell/          # SpellAPI + ISpell
+│       ├── worldgen/decor/ # DecorationBuilder + TreePlacerAPI + TreeRegistry
+│       ├── attachment/     # PDPlayerAttachments
+│       ├── attribute/      # APIAttributes
+│       ├── PasterDreamAPI.java   # MOD_ID / DATA_NAMESPACE / registerAll() 统一注册入口
+│       └── PasterDreamAPIMod.java
+├── PasterDream/                        # 主模块（业务实现）
+│   └── src/main/java/com/pasterdream/pasterdreammod/
+│       ├── PasterDreamMod.java         # 主模组类（构造函数调用 registerAll）
+│       ├── block/                      # 方块类（含 entity/ 子目录）
+│       ├── entity/                     # 实体类
+│       ├── item/                       # 物品类
+│       ├── client/                     # 渲染器/粒子/GUI/HUD/音频
+│       ├── registry/                   # ★ 注册系统（按类别拆分）
+│       │   ├── PDBlocks.java           # 方块注册总入口
+│       │   ├── blocks/PDBlocks*.java   # 方块分目录（Simple/Custom/Functional/...）
+│       │   ├── PDItems.java            # 物品注册总入口
+│       │   ├── items/PDItems*.java     # 物品分目录（Materials/Foods/Tools/...）
+│       │   ├── PDEntities.java         # 实体注册
+│       │   ├── PDBlockEntities.java    # 方块实体注册
+│       │   ├── PDCreativeTabs.java     # 创造标签注册总入口
+│       │   ├── creativetabs/PDCreativeTabs*.java  # 标签分目录
+│       │   ├── PDEffects.java          # 状态效果注册
+│       │   ├── PDParticles.java        # 粒子注册
+│       │   ├── PDDimensions.java       # 维度注册
+│       │   ├── PDRuinsRegistration.java # 遗迹注册
+│       │   ├── PDFeatures.java / PDPlacedFeatures.java # 地物
+│       │   ├── ModDecorations.java     # 装饰物（云团等，跨群系）
+│       │   ├── IceDecorations.java     # 冰雪群系装饰物
+│       │   ├── OceanDecorations.java   # 海洋群系装饰物
+│       │   ├── PDSounds.java / PDPotions.java / PDMenus*.java
+│       │   └── ... 等
+│       └── worldgen/                   # 树/地物/自定义生成器
+└── libs/FixPasterDream-main/           # 原模组（只读参考）
 ```
+
+### 模块归属决策（口诀）
+
+> **API/Builder/注册门面 → API 模块；方块/物品/实体/渲染 → 主模块。**
+> 详见 Skill「api-split-multi-module」。
+
+### PasterDreamAPI 统一注册入口
+
+主模组构造函数开头调用一次，替代所有 API 的单独注册：
+
+```java
+public PasterDreamMod(IEventBus modEventBus, ModContainer modContainer) {
+    // 统一注册所有 API 的 DeferredRegister（13 个注册器）
+    PasterDreamAPI.registerAll(modEventBus);
+    // ... 其他初始化
+}
+```
+
+> `PasterDreamAPI.DATA_NAMESPACE = "pasterdream"`（沿用旧数据命名空间），`MOD_ID = "pasterdreamapi"`。
 
 ---
 
@@ -110,7 +139,7 @@ NeoPasterDream1/
 ```java
 // 方块注册
 public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
-public static final DeferredBlock<Block> MY_BLOCK = BLOCKS.registerSimpleBlock("my_block", 
+public static final DeferredBlock<Block> MY_BLOCK = BLOCKS.registerSimpleBlock("my_block",
     BlockBehaviour.Properties.ofFullCopy(Blocks.STONE));
 
 // 方向性方块必须用 registerBlock
@@ -120,17 +149,12 @@ public static final DeferredBlock<Block> MY_DIRECTIONAL_BLOCK = BLOCKS.registerB
 
 // 物品注册
 public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
-public static final DeferredItem<Item> MY_ITEM = ITEMS.registerSimpleItem("my_item", 
+public static final DeferredItem<Item> MY_ITEM = ITEMS.registerSimpleItem("my_item",
     new Item.Properties());
 
 // 实体注册
 public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(
     BuiltInRegistries.ENTITY_TYPE, MOD_ID);
-public static final DeferredHolder<EntityType<?>, EntityType<MyEntity>> MY_ENTITY = 
-    ENTITY_TYPES.register("my_entity",
-        () -> EntityType.Builder.of(MyEntity::new, MobCategory.CREATURE)
-            .sized(0.6F, 1.8F)
-            .build("my_entity"));
 ```
 
 ### 2. HorizontalDirectionalBlock 模板
@@ -179,213 +203,21 @@ public class MyDirectionalBlock extends HorizontalDirectionalBlock {
 }
 ```
 
-### 3. 实体系统 (GeckoLib)
-
-**动物实体继承 `GeckoLibAnimalEntity`：**
-
-```java
-public class PinkChickenEntity extends GeckoLibAnimalEntity {
-    
-    public PinkChickenEntity(EntityType<? extends Animal> entityType, Level level) {
-        super(entityType, level);
-    }
-    
-    public static AttributeSupplier.Builder createAttributes() {
-        return Animal.createLivingAttributes()
-            .add(Attributes.MAX_HEALTH, 4.0D)
-            .add(Attributes.MOVEMENT_SPEED, 0.25D);
-    }
-    
-    @Override
-    protected void registerGoals() {
-        this.goalSelector.addGoal(0, new FloatGoal(this));
-    }
-    
-    @Override
-    public boolean isFood(ItemStack stack) {
-        return stack.is(Items.WHEAT_SEEDS);
-    }
-    
-    @Override
-    public @Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob otherParent) {
-        return null;
-    }
-}
-```
-
 ---
 
-### 4. 状态效果注册（PDEffects）
+### 3. BlockAPI — 方块批量注册系统 ⭐
 
-**使用 `DeferredRegister<MobEffect>` 注册自定义状态效果：**
+**`BlockAPI`** 是 Facade + Builder 模式的方块注册 API（位于 PasterDreamAPI 模块），提供三种注册模式，配合 `BlockConfig` 实现**纹理/模型/挖掘标签/交互/动画**一站式配置。
 
-```java
-// 注册器定义
-public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(
-        Registries.MOB_EFFECT, PasterDreamMod.MOD_ID);
+#### 三种注册模式（方法名以最新代码为准！）
 
-// 注册效果（需先创建 MobEffect 子类）
-public static final DeferredHolder<MobEffect, MobEffect> DREAMWISH_BUFF =
-        MOB_EFFECTS.register("dreamwish_buff",
-                () -> new DreamwishEffect(MobEffectCategory.BENEFICIAL, 0xFF69B4));
-```
+| 模式 | 工厂方法 | Builder | 适用场景 | 示例 |
+|------|---------|---------|---------|------|
+| **模式一** | `registerSimpleBlocks()` | `SimpleBlockBuilder` | 基础换皮方块 | 染梦木板、染梦玻璃 |
+| **模式二** | `createVariantSet(name, block)` | `VariantSetBuilder` | 建筑变体族 | 楼梯+台阶+墙+栅栏家具套 |
+| **模式三** | `batchRegister(name)` | `BatchBlockBuilder` | 编号同类方块 | 花蕾1~17号、粉丁菇0~3 |
 
-**状态效果类模板：**
-```java
-public class DreamwishEffect extends MobEffect {
-    public DreamwishEffect(MobEffectCategory category, int color) {
-        super(category, color);
-    }
-    
-    @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        // 每 tick 效果逻辑
-        return super.applyEffectTick(entity, amplifier);
-    }
-    
-    @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
-        // 控制效果触发频率
-        return true;
-    }
-}
-```
-
----
-
-### 5. 维度注册（PDDimensions）
-
-**使用 `DeferredRegister<DimensionType>` 和 `DeferredRegister<LevelStem>` 注册维度：**
-
-```java
-// 维度类型注册器
-public static final DeferredRegister<DimensionType> DIMENSION_TYPES = DeferredRegister.create(
-        Registries.DIMENSION_TYPE, PasterDreamMod.MOD_ID);
-
-// 维度实例注册器
-public static final DeferredRegister<LevelStem> LEVEL_STEMS = DeferredRegister.create(
-        Registries.LEVEL_STEM, PasterDreamMod.MOD_ID);
-```
-
-**维度注册后还需要：**
-1. `data/<modid>/dimension/<dimension_name>.json` — 维度 JSON
-2. `data/<modid>/dimension_type/<dimension_name>.json` — 维度类型 JSON
-3. 对应的生物群系生成器配置
-
----
-
-### 6. 结构/遗迹注册（PDStructures）
-
-**使用 `DeferredRegister<StructureType<?>>` 注册自定义结构：**
-
-```java
-// 结构类型注册器
-public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPES = DeferredRegister.create(
-        Registries.STRUCTURE_TYPE, PasterDreamMod.MOD_ID);
-
-// 注册结构类型（需先创建 Structure 子类）
-public static final DeferredHolder<StructureType<?>, StructureType<MyStructure>> MY_STRUCTURE =
-        STRUCTURE_TYPES.register("my_structure",
-                () -> () -> MyStructure.CODEC);
-```
-
-**结构注册后还需要：**
-1. `data/<modid>/worldgen/structure/<name>.json` — 结构配置
-2. `data/<modid>/worldgen/structure_set/<name>.json` — 结构集配置
-3. `data/<modid>/worldgen/template_pool/<name>.json` — 模板池
-4. `data/<modid>/structures/<name>.nbt` — 实际建筑文件
-
----
-
-### 7. 成就系统（Advances + JSON）
-
-**成就完全通过 JSON 文件定义**，Java 代码中只需定义 `ResourceLocation` 常量便于引用：
-
-```java
-public static final ResourceLocation MY_ACHIEVEMENT = ResourceLocation.fromNamespaceAndPath(
-        PasterDreamMod.MOD_ID, "story/my_achievement");
-```
-
-**JSON 路径：** `data/<modid>/advancements/<category>/<name>.json`
-
-```json
-{
-    "display": {
-        "icon": {"item": "minecraft:diamond"},
-        "title": {"translate": "advancement.pasterdream.my_achievement"},
-        "description": {"translate": "advancement.pasterdream.my_achievement.desc"},
-        "frame": "task",
-        "show_toast": true,
-        "announce_to_chat": true,
-        "hidden": false
-    },
-    "criteria": {
-        "impossible": {"trigger": "minecraft:impossible"}
-    }
-}
-```
-
----
-
-### 8. 战利品表（Loot Tables + JSON）
-
-**战利品表完全通过 JSON 文件定义**，Java 中定义 `ResourceLocation` 常量便于引用：
-
-```java
-public static final ResourceLocation BLOCK_LOOT = ResourceLocation.fromNamespaceAndPath(
-        PasterDreamMod.MOD_ID, "blocks/my_block");
-```
-
-**JSON 路径：** `data/<modid>/loot_tables/<type>/<name>.json`
-
-```json
-{
-    "type": "minecraft:block",
-    "pools": [
-        {
-            "rolls": 1,
-            "entries": [
-                {"type": "minecraft:item", "name": "minecraft:diamond"}
-            ],
-            "conditions": [
-                {"condition": "minecraft:survives_explosion"}
-            ]
-        }
-    ]
-}
-```
-
----
-
-### 9. 注册系统汇总表
-
-| 注册类 | 注册器 | 注册内容 | 注册时机 |
-|--------|--------|---------|---------|
-| `PDBlocks.java` | `DeferredRegister.Blocks` | 方块 | 主构造函数 |
-| `PDItems.java` | `DeferredRegister.Items` | 物品 | 主构造函数 |
-| `PDEntities.java` | `DeferredRegister<EntityType<?>>` | 实体 | 主构造函数 |
-| `PDBlockEntities.java` | `DeferredRegister<BlockEntityType<?>>` | 方块实体 | 主构造函数 |
-| `PDCreativeTabs.java` | `DeferredRegister<CreativeModeTab>` | 创造标签 | 主构造函数 |
-| `PDEffects.java` | `DeferredRegister<MobEffect>` | 状态效果 | 主构造函数 |
-| `PDDimensions.java` | `DeferredRegister<DimensionType>` | 维度类型 | 主构造函数 |
-| `PDDimensions.java` | `DeferredRegister<LevelStem>` | 维度实例 | 主构造函数 |
-| `PDStructures.java` | `DeferredRegister<StructureType<?>>` | 结构类型 | 主构造函数 |
-| `PDAdvancements.java` | 常量类（无注册器） | 成就引用 | 无需注册 |
-| `PDLootTables.java` | 常量类（无注册器） | 战利品表引用 | 无需注册 |
-
----
-
-### 10. BlockAPI — 方块批量注册系统 ⭐
-
-**`BlockAPI`** 是一个 Facade + Builder 模式的方块注册 API，提供三种注册模式，配合 `BlockConfig` 实现**纹理/模型/挖掘标签/交互/动画**一站式配置。
-
-#### 三种注册模式
-
-| 模式 | Builder | 适用场景 | 示例 |
-|------|---------|---------|------|
-| **模式一** | `SimpleBlockBuilder` | 基础换皮方块 | 染梦木板、染梦玻璃 |
-| **模式二** | `VariantSetBuilder` | 建筑变体族 | 楼梯+台阶+墙+栅栏家具套 |
-| **模式三** | `BatchBlockBuilder` | 编号同类方块 | 花蕾1~17号、粉丁菇0~3 |
+> ⚠️ **注意**：旧方法名 `registerVariantSet` / `registerBatchBlocks` 已**不存在**，请使用 `createVariantSet` / `batchRegister`。
 
 #### BlockConfig 链式配置
 
@@ -396,8 +228,11 @@ public static final ResourceLocation BLOCK_LOOT = ResourceLocation.fromNamespace
 | `.mineable("axe")` | `"axe"`/`"pickaxe"`/`"shovel"`/`"hoe"` | 工具标签 | `PDBlockTagProvider` → `tags/block/mineable/` |
 | `.model("cube_all")` | 模型标识 | 方块模型类型 | `PDBlockModelProvider` → `models/block/` + `blockstates/` |
 | `.tex("layer", "path")` | 纹理层名+路径 | 纹理映射 | `PDBlockModelProvider` 读取生成 |
-| `.interact(handler)` | Lambda 回调 | 右键交互 | 运行时注册（非数据生成） |
-| `.animated("geo/...")` | GeckoLib 路径 | 动画支持 | 运行时注册 GeckoLib（待完善） |
+| `.renderType("translucent")` | 渲染类型 | 玻璃/冰等透明方块 | 运行时渲染类型 |
+| `.interact(handler)` | Lambda 回调 | 右键交互 | 运行时注册 |
+| `.animated("geo/...")` | GeckoLib 路径 | 动画支持 | 运行时注册 GeckoLib |
+| `.blockFactory(BlockFactory)` | `(Properties) -> Block` | 自定义方块类（如 `GlassBlock::new`） | 覆盖默认 `SelfDropBlock::new` |
+| `.plantable()` | - | 可种植地面，自动加 `pasterdream:plantable_on` 标签 | 标签生成 |
 
 **支持模型类型：**
 
@@ -412,7 +247,7 @@ public static final ResourceLocation BLOCK_LOOT = ResourceLocation.fromNamespace
 
 ```java
 // ===== 模式一：SimpleBlockBuilder（换皮方块）=====
-BlockAPI.registerSimpleBlocks()
+Map<String, DeferredBlock<Block>> blocks = BlockAPI.registerSimpleBlocks()
     .add("dyedream_dirt", Blocks.DIRT)                                 // 无配置，纯换皮
     .add("dyedream_planks", Blocks.OAK_PLANKS, BlockConfig.of()        // 带配置
         .mineable("axe")                                               // → 自动生成斧头标签
@@ -425,12 +260,12 @@ BlockAPI.registerSimpleBlocks()
         .tex("end", "pasterdream:block/dyedream_log_top")
         .tex("side", "pasterdream:block/dyedream_log_side")
     )
-    .build();
+    .addCustom("chiseled_dyedreamquartz_block",
+        BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).lightLevel(s -> 10))  // 自定义属性
+    .build();   // 返回 Map<String, DeferredBlock<Block>>
 
 // ===== 模式二：VariantSetBuilder（建筑变体族）=====
-// 注册 stair/slab/wall/fence/gate/door/trapdoor/button/pressure_plate
-// 使用 .mineable() 自动注册所有变体的挖掘标签 → runData 自动生成
-BlockAPI.registerVariantSet("dyedream_planks", Blocks.OAK_PLANKS)
+BlockAPI.createVariantSet("dyedream_planks", Blocks.OAK_PLANKS)
     .mineable("axe")                                      // 所有变体自动 axe 标签 ✨
     .withStairs()
     .withSlab()
@@ -439,84 +274,33 @@ BlockAPI.registerVariantSet("dyedream_planks", Blocks.OAK_PLANKS)
     .build();
 
 // ===== 模式三：BatchBlockBuilder（编号同类）=====
-BlockAPI.registerBatchBlocks()
-    .add("pinkagaric", 0, 3, Blocks.RED_MUSHROOM)       // pinkagaric_0~3
-    .add("dyedream_bud", 0, 2, Blocks.STONE)             // dyedream_bud_0~2
+BlockAPI.batchRegister("pinkagaric")
+    .indexList(0, 1, 2, 3)                                // 生成 pinkagaric_0~3
+    .factory(index -> new PinkagaricBlock(flowerProps()))  // 按编号工厂创建
     .build();
 ```
 
 > **注意**：`PDBlockTagProvider` 和 `PDBlockModelProvider` 会自动读取 `BlockAPI.putConfig()` 存储的配置，
 > 运行 `runData` 即可生成对应的 `tags/`、`models/`、`blockstates/` JSON 文件。
 
-#### 数据生成器工作流（已可用 ✅）
-
-**流程：**
-1. 在 `PDBlocks.java` 中用 `BlockAPI` + `BlockConfig` 注册方块
-2. 为手动注册的方块在 `static {}` 块中添加 `BlockAPI.putConfig()`（详见下文）
-3. 运行 `.\gradlew runData` → 自动生成 4 个标签 + 批量生成 blockstate 和模型 JSON
-4. 生成的资源在 `src/generated/resources/`，`src/main/resources/` 优先覆盖
-5. 启动游戏，Jade 模组会正确显示"需要 XX 工具挖掘"
-
-**生成内容：**
-| 数据生成器 | 输出路径 | 内容 |
-|-----------|---------|------|
-| `PDBlockTagProvider` | `tags/block/mineable/{pickaxe,axe,shovel,hoe}.json` | 工具类型标签（MC 1.21 新路径） |
-| `PDBlockModelProvider` | `models/block/*.json` + `blockstates/*.json` | 方块模型和状态（仅限有 model/tex 配置的方块） |
-
-> ✅ **已可用**：`compileJava` 已修复，`runData` 可正常运行。
-> 注意生成器使用 `tags/block/`（新标准路径），与 `tags/blocks/`（旧路径）不同。
-
 #### BlockAPI.putConfig() — 手动注册的方块配置
 
-对于**不通过 `SimpleBlockBuilder`/`VariantSetBuilder`/`BatchBlockBuilder`** 注册的方块，
-必须在 `PDBlocks.java` 的 `static {}` 块中手动调用 `BlockAPI.putConfig()`：
+对于**不通过 Builder** 注册的方块，必须在 `PDBlocks.java` 的 `static {}` 块中手动调用：
 
 ```java
 static {
     // Phase 1 移植方块
     BlockAPI.putConfig("titanium_block", BlockConfig.of().mineable("pickaxe"));
-    BlockAPI.putConfig("deepslate_titanium_ore", BlockConfig.of().mineable("pickaxe"));
-
-    // 手动注册的 requiresCorrectToolForDrops 方块
     BlockAPI.putConfig("dream_accumulator", BlockConfig.of().mineable("pickaxe"));
-    BlockAPI.putConfig("dyedream_desk", BlockConfig.of().mineable("axe"));
 }
 ```
 
-> ⚠️ **必须调用**：未调 `putConfig` 的方块不会被 `PDBlockTagProvider` 识别，导致：
-> - Jade 不显示挖掘工具图标
-> - `requiresCorrectToolForDrops()` 无法正常工作（方块不掉落）
->
-> **已覆盖的方块类型（无需重复添加）：**
-> - `SIMPLE_BLOCKS.add()` → `SimpleBlockBuilder.build()` 自动调用 ✅
-> - `VariantSetBuilder` + `.mineable("xxx")` → `build()` 自动调用 ✅
-> - `BatchBlockBuilder` + `.mineable("xxx")` → `build()` 自动调用 ✅
-
-#### needs_stone_tool — 挖掘等级标签（手动维护）
-
-`needs_stone_tool` 标签**不由数据生成器生成**，需在 `src/main/resources/data/minecraft/tags/block/needs_stone_tool.json` 手动维护：
-
-```json
-{
-  "values": [
-    "pasterdream:dyedreamquartz_ore",
-    "pasterdream:titanium_ore",
-    "pasterdream:deepslate_titanium_ore",
-    "pasterdream:moltengold_ore",
-    "pasterdream:soul_ore",
-    "pasterdream:windrunner_crystal_ore",
-    "pasterdream:congeal_wind_ore",
-    "pasterdream:amber_candy_ore",
-    "pasterdream:dyedreamdust_ore"
-  ]
-}
-```
-
-> 所有矿石方块都需要至少石镐挖掘。装饰性方块（如 `dyedream_block`）不需要等级限制。
+> ⚠️ **必须调用**：未调 `putConfig` 的方块不会被标签生成器识别，导致 Jade 不显示工具图标、`requiresCorrectToolForDrops()` 无法正常工作。
+> **已覆盖的（无需重复添加）**：SimpleBlockBuilder / VariantSetBuilder / BatchBlockBuilder 的 build() 自动调用 ✅
 
 #### SelfDropBlock — 掉落物混合策略
 
-所有通过 `SIMPLE_BLOCKS.add()` 注册的方块使用 `SelfDropBlock` 作为工厂类，
+通过 `SimpleBlockBuilder.add()` 注册的方块使用 `SelfDropBlock`（`api/block/SelfDropBlock.java`），
 其 `getDrops()` 采用**"战利品表优先，空则回退自掉落"**的混合策略：
 
 ```java
@@ -532,40 +316,19 @@ public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
 
 - **有战利品表的方块（矿石等）** → 使用战利品表（精准采集+时运）✅
 - **无战利品表的方块（装饰方块）** → 回退为掉落自身 ✅
-- **手动注册的方块（`Block::new`、`RotatedPillarBlock::new`、`BaseEntityBlock` 等）** → 需要自己在 Java 中 override `getDrops()` 或创建战利品表 JSON
-
-#### 交互与动画（预留）
-
-`BlockConfig` 已预留 `.interact()` 和 `.animated()` 支持位，但目前的 `SimpleBlockBuilder` 只注册 `SelfDropBlock`（纯换皮方块），
-不会自动创建带交互或动画的自定义方块类。如需交互/动画，当前仍需手写 Block 子类 + BlockEntity。
+- **手动注册的方块** → 需要自己在 Java 中 override `getDrops()` 或创建战利品表 JSON
 
 #### 方块掉落物完整性检查
 
-**新注册方块时，必须确保掉落物机制正确。以下是检查清单：**
-
-**检查方法：** 查找方块类 → 看是否有 `getDrops()` → 看是否有战利品表 JSON
-
 | 注册方式 | 掉落机制 | 校验要点 |
 |---------|---------|---------|
-| `SIMPLE_BLOCKS.add()` | `SelfDropBlock` 混合策略 | ✅ 自动，无需额外操作 |
-| `VariantSetBuilder` + `.mineable()` | 战利品表 JSON | ✅ Builder 处理标签，需要手动批量生成战利品表 |
-| `BatchBlockBuilder` | Block::new → 需要战利品表 | ⚠️ 使用自定义工厂类（如 `DyedreamFlowerBlock`）必须确保该类有 `getDrops()` |
+| `SimpleBlockBuilder.add()` | `SelfDropBlock` 混合策略 | ✅ 自动，无需额外操作 |
+| `VariantSetBuilder` + `.mineable()` | 战利品表 JSON | ✅ Builder 处理标签，需手动批量生成战利品表 |
+| `BatchBlockBuilder` + `.factory()` | 自定义类 getDrops() | ⚠️ 确保工厂类有 `getDrops()` |
 | 手动 `registerBlock(Block::new)` | 需要战利品表 JSON | ⚠️ 必须创建对应 loot_table |
-| 手动 `registerBlock(CustomClass::new)` | 自定义类 getDrops() | ✅ 已有 getDrops 则自动 |
 | 手动 `registerSimpleBlock()` | 需要战利品表 JSON | ⚠️ 必须创建对应 loot_table |
 
-**掉落物缺失的典型症状：**
-- 方块被破坏后不产生任何掉落物粒子
-- Jade/WAILA 显示无掉落物
-- 即使空手/无附魔工具也什么都不掉
-
-**快速修复方案：**
-1. **自定义方块类** → 添加 `getDrops()` 返回 `List.of(new ItemStack(this))`
-2. **原生类方块（StairBlock 等）** → 在 `data/pasterdream/loot_tables/blocks/` 创建自掉落 JSON
-3. **矿石类方块** → 需要带精准采集+时运的 JSON（参考已有矿石模板）
-4. **有 TileEntity 的方块** → 必须通过 `getDrops()` 自行处理掉落逻辑
-
-**自掉落战利品表模板：**
+**自掉落战利品表模板**（路径 `data/pasterdream/loot_table/blocks/<block_id>.json`，**1.21 单数路径！**）：
 ```json
 {
   "type": "minecraft:block",
@@ -579,3 +342,162 @@ public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
   ]
 }
 ```
+
+---
+
+### 4. 实体系统（EntityAPI + GeckoLib）
+
+**动物实体继承 `GeckoLibAnimalEntity`：**
+
+```java
+public class PinkChickenEntity extends GeckoLibAnimalEntity {
+
+    public PinkChickenEntity(EntityType<? extends Animal> entityType, Level level) {
+        super(entityType, level);
+    }
+
+    public static AttributeSupplier.Builder createAttributes() {
+        return Animal.createLivingAttributes()
+            .add(Attributes.MAX_HEALTH, 4.0D)
+            .add(Attributes.MOVEMENT_SPEED, 0.25D);
+    }
+    // ...
+}
+```
+
+**推荐使用 EntityAPI 注册**（详见 Skill「pasterdream-entity-api」）：
+
+```java
+EntityResult<ShadowGolemEntity> golem = EntityAPI.createEntity("shadow_golem")
+    .category(MobCategory.MONSTER)
+    .size(2.2f, 3.5f)
+    .entityClass(ShadowGolemEntity.class)
+    .attributes(ShadowGolemEntity::createAttributes)
+    .skill(EntitySkill.builder("roar")
+        .animationName("roar").damage(12.0f).range(5.0f).cooldownTicks(200).build())
+    .spawnEgg(0x2C2C2C, 0x6B3FAF)
+    .build();
+```
+
+---
+
+### 5. 状态效果注册（MobEffectAPI）
+
+**推荐使用 MobEffectAPI**（详见 Skill「pasterdream-effect-api」）：
+
+```java
+MobEffectResult dreamwish = MobEffectAPI.createEffect("dreamwish_buff")
+    .beneficial()
+    .color(0xFF69B4)
+    .build();
+```
+
+---
+
+### 6. 维度注册（DimensionAPI）
+
+**推荐使用 DimensionAPI**（详见 Skill「pasterdream-dimension-api」）：
+
+```java
+DimensionResult dyedreamWorld = DimensionAPI.createDimension("dyedream_world")
+    .natural()
+    .hasSkylight()
+    .withAmbientLight(0.5)
+    .minY(-64).height(384)
+    .withDefaultBlock("minecraft:calcite")
+    .withNoiseSettings("pasterdream:dyedream_world")
+    .build();
+```
+
+维度 JSON 文件位于 `data/pasterdream/dimension/` 和 `data/pasterdream/dimension_type/`。
+
+---
+
+### 7. 遗迹注册（RuinAPI）
+
+**推荐使用 RuinAPI**（详见 Skill「pasterdream-ruin-api」）。
+
+---
+
+### 8. 成就系统（Advances + JSON）
+
+**成就完全通过 JSON 文件定义**，Java 代码中只需定义 `ResourceLocation` 常量便于引用：
+
+```java
+public static final ResourceLocation MY_ACHIEVEMENT = ResourceLocation.fromNamespaceAndPath(
+        PasterDreamMod.MOD_ID, "story/my_achievement");
+```
+
+**JSON 路径：** `data/pasterdream/advancement/<name>.json`（1.21 单数路径！）
+
+---
+
+### 9. 战利品表（Loot Tables + JSON）
+
+**JSON 路径：** `data/pasterdream/loot_table/<type>/<name>.json`（**1.21 单数 `loot_table`，不是 `loot_tables`！**）
+
+---
+
+### 10. 注册系统汇总表
+
+| 注册类 | 注册器 | 注册内容 | 注册时机 |
+|--------|--------|---------|---------|
+| `registry/PDBlocks.java` | `DeferredRegister.Blocks` | 方块（含分目录 `blocks/`） | 主构造函数 |
+| `registry/PDItems.java` | `DeferredRegister.Items` | 物品（含分目录 `items/`） | 主构造函数 |
+| `registry/PDEntities.java` | `DeferredRegister<EntityType<?>>` | 实体 | 主构造函数 |
+| `registry/PDBlockEntities.java` | `DeferredRegister<BlockEntityType<?>>` | 方块实体 | 主构造函数 |
+| `registry/PDCreativeTabs.java` | `DeferredRegister<CreativeModeTab>` | 创造标签（含分目录 `creativetabs/`） | 主构造函数 |
+| `registry/PDEffects.java` | `DeferredRegister<MobEffect>` | 状态效果 | 主构造函数 |
+| `registry/PDDimensions.java` | DimensionAPI | 维度 | 主构造函数 |
+| `registry/PDRuinsRegistration.java` | RuinAPI | 结构类型 | 主构造函数 |
+| `registry/PDParticles.java` | ParticleAPI | 粒子 | 主构造函数 |
+| 各 API 模块 | `PasterDreamAPI.registerAll()` | 所有 API 注册器统一挂总线 | 主构造函数开头 |
+
+---
+
+## 🌍 1.21 数据目录命名（反复踩坑警告 ⚠️）
+
+| 功能 | ❌ 旧路径（1.20） | ✅ 新路径（1.21） |
+|------|-----------------|-----------------|
+| 战利品表 | `loot_tables/` | `loot_table/` |
+| 配方 | `recipes/` | `recipe/` |
+| 结构模板 | `structures/` | `structure/` |
+| 成就 | `advancements/` | `advancement/` |
+| 挖掘标签 | `tags/blocks/` | `tags/block/` |
+
+**配方 JSON 格式（1.21 变更）**：
+```json
+{
+  "result": {
+    "id": "pasterdream:xxx",     // ✅ 1.21 用 id，不用 item
+    "count": 1
+  }
+}
+```
+
+**`category` 字段有效值**：`building`、`redstone`、`equipment`、`misc`、`food`
+
+---
+
+## 🔧 常用开发工作流
+
+```bash
+.\gradlew compileJava    # 编译两个模块（自动）
+.\gradlew runData        # 运行数据生成器（标签/模型/blockstate）
+.\gradlew runClient      # 启动游戏
+.\gradlew runServer      # 启动服务器
+```
+
+---
+
+## 引用文件
+
+- [PasterDreamAPI.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/PasterDreamAPI.java) — API 模块常量与统一注册入口
+- [PasterDreamMod.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDream/src/main/java/com/pasterdream/pasterdreammod/PasterDreamMod.java) — 主模组类
+- [BlockAPI.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/block/BlockAPI.java) — 方块注册门面
+- [BlockConfig.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/block/BlockConfig.java) — 方块配置
+- [SimpleBlockBuilder.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/block/builder/SimpleBlockBuilder.java) — 模式一 Builder
+- [SelfDropBlock.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/block/SelfDropBlock.java) — 混合掉落策略方块
+- [PDBlocks.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDBlocks.java) — 方块注册入口
+- [PDItems.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDItems.java) — 物品注册入口
+- [PDEntities.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDEntities.java) — 实体注册入口

@@ -7,7 +7,7 @@
     "east": "pasterdream:block/air",
     "south": "pasterdream:block/air",
     "west": "pasterdream:block/air",
-    "particle": "pasterdream:block/yin_ying_shi_wa_"
+    "particle": "pasterdream:block/shadow_stone_tiles"
   },
   "render_type": "cutout"
 }

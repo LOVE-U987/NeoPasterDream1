@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/chuang_zao_lan__diao_shi_"
+    "layer0": "pasterdream:item/creative_tab_debug"
   },
   "display": {
     "thirdperson_righthand": {

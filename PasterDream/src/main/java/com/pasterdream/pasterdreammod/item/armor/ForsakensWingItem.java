@@ -50,7 +50,7 @@ public class ForsakensWingItem extends ArmorItem implements GeoItem {
             return;
         }
         if (Boolean.TRUE.equals(PDCommonConfig.BAN_ALL_THE_WINGS.get())) {
-            player.displayClientMessage(Component.literal("§4此物品已被禁用"), true);
+            player.displayClientMessage(Component.translatable("tooltip.pasterdream.forsakens_wing.disabled"), true);
             return;
         }
         ServerScheduler.schedule(2, () -> {
@@ -75,9 +75,9 @@ public class ForsakensWingItem extends ArmorItem implements GeoItem {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tip, TooltipFlag flag) {
         super.appendHoverText(stack, ctx, tip, flag);
-        tip.add(Component.literal("§7▪ §9装备后获得飞行能力"));
-        tip.add(Component.literal("§7▪ §9免疫摔落伤害"));
-        tip.add(Component.literal("§7▪ §9清除缓慢与凋零效果"));
+        tip.add(Component.translatable("tooltip.pasterdream.forsakens_wing.flight"));
+        tip.add(Component.translatable("tooltip.pasterdream.forsakens_wing.fall_immune"));
+        tip.add(Component.translatable("tooltip.pasterdream.forsakens_wing.cure_debuff"));
     }
 
     @Override

@@ -60,7 +60,7 @@ public class StarWishRodItem extends FishingRodItem {
     public void appendHoverText(ItemStack stack, TooltipContext context,
                                 List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("§7▪ §9钓鱼特殊幸运值乘区：220%"));
-        tooltip.add(Component.literal("§7▪ §9将可能钓到更有价值的深海秘宝"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.star_wish_rod.luck"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.star_wish_rod.treasure"));
     }
 }

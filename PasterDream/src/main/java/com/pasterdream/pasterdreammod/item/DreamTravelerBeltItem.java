@@ -31,7 +31,7 @@ public class DreamTravelerBeltItem extends Item implements ICurioItem {
     @Override
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, context, list, flag);
-        list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7b\u7CBE\u826F \u2605\u2605\u2605"));
+        list.add(Component.translatable("tooltip.pasterdream.dream_traveler_belt.quality"));
 }
 
     @Override

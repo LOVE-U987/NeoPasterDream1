@@ -26,7 +26,7 @@ public class BubbleTeaItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.literal("\u00A77\u8349\u8393\u9F99\u4EB2\u624B\u6599\u7406\u7684\u996E\u54C1"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.bubble_tea.desc"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 

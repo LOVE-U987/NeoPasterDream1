@@ -30,18 +30,18 @@ import java.util.List;
  */
 public class DreamnotesItem extends Item {
 
-    /** 笔记序号 0..14，对应 GUI 页纹理 xun_meng_zhe_bi_ji__gui{N} */
+    /** 笔记序号 0..14，对应 GUI 页纹理 dreamnotes_gui{N} */
     private final int noteId;
-    private final List<Component> tooltips;
+    private final List<String> tooltipKeys;
 
     /**
-     * @param noteId   0..14
-     * @param tooltips 悬停描述行（已含格式码）
+     * @param noteId      0..14
+     * @param tooltipKeys 悬停描述的语言键列表（tooltip.pasterdream.dreamnotes_<id>.*）
      */
-    public DreamnotesItem(int noteId, List<String> tooltips) {
+    public DreamnotesItem(int noteId, List<String> tooltipKeys) {
         super(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.COMMON));
         this.noteId = noteId;
-        this.tooltips = tooltips.stream().map(s -> (Component) Component.literal(s)).toList();
+        this.tooltipKeys = List.copyOf(tooltipKeys);
     }
 
     public int getNoteId() {
@@ -60,7 +60,9 @@ public class DreamnotesItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.addAll(tooltips);
+        for (String key : tooltipKeys) {
+            tooltipComponents.add(Component.translatable(key));
+        }
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 

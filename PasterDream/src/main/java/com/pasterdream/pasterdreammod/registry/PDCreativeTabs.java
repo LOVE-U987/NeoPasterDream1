@@ -13,7 +13,7 @@ import com.pasterdream.pasterdreammod.registry.creativetabs.*;
 
 /**
  * 创造模式物品栏注册类
- * 按维度/功能划分为11个标签页，便于玩家分类查找物品
+ * 按维度/功能划分为10个标签页，便于玩家分类查找物品
  */
 public class PDCreativeTabs {
 
@@ -42,9 +42,6 @@ public class PDCreativeTabs {
 
     // --- PDCreativeTabsSouvenir ---
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> SOUVENIR_TAB = PDCreativeTabsSouvenir.SOUVENIR_TAB;
-
-    // --- PDCreativeTabsArmor ---
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ARMOR_TAB = PDCreativeTabsArmor.ARMOR_TAB;
 
     // --- PDCreativeTabsWeapon ---
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> WEAPON_TAB = PDCreativeTabsWeapon.WEAPON_TAB;

@@ -59,7 +59,7 @@ public class DebugStructureWandItem extends Item {
         // 射线检测目标方块
         HitResult hitResult = player.pick(100.0D, 1.0F, false);
         if (hitResult.getType() != HitResult.Type.BLOCK) {
-            player.sendSystemMessage(Component.literal("§c没有瞄准任何方块"));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.no_target"));
             return InteractionResultHolder.fail(itemStack);
         }
 
@@ -78,7 +78,7 @@ public class DebugStructureWandItem extends Item {
             templateOpt = loadStructure(serverLevel, nbtLocation);
         }
         if (templateOpt.isEmpty()) {
-            player.sendSystemMessage(Component.literal("§c未找到结构: " + structureId));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.structure_not_found", structureId));
             return InteractionResultHolder.fail(itemStack);
         }
 
@@ -95,9 +95,9 @@ public class DebugStructureWandItem extends Item {
         ), settings, serverLevel.random, 3);
 
         if (placed) {
-            player.sendSystemMessage(Component.literal("§a已放置结构: §f" + structureId + " §a于 " + targetPos.toShortString()));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.structure_placed", structureId, targetPos.toShortString()));
         } else {
-            player.sendSystemMessage(Component.literal("§e结构放置返回空: §f" + structureId + " §e(可能没有方块数据)"));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.structure_empty", structureId));
         }
         return InteractionResultHolder.success(itemStack);
     }
@@ -122,8 +122,8 @@ public class DebugStructureWandItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.literal("§7放置结构: §f" + structurePath));
-        tooltipComponents.add(Component.literal("§7右键点击方块在§e外侧§7生成"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.debug_structure_wand.place", structurePath));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.debug_structure_wand.right_click"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }

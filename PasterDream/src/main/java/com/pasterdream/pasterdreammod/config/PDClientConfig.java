@@ -81,6 +81,10 @@ public class PDClientConfig {
     public static final ModConfigSpec.ConfigValue<Boolean> BGM_MASTER_ENABLED;
     /** BGM 主音量倍率（0.0 ~ 1.0，默认 1.0） */
     public static final ModConfigSpec.ConfigValue<Double> BGM_MASTER_VOLUME;
+    /** 启用「完整播放+间隔」BGM 切换模式（true=把当前曲目完整放完，间隔后再播下一首；false=现有交叉淡化切换，默认 false） */
+    public static final ModConfigSpec.ConfigValue<Boolean> BGM_USE_SONG_COMPLETE_MODE;
+    /** 完整播放后间隔秒数（30 ~ 60，默认 45） */
+    public static final ModConfigSpec.ConfigValue<Integer> BGM_SONG_INTERVAL_SECONDS;
 
     // --- 染梦世界 ---
     /** 染梦世界主 BGM 开关（默认 true） */
@@ -204,6 +208,12 @@ public class PDClientConfig {
         BGM_MASTER_VOLUME = builder
                 .comment("BGM 主音量倍率（0.0 ~ 1.0）默认：1.0")
                 .defineInRange("bgm master volume", 1.0d, 0.0d, 1.0d);
+        BGM_USE_SONG_COMPLETE_MODE = builder
+                .comment("启用「完整播放+间隔」BGM 切换模式（true=把当前曲目完整放完，间隔后再播下一首；false=现有交叉淡化切换）默认：false")
+                .define("bgm use song complete mode", false);
+        BGM_SONG_INTERVAL_SECONDS = builder
+                .comment("完整播放后间隔秒数（30 ~ 60）默认：45")
+                .defineInRange("bgm song interval seconds", 45, 30, 60);
 
         // 染梦世界
         BGM_DYEDREAM_WORLD = builder

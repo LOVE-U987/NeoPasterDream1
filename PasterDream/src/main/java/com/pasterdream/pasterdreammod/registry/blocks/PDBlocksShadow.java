@@ -26,9 +26,9 @@ public class PDBlocksShadow {
 
     // ==================== 阴影维度基础方块 ====================
 
-    /** 阴影方块（下落方块，类似沙子） */
-    public static final DeferredBlock<Block> SHADOW_BLOCK = PDBlocks.BLOCKS.registerBlock("shadow_block",
-            Block::new, BlockBehaviour.Properties.of()
+    /** 阴影方块（下落方块，类似沙子，失去支撑时下落） */
+    public static final DeferredBlock<ShadowBlockBlock> SHADOW_BLOCK = PDBlocks.BLOCKS.registerBlock("shadow_block",
+            ShadowBlockBlock::new, BlockBehaviour.Properties.of()
                     .sound(SoundType.WOOL)
                     .strength(0.45f, 0.5f)
                     .noOcclusion()

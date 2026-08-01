@@ -41,9 +41,9 @@ public class QymArmorItem extends ArmorItem {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("§7▪ §9装备整套时精神值始终为上限"));
-        tooltip.add(Component.literal("§7▪ §9梦境中获得 80% 伤害减免"));
-        tooltip.add(Component.literal("§7▪ §9身处梦境时可以回避任何伤害"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.qym_armor.full_set_san"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.qym_armor.damage_reduction"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.qym_armor.evasion"));
     }
 
     @Override

@@ -35,9 +35,9 @@ public class BrightButterflyCurioItem extends Item implements ICurioItem {
     @Override
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, context, list, flag);
-        list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A75\u4E0A\u53E4 \u2605\u2605\u2605\u2605\u2605"));
-        list.add(Component.literal("\u00A77\u25AA \u00A79\u81EA\u8EAB\u5904\u4E8E\u4F4E\u4EAE\u5EA6\u73AF\u5883\u4E0B\u83B7\u5F97\u591C\u89C6"));
-        list.add(Component.literal("\u00A77\u25AA \u00A79\u514D\u75AB\u9ED1\u6697\u6548\u679C"));
+        list.add(Component.translatable("tooltip.pasterdream.bright_butterfly_curio.quality"));
+        list.add(Component.translatable("tooltip.pasterdream.bright_butterfly_curio.effect_1"));
+        list.add(Component.translatable("tooltip.pasterdream.bright_butterfly_curio.effect_2"));
 }
 
     @Override

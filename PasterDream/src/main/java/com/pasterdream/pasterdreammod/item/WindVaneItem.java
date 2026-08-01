@@ -35,23 +35,23 @@ public class WindVaneItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.literal("§7检测当前的风向与玩家的角度"));
+        tooltip.add(Component.translatable("tooltip.pasterdream.wind_vane.desc"));
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide()) {
-            player.displayClientMessage(Component.literal(
-                    "角度：" + String.format("%.2f", player.getXRot())
-                            + " 方向：" + String.format("%.2f", player.getYRot())), true);
+            player.displayClientMessage(Component.translatable("tooltip.pasterdream.wind_vane.angle_dir",
+                    String.format("%.2f", player.getXRot()),
+                    String.format("%.2f", player.getYRot())), true);
             level.playSound(null, player.blockPosition(), PDSounds.DING_0.get(),
                     SoundSource.PLAYERS, 1.0f, 1.0f);
             int dir = level.getGameRules().getInt(PDGameRules.WIND_DIRECTION);
             if (dir < 0 || dir >= WIND_NAMES.length) {
                 dir = 0;
             }
-            player.displayClientMessage(Component.literal("当前风向：" + WIND_NAMES[dir]), false);
+            player.displayClientMessage(Component.translatable("tooltip.pasterdream.wind_vane.wind_dir", WIND_NAMES[dir]), false);
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }

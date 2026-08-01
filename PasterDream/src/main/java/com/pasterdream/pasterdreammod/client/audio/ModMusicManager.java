@@ -109,6 +109,9 @@ public class ModMusicManager {
     /** 曲目随机选择器 */
     private final RandomSource trackRandom = RandomSource.create();
 
+    /** 「完整播放+间隔」模式下，群系变化后待播放的曲目（等当前曲目放完再播） */
+    private String pendingMusicName;
+
     /**
      * 构造函数 —— 通过依赖注入接收所有子系统
      *
@@ -152,6 +155,8 @@ public class ModMusicManager {
         registerBiomeMusic("biome_dyedream_deep_ocean", "sweetdream_music");
         registerBiomeMusic("biome_dyedream_mushroom_plains", "snowfall_dream_music");
         registerBiomeMusic("biome_dyedream_dense_forest", "dream_heath", "dream_meadow_daisy");
+        registerBiomeMusic("biome_dyedream_shore", "sweetdream_music");
+        registerBiomeMusic("biome_dyedream_river", "dyedream_world");
         registerBiomeMusic("wind_journey_biome_0", "wind_journey_departure", "wind_journey_midsummer");
         registerBiomeMusic("wind_journey_biome_1", "wind_journey_departure", "wind_journey_midsummer");
     }
@@ -205,6 +210,18 @@ public class ModMusicManager {
      */
     public boolean isPlayingBgm() {
         return playbackController.isPlaying() || crossfadeManager.isCrossfading();
+    }
+
+    /**
+     * 查询是否启用了「完整播放+间隔」BGM 切换模式。
+     * <p>
+     * 该模式下群系切换不会打断当前曲目，而是等曲目完整放完后，
+     * 间隔配置指定的秒数再播放下一首；关闭时保持现有的交叉淡化切换预设。
+     *
+     * @return true 表示启用完整播放+间隔模式
+     */
+    public static boolean isSongCompleteMode() {
+        return Boolean.TRUE.equals(PDClientConfig.BGM_USE_SONG_COMPLETE_MODE.get());
     }
 
     /**
@@ -270,6 +287,14 @@ public class ModMusicManager {
         String musicName = selectTrack(currentBiomeId, candidates);
         long gameTick = mc.level.getGameTime();
 
+        // 同步循环重播间隔：完整播放模式使用配置的间隔秒数，否则恢复默认间隔（现有预设）
+        if (isSongCompleteMode()) {
+            int intervalTicks = Math.max(1, PDClientConfig.BGM_SONG_INTERVAL_SECONDS.get() * 20);
+            loopRestartManager.setIntervalRange(intervalTicks, intervalTicks, intervalTicks, intervalTicks);
+        } else {
+            loopRestartManager.setIntervalRange(1200, 1800, 600, 1200);
+        }
+
         // 当前正在播放的音乐被单独禁用 → 淡出停止
         String currentMusicName = playbackController.getCurrentMusicName();
         if (currentMusicName != null && !isBgmEnabled(currentMusicName)) {
@@ -328,9 +353,23 @@ public class ModMusicManager {
             // 新群系无音乐映射或被单独禁用 → 淡出停止当前 BGM；
             // 音乐相同 → 同样不切换也不进入冷却；两种情况都只标记群系已变化
             if (musicName == null) {
+                if (isSongCompleteMode()) {
+                    // 完整播放模式：不打断当前曲目，让它自然放完；
+                    // 间隔结束后因当前群系无 BGM 而自然静音（由循环重播逻辑处理）
+                    this.pendingMusicName = null;
+                    loopRestartManager.markBiomeChanged();
+                    return;
+                }
                 if (playbackController.getCurrentSound() != null || crossfadeManager.isCrossfading()) {
                     crossfadeManager.beginFadeOutAll();
                 }
+                loopRestartManager.markBiomeChanged();
+                return;
+            }
+            if (isSongCompleteMode()) {
+                // 完整播放模式：不打断当前曲目，仅记录待播曲目，
+                // 等当前曲目完整放完、间隔结束后再切换到新群系的音乐
+                this.pendingMusicName = musicName;
                 loopRestartManager.markBiomeChanged();
                 return;
             }
@@ -361,9 +400,27 @@ public class ModMusicManager {
             boolean isMusicActive = mc.getSoundManager()
                     .isActive(playbackController.getCurrentSound());
             if (loopRestartManager.update(isMusicActive, gameTick)) {
-                // 去重检测：已在播放中 → 跳过
-                if (!deduplication.isBgmActive(playbackController.getCurrentMusicName())) {
-                    playbackController.restart();
+                if (isSongCompleteMode()) {
+                    // 完整播放模式：间隔到期后优先播放群系变化时的待播曲目；
+                    // 无待播曲目时清除缓存重新抽选，实现同群系多曲目轮换
+                    if (pendingMusicName != null) {
+                        playbackController.play(pendingMusicName);
+                        pendingMusicName = null;
+                    } else if (!deduplication.isBgmActive(playbackController.getCurrentMusicName())) {
+                        biomeTrackSelection.remove(currentBiomeId);
+                        String next = selectTrack(currentBiomeId, candidates);
+                        if (next != null) {
+                            playbackController.play(next);
+                        } else {
+                            // 当前群系无 BGM 映射 → 彻底停止，等待进入有 BGM 的群系后由空闲状态重新播放
+                            playbackController.stop();
+                        }
+                    }
+                } else {
+                    // 交叉淡化预设：去重检测通过后直接重播当前曲目
+                    if (!deduplication.isBgmActive(playbackController.getCurrentMusicName())) {
+                        playbackController.restart();
+                    }
                 }
             }
         }
@@ -395,6 +452,7 @@ public class ModMusicManager {
         crossfadeManager.updateStep();      // 推进淡出，检测是否全部结束
         cooldownManager.cancelCooldown();
         loopRestartManager.reset();
+        pendingMusicName = null;
     }
 
     /**

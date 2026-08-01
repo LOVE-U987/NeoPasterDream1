@@ -198,7 +198,7 @@ public class ForcedTowerBlock extends BaseEntityBlock {
                 && serverLevel.getBlockState(target.above(1)).isAir()
                 && serverLevel.getBlockState(target.above(2)).isAir();
         if (!targetValid) {
-            player.displayClientMessage(Component.literal("强征传送塔已被遗失或阻挡"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.forced_tower.lost_or_blocked"), true);
             return;
         }
         // 融梦能量消耗已剥离至附属 mod
@@ -254,7 +254,7 @@ public class ForcedTowerBlock extends BaseEntityBlock {
             PasterItemData.putBoolean(held, "switch", true);
             tower.setLinked(false);
             player.swing(InteractionHand.MAIN_HAND, true);
-            player.displayClientMessage(Component.literal("已存储记录点"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.forced_tower.record_point_saved"), true);
         } else {
             BlockPos recorded = BlockPos.containing(
                     PasterItemData.getDouble(held, "coord_x"),
@@ -270,9 +270,9 @@ public class ForcedTowerBlock extends BaseEntityBlock {
                 }
                 PasterItemData.putBoolean(held, "switch", false);
                 player.swing(InteractionHand.MAIN_HAND, true);
-                player.displayClientMessage(Component.literal("强征传送塔链接建立成功"), true);
+                player.displayClientMessage(Component.translatable("message.pasterdream.forced_tower.link_success"), true);
             } else {
-                player.displayClientMessage(Component.literal("对应坐标没有找到强征传送塔，建立链接失败"), true);
+                player.displayClientMessage(Component.translatable("message.pasterdream.forced_tower.link_failed"), true);
             }
         }
         level.playSound(null, pos, PDSounds.DREAM1.get(), SoundSource.NEUTRAL, 1.1f, 1);

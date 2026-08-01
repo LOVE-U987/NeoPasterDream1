@@ -27,10 +27,10 @@ public class DreamharpOfWandererItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tip, TooltipFlag flag) {
         super.appendHoverText(stack, ctx, tip, flag);
-        tip.add(Component.literal("§7演奏后为半径10格内的玩家提供效果(1:00)："));
-        tip.add(Component.literal("§7▪ §9最大生命值+4 且恢复4点生命 移动速度+10%"));
-        tip.add(Component.literal("§7▪ §9精神值恢复+2.4/min"));
-        tip.add(Component.literal("§7▪ §9冷却时间：10秒"));
+        tip.add(Component.translatable("tooltip.pasterdream.dreamharp_of_wanderer.desc"));
+        tip.add(Component.translatable("tooltip.pasterdream.dreamharp_of_wanderer.buff"));
+        tip.add(Component.translatable("tooltip.pasterdream.dreamharp_of_wanderer.san_regen"));
+        tip.add(Component.translatable("tooltip.pasterdream.dreamharp_of_wanderer.cooldown"));
     }
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {

@@ -51,7 +51,7 @@ public final class LampShadowEvents {
                     || !player.level().dimension().equals(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY)) {
                 return;
             }
-            player.connection.send(new ClientboundSetTitleTextPacket(Component.literal("灯影之下")));
+            player.connection.send(new ClientboundSetTitleTextPacket(Component.translatable("message.pasterdream.sleep.under_lamp_shadow")));
             if (Boolean.TRUE.equals(PDCommonConfig.IN_LAMP_SHADOW_GIVE_PALE_BONENEEDLE.get())) {
                 ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(PDItems.PALE_BONENEEDLE.get()));
             }

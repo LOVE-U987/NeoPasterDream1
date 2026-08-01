@@ -205,7 +205,7 @@ public class WorkshopAnvilBlockEntity extends BlockEntity implements MenuProvide
             PasterItemData.putDouble(result, "paster_luck_number",
                     PasterItemData.getDouble(result, "paster_luck_number") * score * 0.1);
             PasterItemData.putDouble(result, "process", 2);
-            result.set(DataComponents.CUSTOM_NAME, Component.literal("未完成原胚（待淬火）"));
+            result.set(DataComponents.CUSTOM_NAME, Component.translatable("message.pasterdream.embryo.pending_quench"));
             result.setCount(1);
             itemHandler.setStackInSlot(SLOT_RESULT, result);
         }

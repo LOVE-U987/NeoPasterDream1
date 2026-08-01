@@ -1,8 +1,8 @@
 {
   "parent": "block/template_orientable_trapdoor_bottom",
   "textures": {
-    "texture": "pasterdream:block/feng_bo_mu_huo_ban_men_",
-    "particle": "pasterdream:block/feng_bo_mu_huo_ban_men_"
+    "texture": "pasterdream:block/windmoor_trapdoor",
+    "particle": "pasterdream:block/windmoor_trapdoor"
   },
   "render_type": "cutout"
 }

@@ -31,8 +31,8 @@ public class HiyoriHeadItem extends Item implements ICurioItem {
     @Override
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, context, list, flag);
-        list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7d\u53F2\u8BD7 \u2605\u2605\u2605\u2605\u2605\u2605"));
-        list.add(Component.literal("\u00A77\u00A7o-- \u56E0\u4E3A\u5E38\u89C4\u8131\u79BB \u6240\u4EE5creative"));
+        list.add(Component.translatable("tooltip.pasterdream.hiyori_head.quality"));
+        list.add(Component.translatable("tooltip.pasterdream.hiyori_head.flavor_1"));
 }
 
     @Override

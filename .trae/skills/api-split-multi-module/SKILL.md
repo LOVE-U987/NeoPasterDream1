@@ -54,9 +54,11 @@ description: "Guides API-Split multi-module architecture decisions for NeoPaster
 
 | 模块                 | 包路径                                                                | 应包含的内容                                                                                                                    | 不应包含的内容                              |
 | ------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| **PasterDreamAPI** | `PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/` | BlockAPI, EntityAPI, ParticleAPI, DimensionAPI, RuinAPI, MobEffectAPI, ItemMigrationAPI, 以及所有 Builder/Result/Config/Gen 类 | 具体的 Block/Item/Entity 子类，客户端渲染代码     |
-| **PasterDream**    | `PasterDream/src/main/java/com/pasterdream/pasterdreammod/`        | 所有方块、物品、实体、流体、容器、渲染器、注册管理器（PDBlocks, PDItems 等）、DataGen 提供者                                                               | 纯 API 接口/门面类（应通过依赖使用 PasterDreamAPI） |
+| **PasterDreamAPI** | `PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/` | BlockAPI, EntityAPI, ParticleAPI, DimensionAPI, RuinAPI, MobEffectAPI, ItemAPI, MenuAPI, FluidAPI, CurioAPI, BlockEntityAPI, BgmAPI, SanAPI, MeltDreamEnergyAPI, SpellAPI, 以及所有 Builder/Result/Config/Gen 类 | 具体的 Block/Item/Entity 子类，客户端渲染代码     |
+| **PasterDream**    | `PasterDream/src/main/java/com/pasterdream/pasterdreammod/`        | 所有方块、物品、实体、流体、容器、渲染器、注册管理器（registry/PDBlocks, registry/PDItems 等）、DataGen 提供者                                                               | 纯 API 接口/门面类（应通过依赖使用 PasterDreamAPI） |
 | **旧目录（已归档）**       | `src/main/java/com/pasterdream/pasterdreammod/`                    | 仅保留 `package-info.java` 标记为 @Deprecated                                                                                   | 不应在此目录添加新代码                          |
+
+> 注意：`src/` 为旧目录（已归档，不参与构建）；`PasterDreamAPI` 是独立前置模组（modid `pasterdreamapi`），`PasterDream` 是主模组（modid `pasterdream`）。数据命名空间统一沿用 `pasterdream`（`PasterDreamAPI.DATA_NAMESPACE`）。
 
 ## 通用备选处理流程
 
@@ -71,7 +73,7 @@ description: "Guides API-Split multi-module architecture decisions for NeoPaster
 ### 新增 API 模块内容时
 
 1. **创建文件位置**：`PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/` 下的对应子包
-2. **注册事件总线**：在 `PasterDreamMod.java` 构造器中 `.register(modEventBus)`
+2. **注册事件总线**：在 `PasterDreamAPI.registerAll(modEventBus)` 中挂入 DeferredRegister（主模组构造函数开头调用一次）
 3. **添加语言文件**：检查 `PasterDream/src/main/resources/assets/pasterdream/lang/zh_cn.json`
 4. **编译验证**：`.\gradlew compileJava`（会自动编译两个模块）
 
@@ -81,10 +83,14 @@ description: "Guides API-Split multi-module architecture decisions for NeoPaster
 
 | API | Facade 入口           | Builder 类                       | 注册方法                  |
 | --- | ------------------- | ------------------------------- | --------------------- |
-| 方块  | `BlockAPI`          | `SimpleBlockBuilder`            | `.register()`         |
-| 实体  | `EntityAPI`         | `EntityBuilder`                 | `.buildAndRegister()` |
-| 粒子  | `ParticleAPI`       | `ParticleAPI.ParticleBuilder`   | `.build()`            |
-| 维度  | `DimensionAPI`      | `DimensionAPI.DimensionBuilder` | `.register()`         |
+| 方块  | `BlockAPI`          | `SimpleBlockBuilder` / `VariantSetBuilder` / `BatchBlockBuilder` | `.build()`（工厂：`registerSimpleBlocks()` / `createVariantSet()` / `batchRegister()`） |
+| 实体  | `EntityAPI`         | `EntityBuilder`                 | `.build()`            |
+| 物品  | `ItemAPI`           | `SimpleItemBuilder` / `FoodItemBuilder` / `ToolItemBuilder` / `CurioItemBuilder` | `.build()`            |
+| 粒子  | `ParticleAPI`       | `ParticleBuilder`               | `.build()`            |
+| 效果  | `MobEffectAPI`      | `MobEffectBuilder`              | `.build()`            |
+| 维度  | `DimensionAPI`      | `DimensionBuilder`              | `.build()`            |
+| 遗迹  | `RuinAPI`           | `RuinBuilder` / `StructureSetBuilder` | `.build()`            |
+| 菜单  | `MenuAPI`           | `MenuBuilder`                   | `.build()`            |
 | 装饰物 | `DecorationBuilder` | （自身即是Builder）                   | `.register()`         |
 
 新 API 请遵循此模式，确保调用方式一致。

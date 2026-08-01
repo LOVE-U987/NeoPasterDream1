@@ -11,6 +11,9 @@ import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -18,6 +21,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -35,7 +39,9 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.util.RandomSource;
@@ -519,6 +525,27 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-        return List.of(new ItemStack(this));
+        ItemStack stack = new ItemStack(this);
+        // 优先使用战利品上下文携带的方块实体（玩家挖掘路径）
+        BlockEntity be = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+        MeltdreamChestBlockEntity chest = (be instanceof MeltdreamChestBlockEntity c) ? c : null;
+        if (chest == null) {
+            // 兜底：TNT 等爆炸破坏路径可能未携带 BLOCK_ENTITY，通过 ORIGIN 从世界重新获取方块实体
+            Vec3 origin = params.getOptionalParameter(LootContextParams.ORIGIN);
+            if (origin != null && params.getLevel() instanceof ServerLevel serverLevel) {
+                BlockEntity worldBe = serverLevel.getBlockEntity(BlockPos.containing(origin));
+                if (worldBe instanceof MeltdreamChestBlockEntity chestFromWorld) {
+                    chest = chestFromWorld;
+                }
+            }
+        }
+        if (chest != null) {
+            CompoundTag tag = new CompoundTag();
+            chest.saveCooldownsToTag(tag);
+            if (!tag.isEmpty()) {
+                stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(tag));
+            }
+        }
+        return List.of(stack);
     }
 }

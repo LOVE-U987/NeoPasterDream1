@@ -44,6 +44,7 @@ public class DyedreamDecorations {
                 ))
                 .biome("pasterdream:biome_dyedream_0")
                 .rarity(2)
+                .regionCheck(true, 0.3f)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("dyedream_crystal_cluster");
     }
@@ -140,6 +141,7 @@ public class DyedreamDecorations {
                 ))
                 .biome("pasterdream:biome_dyedream_1")
                 .rarity(2)
+                .regionCheck(true, 0.3f)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("calcite_crystal_garden");
     }
@@ -202,6 +204,7 @@ public class DyedreamDecorations {
                 ))
                 .biome("#pasterdream:is_dyedream")
                 .rarity(2)
+                .regionCheck(true, 0.3f)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("dyedream_fallen_leaves");
     }
@@ -239,6 +242,7 @@ public class DyedreamDecorations {
                 ))
                 .biome("pasterdream:biome_dyedream_mushroom_plains")
                 .rarity(1)
+                .regionCheck(true, 0.3f)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("pinkagaric_forest");
     }

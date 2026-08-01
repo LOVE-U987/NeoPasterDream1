@@ -1,6 +1,6 @@
 ---
 name: "pasterdream-dimension-api"
-description: "PasterDream模组维度注册专用API，提供Facade+Builder模式一键注册自定义维度。在需要创建新维度、配置维度类型/生物群系/背景音乐或生成维度JSON时调用。"
+description: "PasterDream模组维度注册专用API，提供Facade+Builder模式一键注册自定义维度。在需要创建新维度、配置维度类型/生物群系/背景音乐/大型结构地形协商或生成维度JSON时调用。"
 ---
 
 # PasterDream Dimension API
@@ -11,8 +11,9 @@ description: "PasterDream模组维度注册专用API，提供Facade+Builder模�
 
 - 创建新的自定义维度（dimension）
 - 配置维度类型参数（dimension_type JSON）
-- 配置生物群系源（fixed / multi_noise / checkerboard）
+- 配置生物群系源（fixed / multi_noise）
 - 为维度添加背景音乐
+- 启用维度的大型结构地形协商（StructureTerrainNegotiator）
 - 自动生成 dimension_type JSON 和 dimension JSON 文件
 
 ## 快速开始
@@ -28,13 +29,13 @@ DimensionResult myWorld = DimensionAPI.createDimension("my_world")
     .monsterSpawnLight(0, 7)
     .withDefaultBlock("minecraft:stone")
     .withDefaultFluid("minecraft:water")
-    .withMusic("my_world_music")
     .build();
 
 // 2. 在 ClientSetup.java 中注册维度特效
 @SubscribeEvent
 public static void registerEffects(RegisterDimensionSpecialEffectsEvent event) {
-    DimensionAPI.registerEffects(event, "my_world",
+    event.register(
+        ResourceLocation.fromNamespaceAndPath("pasterdream", "my_world"),
         new DimensionSpecialEffects(192.0f, true, SkyType.NORMAL, false, false) {
             @Override
             public Vec3 getBrightnessDependentFogColor(Vec3 color, float sunHeight) {
@@ -51,81 +52,101 @@ if (DimensionAPI.isInDimension(level, myWorld)) {
 }
 ```
 
+## 前置条件
+
+在 `PasterDreamMod` 构造函数中通过统一入口注册（DimensionAPI 无需单独注册，已含在 `registerAll` 中）：
+
+```java
+PasterDreamAPI.registerAll(modEventBus);
+```
+
 ## API 架构
 
 ```
 DimensionAPI                        ← Facade 门面
   ├── createDimension(name)         ← 工厂方法 → DimensionBuilder
-  ├── registerEffects()             ← 特效注册
-  ├── registerDimensionMusic()      ← 音乐注册
-  ├── getMusicEvent()               ← 音乐查询
-  ├── isInDimension()               ← 维度判断
-  └── generateDimensionTypeJson()   ← 手动 JSON 生成
-  └── generateDimensionJson()       ← 手动 JSON 生成
+  ├── isInDimension(level, result)  ← 维度判断
+  ├── getRegisteredDimension(name)  ← 查询维度结果 → Optional
+  ├── getMusicEvent(name)           ← 音乐事件查询 → Optional<Supplier<SoundEvent>>
+  ├── getTerrainNegotiator()        ← 获取大型结构地形协商器单例
+  ├── enableLargeStructureSupport(result/dimensionId)  ← 启用大型结构支持
+  └── cacheDimension(result)        ← 缓存维度结果（Builder 内部调用）
 
 DimensionBuilder                    ← Builder 构建器
-  ├── DimensionType 配置           ← 桥接到 DimensionTypeGenerator
-  ├── Dimension 配置               ← 桥接到 DimensionGenerator
-  ├── withMusic()                  ← 背景音乐配置
-  └── build()                      ← 生成 JSON + 返回 DimensionResult
+  ├── DimensionType 配置（natural/ultraWarm/hasSkylight/...）
+  ├── Dimension 配置（withDefaultBlock/addBiome/withFixedBiome/...）
+  ├── withMusic()                   ← 背景音乐（@Deprecated，建议 PDSounds 管理）
+  ├── generateJson(boolean)         ← 是否自动生成 JSON（默认 true）
+  ├── basePath(String)              ← 资源文件基础路径（默认 src/main/resources）
+  └── build()                       ← 生成 JSON + 返回 DimensionResult
 
 DimensionResult                     ← Record 结果
-  ├── typeKey()                    → ResourceKey<DimensionType>
-  ├── levelKey()                   → ResourceKey<Level>
-  ├── effectsId()                  → String
-  └── isDimension(level)           → boolean
+  ├── dimensionName()               → String（维度注册名）
+  ├── dimensionTypeId()             → String（如 "pasterdream:my_world"）
+  ├── typeKey()                     → ResourceKey<DimensionType>
+  ├── levelKey()                    → ResourceKey<Level>
+  ├── effectsId()                   → String（DimensionSpecialEffects 注册 ID）
+  └── isDimension(level)            → boolean
 ```
+
+> ⚠️ 注意：`DimensionAPI.registerEffects()` 和 `generateDimensionTypeJson()/generateDimensionJson()` **已不存在**。特效注册直接在事件中调用 `event.register(...)`；JSON 生成由 `DimensionBuilder.build()` 内部自动完成。
 
 ## Builder 配置参考
 
 ### DimensionType 参数
 
-| 方法 | 参数 | 说明 |
-|------|------|------|
-| `natural()` / `natural(boolean)` | — / bool | 是否为自然维度（床/重生锚行为） |
-| `hasSkylight()` / `hasSkylight(boolean)` | — / bool | 是否有天空光照 |
-| `bedWorks()` / `bedWorks(boolean)` | — / bool | 床能否使用/爆炸 |
-| `ultraWarm()` / `ultraWarm(boolean)` | — / bool | 是否超热（水蒸发、可燃） |
-| `piglinSafe()` / `piglinSafe(boolean)` | — / bool | 猪灵是否安全 |
-| `respawnAnchorWorks()` / `respawnAnchorWorks(boolean)` | — / bool | 重生锚能否使用 |
-| `hasCeiling()` / `hasCeiling(boolean)` | — / bool | 是否有基岩天花板 |
-| `hasRaids()` / `hasRaids(boolean)` | — / bool | 是否有袭击事件 |
-| `coordinateScale(double)` | 缩放倍数 | 坐标缩放（下界为 8.0） |
-| `withAmbientLight(double)` | 0.0~1.0 | 环境光照强度 |
-| `logicalHeight(int)` | 高度值 | 逻辑构建高度 |
-| `infiniburn(String)` | 标签 ID | 无限燃烧标签（如 `#minecraft:infiniburn_overworld`） |
-| `minY(int)` | Y 坐标 | 世界最小 Y |
-| `height(int)` | 高度值 | 世界总高度 |
-| `monsterSpawnLight(int, int)` | 最小, 最大 | 怪物生成光照均匀分布范围 |
-| `monsterSpawnBlockLightLimit(int)` | 光照值 | 方块光照限制 |
+| 方法 | 参数 | 说明 | 默认值 |
+|------|------|------|:------:|
+| `natural()` / `natural(boolean)` | — / bool | 是否为自然维度（天气/床爆炸） | true |
+| `hasSkylight()` / `hasSkylight(boolean)` | — / bool | 是否有天空光照 | true |
+| `bedWorks()` / `bedWorks(boolean)` | — / bool | 床能否使用/爆炸 | true |
+| `ultraWarm()` / `ultraWarm(boolean)` | — / bool | 是否超热（水蒸发、可燃） | false |
+| `piglinSafe()` / `piglinSafe(boolean)` | — / bool | 猪灵是否安全 | false |
+| `respawnAnchorWorks()` / `respawnAnchorWorks(boolean)` | — / bool | 重生锚能否使用 | false |
+| `hasCeiling()` / `hasCeiling(boolean)` | — / bool | 是否有基岩天花板 | false |
+| `hasRaids()` / `hasRaids(boolean)` | — / bool | 是否有袭击事件 | true |
+| `coordinateScale(double)` | 缩放倍数 | 坐标缩放（下界为 8.0） | 1.0 |
+| `withAmbientLight(double)` | 0.0~1.0 | 环境光照强度 | 0.5 |
+| `logicalHeight(int)` | 高度值 | 逻辑构建高度 | 384 |
+| `infiniburn(String)` | 标签 ID | 无限燃烧标签（如 `#minecraft:infiniburn_overworld`） | `#minecraft:infiniburn_overworld` |
+| `minY(int)` | Y 坐标 | 世界最小 Y | -64 |
+| `height(int)` | 高度值 | 世界总高度 | 384 |
+| `monsterSpawnLight(int, int)` | 最小, 最大 | 怪物生成光照均匀分布范围 | 0, 7 |
+| `monsterSpawnBlockLightLimit(int)` | 光照值 | 方块光照限制 | 0 |
 
 ### Dimension 参数
 
+| 方法 | 说明 | 默认值 |
+|------|------|:------:|
+| `withDimensionType(String)` | 手动指定维度类型引用 ID | 自动 `{modId}:{dimensionName}` |
+| `withDefaultBlock(String)` | 默认方块（如 `minecraft:calcite`） | `minecraft:stone` |
+| `withDefaultFluid(String)` | 默认流体（如 `minecraft:water`） | `minecraft:water` |
+| `seaLevel(int)` | 海平面高度 | 63 |
+| `disableMobGeneration(boolean)` | 是否禁用怪物生成 | false |
+| `aquifersEnabled(boolean)` | 是否启用含水层 | true |
+| `oreVeinsEnabled(boolean)` | 是否启用矿脉 | false |
+| `legacyRandomSource(boolean)` | 是否使用旧版随机源 | false |
+| `withNoiseSettings(String)` | 噪声设置 ID（如 `minecraft:overworld`） | null（不写入） |
+| `withFixedBiome(String)` | 固定单一生物群系 | 无 |
+| `addBiome(id, temp[], humid[], cont[], weird[], eros[])` | 添加多噪声生物群系（5 个双值范围数组） | 首次调用自动切 multi_noise |
+
+> `addBiome` 参数顺序：`(biomeId, temperature, humidity, continentalness, weirdness, erosion)`，每个都是 `[min, max]` 双值数组；首次调用会把 biomeSourceType 切换为 `minecraft:multi_noise`。
+
+### 背景音乐（@Deprecated ⚠️）
+
 | 方法 | 说明 |
 |------|------|
-| `withDefaultBlock(String)` | 默认方块（如 `minecraft:calcite`） |
-| `withDefaultFluid(String)` | 默认流体（如 `minecraft:water`） |
-| `seaLevel(int)` | 海平面高度 |
-| `disableMobGeneration(boolean)` | 是否禁用怪物生成 |
-| `aquifersEnabled(boolean)` | 是否启用含水层 |
-| `oreVeinsEnabled(boolean)` | 是否启用矿脉 |
-| `legacyRandomSource(boolean)` | 是否使用旧版随机源 |
-| `withNoiseSettings(String)` | 噪声设置 ID（如 `minecraft:overworld`） |
-| `withFixedBiome(String)` | 固定单一生物群系 |
-| `addBiome(biomeId, temp, humid, cont, weird, eros)` | 添加多噪声生物群系（5 个双值范围数组） |
+| `withMusic(String)` | 注册背景音乐（默认音量 1.0），自动注册 SoundEvent + 生成 sounds.json |
+| `withMusic(String, float)` | 注册背景音乐并自定义音量（钳制 0~1） |
 
-### 背景音乐
-
-| 方法 | 说明 |
-|------|------|
-| `withMusic(String)` | 注册背景音乐（自动注册 SoundEvent + 生成 sounds.json） |
+> ⚠️ **已标记 @Deprecated**：仅用于开发阶段快速原型验证，建议在主模组声音注册类（`PDSounds`）中统一管理。
 
 ### Builder 通用配置
 
-| 方法 | 说明 |
-|------|------|
-| `generateJson(boolean)` | 是否自动生成 JSON 文件（默认 true） |
-| `basePath(String)` | 资源文件基础路径（默认 `src/main/resources`） |
+| 方法 | 说明 | 默认值 |
+|------|------|:------:|
+| `generateJson(boolean)` | 是否自动生成 JSON 文件 | true |
+| `basePath(String)` | 资源文件基础路径 | `src/main/resources` |
 
 ## 完整示例
 
@@ -144,7 +165,6 @@ DimensionResult overworldLike = DimensionAPI.createDimension("my_overworld")
     .withDefaultFluid("minecraft:water")
     .seaLevel(63)
     .withNoiseSettings("minecraft:overworld")
-    .withMusic("my_overworld")
     .build();
 ```
 
@@ -200,43 +220,50 @@ DimensionResult customBiomes = DimensionAPI.createDimension("custom_biomes")
         new double[]{-0.5, 0.5},    // temperature [min, max]
         new double[]{-0.5, 0.5},    // humidity
         new double[]{-0.5, 0.5},    // continentalness
-        new double[]{-0.5, 0.5},    // erosion
-        new double[]{-0.5, 0.5})    // weirdness
+        new double[]{-0.5, 0.5},    // weirdness
+        new double[]{-0.5, 0.5})    // erosion
     .addBiome("pasterdream:custom_biome",
         new double[]{0.1, 0.8}, new double[]{-0.3, 0.2},
-        new double[]{0.3, 0.9}, new double[]{0.1, 0.6},
-        new double[]{-0.7, 0.3})
-    .withMusic("custom_biomes")
+        new double[]{0.3, 0.9}, new double[]{-0.7, 0.3},
+        new double[]{0.1, 0.6})
     .build();
 ```
 
-## Minecraft 参考：`/minecraft` 指令风格
+## 大型结构地形协商（StructureTerrainNegotiator）
 
-### 生成测试 JSON 文件
+DimensionAPI 集成了大型结构地形协商系统：当维度生成区块时，如果附近有已注册的大型结构（通过 RuinAPI 的 `largeStructure()` 注册），会自动调整地形以适应结构。
 
-```bash
-.\gradlew generateDimensionTestJsons
+```java
+// 启用指定维度的地形协商支持（需在维度 build() 后调用）
+DimensionAPI.enableLargeStructureSupport(dyedreamWorld);
+
+// 或按维度 ID 启用
+DimensionAPI.enableLargeStructureSupport("pasterdream:dyedream_world");
+
+// 获取协商器单例（可注册/诊断/评估）
+StructureTerrainNegotiator negotiator = DimensionAPI.getTerrainNegotiator();
 ```
 
-### 运行 API 示例程序
+> 大型结构的定义与注册见 Skill「pasterdream-ruin-api」的 `RuinBuilder.largeStructure()` / `withTerrainPlatform()`。
 
-```bash
-.\gradlew runDimensionApiDemo
-```
-
-### 生成的 JSON 文件位置
+## 生成的 JSON 文件位置
 
 ```
-src/main/resources/
-├── data/{modId}/dimension_type/{name}.json    ← 维度类型配置
-├── data/{modId}/dimension/{name}.json         ← 维度实例配置
-└── assets/{modId}/sounds.json                 ← 声音配置（自动追加音乐条目）
+PasterDream/src/main/resources/
+├── data/pasterdream/dimension_type/{name}.json    ← 维度类型配置
+├── data/pasterdream/dimension/{name}.json         ← 维度实例配置
+└── assets/pasterdream/sounds.json                 ← 声音配置（withMusic 时自动追加）
 ```
+
+> ⚠️ **1.21 维度 JSON 格式要求**：
+> - 维度 JSON 必须包含 `noise_router` 和 `surface_rule` 字段，否则游戏崩溃
+> - 虚空维度推荐参考 `data/pasterdream/dimension/aaroncos_arena_world.json`
+> - 文件必须放在 `data/<modid>/dimension/`，不是 `assets/`
 
 ### .ogg 音频文件放置位置
 
 ```
-assets/{modId}/sounds/music/{musicName}.ogg    ← 背景音乐文件
+assets/pasterdream/sounds/music/{musicName}.ogg    ← 背景音乐文件（withMusic 时）
 ```
 
 ## 客户端特效注册
@@ -246,34 +273,34 @@ assets/{modId}/sounds/music/{musicName}.ogg    ← 背景音乐文件
 ```java
 @SubscribeEvent
 public static void registerDimensionSpecialEffects(RegisterDimensionSpecialEffectsEvent event) {
-    DimensionAPI.registerEffects(event, "my_world",
-            new DimensionSpecialEffects(192.0f, true, SkyType.NORMAL, false, false) {
-                @Override
-                public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float sunHeight) {
-                    return fogColor.multiply(
-                        sunHeight * 0.94 + 0.06,
-                        sunHeight * 0.94 + 0.06,
-                        sunHeight * 0.91 + 0.09
-                    );
-                }
-                @Override
-                public boolean isFoggyAt(int x, int y) {
-                    return false;
-                }
+    event.register(
+        ResourceLocation.fromNamespaceAndPath("pasterdream", "my_world"),
+        new DimensionSpecialEffects(192.0f, true, SkyType.NORMAL, false, false) {
+            @Override
+            public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float sunHeight) {
+                return fogColor.multiply(
+                    sunHeight * 0.94 + 0.06,
+                    sunHeight * 0.94 + 0.06,
+                    sunHeight * 0.91 + 0.09
+                );
             }
+            @Override
+            public boolean isFoggyAt(int x, int y) {
+                return false;
+            }
+        }
     );
 }
 ```
 
+> 特效注册 ID 必须与 `DimensionResult.effectsId()`（即 `{modId}:{dimensionName}`）一致。
+
 ## 引用文件
 
-- [DimensionAPI.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/dimension/DimensionAPI.java) — 门面类
-- [DimensionBuilder.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/dimension/builder/DimensionBuilder.java) — 构建器
-- [DimensionResult.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/dimension/DimensionResult.java) — 结果类
-- [DimensionTypeGenerator.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/dimension/gen/DimensionTypeGenerator.java) — dimension_type JSON 生成器
-- [DimensionGenerator.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/dimension/gen/DimensionGenerator.java) — dimension JSON 生成器
-- [SoundsJsonGenerator.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/dimension/gen/SoundsJsonGenerator.java) — sounds.json 生成器
-- [PDSounds.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/registry/PDSounds.java) — 声音注册类
-- [PDDimensions.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/registry/PDDimensions.java) — 维度注册示例
-- [DimensionApiDemo.java](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/src/main/java/com/pasterdream/pasterdreammod/api/dimension/example/DimensionApiDemo.java) — 完整示例
-- [build.gradle](file:///c:/Users/97128/Documents/GitHub/NeoPasterDream1/build.gradle) — Gradle 任务定义
+- [DimensionAPI.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/dimension/DimensionAPI.java) — 门面类
+- [DimensionBuilder.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/dimension/builder/DimensionBuilder.java) — 构建器
+- [DimensionResult.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/dimension/DimensionResult.java) — 结果类
+- [StructureTerrainNegotiator.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/dimension/terrain/StructureTerrainNegotiator.java) — 大型结构地形协商器
+- [TerrainRequirements.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/dimension/terrain/TerrainRequirements.java) — 地形需求配置
+- [PDDimensions.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDDimensions.java) — 维度注册示例
+- [PDSounds.java](file:///C:/Users/97128/Documents/GitHub/NeoPasterDream1/PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDSounds.java) — 声音注册类

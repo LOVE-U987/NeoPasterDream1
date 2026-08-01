@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "pasterdream:item/xun_meng_zhe_bi_ji__deng_ying_zhi_xia_"
+    "layer0": "pasterdream:item/dreamnotes_lamp_shadow"
   }
 }

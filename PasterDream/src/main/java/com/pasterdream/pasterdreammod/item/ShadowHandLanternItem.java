@@ -120,11 +120,11 @@ public class ShadowHandLanternItem extends Item implements GeoItem {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tip, TooltipFlag flag) {
         super.appendHoverText(stack, ctx, tip, flag);
-        tip.add(Component.literal("§7▪ §9手持提灯时理智光环+1.2san/分钟"));
-        tip.add(Component.literal("§7右键使用"));
-        tip.add(Component.literal("§7▪ §9直径15格范围内的暗影生物受到20%的易伤效果持续15秒"));
-        tip.add(Component.literal("§7▪ §9冷却时间：8秒"));
-        tip.add(Component.literal("§7▪ §4精神值消耗：1"));
+        tip.add(Component.translatable("tooltip.pasterdream.shadow_hand_lantern.san_aura"));
+        tip.add(Component.translatable("tooltip.pasterdream.shadow_hand_lantern.use"));
+        tip.add(Component.translatable("tooltip.pasterdream.shadow_hand_lantern.vulnerability"));
+        tip.add(Component.translatable("tooltip.pasterdream.shadow_hand_lantern.cooldown"));
+        tip.add(Component.translatable("tooltip.pasterdream.shadow_hand_lantern.san_cost"));
     }
 
     @Override

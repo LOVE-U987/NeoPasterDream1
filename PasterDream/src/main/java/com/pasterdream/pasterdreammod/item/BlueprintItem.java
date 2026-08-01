@@ -150,7 +150,7 @@ public class BlueprintItem extends Item {
                 level.playSound(null, pos, notes, SoundSource.NEUTRAL, 1.0f, 1.0f);
             }
         } else if (entity instanceof Player player && !player.level().isClientSide()) {
-            player.displayClientMessage(Component.literal("请对准空气使用"), true);
+            player.displayClientMessage(Component.translatable("tooltip.pasterdream.blueprint.aim_air"), true);
         }
     }
 }

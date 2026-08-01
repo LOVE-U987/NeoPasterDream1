@@ -129,6 +129,12 @@ public class DecorationBuilder {
     /** 是否需要水环境 */
     private boolean waterRequired = false;
 
+    /** 是否避开遗迹生成（遗迹四周不生成地物，默认开启） */
+    private boolean avoidRuins = true;
+
+    /** 是否启用区域认领（防止地物互相重叠，默认开启） */
+    private boolean claimCheck = true;
+
     /** 尖刺倾斜程度（0=垂直，越大越倾斜） */
     private float tiltIntensity = 0.0f;
 
@@ -461,6 +467,36 @@ public class DecorationBuilder {
     }
 
     /**
+     * 启用/禁用遗迹避让
+     * <p>
+     * 启用后，本装饰物不会在遗迹（通过 {@code RuinAPI} 注册的结构）四周生成，
+     * 防止地物与遗迹重叠。默认开启，适用于当前所有地物。
+     *
+     * @param avoid true=避开遗迹生成，false=不避让
+     * @return this（支持链式调用）
+     */
+    public DecorationBuilder avoidRuins(boolean avoid) {
+        this.avoidRuins = avoid;
+        return this;
+    }
+
+    /**
+     * 启用/禁用区域认领
+     * <p>
+     * 启用后，本装饰物生成前会认领其占据的空间（水平 + 垂直范围）；
+     * 若目标区域已被其他地物认领，则自动在附近（±8 格）寻找无冲突位置重新生成。
+     * 认领按「水平重叠 && 垂直重叠」判定冲突，允许不同垂直层级的地物共存
+     * （如地表植被可生成在高大植物下方）。默认开启。
+     *
+     * @param check true=启用区域认领，false=禁用
+     * @return this（支持链式调用）
+     */
+    public DecorationBuilder claimCheck(boolean check) {
+        this.claimCheck = check;
+        return this;
+    }
+
+    /**
      * 设置尖刺倾斜程度
      * <p>
      * 让尖刺在生成时随机向某个方向倾斜。
@@ -601,6 +637,8 @@ public class DecorationBuilder {
                 regionThreshold,
                 undergroundCheck,
                 waterRequired,
+                avoidRuins,
+                claimCheck,
                 replaceable,
                 tiltIntensity,
                 customGeneratorKey

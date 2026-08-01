@@ -188,7 +188,7 @@ public class WorkshopGrindBlock extends BaseEntityBlock {
         }
         ItemStack hand = player.getMainHandItem();
         if (!hand.is(EMBRYO_ITEMS) || PasterItemData.getDouble(hand, "process") != 3) {
-            player.displayClientMessage(Component.literal("用于打磨原胚 过程总计需要消耗10经验等级"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.workshop_grind.info"), true);
             return InteractionResult.SUCCESS;
         }
         if (PasterItemData.getDouble(hand, "level") >= MAX_GRIND_LEVEL) {
@@ -209,14 +209,15 @@ public class WorkshopGrindBlock extends BaseEntityBlock {
      */
     private void advanceGrind(Level level, BlockPos pos, Player player, ItemStack hand) {
         if (player.experienceLevel < TOTAL_XP_LEVELS - PasterItemData.getDouble(hand, "level")) {
-            player.displayClientMessage(Component.literal("经验值不足"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.workshop_grind.no_xp"), true);
             return;
         }
         player.giveExperienceLevels(-1);
         double newLevel = PasterItemData.getDouble(hand, "level") + 1;
         PasterItemData.putDouble(hand, "level", newLevel);
-        player.displayClientMessage(Component.literal(
-                "打磨进度 " + new java.text.DecimalFormat("#").format(newLevel) + "0%"), true);
+        player.displayClientMessage(Component.translatable(
+                "message.pasterdream.workshop_grind.progress",
+                new java.text.DecimalFormat("#").format(newLevel)), true);
         level.playSound(null, pos, SoundEvents.GRINDSTONE_USE, SoundSource.NEUTRAL, 1.0f, 1.0f);
         if (level instanceof ServerLevel serverLevel) {
             double x = pos.getX();
@@ -244,7 +245,7 @@ public class WorkshopGrindBlock extends BaseEntityBlock {
         if (resultItem == Items.AIR) {
             PasterDreamMod.LOGGER.debug("[WorkshopGrind] 原胚 {} 的成品未解析到注册物，跳过出品",
                     BuiltInRegistries.ITEM.getKey(hand.getItem()));
-            player.displayClientMessage(Component.literal("无法识别该原胚的成品"), true);
+            player.displayClientMessage(Component.translatable("message.pasterdream.workshop_grind.unknown_result"), true);
             return;
         }
         ItemStack stash = hand.copy();
@@ -252,7 +253,7 @@ public class WorkshopGrindBlock extends BaseEntityBlock {
         if (level.getBlockEntity(pos) instanceof WorkshopGrindBlockEntity grind) {
             grind.applyGrindInlay(stash);
         }
-        player.displayClientMessage(Component.literal("打磨进度 100%"), true);
+        player.displayClientMessage(Component.translatable("message.pasterdream.workshop_grind.done"), true);
         level.playSound(null, pos, SoundEvents.PLAYER_LEVELUP, SoundSource.NEUTRAL, 1.0f, 1.0f);
         if (level instanceof ServerLevel serverLevel) {
             double x = pos.getX();

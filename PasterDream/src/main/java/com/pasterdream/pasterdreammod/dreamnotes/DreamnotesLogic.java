@@ -56,8 +56,8 @@ public final class DreamnotesLogic {
         }
         living.addEffect(new MobEffectInstance(PDEffects.EXPUP_BUFF.holder(), 3600, 0));
         if (entity instanceof Player player) {
-            player.displayClientMessage(Component.literal(
-                    "你收到了笔记的启发，随§a时间流逝§f缓慢获得§e少量经验§f，并在§a获取经验时§f可以§e延长§f经验提升的效果时间"), false);
+            player.displayClientMessage(Component.translatable(
+                    "message.pasterdream.dreamnotes.expup"), false);
         }
     }
 
@@ -76,47 +76,57 @@ public final class DreamnotesLogic {
         double z = entity.getZ();
         switch (noteId) {
             case 1 -> tryUnlock(world, x, y, z, entity, PDAdvancements.A_0, PDAdvancements.START,
-                    "你习得了新的知识 关于§a[染梦裂隙]§f，新的进度已解锁", true);
+                    learned("message.pasterdream.dreamnotes.topic.rift"), true);
             case 2 -> tryUnlock(world, x, y, z, entity, PDAdvancements.B_0, PDAdvancements.A_0,
-                    "你习得了新的知识 关于§a[染梦世界]§f，新的进度已解锁", true);
+                    learned("message.pasterdream.dreamnotes.topic.world"), true);
             case 3 -> tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_0, PDAdvancements.START,
-                    "你习得了新的知识 关于§a[粉红史莱姆]§f，新的进度已解锁", true);
+                    learned("message.pasterdream.dreamnotes.topic.pink_slime"), true);
             case 4 -> tryUnlock(world, x, y, z, entity, PDAdvancements.A_1, PDAdvancements.START,
-                    "你习得了新的知识 关于§a[苍白雪莲]§f，新的进度已解锁", true);
+                    learned("message.pasterdream.dreamnotes.topic.pale_lotus"), true);
             case 5 -> tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_3, PDAdvancements.A_1,
-                    "你习得了新的知识 关于§a[苍白骨针]§f，新的进度已解锁", true);
+                    learned("message.pasterdream.dreamnotes.topic.pale_needle"), true);
             case 6 -> tryUnlock(world, x, y, z, entity, PDAdvancements.C_2, PDAdvancements.START,
-                    "你习得了新的知识 关于§a[衍梦肥泥]§f，新的进度已解锁", true);
+                    learned("message.pasterdream.dreamnotes.topic.fertile_mud"), true);
             case 7 -> tryUnlock(world, x, y, z, entity, PDAdvancements.C_3, PDAdvancements.B_0,
-                    "你习得了新的知识 关于§a[蓄梦池]§f，新的进度已解锁", true);
+                    learned("message.pasterdream.dreamnotes.topic.reservoir"), true);
             case 8 -> onUseNote8(world, x, y, z, entity, stack);
             case 9 -> onUseNote9(world, x, y, z, entity, stack);
             case 10 -> tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_11, PDAdvancements.SHADOW_START,
-                    "你习得了新的知识 关于§a[沉淀阴影]§f，新的进度已解锁", true);
+                    learned("message.pasterdream.dreamnotes.topic.settled_shadow"), true);
             case 11 -> tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_12, PDAdvancements.HIDE_11,
-                    "你习得了新的知识 关于§a[阴影游记]§f，新的进度已解锁", true);
+                    learned("message.pasterdream.dreamnotes.topic.shadow_travels"), true);
             case 12 -> {
                 if (tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_14, PDAdvancements.HIDE_13,
-                        "你习得了新的知识 关于§a[暗影地牢]§f，新的进度已解锁", true)) {
-                    msg(entity, "你学会了修复暗影地牢的方法", false);
+                        learned("message.pasterdream.dreamnotes.topic.shadow_dungeon"), true)) {
+                    msg(entity, Component.translatable("message.pasterdream.dreamnotes.fixed_dungeon"), false);
                 }
             }
             case 13 -> {
                 if (tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_15, PDAdvancements.HIDE_14,
-                        "你习得了新的知识 关于§a[恐惧]§f，新的进度已解锁", true)) {
-                    msg(entity, "黑暗双手的掌心向你敞开", false);
+                        learned("message.pasterdream.dreamnotes.topic.fear"), true)) {
+                    msg(entity, Component.translatable("message.pasterdream.dreamnotes.palms_open"), false);
                 }
             }
             case 14 -> {
                 if (tryUnlock(world, x, y, z, entity, PDAdvancements.HIDE_16, PDAdvancements.B_0,
-                        "你习得了新的知识 关于§a[无翼鸟也有展翅的梦]§f，新的进度已解锁", true)) {
-                    msg(entity, "天空的云层将可以被你撕裂", false);
+                        learned("message.pasterdream.dreamnotes.topic.flightless_bird"), true)) {
+                    msg(entity, Component.translatable("message.pasterdream.dreamnotes.tear_clouds"), false);
                 }
             }
             default -> {
                 // notes_0：仅打开 GUI，无成就
             }
         }
+    }
+
+    /**
+     * 构建"习得新知识"解锁提示组件。
+     *
+     * @param topicKey 主题名语言键（纯文本，置于 §a[...] 内）
+     */
+    private static Component learned(String topicKey) {
+        return Component.translatable("message.pasterdream.dreamnotes.learned",
+                Component.translatable(topicKey));
     }
 
     /** 手持选中时显示背面坐标（原版 Dreamnotes8Pr1，notes_8/9 共用）。 */
@@ -130,8 +140,9 @@ public final class DreamnotesLogic {
         if (entity instanceof Player player) {
             double cx = DreamnotesData.getDouble(stack, "x");
             double cz = DreamnotesData.getDouble(stack, "z");
-            player.displayClientMessage(Component.literal(
-                    "主世界 X:" + INT_FMT.format(cx) + " Z:" + INT_FMT.format(cz)), true);
+            player.displayClientMessage(Component.translatable(
+                    "message.pasterdream.dreamnotes.overworld_coords",
+                    INT_FMT.format(cx), INT_FMT.format(cz)), true);
         }
     }
 
@@ -140,12 +151,11 @@ public final class DreamnotesLogic {
         boolean hide7 = isDone(entity, PDAdvancements.HIDE_7);
         if (!hide8 && hide7) {
             if (awardAllCriteria(entity, PDAdvancements.HIDE_8)) {
-                msg(entity, "你习得了新的知识 关于§a[阴影中的潜藏者]§f，新的进度已解锁", false);
+                msg(entity, learned("message.pasterdream.dreamnotes.topic.lurker"), false);
                 playChallenge(world, x, y, z);
                 if (writeCoords(world, entity, stack)) {
-                    msg(entity, "笔记的背面刻印这一个坐标", false);
-                    msg(entity, "X:" + INT_FMT.format(DreamnotesData.getDouble(stack, "x"))
-                            + "Z:" + INT_FMT.format(DreamnotesData.getDouble(stack, "z")), false);
+                    msg(entity, Component.translatable("message.pasterdream.dreamnotes.coords_engraved"), false);
+                    msg(entity, coordsComponent(stack), false);
                 }
                 grantNotesExpup(entity);
             }
@@ -159,39 +169,46 @@ public final class DreamnotesLogic {
         boolean hide10 = isDone(entity, PDAdvancements.HIDE_10);
         boolean b0 = isDone(entity, PDAdvancements.B_0);
         if (hide10 && b0) {
+            // 已解锁后再读：刷新为当前最近据点，并打印坐标
             if (writeCoords(world, entity, stack)) {
-                msg(entity, "笔记的背面刻印这一个坐标", false);
+                msg(entity, Component.translatable("message.pasterdream.dreamnotes.coords_engraved"), false);
+                msg(entity, coordsComponent(stack), false);
             }
         }
         if (!hide10 && b0) {
             if (awardAllCriteria(entity, PDAdvancements.HIDE_10)) {
-                msg(entity, "你习得了新的知识 关于§a[侵染教堂]§f，新的进度已解锁", false);
+                msg(entity, learned("message.pasterdream.dreamnotes.topic.infected_church"), false);
                 playChallenge(world, x, y, z);
                 DreamnotesData.putBoolean(stack, "switch", true);
                 giveCalleCard0(entity);
-                msg(entity, "你在对折的笔记里发现了一张卡片", false);
+                msg(entity, Component.translatable("message.pasterdream.dreamnotes.card_found"), false);
                 if (writeCoords(world, entity, stack)) {
-                    msg(entity, "笔记的背面刻印这一个坐标", false);
-                    msg(entity, "X:" + INT_FMT.format(DreamnotesData.getDouble(stack, "x"))
-                            + "Z:" + INT_FMT.format(DreamnotesData.getDouble(stack, "z")), false);
+                    msg(entity, Component.translatable("message.pasterdream.dreamnotes.coords_engraved"), false);
+                    msg(entity, coordsComponent(stack), false);
                 }
                 grantNotesExpup(entity);
             }
         }
         if (entity instanceof Player player && player.getAbilities().instabuild) {
             if (writeCoords(world, entity, stack)) {
-                msg(entity, "笔记的背面刻印这一个坐标", false);
-                msg(entity, "X:" + INT_FMT.format(DreamnotesData.getDouble(stack, "x"))
-                        + "Z:" + INT_FMT.format(DreamnotesData.getDouble(stack, "z")), false);
+                msg(entity, Component.translatable("message.pasterdream.dreamnotes.coords_engraved"), false);
+                msg(entity, coordsComponent(stack), false);
             }
         }
+    }
+
+    /** 构建笔记背面坐标组件（X:%sZ:%s）。 */
+    private static Component coordsComponent(ItemStack stack) {
+        return Component.translatable("message.pasterdream.dreamnotes.coords",
+                INT_FMT.format(DreamnotesData.getDouble(stack, "x")),
+                INT_FMT.format(DreamnotesData.getDouble(stack, "z")));
     }
 
     /**
      * @return 本次是否成功新解锁
      */
     private static boolean tryUnlock(Level world, double x, double y, double z, Entity entity,
-                                     ResourceLocation unlock, ResourceLocation prereq, String message, boolean expup) {
+                                     ResourceLocation unlock, ResourceLocation prereq, Component message, boolean expup) {
         if (isDone(entity, unlock) || !isDone(entity, prereq)) {
             return false;
         }
@@ -217,7 +234,7 @@ public final class DreamnotesLogic {
         }
         Optional<BlockPos> found = PDShadowDoorLocator.locate(server, entity.blockPosition());
         if (found.isEmpty()) {
-            msg(entity, "尚未感应到暮影据点的方位", false);
+            msg(entity, Component.translatable("message.pasterdream.dreamnotes.no_base"), false);
             return false;
         }
         BlockPos pos = found.get();
@@ -252,9 +269,9 @@ public final class DreamnotesLogic {
                 SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.NEUTRAL, 1.0f, 1.0f);
     }
 
-    private static void msg(Entity entity, String text, boolean actionBar) {
+    private static void msg(Entity entity, Component component, boolean actionBar) {
         if (entity instanceof Player player && !player.level().isClientSide()) {
-            player.displayClientMessage(Component.literal(text), actionBar);
+            player.displayClientMessage(component, actionBar);
         }
     }
 

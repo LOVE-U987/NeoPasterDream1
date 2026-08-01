@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/xiu_shi_jin_shu_kuai_",
-    "up": "pasterdream:block/xiu_shi_jin_shu_kuai_",
-    "north": "pasterdream:block/xiu_shi_jin_shu_kuai_",
-    "east": "pasterdream:block/xiu_shi_jin_shu_kuai_",
-    "south": "pasterdream:block/xiu_shi_jin_shu_kuai_",
-    "west": "pasterdream:block/xiu_shi_jin_shu_kuai_",
-    "particle": "pasterdream:block/xiu_shi_jin_shu_kuai_"
+    "down": "pasterdream:block/rust_black_metal_block",
+    "up": "pasterdream:block/rust_black_metal_block",
+    "north": "pasterdream:block/rust_black_metal_block",
+    "east": "pasterdream:block/rust_black_metal_block",
+    "south": "pasterdream:block/rust_black_metal_block",
+    "west": "pasterdream:block/rust_black_metal_block",
+    "particle": "pasterdream:block/rust_black_metal_block"
   },
   "render_type": "solid"
 }

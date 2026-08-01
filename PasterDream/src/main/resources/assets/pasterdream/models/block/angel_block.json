@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/tian_shi_fang_kuai__top",
-    "up": "pasterdream:block/tian_shi_fang_kuai__top",
-    "north": "pasterdream:block/tian_shi_fang_kuai_",
-    "east": "pasterdream:block/tian_shi_fang_kuai_",
-    "south": "pasterdream:block/tian_shi_fang_kuai_",
-    "west": "pasterdream:block/tian_shi_fang_kuai_",
-    "particle": "pasterdream:block/tian_shi_fang_kuai__top"
+    "down": "pasterdream:block/angel_block_top",
+    "up": "pasterdream:block/angel_block_top",
+    "north": "pasterdream:block/angel_block",
+    "east": "pasterdream:block/angel_block",
+    "south": "pasterdream:block/angel_block",
+    "west": "pasterdream:block/angel_block",
+    "particle": "pasterdream:block/angel_block_top"
   },
   "render_type": "translucent"
 }

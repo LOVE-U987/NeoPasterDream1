@@ -27,8 +27,8 @@ public class Unknownnotes0Item extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.literal("未知内容"));
-        tooltipComponents.add(Component.literal("§7需要使用§e研究台§7解析笔记"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.unknownnotes_0.content"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.unknownnotes_0.describe"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }

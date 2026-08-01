@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/huan_xing_zhe_fa_zhang_"
+    "layer0": "pasterdream:item/starcaller_wand"
   },
   "display": {
     "thirdperson_righthand": {

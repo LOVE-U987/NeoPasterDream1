@@ -74,9 +74,13 @@ public class CalleCardItem extends Item {
     /** 0 号占卜牌可抽取 1..9 全卡 */
     private static final int[] DRAW_POOL = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-    /** 各编号预言卡牌的名称（下标 = 卡牌编号，0 号占位为空） */
-    private static final String[] CARD_NAMES = {
-            "", "墓园", "执剑", "疾行", "守护", "对立", "罪恶", "均衡", "圣杯", "混乱"
+    /** 各编号预言卡牌名称的语言键（下标 = 卡牌编号，0 号占位为空） */
+    private static final String[] CARD_KEYS = {
+            "", "tooltip.pasterdream.calle_card.name.1", "tooltip.pasterdream.calle_card.name.2",
+            "tooltip.pasterdream.calle_card.name.3", "tooltip.pasterdream.calle_card.name.4",
+            "tooltip.pasterdream.calle_card.name.5", "tooltip.pasterdream.calle_card.name.6",
+            "tooltip.pasterdream.calle_card.name.7", "tooltip.pasterdream.calle_card.name.8",
+            "tooltip.pasterdream.calle_card.name.9"
     };
 
     /** 抽取结果编号 → 对应卡牌物品（延迟解析，避免静态初始化顺序问题） */
@@ -125,8 +129,8 @@ public class CalleCardItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        for (String line : tooltipLines) {
-            tooltip.add(Component.literal(line));
+        for (String key : tooltipLines) {
+            tooltip.add(Component.translatable(key));
         }
     }
 
@@ -170,11 +174,13 @@ public class CalleCardItem extends Item {
         level.sendParticles((SimpleParticleType) PDParticles.CALLE_PARTICLE.particleType(),
                 x, y, z, 128, 1, 2, 1, 0.1);
         level.playSound(null, BlockPos.containing(x, y, z), CARD0_SOUND, SoundSource.PLAYERS, 1.5f, 1.0f);
-        player.displayClientMessage(Component.literal("§6你手中的卡莱占卜牌已显示所预言的一面"), false);
+        player.displayClientMessage(Component.translatable("tooltip.pasterdream.calle_card.divination_revealed"), false);
         stack.shrink(1);
-        String name = CARD_NAMES[drawn];
-        player.displayClientMessage(Component.literal("§6预言卡牌为：『" + name + "』"), false);
-        player.displayClientMessage(Component.literal("§6§l『" + name + "』"), true);
+        String nameKey = CARD_KEYS[drawn];
+        player.displayClientMessage(Component.translatable(
+                "tooltip.pasterdream.calle_card.card_drawn", Component.translatable(nameKey)), false);
+        player.displayClientMessage(Component.translatable(
+                "tooltip.pasterdream.calle_card.card_title", Component.translatable(nameKey)), true);
         Supplier<Item> reward = cardById(drawn);
         schedule(level, 2, () -> {
             if (player.isAlive()) {
