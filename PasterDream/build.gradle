@@ -291,6 +291,8 @@ tasks.register('checkLang', Exec) {
         script.exists()
     }
     commandLine 'python', script.absolutePath
+    // Windows GBK 控制台无法输出 emoji，强制 UTF-8 输出避免 UnicodeEncodeError
+    environment 'PYTHONIOENCODING', 'utf-8'
     // 仅当脚本返回非 0 时让构建失败，便于 CI 拦截缺失翻译
     ignoreExitValue = false
 }
