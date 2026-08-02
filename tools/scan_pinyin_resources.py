@@ -17,7 +17,7 @@ RESOURCE_DIRS = [
     BASE / "PasterDream" / "src" / "main" / "resources",
     BASE / "PasterDreamAPI" / "src" / "main" / "resources",
 ]
-TOOLS = BASE / ".trae" / "tools"
+TOOLS = BASE / "tools"
 
 # 额外项目术语白名单（避免误报）
 PROJECT_WHITELIST = {
@@ -131,7 +131,7 @@ def main():
         print(f"| {token} | {len(contexts)} | {sample_str} |")
 
     # 输出详细清单到报告目录
-    out = BASE / ".trae" / "reports" / "pinyin-resource-scan.md"
+    out = BASE / "docs" / "archive" / "pinyin-resource-scan.md"
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", encoding="utf-8") as f:
         f.write("# 资源文件中文拼音命名扫描结果\n\n")

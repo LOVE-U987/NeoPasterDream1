@@ -16,15 +16,15 @@ content = r'''#!/usr/bin/env python3
 - BlockAPI.createVariantSet 建筑变体族注册
 
 用法:
-    python .trae/tools/check_lang.py
+    python tools/check_lang.py
 """
 
 import json
 import re
 from pathlib import Path
 
-# 项目根目录（脚本位于 .trae/tools/）
-ROOT = Path(__file__).resolve().parent.parent.parent
+# 项目根目录（脚本位于 tools/）
+ROOT = Path(__file__).resolve().parent.parent
 
 PD_ITEMS = ROOT / "PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDItems.java"
 PD_BLOCKS = ROOT / "PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDBlocks.java"
@@ -189,6 +189,6 @@ if __name__ == "__main__":
     raise SystemExit(main())
 '''
 
-path = Path(r'c:\Users\97128\Documents\GitHub\NeoPasterDream1\.trae\tools\check_lang.py')
+path = Path(__file__).resolve().parent / 'check_lang.py'
 path.write_text(content, encoding='utf-8')
-print(f"Written {len(content)} chars to {
+print(f"Written {len(content)} chars to {path}")

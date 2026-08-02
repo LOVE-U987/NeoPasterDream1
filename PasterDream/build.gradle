@@ -282,9 +282,9 @@ tasks.register('checkLang', Exec) {
     description = '检查 zh_cn.json 是否包含所有 PDItems/PDBlocks 注册项的翻译键'
     group = 'verification'
     workingDir = rootProject.projectDir
-    def script = rootProject.file('.trae/tools/check_lang.py')
+    def script = rootProject.file('tools/check_lang.py')
     onlyIf {
-        // .trae 工具树可能已清理；缺失时跳过，不阻断 runClient/VERIFY
+        // tools 工具树可能已清理；缺失时跳过，不阻断 runClient/VERIFY
         script.exists()
     }
     commandLine 'python', script.absolutePath
