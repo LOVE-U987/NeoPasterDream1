@@ -1,13 +1,13 @@
 {
   "parent": "block/cube",
   "textures": {
-    "down": "pasterdream:block/chiseled_shadow_stone_brick",
-    "up": "pasterdream:block/chiseled_shadow_stone_brick",
-    "north": "pasterdream:block/chiseled_shadow_stone_brick",
-    "east": "pasterdream:block/chiseled_shadow_stone_brick",
-    "south": "pasterdream:block/chiseled_shadow_stone_brick",
-    "west": "pasterdream:block/chiseled_shadow_stone_brick",
-    "particle": "pasterdream:block/chiseled_shadow_stone_brick"
+    "down": "pasterdream:block/shadow_stone_bricks",
+    "up": "pasterdream:block/shadow_stone_bricks",
+    "north": "pasterdream:block/shadow_stone_bricks",
+    "east": "pasterdream:block/shadow_stone_bricks",
+    "south": "pasterdream:block/shadow_stone_bricks",
+    "west": "pasterdream:block/shadow_stone_bricks",
+    "particle": "pasterdream:block/shadow_stone_bricks"
   },
   "render_type": "solid"
 }

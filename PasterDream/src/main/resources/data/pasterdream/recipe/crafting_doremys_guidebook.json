@@ -5,7 +5,7 @@
       "modid": "patchouli"
     }
   ],
-  "type": "patchouli:shapeless_book_recipe",
+  "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
     {
@@ -15,5 +15,11 @@
       "item": "pasterdream:dyedream_fruit"
     }
   ],
-  "book": "pasterdream:doremys_guidebook"
+  "result": {
+    "id": "patchouli:guide_book",
+    "count": 1,
+    "components": {
+      "patchouli:book": "pasterdream:doremys_guidebook"
+    }
+  }
 }

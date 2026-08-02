@@ -109,6 +109,16 @@ config="${mod_id}.mixins.json"
     ordering="NONE"
     side="BOTH"
 
+# 帕斯特指南（doremys_guidebook）：书 JSON / 词条 / 条件配方随本模分发；
+# 未安装时主模可独立运行（配方 neoforge:mod_loaded 跳过）。装上后即可合成与阅读。
+[[dependencies.${mod_id}]]
+    modId="patchouli"
+    type="optional"
+    versionRange="[1.21,)"
+    ordering="AFTER"
+    side="BOTH"
+    reason="可选：提供帕斯特指南（Patchouli 图鉴）；未安装不影响主模其它功能"
+
 [[dependencies.${mod_id}]]
     modId="pasterdreamapi"
     type="required"

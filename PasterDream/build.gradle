@@ -178,6 +178,12 @@ dependencies {
     compileOnly "mezz.jei:jei-1.21.1-neoforge-api:${jei_version}"
     localRuntime "mezz.jei:jei-1.21.1-neoforge:${jei_version}"
 
+    // ======================== Patchouli 图鉴（可选依赖 · 纯数据） ========================
+    // 主模无 Java 硬依赖：书内容与条件配方随 jar 分发；未装 Patchouli 时配方经
+    // neoforge:mod_loaded 跳过，主模照常运行。localRuntime 仅便于 runClient/VERIFY 手测。
+    // 发布 jar 不携带 Patchouli；玩家需自装兼容 1.21.1 NeoForge 的 Patchouli。
+    localRuntime "maven.modrinth:patchouli:${patchouli_version}"
+
     // ======================== KubeJS 集成（可选依赖） ========================
     // 仅编译期依赖，不进入发布 jar；未安装 KubeJS 时相关类不会被加载
     compileOnly "maven.modrinth:umyGl7zF:${kubejs_version}"

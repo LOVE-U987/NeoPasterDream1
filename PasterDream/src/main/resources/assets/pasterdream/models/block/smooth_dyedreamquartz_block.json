@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "pasterdream:block/dyedreamquartz"
+    "all": "pasterdream:block/smooth_dyedreamquartz"
   }
 }
