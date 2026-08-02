@@ -43,7 +43,7 @@ import java.util.function.Consumer;
  * <b>不</b>并入默认 {@code all}；须
  * {@code PASTERDREAM_VERIFY_SUITES=shadow-intrude}。
  * <p>
- * 扫描结论见仓库 {@code docs/暗影入侵事件流程扫描.md}。
+ * 扫描结论见仓库 {@code docs/archive/2026-07-30-暗影入侵事件流程扫描.md}。
  */
 public final class PDShadowIntrudeVerifyHooks {
 

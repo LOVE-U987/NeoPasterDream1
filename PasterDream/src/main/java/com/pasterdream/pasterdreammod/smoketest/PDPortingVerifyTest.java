@@ -159,14 +159,13 @@ public final class PDPortingVerifyTest {
         WIND_JOURNEY("wind-journey", "wind", "third-dream"),
         /**
          * 风维水色湖专项（非超平坦+开建筑；校验正式常驻 safe_lake 挂接）；不在 all。
-         * 见 docs/superpowers/specs/2026-07-29-wind-lake-verify-design.md
          */
         WIND_LAKE("wind-lake", "wind_lake", "lake"),
         /** 第二梦境灯影专项；不在 all 默认集合内 */
         SECOND_DREAM("second-dream", "second", "lamp-shadow"),
         /**
          * 暗影入侵专项（窥视 buff / 白天·清剿 calm / npc_3 / Stage4）；不在 all。
-         * 见 docs/暗影入侵事件流程扫描.md
+         * 见 docs/archive/2026-07-30-暗影入侵事件流程扫描.md
          */
         SHADOW_INTRUDE("shadow-intrude", "shadow_intrude", "invasion", "shadow-invasion"),
         /** 主干全链路连续流程；不在 all 默认集合内 */
