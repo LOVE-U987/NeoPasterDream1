@@ -182,6 +182,9 @@ dependencies {
     // 主模无 Java 硬依赖：书内容与条件配方随 jar 分发；未装 Patchouli 时配方经
     // neoforge:mod_loaded 跳过，主模照常运行。localRuntime 仅便于 runClient/VERIFY 手测。
     // 发布 jar 不携带 Patchouli；玩家需自装兼容 1.21.1 NeoForge 的 Patchouli。
+    // compileOnly 用于「首次登录赠送指南书」时引用 PatchouliAPI（调用前经 isLoaded 守卫，
+    // 未装 Patchouli 时不会触达该分支，与 JEI 同模式，不产生运行时硬依赖）。
+    compileOnly "maven.modrinth:patchouli:${patchouli_version}"
     localRuntime "maven.modrinth:patchouli:${patchouli_version}"
 
     // ======================== KubeJS 集成（可选依赖） ========================
