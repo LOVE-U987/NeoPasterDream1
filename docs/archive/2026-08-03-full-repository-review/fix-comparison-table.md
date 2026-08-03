@@ -17,7 +17,7 @@
 | ID | 问题摘要 | 涉及文件 | 优先级 | 状态                                 |
 |---|---|---|---|--------------------------------------|
 | C1 | 音乐碟硬 import 客户端 `Screen` → DS 启动风险 | `item/PastedreamMusicDiscItem.java` | 1 | 已核验（懒解析无崩溃，维持现状不修） |
-| C2-1 | 盔甲 `inventoryTick` 无护甲槽归属守卫 → 背包持有即触发剥 buff | `item/SculkArmorItem.java` `TitaniumArmorItem.java` `DyedreamArmorItem.java` `CopperArmorItem.java` | 1 | 已修复（见 [`2026-08-04-C2-1修复报告.md`](2026-08-04-C2-1修复报告.md)） |
+| C2-1 | 盔甲 `inventoryTick` 无护甲槽归属守卫 → 背包持有即触发剥 buff | `item/SculkArmorItem.java` `TitaniumArmorItem.java` `DyedreamArmorItem.java` `CopperArmorItem.java` | 1 | 已修复                               |
 | C2-2 | 非满套 else 分支 `removeEffect` 剥外来同名 buff | `item/SculkArmorItem.java:44` `TitaniumArmorItem.java:44` `DyedreamArmorItem.java:48` | 1 | 修复中MomoNyako负责                  |
 | C2-3 | 四件各自每 tick 重复执行全套检查（无单点） | 上述 4 个 ArmorItem | 3 | 未计划                               |
 | C2-4 | 满套 `addEffect` 无条件重加弱效果覆盖外来更强效果 | `item/SculkArmorItem.java:41` `TitaniumArmorItem.java:41` `DyedreamArmorItem.java:41` | 4 | 未计划                               |
