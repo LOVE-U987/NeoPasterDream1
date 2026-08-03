@@ -14,19 +14,19 @@
 
 ## Critical / High（11）
 
-| ID | 问题摘要 | 涉及文件 | 优先级 | 状态          |
-|---|---|---|---|---------------|
-| C1 | 音乐碟硬 import 客户端 `Screen` → DS 启动风险 | `item/PastedreamMusicDiscItem.java` | 1 | MomoNyako负责 |
-| C2 | Sculk/Titanium/Dyedream/Copper 盔甲 `removeEffect` 剥外来 buff | `item/SculkArmorItem.java` `TitaniumArmorItem.java` `DyedreamArmorItem.java` `CopperArmorItem.java` | 3 | MomoNyako负责 |
-| B1 | 蓝图翻页包未注册 → 点翻页断线 | `network/PDNetwork.java` | 2 | 未计划        |
-| B2 | 地牢修复后冷却永久卡死 | `block/BrokenShadowDungeonProtalBlock.java` `ShadowDungeonPortalBlock.java` | 2 | 未计划        |
-| B3 | 无名 NPC 发 `WIN_GAME` → 终章字幕+改生存 | `entity/mob/ShadowNpc0Entity.java` | 2 | 未计划        |
-| B4 | 配置重置按钮主菜单 NPE | `client/gui/config/PDConfigScreen.java` | 1 | 未计划        |
-| B5 | 卡勒卡牌 6 双重伤害 25≠20 | `item/CalleCardItem.java` | 4 | 未计划        |
-| H2 | 地牢清场 discard 全部非玩家实体 | `block/BrokenShadowDungeonProtalBlock.java` | 3 | 未计划        |
-| H3 | `ServerScheduler` 纯内存，重启丢世界修改 | `PasterDreamAPI/.../api/util/ServerScheduler.java` | 5 | 未计划        |
-| H4 | `DyedreamBiomeSource` 噪声未绑种子 | `worldgen/chunkgen/DyedreamBiomeSource.java` | 5 | 未计划        |
-| H5 | 竞技场 gamerule 无 try/finally | `worldgen/PDAaroncosArenaWorldgen.java` | 5 | 未计划        |
+| ID | 问题摘要 | 涉及文件 | 优先级 | 状态                |
+|---|---|---|---|---------------------|
+| C1 | 音乐碟硬 import 客户端 `Screen` → DS 启动风险 | `item/PastedreamMusicDiscItem.java` | 1 | 修复中MomoNyako负责 |
+| C2 | Sculk/Titanium/Dyedream/Copper 盔甲 `removeEffect` 剥外来 buff | `item/SculkArmorItem.java` `TitaniumArmorItem.java` `DyedreamArmorItem.java` `CopperArmorItem.java` | 3 | 修复中MomoNyako负责 |
+| B1 | 蓝图翻页包未注册 → 点翻页断线 | `network/PDNetwork.java` | 2 | 未计划              |
+| B2 | 地牢修复后冷却永久卡死 | `block/BrokenShadowDungeonProtalBlock.java` `ShadowDungeonPortalBlock.java` | 2 | 未计划              |
+| B3 | 无名 NPC 发 `WIN_GAME` → 终章字幕+改生存 | `entity/mob/ShadowNpc0Entity.java` | 2 | 未计划              |
+| B4 | 配置重置按钮主菜单 NPE | `client/gui/config/PDConfigScreen.java` | 1 | 未计划              |
+| B5 | 卡勒卡牌 6 双重伤害 25≠20 | `item/CalleCardItem.java` | 4 | 未计划              |
+| H2 | 地牢清场 discard 全部非玩家实体 | `block/BrokenShadowDungeonProtalBlock.java` | 3 | 未计划              |
+| H3 | `ServerScheduler` 纯内存，重启丢世界修改 | `PasterDreamAPI/.../api/util/ServerScheduler.java` | 5 | 未计划              |
+| H4 | `DyedreamBiomeSource` 噪声未绑种子 | `worldgen/chunkgen/DyedreamBiomeSource.java` | 5 | 未计划              |
+| H5 | 竞技场 gamerule 无 try/finally | `worldgen/PDAaroncosArenaWorldgen.java` | 5 | 未计划              |
 
 ---
 
