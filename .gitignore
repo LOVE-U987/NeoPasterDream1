@@ -38,6 +38,13 @@ run/
 repo/
 !**/src/**/repo/
 
+### Python ###
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
 ### AI tools ###
 .claude
 
@@ -54,5 +61,4 @@ libs/eternal-starlight/
 # 原版对照源码 libs/FixPasterDream-main/：开发期本地放即可；
 # 当前仍被 git 跟踪；若要从仓库剥离可取消下面注释并 git rm -r --cached
 # libs/FixPasterDream-main/
-.trae
 /.superpowers/

@@ -195,13 +195,15 @@ public class PDItemsTools {
                     .incorrectTag("minecraft:incorrect_for_netherite_tool")
                     .repairWith(new ItemStack(Items.NETHERITE_INGOT))
                     .build();
+    /**
+     * 融梦水晶镐 (meltdream_pickaxe) — 融梦修补
+     * 改用自定义 {@link MeltdreamPickaxeItem}（属性与原 ItemAPI 注册逐项一致），
+     * 补上原版融梦修补：手持时每 10 tick 消耗 0.01 融梦能量修复 1 耐久；
+     * 铁砧修复材料为融梦水晶碎片（原版行为，取代铁锭）
+     */
     public static final DeferredItem<Item> MELTDREAM_PICKAXE =
-            ItemAPI.toolItem("meltdream_pickaxe")
-                    .type(ToolType.PICKAXE).durability(250).miningSpeed(6.0f)
-                    .attackDamage(3.0f).attackSpeed(-2.8f)
-                    .incorrectTag("minecraft:incorrect_for_iron_tool")
-                    .repairWith(new ItemStack(Items.IRON_INGOT))
-                    .build();
+            PDItems.ITEMS.register("meltdream_pickaxe",
+                    () -> new MeltdreamPickaxeItem(new Item.Properties()));
     public static final DeferredItem<Item> MOLTENGOLD_PICKAXE =
             ItemAPI.toolItem("moltengold_pickaxe")
                     .type(ToolType.PICKAXE).durability(131).miningSpeed(4.0f)
@@ -323,28 +325,34 @@ public class PDItemsTools {
                     .repairWith(new ItemStack(Items.COBBLESTONE))
                     .build();
 
-    // === Meltdream 工具 ===
+    // === Meltdream 工具（融梦修补：手持消耗融梦能量自动修复）===
+    /**
+     * 融梦水晶斧 (meltdream_axe) — 融梦修补
+     * 改用自定义 {@link MeltdreamAxeItem}（属性与原 ItemAPI 注册逐项一致），
+     * 补上原版融梦修补：手持时每 10 tick 消耗 0.01 融梦能量修复 1 耐久；
+     * 铁砧修复材料为融梦水晶碎片（原版行为，取代铁锭）
+     */
     public static final DeferredItem<Item> MELTDREAM_AXE =
-            ItemAPI.toolItem("meltdream_axe")
-                    .type(ToolType.AXE).durability(250).miningSpeed(6.0f)
-                    .attackDamage(7.0f).attackSpeed(-3.0f)
-                    .incorrectTag("minecraft:incorrect_for_iron_tool")
-                    .repairWith(new ItemStack(Items.IRON_INGOT))
-                    .build();
+            PDItems.ITEMS.register("meltdream_axe",
+                    () -> new MeltdreamAxeItem(new Item.Properties()));
+    /**
+     * 融梦水晶锹 (meltdream_shovel) — 融梦修补
+     * 改用自定义 {@link MeltdreamShovelItem}（属性与原 ItemAPI 注册逐项一致），
+     * 补上原版融梦修补：手持时每 10 tick 消耗 0.01 融梦能量修复 1 耐久；
+     * 铁砧修复材料为融梦水晶碎片（原版行为，取代铁锭）
+     */
     public static final DeferredItem<Item> MELTDREAM_SHOVEL =
-            ItemAPI.toolItem("meltdream_shovel")
-                    .type(ToolType.SHOVEL).durability(250).miningSpeed(6.0f)
-                    .attackDamage(4.0f).attackSpeed(-3.0f)
-                    .incorrectTag("minecraft:incorrect_for_iron_tool")
-                    .repairWith(new ItemStack(Items.IRON_INGOT))
-                    .build();
+            PDItems.ITEMS.register("meltdream_shovel",
+                    () -> new MeltdreamShovelItem(new Item.Properties()));
+    /**
+     * 融梦水晶锄 (meltdream_hoe) — 融梦修补
+     * 改用自定义 {@link MeltdreamHoeItem}（属性与原 ItemAPI 注册逐项一致），
+     * 补上原版融梦修补：手持时每 10 tick 消耗 0.01 融梦能量修复 1 耐久；
+     * 铁砧修复材料为融梦水晶碎片（原版行为，取代铁锭）
+     */
     public static final DeferredItem<Item> MELTDREAM_HOE =
-            ItemAPI.toolItem("meltdream_hoe")
-                    .type(ToolType.HOE).durability(250).miningSpeed(6.0f)
-                    .attackDamage(0.0f).attackSpeed(0.0f)
-                    .incorrectTag("minecraft:incorrect_for_iron_tool")
-                    .repairWith(new ItemStack(Items.IRON_INGOT))
-                    .build();
+            PDItems.ITEMS.register("meltdream_hoe",
+                    () -> new MeltdreamHoeItem(new Item.Properties()));
 
     // === Shadow Erosion 工具 ===
     public static final DeferredItem<Item> SHADOW_EROSION_AXE =

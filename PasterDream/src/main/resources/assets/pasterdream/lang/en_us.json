@@ -2545,5 +2545,7 @@
   "tooltip.pasterdream.memento_item_01.author": "§6PasterDream Creator Developer",
   "tooltip.pasterdream.magic_stone.flavor": "§7§oWhat mage doesn't keep a few magic stones tucked in their pocket?",
   "tooltip.pasterdream.dream_wand_embryo.raw": "§7Unworked raw embryo",
+  "tooltip.pasterdream.meltdream_tool.hold_hint": "§fWhile held in hand",
+  "tooltip.pasterdream.meltdream_tool.repair": "§f▪ §7Meltdream repair: 0.01E/1 durability",
   "tooltip.pasterdream.dream_wand_embryo.workbench": "§7Must be further forged at the Artisan Workshop"
 }

@@ -676,6 +676,7 @@ public class PDItems {
     public static final DeferredItem<?> RED_DEW_3_RING = PDItemsCurios.RED_DEW_3_RING;
     public static final DeferredItem<?> ALLKINDS_RING = PDItemsCurios.ALLKINDS_RING;
     public static final DeferredItem<?> COUNTER_RING = PDItemsCurios.COUNTER_RING;
+    public static final DeferredItem<?> MELTDREAM_ENERGY_0_RING = PDItemsCurios.MELTDREAM_ENERGY_0_RING;
     public static final DeferredItem<?> EMBRYO_NECKLACE = PDItemsCurios.EMBRYO_NECKLACE;
     public static final DeferredItem<?> CROSS_NECKLACE = PDItemsCurios.CROSS_NECKLACE;
     public static final DeferredItem<?> FEATHER_NECKLACE = PDItemsCurios.FEATHER_NECKLACE;

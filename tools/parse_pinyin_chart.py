@@ -32,6 +32,6 @@ print(f"count={len(syllables)}")
 print(syllables)
 
 # 同时保存为文本，方便其它脚本引用
-out = Path(r"C:\Users\97128\Documents\GitHub\NeoPasterDream1\.trae\tools\pinyin_syllables.txt")
+out = Path(__file__).resolve().parent / "pinyin_syllables.txt"
 out.write_text("\n".join(syllables), encoding="utf-8")
 print(f"saved to {out}")

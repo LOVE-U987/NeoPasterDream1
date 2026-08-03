@@ -150,7 +150,7 @@ registerBiomeMusic("biome_dyedream_river", "dyedream_world");
 
 ### 🏗️ 3.3 API 架构文档更新
 
-**变更文件：** `.trae/skills/api-split-multi-module/SKILL.md`
+**变更文件：** `~/.copilot/skills/api-split-multi-module/SKILL.md`(迁移自 `.trae/skills/api-split-multi-module/SKILL.md`)
 
 #### 模块职责划分优化
 

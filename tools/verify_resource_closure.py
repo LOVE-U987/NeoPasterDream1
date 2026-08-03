@@ -261,7 +261,7 @@ def main():
 
     total = sum(len(v) for v in failures.values())
     report = {
-        "generated_by": ".trae/tools/verify_resource_closure.py",
+        "generated_by": "tools/verify_resource_closure.py",
         "json_files": json_count,
         "registered_blocks_scanned": blocks,
         "registered_items_scanned": items,

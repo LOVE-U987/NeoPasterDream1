@@ -6,7 +6,7 @@ import json
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent.parent
+ROOT = Path(__file__).resolve().parent.parent
 PD_ITEMS_DIR = ROOT / "PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry"
 PD_ITEMS = PD_ITEMS_DIR / "PDItems.java"
 PD_BLOCKS = PD_ITEMS_DIR / "PDBlocks.java"

@@ -182,6 +182,9 @@ dependencies {
     // 主模无 Java 硬依赖：书内容与条件配方随 jar 分发；未装 Patchouli 时配方经
     // neoforge:mod_loaded 跳过，主模照常运行。localRuntime 仅便于 runClient/VERIFY 手测。
     // 发布 jar 不携带 Patchouli；玩家需自装兼容 1.21.1 NeoForge 的 Patchouli。
+    // compileOnly 用于「首次登录赠送指南书」时引用 PatchouliAPI（调用前经 isLoaded 守卫，
+    // 未装 Patchouli 时不会触达该分支，与 JEI 同模式，不产生运行时硬依赖）。
+    compileOnly "maven.modrinth:patchouli:${patchouli_version}"
     localRuntime "maven.modrinth:patchouli:${patchouli_version}"
 
     // ======================== KubeJS 集成（可选依赖） ========================
@@ -282,12 +285,14 @@ tasks.register('checkLang', Exec) {
     description = '检查 zh_cn.json 是否包含所有 PDItems/PDBlocks 注册项的翻译键'
     group = 'verification'
     workingDir = rootProject.projectDir
-    def script = rootProject.file('.trae/tools/check_lang.py')
+    def script = rootProject.file('tools/check_lang.py')
     onlyIf {
-        // .trae 工具树可能已清理；缺失时跳过，不阻断 runClient/VERIFY
+        // tools 工具树可能已清理；缺失时跳过，不阻断 runClient/VERIFY
         script.exists()
     }
     commandLine 'python', script.absolutePath
+    // Windows GBK 控制台无法输出 emoji，强制 UTF-8 输出避免 UnicodeEncodeError
+    environment 'PYTHONIOENCODING', 'utf-8'
     // 仅当脚本返回非 0 时让构建失败，便于 CI 拦截缺失翻译
     ignoreExitValue = false
 }

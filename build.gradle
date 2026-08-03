@@ -18,7 +18,7 @@ subprojects {
 }
 
 // 打包产物自动归档任务：将 build/dist 下的 jar 移动到项目根目录的 打包产物/ 文件夹
-def distScript = rootProject.file('.trae/tools/dist_to_folder.py')
+def distScript = rootProject.file('tools/dist_to_folder.py')
 tasks.register('deployDist', Exec) {
     group = 'distribution'
     description = '归档 build/dist 产物到 打包产物/（自动）'

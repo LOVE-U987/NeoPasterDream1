@@ -6,15 +6,19 @@ import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDGameRules;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsDreamnotes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import vazkii.patchouli.api.PatchouliAPI;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -32,6 +36,7 @@ import java.util.function.Supplier;
  * <ul>
  *   <li>{@code AnnouncementProcedure} — 可选聊天公告 + 首次登录赠 {@code dreamnotes_0} / {@code achievement_hide_6}</li>
  *   <li>{@code MementoPlayerSpawnPr0} — 未完成 hide_6 时按玩家名掉落纪念物</li>
+ *   <li>首次登录赠送《帕斯特指南》（Patchouli 图鉴，可选依赖，见 {@link #giveGuideBookIfNeeded}）</li>
  * </ul>
  */
 public class PlayerDataEvents {
@@ -57,7 +62,17 @@ public class PlayerDataEvents {
     );
 
     /**
-     * 玩家登录：全量同步 San 与融梦能量；公告 / hide_6 笔记 / 纪念物。
+     * 玩家持久 NBT 中「《帕斯特指南》已发放」标记键（命名空间化，避免与其他模组键冲突）。
+     */
+    private static final String GUIDE_BOOK_GIVEN_KEY = "pasterdream.guide_book_given";
+
+    /**
+     * 《帕斯特指南》Patchouli 书 id（book.json 所在 id：{@code pasterdream:doremys_guidebook}）。
+     */
+    private static final ResourceLocation GUIDE_BOOK_ID = ResourceLocation.parse("pasterdream:doremys_guidebook");
+
+    /**
+     * 玩家登录：全量同步 San 与融梦能量；公告 / hide_6 笔记 / 纪念物；首次登录赠送《帕斯特指南》。
      *
      * @param event 登录事件
      */
@@ -68,6 +83,32 @@ public class PlayerDataEvents {
         PDAttachments.syncSan(sp);
         PDAttachments.syncMeltDreamEnergy(sp);
         handleLoginAnnouncementAndStarter(sp);
+        giveGuideBookIfNeeded(sp);
+    }
+
+    /**
+     * 首次登录赠送《帕斯特指南》（Patchouli 图鉴）。
+     * <p>
+     * 新创建存档的玩家与已创建的旧存档玩家，首次登录时均会获得一本；发放成功后在玩家
+     * 持久 NBT 写入标记，保证同一存档内只发一次（丢弃书籍不补发）。
+     * <p>
+     * Patchouli 为可选依赖：未安装时不发也不写标记，待玩家装上 Patchouli 后下次登录自动补发。
+     *
+     * @param player 登录的服务端玩家
+     */
+    private static void giveGuideBookIfNeeded(ServerPlayer player) {
+        CompoundTag persistent = player.getPersistentData();
+        if (persistent.getBoolean(GUIDE_BOOK_GIVEN_KEY)) {
+            return;
+        }
+        if (!ModList.get().isLoaded("patchouli")) {
+            return;
+        }
+        ItemStack book = PatchouliAPI.get().getBookStack(GUIDE_BOOK_ID);
+        if (!book.isEmpty()) {
+            ItemHandlerHelper.giveItemToPlayer(player, book);
+            persistent.putBoolean(GUIDE_BOOK_GIVEN_KEY, true);
+        }
     }
 
     /**

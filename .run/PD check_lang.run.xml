@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="PD check_lang" type="ShConfigurationType">
-    <option name="SCRIPT_TEXT" value="python3 .trae/tools/check_lang.py" />
+    <option name="SCRIPT_TEXT" value="python3 tools/check_lang.py" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="" />
     <option name="SCRIPT_OPTIONS" value="" />
