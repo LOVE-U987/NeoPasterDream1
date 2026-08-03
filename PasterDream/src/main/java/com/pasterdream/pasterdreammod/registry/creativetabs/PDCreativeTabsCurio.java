@@ -44,9 +44,7 @@ public class PDCreativeTabsCurio {
                         output.accept(PDItems.RED_DEW_2_RING.get());
                         output.accept(PDItems.RED_DEW_3_RING.get());
                         output.accept(PDItems.COUNTER_RING.get());
-                        // 融梦光环戒指（注册在 pasterdream 命名空间；未安装时不在创造栏显示）
-                        BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdream", "meltdream_energy_0_ring"))
-                                .ifPresent(item -> output.accept(new ItemStack(item)));
+                        output.accept(PDItems.MELTDREAM_ENERGY_0_RING.get());
                         output.accept(PDItems.DARK_ALLLEGORY_CURIO.get());
                         output.accept(PDItems.CECILIACARE_CHARM.get());
                         output.accept(PDItems.CARAPAX_CHARM.get());

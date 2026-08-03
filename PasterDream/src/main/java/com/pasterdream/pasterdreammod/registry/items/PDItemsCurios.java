@@ -68,6 +68,12 @@ public class PDItemsCurios {
     public static final DeferredItem<Item> RED_DEW_3_RING = CurioAPI.create("red_dew_3_ring").slot(CurioSlot.RING).withItemClass(RedDew3RingItem::new).register();
     public static final DeferredItem<Item> ALLKINDS_RING = CurioAPI.create("allkinds_ring").slot(CurioSlot.RING).withItemClass(AllkindsRingItem::new).register();
     public static final DeferredItem<Item> COUNTER_RING = CurioAPI.create("counter_ring").slot(CurioSlot.RING).withItemClass(CounterRingItem::new).register();
+    // 融梦光环戒指：注册在主模组 pasterdream 命名空间（手册/配方/创造栏引用的物品必须始终可解析，
+    // 不依赖 PasterDreamMeltDream 附属模块是否加载；附属模块中的重复注册已移除）
+    public static final DeferredItem<Item> MELTDREAM_ENERGY_0_RING = CurioAPI.create("meltdream_energy_0_ring")
+            .slot(CurioSlot.RING)
+            .withItemClass(MeltdreamEnergy0RingItem::new)
+            .register();
 
     // === Curio 项链 (NECKLACE) ===
     public static final DeferredItem<Item> EMBRYO_NECKLACE = CurioAPI.create("embryo_necklace").slot(CurioSlot.NECKLACE).withItemClass(EmbryoNecklaceItem::new).register();

@@ -2543,5 +2543,7 @@
   "tooltip.pasterdream.memento_item_01.author": "§6PasterDream创作者 开发者",
   "tooltip.pasterdream.magic_stone.flavor": "§7§o哪个法师的兜里不会踹几块魔法石呢？",
   "tooltip.pasterdream.dream_wand_embryo.raw": "§7未加工原胚",
+  "tooltip.pasterdream.meltdream_tool.hold_hint": "§f手持工具时",
+  "tooltip.pasterdream.meltdream_tool.repair": "§f▪ §7融梦修补：0.01E/1耐久",
   "tooltip.pasterdream.dream_wand_embryo.workbench": "§7需要在精铸工坊内完成后续锻造"
 }
