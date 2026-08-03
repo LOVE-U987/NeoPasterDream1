@@ -4,10 +4,10 @@
     "item": "pasterdream:dyedream_upgrade"
   },
   "base": {
-    "item": "pasterdream:meltdream_crystal_0"
+    "item": "pasterdream:dyedream_pickaxe"
   },
   "addition": {
-    "item": "pasterdream:dyedream_pickaxe"
+    "item": "pasterdream:meltdream_crystal_0"
   },
   "result": {
     "id": "pasterdream:meltdream_pickaxe",
