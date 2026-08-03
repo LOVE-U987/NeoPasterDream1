@@ -12,21 +12,26 @@
 
 ---
 
-## Critical / High（11）
+## Critical / High（16）
 
-| ID | 问题摘要 | 涉及文件 | 优先级 | 状态                |
-|---|---|---|---|---------------------|
-| C1 | 音乐碟硬 import 客户端 `Screen` → DS 启动风险 | `item/PastedreamMusicDiscItem.java` | 1 | 修复中MomoNyako负责 |
-| C2 | Sculk/Titanium/Dyedream/Copper 盔甲 `removeEffect` 剥外来 buff | `item/SculkArmorItem.java` `TitaniumArmorItem.java` `DyedreamArmorItem.java` `CopperArmorItem.java` | 3 | 修复中MomoNyako负责 |
-| B1 | 蓝图翻页包未注册 → 点翻页断线 | `network/PDNetwork.java` | 2 | 未计划              |
-| B2 | 地牢修复后冷却永久卡死 | `block/BrokenShadowDungeonProtalBlock.java` `ShadowDungeonPortalBlock.java` | 2 | 未计划              |
-| B3 | 无名 NPC 发 `WIN_GAME` → 终章字幕+改生存 | `entity/mob/ShadowNpc0Entity.java` | 2 | 未计划              |
-| B4 | 配置重置按钮主菜单 NPE | `client/gui/config/PDConfigScreen.java` | 1 | 未计划              |
-| B5 | 卡勒卡牌 6 双重伤害 25≠20 | `item/CalleCardItem.java` | 4 | 未计划              |
-| H2 | 地牢清场 discard 全部非玩家实体 | `block/BrokenShadowDungeonProtalBlock.java` | 3 | 未计划              |
-| H3 | `ServerScheduler` 纯内存，重启丢世界修改 | `PasterDreamAPI/.../api/util/ServerScheduler.java` | 5 | 未计划              |
-| H4 | `DyedreamBiomeSource` 噪声未绑种子 | `worldgen/chunkgen/DyedreamBiomeSource.java` | 5 | 未计划              |
-| H5 | 竞技场 gamerule 无 try/finally | `worldgen/PDAaroncosArenaWorldgen.java` | 5 | 未计划              |
+| ID | 问题摘要 | 涉及文件 | 优先级 | 状态                                 |
+|---|---|---|---|--------------------------------------|
+| C1 | 音乐碟硬 import 客户端 `Screen` → DS 启动风险 | `item/PastedreamMusicDiscItem.java` | 1 | 已核验（懒解析无崩溃，维持现状不修） |
+| C2-1 | 盔甲 `inventoryTick` 无护甲槽归属守卫 → 背包持有即触发剥 buff | `item/SculkArmorItem.java` `TitaniumArmorItem.java` `DyedreamArmorItem.java` `CopperArmorItem.java` | 1 | 已修复（见 [`2026-08-04-C2-1修复报告.md`](2026-08-04-C2-1修复报告.md)） |
+| C2-2 | 非满套 else 分支 `removeEffect` 剥外来同名 buff | `item/SculkArmorItem.java:44` `TitaniumArmorItem.java:44` `DyedreamArmorItem.java:48` | 1 | 修复中MomoNyako负责                  |
+| C2-3 | 四件各自每 tick 重复执行全套检查（无单点） | 上述 4 个 ArmorItem | 3 | 未计划                               |
+| C2-4 | 满套 `addEffect` 无条件重加弱效果覆盖外来更强效果 | `item/SculkArmorItem.java:41` `TitaniumArmorItem.java:41` `DyedreamArmorItem.java:41` | 4 | 未计划                               |
+| C2-5 | Copper 满套剥 `DIG_SLOWDOWN` 连主动饮用药水也剥（设计争议，待产品审核） | `item/CopperArmorItem.java:43` | 4 | 未计划                               |
+| C2-6 | 孤儿效果 `DYEDREAM/SCULK_ARMOR_BUFF` + `armorBuffRemove` 同模式 removeEffect | `registry/PDEffects.java:389,579,881` | 6 | 未计划                               |
+| B1 | 蓝图翻页包未注册 → 点翻页断线 | `network/PDNetwork.java` | 2 | 未计划                               |
+| B2 | 地牢修复后冷却永久卡死 | `block/BrokenShadowDungeonProtalBlock.java` `ShadowDungeonPortalBlock.java` | 2 | 未计划                               |
+| B3 | 无名 NPC 发 `WIN_GAME` → 终章字幕+改生存 | `entity/mob/ShadowNpc0Entity.java` | 2 | 未计划                               |
+| B4 | 配置重置按钮主菜单 NPE | `client/gui/config/PDConfigScreen.java` | 1 | 未计划                               |
+| B5 | 卡勒卡牌 6 双重伤害 25≠20 | `item/CalleCardItem.java` | 4 | 未计划                               |
+| H2 | 地牢清场 discard 全部非玩家实体 | `block/BrokenShadowDungeonProtalBlock.java` | 3 | 未计划                               |
+| H3 | `ServerScheduler` 纯内存，重启丢世界修改 | `PasterDreamAPI/.../api/util/ServerScheduler.java` | 5 | 未计划                               |
+| H4 | `DyedreamBiomeSource` 噪声未绑种子 | `worldgen/chunkgen/DyedreamBiomeSource.java` | 5 | 未计划                               |
+| H5 | 竞技场 gamerule 无 try/finally | `worldgen/PDAaroncosArenaWorldgen.java` | 5 | 未计划                               |
 
 ---
 
@@ -85,9 +90,9 @@
 
 | 级别 | 计划项 | 已修复 |
 |---|---|---|
-| Critical/High | 11 | 0 |
+| Critical/High | 16 | 0 |
 | Medium | 19 | 0 |
 | Low | 18 | 0 |
-| **合计** | **48** | **0** |
+| **合计** | **53** | **0** |
 
-> 注：主文档合计 46（Medium 16 含 M1–M8 合并计 1、H1 计 1；本表展开计 19）。计数口径差异因主文档将 M/H 系列合并表述，本表按条目展开。
+> 注：2026-08-04 对原 C2 拆分为 C2-1~C2-6（Critical/High 11→16、合计 48→53），详见临时报告 [`2026-08-04-C2-review.md`](2026-08-04-C2-review.md)。主文档合计 46（Medium 16 含 M1–M8 合并计 1、H1 计 1；本表展开计 19）。计数口径差异因主文档将 M/H 系列合并表述，本表按条目展开。
