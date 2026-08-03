@@ -37,11 +37,11 @@ public class SculkArmorItem extends ArmorItem {
                 && leggings.getItem() == PDItems.SCULK_ARMOR_LEGGINGS.get()
                 && boots.getItem() == PDItems.SCULK_ARMOR_BOOTS.get();
 
+        // C2-2 修复：禁止 removeEffect，避免剥掉药水/信标等外来同名 buff；
+        // 仅满套时短时效刷新，脱套后效果自然过期（见 2026-08-04-C2-review.md）
         if (hasFullSet) {
             entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(
                     net.minecraft.world.effect.MobEffects.INVISIBILITY, 10, 0, false, false));
-        } else {
-            entity.removeEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY);
         }
     }
 
