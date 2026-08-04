@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.worldgen.tree.trunk;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.pasterdream.pasterdreammod.api.worldgen.WorldGenUtils;
 import com.pasterdream.pasterdreammod.worldgen.tree.DyedreamTreePlacers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -44,6 +45,22 @@ public class DyedreamColossalTrunkPlacer extends TrunkPlacer {
     @Override
     protected TrunkPlacerType<?> type() {
         return DyedreamTreePlacers.COLOSSAL_TRUNK_PLACER.get();
+    }
+
+    /**
+     * 扩展有效位置判定 —— 越出当前世界生成可写范围的方块位置直接判定为无效
+     * <p>
+     * 超巨型主干含 3x3 主柱、角柱与多层长侧枝，横向跨度可达 10+ 格，在区块边缘
+     * 生成时会跨越到尚未就绪的相邻区块，触发 "Detected setBlock in a far chunk"
+     * 错误刷屏；此处提前过滤，越界位置不放置。
+     *
+     * @param level 模拟世界读取器
+     * @param pos   目标位置
+     * @return true 表示该位置有效且可安全写入
+     */
+    @Override
+    protected boolean validTreePos(LevelSimulatedReader level, BlockPos pos) {
+        return super.validTreePos(level, pos) && WorldGenUtils.canPlaceInRegion(level, pos);
     }
 
     @Override

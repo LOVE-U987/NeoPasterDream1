@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.api.worldgen;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.LevelSimulatedReader;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
@@ -206,5 +207,28 @@ public final class WorldGenUtils {
         int targetChunkZ = target.getZ() >> 4;
         return Math.abs(targetChunkX - originChunkX) <= chunkRadius
             && Math.abs(targetChunkZ - originChunkZ) <= chunkRadius;
+    }
+
+    /**
+     * 检查目标位置是否处于世界生成区域的可写范围内（防 far chunk 报错）
+     * <p>
+     * Minecraft 1.21.1 的 {@link net.minecraft.server.level.WorldGenRegion} 在生成期间
+     * 只允许向「生成步骤写方块半径」内的区块写入方块；一旦越界，内部
+     * {@code ensureCanWrite} 会记录 "Detected setBlock in a far chunk" 错误并拒绝放置。
+     * 大跨度结构（浮空岛、巨型染梦树等）的方块很容易落在未就绪的相邻区块上，从而刷屏报错。
+     * <p>
+     * 此方法在放置前调用 {@code WorldGenLevel.ensureCanWrite} 做同样的预检，
+     * 越界位置直接跳过（不写入、不产生错误日志）。非世界生成环境（如 {@code /place}
+     * 命令）下 {@code ensureCanWrite} 恒返回 true，行为不受影响。
+     *
+     * @param level 模拟世界读取器（世界生成期间为 WorldGenRegion）
+     * @param pos   要放置方块的位置
+     * @return true 表示目标位置可安全写入，false 表示应跳过该位置
+     */
+    public static boolean canPlaceInRegion(LevelSimulatedReader level, BlockPos pos) {
+        if (level instanceof WorldGenLevel worldGenLevel) {
+            return worldGenLevel.ensureCanWrite(pos);
+        }
+        return true;
     }
 }

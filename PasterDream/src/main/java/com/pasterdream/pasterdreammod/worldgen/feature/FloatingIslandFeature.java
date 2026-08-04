@@ -113,6 +113,28 @@ public class FloatingIslandFeature extends Feature<FloatingIslandConfiguration> 
         return true;
     }
 
+    // ==================== 安全放置工具 ====================
+
+    /**
+     * 安全放置方块 —— 先检查目标位置是否在当前世界生成可写范围内
+     * <p>
+     * 浮岛横向跨度可达「半径 + 随机游走偏移」，生成原点靠近区块边缘时
+     * 方块会跨越到尚未就绪的相邻区块，触发 "Detected setBlock in a far chunk"
+     * 错误刷屏。放置前用 {@link WorldGenUtils#canPlaceInRegion} 预检，越界位置直接跳过。
+     *
+     * @param level 世界生成级别访问
+     * @param pos   目标位置
+     * @param state 要放置的方块状态
+     * @return true 表示放置成功
+     */
+    private static boolean safeSetBlock(WorldGenLevel level, BlockPos pos, BlockState state) {
+        if (!WorldGenUtils.canPlaceInRegion(level, pos)) {
+            return false;
+        }
+        level.setBlock(pos, state, 3);
+        return true;
+    }
+
     // ==================== 岛屿主体生成 ====================
 
     /**
@@ -198,9 +220,10 @@ public class FloatingIslandFeature extends Feature<FloatingIslandConfiguration> 
                         // 上半部内核：方解石（骨架）
                         state = Blocks.CALCITE.defaultBlockState();
                     }
-                    level.setBlock(placePos, state, 3);
-                    allPlaced.add(placePos);
-                    placed = true;
+                    if (safeSetBlock(level, placePos, state)) {
+                        allPlaced.add(placePos);
+                        placed = true;
+                    }
                 }
             }
         }
@@ -265,13 +288,12 @@ public class FloatingIslandFeature extends Feature<FloatingIslandConfiguration> 
                     break;
                 }
 
-                if (drop == crystalLength && random.nextFloat() < 0.25f) {
-                    // 尖端使用生命水晶或染梦水晶灯
-                    level.setBlock(crystalPos, PDBlocks.LIFE_CRYSTAL.get().defaultBlockState(), 3);
-                } else {
-                    level.setBlock(crystalPos, crystalBlock.defaultBlockState(), 3);
+                BlockState spikeState = (drop == crystalLength && random.nextFloat() < 0.25f)
+                        ? PDBlocks.LIFE_CRYSTAL.get().defaultBlockState()
+                        : crystalBlock.defaultBlockState();
+                if (safeSetBlock(level, crystalPos, spikeState)) {
+                    allPlaced.add(crystalPos);
                 }
-                allPlaced.add(crystalPos);
             }
 
             // 10% 概率在主水晶旁边生成小副水晶
@@ -284,8 +306,8 @@ public class FloatingIslandFeature extends Feature<FloatingIslandConfiguration> 
                 } else {
                     sidePos = new BlockPos(spikeX, bottomY - 1, spikeZ + sideOffset);
                 }
-                if (level.getBlockState(sidePos).isAir() && !allPlaced.contains(sidePos)) {
-                    level.setBlock(sidePos, PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 3);
+                if (level.getBlockState(sidePos).isAir() && !allPlaced.contains(sidePos)
+                        && safeSetBlock(level, sidePos, PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState())) {
                     allPlaced.add(sidePos);
                 }
             }
@@ -324,12 +346,12 @@ public class FloatingIslandFeature extends Feature<FloatingIslandConfiguration> 
                     BlockState current = level.getBlockState(checkPos);
                     if (current.is(Blocks.CALCITE)) {
                         // 顶部方解石 → 草方块
-                        level.setBlock(checkPos, grassBlock, 3);
+                        safeSetBlock(level, checkPos, grassBlock);
                         // 下方再铺一层泥土
                         BlockPos belowPos = checkPos.below();
                         if (allPlaced.contains(belowPos)
                                 && level.getBlockState(belowPos).is(Blocks.CALCITE)) {
-                            level.setBlock(belowPos, dirtBlock, 3);
+                            safeSetBlock(level, belowPos, dirtBlock);
                         }
                         foundTop = true;
                     } else {
@@ -380,8 +402,9 @@ public class FloatingIslandFeature extends Feature<FloatingIslandConfiguration> 
                 if (random.nextFloat() < TOP_FLOWER_CHANCE
                         && level.getBlockState(decoratePos).is(PDBlocks.DYEDREAM_GRASS.get())) {
                     Block flowerBlock = selectRandomFlower(random);
-                    level.setBlock(abovePos, flowerBlock.defaultBlockState(), 3);
-                    allPlaced.add(abovePos);
+                    if (safeSetBlock(level, abovePos, flowerBlock.defaultBlockState())) {
+                        allPlaced.add(abovePos);
+                    }
                 }
             }
         }
@@ -494,8 +517,9 @@ public class FloatingIslandFeature extends Feature<FloatingIslandConfiguration> 
                     break;
                 }
 
-                level.setBlock(vinePos, PDBlocks.VINE_0.get().defaultBlockState(), 3);
-                allPlaced.add(vinePos);
+                if (safeSetBlock(level, vinePos, PDBlocks.VINE_0.get().defaultBlockState())) {
+                    allPlaced.add(vinePos);
+                }
             }
         }
     }

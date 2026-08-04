@@ -16,7 +16,8 @@ import shutil
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+# 脚本位于 <项目根>/tools/ 下：parents[0]=tools, parents[1]=项目根
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> int:

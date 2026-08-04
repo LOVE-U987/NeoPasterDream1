@@ -3,6 +3,17 @@
 > 由 `Trae CN/.trae/rules/project_rules.md` 迁移而来
 > 迁移日期: 2026-08-03
 
+## ⚠️ 任务启动强制流程（最高优先级）
+
+**每次开始执行任何任务（开发/修复/排查/回答）前，必须先完成：**
+
+1. 用 `read_file` 读取个人全局规则文件（UTF-8）：
+   `C:\Users\97128\AppData\Roaming\Code\User\prompts\personal-rules.instructions.md`
+2. 逐条遵守其中的所有规则（沟通风格、代码规范、Git 规范、Python 脚本优先、Skills 优先等）
+3. 任务涉及物品/注册/实体/粒子/效果/遗迹/装饰/维度时，先读取 `.github/skills/` 中对应 SKILL 再动手
+
+> 若个人规则文件内容已自动注入上下文，可跳过第 1 步；否则必须读取。
+
 ## 项目概况
 
 PasterDream NeoForge 1.21.1 模组开发项目。**核心理念:精神续作,而非代码移植。**

@@ -2,10 +2,13 @@
 // All build logic is in the submodule build.gradle files.
 // See: PasterDreamAPI/build.gradle (API library) and PasterDream/build.gradle (main mod).
 //
-// 分发约定：玩家只安装一个 jar
+// 分发约定：主模内嵌 API，附属独立发行
 //   ./gradlew packageMod
-//   → build/dist/pasterdream-<version>.jar
-//     （Jar-in-Jar 内嵌 PasterDreamAPI + enable*=true 的 Sanity/MeltDream/Spells）
+//   → build/dist/ 产出 4 个 jar：
+//     pasterdream-<version>.jar         （主模，Jar-in-Jar 内嵌 PasterDreamAPI）
+//     pasterdreammeltdream-<version>.jar / pasterdreamsanity-<version>.jar / pasterdreamspells-<version>.jar
+//       （三个独立附属模组；运行时依赖主模内置的 PasterDreamAPI）
+//   全部放入 mods/ 即可。
 //
 // 客户端启动：必须使用 PasterDream 的 runClient，避免多子项目歧义
 //   ./gradlew :PasterDream:runClient
@@ -29,27 +32,19 @@ tasks.register('deployDist', Exec) {
 
 tasks.register('packageMod') {
     group = 'distribution'
-    description = '构建并收集单一可安装 jar 到 build/dist/（内嵌 API + 附属）并归档到 打包产物/'
+    description = '构建并收集可安装 jar 到 build/dist/（主模内嵌 API + 三个独立附属 jar）并归档到 打包产物/'
     dependsOn ':PasterDream:packageMod'
-    dependsOn tasks.named('deployDist')
-}
-
-// 完整包 = 主模 fat jar（与 packageMod 相同；附属已 JiJ，勿再并排放独立附属 jar）
-tasks.register('packageAll') {
-    group = 'distribution'
-    description = '打包完整可安装 jar（主模内嵌 API + Sanity/MeltDream/Spells）并归档到 打包产物/'
-    dependsOn tasks.named('packageMod')
-}
-
-// 可选：分别产出附属 thin jar（不含 API；需与「未内嵌对应附属」的主包搭配，勿与 fat 主包同装）
-// 任务名用 packageThin，避免 `gradlew packageMod` 按名称匹配到附属子项目。
-tasks.register('packageAddonsSeparate') {
-    group = 'distribution'
-    description = '仅打包三个附属 thin jar 到 build/dist/（模块化发行用；勿与已内嵌附属的主包同时装）'
     dependsOn ':PasterDreamMeltDream:packageThin'
     dependsOn ':PasterDreamSanity:packageThin'
     dependsOn ':PasterDreamSpells:packageThin'
     dependsOn tasks.named('deployDist')
+}
+
+// 完整发行集 = 主模（内嵌 PasterDreamAPI）+ 三个独立附属 jar
+tasks.register('packageAll') {
+    group = 'distribution'
+    description = '打包完整发行集（主模内嵌 API + Sanity/MeltDream/Spells 独立 jar）并归档到 打包产物/'
+    dependsOn tasks.named('packageMod')
 }
 
 // 强制归档任务在全部相关打包完成后才执行，避免移动空产物

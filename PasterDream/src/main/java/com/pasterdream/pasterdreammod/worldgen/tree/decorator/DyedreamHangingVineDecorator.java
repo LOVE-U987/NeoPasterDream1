@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecorator;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecoratorType;
+import com.pasterdream.pasterdreammod.api.worldgen.WorldGenUtils;
 import com.pasterdream.pasterdreammod.worldgen.tree.DyedreamTreePlacers;
 
 import java.util.function.BiConsumer;
@@ -33,7 +34,14 @@ public class DyedreamHangingVineDecorator extends TreeDecorator {
     public void place(Context context) {
         LevelSimulatedReader level = context.level();
         RandomSource random = context.random();
-        BiConsumer<BlockPos, BlockState> setter = context::setBlock;
+        // 包装 setter：越出当前世界生成可写范围的方块位置直接跳过
+        //（垂藤在区块边缘生成时会跨越到尚未就绪的相邻区块，触发
+        //  "Detected setBlock in a far chunk" 错误刷屏，此处提前过滤）
+        BiConsumer<BlockPos, BlockState> setter = (pos, state) -> {
+            if (WorldGenUtils.canPlaceInRegion(context.level(), pos)) {
+                context.setBlock(pos, state);
+            }
+        };
 
         for (BlockPos leafPos : context.leaves()) {
             if (random.nextFloat() < 0.08f) {

@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.worldgen.feature;
 
+import com.pasterdream.pasterdreammod.api.worldgen.WorldGenUtils;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -120,7 +121,7 @@ public final class CloudBridgeDecorator {
                 BlockState mainState = (Math.abs(w) <= 1)
                         ? PDBlocks.THICK_CLOUD.get().defaultBlockState()
                         : PDBlocks.CLOUD.get().defaultBlockState();
-                level.setBlock(bridgePos, mainState, 3);
+                safeSetBlock(level, bridgePos, mainState);
                 if (placedSet != null) {
                     placedSet.add(bridgePos.immutable());
                 }
@@ -129,7 +130,7 @@ public final class CloudBridgeDecorator {
                 if (Math.abs(w) <= 2) {
                     bridgePos.set(bx + perpX, bridgeY + yOffset - 1, bz + perpZ);
                     if (canPlaceAt(level, bridgePos, placedSet)) {
-                        level.setBlock(bridgePos, PDBlocks.CLOUD.get().defaultBlockState(), 3);
+                        safeSetBlock(level, bridgePos, PDBlocks.CLOUD.get().defaultBlockState());
                         if (placedSet != null) {
                             placedSet.add(bridgePos.immutable());
                         }
@@ -140,7 +141,7 @@ public final class CloudBridgeDecorator {
                 if (Math.abs(w) <= 1) {
                     bridgePos.set(bx + perpX, bridgeY + yOffset - 2, bz + perpZ);
                     if (canPlaceAt(level, bridgePos, placedSet)) {
-                        level.setBlock(bridgePos, PDBlocks.CLOUD.get().defaultBlockState(), 3);
+                        safeSetBlock(level, bridgePos, PDBlocks.CLOUD.get().defaultBlockState());
                         if (placedSet != null) {
                             placedSet.add(bridgePos.immutable());
                         }
@@ -159,7 +160,7 @@ public final class CloudBridgeDecorator {
                     BlockState decorState = random.nextFloat() < GLOW_CRYSTAL_CHANCE
                             ? PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState()
                             : PDBlocks.CLOUD.get().defaultBlockState();
-                    level.setBlock(tempPos, decorState, 3);
+                    safeSetBlock(level, tempPos, decorState);
                     if (placedSet != null) {
                         placedSet.add(tempPos.immutable());
                     }
@@ -172,7 +173,7 @@ public final class CloudBridgeDecorator {
                     perpZ = (int) Math.round(dx * outerW / (double) dist);
                     tempPos.set(bx + perpX, bridgeY + yOffset, bz + perpZ);
                     if (canPlaceAt(level, tempPos, placedSet)) {
-                        level.setBlock(tempPos, PDBlocks.CLOUD.get().defaultBlockState(), 3);
+                        safeSetBlock(level, tempPos, PDBlocks.CLOUD.get().defaultBlockState());
                         if (placedSet != null) {
                             placedSet.add(tempPos.immutable());
                         }
@@ -184,7 +185,7 @@ public final class CloudBridgeDecorator {
             if (random.nextFloat() < VINE_CHANCE && step > dist / 4 && step < dist * 3 / 4) {
                 tempPos.set(bx, bridgeY + yOffset - 1, bz);
                 if (canPlaceAt(level, tempPos, placedSet)) {
-                    level.setBlock(tempPos, PDBlocks.VINE_0.get().defaultBlockState(), 3);
+                    safeSetBlock(level, tempPos, PDBlocks.VINE_0.get().defaultBlockState());
                     if (placedSet != null) {
                         placedSet.add(tempPos.immutable());
                     }
@@ -217,7 +218,7 @@ public final class CloudBridgeDecorator {
             if (!canPlaceAt(level, pillarPos, placedSet)) {
                 break;
             }
-            level.setBlock(pillarPos, PDBlocks.CLOUD.get().defaultBlockState(), 3);
+            safeSetBlock(level, pillarPos, PDBlocks.CLOUD.get().defaultBlockState());
             if (placedSet != null) {
                 placedSet.add(pillarPos.immutable());
             }
@@ -226,13 +227,33 @@ public final class CloudBridgeDecorator {
             if (dy == pillarHeight && random.nextFloat() < 0.6f) {
                 pillarPos.set(x, bridgeY + dy + 1, z);
                 if (canPlaceAt(level, pillarPos, placedSet)) {
-                    level.setBlock(pillarPos, PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 3);
+                    safeSetBlock(level, pillarPos, PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState());
                     if (placedSet != null) {
                         placedSet.add(pillarPos.immutable());
                     }
                 }
             }
         }
+    }
+
+    /**
+     * 安全放置方块 —— 先检查目标位置是否在当前世界生成可写范围内
+     * <p>
+     * 云桥跨度大（最长约 20 格），生成原点靠近区块边缘时会跨越到尚未就绪的
+     * 相邻区块，触发 "Detected setBlock in a far chunk" 错误刷屏。
+     * 放置前用 {@link WorldGenUtils#canPlaceInRegion} 预检，越界位置直接跳过。
+     *
+     * @param level 世界生成级别访问
+     * @param pos   目标位置
+     * @param state 要放置的方块状态
+     * @return true 表示放置成功
+     */
+    private static boolean safeSetBlock(WorldGenLevel level, BlockPos pos, BlockState state) {
+        if (!WorldGenUtils.canPlaceInRegion(level, pos)) {
+            return false;
+        }
+        level.setBlock(pos, state, 3);
+        return true;
     }
 
     /**

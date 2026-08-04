@@ -9,10 +9,10 @@
   "start_height": {
   	"type": "very_biased_to_bottom",
     "min_inclusive": {
-    	"absolute": 10
+    	"absolute": 2
     },
     "max_inclusive": {
-    	"absolute": 2
+    	"absolute": 10
     }
   },
   "project_start_to_heightmap": "WORLD_SURFACE_WG",

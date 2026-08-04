@@ -12,6 +12,7 @@ import net.minecraft.world.level.levelgen.feature.configurations.TreeConfigurati
 import net.minecraft.world.level.levelgen.feature.foliageplacers.FoliagePlacer;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacer;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacerType;
+import com.pasterdream.pasterdreammod.api.worldgen.WorldGenUtils;
 import com.pasterdream.pasterdreammod.worldgen.tree.DyedreamTreePlacers;
 
 import java.util.List;
@@ -41,6 +42,21 @@ public class DyedreamMegaTrunkPlacer extends TrunkPlacer {
     @Override
     protected TrunkPlacerType<?> type() {
         return DyedreamTreePlacers.MEGA_TRUNK_PLACER.get();
+    }
+
+    /**
+     * 扩展有效位置判定 —— 越出当前世界生成可写范围的方块位置直接判定为无效
+     * <p>
+     * 巨型多柱主干横向跨度大，在区块边缘生成时会跨越到尚未就绪的相邻区块，触发
+     * "Detected setBlock in a far chunk" 错误刷屏；此处提前过滤，越界位置不放置。
+     *
+     * @param level 模拟世界读取器
+     * @param pos   目标位置
+     * @return true 表示该位置有效且可安全写入
+     */
+    @Override
+    protected boolean validTreePos(LevelSimulatedReader level, BlockPos pos) {
+        return super.validTreePos(level, pos) && WorldGenUtils.canPlaceInRegion(level, pos);
     }
 
     @Override

@@ -15,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
@@ -276,6 +277,26 @@ public class CurioBuilder {
      * @return 注册后的物品持有者
      */
     public net.neoforged.neoforge.registries.DeferredItem<Item> register() {
+        // 防重复注册保护：CurioAPI.REGISTRY 由所有模块共享（pasterdream 命名空间）。
+        // 若主模组与附属模块（或两个附属模块之间）对同一注册名调用
+        // CurioAPI.create(...).register()，NeoForge 的 DeferredRegister.register()
+        // 会立即抛出 IllegalArgumentException("Duplicate registration <name>")，
+        // 导致整个游戏加载失败（如历史上 meltdream_energy_0_ring 重复注册崩溃）。
+        // 此处提前检测：名称已被注册时记录警告并复用既有条目，
+        // 保证手册条目 / 配方 / 标签对同一注册名的引用始终可解析。
+        for (DeferredHolder<Item, ? extends Item> existing : registry.getEntries()) {
+            if (existing.getId().toString().equals(fullName)) {
+                PasterDreamAPI.LOGGER.warn(
+                        "[CurioAPI] 检测到重复注册同名饰品 {}，本次注册被跳过并复用既有条目。"
+                                + "请检查是否有多个模块对同一饰品名重复调用 CurioAPI.create(\"{}\")。",
+                        fullName, name);
+                @SuppressWarnings("unchecked")
+                net.neoforged.neoforge.registries.DeferredItem<Item> reused =
+                        (net.neoforged.neoforge.registries.DeferredItem<Item>) existing;
+                return reused;
+            }
+        }
+
         // 将物品创建推迟到 DeferredRegister 回调中，避免注册表冻结问题
         var deferredItem = registry.register(name, () -> {
             // 构建物品（此时注册表已就绪，Item.<init> 可正常调用）
