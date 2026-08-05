@@ -85,4 +85,13 @@ public final class PlayerSkyLinkData {
     public static void clear(UUID playerUuid) {
         PLAYER_STARS.remove(playerUuid);
     }
+
+    /**
+     * 清空所有玩家的星体节点（白天到来时回退夜间操作）
+     * <p>
+     * 黎明触发：玩家在夜晚绘制的连线星体全部消散，星空枕数据回到初始状态。
+     */
+    public static void clearAll() {
+        PLAYER_STARS.clear();
+    }
 }

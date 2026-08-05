@@ -59,14 +59,6 @@ public class ConstellationSkyContent implements SkyContent {
     private static final float CROSS_MID_WIDTH = 0.10F;
     /** 十字星内层亮核线宽 */
     private static final float CROSS_CORE_WIDTH = 0.045F;
-    /** 调试日志记录器 */
-    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(ConstellationSkyContent.class);
-    /** 上次对准状态（用于变化时打印日志） */
-    private static boolean lastAimed;
-    /** 上次打印对准日志的游戏 tick（节流，避免多星座实例共享静态状态时刷屏） */
-    private static long lastAimLogTick = Long.MIN_VALUE;
-    /** 对准日志节流间隔（tick） */
-    private static final long AIM_LOG_INTERVAL_TICKS = 30;
     /**
      * 望远镜缩放进度（0~1，平滑过渡动画）
      * <p>
@@ -130,6 +122,12 @@ public class ConstellationSkyContent implements SkyContent {
 
     @Override
     public void render(SkyboxRenderContext context, float alpha) {
+        // 白天（夜晚因子低）时回退望远镜瞄准状态：星空消失，玩家观星/放大进度一并归零
+        if (context.nightFactor() <= 0.5F) {
+            for (int i = 0; i < this.aimState.length; i++) {
+                this.aimState[i] = 0.0F;
+            }
+        }
         Matrix4f matrix = context.poseStack().last().pose();
         Tesselator tesselator = Tesselator.getInstance();
         float time = context.renderTime();
@@ -220,7 +218,9 @@ public class ConstellationSkyContent implements SkyContent {
                 }
                 // 望远镜对准中心检测（按星大小）→ 更新该星独立的缓慢进入/退出进度
                 boolean aimed = aimEnabled && isAimed(star.point(), star.size(), lookX, lookY, lookZ, skyAngleRad);
-                logAimed(aimed, time);
+                if (aimed) {
+                    SkyboxRenderer.awardClient("achievement_stargaze");
+                }
                 aimState[index] = Mth.clamp(aimState[index] + (aimed ? AIM_TRANSITION_SPEED : -AIM_TRANSITION_SPEED), 0.0F, 1.0F);
                 float state = aimState[index];
                 float twinkle = 0.78F + 0.22F * Mth.sin(time * this.twinkleSpeed + star.phase());
@@ -264,7 +264,9 @@ public class ConstellationSkyContent implements SkyContent {
             float angle = star.baseAngle() + time * star.spinSpeed();
             // 对准中心检测 → 更新该星独立进度
             boolean aimed = aimEnabled && isAimed(star.point(), star.size(), lookX, lookY, lookZ, skyAngleRad);
-            logAimed(aimed, time);
+            if (aimed) {
+                SkyboxRenderer.awardClient("achievement_stargaze");
+            }
             aimState[index] = Mth.clamp(aimState[index] + (aimed ? AIM_TRANSITION_SPEED : -AIM_TRANSITION_SPEED), 0.0F, 1.0F);
             float state = aimState[index];
             // 对准星缓慢放大变亮
@@ -370,30 +372,6 @@ public class ConstellationSkyContent implements SkyContent {
             SkyGeometry.addLine(buffer, matrix, v1, v2, CROSS_CORE_WIDTH, CROSS_CORE_COLOR, crossAlpha);
         }
         SkyGeometry.drawIfNotEmpty(buffer);
-    }
-
-    /**
-     * 对准状态变化时打印调试日志（节流 + 仅 DEBUG 级别）
-     * <p>
-     * ⚠️ 多个星座实例共享静态 {@link #lastAimed}，状态交替会导致日志每帧刷屏，
-     * 这里按游戏 tick 节流（默认每 1.5 秒至多一条）。
-     *
-     * @param aimed      当前是否对准
-     * @param renderTime 当前渲染时间（游戏 tick，用于节流）
-     */
-    private static void logAimed(boolean aimed, float renderTime) {
-        if (aimed != lastAimed) {
-            lastAimed = aimed;
-            // 首次对准任意星座星点 → 授予观星成就（客户端单机安全提交到服务端线程）
-            if (aimed) {
-                SkyboxRenderer.awardClient("achievement_stargaze");
-            }
-            long tick = (long) renderTime;
-            if (tick - lastAimLogTick >= AIM_LOG_INTERVAL_TICKS) {
-                lastAimLogTick = tick;
-                LOGGER.debug("[Skybox] 望远镜对准星座星点: {}", aimed ? "对准 (放大变亮)" : "移开视线 (恢复)");
-            }
-        }
     }
 
     /**

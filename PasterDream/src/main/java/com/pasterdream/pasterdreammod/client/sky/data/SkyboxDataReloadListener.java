@@ -71,9 +71,6 @@ public class SkyboxDataReloadListener extends SimpleJsonResourceReloadListener {
             }
         }
         SkyboxRegistry.replaceDataEntries(entries);
-        // 调试日志：确认数据加载（INFO 级，仅在重载时打印一次）
-        org.slf4j.LoggerFactory.getLogger(SkyboxDataReloadListener.class)
-                .info("[Skybox] 数据重载完成: {} 个文件 -> {} 个条目", elements.size(), entries.size());
     }
 
     /**

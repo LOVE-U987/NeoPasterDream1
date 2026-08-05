@@ -1453,6 +1453,7 @@
   "message.pasterdream.skylink.full": "§c连线星体已达上限 (%d)",
   "message.pasterdream.skylink.look_up": "§c请抬头看向天空再试",
   "message.pasterdream.skylink.night_only": "§7夜晚才能绘制星空哦，晚上再来试试吧~",
+  "message.pasterdream.skylink.day_reset": "§7天亮了，昨夜绘制的星空星体已随风消散……",
   "message.pasterdream.meltdream_chest.break_animating": "§e宝箱正在开启，请稍候",
   "message.pasterdream.meltdream_chest.break_require_sneak": "§e每位玩家独立计时，潜行才能挖掘",
   "pack.pasterdream.vanilla.title": "§d帕斯特之梦主题资源包",

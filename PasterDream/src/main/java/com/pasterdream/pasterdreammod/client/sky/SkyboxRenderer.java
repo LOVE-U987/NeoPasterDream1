@@ -51,9 +51,6 @@ public final class SkyboxRenderer {
 
     private static final Minecraft MC = Minecraft.getInstance();
 
-    /** 调试日志记录器 */
-    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(SkyboxRenderer.class);
-
     /** 各条目当前透明度缓存（id → alpha） */
     private static final Map<String, Float> ALPHAS = new HashMap<>();
 
@@ -83,8 +80,55 @@ public final class SkyboxRenderer {
     private static float lastBiomeSwitchTime = Float.NEGATIVE_INFINITY;
     /** 群系切换过渡窗口（tick） */
     private static final float BIOME_TRANSITION_WINDOW_TICKS = 40.0F;
+    /** 上次是否为夜晚（用于检测黎明边沿 → 回退玩家夜间操作） */
+    private static boolean lastNightState;
+    /** 黎明检测是否已初始化（维度切换后重置） */
+    private static boolean dayStateInitialized;
+    /** 白天回退提示是否已发送（防重复刷屏） */
+    private static boolean dayResetNotified;
 
     private SkyboxRenderer() {
+    }
+
+    /**
+     * 检测并回退玩家的夜间操作（黎明触发一次）
+     * <p>
+     * 当时间从夜晚过渡到白天（夜晚因子降至 0.5 以下）时：
+     * <ul>
+     *   <li>清空所有玩家用星空枕绘制的连线星体（{@link PlayerSkyLinkData#clearAll}）</li>
+     *   <li>重置连线星体透明度缓存</li>
+     *   <li>提示本地玩家"天亮了，夜空星体已消散"</li>
+     * </ul>
+     * 回退只在黎明边沿执行一次，避免每帧重复清理。
+     */
+    private static void checkDayRollback() {
+        boolean night = isNight();
+        // 首次调用/维度切换后：只记录当前状态，不触发回退
+        if (!dayStateInitialized) {
+            dayStateInitialized = true;
+            lastNightState = night;
+            dayResetNotified = night;
+            return;
+        }
+        // 夜晚 → 白天边沿（黎明）：回退所有夜间操作
+        if (lastNightState && !night) {
+            lastNightState = false;
+            skylinkAlpha = 0.0F;
+            PlayerSkyLinkData.clearAll();
+            // 提示本地玩家（仅提示一次，避免多帧刷屏）
+            if (MC.player != null && !dayResetNotified) {
+                dayResetNotified = true;
+                MC.player.displayClientMessage(
+                        net.minecraft.network.chat.Component.translatable("message.pasterdream.skylink.day_reset"),
+                        true
+                );
+            }
+        }
+        // 白天 → 夜晚边沿（黄昏）：重置提示标记，允许下一个黎明再次提示
+        if (!lastNightState && night) {
+            lastNightState = true;
+            dayResetNotified = false;
+        }
     }
 
     /**
@@ -247,6 +291,9 @@ public final class SkyboxRenderer {
      * @param context   渲染上下文
      */
     private static void render(PoseStack poseStack, SkyboxRenderContext context) {
+        // 每帧检测黎明边沿：白天到来时回退玩家夜间操作（清除连线星体等）
+        checkDayRollback();
+
         RenderSystem.depthMask(false);
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
@@ -259,14 +306,6 @@ public final class SkyboxRenderer {
 
         List<SkyboxEntry> entries = SkyboxRegistry.entries();
         Candidate selected = updateSelectedCandidate(entries, context);
-
-        // 调试日志：每 5 秒打印一次当前候选与条目数（DEBUG 级别）
-        if (Math.floorMod((int) context.renderTime(), 100) == 0) {
-            int nightCount = rawCandidates(entries, emptyContext()).size();
-            LOGGER.debug("[Skybox] 渲染: entries={} 候选={} 夜晚候选数={} 可见度={} 群系={} 白天时间={}",
-                    entries.size(), selected, nightCount, String.format("%.2f", context.visibility()),
-                    context.biomeKey(), String.format("%.0f", context.dayTime()));
-        }
 
         for (SkyboxEntry entry : entries) {
             String id = entry.content().id().toString();
@@ -345,6 +384,10 @@ public final class SkyboxRenderer {
             ALPHAS.clear();
             skylinkAlpha = 0.0F;
             lastBiomeSwitchTime = Float.NEGATIVE_INFINITY;
+            // 维度切换：重置黎明检测状态，避免误触发回退
+            lastNightState = false;
+            dayStateInitialized = false;
+            dayResetNotified = false;
         }
 
         // 检测新的一天：白天时间从高（>20000）回落到低（<1000）
@@ -380,7 +423,6 @@ public final class SkyboxRenderer {
             candidate = matches.get(MC.level.getRandom().nextInt(matches.size()));
             randomBiomeKey = biomeKeyStr;
             newDayDetected = false;
-            LOGGER.debug("[Skybox] 每晚随机: 群系={} 候选={} (共{}套)", biomeKeyStr, candidate.key(), matches.size());
         } else {
             // 保持当前已随机选中的套（同群系内不频繁切换）
             Candidate keep = null;

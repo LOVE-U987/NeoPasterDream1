@@ -4,6 +4,33 @@
 
 ## v0.9.3 — 2026-08-06
 
+### 重构：清除天空盒相关调试日志输出
+
+*   **移除全部调试日志**（`client/sky/SkyboxRenderer.java` / `content/ConstellationSkyContent.java` / `data/SkyboxDataReloadListener.java`）：
+    * 删除 `SkyboxRenderer` 中 3 处 DEBUG 日志（渲染状态、每晚随机、黎明回退）与 `LOGGER` 字段
+    * 删除 `ConstellationSkyContent` 中望远镜对准 DEBUG 日志（`logAimed` 方法）及 `LOGGER`/节流字段——**观星成就授予逻辑保留**，内联到星点渲染处
+    * 删除 `SkyboxDataReloadListener` 数据重载 INFO 日志
+    * 无功能性改动，仅清理日志输出
+
+---
+
+## v0.9.3 — 2026-08-06
+
+### 新增：白天到来时回退玩家夜间操作
+
+*   **黎明回退**（`client/sky/SkyboxRenderer.java` `checkDayRollback`）：
+    * 每帧检测"夜晚 → 白天"边沿（夜晚因子降至 0.5 以下），触发一次回退：
+        * **清空所有玩家用星空枕绘制的连线星体**（`PlayerSkyLinkData.clearAll`，新增）
+        * 重置连线星体透明度缓存
+        * 快捷栏上方提示"天亮了，昨夜绘制的星空星体已随风消散……"（`message.pasterdream.skylink.day_reset`，仅提示一次）
+    * 黄昏（白天 → 夜晚）重置提示标记，允许下一个黎明再次提示；维度切换后重置检测状态避免误触发
+*   **望远镜瞄准状态回退**（`client/sky/content/ConstellationSkyContent.java`）：夜晚因子 ≤ 0.5（白天）时所有星点的瞄准放大进度 `aimState[]` 强制归零——玩家观星/放大进度随天亮一并回退
+*   **新增语言键 2 个**（zh_cn/en_us 成对）：`message.pasterdream.skylink.day_reset`
+
+---
+
+## v0.9.3 — 2026-08-06
+
 ### 修复：羽星占卜图录 / 星空枕无法从融梦水晶箱开出
 
 *   **根因**（`block/MeltdreamChestBlock.java`）：融梦水晶箱的掉落是 **Java 代码硬编码**的三档品质池（普通/稀有/传说），**不读取 JSON 战利品表**。此前仅在 `data/pasterdream/loot_table/chests/*.json`（遗迹宝箱 `loots_relic_*`、深藏宝物 `loots_deep_treasure_*`）添加条目，对融梦水晶箱无效

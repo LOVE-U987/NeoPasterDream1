@@ -1747,6 +1747,7 @@
   "message.pasterdream.skylink.full": "§cLinked star limit reached (%d)",
   "message.pasterdream.skylink.look_up": "§cLook up at the sky and try again",
   "message.pasterdream.skylink.night_only": "§7You can only paint the night sky at night~",
+  "message.pasterdream.skylink.day_reset": "§7Dawn breaks — the stars you painted last night have faded away...",
   "message.pasterdream.meltdream_chest.break_animating": "§eThe chest is opening, please wait",
   "message.pasterdream.meltdream_chest.break_require_sneak": "§eEach player has an independent timer — sneak to mine",
   "pack.pasterdream.vanilla.title": "§dPasterdream Resources",
