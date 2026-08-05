@@ -9,6 +9,103 @@
 
 ---
 
+## Ver.2 2026-08-04 · C2-3 修复 + C2-4 核验
+
+> 前置分析：临时审查报告 [`2026-08-04-C2-review.md`](2026-08-04-C2-review.md)（C2-3 单点收敛 / C2-4 源码核验）
+
+### 🔧 已修复
+
+| ID | 变更 |
+|---|---|
+| C2-3 | 四件护甲（Sculk/Titanium/Dyedream/Copper）`inventoryTick` 收敛到头盔单点触发全套检查，每 tick 触发次数 4× → 1×，行为不变 |
+
+### ✅ 已核验（不修）
+
+| ID | 变更 |
+|---|---|
+| C2-4 | 满套 `addEffect(10t/0级)` **不会**覆盖外来更强/更长的同名效果：vanilla `MobEffectInstance.update` 仅在「新效果更高等级」或「同级且更长」时替换，弱效果不占优；仅存在一次性 cosmetic 干扰（外来同名效果 `visible/showIcon` 被翻 false → HUD 图标/粒子隐藏）。维持现状不修 |
+
+---
+
+### C2-3 详细 — 四件各自每 tick 重复执行全套检查
+
+**问题**：四个盔甲类各自覆写 `inventoryTick` 并完整执行 `checkAndApplySetEffect`，满套时每 tick 重复 4 次全套检查（携带多件时更多），无单点。
+
+**根因（调用链，1.21.1 反汇编确认）**：
+
+```
+Player.tick() → LivingEntity.tick() → aiStep() → Inventory.tick()      [Player.java:552, Inventory.java:228-240]
+└─ Inventory.tick() 遍历 compartments [main(36), armor(4), offhand(1)]
+     └─ 护甲槽(36-39) 每件各触发一次 inventoryTick                        [Inventory.java:235]
+          └─ <对应>ArmorItem.inventoryTick(...)     [ArmorItem 基类不覆写,行为全由各盔甲类决定]
+               └─ checkAndApplySetEffect(entity)     ← 满套时 4× 重复
+```
+
+- `Inventory.tick()`（`Inventory.java:35,228-240`）对护甲槽 36-39 每件各调用一次 `inventoryTick`。
+- 参考范本 `QymArmorItem.java:56` 已收敛到头盔单点。
+
+**修复**：在四个盔甲类 `inventoryTick` 内、C2-1 守卫**之前**追加头盔单点短路：
+
+```java
+// C2-3 修复：仅头盔作为套装检查触发点
+if (this.getType() != ArmorItem.Type.HELMET) {
+    return;
+}
+```
+
+- 满套必然含头盔且头盔穿在护甲槽 36，每 tick 必被触发 → 单点可靠。
+- **保留** C2-1 归属守卫（比 Qym 范本多一层，背包携带头盔也不触发）。
+- 触发次数 4×/tick → 1×/tick，`checkAndApplySetEffect` 逻辑与套装判定不变。
+
+**变更文件**：
+
+| 文件 | 变更 |
+|---|---|
+| `PasterDream/.../item/SculkArmorItem.java` | `inventoryTick` 加头盔单点短路 |
+| `PasterDream/.../item/TitaniumArmorItem.java` | 同上 |
+| `PasterDream/.../item/DyedreamArmorItem.java` | 同上 |
+| `PasterDream/.../item/CopperArmorItem.java` | 同上 |
+
+**验证**：`.\gradlew compileJava` → BUILD SUCCESSFUL。
+
+**修复后行为**：✅ 满套每 tick 仅头盔执行 1 次全套检查；✅ 背包携带头盔仍不触发（C2-1 保留）。
+
+---
+
+### C2-4 核验 — 满套 `addEffect` 覆盖外来更强效果
+
+**原报告**：满套每 tick `addEffect(同名效果, 10t, 0级)` 会覆盖外来更强/更长效果（如药水隐身 II 被降级为 0 级 10t）。
+
+**核验（源码，NeoForge 21.1.219 反汇编）**：**不成立**。
+
+`LivingEntity.addEffect`（`LivingEntity.java:971-991`）对已有同名效果调用 `MobEffectInstance.update(other)`（`MobEffectInstance.java:138-181`），替换条件仅两个方向：
+
+1. `other.amplifier > this.amplifier`（新效果**更高等级**）→ 替换等级+时长；
+2. `isShorterDurationThan(other)`（现有**更短**且**同级**）→ 仅拉长时长。
+
+10t/0级 弱效果在两个条件上都不占优 → 外来隐身 II / 长时隐身 I **永不**被替换降级；异级且现有效果更短时弱效果存入 `hiddenEffect` 链，等强效果到期后自动续接（vanilla 正常链式语义）。
+
+**真实残留（次要，不修）**：
+
+- `update` 末尾（`:165-178`）无条件以新实例翻转 `ambient`/`visible`/`showIcon` → 外来同名效果 HUD 图标/粒子被**一次性**隐藏（纯外观，首次翻转后不再触发）。
+- 同级药水剩余 <10t 时被拉平到 10t（轻微延长，非削弱）。
+
+**结论**：`fix-comparison-table.md` 状态置 `已核验（不修）`。
+
+---
+
+### 待处理（C2 剩余）
+
+- **C2-5** Copper 满套剥 `DIG_SLOWDOWN`（设计免疫，待产品审核）。
+- **C2-6** 孤儿效果 `DYEDREAM/SCULK_ARMOR_BUFF` + `armorBuffRemove` 同模式 removeEffect。
+
+### 📄 文档变化
+
+- `fix-comparison-table.md`：C2-3 → `已修复`；C2-4 → `已核验（不修）`。
+- 临时报告 `2026-08-04-C2-3修复报告.md` 已并入本节后移除。
+
+---
+
 ## Ver.1 2026-08-04 · C2-1/C2-2 修复
 
 > 前置分析：临时审查报告 [`2026-08-04-C2-review.md`](2026-08-04-C2-review.md)（原 C2 拆分为 C2-1~C2-6）

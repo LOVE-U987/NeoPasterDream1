@@ -53,8 +53,12 @@ public class DyedreamArmorItem extends ArmorItem {
     public void inventoryTick(ItemStack itemstack, net.minecraft.world.level.Level world, net.minecraft.world.entity.Entity entity, int slot, boolean selected) {
         super.inventoryTick(itemstack, world, entity, slot, selected);
         if (!world.isClientSide() && entity instanceof LivingEntity livingEntity) {
+            // C2-3 修复：仅头盔作为套装检查触发点，避免四件护甲每 tick 各执行一次全套检查
+            if (this.getType() != ArmorItem.Type.HELMET) {
+                return;
+            }
             // C2-1 修复：护甲槽归属守卫，仅当该件实际穿在对应护甲槽才触发套装检查，
-            // 避免背包持有（主背包/副手）每 tick 触发导致剥外来 buff（见 2026-08-04-C2-1修复报告.md）
+            // 避免背包持有（主背包/副手）每 tick 触发导致剥外来 buff
             if (livingEntity.getItemBySlot(this.getType().getSlot()) != itemstack) {
                 return;
             }
