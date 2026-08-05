@@ -163,7 +163,7 @@ public class PDItemsMaterials {
     public static final DeferredItem<Item> SOUL_ESSENCE = PDItems.ITEMS.registerSimpleItem("soul_essence");
     public static final DeferredItem<Item> SPOOL = PDItems.ITEMS.registerSimpleItem("spool");
     public static final DeferredItem<Item> STAR_WISH_ROD_EMBRYO = PDItems.ITEMS.registerSimpleItem("star_wish_rod_embryo");
-    public static final DeferredItem<Item> SWORD_EMBRYO_0 = PDItems.ITEMS.registerSimpleItem("sword_embryo_0");
+    public static final DeferredItem<Item> SWORD_EMBRYO_0 = PDItems.ITEMS.registerSimpleItem("sword_embryo_0", new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> TERRASWORD_EMBRYO = PDItems.ITEMS.registerSimpleItem("terrasword_embryo");
     public static final DeferredItem<Item> TITANIUM_NUGGET = PDItems.ITEMS.registerSimpleItem("titanium_nugget");
     public static final DeferredItem<Item> TITANIUM_UPGRADE = PDItems.ITEMS.registerSimpleItem("titanium_upgrade");
