@@ -18,7 +18,7 @@ public class DyedreamArmorItem extends ArmorItem {
      * @param type 盔甲类型（头盔/胸甲/护腿/靴子）
      */
     public DyedreamArmorItem(ArmorItem.Type type) {
-        super(PDArmorMaterials.DYEDREAM_ARMOR, type, new Properties());
+        super(PDArmorMaterials.DYEDREAM_ARMOR, type, new Properties().durability(type.getDurability(40)));
     }
 
     /**

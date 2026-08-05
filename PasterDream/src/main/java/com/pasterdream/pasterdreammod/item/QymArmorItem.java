@@ -35,7 +35,7 @@ import java.util.List;
 public class QymArmorItem extends ArmorItem {
 
     public QymArmorItem(ArmorItem.Type type) {
-        super(PDArmorMaterials.QIN_ARMOR, type, new Properties());
+        super(PDArmorMaterials.QIN_ARMOR, type, new Properties().stacksTo(1));
     }
 
     @Override

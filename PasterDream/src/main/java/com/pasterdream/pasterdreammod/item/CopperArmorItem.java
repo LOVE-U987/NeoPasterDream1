@@ -20,7 +20,7 @@ public class CopperArmorItem extends ArmorItem {
      * @param type 盔甲类型（头盔/胸甲/护腿/靴子）
      */
     public CopperArmorItem(ArmorItem.Type type) {
-        super(PDArmorMaterials.COPPER_ARMOR, type, new Properties());
+        super(PDArmorMaterials.COPPER_ARMOR, type, new Properties().durability(type.getDurability(14)));
     }
 
     /**
