@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * 主世界竞技场遗迹由结构集正常随机生成且每世界仅生成一座
  * （关门逻辑见 {@code AaroncosArenaPortalStructure}）；本类记录遗迹中心坐标，
- * 供服务器重启后恢复遗迹感染（{@link ArenaRuinInfection}）及 /pasterdream arena 定位使用。
+ * 供服务器重启后恢复遗迹感染（{@link ArenaRuinInfection}）使用。
  */
 public class PDAaroncosArenaSpawnData extends SavedData {
 

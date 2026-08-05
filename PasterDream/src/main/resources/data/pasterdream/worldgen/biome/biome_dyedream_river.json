@@ -20,10 +20,12 @@
     [],
     [],
     [],
-    ["minecraft:freeze_top_layer"]
+    [
+      "minecraft:freeze_top_layer"
+    ]
   ],
   "effects": {
-    "foliage_color": -145678,
+    "foliage_color": -7187073,
     "grass_color": -145678,
     "sky_color": 7972607,
     "fog_color": 13421772,

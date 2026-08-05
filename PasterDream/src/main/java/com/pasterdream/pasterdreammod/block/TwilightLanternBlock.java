@@ -10,6 +10,7 @@ import com.pasterdream.pasterdreammod.registry.PDSounds;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsFunctional;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
+import com.pasterdream.pasterdreammod.world.TwilightLanternMusicState;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
@@ -40,6 +41,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.RenderShape;
@@ -151,7 +153,34 @@ public class TwilightLanternBlock extends BaseEntityBlock {
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean moving) {
         super.onPlace(state, level, pos, oldState, moving);
+        // 保险：onPlace 触达的放置路径（含 BlockItem 放置等）确保 BE 存在
+        ensureBlockEntity(level, pos);
         level.scheduleTick(pos, this, 20);
+    }
+
+    /**
+     * 若方块处缺少 {@link W4GeoDataBlockEntity} 则补建。
+     * <p>
+     * 必要性：jigsaw 结构生成（FEATURES 阶段 {@code WorldGenRegion.setBlock} → {@code ProtoChunk}）
+     * 不创建 BlockEntity、也不调用 {@code onPlace}，仅写入 {@code id=DUMMY} 占位 NBT，
+     * 区块转 {@code LevelChunk} 时 {@code loadStatic(DUMMY)} 找不到类型 → BE 永久缺失。
+     * 后果：右键点燃时 {@code putBooleanAt("switch", true)} 静默失败且 tick 从未调度 →
+     * 结构生成的暮影之笼不刷怪（玩家放置的正常）。此处自愈补建。
+     *
+     * @param level 世界
+     * @param pos   暮影之笼方块位置
+     */
+    public static void ensureBlockEntity(Level level, BlockPos pos) {
+        if (level.getBlockEntity(pos) instanceof W4GeoDataBlockEntity) {
+            return;
+        }
+        BlockState state = level.getBlockState(pos);
+        if (state.getBlock() instanceof EntityBlock entityBlock) {
+            BlockEntity be = entityBlock.newBlockEntity(pos, state);
+            if (be != null) {
+                level.setBlockEntity(be);
+            }
+        }
     }
 
     @Override
@@ -225,12 +254,17 @@ public class TwilightLanternBlock extends BaseEntityBlock {
         if (hasAdvancement(player, "achievement_hide_8") || hasAdvancement(player, "achievement_hide_10")) {
             if (player.getMainHandItem().getItem() == PDItemsFunctional.MELTDREAM_CRYSTAL_0.get()
                     && !W4DataBlockEntity.getBooleanAt(level, pos, "switch")) {
+                // 结构生成的笼子 BE 可能缺失（ProtoChunk 不创建 BE）→ 点燃前自愈补建，
+                // 否则 switch 写入静默失败且 tick 从未调度 → 不刷怪
+                ensureBlockEntity(level, pos);
                 if (player instanceof LivingEntity living && !living.level().isClientSide()) {
                     living.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 140, 0, false, false));
                 }
                 // Neo 增强：再点燃时清零 number，避免上次残留导致刷怪节点无法再次命中
                 W4DataBlockEntity.putDoubleAt(level, pos, "number", 0);
                 W4DataBlockEntity.putBooleanAt(level, pos, "switch", true);
+                // 结构生成的笼子 onPlace 从未调度 tick → 点燃时手动启动 20t 计数循环
+                level.scheduleTick(pos, this, 20);
                 ItemStack toRemove = new ItemStack(PDItemsFunctional.MELTDREAM_CRYSTAL_0.get());
                 player.getInventory().clearOrCountMatchingItems(
                         s -> toRemove.getItem() == s.getItem(), 1, player.inventoryMenu.getCraftSlots());
@@ -255,8 +289,11 @@ public class TwilightLanternBlock extends BaseEntityBlock {
                         player.displayClientMessage(
                                 Component.translatable("message.pasterdream.twilight_lantern.shadow_materialize"), false);
                     }
-                    if (!level.isClientSide()) {
-                        level.playSound(null, pos, PDSounds.SHADOW_MUSIC_0.get(), SoundSource.MUSIC, 1, 1);
+                    if (level instanceof ServerLevel serverLevel) {
+                        serverLevel.playSound(null, pos, PDSounds.SHADOW_MUSIC_0.get(), SoundSource.MUSIC, 1, 1);
+                        // 通知客户端静音原版背景音乐，避免与暮影之笼 BGM 双播（SoundEngine 不会自动停止 MUSIC 源声音）
+                        // 经状态追踪：多笼并发计数、登录/换维度补发、断线重置
+                        TwilightLanternMusicState.begin(serverLevel);
                     }
                 });
                 ServerScheduler.schedule(2600, () -> {
@@ -288,6 +325,10 @@ public class TwilightLanternBlock extends BaseEntityBlock {
                     // Neo 增强：事件结束同时清零 number（原版只关 switch）
                     W4DataBlockEntity.putBooleanAt(level, pos, "switch", false);
                     W4DataBlockEntity.putDoubleAt(level, pos, "number", 0);
+                    // 事件结束：经状态追踪通知客户端恢复原版背景音乐（计数归零才广播）
+                    if (level instanceof ServerLevel serverLevel) {
+                        TwilightLanternMusicState.end(serverLevel);
+                    }
                 });
             } else if (!player.level().isClientSide()) {
                 player.displayClientMessage(Component.translatable("message.pasterdream.twilight_lantern.need_shard"), true);

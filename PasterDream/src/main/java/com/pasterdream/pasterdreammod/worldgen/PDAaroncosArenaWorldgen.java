@@ -32,7 +32,7 @@ import java.util.List;
  *   <li>服务器启动时（{@link #onServerStarting}）：仅恢复已记录的遗迹感染，
  *       不再强制生成任何地形。</li>
  * </ul>
- * 中心坐标记录在 {@link PDAaroncosArenaSpawnData} 中，供 /pasterdream arena 定位使用。
+ * 中心坐标记录在 {@link PDAaroncosArenaSpawnData} 中。
  */
 public class PDAaroncosArenaWorldgen {
 

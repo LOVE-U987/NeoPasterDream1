@@ -28,6 +28,7 @@ public class PDMeltDreamConfig implements IMeltDreamEnergySystemConfig {
     private static final ModConfigSpec.ConfigValue<Double> CHEST_HURT_MULTIPLIER;
     private static final ModConfigSpec.ConfigValue<Double> CHEST_KILL_MULTIPLIER;
     private static final ModConfigSpec.ConfigValue<Double> CHEST_MAX_ENERGY;
+    private static final ModConfigSpec.ConfigValue<Integer> CHEST_COOLDOWN;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -54,6 +55,9 @@ public class PDMeltDreamConfig implements IMeltDreamEnergySystemConfig {
         CHEST_MAX_ENERGY = builder
                 .comment("融梦水晶箱能量转化上限 默认：1000.0")
                 .defineInRange("chest max energy", 1000.0D, 0.0D, Double.MAX_VALUE);
+        CHEST_COOLDOWN = builder
+                .comment("融梦水晶箱玩家开箱冷却时长（tick） 默认：12000（10 分钟）")
+                .defineInRange("chest cooldown", 12000, 1, Integer.MAX_VALUE);
         builder.pop();
 
         // 向主模组配置界面注册本模组配置项
@@ -74,6 +78,7 @@ public class PDMeltDreamConfig implements IMeltDreamEnergySystemConfig {
         PDAddonConfigRegistry.registerDoubleEntry("pasterdreammeltdream", "meltdream_system", CHEST_HURT_MULTIPLIER, 0.0D, Double.MAX_VALUE, "meltdream_chest_hurt_multiplier");
         PDAddonConfigRegistry.registerDoubleEntry("pasterdreammeltdream", "meltdream_system", CHEST_KILL_MULTIPLIER, 0.0D, Double.MAX_VALUE, "meltdream_chest_kill_multiplier");
         PDAddonConfigRegistry.registerDoubleEntry("pasterdreammeltdream", "meltdream_system", CHEST_MAX_ENERGY, 0.0D, Double.MAX_VALUE, "meltdream_chest_max_energy");
+        PDAddonConfigRegistry.registerIntegerEntry("pasterdreammeltdream", "meltdream_system", CHEST_COOLDOWN, 1, Integer.MAX_VALUE, "meltdream_chest_cooldown");
     }
 
     private PDMeltDreamConfig() {
@@ -121,5 +126,10 @@ public class PDMeltDreamConfig implements IMeltDreamEnergySystemConfig {
     @Override
     public Supplier<Double> chestMaxEnergy() {
         return CHEST_MAX_ENERGY;
+    }
+
+    @Override
+    public Supplier<Integer> chestCooldownTicks() {
+        return CHEST_COOLDOWN;
     }
 }

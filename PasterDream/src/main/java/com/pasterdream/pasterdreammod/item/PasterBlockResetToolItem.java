@@ -13,6 +13,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
@@ -40,6 +43,14 @@ public class PasterBlockResetToolItem extends Item {
             return InteractionResult.PASS;
         }
         if (!level.isClientSide()) {
+            // 结构生成的笼子 BE 可能缺失（ProtoChunk 不创建 BE）→ 先自愈补建，否则重置静默失败
+            BlockState state = level.getBlockState(pos);
+            if (state.getBlock() instanceof EntityBlock entityBlock && level.getBlockEntity(pos) == null) {
+                BlockEntity be = entityBlock.newBlockEntity(pos, state);
+                if (be != null) {
+                    level.setBlockEntity(be);
+                }
+            }
             W4DataBlockEntity.putBooleanAt(level, pos, "switch", false);
             level.sendBlockUpdated(pos, level.getBlockState(pos), level.getBlockState(pos), 3);
             level.playSound(null, pos, PDSounds.DING_0.get(), SoundSource.NEUTRAL, 1f, 1f);

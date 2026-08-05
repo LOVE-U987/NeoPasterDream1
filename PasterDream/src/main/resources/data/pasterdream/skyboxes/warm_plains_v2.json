@@ -1,0 +1,452 @@
+{
+  "fade_speed": 0.12,
+  "weight": 100,
+  "dimensions": [
+    "pasterdream:dyedream_world"
+  ],
+  "biomes": [
+    "pasterdream:biome_dyedream_0"
+  ],
+  "layers": [
+    {
+      "type": "pasterdream:sky_tint",
+      "priority": -100,
+      "color": [
+        0.3,
+        0.18,
+        0.42
+      ],
+      "opacity": 0.06
+    },
+    {
+      "type": "pasterdream:ribbons",
+      "priority": -12,
+      "segments": 180,
+      "gradient_steps": 10,
+      "center_yaw": 2.95,
+      "base_pitch": 0.18,
+      "spacing": 0,
+      "thickness": 0.16,
+      "arc": 6.28318,
+      "tilt": 1.25,
+      "wave_amplitude": 0.032,
+      "wave_frequency": 3.0,
+      "wobble_amplitude": 0.035,
+      "speed": 0.01,
+      "edge_softness": 0.2,
+      "blur": 0.35,
+      "opacity": 0.35,
+      "seed": 12,
+      "colors": [
+        [
+          0.92,
+          0.6,
+          0.42
+        ]
+      ]
+    },
+    {
+      "type": "pasterdream:aurora",
+      "priority": 20,
+      "bands": 2,
+      "segments": 200,
+      "gradient_steps": 16,
+      "center_yaw": 3.14,
+      "sphere_radius": 2,
+      "width": 18,
+      "min_pitch": 0.05,
+      "max_pitch": 0.4,
+      "wave_amplitude": 0.05,
+      "wave_frequency": 5.0,
+      "depth_amplitude": 10,
+      "ray_strength": 0.5,
+      "edge_softness": 0.5,
+      "speed": 0.005,
+      "opacity": 0.25,
+      "seed": 201,
+      "colors": [
+        [
+          1.0,
+          0.75,
+          0.6
+        ],
+        [
+          1.0,
+          0.6,
+          0.8
+        ]
+      ]
+    },
+    {
+      "type": "pasterdream:star_field",
+      "priority": -5,
+      "textures": [
+        "pasterdream:textures/sky/warm/warm_star_1.png",
+        "pasterdream:textures/sky/warm/warm_star_2.png",
+        "pasterdream:textures/sky/warm/warm_star_3.png",
+        "pasterdream:textures/sky/warm/warm_star_4.png",
+        "pasterdream:textures/sky/warm/warm_star_5.png",
+        "pasterdream:textures/sky/warm/warm_star_6.png",
+        "pasterdream:textures/sky/warm/warm_star_7.png",
+        "pasterdream:textures/sky/warm/warm_star2_1.png",
+        "pasterdream:textures/sky/warm/warm_star2_2.png",
+        "pasterdream:textures/sky/warm/warm_star2_3.png",
+        "pasterdream:textures/sky/warm/warm_star2_4.png",
+        "pasterdream:textures/sky/warm/warm_star2_5.png",
+        "pasterdream:textures/sky/warm/warm_star2_6.png",
+        "pasterdream:textures/sky/warm/warm_star2_7.png"
+      ],
+      "count": 1100,
+      "min_size": 0.5,
+      "max_size": 1.5,
+      "color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seed": 102
+    },
+    {
+      "type": "pasterdream:planet_system",
+      "priority": 8,
+      "planets": [
+        {
+          "texture": "pasterdream:textures/sky/warm/warm_planet_2.png",
+          "yaw": -2.78,
+          "pitch": -0.28,
+          "size": 7.6,
+          "roll": 0.1,
+          "roll_speed": 0.0008,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.95
+        },
+        {
+          "texture": "pasterdream:textures/sky/warm/warm_planet_3.png",
+          "yaw": -2.0,
+          "pitch": 0.04,
+          "size": 10.2,
+          "roll": 0.35,
+          "roll_speed": -0.0009,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.95
+        },
+        {
+          "texture": "pasterdream:textures/sky/warm/warm_planet_4.png",
+          "yaw": -1.13,
+          "pitch": 0.34,
+          "size": 6.4,
+          "roll": 0.6,
+          "roll_speed": 0.001,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/warm/warm_planet_5.png",
+          "yaw": -0.26,
+          "pitch": -0.16,
+          "size": 8.7,
+          "roll": 0.85,
+          "roll_speed": -0.0011,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/warm/warm_planet_6.png",
+          "yaw": 0.64,
+          "pitch": 0.22,
+          "size": 6.8,
+          "roll": 1.1,
+          "roll_speed": 0.0012,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/warm/warm_planet_7.png",
+          "yaw": 1.46,
+          "pitch": -0.06,
+          "size": 7.0,
+          "roll": 1.35,
+          "roll_speed": -0.0013,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/warm/warm_planet_1.png",
+          "yaw": 2.4,
+          "pitch": 0.4,
+          "size": 6.6,
+          "roll": 1.6,
+          "roll_speed": 0.0014,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        }
+      ]
+    },
+    {
+      "type": "pasterdream:shooting_stars",
+      "priority": 24,
+      "count": 2,
+      "interval_ticks": 120,
+      "duration_ticks": 18,
+      "color": [
+        0.66,
+        0.92,
+        1.0
+      ],
+      "seed": 1002
+    },
+    {
+      "type": "pasterdream:constellation",
+      "priority": 15,
+      "yaw": -1.18,
+      "pitch": -0.4,
+      "scale": 0.56,
+      "twinkle_speed": 0.024,
+      "line_width": 0.15,
+      "color": [
+        0.68,
+        0.92,
+        1.0
+      ],
+      "seed": 200,
+      "stars": [
+        {
+          "u": -0.48,
+          "v": -0.24,
+          "size": 0.9
+        },
+        {
+          "u": -0.24,
+          "v": -0.02,
+          "size": 1.02
+        },
+        {
+          "u": 0.02,
+          "v": 0.18,
+          "size": 1.28
+        },
+        {
+          "u": 0.34,
+          "v": 0.32,
+          "size": 0.95
+        },
+        {
+          "u": 0.5,
+          "v": 0.06,
+          "size": 0.86
+        }
+      ],
+      "lines": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "type": "pasterdream:constellation",
+      "priority": 15,
+      "yaw": 2.16,
+      "pitch": -0.28,
+      "scale": 0.62,
+      "twinkle_speed": 0.024,
+      "line_width": 0.15,
+      "color": [
+        0.58,
+        0.84,
+        1.0
+      ],
+      "seed": 201,
+      "stars": [
+        {
+          "u": -0.56,
+          "v": -0.06,
+          "size": 0.92
+        },
+        {
+          "u": -0.34,
+          "v": 0.18,
+          "size": 1.08
+        },
+        {
+          "u": -0.08,
+          "v": 0.04,
+          "size": 1.22
+        },
+        {
+          "u": 0.18,
+          "v": 0.2,
+          "size": 0.98
+        },
+        {
+          "u": 0.46,
+          "v": 0.08,
+          "size": 0.92
+        },
+        {
+          "u": 0.58,
+          "v": -0.18,
+          "size": 0.86
+        },
+        {
+          "u": -0.2,
+          "v": -0.28,
+          "size": 0.9
+        },
+        {
+          "u": 0.1,
+          "v": -0.18,
+          "size": 0.86
+        }
+      ],
+      "lines": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          6,
+          2
+        ]
+      ]
+    },
+    {
+      "type": "pasterdream:constellation",
+      "priority": 15,
+      "yaw": 0.28,
+      "pitch": 0.8799999999999999,
+      "scale": 0.54,
+      "twinkle_speed": 0.024,
+      "line_width": 0.15,
+      "color": [
+        0.86,
+        0.92,
+        1.0
+      ],
+      "seed": 202,
+      "stars": [
+        {
+          "u": -0.38,
+          "v": -0.34,
+          "size": 0.86
+        },
+        {
+          "u": -0.18,
+          "v": -0.06,
+          "size": 0.98
+        },
+        {
+          "u": 0.02,
+          "v": 0.24,
+          "size": 1.28
+        },
+        {
+          "u": 0.26,
+          "v": 0.02,
+          "size": 0.94
+        },
+        {
+          "u": 0.5,
+          "v": -0.22,
+          "size": 0.86
+        },
+        {
+          "u": -0.42,
+          "v": 0.18,
+          "size": 0.88
+        },
+        {
+          "u": 0.22,
+          "v": -0.42,
+          "size": 0.9
+        }
+      ],
+      "lines": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          3,
+          6
+        ]
+      ]
+    }
+  ]
+}

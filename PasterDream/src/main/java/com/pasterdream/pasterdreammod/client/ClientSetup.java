@@ -30,12 +30,12 @@ import com.pasterdream.pasterdreammod.client.curio.CurioClientHandler;
 import com.pasterdream.pasterdreammod.registry.PDMenus;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDFluidsType;
+import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -53,6 +53,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import org.jetbrains.annotations.Nullable;
 
+import com.pasterdream.pasterdreammod.api.client.block.BlockTintClient;
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 客户端设置类
@@ -121,22 +122,33 @@ public class ClientSetup {
     }
 
     /**
-     * 注册树叶颜色提供者，使树叶根据群系显示不同颜色
+     * 染梦树叶基础颜色（原彩色纹理的平均色 146,85,127 = 0x92557F）。
+     * <p>注意：Minecraft 的 BlockColor/ItemColor 返回值为 ARGB 格式，
+     * 必须携带 alpha 位（0xFF000000 | rgb），否则 alpha=0 会渲染为完全透明。
+     * 用于物品图标显示与无世界位置时的回退（固定显示基础粉紫）。
+     */
+    /**
+     * 注册方块颜色提供者：委托给 {@link BlockTintClient}，按 BlockAPI 配置自动注册染色方块。
+     * <p>染梦树叶在 PDBlocks 中声明了 {@code tintFoliage()}，走原版 {@link BiomeColors#getAverageFoliageColor}
+     * 取群系 foliage_color（数据驱动，兼容 Sodium/Iris）。
      *
      * @param event 颜色处理器注册事件
      */
     @SubscribeEvent
     public static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
-        event.register((state, level, pos, tintIndex) -> {
-            if (level == null || pos == null) {
-                return -145678;
-            }
-            if (level instanceof Level) {
-                return ((Level) level).getBiome(pos).value().getFoliageColor();
-            }
-            return -145678;
-        }, PDBlocks.DYEDREAM_LEAVES.get());
-        PDDebugLogger.mainDebug("[ClientSetup] 注册树叶颜色提供者: dyedream_leaves");
+        BlockTintClient.registerBlockTints(event);
+        PDDebugLogger.mainDebug("[ClientSetup] 注册方块颜色提供者（BlockAPI tint）");
+    }
+
+    /**
+     * 注册物品颜色提供者：委托给 {@link BlockTintClient}（物品无世界位置，固定显示配置色）
+     *
+     * @param event 物品颜色处理器注册事件
+     */
+    @SubscribeEvent
+    public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
+        BlockTintClient.registerItemTints(event);
+        PDDebugLogger.mainDebug("[ClientSetup] 注册物品颜色提供者（BlockAPI tint）");
     }
 
     /**

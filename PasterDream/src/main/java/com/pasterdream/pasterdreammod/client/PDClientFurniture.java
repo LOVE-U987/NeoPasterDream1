@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.client;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.client.renderer.block.W4GeoBlockRenderer;
+import com.pasterdream.pasterdreammod.client.renderer.block.WindKnightSpawnblockBlockRenderer;
 import com.pasterdream.pasterdreammod.client.renderer.item.W4GeoDisplayItemRenderer;
 import com.pasterdream.pasterdreammod.client.screen.PicnicBasketScreen;
 import com.pasterdream.pasterdreammod.client.screen.ShadowDeskScreen;
@@ -40,11 +41,9 @@ public class PDClientFurniture {
      */
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        for (int i = 0; i < 5; i++) {
-            final String name = "wind_knight_spawnblock_" + i;
-            event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.WIND_KNIGHT_SPAWNBLOCKS.get(i).get(),
-                    context -> new W4GeoBlockRenderer(name));
-        }
+        // 风之骑士唤醒台：单一 BE，模型按方块 STAGE 属性切换
+        event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.WIND_KNIGHT_SPAWNBLOCK.get(),
+                context -> new WindKnightSpawnblockBlockRenderer());
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.ECOLOGY_GLASS_JAR.get(),
                 context -> new W4GeoBlockRenderer("ecology_glass_jar"));
         event.registerBlockEntityRenderer(PDBlockEntitiesFurniture.FIREFLY_GLASS_JAR.get(),
@@ -94,16 +93,9 @@ public class PDClientFurniture {
      */
     @SubscribeEvent
     public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
-        for (int i = 0; i < 5; i++) {
-            registerDisplayItem(event, PDItemsFurniture.class, "wind_knight_spawnblock_" + i,
-                    switch (i) {
-                        case 0 -> PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_0.get();
-                        case 1 -> PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_1.get();
-                        case 2 -> PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_2.get();
-                        case 3 -> PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_3.get();
-                        default -> PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get();
-                    });
-        }
+        // 风之骑士唤醒台：单一物品，手持 3D 显示初始阶段（stage 0）模型
+        registerDisplayItem(event, PDItemsFurniture.class, "wind_knight_spawnblock_0",
+                PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK.get());
         registerDisplayItem(event, PDItemsFurniture.class, "ecology_glass_jar", PDItemsFurniture.ECOLOGY_GLASS_JAR.get());
         registerDisplayItem(event, PDItemsFurniture.class, "firefly_glass_jar", PDItemsFurniture.FIREFLY_GLASS_JAR.get());
         registerDisplayItem(event, PDItemsFurniture.class, "light_firefly_glass_jar", PDItemsFurniture.LIGHT_FIREFLY_GLASS_JAR.get());

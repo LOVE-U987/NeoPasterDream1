@@ -75,6 +75,10 @@ public class PDNetwork {
         registrar.playToClient(EvasionPosePayload.TYPE, EvasionPosePayload.STREAM_CODEC,
                 PDNetwork::handleEvasionPoseOnClient);
 
+        // ==================== S2C：暮影之笼事件 BGM 状态 ====================
+        registrar.playToClient(TwilightLanternMusicPayload.TYPE, TwilightLanternMusicPayload.STREAM_CODEC,
+                PDNetwork::handleTwilightLanternMusicOnClient);
+
         // ==================== C2S：按键消息 ====================
         registrar.playToServer(TeleportationPayload.TYPE, TeleportationPayload.STREAM_CODEC,
                 PDNetwork::handleTeleportationOnServer);
@@ -118,6 +122,36 @@ public class PDNetwork {
     }
 
     /**
+     * 向指定维度内所有玩家广播暮影之笼事件 BGM 状态。
+     * <p>
+     * 用于在事件激活（+55t）与结束（+2600t）时同步客户端音乐静音标志。
+     *
+     * @param level  暮影之笼所在服务端维度
+     * @param active true=事件 BGM 激活中；false=事件结束
+     */
+    public static void sendTwilightLanternMusic(ServerLevel level, boolean active) {
+        if (level == null) return;
+        TwilightLanternMusicPayload payload =
+                active ? TwilightLanternMusicPayload.start() : TwilightLanternMusicPayload.stop();
+        for (ServerPlayer player : level.players()) {
+            PacketDistributor.sendToPlayer(player, payload);
+        }
+    }
+
+    /**
+     * 向单个玩家发送暮影之笼事件 BGM 状态（登录/切换维度时补发）。
+     *
+     * @param player 目标玩家（服务端）
+     * @param active true=事件 BGM 激活中（静音原版音乐）；false=事件结束（恢复原版音乐）
+     */
+    public static void sendTwilightLanternMusicToPlayer(ServerPlayer player, boolean active) {
+        if (player == null) return;
+        TwilightLanternMusicPayload payload =
+                active ? TwilightLanternMusicPayload.start() : TwilightLanternMusicPayload.stop();
+        PacketDistributor.sendToPlayer(player, payload);
+    }
+
+    /**
      * 客户端：全屏物品展示。
      *
      * @param payload 包
@@ -126,6 +160,17 @@ public class PDNetwork {
     public static void handleItemActivationOnClient(final ItemActivationPayload payload,
                                                     final IPayloadContext context) {
         invokeClientVfx("handleItemActivation", ItemActivationPayload.class, payload);
+    }
+
+    /**
+     * 客户端：暮影之笼事件 BGM 状态（设置/清除原版音乐静音标志）。
+     *
+     * @param payload 包
+     * @param context 上下文
+     */
+    public static void handleTwilightLanternMusicOnClient(final TwilightLanternMusicPayload payload,
+                                                          final IPayloadContext context) {
+        invokeClientVfx("handleTwilightLanternMusic", TwilightLanternMusicPayload.class, payload);
     }
 
     /**

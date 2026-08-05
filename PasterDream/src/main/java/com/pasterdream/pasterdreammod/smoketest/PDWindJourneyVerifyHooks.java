@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.smoketest;
 
+import com.pasterdream.pasterdreammod.block.WindKnightSpawnblockBlock;
 import com.pasterdream.pasterdreammod.entity.mob.ThundercloudEntity;
 import com.pasterdream.pasterdreammod.entity.mob.WindKnightEntity;
 import com.pasterdream.pasterdreammod.entity.projectile.LightningProjectileEntity;
@@ -36,6 +37,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -129,7 +131,7 @@ public final class PDWindJourneyVerifyHooks {
         }
         ServerLevel level = player.serverLevel();
         // 推进 ServerScheduler 已由主 tick 完成；此处只读结果
-        boolean reset0 = level.getBlockState(altarPos).is(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0.get());
+        boolean reset0 = stageOf(level.getBlockState(altarPos)) == 0;
         acceptAltarBeType(level, altarPos, 0, out, "祭坛召唤后 BE type 回 stage0");
         int knights = level.getEntitiesOfClass(WindKnightEntity.class,
                 new AABB(altarPos).inflate(16)).size();
@@ -239,24 +241,24 @@ public final class PDWindJourneyVerifyHooks {
                 level.setBlock(base.offset(dx, -1, dz), Blocks.STONE.defaultBlockState(), 3);
             }
         }
-        level.setBlock(base, PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0.get().defaultBlockState(), 3);
+        level.setBlock(base, stageState(0), 3);
         BlockEntity be0 = level.getBlockEntity(base);
         out.accept(new Result(be0 != null, "祭坛 stage0 BE 创建",
                 be0 == null ? "null BE" : be0.getClass().getSimpleName()));
         acceptAltarBeType(level, base, 0, out, "祭坛 stage0 BE type");
 
-        // 并排 setblock 0..4：BE type 与方块 stage 一一对应（渲染 mesh 的服务端锚点）
+        // 并排 setblock stage 0..4：BE type 唯一（渲染 mesh 按方块 STAGE 属性切换）
         for (int stage = 0; stage < 5; stage++) {
             BlockPos side = base.offset(2 + stage, 0, 0);
             level.setBlock(side.below(), Blocks.STONE.defaultBlockState(), 3);
-            level.setBlock(side, stageBlock(stage).defaultBlockState(), 3);
-            acceptAltarBeType(level, side, stage, out, "祭坛并排 setblock BE type s" + stage);
+            level.setBlock(side, stageState(stage), 3);
+            acceptAltarBeType(level, side, stage, out, "祭坛并排 setblock STAGE s" + stage);
         }
 
         player.setItemInHand(InteractionHand.MAIN_HAND,
                 new ItemStack(PDItemsMaterials.WINDRUNNER_CRYSTAL.get()));
         useBlock(player, level, base);
-        boolean s1 = level.getBlockState(base).is(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_1.get());
+        boolean s1 = stageOf(level.getBlockState(base)) == 1;
         out.accept(new Result(s1, "祭坛 0→1 风行者水晶",
                 level.getBlockState(base).getBlock().toString()));
         acceptAltarBeType(level, base, 1, out, "祭坛 0→1 后 BE type");
@@ -270,7 +272,7 @@ public final class PDWindJourneyVerifyHooks {
             int expect = 2 + step;
             acceptAltarBeType(level, base, expect, out, "祭坛 →" + expect + " 后 BE type");
         }
-        boolean s4 = level.getBlockState(base).is(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get());
+        boolean s4 = stageOf(level.getBlockState(base)) == 4;
         out.accept(new Result(s4, "祭坛 →4 凝风铁×3",
                 level.getBlockState(base).getBlock().toString()));
 
@@ -297,28 +299,31 @@ public final class PDWindJourneyVerifyHooks {
         ServerScheduler.advanceForTest(ticks);
     }
 
-    private static Block stageBlock(int stage) {
-        return switch (stage) {
-            case 0 -> PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0.get();
-            case 1 -> PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_1.get();
-            case 2 -> PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_2.get();
-            case 3 -> PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_3.get();
-            default -> PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get();
-        };
+    /** 构造指定阶段的唤醒台方块状态（单一方块 + STAGE 属性） */
+    private static BlockState stageState(int stage) {
+        return PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK.get().defaultBlockState()
+                .setValue(WindKnightSpawnblockBlock.STAGE, stage);
     }
 
-    /** 断言祭坛 BE 的 BlockEntityType 注册名 = wind_knight_spawnblock_n */
+    /** 读取唤醒台方块阶段的便捷方法 */
+    private static int stageOf(BlockState state) {
+        return WindKnightSpawnblockBlock.stageOf(state);
+    }
+
+    /** 断言祭坛 BE 的 BlockEntityType = wind_knight_spawnblock（唯一 BE，样式由方块 STAGE 决定） */
     private static void acceptAltarBeType(ServerLevel level, BlockPos pos, int stage,
                                           Consumer<Result> out, String name) {
         BlockEntity be = level.getBlockEntity(pos);
-        var expected = PDBlockEntitiesFurniture.WIND_KNIGHT_SPAWNBLOCKS.get(stage).get();
-        boolean ok = be != null && be.getType() == expected;
+        var expected = PDBlockEntitiesFurniture.WIND_KNIGHT_SPAWNBLOCK.get();
+        boolean ok = be != null && be.getType() == expected
+                && stageOf(level.getBlockState(pos)) == stage;
         String detail;
         if (be == null) {
             detail = "null BE block=" + level.getBlockState(pos);
         } else {
             var key = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType());
-            detail = "type=" + key + " block=" + level.getBlockState(pos).getBlock();
+            detail = "type=" + key + " stage=" + stageOf(level.getBlockState(pos))
+                    + " block=" + level.getBlockState(pos).getBlock();
         }
         out.accept(new Result(ok, name, detail));
     }

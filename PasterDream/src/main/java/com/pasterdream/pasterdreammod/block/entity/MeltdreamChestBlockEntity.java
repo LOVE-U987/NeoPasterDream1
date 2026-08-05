@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.block.entity;
 
+import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyConfigRegistry;
 import com.pasterdream.pasterdreammod.block.MeltdreamChestBlock;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
@@ -95,9 +96,6 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
     /** 玩家冷却映射表（UUID → 游戏刻到期时间） */
     private final Map<UUID, Long> playerCooldowns = new HashMap<>();
 
-    /** 冷却时长（游戏刻）：1 分钟 = 1200 ticks */
-    private static final long COOLDOWN_DURATION = 1200;
-
     // ==================== NBT 键 ====================
 
     private static final String TAG_POP_PROGRESS = "popProgress";
@@ -166,13 +164,25 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
     }
 
     /**
+     * 获取玩家开箱冷却时长（游戏刻）。
+     * <p>
+     * 优先读取融梦能量系统配置（PasterDreamMeltDream 的 "chest cooldown" 配置项，
+     * 默认 10 分钟 = 12000 ticks）；未安装融梦模组（配置未注册）时回退到默认值。
+     *
+     * @return 冷却时长（tick）
+     */
+    private static long getCooldownDuration() {
+        return MeltDreamEnergyConfigRegistry.get().chestCooldownTicks().get();
+    }
+
+    /**
      * 设置玩家冷却（当前游戏刻 + 冷却时长）
      *
      * @param player 玩家
      */
     public void setCooldown(Player player) {
         if (level == null) return;
-        playerCooldowns.put(player.getUUID(), level.getGameTime() + COOLDOWN_DURATION);
+        playerCooldowns.put(player.getUUID(), level.getGameTime() + getCooldownDuration());
         setChanged();
     }
 

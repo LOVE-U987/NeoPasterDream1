@@ -59,4 +59,13 @@ public interface IMeltDreamEnergySystemConfig {
      * @return 上限 Supplier
      */
     Supplier<Double> chestMaxEnergy();
+
+    /**
+     * 融梦水晶箱玩家开箱冷却时长（tick）。
+     * <p>
+     * 每位玩家两次开箱之间的独立冷却，默认 10 分钟 = 12000 tick。
+     *
+     * @return 冷却时长 Supplier
+     */
+    Supplier<Integer> chestCooldownTicks();
 }

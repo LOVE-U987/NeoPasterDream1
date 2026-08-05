@@ -208,11 +208,6 @@
     "weapon_workshop",
     "white_sand",
     "wind_iron_block",
-    "wind_knight_spawnblock_0",
-    "wind_knight_spawnblock_1",
-    "wind_knight_spawnblock_2",
-    "wind_knight_spawnblock_3",
-    "wind_knight_spawnblock_4",
     "windiron_bars",
     "windmoor_button",
     "windmoor_crate",
@@ -233,7 +228,8 @@
     "workshop_anvil",
     "workshop_blast",
     "workshop_cauldeon",
-    "workshop_grind"
+    "workshop_grind",
+    "wind_knight_spawnblock"
   ],
   "item_ids": [
     "aaroncos_arena_create",
@@ -582,17 +578,13 @@
     "white_sword_embryo",
     "white_sword_rain",
     "wind_iron_ingot",
-    "wind_knight_spawnblock_0",
-    "wind_knight_spawnblock_1",
-    "wind_knight_spawnblock_2",
-    "wind_knight_spawnblock_3",
-    "wind_knight_spawnblock_4",
     "wind_plant_extract",
     "wind_vane",
     "windrunner_crystal",
     "wings_of_fang",
     "yeast",
-    "yinhul_cotton_candy"
+    "yinhul_cotton_candy",
+    "wind_knight_spawnblock"
   ],
   "existing_tags": {
     "pasterdream/advancement/achievement_adventure_0.json": [],

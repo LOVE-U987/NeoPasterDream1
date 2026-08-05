@@ -49,23 +49,11 @@ public class PDBlocksFurniture {
                 .isRedstoneConductor((bs, br, bp) -> false);
     }
 
-    // ==================== 风之骑士唤醒台（wind_knight_spawnblock_0..4） ====================
+    // ==================== 风之骑士唤醒台（wind_knight_spawnblock，STAGE 0..4 控制样式） ====================
 
-    public static final DeferredBlock<WindKnightSpawnblockBlock> WIND_KNIGHT_SPAWNBLOCK_0 =
-            PDBlocks.BLOCKS.registerBlock("wind_knight_spawnblock_0",
-                    p -> new WindKnightSpawnblockBlock(0, p), unbreakableStone());
-    public static final DeferredBlock<WindKnightSpawnblockBlock> WIND_KNIGHT_SPAWNBLOCK_1 =
-            PDBlocks.BLOCKS.registerBlock("wind_knight_spawnblock_1",
-                    p -> new WindKnightSpawnblockBlock(1, p), unbreakableStone());
-    public static final DeferredBlock<WindKnightSpawnblockBlock> WIND_KNIGHT_SPAWNBLOCK_2 =
-            PDBlocks.BLOCKS.registerBlock("wind_knight_spawnblock_2",
-                    p -> new WindKnightSpawnblockBlock(2, p), unbreakableStone());
-    public static final DeferredBlock<WindKnightSpawnblockBlock> WIND_KNIGHT_SPAWNBLOCK_3 =
-            PDBlocks.BLOCKS.registerBlock("wind_knight_spawnblock_3",
-                    p -> new WindKnightSpawnblockBlock(3, p), unbreakableStone());
-    public static final DeferredBlock<WindKnightSpawnblockBlock> WIND_KNIGHT_SPAWNBLOCK_4 =
-            PDBlocks.BLOCKS.registerBlock("wind_knight_spawnblock_4",
-                    p -> new WindKnightSpawnblockBlock(4, p), unbreakableStone());
+    public static final DeferredBlock<WindKnightSpawnblockBlock> WIND_KNIGHT_SPAWNBLOCK =
+            PDBlocks.BLOCKS.registerBlock("wind_knight_spawnblock",
+                    WindKnightSpawnblockBlock::new, unbreakableStone());
 
     // ==================== 玻璃罐（ecology/firefly/light_firefly_glass_jar） ====================
 

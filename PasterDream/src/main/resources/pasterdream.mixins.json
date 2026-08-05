@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "pasterdream.refmap.json",
   "client": [
-    "MinecraftMixin"
+    "MinecraftMixin",
+    "LevelRendererMixin"
   ],
   "mixins": []
 }

@@ -1,0 +1,425 @@
+{
+  "fade_speed": 0.12,
+  "weight": 100,
+  "dimensions": [
+    "pasterdream:dyedream_world"
+  ],
+  "biomes": [
+    "pasterdream:biome_dyedream_mushroom_plains"
+  ],
+  "layers": [
+    {
+      "type": "pasterdream:sky_tint",
+      "priority": -100,
+      "color": [
+        0.24,
+        0.16,
+        0.34
+      ],
+      "opacity": 0.05
+    },
+    {
+      "type": "pasterdream:aurora",
+      "priority": 20,
+      "bands": 2,
+      "segments": 200,
+      "gradient_steps": 16,
+      "center_yaw": 3.14,
+      "sphere_radius": 2,
+      "width": 18,
+      "min_pitch": 0.05,
+      "max_pitch": 0.4,
+      "wave_amplitude": 0.05,
+      "wave_frequency": 5.0,
+      "depth_amplitude": 10,
+      "ray_strength": 0.5,
+      "edge_softness": 0.5,
+      "speed": 0.005,
+      "opacity": 0.3,
+      "seed": 501,
+      "colors": [
+        [
+          0.75,
+          0.55,
+          1.0
+        ],
+        [
+          0.55,
+          0.75,
+          1.0
+        ]
+      ]
+    },
+    {
+      "type": "pasterdream:star_field",
+      "priority": -5,
+      "textures": [
+        "pasterdream:textures/sky/mushroom/mushroom_star_1.png",
+        "pasterdream:textures/sky/mushroom/mushroom_star_2.png",
+        "pasterdream:textures/sky/mushroom/mushroom_star_3.png",
+        "pasterdream:textures/sky/mushroom/mushroom_star_4.png",
+        "pasterdream:textures/sky/mushroom/mushroom_star_5.png",
+        "pasterdream:textures/sky/mushroom/mushroom_star_6.png",
+        "pasterdream:textures/sky/mushroom/mushroom_star_7.png",
+        "pasterdream:textures/sky/mushroom/mushroom_star2_1.png",
+        "pasterdream:textures/sky/mushroom/mushroom_star2_2.png",
+        "pasterdream:textures/sky/mushroom/mushroom_star2_3.png",
+        "pasterdream:textures/sky/mushroom/mushroom_star2_4.png",
+        "pasterdream:textures/sky/mushroom/mushroom_star2_5.png",
+        "pasterdream:textures/sky/mushroom/mushroom_star2_6.png",
+        "pasterdream:textures/sky/mushroom/mushroom_star2_7.png"
+      ],
+      "count": 1000,
+      "min_size": 0.5,
+      "max_size": 1.5,
+      "color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seed": 501
+    },
+    {
+      "type": "pasterdream:planet_system",
+      "priority": 8,
+      "planets": [
+        {
+          "texture": "pasterdream:textures/sky/mushroom/mushroom_planet_1.png",
+          "yaw": -2.85,
+          "pitch": -0.33,
+          "size": 7.6,
+          "roll": 0.1,
+          "roll_speed": 0.0008,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.95
+        },
+        {
+          "texture": "pasterdream:textures/sky/mushroom/mushroom_planet_2.png",
+          "yaw": -2.07,
+          "pitch": -0.01,
+          "size": 10.2,
+          "roll": 0.35,
+          "roll_speed": -0.0009,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.95
+        },
+        {
+          "texture": "pasterdream:textures/sky/mushroom/mushroom_planet_3.png",
+          "yaw": -1.2,
+          "pitch": 0.29,
+          "size": 6.4,
+          "roll": 0.6,
+          "roll_speed": 0.001,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/mushroom/mushroom_planet_4.png",
+          "yaw": -0.33,
+          "pitch": -0.21,
+          "size": 8.7,
+          "roll": 0.85,
+          "roll_speed": -0.0011,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/mushroom/mushroom_planet_5.png",
+          "yaw": 0.57,
+          "pitch": 0.17,
+          "size": 6.8,
+          "roll": 1.1,
+          "roll_speed": 0.0012,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/mushroom/mushroom_planet_6.png",
+          "yaw": 1.39,
+          "pitch": -0.11,
+          "size": 7.0,
+          "roll": 1.35,
+          "roll_speed": -0.0013,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/mushroom/mushroom_planet_7.png",
+          "yaw": 2.33,
+          "pitch": 0.35,
+          "size": 6.6,
+          "roll": 1.6,
+          "roll_speed": 0.0014,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        }
+      ]
+    },
+    {
+      "type": "pasterdream:shooting_stars",
+      "priority": 24,
+      "count": 2,
+      "interval_ticks": 120,
+      "duration_ticks": 18,
+      "color": [
+        0.66,
+        0.92,
+        1.0
+      ],
+      "seed": 5001
+    },
+    {
+      "type": "pasterdream:constellation",
+      "priority": 15,
+      "yaw": -1.23,
+      "pitch": -0.43000000000000005,
+      "scale": 0.56,
+      "twinkle_speed": 0.024,
+      "line_width": 0.15,
+      "color": [
+        0.68,
+        0.92,
+        1.0
+      ],
+      "seed": 100,
+      "stars": [
+        {
+          "u": -0.48,
+          "v": -0.24,
+          "size": 0.9
+        },
+        {
+          "u": -0.24,
+          "v": -0.02,
+          "size": 1.02
+        },
+        {
+          "u": 0.02,
+          "v": 0.18,
+          "size": 1.28
+        },
+        {
+          "u": 0.34,
+          "v": 0.32,
+          "size": 0.95
+        },
+        {
+          "u": 0.5,
+          "v": 0.06,
+          "size": 0.86
+        }
+      ],
+      "lines": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "type": "pasterdream:constellation",
+      "priority": 15,
+      "yaw": 2.11,
+      "pitch": -0.31000000000000005,
+      "scale": 0.62,
+      "twinkle_speed": 0.024,
+      "line_width": 0.15,
+      "color": [
+        0.58,
+        0.84,
+        1.0
+      ],
+      "seed": 101,
+      "stars": [
+        {
+          "u": -0.56,
+          "v": -0.06,
+          "size": 0.92
+        },
+        {
+          "u": -0.34,
+          "v": 0.18,
+          "size": 1.08
+        },
+        {
+          "u": -0.08,
+          "v": 0.04,
+          "size": 1.22
+        },
+        {
+          "u": 0.18,
+          "v": 0.2,
+          "size": 0.98
+        },
+        {
+          "u": 0.46,
+          "v": 0.08,
+          "size": 0.92
+        },
+        {
+          "u": 0.58,
+          "v": -0.18,
+          "size": 0.86
+        },
+        {
+          "u": -0.2,
+          "v": -0.28,
+          "size": 0.9
+        },
+        {
+          "u": 0.1,
+          "v": -0.18,
+          "size": 0.86
+        }
+      ],
+      "lines": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          6,
+          2
+        ]
+      ]
+    },
+    {
+      "type": "pasterdream:constellation",
+      "priority": 15,
+      "yaw": 0.22999999999999998,
+      "pitch": 0.85,
+      "scale": 0.54,
+      "twinkle_speed": 0.024,
+      "line_width": 0.15,
+      "color": [
+        0.86,
+        0.92,
+        1.0
+      ],
+      "seed": 102,
+      "stars": [
+        {
+          "u": -0.38,
+          "v": -0.34,
+          "size": 0.86
+        },
+        {
+          "u": -0.18,
+          "v": -0.06,
+          "size": 0.98
+        },
+        {
+          "u": 0.02,
+          "v": 0.24,
+          "size": 1.28
+        },
+        {
+          "u": 0.26,
+          "v": 0.02,
+          "size": 0.94
+        },
+        {
+          "u": 0.5,
+          "v": -0.22,
+          "size": 0.86
+        },
+        {
+          "u": -0.42,
+          "v": 0.18,
+          "size": 0.88
+        },
+        {
+          "u": 0.22,
+          "v": -0.42,
+          "size": 0.9
+        }
+      ],
+      "lines": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          3,
+          6
+        ]
+      ]
+    }
+  ]
+}

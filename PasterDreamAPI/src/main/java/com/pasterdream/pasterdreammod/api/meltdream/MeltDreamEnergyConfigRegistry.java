@@ -31,6 +31,8 @@ public final class MeltDreamEnergyConfigRegistry {
         public Supplier<Double> chestKillMultiplier() { return () -> 0.0D; }
         @Override
         public Supplier<Double> chestMaxEnergy() { return () -> 0.0D; }
+        @Override
+        public Supplier<Integer> chestCooldownTicks() { return () -> 12000; }
     };
 
     private MeltDreamEnergyConfigRegistry() {

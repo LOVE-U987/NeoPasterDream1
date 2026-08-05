@@ -89,7 +89,8 @@ public class PDBlocks {
                 .tex("side", "pasterdream:block/dyedreamquartz_pillar"));
         BlockAPI.putConfig("dyedream_leaves", BlockConfig.of()
                 .mineable("hoe").model("cube_all")
-                .tex("all", "pasterdream:block/dyedream_leaves"));
+                .tex("all", "pasterdream:block/dyedream_leaves")
+                .tintFoliage());
         BlockAPI.putConfig("dyedream_glowing_leaves", BlockConfig.of()
                 .mineable("hoe").model("cube_all")
                 .tex("all", "pasterdream:block/dyedream_glowing_leaves"));
@@ -546,11 +547,7 @@ public class PDBlocks {
     public static final DeferredBlock<?> STRUCTURE_BLOCK_23 = PDBlocksStructure.STRUCTURE_BLOCK_23;
 
     // --- PDBlocksFurniture：风骑士台 / 玻璃罐 / 容器床 / 杂项功能方块 ---
-    public static final DeferredBlock<?> WIND_KNIGHT_SPAWNBLOCK_0 = PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0;
-    public static final DeferredBlock<?> WIND_KNIGHT_SPAWNBLOCK_1 = PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_1;
-    public static final DeferredBlock<?> WIND_KNIGHT_SPAWNBLOCK_2 = PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_2;
-    public static final DeferredBlock<?> WIND_KNIGHT_SPAWNBLOCK_3 = PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_3;
-    public static final DeferredBlock<?> WIND_KNIGHT_SPAWNBLOCK_4 = PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4;
+    public static final DeferredBlock<?> WIND_KNIGHT_SPAWNBLOCK = PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK;
     public static final DeferredBlock<?> ECOLOGY_GLASS_JAR = PDBlocksFurniture.ECOLOGY_GLASS_JAR;
     public static final DeferredBlock<?> FIREFLY_GLASS_JAR = PDBlocksFurniture.FIREFLY_GLASS_JAR;
     public static final DeferredBlock<?> LIGHT_FIREFLY_GLASS_JAR = PDBlocksFurniture.LIGHT_FIREFLY_GLASS_JAR;

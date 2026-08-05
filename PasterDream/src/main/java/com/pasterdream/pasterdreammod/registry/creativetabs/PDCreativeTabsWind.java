@@ -127,11 +127,7 @@ public class PDCreativeTabsWind {
                         output.accept(PDItems.WIND_VANE.get());
 
                         // W4：风骑士唤醒台与风泊木箱
-                        output.accept(PDItems.WIND_KNIGHT_SPAWNBLOCK_0.get());
-                        output.accept(PDItems.WIND_KNIGHT_SPAWNBLOCK_1.get());
-                        output.accept(PDItems.WIND_KNIGHT_SPAWNBLOCK_2.get());
-                        output.accept(PDItems.WIND_KNIGHT_SPAWNBLOCK_3.get());
-                        output.accept(PDItems.WIND_KNIGHT_SPAWNBLOCK_4.get());
+                        output.accept(PDItems.WIND_KNIGHT_SPAWNBLOCK.get());
                         output.accept(PDItems.WINDMOOR_CRATE.get());
                     })
                     .build());

@@ -65,18 +65,10 @@ public class PDItemsFurniture {
     public static final DeferredItem<BlockItem> STRUCTURE_BLOCK_23 = STRUCTURE_BLOCK_ITEMS.get(23);
 
 
-    // ==================== 风之骑士唤醒台物品（GeckoLib 3D） ====================
+    // ==================== 风之骑士唤醒台物品（GeckoLib 3D，方块数据 STAGE 控制样式） ====================
 
-    public static final DeferredItem<BlockItem> WIND_KNIGHT_SPAWNBLOCK_0 = PDItems.ITEMS.register("wind_knight_spawnblock_0",
-            () -> new W4GeoDisplayItem(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0.get(), new Item.Properties()));
-    public static final DeferredItem<BlockItem> WIND_KNIGHT_SPAWNBLOCK_1 = PDItems.ITEMS.register("wind_knight_spawnblock_1",
-            () -> new W4GeoDisplayItem(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_1.get(), new Item.Properties()));
-    public static final DeferredItem<BlockItem> WIND_KNIGHT_SPAWNBLOCK_2 = PDItems.ITEMS.register("wind_knight_spawnblock_2",
-            () -> new W4GeoDisplayItem(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_2.get(), new Item.Properties()));
-    public static final DeferredItem<BlockItem> WIND_KNIGHT_SPAWNBLOCK_3 = PDItems.ITEMS.register("wind_knight_spawnblock_3",
-            () -> new W4GeoDisplayItem(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_3.get(), new Item.Properties()));
-    public static final DeferredItem<BlockItem> WIND_KNIGHT_SPAWNBLOCK_4 = PDItems.ITEMS.register("wind_knight_spawnblock_4",
-            () -> new W4GeoDisplayItem(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get(), new Item.Properties()));
+    public static final DeferredItem<BlockItem> WIND_KNIGHT_SPAWNBLOCK = PDItems.ITEMS.register("wind_knight_spawnblock",
+            () -> new W4GeoDisplayItem(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK.get(), new Item.Properties()));
 
     // ==================== 玻璃罐物品（GeckoLib 3D） ====================
 

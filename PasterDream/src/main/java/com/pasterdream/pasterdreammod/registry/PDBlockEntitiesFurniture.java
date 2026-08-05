@@ -19,7 +19,7 @@ import java.util.List;
  * 容器/家具/杂项方块组方块实体注册（[分区F]，波次 W4）。
  * <p>
  * 与原版一一对应的 49 个 BlockEntityType：structure_block_0..23、
- * wind_knight_spawnblock_0..4、玻璃罐 ×3、容器 ×3、影之床 ×2 及杂项。
+ * wind_knight_spawnblock、玻璃罐 ×3、容器 ×3、影之床 ×2 及杂项。
  * 数据型 BE 由 {@link W4DataBlockEntity}、GeckoLib 型由
  * {@link W4GeoDataBlockEntity} 统一承载，按类型区分注册名。
  */
@@ -28,8 +28,8 @@ public class PDBlockEntitiesFurniture {
     /** structure_block_0..23 方块实体类型（存 number 随机数） */
     public static final List<DeferredHolder<BlockEntityType<?>, BlockEntityType<W4DataBlockEntity>>> STRUCTURE_BLOCKS;
 
-    /** wind_knight_spawnblock_0..4 方块实体类型（GeckoLib 渲染） */
-    public static final List<DeferredHolder<BlockEntityType<?>, BlockEntityType<W4GeoDataBlockEntity>>> WIND_KNIGHT_SPAWNBLOCKS;
+    /** wind_knight_spawnblock 方块实体类型（GeckoLib 渲染，样式由方块 STAGE 属性决定） */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<W4GeoDataBlockEntity>> WIND_KNIGHT_SPAWNBLOCK;
 
     static {
         List<DeferredHolder<BlockEntityType<?>, BlockEntityType<W4DataBlockEntity>>> structures = new ArrayList<>(24);
@@ -43,22 +43,11 @@ public class PDBlockEntitiesFurniture {
         }
         STRUCTURE_BLOCKS = Collections.unmodifiableList(structures);
 
-        List<DeferredHolder<BlockEntityType<?>, BlockEntityType<W4GeoDataBlockEntity>>> spawnblocks = new ArrayList<>(5);
-        for (int i = 0; i < 5; i++) {
-            final int index = i;
-            spawnblocks.add(BlockEntityAPI.<W4GeoDataBlockEntity>createBlockEntity("wind_knight_spawnblock_" + i)
-                    .factory((pos, state) -> new W4GeoDataBlockEntity(
-                            PDBlockEntitiesFurniture.WIND_KNIGHT_SPAWNBLOCKS.get(index).get(), pos, state))
-                    .validBlock(switch (i) {
-                        case 0 -> PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0;
-                        case 1 -> PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_1;
-                        case 2 -> PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_2;
-                        case 3 -> PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_3;
-                        default -> PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4;
-                    })
-                    .build());
-        }
-        WIND_KNIGHT_SPAWNBLOCKS = Collections.unmodifiableList(spawnblocks);
+        WIND_KNIGHT_SPAWNBLOCK = BlockEntityAPI.<W4GeoDataBlockEntity>createBlockEntity("wind_knight_spawnblock")
+                .factory((pos, state) -> new W4GeoDataBlockEntity(
+                        PDBlockEntitiesFurniture.WIND_KNIGHT_SPAWNBLOCK.get(), pos, state))
+                .validBlock(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK)
+                .build();
     }
 
     // ==================== 玻璃罐 ====================

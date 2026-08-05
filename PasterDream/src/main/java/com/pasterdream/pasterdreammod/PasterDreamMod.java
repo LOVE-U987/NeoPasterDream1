@@ -2,7 +2,6 @@ package com.pasterdream.pasterdreammod;
 
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.attachment.PlayerDataEvents;
-import com.pasterdream.pasterdreammod.command.PDCommands;
 import com.pasterdream.pasterdreammod.config.PDClientConfig;
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.data.PDBlockModelProvider;
@@ -248,9 +247,6 @@ public class PasterDreamMod {
         // 注册数据生成器（用于自动生成方块标签等资源文件）
         modEventBus.addListener(this::gatherData);
 
-        // 在游戏总线上注册指令
-        NeoForge.EVENT_BUS.addListener(PDCommands::register);
-
         // 在游戏总线上注册竞技场维度事件（玩家进入竞技场时的初始化逻辑）
         NeoForge.EVENT_BUS.addListener(PDArenaEvents::onPlayerChangedDimension);
 
@@ -261,13 +257,17 @@ public class PasterDreamMod {
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDLampShadowWorldgen::onLevelLoad);
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDEntityDeathEvents::onLivingDeath);
 
+        // 暮影之笼事件 BGM：玩家登录/切换维度时补发当前维度静音状态（防断线/换维残留）
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.TwilightLanternMusicState::onPlayerLoggedIn);
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.TwilightLanternMusicState::onPlayerChangedDimension);
+
         // 亚伦柯斯竞技场：服务器启动时在出生点附近放置遗迹并设置群系
         NeoForge.EVENT_BUS.addListener(PDAaroncosArenaWorldgen::onServerStarting);
         // 服务器停止时复位遗迹感染运行状态，避免跨存档残留
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.ArenaRuinInfection::onServerStopped);
 
-        // 客户端 Tick 事件和极光天幕渲染器通过 @EventBusSubscriber(Dist.CLIENT)
-        // 在 PDClientEvents 和 DyeDreamSkyRenderer 中自动注册，避免服务端类加载
+        // 客户端 Tick 事件和天空盒系统通过 @EventBusSubscriber(Dist.CLIENT)
+        // 在 PDClientEvents 和 SkyboxClientEvents 中自动注册，避免服务端类加载
     }
 
     /**

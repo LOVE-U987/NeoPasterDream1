@@ -38,6 +38,7 @@
 | `chest hurt multiplier` | 融梦水晶箱被攻击时能量产生倍率 | `1.0` |
 | `chest kill multiplier` | 融梦水晶箱被杀死时能量产生倍率 | `1.0` |
 | `chest max energy` | 融梦水晶箱能量转化上限 | `1000.0` |
+| `chest cooldown` | 融梦水晶箱玩家开箱冷却时长（tick） | `12000`（10 分钟） |
 
 ---
 

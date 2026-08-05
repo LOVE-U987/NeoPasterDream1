@@ -1,7 +1,9 @@
 package com.pasterdream.pasterdreammod.smoketest;
 
 import com.mojang.brigadier.tree.CommandNode;
+import com.pasterdream.pasterdreammod.block.TwilightLanternBlock;
 import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
+import com.pasterdream.pasterdreammod.block.entity.W4GeoDataBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDGameRules;
@@ -313,6 +315,21 @@ public final class PDTwilightLanternVerifyHooks {
         out.accept(new Result(key && !sw && num == 0.0,
                 "W4 BE key/switch/number 读写",
                 "key=" + key + " switch=" + sw + " number=" + num));
+
+        // —— 结构生成（ProtoChunk 不创建 BE）自愈回归 ——
+        // jigsaw 放置时 chunk 为 ProtoChunk：无 BE、无 onPlace；此处模拟「BE 缺失」状态，
+        // 走点燃前同一 ensure 逻辑补建，并验证数据可写（switch 写入不再静默失败）。
+        level.removeBlockEntity(lanternPos);
+        boolean missing = level.getBlockEntity(lanternPos) == null;
+        TwilightLanternBlock.ensureBlockEntity(level, lanternPos);
+        boolean healed = level.getBlockEntity(lanternPos) instanceof W4GeoDataBlockEntity;
+        W4DataBlockEntity.putBooleanAt(level, lanternPos, "switch", true);
+        boolean switchWrite = W4DataBlockEntity.getBooleanAt(level, lanternPos, "switch");
+        out.accept(new Result(missing && healed && switchWrite,
+                "BE 缺失自愈（结构生成 ProtoChunk 场景）",
+                "missing=" + missing + " healed=" + healed + " switchWrite=" + switchWrite));
+        W4DataBlockEntity.putBooleanAt(level, lanternPos, "switch", false);
+        W4DataBlockEntity.putBooleanAt(level, lanternPos, "key", true);
 
         // hide_9 授予路径（award 容错）
         AdvancementHolder hide9 = player.server.getAdvancements()

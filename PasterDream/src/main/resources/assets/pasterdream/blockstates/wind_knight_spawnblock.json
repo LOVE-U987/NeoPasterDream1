@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "stage=0": {
+      "model": "pasterdream:custom/wind_knight_spawnblock_0_particle"
+    },
+    "stage=1": {
+      "model": "pasterdream:custom/wind_knight_spawnblock_1_particle"
+    },
+    "stage=2": {
+      "model": "pasterdream:custom/wind_knight_spawnblock_2_particle"
+    },
+    "stage=3": {
+      "model": "pasterdream:custom/wind_knight_spawnblock_3_particle"
+    },
+    "stage=4": {
+      "model": "pasterdream:custom/wind_knight_spawnblock_4_particle"
+    }
+  }
+}

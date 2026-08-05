@@ -52,6 +52,12 @@ public class BlockConfig {
     /** 是否可种植标记 —— 为 true 时自动加入 pasterdream:plantable_on 标签 */
     boolean plantableOn;
 
+    /** 方块染色类型（客户端 tint 渲染），默认 NONE 不染色 */
+    TintType tint = TintType.NONE;
+
+    /** 固定染色值（ARGB，含 alpha 位），仅当 tint == FIXED 时使用 */
+    int fixedTint = 0xFF92557F;
+
     BlockConfig() {
     }
 
@@ -62,6 +68,12 @@ public class BlockConfig {
     /** @return 挖掘工具类型，如 "axe"/"pickaxe"/"shovel"/"hoe" */
     @Nullable
     public String getMineable() { return mineable; }
+
+    /** @return 方块染色类型 */
+    public TintType getTint() { return tint; }
+
+    /** @return 固定染色值（ARGB），仅当 tint == FIXED 时有效 */
+    public int getFixedTint() { return fixedTint; }
 
     /** @return 是否可种植（自动加入 plantable_on 标签） */
     public boolean isPlantable() { return plantableOn; }
@@ -186,6 +198,56 @@ public class BlockConfig {
     public BlockConfig plantable() {
         this.plantableOn = true;
         return this;
+    }
+
+    /**
+     * 设置方块染色类型为「跟随群系 foliage 颜色」（原版树叶/藤蔓机制）。
+     * <p>
+     * 客户端渲染时通过 {@link net.minecraft.client.renderer.BiomeColors#getAverageFoliageColor}
+     * 取群系 {@code foliage_color}（数据驱动，兼容 Sodium/Iris）。
+     * 需配合模型 element 的 {@code tintindex}（如 parent 使用 {@code minecraft:block/leaves}）。
+     *
+     * @return 当前配置实例
+     */
+    public BlockConfig tintFoliage() {
+        this.tint = TintType.FOLIAGE;
+        return this;
+    }
+
+    /**
+     * 设置方块染色类型为「跟随群系草地颜色」。
+     *
+     * @return 当前配置实例
+     */
+    public BlockConfig tintGrass() {
+        this.tint = TintType.GRASS;
+        return this;
+    }
+
+    /**
+     * 设置方块染色类型为「固定颜色」（不随群系变化）。
+     *
+     * @param argb 固定染色值（ARGB 格式，须含 alpha 位，如 0xFF92557F）
+     * @return 当前配置实例
+     */
+    public BlockConfig tintFixed(int argb) {
+        this.tint = TintType.FIXED;
+        this.fixedTint = argb;
+        return this;
+    }
+
+    /**
+     * 方块染色类型枚举
+     */
+    public enum TintType {
+        /** 不染色（默认） */
+        NONE,
+        /** 跟随群系 foliage 颜色（树叶/藤蔓） */
+        FOLIAGE,
+        /** 跟随群系草地颜色 */
+        GRASS,
+        /** 固定颜色 */
+        FIXED
     }
 
     /**

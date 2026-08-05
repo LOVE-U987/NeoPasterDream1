@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.client;
 
 import com.pasterdream.pasterdreammod.network.EvasionPosePayload;
 import com.pasterdream.pasterdreammod.network.ItemActivationPayload;
+import com.pasterdream.pasterdreammod.network.TwilightLanternMusicPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -47,5 +48,14 @@ public final class PDClientVfx {
             return;
         }
         PDPlayerAnimation.startEvasionPose();
+    }
+
+    /**
+     * 更新暮影之笼事件 BGM 状态（静音/恢复原版背景音乐）。
+     *
+     * @param payload 暮影之笼音乐状态包
+     */
+    public static void handleTwilightLanternMusic(TwilightLanternMusicPayload payload) {
+        com.pasterdream.pasterdreammod.client.audio.TwilightLanternMusicHandler.setActive(payload.active());
     }
 }

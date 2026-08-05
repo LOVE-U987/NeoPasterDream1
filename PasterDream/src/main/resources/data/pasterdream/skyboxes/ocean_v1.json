@@ -1,0 +1,484 @@
+{
+  "fade_speed": 0.12,
+  "weight": 100,
+  "dimensions": [
+    "pasterdream:dyedream_world"
+  ],
+  "biomes": [
+    "pasterdream:biome_dyedream_3",
+    "pasterdream:biome_dyedream_deep_ocean",
+    "pasterdream:biome_dyedream_shore",
+    "pasterdream:biome_dyedream_river"
+  ],
+  "layers": [
+    {
+      "type": "pasterdream:sky_tint",
+      "priority": -100,
+      "color": [
+        0.1,
+        0.22,
+        0.36
+      ],
+      "opacity": 0.05
+    },
+    {
+      "type": "pasterdream:ribbons",
+      "priority": -12,
+      "segments": 180,
+      "gradient_steps": 10,
+      "center_yaw": 2.95,
+      "base_pitch": 0.18,
+      "spacing": 0,
+      "thickness": 0.16,
+      "arc": 6.28318,
+      "tilt": 1.25,
+      "wave_amplitude": 0.032,
+      "wave_frequency": 3.0,
+      "wobble_amplitude": 0.035,
+      "speed": 0.01,
+      "edge_softness": 0.2,
+      "blur": 0.35,
+      "opacity": 0.45,
+      "seed": 41,
+      "colors": [
+        [
+          0.12,
+          0.5,
+          0.8
+        ],
+        [
+          0.3,
+          0.75,
+          1.0
+        ]
+      ]
+    },
+    {
+      "type": "pasterdream:star_field",
+      "priority": -5,
+      "textures": [
+        "pasterdream:textures/sky/ocean/ocean_star_1.png",
+        "pasterdream:textures/sky/ocean/ocean_star_2.png",
+        "pasterdream:textures/sky/ocean/ocean_star_3.png",
+        "pasterdream:textures/sky/ocean/ocean_star_4.png",
+        "pasterdream:textures/sky/ocean/ocean_star_5.png",
+        "pasterdream:textures/sky/ocean/ocean_star_6.png",
+        "pasterdream:textures/sky/ocean/ocean_star_7.png",
+        "pasterdream:textures/sky/ocean/ocean_star2_1.png",
+        "pasterdream:textures/sky/ocean/ocean_star2_2.png",
+        "pasterdream:textures/sky/ocean/ocean_star2_3.png",
+        "pasterdream:textures/sky/ocean/ocean_star2_4.png",
+        "pasterdream:textures/sky/ocean/ocean_star2_5.png",
+        "pasterdream:textures/sky/ocean/ocean_star2_6.png",
+        "pasterdream:textures/sky/ocean/ocean_star2_7.png"
+      ],
+      "count": 1000,
+      "min_size": 0.5,
+      "max_size": 1.5,
+      "color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seed": 401
+    },
+    {
+      "type": "pasterdream:planet_system",
+      "priority": 8,
+      "planets": [
+        {
+          "texture": "pasterdream:textures/sky/ocean/ocean_planet_1.png",
+          "yaw": -2.85,
+          "pitch": -0.33,
+          "size": 7.6,
+          "roll": 0.1,
+          "roll_speed": 0.0008,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.95
+        },
+        {
+          "texture": "pasterdream:textures/sky/ocean/ocean_planet_2.png",
+          "yaw": -2.07,
+          "pitch": -0.01,
+          "size": 10.2,
+          "roll": 0.35,
+          "roll_speed": -0.0009,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.95
+        },
+        {
+          "texture": "pasterdream:textures/sky/ocean/ocean_planet_3.png",
+          "yaw": -1.2,
+          "pitch": 0.29,
+          "size": 6.4,
+          "roll": 0.6,
+          "roll_speed": 0.001,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/ocean/ocean_planet_4.png",
+          "yaw": -0.33,
+          "pitch": -0.21,
+          "size": 8.7,
+          "roll": 0.85,
+          "roll_speed": -0.0011,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/ocean/ocean_planet_5.png",
+          "yaw": 0.57,
+          "pitch": 0.17,
+          "size": 6.8,
+          "roll": 1.1,
+          "roll_speed": 0.0012,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/ocean/ocean_planet_6.png",
+          "yaw": 1.39,
+          "pitch": -0.11,
+          "size": 7.0,
+          "roll": 1.35,
+          "roll_speed": -0.0013,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/ocean/ocean_planet_7.png",
+          "yaw": 2.33,
+          "pitch": 0.35,
+          "size": 6.6,
+          "roll": 1.6,
+          "roll_speed": 0.0014,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/ocean/ocean_planet_1.png",
+          "yaw": -2.41,
+          "pitch": 0.83,
+          "size": 5.8,
+          "roll": 1.85,
+          "roll_speed": -0.0015,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/ocean/ocean_planet_2.png",
+          "yaw": 0.87,
+          "pitch": 0.91,
+          "size": 4.8,
+          "roll": 2.1,
+          "roll_speed": 0.0016,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/ocean/ocean_planet_3.png",
+          "yaw": -1.01,
+          "pitch": -0.71,
+          "size": 6.2,
+          "roll": 2.35,
+          "roll_speed": -0.0017,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        },
+        {
+          "texture": "pasterdream:textures/sky/ocean/ocean_planet_4.png",
+          "yaw": 2.77,
+          "pitch": -0.57,
+          "size": 5.4,
+          "roll": 2.6,
+          "roll_speed": 0.0018,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "opacity": 0.9
+        }
+      ]
+    },
+    {
+      "type": "pasterdream:shooting_stars",
+      "priority": 24,
+      "count": 3,
+      "interval_ticks": 100,
+      "duration_ticks": 18,
+      "color": [
+        0.66,
+        0.92,
+        1.0
+      ],
+      "seed": 4001
+    },
+    {
+      "type": "pasterdream:constellation",
+      "priority": 15,
+      "yaw": -1.23,
+      "pitch": -0.43000000000000005,
+      "scale": 0.56,
+      "twinkle_speed": 0.024,
+      "line_width": 0.15,
+      "color": [
+        0.68,
+        0.92,
+        1.0
+      ],
+      "seed": 100,
+      "stars": [
+        {
+          "u": -0.48,
+          "v": -0.24,
+          "size": 0.9
+        },
+        {
+          "u": -0.24,
+          "v": -0.02,
+          "size": 1.02
+        },
+        {
+          "u": 0.02,
+          "v": 0.18,
+          "size": 1.28
+        },
+        {
+          "u": 0.34,
+          "v": 0.32,
+          "size": 0.95
+        },
+        {
+          "u": 0.5,
+          "v": 0.06,
+          "size": 0.86
+        }
+      ],
+      "lines": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "type": "pasterdream:constellation",
+      "priority": 15,
+      "yaw": 2.11,
+      "pitch": -0.31000000000000005,
+      "scale": 0.62,
+      "twinkle_speed": 0.024,
+      "line_width": 0.15,
+      "color": [
+        0.58,
+        0.84,
+        1.0
+      ],
+      "seed": 101,
+      "stars": [
+        {
+          "u": -0.56,
+          "v": -0.06,
+          "size": 0.92
+        },
+        {
+          "u": -0.34,
+          "v": 0.18,
+          "size": 1.08
+        },
+        {
+          "u": -0.08,
+          "v": 0.04,
+          "size": 1.22
+        },
+        {
+          "u": 0.18,
+          "v": 0.2,
+          "size": 0.98
+        },
+        {
+          "u": 0.46,
+          "v": 0.08,
+          "size": 0.92
+        },
+        {
+          "u": 0.58,
+          "v": -0.18,
+          "size": 0.86
+        },
+        {
+          "u": -0.2,
+          "v": -0.28,
+          "size": 0.9
+        },
+        {
+          "u": 0.1,
+          "v": -0.18,
+          "size": 0.86
+        }
+      ],
+      "lines": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          6,
+          2
+        ]
+      ]
+    },
+    {
+      "type": "pasterdream:constellation",
+      "priority": 15,
+      "yaw": 0.22999999999999998,
+      "pitch": 0.85,
+      "scale": 0.54,
+      "twinkle_speed": 0.024,
+      "line_width": 0.15,
+      "color": [
+        0.86,
+        0.92,
+        1.0
+      ],
+      "seed": 102,
+      "stars": [
+        {
+          "u": -0.38,
+          "v": -0.34,
+          "size": 0.86
+        },
+        {
+          "u": -0.18,
+          "v": -0.06,
+          "size": 0.98
+        },
+        {
+          "u": 0.02,
+          "v": 0.24,
+          "size": 1.28
+        },
+        {
+          "u": 0.26,
+          "v": 0.02,
+          "size": 0.94
+        },
+        {
+          "u": 0.5,
+          "v": -0.22,
+          "size": 0.86
+        },
+        {
+          "u": -0.42,
+          "v": 0.18,
+          "size": 0.88
+        },
+        {
+          "u": 0.22,
+          "v": -0.42,
+          "size": 0.9
+        }
+      ],
+      "lines": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          3,
+          6
+        ]
+      ]
+    }
+  ]
+}

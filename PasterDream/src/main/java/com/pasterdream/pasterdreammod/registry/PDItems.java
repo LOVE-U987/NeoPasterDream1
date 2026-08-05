@@ -933,11 +933,7 @@ public class PDItems {
     public static final DeferredItem<?> STRUCTURE_BLOCK_21 = PDItemsFurniture.STRUCTURE_BLOCK_21;
     public static final DeferredItem<?> STRUCTURE_BLOCK_22 = PDItemsFurniture.STRUCTURE_BLOCK_22;
     public static final DeferredItem<?> STRUCTURE_BLOCK_23 = PDItemsFurniture.STRUCTURE_BLOCK_23;
-    public static final DeferredItem<?> WIND_KNIGHT_SPAWNBLOCK_0 = PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_0;
-    public static final DeferredItem<?> WIND_KNIGHT_SPAWNBLOCK_1 = PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_1;
-    public static final DeferredItem<?> WIND_KNIGHT_SPAWNBLOCK_2 = PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_2;
-    public static final DeferredItem<?> WIND_KNIGHT_SPAWNBLOCK_3 = PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_3;
-    public static final DeferredItem<?> WIND_KNIGHT_SPAWNBLOCK_4 = PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK_4;
+    public static final DeferredItem<?> WIND_KNIGHT_SPAWNBLOCK = PDItemsFurniture.WIND_KNIGHT_SPAWNBLOCK;
     public static final DeferredItem<?> ECOLOGY_GLASS_JAR = PDItemsFurniture.ECOLOGY_GLASS_JAR;
     public static final DeferredItem<?> FIREFLY_GLASS_JAR = PDItemsFurniture.FIREFLY_GLASS_JAR;
     public static final DeferredItem<?> LIGHT_FIREFLY_GLASS_JAR = PDItemsFurniture.LIGHT_FIREFLY_GLASS_JAR;

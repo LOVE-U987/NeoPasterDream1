@@ -21,6 +21,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import com.pasterdream.pasterdreammod.block.AaroncosArenaPortalsBlock;
+import com.pasterdream.pasterdreammod.block.WindKnightSpawnblockBlock;
 import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
 import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesItems;
 import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesLogic;
@@ -717,7 +718,7 @@ public final class PDMainFlowVerifyHooks {
 	    for (int dx = -1; dx <= 1; dx++)
 	        for (int dz = -1; dz <= 1; dz++)
 	            wind.setBlock(altar.offset(dx, -1, dz), Blocks.STONE.defaultBlockState(), 3);
-	    wind.setBlock(altar, PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_0.get().defaultBlockState(), 3);
+	    wind.setBlock(altar, PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK.get().defaultBlockState(), 3);
 	    player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(PDItemsMaterials.WINDRUNNER_CRYSTAL.get()));
 	    useBlock(player, wind, altar);
 	    for (int step = 0; step < 3; step++) {
@@ -725,7 +726,7 @@ public final class PDMainFlowVerifyHooks {
 	        useBlock(player, wind, altar);
 	        ServerScheduler.advanceForTest(2);
 	    }
-	    accept(out, wind.getBlockState(altar).is(PDBlocksFurniture.WIND_KNIGHT_SPAWNBLOCK_4.get()),
+accept(out, wind.getBlockState(altar).getValue(WindKnightSpawnblockBlock.STAGE) == 4,
 	            "祭坛 → stage4", wind.getBlockState(altar).toString());
 
 	    // 投闪电法术/推进召唤：advance ~90t（对齐专项；生产需要 lightning_spell use 触发 schedule 86t spawn）
