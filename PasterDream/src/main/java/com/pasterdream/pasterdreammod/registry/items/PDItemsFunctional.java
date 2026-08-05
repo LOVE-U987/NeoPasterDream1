@@ -145,12 +145,14 @@ public class PDItemsFunctional {
     public static final DeferredItem<Item> MEMENTO_ITEM_01 = PDItems.ITEMS.register("memento_item_01",
             () -> new MementoItem01Item(new Item.Properties()));
     public static final DeferredItem<Item> MEMENTO_ITEM_02 = PDItems.ITEMS.registerSimpleItem("memento_item_02");
-    public static final DeferredItem<Item> MEMENTO_ITEM_03 = PDItems.ITEMS.registerSimpleItem("memento_item_03");
+    public static final DeferredItem<Item> MEMENTO_ITEM_03 = PDItems.ITEMS.register("memento_item_03",
+            () -> new DivinationItem(new Item.Properties()));
     public static final DeferredItem<Item> MEMENTO_ITEM_04 = PDItems.ITEMS.registerSimpleItem("memento_item_04");
     public static final DeferredItem<Item> MEMENTO_ITEM_05 = PDItems.ITEMS.registerSimpleItem("memento_item_05");
     public static final DeferredItem<Item> MEMENTO_ITEM_06 = PDItems.ITEMS.registerSimpleItem("memento_item_06");
     public static final DeferredItem<Item> MEMENTO_ITEM_07 = PDItems.ITEMS.registerSimpleItem("memento_item_07");
-    public static final DeferredItem<Item> MEMENTO_ITEM_08 = PDItems.ITEMS.registerSimpleItem("memento_item_08");
+    public static final DeferredItem<Item> MEMENTO_ITEM_08 = PDItems.ITEMS.register("memento_item_08",
+            () -> new SkyLinkItem(new Item.Properties()));
     public static final DeferredItem<Item> MEMENTO_ITEM_09 = PDItems.ITEMS.registerSimpleItem("memento_item_09");
     public static final DeferredItem<Item> MEMENTO_ITEM_10 = PDItems.ITEMS.registerSimpleItem("memento_item_10");
     public static final DeferredItem<Item> MEMORY_GEM_0 = PDItems.ITEMS.register("memory_gem_0",

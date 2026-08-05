@@ -1,6 +1,8 @@
 package com.pasterdream.pasterdreammod.client.sky.render;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.pasterdream.pasterdreammod.client.sky.math.SkyColor;
 import com.pasterdream.pasterdreammod.client.sky.math.SkyPoint;
@@ -19,6 +21,23 @@ public final class SkyGeometry {
     public static final float SKY_RADIUS = 100.0F;
 
     private SkyGeometry() {
+    }
+
+    /**
+     * 安全提交顶点缓冲 —— 空缓冲（没有任何顶点）时静默跳过
+     * <p>
+     * ⚠️ {@code buildOrThrow()} 在缓冲为空时抛
+     * {@code IllegalStateException("BufferBuilder was empty")}，会直接崩溃游戏。
+     * 天空内容的数据（如玩家创建的连线星体只有 1 颗、某纹理帧没有星星、
+     * 两点重合导致线段被跳过等）可能让缓冲为空，统一用本方法防御。
+     *
+     * @param buffer 已写入顶点的缓冲
+     */
+    public static void drawIfNotEmpty(BufferBuilder buffer) {
+        MeshData mesh = buffer.build();
+        if (mesh != null) {
+            BufferUploader.drawWithShader(mesh);
+        }
     }
 
     /**

@@ -52,6 +52,11 @@ public class PDCommonConfig {
     /** 玩家刻功能程序更新频率，单位 tick（默认 5，推荐 2~20） */
     public static final ModConfigSpec.ConfigValue<Integer> PLAYER_TOTAL_TICK_UPDATE;
 
+    // ==================== Sky ====================
+
+    /** 星空枕(memento_item_08)在天空上可创建的连线星体数量上限（默认 8） */
+    public static final ModConfigSpec.ConfigValue<Integer> SKYLINK_MAX_STARS;
+
     // ==================== Ban ====================
 
     /** 关闭并禁止所有翅膀的功能（默认 false） */
@@ -128,6 +133,12 @@ public class PDCommonConfig {
         PLAYER_TOTAL_TICK_UPDATE = builder
                 .comment("pasterdream玩家刻功能程序更新频率，算法：每-[此配置单位时间]-进行一次更新 单位/tick，过快的更新频率可能会影响性能，过慢的频率会让部分功能显得非常迟钝，推荐频率范围[2~20]整数  默认：5")
                 .defineInRange("player total tick update", 5, 2, 20);
+        builder.pop();
+
+        builder.push("Sky");
+        SKYLINK_MAX_STARS = builder
+                .comment("星空枕(memento_item_08)在天空上可创建的连线星体数量上限 默认：8 范围：1~64")
+                .defineInRange("skylink max stars", 8, 1, 64);
         builder.pop();
 
         builder.push("Ban");

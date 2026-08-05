@@ -39,12 +39,7 @@
       "xz_scale": 1,
       "y_scale": 0.7142857142857143
     },
-    "lava": {
-      "type": "minecraft:noise",
-      "noise": "minecraft:aquifer_lava",
-      "xz_scale": 1,
-      "y_scale": 1
-    },
+    "lava": 0.0,
     "temperature": {
       "type": "minecraft:shifted_noise",
       "noise": "minecraft:temperature",
@@ -674,48 +669,22 @@
       {
         "type": "minecraft:condition",
         "if_true": {
-          "type": "minecraft:vertical_gradient",
-          "random_name": "minecraft:deepstone_layer",
-          "true_at_and_below": {
-            "above_bottom": 0
-          },
-          "false_at_and_above": {
-            "above_bottom": 64
+          "type": "minecraft:not",
+          "invert": {
+            "type": "minecraft:vertical_gradient",
+            "random_name": "minecraft:shallow_sandstone_layer",
+            "true_at_and_below": {
+              "above_bottom": 64
+            },
+            "false_at_and_above": {
+              "above_bottom": 128
+            }
           }
         },
         "then_run": {
           "type": "minecraft:block",
           "result_state": {
-            "Name": "pasterdream:dyedream_deepstone"
-          }
-        }
-      },
-      {
-        "type": "minecraft:condition",
-        "if_true": {
-          "type": "minecraft:vertical_gradient",
-          "random_name": "minecraft:sandstone_layer",
-          "true_at_and_below": {
-            "above_bottom": 64
-          },
-          "false_at_and_above": {
-            "above_bottom": 128
-          }
-        },
-        "then_run": {
-          "type": "minecraft:condition",
-          "if_true": {
-            "type": "minecraft:biome",
-            "biome_is": [
-              "pasterdream:biome_dyedream_3",
-              "pasterdream:biome_dyedream_deep_ocean"
-            ]
-          },
-          "then_run": {
-            "type": "minecraft:block",
-            "result_state": {
-              "Name": "pasterdream:dyedream_sandstone"
-            }
+            "Name": "pasterdream:dyedream_sandstone"
           }
         }
       },

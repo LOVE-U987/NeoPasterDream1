@@ -2,13 +2,13 @@ package com.pasterdream.pasterdreammod.client.sky.content;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.pasterdream.pasterdreammod.api.client.sky.SkyContent;
 import com.pasterdream.pasterdreammod.api.client.sky.SkyboxRenderContext;
 import com.pasterdream.pasterdreammod.client.sky.math.SkyColor;
+import com.pasterdream.pasterdreammod.client.sky.render.SkyGeometry;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -91,7 +91,8 @@ public class SkyTintContent implements SkyContent {
                 addVertex(buffer, matrix, yaw0, pitch1, alpha1);
             }
         }
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
+        // 安全提交：避免极端配置下空缓冲崩溃
+        SkyGeometry.drawIfNotEmpty(buffer);
     }
 
     /**

@@ -4,9 +4,9 @@
   "downfall": 0.2,
   "carvers": {
     "air": [
-      "minecraft:cave",
-      "minecraft:cave_extra_underground",
-      "minecraft:canyon"
+      "pasterdream:dyedream_cave",
+      "pasterdream:dyedream_cave_extra_underground",
+      "pasterdream:dyedream_canyon"
     ]
   },
   "features": [

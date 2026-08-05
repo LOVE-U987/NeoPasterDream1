@@ -6,6 +6,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "minecraft:feather",
           "weight": 3,
           "functions": [
@@ -65,6 +75,16 @@
     {
       "rolls": 1,
       "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
         {
           "type": "minecraft:item",
           "name": "pasterdream:phantom_daze",

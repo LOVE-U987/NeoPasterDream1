@@ -2,7 +2,6 @@ package com.pasterdream.pasterdreammod.client.sky.content;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -119,7 +118,8 @@ public class SkyRibbonContent implements SkyContent {
         float time = context.renderTime() * this.speed;
         BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         renderRibbon(buffer, matrix, this.ribbon, time, alpha * this.opacity);
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
+        // 安全提交：避免极端配置下空缓冲崩溃
+        SkyGeometry.drawIfNotEmpty(buffer);
         RenderSystem.enableCull();
     }
 

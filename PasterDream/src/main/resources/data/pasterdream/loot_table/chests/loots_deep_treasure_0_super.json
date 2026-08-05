@@ -6,6 +6,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "pasterdream:blue_dew",
           "weight": 1,
           "functions": [
@@ -23,6 +33,16 @@
     {
       "rolls": 1,
       "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
         {
           "type": "minecraft:item",
           "name": "pasterdream:thermal_dagger",
@@ -198,6 +218,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "minecraft:book",
           "weight": 1,
           "functions": [
@@ -223,6 +253,16 @@
     {
       "rolls": 1,
       "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
         {
           "type": "minecraft:item",
           "name": "pasterdream:phantom_daze",

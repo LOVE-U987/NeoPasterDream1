@@ -2,7 +2,6 @@ package com.pasterdream.pasterdreammod.client.sky.content;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -10,8 +9,7 @@ import com.mojang.math.Axis;
 import com.pasterdream.pasterdreammod.api.client.sky.SkyContent;
 import com.pasterdream.pasterdreammod.api.client.sky.SkyboxRenderContext;
 import com.pasterdream.pasterdreammod.client.sky.math.SkyColor;
-import com.pasterdream.pasterdreammod.client.sky.math.SkyPoint;
-import net.minecraft.client.renderer.GameRenderer;
+import com.pasterdream.pasterdreammod.client.sky.math.SkyPoint;import com.pasterdream.pasterdreammod.client.sky.render.SkyGeometry;import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
@@ -100,7 +98,8 @@ public class RainbowSkyContent implements SkyContent {
         float rainbowAlpha = alpha * this.opacity;
         BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         renderGradient(buffer, matrix, this.radius, this.radius - this.thickness, rainbowAlpha);
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
+        // 安全提交：避免极端配置下空缓冲崩溃
+        SkyGeometry.drawIfNotEmpty(buffer);
         context.poseStack().popPose();
         RenderSystem.enableCull();
     }

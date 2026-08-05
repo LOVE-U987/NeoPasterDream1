@@ -6,6 +6,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "pasterdream:deep_treasure_0",
           "weight": 1,
           "functions": [
@@ -26,6 +36,16 @@
         "max": 2
       },
       "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
         {
           "type": "minecraft:item",
           "name": "minecraft:cod",
@@ -89,6 +109,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "minecraft:seagrass",
           "weight": 2,
           "functions": [
@@ -136,6 +166,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "pasterdream:water_glassjar",
           "weight": 1,
           "functions": [
@@ -181,6 +221,16 @@
     {
       "rolls": 1,
       "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
         {
           "type": "minecraft:item",
           "name": "minecraft:ink_sac",
@@ -294,6 +344,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "minecraft:cod_bucket",
           "weight": 2,
           "functions": [
@@ -367,6 +427,16 @@
     {
       "rolls": 1,
       "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
         {
           "type": "minecraft:item",
           "name": "pasterdream:wafer_biscuit",
@@ -456,6 +526,16 @@
     {
       "rolls": 1,
       "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
         {
           "type": "minecraft:item",
           "name": "pasterdream:phantom_daze",

@@ -55,5 +55,7 @@ public class SkyboxClientEvents {
         // AFTER_SKY 事件 PoseStack 为 null，用 API 辅助构建（含相机旋转）
         PoseStack poseStack = SkyboxAPI.buildSkyPoseStack(event);
         SkyboxRenderer.render(poseStack, event.getCamera(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
+        // 玩家连线星体（星空枕创建）在主天空之后渲染
+        SkyboxRenderer.renderPlayerSkyLinks(poseStack, event.getCamera(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
     }
 }

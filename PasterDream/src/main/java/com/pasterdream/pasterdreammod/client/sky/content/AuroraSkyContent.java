@@ -2,7 +2,6 @@ package com.pasterdream.pasterdreammod.client.sky.content;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -11,6 +10,7 @@ import com.pasterdream.pasterdreammod.api.client.sky.SkyContent;
 import com.pasterdream.pasterdreammod.api.client.sky.SkyboxRenderContext;
 import com.pasterdream.pasterdreammod.client.sky.math.SkyColor;
 import com.pasterdream.pasterdreammod.client.sky.math.SkyPoint;
+import com.pasterdream.pasterdreammod.client.sky.render.SkyGeometry;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -26,6 +26,14 @@ import java.util.List;
  * 颜色沿纵向渐变、横向淡出，整体缓慢脉动。
  */
 public class AuroraSkyContent implements SkyContent {
+
+    /**
+     * 亮度增强倍率（未开光影时极光过淡，×5 提升可见度）
+     * <p>
+     * 仅在标准混合的 alpha 上放大并钳制到 1，保持 AFTER_SKY 挂载与
+     * 标准混合不变 —— Iris 光影下同样兼容。
+     */
+    private static final float BRIGHTNESS_BOOST = 5.0F;
 
     /** 极光内容标识 */
     private final ResourceLocation id;
@@ -120,8 +128,12 @@ public class AuroraSkyContent implements SkyContent {
         Matrix4f matrix = context.poseStack().last().pose();
         float time = context.renderTime() * this.speed;
         BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
-        renderCurtains(buffer, matrix, time, alpha * this.opacity);
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
+        // 加强 5 倍：renderCurtains 内部 bandAlpha 还会乘 opacity，故此处 alpha×opacity×BOOST
+        // 正好使有效透明度提升 5 倍（无光影时极光明显可见）；仍保持标准混合
+        // （AFTER_SKY 挂载），Iris 光影下兼容。峰值 5×0.32×0.32≈0.51 < 1，不会过曝。
+        renderCurtains(buffer, matrix, time, alpha * this.opacity * BRIGHTNESS_BOOST);
+        // 安全提交：任何空缓冲（如极小尺寸配置）静默跳过，避免崩溃
+        SkyGeometry.drawIfNotEmpty(buffer);
         context.poseStack().popPose();
         RenderSystem.enableCull();
     }

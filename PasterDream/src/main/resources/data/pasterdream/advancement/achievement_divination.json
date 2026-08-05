@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "pasterdream:memento_item_03"
+    },
+    "title": {
+      "translate": "advancements.achievement_divination.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_divination.descr"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "achievement_divination": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "minecraft:adventure/root",
+  "rewards": {
+    "experience": 10
+  }
+}

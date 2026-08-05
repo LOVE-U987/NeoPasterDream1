@@ -1,9 +1,6 @@
 {
   "type": "minecraft:jigsaw",
-  "biomes": [
-    "pasterdream:biome_dyedream_0",
-    "pasterdream:biome_dyedream_3"
-  ],
+  "biomes": "pasterdream:biome_dyedream_0",
   "step": "surface_structures",
   "terrain_adaptation": "none",
   "spawn_overrides": {},

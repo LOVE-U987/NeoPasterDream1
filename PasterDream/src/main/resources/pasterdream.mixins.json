@@ -8,5 +8,7 @@
     "MinecraftMixin",
     "LevelRendererMixin"
   ],
-  "mixins": []
+  "mixins": [
+    "NoiseBasedChunkGeneratorMixin"
+  ]
 }

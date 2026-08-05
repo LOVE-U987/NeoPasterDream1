@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "pasterdream:memento_item_08"
+    },
+    "title": {
+      "translate": "advancements.achievement_skylink.title"
+    },
+    "description": {
+      "translate": "advancements.achievement_skylink.descr"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "achievement_skylink": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "minecraft:adventure/root",
+  "rewards": {
+    "experience": 10
+  }
+}

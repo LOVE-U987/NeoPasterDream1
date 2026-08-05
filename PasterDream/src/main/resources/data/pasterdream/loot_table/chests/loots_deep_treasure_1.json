@@ -6,6 +6,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "pasterdream:dyedream_fruit",
           "weight": 1,
           "functions": [
@@ -131,6 +141,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "pasterdream:tabitem_1",
           "weight": 100,
           "functions": [
@@ -218,6 +238,16 @@
     {
       "rolls": 1,
       "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
         {
           "type": "minecraft:item",
           "name": "pasterdream:phantom_daze",

@@ -2,7 +2,6 @@ package com.pasterdream.pasterdreammod.client.sky.content;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -53,8 +52,8 @@ public class TexturedPlanetSystemSkyContent implements SkyContent {
 
     @Override
     public float targetAlpha(SkyboxRenderContext context) {
-        // 行星/卫星全天可见（白天像月亮一样淡一些，夜晚全亮）
-        return Mth.clamp(context.weatherFactor() * (0.55F + 0.45F * context.nightFactor()), 0.0F, 1.0F);
+        // 行星/卫星仅夜晚可见（与星空/星座一致，白天完全消失）
+        return context.visibility();
     }
 
     @Override
@@ -77,7 +76,8 @@ public class TexturedPlanetSystemSkyContent implements SkyContent {
                     buffer, matrix, center, planet.size(),
                     planet.roll() + context.renderTime() * planet.rollSpeed()
             );
-            BufferUploader.drawWithShader(buffer.buildOrThrow());
+            // 安全提交：避免空缓冲崩溃
+            SkyGeometry.drawIfNotEmpty(buffer);
 
             for (Satellite satellite : planet.satellites()) {
                 float orbitAngle = satellite.orbitOffset() + context.renderTime() * satellite.orbitSpeed();
@@ -88,10 +88,40 @@ public class TexturedPlanetSystemSkyContent implements SkyContent {
                         satBuffer, matrix, satelliteCenter, satellite.size(),
                         orbitAngle + satellite.roll()
                 );
-                BufferUploader.drawWithShader(satBuffer.buildOrThrow());
+                // 安全提交：避免空缓冲崩溃
+                SkyGeometry.drawIfNotEmpty(satBuffer);
             }
         }
         RenderSystem.enableCull();
+    }
+
+    /**
+     * 判断天空局部方向附近是否存在行星/卫星（供占卜/观星交互检测）
+     * <p>
+     * 方向比较用归一化点积：点积 &gt; {@code cos(threshold)} 即视为"对准"。
+     *
+     * @param localLook 天空局部空间方向（无需乘半径）
+     * @param threshold 对准夹角阈值（弧度）
+     * @return 是否有行星在该方向附近
+     */
+    public boolean containsPlanetNear(SkyPoint localLook, float threshold) {
+        float lookLen = localLook.length();
+        if (lookLen < 0.001F) {
+            return false;
+        }
+        float cosThreshold = Mth.cos(threshold);
+        for (Planet planet : this.planets) {
+            SkyPoint center = SkyGeometry.point(planet.yaw(), planet.pitch());
+            float len = center.length();
+            if (len < 0.001F) {
+                continue;
+            }
+            float dot = (center.x() * localLook.x() + center.y() * localLook.y() + center.z() * localLook.z()) / (len * lookLen);
+            if (dot > cosThreshold) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

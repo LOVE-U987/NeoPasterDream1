@@ -454,7 +454,10 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
                     new LootEntry(new ItemStack(PDItems.DYEDREAM_SWORD.get()), 12),
                     new LootEntry(new ItemStack(PDItems.TITANIUM_SWORD.get()), 12),
                     new LootEntry(new ItemStack(PDItems.PINKEGG.get(), 2), 10),
-                    new LootEntry(new ItemStack(PDItems.NIGHTMARE_FUEL.get(), 2), 10)
+                    new LootEntry(new ItemStack(PDItems.NIGHTMARE_FUEL.get(), 2), 10),
+                    // 夜空交互纪念品：羽星占卜图录 / 星空枕（稀有档也有机会开出）
+                    new LootEntry(new ItemStack(PDItems.MEMENTO_ITEM_03.get()), 6),
+                    new LootEntry(new ItemStack(PDItems.MEMENTO_ITEM_08.get()), 6)
             };
         }
         return rareLoot;
@@ -478,7 +481,10 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
                     new LootEntry(new ItemStack(PDItems.SCULK_UPGRADE.get(), 1), 10),
                     new LootEntry(new ItemStack(PDItems.DYEDREAM_TELEPORT_CRYSTAL.get(), 2), 10),
                     new LootEntry(new ItemStack(PDItems.SWEETDREAM_DISC.get(), 1), 8),
-                    new LootEntry(new ItemStack(PDItems.DYEDREAM_WORLD_DISC.get(), 1), 8)
+                    new LootEntry(new ItemStack(PDItems.DYEDREAM_WORLD_DISC.get(), 1), 8),
+                    // 夜空交互纪念品：羽星占卜图录 / 星空枕（传说档高概率开出）
+                    new LootEntry(new ItemStack(PDItems.MEMENTO_ITEM_03.get()), 8),
+                    new LootEntry(new ItemStack(PDItems.MEMENTO_ITEM_08.get()), 8)
             };
         }
         return legendaryLoot;

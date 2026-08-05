@@ -8,4 +8,13 @@ package com.pasterdream.pasterdreammod.client.sky.math;
  * @param z Z 坐标
  */
 public record SkyPoint(float x, float y, float z) {
+
+    /**
+     * 向量模长
+     *
+     * @return 长度
+     */
+    public float length() {
+        return (float) Math.sqrt(x * x + y * y + z * z);
+    }
 }

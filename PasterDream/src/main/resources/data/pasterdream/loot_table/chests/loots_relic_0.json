@@ -9,6 +9,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "pasterdream:dyedream_dust_piece",
           "weight": 4,
           "functions": [
@@ -71,6 +81,16 @@
         "max": 3
       },
       "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
         {
           "type": "minecraft:item",
           "name": "pasterdream:dyedream_sapling",
@@ -191,6 +211,16 @@
         "max": 3
       },
       "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
         {
           "type": "minecraft:item",
           "name": "pasterdream:dough",
@@ -425,6 +455,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "pasterdream:polished_calcite",
           "weight": 1,
           "functions": [
@@ -596,6 +636,16 @@
     {
       "rolls": 1,
       "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
         {
           "type": "minecraft:item",
           "name": "pasterdream:pale_boneneedle",
@@ -913,6 +963,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "pasterdream:dyedream_base",
           "weight": 1,
           "functions": [
@@ -1128,6 +1188,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "pasterdream:dyedream_upgrade",
           "weight": 1,
           "functions": [
@@ -1287,6 +1357,16 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
           "name": "pasterdream:embryo_ring",
           "weight": 1,
           "functions": [
@@ -1388,6 +1468,16 @@
     {
       "rolls": 1,
       "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_03",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:memento_item_08",
+          "weight": 1
+        },
         {
           "type": "minecraft:item",
           "name": "minecraft:book",

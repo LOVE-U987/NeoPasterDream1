@@ -2,7 +2,6 @@ package com.pasterdream.pasterdreammod.client.sky.content;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -93,7 +92,8 @@ public class ShootingStarSkyContent implements SkyContent {
         for (VisibleShootingStar star : visible) {
             addTrail(buffer, matrix, star, this.color, alpha);
         }
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
+        // 安全提交：避免空缓冲崩溃
+        SkyGeometry.drawIfNotEmpty(buffer);
         context.poseStack().popPose();
         RenderSystem.enableCull();
     }

@@ -2,7 +2,6 @@ package com.pasterdream.pasterdreammod.client.sky.content;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -89,7 +88,8 @@ public class StarFieldSkyContent implements SkyContent {
                     );
                 }
             }
-            BufferUploader.drawWithShader(buffer.buildOrThrow());
+            // 该帧没有任何星星时缓冲为空，安全提交避免崩溃
+            SkyGeometry.drawIfNotEmpty(buffer);
         }
 
         RenderSystem.enableCull();

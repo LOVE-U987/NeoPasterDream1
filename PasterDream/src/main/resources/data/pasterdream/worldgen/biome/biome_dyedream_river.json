@@ -4,8 +4,8 @@
   "downfall": 0.5,
   "carvers": {
     "air": [
-      "minecraft:cave",
-      "minecraft:cave_extra_underground"
+      "pasterdream:dyedream_cave",
+      "pasterdream:dyedream_cave_extra_underground"
     ],
     "liquid": []
   },
