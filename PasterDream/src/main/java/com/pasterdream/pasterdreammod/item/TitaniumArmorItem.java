@@ -9,9 +9,19 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * 钛盔甲物品类
- * 提供套装效果：穿上全套钛盔甲时获得夜视效果
+ * 提供套装效果：穿上全套钛盔甲时获得夜视效果（20 秒时长，每 5 秒重置）
  */
 public class TitaniumArmorItem extends ArmorItem {
+
+    /**
+     * 夜视效果时长（tick），20 秒
+     */
+    private static final int NIGHT_VISION_DURATION = 400;
+
+    /**
+     * 重置阈值（tick），剩余时长低于该值即重新施加，即每 5 秒重置一次
+     */
+    private static final int NIGHT_VISION_REFRESH_THRESHOLD = 300;
 
     /**
      * 构造钛盔甲物品
@@ -23,7 +33,8 @@ public class TitaniumArmorItem extends ArmorItem {
 
     /**
      * 检查并应用套装效果
-     * 穿上全套钛盔甲时，玩家获得夜视效果
+     * 穿上全套钛盔甲时，玩家获得夜视效果（20 秒时长，每 5 秒重置）
+     * 剩余时长始终 &gt;200 tick，避免进入原版夜视淡出区导致画面亮度闪烁
      * @param entity 穿戴盔甲的生物实体
      */
     private void checkAndApplySetEffect(LivingEntity entity) {
@@ -38,10 +49,16 @@ public class TitaniumArmorItem extends ArmorItem {
                 && boots.getItem() == PDItems.TITANIUM_ARMOR_BOOTS.get();
 
         // C2-2 修复：禁止 removeEffect，避免剥掉药水/信标等外来同名 buff；
-        // 仅满套时短时效刷新，脱套后效果自然过期（见 2026-08-04-C2-review.md）
+        // 仅满套时条件刷新（无效果或剩余时长 <= 300t 时重加 400t），脱套后效果自然过期
+        // （见 2026-08-04-C2-review.md）
         if (hasFullSet) {
-            entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                    net.minecraft.world.effect.MobEffects.NIGHT_VISION, 10, 0, false, false));
+            net.minecraft.world.effect.MobEffectInstance nightVision =
+                    entity.getEffect(net.minecraft.world.effect.MobEffects.NIGHT_VISION);
+            if (nightVision == null || nightVision.getDuration() <= NIGHT_VISION_REFRESH_THRESHOLD) {
+                entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                        net.minecraft.world.effect.MobEffects.NIGHT_VISION,
+                        NIGHT_VISION_DURATION, 0, false, false));
+            }
         }
     }
 
