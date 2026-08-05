@@ -19,8 +19,8 @@
 | C1 | 音乐碟硬 import 客户端 `Screen` → DS 启动风险 | `item/PastedreamMusicDiscItem.java` | 1 | 已核验（懒解析无崩溃，维持现状不修） |
 | C2-1 | 盔甲 `inventoryTick` 无护甲槽归属守卫 → 背包持有即触发剥 buff | `item/SculkArmorItem.java` `TitaniumArmorItem.java` `DyedreamArmorItem.java` `CopperArmorItem.java` | 1 | 已修复                               |
 | C2-2 | 非满套 else 分支 `removeEffect` 剥外来同名 buff | `item/SculkArmorItem.java:40` `TitaniumArmorItem.java:40` `DyedreamArmorItem.java:40` | 1 | 已修复                               |
-| C2-3 | 四件各自每 tick 重复执行全套检查（无单点） | 上述 4 个 ArmorItem | 3 | 修复中MomoNyako负责                  |
-| C2-4 | 满套 `addEffect` 无条件重加弱效果覆盖外来更强效果 | `item/SculkArmorItem.java:41` `TitaniumArmorItem.java:41` `DyedreamArmorItem.java:41` | 4 | MomoNyako负责                        |
+| C2-3 | 四件各自每 tick 重复执行全套检查（无单点） | 上述 4 个 ArmorItem | 3 | 已修复                               |
+| C2-4 | 满套 `addEffect` 无条件重加弱效果覆盖外来更强效果 | `item/SculkArmorItem.java:41` `TitaniumArmorItem.java:41` `DyedreamArmorItem.java:41` | 4 | 修复中MomoNyako负责                  |
 | C2-5 | Copper 满套剥 `DIG_SLOWDOWN` 连主动饮用药水也剥（设计争议，待产品审核） | `item/CopperArmorItem.java:43` | 4 | 未计划                               |
 | C2-6 | 孤儿效果 `DYEDREAM/SCULK_ARMOR_BUFF` + `armorBuffRemove` 同模式 removeEffect | `registry/PDEffects.java:389,579,881` | 6 | 未计划                               |
 | B1 | 蓝图翻页包未注册 → 点翻页断线 | `network/PDNetwork.java` | 2 | 未计划                               |
