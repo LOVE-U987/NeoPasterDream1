@@ -18,7 +18,7 @@ public class SculkArmorItem extends ArmorItem {
      * @param type 盔甲类型（头盔/胸甲/护腿/靴子）
      */
     public SculkArmorItem(ArmorItem.Type type) {
-        super(PDArmorMaterials.SCULK_ARMOR, type, new Properties());
+        super(PDArmorMaterials.SCULK_ARMOR, type, new Properties().durability(type.getDurability(42)));
     }
 
     /**
