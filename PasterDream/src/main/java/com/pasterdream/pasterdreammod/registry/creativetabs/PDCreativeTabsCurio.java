@@ -5,9 +5,7 @@ import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -71,9 +69,8 @@ public class PDCreativeTabsCurio {
                         output.accept(PDItems.LIGHT_BUTTERFLY_CURIO.get());
                         output.accept(PDItems.ICESHADOW_CURIO.get());
                         output.accept(PDItems.DEGENERATE_BODYS.get());
-                        // 白花胸针已拆分到 PasterDreamSanity（注册在 pasterdream 命名空间）；未安装时不在创造栏显示
-                        BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdream", "white_flower_body"))
-                                .ifPresent(item -> output.accept(new ItemStack(item)));
+                        // 白花胸针已合并注册到主模组（pasterdream 命名空间），直接显示，不再依赖 PasterDreamSanity
+                        output.accept(PDItems.WHITE_FLOWER_BODY.get());
                         output.accept(PDItems.WORLDTREE_SEEDPOD.get());
                         output.accept(PDItems.HIYORI_HEAD.get());
                         output.accept(PDItems.QYM_HEAD.get());

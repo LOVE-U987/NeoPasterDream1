@@ -4,6 +4,7 @@ import com.pasterdream.pasterdreammod.attachment.PDAttachments;
 import com.pasterdream.pasterdreammod.block.entity.W4DataBlockEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
+import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -140,24 +141,7 @@ public class TrueShadowBedBlock extends Block implements SimpleWaterloggedBlock,
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hitResult) {
-        boolean nightOrThunder = !level.isDay() || level.getLevelData().isThundering();
-        boolean notInLampWorld = level.dimension() != PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY;
-        if (nightOrThunder || notInLampWorld) {
-            if (player instanceof ServerPlayer serverPlayer && serverPlayer.level() instanceof ServerLevel
-                    && ShadowBedBlock.hasAdvancement(serverPlayer, "achievement_shadow_start")) {
-                PDAttachments.addPlayerSanWithCheck(serverPlayer, -10);
-                if (!ShadowBedBlock.hasAdvancement(serverPlayer, "achievement_shadow_a_1")) {
-                    ShadowBedBlock.awardAdvancement(serverPlayer, "achievement_shadow_a_1");
-                }
-                ShadowBedBlock.teleportToLampShadowWorld(level, player);
-            } else if (!player.level().isClientSide()) {
-                player.displayClientMessage(Component.translatable("message.pasterdream.shadow_bed.lack_progress"), true);
-            }
-        } else if (!player.level().isClientSide()) {
-            player.displayClientMessage(Component.translatable("message.pasterdream.shadow_bed.night_only"), true);
-        }
-
-        // 灯影世界中：影之抉择（ShadowSelectEnd GUI）
+        // 灯影世界中：影之抉择（ShadowSelectEnd GUI）—— 原 TrueShadowBedPr0Procedure 后半段
         if (level.dimension() == PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY
                 && player instanceof ServerPlayer serverPlayer
                 && serverPlayer.level() instanceof ServerLevel
@@ -176,6 +160,28 @@ public class TrueShadowBedBlock extends Block implements SimpleWaterloggedBlock,
                     return new com.pasterdream.pasterdreammod.menu.ShadowSelectEndMenu(id, inventory);
                 }
             }, bedPos);
+        }
+
+        // ==================== 入眠交互（原 TrueShadowBedPr0Procedure） ====================
+        // 真·影之床是「首次进入灯影」的入口：必须位于暮影之笼正下方（上方 y+2 为
+        // twilight_lantern 且其 key=true，即据点守卫事件完成），且已达成 achievement_hide_9。
+        // 原先误用 achievement_shadow_start（进入灯影世界后才授予）导致前置全完成后仍无法进入。
+        boolean nightOrThunder = !level.isDay() || level.getLevelData().isThundering();
+        if (nightOrThunder) {
+            BlockPos lanternPos = pos.above(2);
+            boolean lanternReady =
+                    level.getBlockState(lanternPos).getBlock() == PDBlocksFurniture.TWILIGHT_LANTERN.get()
+                            && W4DataBlockEntity.getBooleanAt(level, lanternPos, "key");
+            if (player instanceof ServerPlayer serverPlayer && serverPlayer.level() instanceof ServerLevel
+                    && lanternReady
+                    && ShadowBedBlock.hasAdvancement(serverPlayer, "achievement_hide_9")) {
+                PDAttachments.addPlayerSanWithCheck(serverPlayer, -10);
+                ShadowBedBlock.teleportToLampShadowWorld(level, player);
+            } else if (!player.level().isClientSide()) {
+                player.displayClientMessage(Component.translatable("message.pasterdream.shadow_bed.lack_progress"), true);
+            }
+        } else if (!player.level().isClientSide()) {
+            player.displayClientMessage(Component.translatable("message.pasterdream.shadow_bed.night_only"), true);
         }
         player.swing(InteractionHand.MAIN_HAND, true);
         return InteractionResult.SUCCESS;

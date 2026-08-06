@@ -7,17 +7,24 @@ import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksDungeon;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -31,6 +38,9 @@ import org.jetbrains.annotations.NotNull;
  * 中心门（0 / 2）放置时补全 8 邻格填充门；右键开门；破坏时级联拆除。
  */
 public class ShadowDungeonDoorBlock extends Block {
+
+    /** 水平朝向状态属性 —— 使门能随结构旋转（jigsaw 旋转遗迹时门跟着转） */
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     /** 下层门（door0）同 y 平面 3×3 偏移（含中心） */
     private static final int[][] LOWER_OFFSETS = {
@@ -51,6 +61,28 @@ public class ShadowDungeonDoorBlock extends Block {
     public ShadowDungeonDoorBlock(BlockBehaviour.Properties properties, VoxelShape shape) {
         super(properties);
         this.shape = shape;
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FACING);
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return this.defaultBlockState()
+                .setValue(FACING, context.getHorizontalDirection().getOpposite());
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, Rotation rot) {
+        return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
     @Override

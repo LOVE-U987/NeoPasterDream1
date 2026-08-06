@@ -1,4 +1,4 @@
-package com.pasterdream.pasterdreammod.pasterdreamsanity.item;
+package com.pasterdream.pasterdreammod.item;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -13,7 +13,11 @@ import java.util.List;
  * 白花胸针 (White Flower Body)
  * <p>
  * San 值系统专属 Curio 身体饰品。装备后不再受到环境造成的降 San 影响。
- * 已从 PasterDream 主模组迁移至 PasterDreamSanity 附属模组。
+ * <p>
+ * 由 PasterDreamSanity 附属模组合并注册至主模组（使用 {@code pasterdream} 命名空间，
+ * 原版 ID、主模 lang、curios:body 数据包、剧情掉落均写死该 ID）。主模组创造栏/
+ * 配方/掉落引用不再依赖 PasterDreamSanity 是否加载；附属模组中的重复注册已移除。
+ * 槽位绑定由 {@code data/curios/tags/item/body.json} 完成。
  *
  * @author PasterDream
  */
@@ -30,9 +34,9 @@ public class WhiteFlowerBodyItem extends Item implements ICurioItem {
     public void appendHoverText(ItemStack itemstack, Item.TooltipContext context,
                                 List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, context, list, flag);
-        list.add(Component.literal("\u54C1\u8D28\uFF1A\u00A7d\u53F2\u8BD7 \u2605\u2605\u2605\u2605\u2605\u2605"));
-        list.add(Component.literal("\u00A77\u25AA \u00A7f\u6761\u4EF6:\u4FE1\u4EF0\u5149\u660E"));
-        list.add(Component.literal("\u00A77\u25AA \u00A79\u4E0D\u518D\u4F1A\u53D7\u5230\u73AF\u5883\u9020\u6210\u7684\u964Dsan\u5F71\u54CD"));
-        list.add(Component.literal("\u00A77\u00A7o-- \u6211\u6D88\u901D\u4E8E\u65E0\u5F62 \u6B64\u523B\u4EAB\u53D7\u4F60\u5E94\u5F97\u7684\u8363\u8000"));
+        list.add(Component.literal("品质：§d史诗 ★★★★★★"));
+        list.add(Component.literal("§7▪ §f条件:信仰光明"));
+        list.add(Component.literal("§7▪ §9不再会受到环境造成的降san影响"));
+        list.add(Component.literal("§7§o-- 我消逝于无形 此刻享受你应得的荣耀"));
     }
 }

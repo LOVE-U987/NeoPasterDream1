@@ -2,6 +2,101 @@
 
 ---
 
+## v0.9.4 — 2026-08-06
+
+### 清理：移除 geo/animations 根目录冗余副本（63 个）
+
+*   **背景**：资源审计发现 `geo/` 与 `animations/` 根目录存在大量与子目录（`geo/block/`、`geo/entity/`）内容重复的副本文件，是早期路径混乱遗留的冗余资源，增大 jar 体积但无功能影响。
+*   **清理 63 个文件**：
+    * **53 个**内容与子目录完全一致且未被任何代码/JSON 引用的副本（27 geo + 26 animations）
+    * **10 个**实体 geo 旧名孤儿副本（`geo/xxx.geo.json` → 实为 `geo/entity/xxx.geo.json` 的旧 identifier 遗留，如 `geometry.shyspirit`）
+*   **保留**：6 个被自定义 GeoModel 硬编码引用根路径的 geo（`angel_wing`、`dream_meter`、`forsakens_wing`、`machine_wing`、`shadow_hand_lantern`、`weakness_terrorbeak`）+ 4 个被硬编码引用的根目录 animations。
+*   **验证**：`verify_resource_closure.py` 闭包验证 PASS（3802 JSON），`compileJava` 通过，无任何引用破坏。
+*   新增工具脚本：`tools/clean_dup_geo_anim.py`、`tools/clean_dup_entity_geo.py`。
+
+---
+
+## v0.9.4 — 2026-08-06
+
+### 修复：4 个玩偶方块缺失动画文件（死资源）
+
+*   **审计发现**：`DefaultedBlockGeoModel("qin_doll_0" / "little_purple_doll_0" / "eoul_doll" / "love_u_doll")` 会解析 `animations/block/{name}.animation.json`，但 4 个玩偶的动画文件缺失（geo/texture 均存在，原版也无动画 → 静态模型）。
+*   **修复**：为 4 个玩偶创建空动画占位文件（内容与 `empty.animation.json` 一致），消除 GeckoLib "Couldn't load animation" 死资源引用。
+
+---
+
+## v0.9.4 — 2026-08-06
+
+### 文档：战利品表 1.21.1 格式规范写入项目规则
+
+*   `AGENTS.md` 新增「战利品表 JSON 格式规范（NeoForge 1.21.1）」章节，固化 `match_tool` predicate 必须用 `predicates."minecraft:enchantments"` 新格式、路径用单数 `loot_table`、常见错误清单与批量校验方式
+*   `.github/skills/neoforge-block-drops/SKILL.md` 新增「4a. match_tool predicate 必须用 1.21.1 新格式」陷阱条目，含错误/正确格式对照表与批量校验命令
+*   目的：防止其他 AI / 后续开发再次使用 1.20 旧格式导致战利品表静默解析失败（矿石掉本体）
+
+---
+
+## v0.9.4 — 2026-08-06
+
+### 修复：战利品表 match_tool 条件使用 1.20 旧格式导致全部解析失败
+
+*   **真正的根因**（`data/pasterdream/loot_table/blocks/*.json`，23 个文件 62 处）：战利品表 JSON 中的 `match_tool` 条件用了 **1.20 旧格式**：
+    ```json
+    "predicate": { "enchantments": [ { "enchantment": "minecraft:silk_touch", "levels": { "min": 1 } } ] }
+    ```
+    而 1.21.1 的 `ItemPredicate`/`EnchantmentPredicate` 要求 **`predicates."minecraft:enchantments"` 嵌套 + `enchantments` 复数**。旧格式解析失败 → 战利品表整体退回 `LootTable.EMPTY` → 矿石挖出**本体**而非粗矿。
+*   **修复**：批量将 62 处 `match_tool` 的 predicate 转换为 1.21.1 正确格式：
+    ```json
+    "predicate": { "predicates": { "minecraft:enchantments": [ { "enchantments": "minecraft:silk_touch", "levels": { "min": 1 } } ] } }
+    ```
+*   **影响**：修复后钛矿石/炙炎金矿石/深层钛矿石、灵魂矿石、凝风矿石等所有带精准采集判断的方块，普通挖掘掉粗矿、精准采集掉本体，行为恢复正常。303 个战利品表 JSON 全部可解析、无残留错误格式。
+*   参考：原版 `data/minecraft/loot_table/blocks/diamond_ore.json` 结构确认。
+
+---
+
+## v0.9.4 — 2026-08-06
+
+### 修复：SelfDropBlock 空战利品表兜底误伤矿石掉落
+
+*   **根因**（`PasterDreamAPI/api/block/SelfDropBlock.java`）：`SelfDropBlock.getDrops()` 原实现为"战利品表返回空列表时就回退掉落方块自身"。对矿石等有战利品表的方块，当战利品表因 `match_tool`/精准采集拦截、`requiresCorrectToolForDrops` 空掉落等原因返回空时，被错误兜底成掉落矿石本体，而非正确的粗矿。
+*   **修复**：改为仅当方块**没有实际战利品表**（`getLootTable()` 返回 `BuiltInLootTables.EMPTY`，或实际加载到 `LootTable.EMPTY`）时才回退掉落自身；有战利品表的方块完全交给战利品表，保留"需正确工具/条件不满足无掉落"语义。
+*   **影响面评估**：`registerSimpleBlocks` 27 个方块中 25 个有战利品表（含全部矿石），仅 `dyedream_deepstone`、`dyedream_sandstone` 两个纯装饰方块依赖兜底掉落，行为不变。
+*   新增 import：`ResourceKey`、`ServerLevel`、`BuiltInLootTables`、`LootTable`
+
+---
+
+## v0.9.4 — 2026-08-06
+
+### 修复：白厄花胸针合并注册至主模组
+
+*   **白厄花胸针（white_flower_body）原本只注册在 PasterDreamSanity 附属模组**，但主模组大量引用它（创造栏、亚伦柯斯手宝箱掉落、smoketest 等），导致仅安装主模组（不装附属）时物品缺失、引用无法解析
+*   **合并注册到主模组**（`PasterDream/.../registry/items/PDItemsCurios.java`）：
+    * 使用 `CurioAPI.create("white_flower_body").slot(CurioSlot.BODY)` 注册（pasterdream 命名空间，与原版 ID 一致），行为对齐既有 `MELTDREAM_ENERGY_0_RING` 迁移先例
+    * 新增主模组物品类 `item/WhiteFlowerBodyItem.java`（自 PasterDreamSanity 迁移，tooltip 文案一致）
+    * 主模组 `PDItems` re-export `WHITE_FLOWER_BODY`；创造栏 `PDCreativeTabsCurio` 改为直接显示，不再依赖运行时注册表查询
+    * 主模组 `data/curios/tags/item/body.json` 补充 `pasterdream:white_flower_body`
+    * **PasterDreamSanity 移除重复注册**（`PDSanityItems` 清空为占位注册器）并删除已迁移的孤儿类 `WhiteFlowerBodyItem.java`
+*   引用点确认：`PDSanityHelper` / `PDSanityEffects` 均按 ID 字符串查询，主模组注册后运行时正常解析，无需改动
+*   smoketest 注释同步更新
+
+---
+
+## v0.9.4 — 2026-08-06
+
+### 修复：灯影长床进入 / 暗影地牢冷却 / 地牢大门朝向 / 染梦晶芽掉落
+
+*   **灯影之下长床无法进入**（`block/TrueShadowBedBlock.java`）：
+    * 原误用 `achievement_shadow_start`（进入灯影世界后才授予 → 死锁），导致前置全完成后首次右键长床仍无法进入
+    * 改为对齐原版 `TrueShadowBedPr0Procedure`：判定「上方 y+2 为暮影之笼且 `key=true`（据点守卫完成）+ 已达成 `achievement_hide_9`」，夜晚/雷暴时右键真·影之床即传送至灯影之下
+*   **暗影地牢冷却不计时**（`block/ShadowDungeonPortalBlock.java`）：
+    * 修复后的完整地牢核心替换了 `BrokenShadowDungeonProtalBlock`，原冷却 tick（`cd` 递增 `time`，1800t 结束）只存在于破损版，替换后冷却永不走动
+    * 为 `ShadowDungeonPortalBlock` 补上 `onPlace`/`tick` 冷却逻辑，冷却计时恢复正常；时之沙刷新仍生效
+*   **地牢底部通往长床的大门方向出错**（`block/ShadowDungeonDoorBlock.java` + `assets/pasterdream/blockstates/shadow_dungeon_door_*.json` + `shadowdungeondoor_2/3.json`）：
+    * 根因：门方块缺 `FACING` 属性，`shadow_dungeon` 遗迹由 jigsaw 以 `RandomRotation` 随机旋转放置时门不跟随 → "遗迹横过来了大门没横过来"
+    * 为 `ShadowDungeonDoorBlock` 增加 `FACING`（放置/旋转/镜像），4 个 blockstates 补 facing 四方向 + y 旋转，结构旋转时门同步转向
+*   **染梦晶芽破坏掉落本体**（`block/DyedreamBudBlock.java`）：`getDrops` 由掉落花蕾本体改为掉落「染梦晶芽粒」（`dyedream_bud_nugget`）
+
+---
+
 ## v0.9.3 — 2026-08-06
 
 ### 重构：清除天空盒相关调试日志输出

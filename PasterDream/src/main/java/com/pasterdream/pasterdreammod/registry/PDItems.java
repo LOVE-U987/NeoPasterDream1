@@ -712,6 +712,7 @@ public class PDItems {
     public static final DeferredItem<?> EVASION_CLOAK = PDItemsCurios.EVASION_CLOAK;
     public static final DeferredItem<?> TURNBACK_CLOAK = PDItemsCurios.TURNBACK_CLOAK;
     public static final DeferredItem<?> DEGENERATE_BODYS = PDItemsCurios.DEGENERATE_BODYS;
+    public static final DeferredItem<?> WHITE_FLOWER_BODY = PDItemsCurios.WHITE_FLOWER_BODY;
     public static final DeferredItem<?> WIND_KNIGHT_FLAG = PDItemsCurios.WIND_KNIGHT_FLAG;
     public static final DeferredItem<?> TEST_CURIO = PDItemsCurios.TEST_CURIO;
     public static final DeferredItem<?> PALE_BONENEEDLE = PDItemsCurios.PALE_BONENEEDLE;

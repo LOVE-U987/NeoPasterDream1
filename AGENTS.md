@@ -102,6 +102,36 @@ NeoPasterDream1/
 **可直接复制**:纹理、声音、GeckoLib 模型/动画、语言文件
 **需重新创建**:配方、战利品表、标签(DataGen)、维度文件、生物群系修饰器
 
+### 战利品表 JSON 格式规范（NeoForge 1.21.1）
+
+> ⚠️ **1.20 旧格式会导致整个战利品表解析失败 → 方块掉落本体/无掉落，且无任何报错！**
+
+**1. 数据包路径必须是单数 `loot_table`**（不是 1.20 的 `loot_tables`）：
+```
+data/<modid>/loot_table/blocks/<block_name>.json
+```
+
+**2. `match_tool` 条件的 predicate 必须是 1.21.1 新格式**：
+
+| 版本 | 格式 |
+|------|------|
+| ❌ 1.20 旧（解析失败） | `"predicate": { "enchantments": [ { "enchantment": "minecraft:silk_touch", "levels": {"min": 1} } ] }` |
+| ✅ 1.21 新 | `"predicate": { "predicates": { "minecraft:enchantments": [ { "enchantments": "minecraft:silk_touch", "levels": {"min": 1} } ] } }` |
+
+关键差异：外层需 `predicates."minecraft:enchantments"` 包装，`enchantment` → `enchantments`（复数）。
+
+**参考原版**：`data/minecraft/loot_table/blocks/diamond_ore.json`（唯一权威对照）。
+
+**3. 格式错误后果**：`ItemPredicate` codec 解析失败 → 战利品表整体退回 `LootTable.EMPTY` → 普通 `Block` 无掉落、`SelfDropBlock` 兜底掉本体（矿石会掉矿石本体而非粗矿）。
+
+**4. 常见错误清单**：
+- ❌ 用 `loot_tables` 复数目录 → 静默忽略
+- ❌ `match_tool` predicate 用单数 `enchantment` + 无 `predicates` 包装 → 解析失败
+- ❌ 空数组 `"functions": []` / `"conditions": []` → 解析失败
+- ❌ 文件名大小写/拼写不匹配
+
+**5. 批量校验**：改完战利品表后，用项目脚本验证所有 JSON 可解析且无残留旧格式（参照 `tools/` 或临时脚本扫描 `"enchantment": "minecraft:silk_touch"` + 无 `predicates` 的情况）。
+
 ### GeckoLib 动画/模型文件目录规范
 
 **复制原模组资源文件时,必须按以下规则放置,放错目录 = 游戏加载不到该文件且无任何报错!**

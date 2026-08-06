@@ -123,6 +123,12 @@ public class PDItemsCurios {
 
     // === Curio 身体 (BODY) ===
     public static final DeferredItem<Item> DEGENERATE_BODYS = CurioAPI.create("degenerate_bodys").slot(CurioSlot.BODY).withItemClass(DegenerateBodysItem::new).register();
+    // 白花胸针：由 PasterDreamSanity 附属模组合并注册至主模组（pasterdream 命名空间）。
+    // 手册/配方/创造栏/掉落引用的物品必须始终可解析，不依赖附属模块是否加载；附属模块中的重复注册已移除
+    public static final DeferredItem<Item> WHITE_FLOWER_BODY = CurioAPI.create("white_flower_body")
+            .slot(CurioSlot.BODY)
+            .withItemClass(WhiteFlowerBodyItem::new)
+            .register();
 
     // === Curio 通用 (CURIO) ===
     public static final DeferredItem<Item> WIND_KNIGHT_FLAG = CurioAPI.create("wind_knight_flag").slot(CurioSlot.CURIO).withItemClass(WindKnightFlagItem::new).register();

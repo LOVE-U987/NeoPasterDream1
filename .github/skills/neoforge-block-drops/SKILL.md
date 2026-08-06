@@ -95,6 +95,26 @@ src/main/resources/data/<modid>/loot_table/blocks/<block_name>.json
 - ❌ 路径错误：使用 `loot_tables` 复数形式 —— **1.21.1 应使用 `loot_table` 单数**（用错路径游戏静默忽略，无任何报错）
 - ❌ 文件名不匹配：大小写或拼写错误
 
+### 4a. ⚠️ `match_tool` predicate 必须用 1.21.1 新格式（重大陷阱）
+
+**症状**：矿石等带精准采集判断的方块挖出**本体**而非粗矿（或叶子不掉落），无任何报错。
+
+**根因**：`match_tool` 的 predicate 用了 1.20 旧格式 → `ItemPredicate` codec 解析失败 → 战利品表整体退回 `LootTable.EMPTY`。
+
+| 版本 | 格式 |
+|------|------|
+| ❌ 1.20 旧（解析失败） | `"predicate": { "enchantments": [ { "enchantment": "minecraft:silk_touch", "levels": {"min": 1} } ] }` |
+| ✅ 1.21 新 | `"predicate": { "predicates": { "minecraft:enchantments": [ { "enchantments": "minecraft:silk_touch", "levels": {"min": 1} } ] } }` |
+
+关键差异：外层需 `predicates."minecraft:enchantments"` 包装，`enchantment` → `enchantments`（复数）。参考原版 `data/minecraft/loot_table/blocks/diamond_ore.json`。
+
+**批量校验命令**（PowerShell/Bash 任选，扫描残留旧格式）：
+```bash
+# 查找仍有 1.20 旧格式（单数 enchantment + 无 predicates 包装）的方块战利品表
+rg -l '"enchantment": "minecraft:silk_touch"' PasterDream/src/main/resources/data/pasterdream/loot_table/blocks/ \
+  | while read f; do rg -q '"predicates"' "$f" || echo "需修复: $f"; done
+```
+
 ## 完整修复流程
 
 ### Step 1: 检查 BlockItem 注册

@@ -171,7 +171,7 @@ public class AaroncosHandChestBlockEntity extends BlockEntity implements GeoBloc
         List<ItemStack> out = new ArrayList<>();
         if (player instanceof ServerPlayer sp) {
             if (hasAdvancement(sp, "achievement_talent_light")) {
-                // 白花胸针已拆分到 PasterDreamSanity（注册在 pasterdream 命名空间）；未安装时不加入战利品
+                // 白花胸针已合并注册到主模组（pasterdream 命名空间，PDItemsCurios）；注册表动态获取保证可解析
                 BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdream", "white_flower_body"))
                         .ifPresent(item -> out.add(new ItemStack(item)));
                 out.add(new ItemStack(PDItems.WHITE_CRYSTAL.get()));

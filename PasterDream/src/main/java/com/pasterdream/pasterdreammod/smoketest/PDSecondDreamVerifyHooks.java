@@ -52,10 +52,10 @@ import java.util.function.Consumer;
  */
 public final class PDSecondDreamVerifyHooks {
 
-    /** 白花胸针已拆分到 PasterDreamSanity（注册在 pasterdream 命名空间）；测试时通过注册表动态获取 */
+    /** 白花胸针已合并注册到主模组（pasterdream 命名空间，PDItemsCurios）；测试时通过注册表动态获取 */
     private static final Supplier<Item> WHITE_FLOWER_BODY = () ->
             BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("pasterdream", "white_flower_body"))
-                    .orElseThrow(() -> new IllegalStateException("white_flower_body 未注册，PasterDreamSanity 是否已加载？"));
+                    .orElseThrow(() -> new IllegalStateException("white_flower_body 未注册？"));
 
     public record Result(boolean pass, String name, String detail) {
     }

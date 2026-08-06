@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -193,6 +194,7 @@ public class DyedreamBudBlock extends Block implements SimpleWaterloggedBlock {
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-        return List.of(new ItemStack(this));
+        // 染梦晶芽破坏时掉落「染梦晶芽粒」，而非花蕾本体
+        return List.of(new ItemStack(PDItemsMaterials.DYEDREAM_BUD_NUGGET.get()));
     }
 }
