@@ -5,8 +5,25 @@
       "rolls": 1,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "pasterdream:flower_6"
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "pasterdream:flower_6",
+              "conditions": [
+                {
+                  "condition": "minecraft:match_tool",
+                  "predicate": {
+                    "items": "minecraft:shears"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:blaze_powder"
+            }
+          ]
         }
       ],
       "conditions": [
@@ -15,5 +32,6 @@
         }
       ]
     }
-  ]
+  ],
+  "random_sequence": "pasterdream:blocks/flower_6"
 }

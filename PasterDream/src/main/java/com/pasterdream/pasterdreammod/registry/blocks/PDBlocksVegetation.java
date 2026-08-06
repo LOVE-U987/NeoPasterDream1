@@ -167,7 +167,8 @@ public class PDBlocksVegetation {
     // ========== API 批量注册：花（单格 + 双层） ==========
 
     private static final Map<String, DeferredBlock<Block>> FLOWERS_SINGLE = BlockAPI.batchRegister("flower")
-            .indexList(1, 2, 3, 5, 6, 8, 9, 13, 14, 15, 16, 17)
+            // 注意：flower_6（烈焰花）有专属掉落逻辑，单独注册，见下方 FLOWER_6
+            .indexList(1, 2, 3, 5, 8, 9, 13, 14, 15, 16, 17)
             .factory((index, props) -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, props))
             .withProperties(flowerProps())
             .build();
@@ -182,7 +183,10 @@ public class PDBlocksVegetation {
     public static final DeferredBlock<Block> FLOWER_2 = FLOWERS_SINGLE.get("flower_2");
     public static final DeferredBlock<Block> FLOWER_3 = FLOWERS_SINGLE.get("flower_3");
     public static final DeferredBlock<Block> FLOWER_5 = FLOWERS_SINGLE.get("flower_5");
-    public static final DeferredBlock<Block> FLOWER_6 = FLOWERS_SINGLE.get("flower_6");
+    // 烈焰花：正常采集掉烈焰粉，剪刀采集掉自身，见 BlazeFlowerBlock
+    public static final DeferredBlock<Block> FLOWER_6 = PDBlocks.BLOCKS.registerBlock("flower_6",
+            p -> new BlazeFlowerBlock(MobEffects.HUNGER, 100, p),
+            flowerProps());
     public static final DeferredBlock<Block> FLOWER_7 = FLOWERS_DOUBLE.get("flower_7");
     public static final DeferredBlock<Block> FLOWER_8 = FLOWERS_SINGLE.get("flower_8");
     public static final DeferredBlock<Block> FLOWER_9 = FLOWERS_SINGLE.get("flower_9");

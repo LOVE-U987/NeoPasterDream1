@@ -4,6 +4,19 @@
 
 ## v0.9.4 — 2026-08-06
 
+### 修复：烈焰花（flower_6）正常采集不掉落烈焰粉
+
+*   **背景**：`DyedreamFlowerBlock.getDrops()` 覆写了所有染梦花的掉落逻辑——只有剪刀采集才掉本体，空手/其它工具一律返回空列表。因此 `flower_6` 虽配置了战利品表，但被 Java 逻辑完全绕过，正常采集什么都掉不出来。
+*   **修复**：
+    * 新增 `BlazeFlowerBlock`（继承 `DyedreamFlowerBlock`）：**剪刀采集掉自身**（不变），**正常采集（空手/其它工具）掉 1 个烈焰粉** `minecraft:blaze_powder`
+    * `PDBlocksVegetation` 将 `flower_6` 从 `FLOWERS_SINGLE` 批量注册中拆出，改用 `BlazeFlowerBlock` 单独注册（其余花不受影响）
+    * 同步更新 `flower_6.json` 战利品表：剪刀 → 掉本体，其余 → 掉烈焰粉
+*   **验证**：`:PasterDream:compileJava` 通过；其它花（flower_1/2/3/5/8/9…）掉落行为不变。
+
+---
+
+## v0.9.4 — 2026-08-06
+
 ### 清理：移除 geo/animations 根目录冗余副本（63 个）
 
 *   **背景**：资源审计发现 `geo/` 与 `animations/` 根目录存在大量与子目录（`geo/block/`、`geo/entity/`）内容重复的副本文件，是早期路径混乱遗留的冗余资源，增大 jar 体积但无功能影响。
