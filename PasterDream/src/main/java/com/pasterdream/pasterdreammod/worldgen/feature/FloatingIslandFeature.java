@@ -64,7 +64,10 @@ public class FloatingIslandFeature extends Feature<FloatingIslandConfiguration> 
     public boolean place(FeaturePlaceContext<FloatingIslandConfiguration> context) {
         FloatingIslandConfiguration config = context.config();
         WorldGenLevel level = context.level();
-        BlockPos origin = context.origin();
+        // 将生成原点对齐到所在区块中心（X/Z），避免岛体 + 云桥横向跨度
+        // 超出 features 阶段的 ±1 区块写半径，触发 "Detected setBlock in a far chunk"
+        // 刷屏与连锁的光照 DataLayer NPE。Y 保持不变（仍由 height_range 决定）。
+        BlockPos origin = WorldGenUtils.alignToChunkCenter(context.origin());
         RandomSource random = context.random();
 
         // 1. 位置密度检查：使用位置哈希模拟噪声分布

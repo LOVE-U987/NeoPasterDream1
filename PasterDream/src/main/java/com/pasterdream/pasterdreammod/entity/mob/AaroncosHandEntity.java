@@ -159,6 +159,18 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
     protected abstract double getMeleeAttackSpeed();
 
     /**
+     * 获取首选战斗距离（格）。
+     * <p>
+     * 远程手（右手）覆写返回 &gt; 0，飞行追踪 AI 会维持该距离输出并避免贴脸；
+     * 近战手（左手）保持默认 0，维持贴脸追击。
+     *
+     * @return 首选战斗距离，0 表示贴脸近战
+     */
+    protected double getPreferredCombatRange() {
+        return 0.0;
+    }
+
+    /**
      * 执行技能循环。子类在此实现各自的技能调度逻辑。
      */
     protected abstract void tickSkillCycle();
@@ -665,7 +677,18 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
 
         @Override
         public boolean canUse() {
-            return !isSkillActive() && getTarget() != null && !getMoveControl().hasWanted();
+            if (isSkillActive() || getTarget() == null || getMoveControl().hasWanted()) {
+                return false;
+            }
+            // 远程手：已在舒适战斗距离带内时无需移动，悬停输出（技能循环负责释放）
+            double range = getPreferredCombatRange();
+            if (range > 0) {
+                double distSq = distanceToSqr(getTarget());
+                double near = range - 3.0;
+                double far = range + 8.0;
+                return distSq < near * near || distSq > far * far;
+            }
+            return true;
         }
 
         @Override
@@ -677,10 +700,15 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
         @Override
         public void start() {
             LivingEntity target = getTarget();
-            if (target != null) {
-                Vec3 pos = target.getEyePosition(1);
-                moveControl.setWantedPosition(pos.x, pos.y, pos.z, 1.0);
+            if (target == null) return;
+            // 远程手：过近则先拉开到首选距离，其余情况逼近目标
+            double range = getPreferredCombatRange();
+            if (range > 0 && distanceToSqr(target) < (range - 3.0) * (range - 3.0)) {
+                setAwayFromTarget(target, range);
+                return;
             }
+            Vec3 pos = target.getEyePosition(1);
+            moveControl.setWantedPosition(pos.x, pos.y, pos.z, 1.0);
         }
 
         @Override
@@ -688,12 +716,49 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
             LivingEntity target = getTarget();
             if (target == null || isSkillActive()) return;
 
+            // 远程手：维持战斗距离——过近远离，过远逼近，舒适带内悬停
+            double range = getPreferredCombatRange();
+            if (range > 0) {
+                double distSq = distanceToSqr(target);
+                double near = range - 3.0;
+                double far = range + 8.0;
+                if (distSq < near * near) {
+                    setAwayFromTarget(target, range);
+                } else if (distSq > far * far) {
+                    Vec3 pos = target.getEyePosition(1);
+                    moveControl.setWantedPosition(pos.x, pos.y, pos.z, 1.0);
+                }
+                return;
+            }
+
+            // 近战手（range == 0）：贴脸追击 + 碰撞普攻
             if (getBoundingBox().intersects(target.getBoundingBox())) {
                 doHurtTarget(target);
             } else if (distanceToSqr(target) < 16) {
                 Vec3 pos = target.getEyePosition(1);
                 moveControl.setWantedPosition(pos.x, pos.y, pos.z, 1.0);
             }
+        }
+
+        /**
+         * 让 BOSS 远离目标，落点在目标水平方向 + 首选距离处（保持当前高度）
+         *
+         * @param target 仇恨目标
+         * @param range  首选战斗距离
+         */
+        private void setAwayFromTarget(LivingEntity target, double range) {
+            Vec3 away = AaroncosHandEntity.this.position().subtract(target.getEyePosition(1));
+            away = new Vec3(away.x, 0, away.z);
+            if (away.lengthSqr() < 1.0E-4) {
+                // 与目标几乎同坐标时取随机水平方向，避免归一化除零
+                away = new Vec3(AaroncosHandEntity.this.getRandom().nextDouble() - 0.5, 0,
+                        AaroncosHandEntity.this.getRandom().nextDouble() - 0.5);
+            }
+            away = away.normalize();
+            Vec3 destination = target.getEyePosition(1).add(away.scale(range));
+            destination = new Vec3(destination.x, AaroncosHandEntity.this.getY(), destination.z);
+            AaroncosHandEntity.this.moveControl.setWantedPosition(
+                    destination.x, destination.y, destination.z, 1.0);
         }
     }
 
@@ -717,12 +782,30 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
 
         @Override
         public boolean canUse() {
-            return !isSkillActive() && super.canUse();
+            if (isSkillActive()) return false;
+            // 远程手：过近（低于首选距离）时禁用近战普攻，让优先级更低的
+            // FlyingPursuitGoal 接管拉开距离，避免贴脸卡在普攻不放远程技能。
+            double range = getPreferredCombatRange();
+            if (range > 0) {
+                LivingEntity target = getTarget();
+                if (target == null || distanceToSqr(target) < (range - 3.0) * (range - 3.0)) {
+                    return false;
+                }
+            }
+            return super.canUse();
         }
 
         @Override
         public boolean canContinueToUse() {
-            return !isSkillActive() && super.canContinueToUse();
+            if (isSkillActive()) return false;
+            double range = getPreferredCombatRange();
+            if (range > 0) {
+                LivingEntity target = getTarget();
+                if (target == null || distanceToSqr(target) < (range - 3.0) * (range - 3.0)) {
+                    return false;
+                }
+            }
+            return super.canContinueToUse();
         }
     }
 }

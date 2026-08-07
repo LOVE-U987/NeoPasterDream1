@@ -48,7 +48,7 @@ import java.util.List;
  * - 无 AI，静止不动
  * - 免疫火焰、药水、摔落、凋零伤害
  * - 始终播放 idle 动画，死亡时播放 death 动画
- * - 生成后进入倒计时，倒计时结束对 50 格内造成 250 点魔法伤害的巨型爆炸
+ * - 生成后进入倒计时，倒计时结束对 50 格内造成 2500 点魔法伤害的巨型爆炸
  * - 玩家需在爆炸前摧毁图腾（50 HP）以规避毁灭性伤害
  * <p>
  * 注意：Geo 模型文件名为 shadow_rune_totem.geo.json，与注册名不一致，渲染器需自定义模型路径。
@@ -168,9 +168,14 @@ public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity {
             return;
         }
 
-        // 300 tick (15s): 广播即将爆破
+        // 300 tick (15s): 广播即将爆破 + 开始缓慢降低四周亮度（暗化铺垫）
         if (skillTick == 300) {
             broadcastToNearbyPlayers(64, Component.translatable("message.pasterdream.shadow_tune.detonation_soon"));
+            // 低强度暗化起步：客户端 AtmosphereHandler 阻尼插值（0.15/tick）缓慢爬升，
+            // 覆盖到爆炸后（300+200 > 497 自毁），让玩家先感知"危机逼近"再转入全黑
+            if (this.level() instanceof ServerLevel sl) {
+                AtmosphereEffectAPI.darken(sl, this.position(), 99.0, 0.3f, 200);
+            }
         }
 
         // 400 tick (20s): 播放 skill 动画 + 音效 + 充能光柱粒子（持续到爆炸前）
@@ -188,12 +193,13 @@ public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity {
                                 .particlesPerTick(5)
                                 .processor(new CircleSpawnProcessor(1.5f))
                                 .build());
-                // 黑场蓄力铺垫：暗化氛围持续到爆炸（82 tick），营造"即将爆炸"的压迫感
-                AtmosphereEffectAPI.darken(sl, this.position(), 99.0, 0.7f, 82);
+                // 黑场蓄力铺垫：爆炸动画开始瞬间将亮度快速压到极低（0.95 近乎全黑），
+                // 覆盖 300t 的缓慢暗化，营造"即将爆炸"的极致压迫感
+                AtmosphereEffectAPI.darken(sl, this.position(), 99.0, 0.95f, 82);
             }
         }
 
-        // 482 tick (~24s): 执行爆炸 —— 半径 50 格内造成 250 点魔法伤害
+        // 482 tick (~24s): 执行爆炸 —— 半径 50 格内造成 2500 点魔法伤害
         if (skillTick == 482) {
             double x = this.getX();
             double y = this.getY();
@@ -203,7 +209,7 @@ public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity {
             this.level().playSound(null, this.blockPosition(),
                     SoundEvents.GENERIC_EXPLODE.value(), SoundSource.HOSTILE, 4.0F, 1.0F);
 
-            // 对 50 格内非特殊/非暗影实体造成 250 魔法伤害
+            // 对 50 格内非特殊/非暗影实体造成 2500 魔法伤害
             AABB aabb = new AABB(new Vec3(x, y, z), new Vec3(x, y, z)).inflate(50 / 2d);
             List<Entity> targets = this.level().getEntitiesOfClass(Entity.class, aabb, e -> true)
                     .stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(this)))
@@ -214,12 +220,13 @@ public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity {
                         && !target.getType().is(TagKey.create(Registries.ENTITY_TYPE,
                         ResourceLocation.fromNamespaceAndPath("pasterdream", "shadow_mob")))
                         && !(target instanceof Player player && player.isCreative())) {
-                    target.hurt(this.damageSources().magic(), 250.0F);
+                    target.hurt(this.damageSources().magic(), 2500.0F);
                 }
             }
 
-            // 15 格破坏地形大爆炸：BLOCK 交互不受 mobGriefing 限制必然破坏方块；
-            // 自定义 ExplosionDamageCalculator 关闭爆炸自身对实体的伤害/击退，避免与上方 250 魔法伤害叠加
+            // 7.5 格破坏地形爆炸（范围减半，由原 15 格调整为 7.5 格）：
+            // BLOCK 交互不受 mobGriefing 限制必然破坏方块；
+            // 自定义 ExplosionDamageCalculator 关闭爆炸自身对实体的伤害/击退，避免与上方 2500 魔法伤害叠加
             if (this.level() instanceof ServerLevel serverLevel) {
                 serverLevel.explode(this,
                         Explosion.getDefaultDamageSource(serverLevel, this),
@@ -230,23 +237,34 @@ public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity {
                             }
                         },
                         x, y, z,
-                        15.0f, false, Level.ExplosionInteraction.BLOCK);
+                        7.5f, false, Level.ExplosionInteraction.BLOCK);
 
-                // 释放暗影石粒子 + 烟雾 + 巨型爆炸闪光
-                serverLevel.sendParticles((SimpleParticleType) PDParticles.SHADOW_STONE_PARTICLE.particleType(),
-                        x, y, z, 128, 1, 4, 1, 0.1);
-                serverLevel.sendParticles(ParticleTypes.SMOKE,
-                        x, y, z, 128, 1, 4, 1, 0.1);
+                // 持续 5 秒（100 tick）的爆炸粒子发射器：暗影石 + 烟雾混合，
+                // 以 CircleSpawnProcessor 向四周缓慢扩散（方向向上、速度 0.3~1.5、半径 6）
+                ParticleEmitterAPI.spawn(serverLevel, this.position(), 99.0,
+                        ParticleEmitterData.builder((SimpleParticleType) PDParticles.SHADOW_STONE_PARTICLE.particleType())
+                                .addParticle(ParticleTypes.SMOKE)
+                                .position(this.position())
+                                .lifetime(100)
+                                .particlesPerTick(6)
+                                .processor(new CircleSpawnProcessor(new Vec3(0, 1, 0), 0.3f, 1.5f, 6.0f))
+                                .build());
+                // 爆炸核心闪光（一次性，vanilla 爆炸指示器）
                 serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER,
                         x, y, z, 1, 0, 0, 0, 0);
 
-                // 图腾爆炸：终结技高潮 —— 全屏黑场打击帧 + 屏幕晃动 + 暗化峰值（参考 Chesed 终结技演出）
+                // 图腾爆炸：终结技高潮 —— 黑白闪（黑场/白场交替各 3 tick）+ 屏幕晃动 + 暗化峰值
                 ImpactFrameAPI.sendImpactFrames(serverLevel, this.position(), 99.0,
-                        new ImpactFrame(0.3f, 0.05f, 8, true));
+                        new ImpactFrame(0.3f, 0.05f, 3, true),   // 黑场
+                        new ImpactFrame(0.3f, 0.05f, 3, false),  // 白场
+                        new ImpactFrame(0.3f, 0.05f, 3, true),   // 黑场
+                        new ImpactFrame(0.3f, 0.05f, 3, false)); // 白场
+                // 屏幕晃动：总时长 6 秒（120 tick），in 极短快速达峰、stay 短暂维持、
+                // out 长时递减——强度由最高到低随时间衰减；amplitude 0.35 为高强度
                 ScreenShakeAPI.sendShake(serverLevel, this.position(), 99.0,
                         ScreenShakeData.builder()
-                                .inTime(2).stayTime(8).outTime(14)
-                                .amplitude(0.15f).frequency(1.0f)
+                                .inTime(4).stayTime(8).outTime(108)
+                                .amplitude(0.35f).frequency(1.5f)
                                 .build());
                 AtmosphereEffectAPI.darken(serverLevel, this.position(), 99.0, 0.95f, 100);
 

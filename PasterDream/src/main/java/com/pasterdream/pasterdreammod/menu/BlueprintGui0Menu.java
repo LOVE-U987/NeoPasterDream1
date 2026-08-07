@@ -60,10 +60,12 @@ public class BlueprintGui0Menu extends AbstractContainerMenu {
      * @param extraData blueprintId + BlockPos + isMainHand
      */
     public BlueprintGui0Menu(int id, Inventory inv, FriendlyByteBuf extraData) {
+        // 防御：extraData 可能为 null（旁观者经 vanilla 单参 openMenu 打开时无附加数据），
+        // 兜底用无效蓝图 ID + 玩家位置 + 主手，菜单仍正常显示空蓝图
         this(id, inv,
-                extraData.readResourceLocation(),
-                extraData.readBlockPos(),
-                extraData.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
+                extraData != null ? extraData.readResourceLocation() : ResourceLocation.withDefaultNamespace("missing"),
+                extraData != null ? extraData.readBlockPos() : inv.player.blockPosition(),
+                extraData != null && extraData.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
     }
 
     /**

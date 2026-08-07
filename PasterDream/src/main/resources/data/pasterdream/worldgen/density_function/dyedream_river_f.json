@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:clamp",
+  "input": {
+    "type": "minecraft:mul",
+    "argument1": 150,
+    "argument2": {
+      "type": "minecraft:add",
+      "argument1": -0.01,
+      "argument2": {
+        "type": "minecraft:abs",
+        "argument": "minecraft:overworld/ridges"
+      }
+    }
+  },
+  "min": 0,
+  "max": 1
+}

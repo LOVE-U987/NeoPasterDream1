@@ -10,7 +10,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 
 import java.io.IOException;
 
@@ -24,8 +23,9 @@ import java.io.IOException;
  * <p>
  * 内置链：{@code pasterdream:impact_frame}（打击帧灰闪）。
  * <p>
- * F3+T 资源重载时经 {@link RegisterClientReloadListenersEvent} 触发的
- * 重载逻辑由 {@code PDEffectClientEvents} 调 {@code PostShaderManager.reloadAll()}。
+ * F3+T / 加载世界资源重载时，{@code PDEffectClientEvents} 在
+ * {@code AddReloadListenerEvent} 中调 {@code PostShaderManager.requestReload()}
+ * 置位，由渲染线程 tick 中的 {@code processPendingReload()} 销毁并惰性重建。
  */
 @EventBusSubscriber(modid = PasterDreamMod.MOD_ID, value = Dist.CLIENT)
 public class PDShaderBootstrap {

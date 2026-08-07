@@ -22,7 +22,10 @@ import java.util.function.Supplier;
  *       {@code new PostChain(...)}，确保 OpenGL 上下文就绪；</li>
  *   <li><b>getChain</b>：按 id 获取已实例化链（未实例化则惰性创建）；</li>
  *   <li><b>resizeAllIfNeeded</b>：窗口尺寸变化时对每个 PostChain 调用 {@code resize}；</li>
- *   <li><b>reloadAll</b>：资源重载（F3+T）时销毁并重实例化 PostChain；</li>
+ *   <li><b>requestReload / processPendingReload</b>：资源重载（F3+T）时
+ *       置位标记，由渲染线程 tick 消费并销毁/重实例化 PostChain；
+ *       {@code PostChain.close()} 内部调用 {@code RenderTarget.destroyBuffers()}，
+ *       属 OpenGL 操作，严禁在资源加载线程执行；</li>
  *   <li><b>processLevel / processScreen</b>：渲染阶段驱动，供特效 handler 调用。</li>
  * </ul>
  * <p>
@@ -43,6 +46,9 @@ public final class PostShaderManager {
     /** 当前窗口尺寸（用于检测 resize） */
     private static int lastWidth = -1;
     private static int lastHeight = -1;
+
+    /** 资源重载待处理标记：资源加载线程置位，渲染线程 tick 消费 */
+    private static volatile boolean reloadPending = false;
 
     private PostShaderManager() {
         throw new UnsupportedOperationException("PostShaderManager 是纯静态门面类，不可实例化");
@@ -117,9 +123,33 @@ public final class PostShaderManager {
     }
 
     /**
-     * 资源重载（F3+T）时销毁并重实例化所有后处理链
+     * 请求资源重载（任意线程可调用，如 {@code AddReloadListenerEvent} 的资源加载线程）
+     * <p>
+     * 仅置位待处理标记，真正的 PostChain 销毁由渲染线程的
+     * {@link #processPendingReload()} 执行。切勿在此直接销毁：
+     * {@code PostChain.close()} 内部会调用 {@code RenderTarget.destroyBuffers()}，
+     * 属于 OpenGL 操作，必须在渲染线程执行，否则在资源加载线程（
+     * {@code Util.backgroundExecutor()} 的 Worker 线程）触发会因 GL 上下文
+     * 归属校验失败而崩溃。
+     *
+     * @see #processPendingReload()
      */
-    public static void reloadAll() {
+    public static void requestReload() {
+        reloadPending = true;
+    }
+
+    /**
+     * 渲染线程 tick 中消费待处理的重载请求（客户端 tick 时调用）
+     * <p>
+     * 销毁全部已实例化后处理链并清空缓存、重置窗口尺寸记录；下次
+     * {@link #getChain} 访问时用重载后的资源惰性重建。本方法必须在
+     * 渲染线程执行（{@code PostChain.close()} 属 OpenGL 操作）。
+     */
+    public static void processPendingReload() {
+        if (!reloadPending) {
+            return;
+        }
+        reloadPending = false;
         for (PostChain chain : CHAINS.values()) {
             chain.close();
         }
@@ -130,6 +160,8 @@ public final class PostShaderManager {
 
     /**
      * 清除全部后处理链（玩家登出/客户端卸载时清理）
+     * <p>
+     * 注意：{@code PostChain.close()} 属 OpenGL 操作，本方法必须在渲染线程执行。
      */
     public static void clearAll() {
         for (PostChain chain : CHAINS.values()) {

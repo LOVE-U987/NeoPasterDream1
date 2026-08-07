@@ -5,6 +5,7 @@ import com.pasterdream.pasterdreammod.api.block.BlockConfig;
 import com.pasterdream.pasterdreammod.api.block.builder.VariantSetResult;
 import com.pasterdream.pasterdreammod.block.*;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import net.minecraft.util.ColorRGBA;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -30,7 +31,10 @@ public class PDBlocksSimple {
             .add("dyedream_dirt", Blocks.DIRT, BlockConfig.of()
                     .mineable("shovel").model("cube_all").tex("all", "pasterdream:block/dyedream_dirt"))
             .add("dyedream_sand", Blocks.SAND, BlockConfig.of()
-                    .mineable("shovel").model("cube_all").tex("all", "pasterdream:block/dyedream_sand").plantable())
+                    .mineable("shovel").model("cube_all").tex("all", "pasterdream:block/dyedream_sand").plantable()
+                    // 使用原版沙子类 ColoredFallingBlock：与沙子一致的重力下落物理行为，
+                    // dustColor 取染梦沙纹理主色 (240,186,211) = 0xF0BAD3
+                    .blockFactory(p -> new ColoredFallingBlock(new ColorRGBA(0xF0BAD3), p)))
             .add("dyedream_planks", Blocks.OAK_PLANKS, BlockConfig.of()
                     .mineable("axe").model("cube_all").tex("all", "pasterdream:block/dyedream_planks"))
             .add("dyedream_glass", Blocks.GLASS, BlockConfig.of()

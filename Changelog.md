@@ -2,14 +2,173 @@
 
 ---
 
+## v0.9.5 — 2026-08-08
+
+### 修复：河流群系不再出现在海洋/海岸带
+
+*   **需求**：河流是陆地地貌，不应在海洋/海岸（水下区域）生成——否则水下会铺出染梦沙河床带。
+*   **根因**：`DyedreamBiomeSource.computeBiome` 中 river 判定在浅海之后、海岸之前，导致海岸带（大陆性 -0.3 ~ -0.12 的水下浅滩）也会命中 river 群系。
+*   **修复**：river 判定增加陆地条件 `continentalness >= SHORE_THRESHOLD`（大陆性 ≥ -0.12），海洋/海岸带一律不生成河流。
+*   **验证**（干净世界 NBT 分析）：river 群系仅占陆地 3.33% 地表（此前含海岸带时 10.2%），海岸带 river 单元为 0；地图确认 river 带完全位于陆地、与海岸线自然过渡、不侵入海洋。
+
+---
+
+## v0.9.5 — 2026-08-08
+
+### 调整：染梦河流形态改为「水道 + 两岸沙地」窄带蜿蜒
+
+*   **需求**：河流不应是大片水域，而应模拟现实河流——窄水道（约 3-5 格）+ 两岸 3-5 格沙质河岸，形成弯曲引导性的窄带河道。
+*   **实现**：
+    *   `DyedreamBiomeSource`：`RIVER_WEIRDNESS_BAND` 0.14 → **0.045**（weirdness 窄带判定 river 群系，band 内为河道+河岸）
+    *   `density_function/dyedream_river_f.json`：挖空起始带宽 0.14 → **0.010**，渐变系数 12 → **150**（`clamp(150*(|w|-0.01),0,1)`）——只挖 |w|<0.01 的核心水道，0.01~0.017 陡渐变，0.045 群系带内其余部分不挖空（保留为两岸沙地）
+*   **效果**（干净世界 NBT 分析）：river 群系带从 24-48 格宽带 → **蜿蜒窄带 8-24 格**；水道（水面）**4-8 格**；两岸沙地各 4-8 格。群系带（0.045）> 挖空带（0.010）保证两岸不挖空、只铺沙。
+*   **验证**：`compileJava` 通过；干净世界 81 区块 forceload + NBT 分析确认窄带形态。
+
+---
+
+## v0.9.5 — 2026-08-08
+
+### 调整：染梦维度海平面提高 5 格（55 → 60），抬升河道水面
+
+*   **需求**：用户反馈河流水面过低，需要提高 5-6 格才达到效果。
+*   **实现**：`noise_settings/dyedream_world.json` 的 `sea_level` 从 55 → 60。染梦维度使用 vanilla 生成器时，`sea_level` **只控制含水层水位（水面）**，不影响陆地高度（陆地由 final_density 固定表达式决定）——所以只需调 sea_level 即可精确抬升水面、陆地不动，天然兼容。
+*   **验证**（干净世界 NBT 分析）：水面顶层 Y 从 54 → **59**（+5 格，243 列水面），水方块从 y=40 到 y=59 连续；陆地高度不变。
+
+---
+
+## v0.9.5 — 2026-08-08
+
+### 修复：染梦沙无重力下落物理行为
+
+*   **根因**：`dyedream_sand` 通过 `SimpleBlockBuilder` 批量注册，默认使用 `SelfDropBlock`（普通 `Block`）——虽然属性复制自 `Blocks.SAND`，但类不是下落方块，没有 `FallingBlock` 的重力物理行为（破坏下方方块后不会下落形成 `FallingBlockEntity`）。
+*   **修复**（`PDBlocksSimple`）：给 `dyedream_sand` 配置自定义 `blockFactory`，改用 **`ColoredFallingBlock`**（1.21.1 原版沙子类，继承 `FallingBlock`，自带 CODEC）：
+    * `new ColoredFallingBlock(new ColorRGBA(0xF0BAD3), p)` — `dustColor` 取染梦沙纹理主色 `(240,186,211)`，下落尘粒子颜色与原版一致机制
+    * 保留 `mineable("shovel")` / `plantable()` / 战利品表（掉自身）不变
+*   **验证**：`:PasterDream:compileJava` 通过。
+
+---
+
+## v0.9.5 — 2026-08-08
+
+### 修复：染梦 river 群系大面积占据地表 + 河道挖空导致地表抬升
+
+*   **问题**：上轮修复后出现两个新问题——① `biome_dyedream_river` 群系占据约 46% 的地表（应为窄条河网而非独立群系）；② 河道挖空密度函数把部分列从海平面挖到 y=290 巨洞，地表出现"抬升到建筑最高度"的异常。
+*   **根因**：
+    * **群系判定公式错误**：用 vanilla 旧版 riverFactor 雕刻公式（`|erosion-0.4|` / `|ridges-0.9|`）做群系判定，该公式在大部分区域值都大，导致 river 群系大面积命中。vanilla 的 river 群系实际由 MultiNoise 的 **weirdness 窄带**决定（`|weirdness| < ~0.05`）。
+    * **挖空无高度限制**：sink 密度函数作用于全高度，0.5 的正偏移在密度临界列会把整列从海平面挖到 y=290。
+*   **修复**：
+    * **群系判定**：`DyedreamBiomeSource.computeBiome` 改为 vanilla 风格 `|weirdness| < RIVER_WEIRDNESS_BAND(0.25)`（约 14% 区域，形成可见河网）；**不能用 riverFactor 雕刻公式做群系判定**（已在注释中说明教训）。
+    * **挖空 mask**：`dyedream_river_f.json` 改为 `clamp(3×(|weirdness|-0.25), 0, 1)`（与群系判定一致，`|weirdness| < 0.25` 时=0 即河心）。
+    * **挖空幅度**：`dyedream_river_sink.json` = `0.5 × (1-river_f)`（河心正偏移挖空），**限制高度 y=52~78**（仅海平面附近），避免整列挖空。
+*   **验证**（干净世界 NBT 分析）：river 群系占比 46% → **14.1%**；地表高度 avg 69.7 / max **160**（此前 294）；>200 抬升列 190 → **0**；水+染梦沙共存区块 **95 个**（河床有效果）。`compileJava` BUILD SUCCESSFUL。
+
+---
+
+## v0.9.5 — 2026-08-08
+
+### 修复：染梦维度"河流状干沟壑"（海平面调低后河道无水 + 河床无染梦沙）
+
+*   **问题**：染梦维度地形存在大量像河流的雕刻沟壑，但里面没有水，底部也不是对应的水下方块（裸露默认方解石）。
+*   **根因**：
+    * 染梦维度当前使用 vanilla `minecraft:noise` 生成器（自定义 `DyedreamChunkGenerator` 未启用），地形由 noise_settings 的原版 `overworld/depth` 等密度函数生成——原版 depth 内置河流沟壑雕刻逻辑，这就是"像河流的雕刻"的来源。
+    * 海平面从原版参考 63 调低到 55 后，大量河床沟壑**高于海平面** → 含水层不灌水 → 干涸暴露。
+    * `DyedreamBiomeSource.computeBiome` **从不返回河流群系**（`biome_dyedream_river`），surface_rule 中给河流铺染梦沙的规则永远不会触发 → 河床裸露方解石。
+*   **修复**（不回退海平面、维持 vanilla 生成器的兼容方案）：
+    * **新增密度函数** `data/pasterdream/worldgen/density_function/dyedream_river_f.json`：复刻原版 riverFactor 公式 `f = clamp(max(|erosion-0.4|-0.6, |ridges_folded-0.9|×0.85), 0, 0.75)`（用 `ridges_folded` 与群系判定保持一致）。
+    * **新增密度函数** `dyedream_river_sink.json`：在 y52+ 对河道区域施加**正密度偏移**（挖空河道到海平面以下，含水层自动灌水成真河）。
+    * **noise_settings** `final_density` 外层包 `add` 接入 `dyedream_river_sink`（仅 final 一处，避免与 initial 双重挖空）。
+    * **surface_rule** 移除 river 群系规则的 `above_preliminary_surface` 包裹，使河床在水下也能铺染梦沙（原版水下铺沙用 `stone_depth floor` 而非 preliminary surface）。
+    * **`DyedreamBiomeSource.computeBiome`** 在海洋判定后、陆地群系前新增河流判定：复刻同一 riverF 公式，`f > 0.55` 返回 `biome_dyedream_river`，激活铺沙规则。
+*   **验证**：专用服务器生成干净世界，NBT 区块分析确认大量区块出现"水 + 染梦沙"河流特征（如 chunk(-2,-2): 106水+143沙、(-1,-2): 287水+38沙、(0,-6): 346水+22沙），`locate biome biome_dyedream_river` 正常命中；`compileJava` BUILD SUCCESSFUL。
+*   **工具**：新增 `tools/analyze_dyedream_river_chunk.py`（纯标准库解析 region NBT，统计各区块水/染梦沙/方解石分布，可复用于未来地形验证）。
+
+---
+
 ## v0.9.5 — 2026-08-07
 
-### 改动：暗影调和图腾爆炸可破坏地形 + 粒子匹配范围
+### 修复：旁观者打开容器菜单崩溃（extraData null NPE → 网络协议错误）
+
+*   **问题**：旁观模式下右键可储存方块（染梦书桌等）客户端崩溃：`Failed to handle packet ClientboundOpenScreenPacket` + `NPE: extraData.readBlockPos() because extraData is null`（DyedreamDeskMenu.java:33），并报"网络协议错误"。
+*   **根因**（NeoForge 21.1.219 字节码 + vanilla 源码确认）：
+    * 旁观者右键方块时，`ServerPlayerGameMode.useItemOn` 走 **SPECTATOR 专用分支**：`state.getMenuProvider()` → `player.openMenu(provider)`（**vanilla 单参**，不写 BlockPos）——不经过我们方块里的 `useWithoutItem`（双参 `openMenu(provider, pos)`）
+    * 单参 `openMenu` → `openMenu(provider, null)`（consumer 为 null）→ `FriendlyByteBufUtil.writeCustomData` 返回**空数组** → 服务端走 **vanilla `ClientboundOpenScreenPacket`（不带 extraData）**，而非 NeoForge `AdvancedOpenScreenPayload`
+    * 客户端收到 vanilla 包 → `MenuScreens` → `IContainerFactory.create(id, inv, null)` → 菜单网络构造器 `extraData.readBlockPos()` → **NPE**
+    * 影响范围：所有用 `IContainerFactory` 网络构造器直接读 `extraData` 的菜单（15 个 BE 菜单 + 储物袋），旁观者打开必崩；`DreamnotesGui0Menu`/`ShadowSelectEndMenu` 已有防御故不崩
+*   **修复**（15 个菜单 + StorageBagMenu 网络构造器加 null 防御）：extraData 为 null 时兜底构造空菜单（BE 传 null → `stillValid` 返回 false 由服务端自动关闭），Blueprint/储物袋兜底为无效/默认数据正常显示。修改：`DyedreamDeskMenu`/`ShadowChestMenu`/`MeltdreamChestMenu`/`DreamCauldronMenu`/`DreamAccumulatorMenu`/`ResearchTableMenu`/`ShadowBlastFurnaceMenu`/`ShadowDeskMenu`/`WindmoorCrateMenu`/`PicnicBasketMenu`/`TheEndlessBookOfDreamSeekersMenu`/`WeaponWorkshopMenu`/`WorkshopAnvilMenu`/`WorkshopBlastMenu`/`BlueprintGui0Menu`/`StorageBagMenu`
+*   **验证**：全模块 `compileJava` BUILD SUCCESSFUL。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 改动：调音图腾终结技演出重做（三段暗化 + 黑白闪 + 6 秒高强度晃动 + 破坏范围减半 + 粒子持续 5 秒）
+
+*   **背景**：用户反馈终结技演出"不全面"——缺爆炸前的亮度渐进、爆炸瞬间缺黑白闪与高强度长时晃动、地形破坏过猛、粒子瞬时即散。
+*   **改动**（`ShadowTuneTotemEntity.executeSkillTick`）：
+    * **300t 提醒时缓慢降亮度**：广播"即将爆破"的同时 `AtmosphereEffectAPI.darken(0.3f, 200)`——客户端阻尼插值（0.15/tick）缓慢爬升，覆盖到爆炸后，先让玩家感知"危机逼近"
+    * **400t 爆炸动画时快速压黑**：暗化强度 `0.7f → 0.95f`，覆盖 300t 的缓降，爆炸动画瞬间近乎全黑
+    * **482t 爆炸高潮黑白闪**：`ImpactFrame` 从单黑场（8t）改为**黑白交替 4 帧**（黑 3t / 白 3t / 黑 3t / 白 3t，invert 切换）
+    * **6 秒高强度屏幕晃动**：`inTime(4).stayTime(8).outTime(108)` 总 120t（6 秒），amplitude `0.15f → 0.35f`（高强度），out 段长时递减——强度由最高随时间衰减
+    * **破坏地形范围减半**：爆炸半径 `15.0f → 7.5f`（破坏范围减半，2500 魔法伤害半径 50 格不变）
+    * **粒子改为持续 5 秒**：一次性 `sendParticles`（128 个暗影石+烟雾瞬时爆发）改为 `ParticleEmitterAPI.spawn` 持续发射器 `lifetime(100)`（5 秒，每 tick 6 个，CircleSpawnProcessor 向上扩散），爆炸核心闪光保留 EXPLOSION_EMITTER 一次性
+*   **验证**：`:PasterDream:compileJava` BUILD SUCCESSFUL。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：世界生成 far chunk 日志刷屏 + 光照 DataLayer NPE 崩溃（浮空岛/巨型染梦树跨区块写入）
+
+*   **问题**：新世界生成时 `floating_island` 与 `dyedream_tree_colossal` 刷屏 `Detected setBlock in a far chunk`，随后光照线程崩溃 `NullPointerException: Cannot invoke "DataLayer.get" because "datalayer" is null`（`LayerLightSectionStorage.getStoredLevel`），世界生成卡死。
+*   **根因**：
+    * **写半径限制**（NeoForge 21.1.219 `WorldGenRegion.ensureCanWrite`，经本地反编译字节码确认）：features 阶段 `blockStateWriteRadius = 1`，只允许向「中心区块 ±1」（3×3 区块）写入；越界即打印 "Detected setBlock in a far chunk" 并拒绝写入
+    * **两个地物横向跨度超出 ±1 区块**：浮岛椭球体半径 ≤12 + 随机游走 ±30% + 云桥最远 `radius+15` = 27 格；超巨型树 3×3 主柱 + 角柱 + Bresenham 侧枝（5~10 格）+ 二分支，横向最远 ~18 格——origin 靠近区块边缘时方块落在未就绪区块
+    * **连锁崩溃**：越界写入尝试污染光照一致性，光照引擎 `propagateIncreases` 对无 DataLayer 的 section 调 `getStoredLevel` → `datalayer == null` NPE
+    * 说明：已有 `safeSetBlock`/`validTreePos` 的 `canPlaceInRegion` 预检能拦截写入，但 `ensureCanWrite` 本身在判定越界时会打 ERROR 日志，故仍刷屏
+*   **修复**（区块中心对齐方案）：
+    * `WorldGenUtils` 新增 **`alignToChunkCenter(origin)`**：X/Z 对齐到所在区块中心（`chunkX*16+8`），Y 保持不变
+    * `FloatingIslandFeature.place`：origin 先对齐区块中心再生成，岛体 + 水晶 + 藤蔓 + 云桥全程落在 ±1 区块写半径内
+    * `DyedreamTreeFeature.place`：新增 `alignGiantTree`，仅对 `DyedreamColossalTrunkPlacer` / `DyedreamWorldTreeTrunkPlacer` 两类巨型树对齐 origin（X/Z），构造新 `FeaturePlaceContext` 委托 vanilla TreeFeature；普通染梦树分布不受影响
+*   **验证**：`:PasterDreamAPI:compileJava` + `:PasterDream:compileJava` 通过。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：资源重载崩溃（PostChain.close 在资源加载线程执行）
+
+*   **问题**：F3+T 重载资源 / 加载世界时崩溃（`IllegalStateException`，PostShaderManager.java:124 `PostChain.close()`）。
+*   **根因**：`PDEffectClientEvents.onAddReloadListeners` 在 `AddReloadListenerEvent`（`Util.backgroundExecutor()` 的 Worker-Main 线程）中**同步**调用 `PostShaderManager.reloadAll()`；而 `PostChain.close()` 内部调用 `RenderTarget.destroyBuffers()` 属 OpenGL 操作，必须在渲染线程执行——资源加载线程触发即崩溃。不能改用 `executeBlocking` 绕到渲染线程：加载世界时渲染线程正阻塞等待 reload future，会死锁。
+*   **修复**（`PostShaderManager` + `PDEffectClientEvents`）：
+    * `PostShaderManager.reloadAll()` → **`requestReload()`**：仅置位 `volatile reloadPending` 标记，任意线程可安全调用
+    * 新增 **`processPendingReload()`**：渲染线程 tick 中消费标记，执行真实的 `close()` 销毁 + 清缓存 + 重置窗口尺寸；重建保持惰性，重载完成后 `getChain` 用新资源实例化
+    * `PDEffectClientEvents.onClientTick` 开头调用 `processPendingReload()`；`onAddReloadListeners` 改为只调 `requestReload()`，并补充线程约束注释
+*   **验证**：`:PasterDreamAPI:compileJava` + `:PasterDream:compileJava` 通过。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：亚伦柯斯终结技「调音图腾」部分战局无法释放（贴脸永不评估）+ 远程手贴脸卡普攻
+
+*   **问题**：终结技在部分战局完全不释放，尤其玩家近战贴脸输出时；「远程手」贴脸后纯普攻、不放任何技能。
+*   **根因**（`AaroncosRighthand0Entity.tickSkillCycle`）：终结技评估被锁在「目标距离 > 6 格」的远程技能分支内（`distanceToSqr > 36`）。而 BOSS 的 AI（`MeleeAttackGoal` + `FlyingPursuitGoal`）会主动追到贴脸——玩家肉搏时右手血量压到 1/3 也不放终结技，直到被击杀。
+*   **修复**：
+    * **终结技评估无条件化**（`AaroncosRighthand0Entity`）：`tryTriggerTuneTotemFinale()` 移到目标/距离检查之前，血量条件（<1/3 且左手死/≤1/5）满足即释放——贴脸肉搏、玩家短暂脱战失去目标都能触发
+    * **远程手拉开距离**（`AaroncosHandEntity`）：新增 `getPreferredCombatRange()`（右手覆写=10 格，左手默认=0 保持近战）；`FlyingPursuitGoal` 增加保持距离逻辑（过近远离 / 过远逼近 / 舒适带悬停），`BossMeleeAttackGoal` 在远程手过近时禁用近战普攻，交由低优先级追击 AI 拉开距离——避免贴脸卡在普攻不放任何远程技能
+*   **验证**：`:PasterDream:compileJava` 通过。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 改动：暗影调和图腾爆炸可破坏地形 + 伤害提升至 2500 + 粒子匹配范围
 
 *   **背景**：图腾爆炸原为纯实体伤害（`target.hurt(magic, 250)`），不破坏任何方块，缺少爆炸的冲击破坏感。
 *   **改动**（`ShadowTuneTotemEntity.executeSkillTick` 的 t482 爆炸）：
+    * **伤害提升**：50 格内魔法伤害 **250 → 2500**（`target.hurt(damageSources().magic(), 2500.0F)`）
     * 新增 **15 格破坏地形爆炸**：`serverLevel.explode(...)` 使用 **`Level.ExplosionInteraction.BLOCK`**（不受 `mobGriefing` 游戏规则限制，必然破坏方块；`MOB` 交互会被 mobGriefing 关闭而失效）
-    * **关闭爆炸自身对实体的伤害/击退**：自定义 `ExplosionDamageCalculator` 覆写 `shouldDamageEntity` 返回 `false`，避免爆炸伤害与 250 魔法伤害叠加（250 魔法伤害逻辑原样保留）
+    * **关闭爆炸自身对实体的伤害/击退**：自定义 `ExplosionDamageCalculator` 覆写 `shouldDamageEntity` 返回 `false`，避免爆炸伤害与 2500 魔法伤害叠加（2500 魔法伤害逻辑原样保留）
     * **粒子匹配范围**：保留 10/20/30/40/50 格同心圆环扩散粒子（标记 50 格伤害波及范围），与爆炸视觉一致
 *   **验证**：`:PasterDream:compileJava` 通过。
 

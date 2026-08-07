@@ -176,6 +176,17 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
         return 1.0;
     }
 
+    /**
+     * 获取首选战斗距离 —— 右手为远程手，飞行追踪 AI 会维持约 10 格输出距离，
+     * 避免贴脸后卡在近战普攻不放远程技能（魔法弹 / 涡流 / 终结技）。
+     *
+     * @return 10.0（格）
+     */
+    @Override
+    protected double getPreferredCombatRange() {
+        return 10.0;
+    }
+
     // ======================== 属性 ========================
 
     /**
@@ -219,6 +230,14 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
 
         if (!sw || skill == 1) return;
 
+        // 终结技优先判定：调音图腾是低血量范围演出（50 格爆炸 + 全屏特效），
+        // 不依赖仇恨目标或攻击距离——贴脸肉搏 / 玩家风筝脱战短暂失去目标时，
+        // 只要血量条件满足都应释放，避免「玩家贴脸输出把 BOSS 打死却从没见大招」。
+        // 原实现把该判定锁在 distanceToSqr > 36 的远程分支内，贴脸时永不被评估。
+        if (tryTriggerTuneTotemFinale()) {
+            return;
+        }
+
         // 只对仇恨目标释放技能：无目标不放（脱战/和平模式站桩）
         LivingEntity target = getCombatTarget();
         if (target == null) return;
@@ -228,11 +247,6 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
 
         // 远程技能：目标稍远（>6 格）才释放（远程手保持距离输出）
         if (this.distanceToSqr(target) > 6.0 * 6.0) {
-            // 终结技优先判定：双 BOSS 低血量 / 单侧死亡时释放调音图腾，全场仅一次
-            if (tryTriggerTuneTotemFinale()) {
-                return;
-            }
-
             // 魔法弹阶段：magicball 不为 1 且不为 3 时触发
             if (magicball != 1 && magicball != 3) {
                 data.putInt("AaroncosSkill", 1);
@@ -420,7 +434,7 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
      * <ul>
      *   <li>0 tick：触发 skill_tunetotem 动画 + 抗性提升 + 下坠 + 范围混乱</li>
      *   <li>0 tick：向场内玩家广播高危提示（伤害极高，需尽快打掉图腾）</li>
-     *   <li>21 tick：召唤 ShadowTuneTotemEntity（50 HP / 50 格 250 魔法伤害爆炸）+ 后跳</li>
+     *   <li>21 tick：召唤 ShadowTuneTotemEntity（50 HP / 50 格 2500 魔法伤害爆炸）+ 后跳</li>
      *   <li>120 tick：解锁技能状态</li>
      * </ul>
      *

@@ -46,7 +46,9 @@ public class WorkshopBlastMenu extends AbstractContainerMenu {
      * @param extraData 包含 BlockPos 的网络缓冲区
      */
     public WorkshopBlastMenu(int id, Inventory inv, net.minecraft.network.FriendlyByteBuf extraData) {
-        this(id, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()));
+        // 防御：extraData 可能为 null（旁观者经 vanilla 单参 openMenu 打开时无附加数据），
+        // 兜底为 null BE → 空菜单，stillValid 返回 false 由服务端自动关闭
+        this(id, inv, extraData != null ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
     }
 
     /**

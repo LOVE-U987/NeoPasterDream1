@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:mul",
+  "argument1": {
+    "type": "minecraft:mul",
+    "argument1": 0.5,
+    "argument2": {
+      "type": "minecraft:add",
+      "argument1": 1,
+      "argument2": {
+        "type": "minecraft:mul",
+        "argument1": -1,
+        "argument2": "pasterdream:dyedream_river_f"
+      }
+    }
+  },
+  "argument2": {
+    "type": "minecraft:mul",
+    "argument1": {
+      "type": "minecraft:range_choice",
+      "input": "minecraft:y",
+      "min_inclusive": 52,
+      "max_exclusive": 1000000,
+      "when_in_range": 1,
+      "when_out_of_range": 0
+    },
+    "argument2": {
+      "type": "minecraft:range_choice",
+      "input": "minecraft:y",
+      "min_inclusive": -1000000,
+      "max_exclusive": 78,
+      "when_in_range": 1,
+      "when_out_of_range": 0
+    }
+  }
+}

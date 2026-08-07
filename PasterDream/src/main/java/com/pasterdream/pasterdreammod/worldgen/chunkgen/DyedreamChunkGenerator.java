@@ -228,14 +228,21 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
                                 worldX, worldY, worldZ, surfaceHeight, minY, randomState
                         );
 
-                        if (blockState != AIR) {
-                            section.setBlockState(localX, localY, localZ, blockState, false);
+                        // 始终写入（含 AIR）：父类 fillFromNoise 生成的方块必须被染梦
+                        // 地形完整覆盖。否则在 getBlockForPosition 返回 AIR 的位置会残留
+                        // 父类实心地形——尤其「沉没岛」（岛屿表面低于海平面）表面以上到
+                        // 海平面的区域：旧逻辑返回 AIR 且不覆盖，父类残留会形成一条条
+                        // 无水的"河流状"干沟壑（底部是父类默认方块而非染梦沙），
+                        // 与海平面取值无关（任何 seaLevel 都存在沉没岛），海平面调整
+                        // 不可回退时此修复天然兼容。
+                        section.setBlockState(localX, localY, localZ, blockState, false);
+                        if (!blockState.isAir()) {
                             oceanFloorMap.update(localX, worldY, localZ, blockState);
                             worldSurfaceMap.update(localX, worldY, localZ, blockState);
-                            if (!blockState.getFluidState().isEmpty()) {
-                                mutablePos.set(worldX, worldY, worldZ);
-                                chunkAccess.markPosForPostprocessing(mutablePos);
-                            }
+                        }
+                        if (!blockState.getFluidState().isEmpty()) {
+                            mutablePos.set(worldX, worldY, worldZ);
+                            chunkAccess.markPosForPostprocessing(mutablePos);
                         }
                     }
                 }
@@ -633,13 +640,27 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
                     return y > seaLevel ? AIR : LAVA;
                 }
             }
+            // 沉没岛（表面低于海平面）或海床（海洋表面=seaLevel-5）的
+            // 表面铺染梦沙，作为水下对应方块——避免裸露默认方解石。
+            // 注意：此条件对海洋海底同样成立（surfaceHeight=seaLevel-5<seaLevel），
+            // 海底铺沙是正确的；正常露出海面的浮岛不受影响。
+            if (y == surfaceHeight && surfaceHeight < seaLevel) {
+                return PDBlocks.DYEDREAM_SAND.get().defaultBlockState();
+            }
             return defaultBlock;
         } else if (y <= seaLevel) {
             // 在海平面与表面高度之间：海洋区域填充水
             if (!DyedreamNoises.isIsland(randomState, x, z)) {
                 return defaultFluid;
             }
-            // 岛屿区域的"水下"部分保持空气（浮岛底部以下是空气）
+            // 岛屿表面低于海平面（沉没岛）：表面以上同样填水，
+            // 否则该区间返回 AIR 且 applyDyedreamTerrain 不覆盖（保留父类
+            // fillFromNoise 的实心残留），会在海面上形成一条条无水的
+            // "河流状"干沟壑，底部为默认方块而非染梦沙。
+            if (surfaceHeight < seaLevel) {
+                return defaultFluid;
+            }
+            // 正常浮岛（表面高于海平面）：此分支不可达（surfaceHeight >= seaLevel）
             return AIR;
         } else {
             // 高于表面高度：空气

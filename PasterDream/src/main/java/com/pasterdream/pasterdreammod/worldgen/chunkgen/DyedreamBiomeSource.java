@@ -84,6 +84,22 @@ public class DyedreamBiomeSource extends BiomeSource {
     /** 蘑菇平原噪声阈值，噪声绝对值超过此值时判定为蘑菇平原（值越大越稀有） */
     private static final double MUSHROOM_PLAINS_THRESHOLD = 0.86;
 
+    /**
+     * 河流群系判定带宽 —— 仿 vanilla {@code overworld/river} 群系的 weirdness 窄带
+     * <p>
+     * vanilla 的 river 群系由 MultiNoise 参数点决定：weirdness 落在极窄的带内，
+     * 形成蜿蜒的窄带河流（水道 + 两岸约 3-5 格河岸）。
+     * <p>
+     * 0.045 带宽实测对应蜿蜒河道带总宽约 8-24 格（水道约 4-8 格 + 两岸沙地各 4-8 格）。
+     * 该值与 {@code dyedream_river_f.json} 的挖空起始带宽（0.010）配合：
+     * 群系带（|w|&lt;0.045）> 挖空带（|w|&lt;0.010），使两岸地面不挖空、只铺沙，
+     * 形成"窄水道 + 沙质河岸"的自然河流形态。
+     * <p>
+     * 注意：不能用 riverFactor 雕刻公式（|erosion-0.4| / |ridges-0.9|）做群系判定，
+     * 那会使 river 群系大面积占据地表（曾导致 46% 区块都是河流）。
+     */
+    private static final double RIVER_WEIRDNESS_BAND = 0.045;
+
     /** 河流噪声频率 */
     private static final float RIVER_NOISE_FREQUENCY = 0.0012f;
 
@@ -234,6 +250,11 @@ public class DyedreamBiomeSource extends BiomeSource {
 
     /**
      * 计算指定位置的群系
+     * <p>
+     * 在常规群系判定前增加河流判定：复刻原版 riverFactor 的 f 值
+     * （{@code f = clamp(max(|erosion-0.4|-0.6, |ridges-0.9|*0.85), 0, 0.75)}），
+     * f 越大越接近河道中心。f 超过 {@link #RIVER_BIOME_THRESHOLD} 时返回
+     * {@code biome_dyedream_river} 河流群系，触发 surface_rule 的河流铺沙规则。
      *
      * @param bx      方块坐标 X
      * @param by      方块坐标 Y
@@ -257,6 +278,17 @@ public class DyedreamBiomeSource extends BiomeSource {
         // 浅海
         if (continentalness < SHALLOW_OCEAN_THRESHOLD) {
             return getBiomeSafe(1);
+        }
+
+        // 河流：仿 vanilla overworld/river 群系的 weirdness 窄带判定。
+        // |weirdness| < RIVER_WEIRDNESS_BAND 且陆地时为河道（窄条，不占据大片地表）。
+        // 仅真陆地（大陆性 >= SHORE_THRESHOLD）才生成河流——海洋/海岸带是水下区域，
+        // 不应出现河流群系（否则水下会铺出染梦沙河床带）。
+        // 放在海洋/海岸判定之后、其他陆地群系之前，使河道优先覆盖陆地群系。
+        if (!rivers.isEmpty() && continentalness >= SHORE_THRESHOLD) {
+            if (Math.abs(ridges) < RIVER_WEIRDNESS_BAND) {
+                return rivers.get(0).riverData();
+            }
         }
 
         // 海岸

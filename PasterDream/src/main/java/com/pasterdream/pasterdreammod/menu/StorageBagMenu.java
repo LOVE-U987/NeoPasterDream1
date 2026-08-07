@@ -36,7 +36,11 @@ public class StorageBagMenu extends AbstractContainerMenu {
      * （slotCount / advanced / mainHand）。
      */
     public StorageBagMenu(int id, Inventory inv, FriendlyByteBuf buf) {
-        this(id, inv, buf.readVarInt(), buf.readBoolean(), buf.readBoolean());
+        // 防御：buf 可能为 null（旁观者经 vanilla 单参 openMenu 打开时无附加数据），
+        // 兜底为 9 格小袋 + 主手，菜单正常显示
+        this(id, inv, buf != null ? buf.readVarInt() : 9,
+                buf != null && buf.readBoolean(),
+                buf != null && buf.readBoolean());
     }
 
     private StorageBagMenu(int id, Inventory inv, int bagSlots, boolean advanced, boolean mainHand) {

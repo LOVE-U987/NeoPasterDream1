@@ -1,7 +1,10 @@
 package com.pasterdream.pasterdreammod.api.worldgen;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelSimulatedReader;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
@@ -217,18 +220,48 @@ public final class WorldGenUtils {
      * {@code ensureCanWrite} 会记录 "Detected setBlock in a far chunk" 错误并拒绝放置。
      * 大跨度结构（浮空岛、巨型染梦树等）的方块很容易落在未就绪的相邻区块上，从而刷屏报错。
      * <p>
-     * 此方法在放置前调用 {@code WorldGenLevel.ensureCanWrite} 做同样的预检，
-     * 越界位置直接跳过（不写入、不产生错误日志）。非世界生成环境（如 {@code /place}
-     * 命令）下 {@code ensureCanWrite} 恒返回 true，行为不受影响。
+     * <b>静默几何预检</b>：直接调用 {@code WorldGenRegion.ensureCanWrite} 有一个副作用——
+     * 它在判定越界时<b>本身就会打印</b> "Detected setBlock in a far chunk" 的 ERROR 日志。
+     * 因此此处先用中心区块坐标做纯几何判断（features 阶段写半径恒为 1，即中心 ±1 区块），
+     * 越界位置直接返回 false（不调 ensureCanWrite、不打日志、不写入）；
+     * 几何范围内再放行，由 {@code setBlock} 内部的 {@code ensureCanWrite} 兜底。
+     * 非世界生成环境（如 {@code /place} 命令）下非 {@code WorldGenRegion} 实例，恒返回 true。
      *
      * @param level 模拟世界读取器（世界生成期间为 WorldGenRegion）
      * @param pos   要放置方块的位置
      * @return true 表示目标位置可安全写入，false 表示应跳过该位置
      */
     public static boolean canPlaceInRegion(LevelSimulatedReader level, BlockPos pos) {
-        if (level instanceof WorldGenLevel worldGenLevel) {
-            return worldGenLevel.ensureCanWrite(pos);
+        if (level instanceof WorldGenRegion region) {
+            // features 阶段 blockStateWriteRadius = 1（vanilla ChunkPyramid 常量），
+            // 允许范围为中心区块 ±1（共 3×3 区块）；纯几何判断，不触发 ensureCanWrite 的日志
+            ChunkPos center = region.getCenter();
+            int targetChunkX = SectionPos.blockToSectionCoord(pos.getX());
+            int targetChunkZ = SectionPos.blockToSectionCoord(pos.getZ());
+            if (Math.abs(targetChunkX - center.x) > 1 || Math.abs(targetChunkZ - center.z) > 1) {
+                return false;
+            }
+            return true;
         }
         return true;
+    }
+
+    /**
+     * 将生成原点对齐到所在区块中心（X/Z），Y 保持不变
+     * <p>
+     * features 阶段的 {@code WorldGenRegion} 写半径仅为 1 区块（含中心区块 ±1，共 3×3 区块）。
+     * 大跨度结构（浮空岛、巨型染梦树）若以随机 origin 为基准生成，横向跨度很容易超出写半径，
+     * 触发 "Detected setBlock in a far chunk" 刷屏并导致连锁的光照 DataLayer NPE。
+     * 将 origin 对齐到区块中心后，结构横向最大只需不超过「区块半宽 + 1 区块 = 24 格」即可全程安全写入。
+     *
+     * @param origin 原始生成原点
+     * @return 对齐到所在区块中心的新原点（X/Z = chunkX*16+8, chunkZ*16+8，Y 不变）
+     */
+    public static BlockPos alignToChunkCenter(BlockPos origin) {
+        return new BlockPos(
+                (origin.getX() >> 4) * 16 + 8,
+                origin.getY(),
+                (origin.getZ() >> 4) * 16 + 8
+        );
     }
 }

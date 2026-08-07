@@ -34,7 +34,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  * 职责（随实现逐步扩充）：
  * <ul>
  *   <li><b>后处理生命周期</b>：客户端 tick 时 {@link PostShaderManager#resizeAllIfNeeded()}，
- *       资源重载时 {@link PostShaderManager#reloadAll()}；</li>
+ *       资源重载时经 {@link PostShaderManager#requestReload()} 置位、由 tick 中的
+ *       {@link PostShaderManager#processPendingReload()} 在渲染线程销毁/重实例化；</li>
  *   <li><b>后处理渲染</b>：订阅 {@link PostShaderEvent.Level}/{@link PostShaderEvent.Screen}
  *       （由 {@code GameRendererMixin} 发布），转发到各特效 handler；</li>
  *   <li><b>粒子发射器</b>：客户端 {@code LevelTickEvent.Pre} 转发到 ParticleEmitterHandler；</li>
@@ -59,6 +60,8 @@ public class PDEffectClientEvents {
      */
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Pre event) {
+        // 消费资源重载待处理标记：PostChain.close() 属 OpenGL 操作，必须在渲染线程执行
+        PostShaderManager.processPendingReload();
         PostShaderManager.resizeAllIfNeeded();
         ImpactFramesHandler.tick();
         ScreenEffectOverlay.tick();
@@ -81,13 +84,18 @@ public class PDEffectClientEvents {
     }
 
     /**
-     * 资源重载（F3+T）：重实例化全部后处理链
+     * 资源重载（F3+T / 加载世界）：请求重实例化全部后处理链
+     * <p>
+     * 注意：{@code AddReloadListenerEvent} 在资源加载线程（
+     * {@code Util.backgroundExecutor()} 的 Worker 线程）触发，而
+     * {@code PostChain.close()} 属 OpenGL 操作必须在渲染线程执行，
+     * 故这里仅置位待处理标记，由 {@link #onClientTick} 在渲染线程消费。
      *
      * @param event 添加重载监听器事件
      */
     @SubscribeEvent
     public static void onAddReloadListeners(AddReloadListenerEvent event) {
-        PostShaderManager.reloadAll();
+        PostShaderManager.requestReload();
     }
 
     // ==================== 后处理渲染 ====================
