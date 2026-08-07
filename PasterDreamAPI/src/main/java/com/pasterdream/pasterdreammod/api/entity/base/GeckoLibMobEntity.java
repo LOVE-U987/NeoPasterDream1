@@ -58,6 +58,13 @@ public abstract class GeckoLibMobEntity extends PathfinderMob implements GeoEnti
     }
 
     public void setAnimation(String animation) {
+        // 同名动画重复触发时（如 BOSS 连续两次 skill_magicball / skill_sprint），
+        // 若当前同步值已经是该名称，entityData.set 不会标记脏数据、也不会重新同步，
+        // 客户端就收不到新状态、无法重新播放。因此同名时先写 "empty" 强制脏标记，
+        // 再写入目标动画，确保每次触发都重新同步到客户端。
+        if (animation.equals(this.entityData.get(ANIMATION))) {
+            this.entityData.set(ANIMATION, "empty");
+        }
         this.entityData.set(ANIMATION, animation);
         this.animationprocedure = animation;
     }

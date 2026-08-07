@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.block;
 
 import com.pasterdream.pasterdreammod.registry.PDItems;
+import com.pasterdream.pasterdreammod.registry.PDItemTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -79,7 +80,7 @@ public class DyedreamLeavesBlock extends LeavesBlock {
             silkTouch = tool.getEnchantmentLevel(silkTouchHolder) > 0;
             fortune = tool.getEnchantmentLevel(fortuneHolder);
         }
-        boolean shears = tool != null && tool.is(Items.SHEARS);
+        boolean shears = tool != null && tool.is(PDItemTags.SHEARS);
 
         if (silkTouch || shears) {
             drops.add(new ItemStack(this));

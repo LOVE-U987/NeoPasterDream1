@@ -11,6 +11,7 @@ import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;
+import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksBoss;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksDungeon;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
@@ -44,7 +45,7 @@ import java.util.function.Consumer;
 /**
  * 第二梦境（灯影之下）VERIFY 套件 {@code second-dream}。
  * <p>
- * 覆盖 P0/P1/P2 接线：地牢门钥、portal d_0、e_0 与胜利倒计时清场、
+ * 覆盖 P0/P1/P2 接线：地牢门钥、portal d_0、e_0 与胜利手动离场、
  * Pale 三围、进场 GUARD、恐怖鸟增援调度、无名同步范围常量、成就 JSON。
  * <p>
  * <b>不</b>并入默认 {@code all}；须
@@ -65,7 +66,8 @@ public final class PDSecondDreamVerifyHooks {
 
     /**
      * 同步阶段：注册 / 门钥 / portal / pale / 进场 / 增援调度 / e_0 与箱。
-     * 倒计时 410t 强制离场由 {@link #verifyVictoryAftermath} 断言。
+     * 胜利后无自动传送、无强制倒计时，玩家留场；
+     * 手动右键召唤方块离场由 {@link #verifyVictoryAftermath} 断言。
      */
     public static void verifySync(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
         if (server == null) {
@@ -91,11 +93,12 @@ public final class PDSecondDreamVerifyHooks {
         verifyPaleBoneneedleDims(player, server, out);
         verifyArenaEnterGuardAndTerrorbeak(player, server, out);
         verifyVictoryGrantAndChest(player, server, out);
-        // 倒计时仍在调度中；aftermath 由时间线稍后调用
+        // 胜利后玩家留场；手动右键离场由 aftermath 在时间线稍后调用时断言
     }
 
     /**
-     * 胜利后 ≥410t：玩家应被强制回主；未开箱时应已把战利品塞进背包。
+     * 胜利后 ≥410t：玩家应<b>仍留在竞技场</b>（无自动传送、无强制离场倒计时）；
+     * 手动右键中心召唤方块后才返回主世界，未开箱则战利品补发进背包。
      */
     public static void verifyVictoryAftermath(MinecraftServer server, ServerPlayer player,
                                                 Consumer<Result> out) {
@@ -103,35 +106,51 @@ public final class PDSecondDreamVerifyHooks {
             out.accept(new Result(false, "victory-aftermath-skip", "player == null"));
             return;
         }
+        ServerLevel arena = server != null
+                ? server.getLevel(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY) : null;
+
+        // 胜利后无强制离场：同步后 ~410t 玩家仍在竞技场，不会被自动踢出
+        boolean stayInArena = arena != null
+                && player.level().dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY);
+        out.accept(new Result(stayInArena,
+                "击杀全部 BOSS 后留在竞技场（无强制离场）",
+                "dim=" + player.level().dimension().location()));
+        if (arena == null || !stayInArena) {
+            return;
+        }
+
+        // 未开箱路径保留 talent_shadow：箱子仍在场且未 claimed
+        BlockPos chestPos = PDArenaBossManager.VICTORY_CHEST_POS;
+        boolean chest = arena.getBlockState(chestPos).is(PDBlocks.AARONCOS_HAND_CHEST.get());
+        boolean unclaimed = arena.getBlockEntity(chestPos)
+                instanceof AaroncosHandChestBlockEntity c && !c.isClaimed();
+        out.accept(ok(chest && unclaimed, "未开箱：战利品箱仍在竞技场",
+                arena.getBlockState(chestPos).toString()));
+
+        // 手动右键中心召唤方块（VICTORY 分支）→ 未开箱补发背包 + 回主世界
+        BlockPos spawnPos = new BlockPos(0, 70, 0);
+        arena.setBlockAndUpdate(spawnPos, PDBlocksBoss.AARONCOSHANDSPAWNBLOCK.get().defaultBlockState());
+        useBlock(player, arena, spawnPos);
+
         boolean overworld = player.level().dimension() == Level.OVERWORLD;
         out.accept(new Result(overworld,
-                "胜利 410t 倒计时强制回主世界",
+                "手动右键召唤方块 → 返回主世界",
                 "dim=" + player.level().dimension().location()
                         + " mode=" + player.gameMode.getGameModeForPlayer()));
         out.accept(new Result(player.gameMode.getGameModeForPlayer() == GameType.SURVIVAL,
-                "强制离场后生存模式",
+                "离场后生存模式",
                 String.valueOf(player.gameMode.getGameModeForPlayer())));
 
-        // 本套件未开箱路径保留 talent_shadow → 强制离场应 grant pure_horror + shadow 分支
+        // 未开箱右键离场应把 pure_horror + talent_shadow 分支补进背包
         int horrorInv = countItem(player, PDItems.PURE_HORROR.get());
         int hiltInv = countItem(player, PDItems.SHADOW_HILT.get());
         int bodyInv = countItem(player, PDItems.DEGENERATE_BODYS.get());
         out.accept(ok(horrorInv >= 1,
-                "未开箱强制离场：pure_horror 已进背包",
+                "未开箱右键离场：pure_horror 已补进背包",
                 "inv=" + horrorInv));
         out.accept(ok(hiltInv >= 1 && bodyInv >= 1,
-                "未开箱强制离场：talent_shadow 分支已进背包",
+                "未开箱右键离场：talent_shadow 分支已补进背包",
                 "hilt=" + hiltInv + " body=" + bodyInv));
-
-        ServerLevel arena = server != null
-                ? server.getLevel(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY) : null;
-        if (arena != null) {
-            BlockPos chestPos = new BlockPos(0, 69, 0);
-            boolean chestGone = !arena.getBlockState(chestPos).is(PDBlocks.AARONCOS_HAND_CHEST.get());
-            out.accept(ok(chestGone,
-                    "强制离场后未开箱已拆除",
-                    arena.getBlockState(chestPos).toString()));
-        }
     }
 
     // ==================== 注册 / 常量 ====================
@@ -409,13 +428,13 @@ public final class PDSecondDreamVerifyHooks {
 
         boolean phaseVictory = PDArenaBossManager.getPhase(arena)
                 == PDArenaBossManager.BossFightPhase.VICTORY;
-        BlockPos chestPos = new BlockPos(0, 69, 0);
+        BlockPos chestPos = PDArenaBossManager.VICTORY_CHEST_POS;
         boolean chest = arena.getBlockState(chestPos).is(PDBlocks.AARONCOS_HAND_CHEST.get());
         boolean e0 = hasAdvancement(player, "achievement_shadow_e_0");
         boolean noSpy = !player.hasEffect(PDEffects.SHADOW_SPYON_BUFF.holder());
 
         out.accept(ok(phaseVictory, "双灭 → VICTORY 阶段", String.valueOf(PDArenaBossManager.getPhase(arena))));
-        out.accept(ok(chest, "胜利生成 aaroncos_hand_chest @ (0,69,0)",
+        out.accept(ok(chest, "胜利生成 aaroncos_hand_chest @ " + chestPos,
                 arena.getBlockState(chestPos).toString()));
         out.accept(ok(e0, "双灭授予 achievement_shadow_e_0", e0 ? "granted" : "missing"));
         out.accept(ok(noSpy, "胜利移除 shadow_spyon_buff", noSpy ? "removed" : "still present"));
@@ -469,9 +488,6 @@ public final class PDSecondDreamVerifyHooks {
         revokeAdvancement(player, "achievement_talent_light");
         // talent_shadow 仍在
         useBlock(player, arena, chestPos);
-        out.accept(ok(!PDArenaBossManager.isForceLeaveActive(arena),
-                "开箱后取消强制离场倒计时",
-                "forceLeave=" + PDArenaBossManager.isForceLeaveActive(arena)));
         ServerScheduler.advanceForTest(45);
         int horrors = countGround(arena, chestPos, PDItems.PURE_HORROR.get());
         int bodys = countGround(arena, chestPos, PDItems.DEGENERATE_BODYS.get());
@@ -485,39 +501,35 @@ public final class PDSecondDreamVerifyHooks {
         out.accept(ok(flowers == 0, "无 talent_light 时不掉 white_flower_body", "flowers=" + flowers));
         out.accept(ok(chestGone, "右键开箱 41t 后箱拆除",
                 arena.getBlockState(chestPos).toString()));
-        // 开箱后仍停在竞技场（不再另启 10s 强制传出）
+        // 开箱后仍停在竞技场（胜利后不自动传送、无强制离场）
         out.accept(ok(player.level().dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY),
-                "开箱后仍在竞技场（无强制传出）",
+                "开箱后仍在竞技场（无强制离场）",
                 player.level().dimension().location().toString()));
 
-        // 作废首轮（initialize 抬升代际），再开未开箱路径测 410t 强制离场
+        // 第二轮：未开箱路径 —— 重建胜利状态，断言击杀全部后留场（不自动踢出）
         PDArenaBossManager.setPhase(arena, PDArenaBossManager.BossFightPhase.NOT_SUMMONED);
         for (ItemEntity ie : arena.getEntitiesOfClass(ItemEntity.class, new AABB(chestPos).inflate(8))) {
             ie.discard();
         }
         player.getInventory().clearContent();
         revokeAdvancement(player, "achievement_shadow_e_0");
-        // 离开箱子碰撞体，避免单机客户端误交互二次开箱（会 cancel 强制离场）
-        player.teleportTo(arena, 8.5, 70.0, 8.5, player.getYRot(), player.getXRot());
-        // 未开箱补发按各人 talent：保留 shadow 以断言 shadow 分支进包
         PDArenaBossManager.initializeBossFight(arena);
         PDArenaBossManager.setBossAlive(arena, true, true);
         PDArenaBossManager.setPhase(arena, PDArenaBossManager.BossFightPhase.FIGHTING);
         PDArenaBossManager.onLeftHandDeath(arena);
         PDArenaBossManager.onRightHandDeath(arena);
-        // 再确认仍站在箱外
-        player.teleportTo(arena, 8.5, 70.0, 8.5, player.getYRot(), player.getXRot());
+
+        boolean stay2 = player.level().dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY);
         boolean chest2 = arena.getBlockState(chestPos).is(PDBlocks.AARONCOS_HAND_CHEST.get());
-        boolean force2 = PDArenaBossManager.isForceLeaveActive(arena);
         boolean unclaimed = arena.getBlockEntity(chestPos)
                 instanceof AaroncosHandChestBlockEntity c2 && !c2.isClaimed();
+        out.accept(ok(stay2, "击杀全部 BOSS 后仍留在竞技场（无自动传送）",
+                "dim=" + player.level().dimension().location()));
         out.accept(ok(chest2, "未开箱路径：重建战利品箱",
                 arena.getBlockState(chestPos).toString()));
-        out.accept(ok(force2, "未开箱路径：强制离场倒计时仍有效",
-                "forceLeave=" + force2));
         out.accept(ok(unclaimed, "未开箱路径：箱仍未 claimed",
                 unclaimed ? "unclaimed" : "already claimed"));
-        out.accept(new Result(true, "胜利倒计时已调度（10/210/…/410t；箱未开）", "await aftermath grant"));
+        // 手动右键召唤方块离场留给 verifyVictoryAftermath（同步后 ~410t）断言
     }
 
     // ==================== helpers ====================

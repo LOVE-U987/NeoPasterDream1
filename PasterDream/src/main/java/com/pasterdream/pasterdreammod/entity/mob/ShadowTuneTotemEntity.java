@@ -1,5 +1,13 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.api.effect.atmosphere.AtmosphereEffectAPI;
+import com.pasterdream.pasterdreammod.api.effect.impact.ImpactFrame;
+import com.pasterdream.pasterdreammod.api.effect.impact.ImpactFrameAPI;
+import com.pasterdream.pasterdreammod.api.effect.particle.ParticleEmitterAPI;
+import com.pasterdream.pasterdreammod.api.effect.particle.ParticleEmitterData;
+import com.pasterdream.pasterdreammod.api.effect.particle.processors.CircleSpawnProcessor;
+import com.pasterdream.pasterdreammod.api.effect.shake.ScreenShakeAPI;
+import com.pasterdream.pasterdreammod.api.effect.shake.ScreenShakeData;
 import com.pasterdream.pasterdreammod.api.entity.damage.ConfigurableImmunityEntity;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
@@ -14,16 +22,15 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.AABB;
@@ -35,12 +42,14 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * 暗影图腾 (Shadow Tune Totem) — 大型地面敌对生物（静止）
+ * 暗影图腾 (Shadow Tune Totem) — 终结技召唤物（50 HP，需玩家尽快打掉）
  * <p>
  * 行为：
  * - 无 AI，静止不动
  * - 免疫火焰、药水、摔落、凋零伤害
  * - 始终播放 idle 动画，死亡时播放 death 动画
+ * - 生成后进入倒计时，倒计时结束对 50 格内造成 250 点魔法伤害的巨型爆炸
+ * - 玩家需在爆炸前摧毁图腾（50 HP）以规避毁灭性伤害
  * <p>
  * 注意：Geo 模型文件名为 shadow_rune_totem.geo.json，与注册名不一致，渲染器需自定义模型路径。
  * 渲染：GeckoLib 动画实体
@@ -84,7 +93,7 @@ public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity {
      */
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, 40)
+                .add(Attributes.MAX_HEALTH, 50)
                 .add(Attributes.ARMOR, 5)
                 .add(Attributes.ATTACK_DAMAGE, 0)
                 .add(Attributes.MOVEMENT_SPEED, 0)
@@ -122,8 +131,8 @@ public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity {
             skillTriggered = true;
             this.triggerSelfDestruct(this.level(), this.getX(), this.getY(), this.getZ());
         }
-        // 自毁炸弹倒计时
-        if (!this.level().isClientSide() && skillTick >= 0) {
+        // 自毁炸弹倒计时（图腾死亡后立即停止，玩家打掉图腾即可规避爆炸）
+        if (!this.level().isClientSide() && skillTick >= 0 && this.isAlive()) {
             skillTick++;
             executeSkillTick();
         }
@@ -143,9 +152,9 @@ public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity {
     public void triggerSelfDestruct(LevelAccessor world, double x, double y, double z) {
         if (this.level().isClientSide()) return;
 
-        // 立即：向 64 格内玩家广播"暗影符文塔正在蓄能"
-        broadcastToNearbyPlayers(64, Component.translatable("message.pasterdream.shadow_tune.charging"));
-        // 启动倒计时
+        // 启动倒计时。
+        // 提示已由右手终结技释放时的 finale_warning 统一给出（含打图腾指令），
+        // 此处不再重复广播 charging，避免动作栏提示被覆盖、玩家看不清。
         skillTick = 0;
     }
 
@@ -164,15 +173,27 @@ public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity {
             broadcastToNearbyPlayers(64, Component.translatable("message.pasterdream.shadow_tune.detonation_soon"));
         }
 
-        // 400 tick (20s): 播放 skill 动画 + 音效
+        // 400 tick (20s): 播放 skill 动画 + 音效 + 充能光柱粒子（持续到爆炸前）
         if (skillTick == 400) {
             this.setAnimation("skill");
             // 播放暗影蓄能音效
             this.level().playSound(null, this.blockPosition(),
                     SoundEvents.BEACON_ACTIVATE, SoundSource.HOSTILE, 2.0F, 0.7F);
+            // 充能粒子发射器：图腾位置暗影石喷射（82 tick ≈ 充能时长，5/tick）
+            if (this.level() instanceof ServerLevel sl) {
+                ParticleEmitterAPI.spawn(sl, this.position(), 99.0,
+                        ParticleEmitterData.builder((net.minecraft.core.particles.SimpleParticleType) PDParticles.SHADOW_STONE_PARTICLE.particleType())
+                                .position(this.position().add(0, 1.5, 0))
+                                .lifetime(82)
+                                .particlesPerTick(5)
+                                .processor(new CircleSpawnProcessor(1.5f))
+                                .build());
+                // 黑场蓄力铺垫：暗化氛围持续到爆炸（82 tick），营造"即将爆炸"的压迫感
+                AtmosphereEffectAPI.darken(sl, this.position(), 99.0, 0.7f, 82);
+            }
         }
 
-        // 482 tick (~24s): 执行爆炸
+        // 482 tick (~24s): 执行爆炸 —— 半径 50 格内造成 250 点魔法伤害
         if (skillTick == 482) {
             double x = this.getX();
             double y = this.getY();
@@ -182,8 +203,8 @@ public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity {
             this.level().playSound(null, this.blockPosition(),
                     SoundEvents.GENERIC_EXPLODE.value(), SoundSource.HOSTILE, 4.0F, 1.0F);
 
-            // 对 99 格内非特殊/非暗影实体施加暗影效果 + 爆炸
-            AABB aabb = new AABB(new Vec3(x, y, z), new Vec3(x, y, z)).inflate(99 / 2d);
+            // 对 50 格内非特殊/非暗影实体造成 250 魔法伤害
+            AABB aabb = new AABB(new Vec3(x, y, z), new Vec3(x, y, z)).inflate(50 / 2d);
             List<Entity> targets = this.level().getEntitiesOfClass(Entity.class, aabb, e -> true)
                     .stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(this)))
                     .toList();
@@ -191,25 +212,56 @@ public class ShadowTuneTotemEntity extends ConfigurableImmunityEntity {
                 if (!target.getType().is(TagKey.create(Registries.ENTITY_TYPE,
                         ResourceLocation.fromNamespaceAndPath("pasterdream", "special_entity_tag")))
                         && !target.getType().is(TagKey.create(Registries.ENTITY_TYPE,
-                        ResourceLocation.fromNamespaceAndPath("pasterdream", "shadow_mob")))) {
-                    if (target instanceof LivingEntity living) {
-                        living.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 200, 0));
-                    }
-                    // 在每个目标位置产生爆炸
-                    this.level().explode(null, target.getX(), target.getY(), target.getZ(),
-                            5, Level.ExplosionInteraction.MOB);
+                        ResourceLocation.fromNamespaceAndPath("pasterdream", "shadow_mob")))
+                        && !(target instanceof Player player && player.isCreative())) {
+                    target.hurt(this.damageSources().magic(), 250.0F);
                 }
             }
 
-            // 释放暗影石粒子 + 烟雾
+            // 15 格破坏地形大爆炸：BLOCK 交互不受 mobGriefing 限制必然破坏方块；
+            // 自定义 ExplosionDamageCalculator 关闭爆炸自身对实体的伤害/击退，避免与上方 250 魔法伤害叠加
             if (this.level() instanceof ServerLevel serverLevel) {
+                serverLevel.explode(this,
+                        Explosion.getDefaultDamageSource(serverLevel, this),
+                        new ExplosionDamageCalculator() {
+                            @Override
+                            public boolean shouldDamageEntity(Explosion explosion, Entity entity) {
+                                return false;
+                            }
+                        },
+                        x, y, z,
+                        15.0f, false, Level.ExplosionInteraction.BLOCK);
+
+                // 释放暗影石粒子 + 烟雾 + 巨型爆炸闪光
                 serverLevel.sendParticles((SimpleParticleType) PDParticles.SHADOW_STONE_PARTICLE.particleType(),
                         x, y, z, 128, 1, 4, 1, 0.1);
                 serverLevel.sendParticles(ParticleTypes.SMOKE,
                         x, y, z, 128, 1, 4, 1, 0.1);
-                // 造成伤害并自毁（延迟 15 tick）
                 serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER,
                         x, y, z, 1, 0, 0, 0, 0);
+
+                // 图腾爆炸：终结技高潮 —— 全屏黑场打击帧 + 屏幕晃动 + 暗化峰值（参考 Chesed 终结技演出）
+                ImpactFrameAPI.sendImpactFrames(serverLevel, this.position(), 99.0,
+                        new ImpactFrame(0.3f, 0.05f, 8, true));
+                ScreenShakeAPI.sendShake(serverLevel, this.position(), 99.0,
+                        ScreenShakeData.builder()
+                                .inTime(2).stayTime(8).outTime(14)
+                                .amplitude(0.15f).frequency(1.0f)
+                                .build());
+                AtmosphereEffectAPI.darken(serverLevel, this.position(), 99.0, 0.95f, 100);
+
+                // 50 格爆炸范围扩散粒子：从中心向四周生成多层同心圆环，
+                // 让 50 格内的玩家都能直观看到爆炸波及范围（与伤害半径一致）
+                for (int radius = 10; radius <= 50; radius += 10) {
+                    int ringCount = 24;
+                    for (int i = 0; i < ringCount; i++) {
+                        double angle = Math.toRadians(i * (360.0 / ringCount));
+                        double px = x + Math.cos(angle) * radius;
+                        double pz = z + Math.sin(angle) * radius;
+                        serverLevel.sendParticles(ParticleTypes.EXPLOSION,
+                                px, y + 0.5, pz, 1, 0, 0, 0, 0);
+                    }
+                }
             }
         }
 

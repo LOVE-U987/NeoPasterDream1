@@ -2,11 +2,17 @@ package com.pasterdream.pasterdreammod.block;
 
 import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
+import com.pasterdream.pasterdreammod.registry.PDItemTags;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
@@ -26,6 +32,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import java.util.List;
 
 /**
@@ -35,6 +42,8 @@ import java.util.List;
  * - 必须 WATERLOGGED=true（被水完全浸泡）
  * - 下方必须是固体方块（沙、土、黏土等），不能悬浮在水中
  * - 不检查上方是否有水，以兼容浅水区自然生成
+ * <p>
+ * 掉落逻辑：仅剪刀或精准采集时掉落自身，其它工具/空手不掉落任何物品。
  */
 public class DyedreamSeagrassBlock extends BushBlock implements SimpleWaterloggedBlock {
     public static final MapCodec<DyedreamSeagrassBlock> CODEC = simpleCodec(properties -> new DyedreamSeagrassBlock());
@@ -114,6 +123,21 @@ public class DyedreamSeagrassBlock extends BushBlock implements SimpleWaterlogge
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-        return List.of(new ItemStack(this));
+        ItemStack tool = params.getParameter(LootContextParams.TOOL);
+        // 剪刀或精准采集才掉落自身，空手/其它工具不掉落
+        if (tool != null && !tool.isEmpty()) {
+            // 剪刀或园艺钳等剪刀类工具：掉落自身
+            if (tool.is(PDItemTags.SHEARS)) {
+                return List.of(new ItemStack(this));
+            }
+            // 精准采集：掉落自身
+            ServerLevel level = params.getLevel();
+            var enchantmentRegistry = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+            Holder<Enchantment> silkTouchHolder = enchantmentRegistry.getHolderOrThrow(Enchantments.SILK_TOUCH);
+            if (tool.getEnchantmentLevel(silkTouchHolder) > 0) {
+                return List.of(new ItemStack(this));
+            }
+        }
+        return List.of();
     }
 }

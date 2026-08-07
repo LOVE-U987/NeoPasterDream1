@@ -2,426 +2,533 @@
 
 ---
 
-## v0.9.4 — 2026-08-06
+## v0.9.5 — 2026-08-07
 
-### 修复：烈焰花（flower_6）正常采集不掉落烈焰粉
+### 改动：暗影调和图腾爆炸可破坏地形 + 粒子匹配范围
 
-*   **背景**：`DyedreamFlowerBlock.getDrops()` 覆写了所有染梦花的掉落逻辑——只有剪刀采集才掉本体，空手/其它工具一律返回空列表。因此 `flower_6` 虽配置了战利品表，但被 Java 逻辑完全绕过，正常采集什么都掉不出来。
+*   **背景**：图腾爆炸原为纯实体伤害（`target.hurt(magic, 250)`），不破坏任何方块，缺少爆炸的冲击破坏感。
+*   **改动**（`ShadowTuneTotemEntity.executeSkillTick` 的 t482 爆炸）：
+    * 新增 **15 格破坏地形爆炸**：`serverLevel.explode(...)` 使用 **`Level.ExplosionInteraction.BLOCK`**（不受 `mobGriefing` 游戏规则限制，必然破坏方块；`MOB` 交互会被 mobGriefing 关闭而失效）
+    * **关闭爆炸自身对实体的伤害/击退**：自定义 `ExplosionDamageCalculator` 覆写 `shouldDamageEntity` 返回 `false`，避免爆炸伤害与 250 魔法伤害叠加（250 魔法伤害逻辑原样保留）
+    * **粒子匹配范围**：保留 10/20/30/40/50 格同心圆环扩散粒子（标记 50 格伤害波及范围），与爆炸视觉一致
+*   **验证**：`:PasterDream:compileJava` 通过。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 移除：暗影之手冲刺残影特效 + 残影采样间距过滤
+
+*   **移除暗影之手冲刺残影**：`ShadowHandEntity.serverChargeTick` 中的 `GhostEffectAPI.startGhostTrail` 调用删除——暗影之手位移小（6 格），残影快照重叠看不出渐变，直接去掉该特效。暗影之手冲刺保留位移/音效/动画本身。
+*   **残影采样间距过滤**：`GhostHandler` 新增 `MIN_SAMPLE_DIST_SQ = 1.0²`——实体每 tick 位移不足 1 格时跳过采样，让位移小的实体生成"少而拉开"的快照（BOSS 冲锋位移大不受影响）；`start()`/`clearAll()` 重置采样位置，避免新旧残影源串扰。
+*   **验证**：`:PasterDream:compileJava` BUILD SUCCESSFUL。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：竞技场 BOSS 战 BGM 听不到（高空音源 16 格衰减 + 单次播放）
+
+*   **问题**：BOSS 战 BGM（aaroncos_music）从一开始就完全听不到；召唤音效同理。
+*   **根因 1（致命）**：`playBossMusic` 用 `arenaLevel.playSound` 位置音效，音源固定在 `ARENA_CENTER`(0,70,0) 高空；玩家在 y≈42 战斗，距离 28 格远超 `aaroncos_music` 默认 **16 格衰减范围**，客户端音量衰减到 0 → 全程静音。原模组从召唤方块坐标（玩家身旁）播放故正常。
+*   **根因 2**：原模组用 `time0` 计数器每 150 tick 周期性重新播放实现循环；重写后仅单次播放，播完 149 秒即静音。
+*   **修复**（`PDArenaEvents`）：
+    * 新增 `playArenaSoundForAll`——对竞技场**每个在场玩家 `playNotifySound`**（无位置、无衰减，全场清晰），BGM 与召唤音效均改用它
+    * BGM 改 `startBossMusicLoop`：召唤时播放一次，之后经 `ServerScheduler` 每 `BOSS_MUSIC_REPLAY_INTERVAL=2980` tick（≈149 秒，略短于整曲避免间隙）重播一次；战斗阶段离开 SUMMONING/FIGHTING（VICTORY 或初始化重置）或竞技场无玩家时自动停止；`bossMusicLoopGen` 代际号防重复召唤叠加多条循环链
+*   **验证**：全模块 `compileJava` BUILD SUCCESSFUL。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：每次进世界重复发放《帕斯特指南》（玩家死亡重生后标记丢失）
+
+*   **问题**：玩家每次进入世界都收到一本《帕斯特指南》，应为新存档首次登录发放一次。
+*   **根因**：发放标记 `pasterdream.guide_book_given` 写在 `persistentData` 顶层（`NeoForgeData`）。NeoForge 的 `ServerPlayer#restoreFrom` 在玩家克隆（死亡重生/末地返回）时**仅**复制 `PlayerPersisted` 子标签，顶层数据随克隆清空 → 标记丢失 → 下次登录重新发书。竞技场/维度测试中玩家死亡频繁触发克隆，故每次进世界都补发。
+*   **修复**（`PlayerDataEvents.giveGuideBookIfNeeded`）：
+    * 标记改存至 `Player.PERSISTED_NBT_TAG`（`PlayerPersisted`）子标签下，克隆时自动保留
+    * 兼容迁移：历史存档顶层的旧标记读取时自动迁入新位置，已领过书的玩家不会重复发放
+*   **验证**：全模块 `compileJava` BUILD SUCCESSFUL。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 改动：BOSS 技能改为「攻击时释放」+ 距离区分 + 技能期间停普攻
+
+用户反馈 BOSS 技能在无仇恨目标时也定时释放（和平模式/脱战也会放技能），且技能与普攻割裂。改造：
+
+*   **技能只对仇恨目标释放**：左右手 `tickSkillCycle()` 开头加 `getCombatTarget()` 检查——无存活目标直接返回，脱战/和平模式站桩不放技能
+*   **区分近远距离**（用户确认）：
+    * 左手（近战手）：目标近身（`<12` 格）才释放冲刺/重击
+    * 右手（远程手）：目标稍远（`>6` 格）才释放魔法弹/涡流，终结技图腾也走远程距离判定
+*   **技能期间停普攻**（用户确认）：`AaroncosSkill==1`（技能执行中）时暂停近战普攻与追击——
+    * 原版 `MeleeAttackGoal` 替换为内部 `BossMeleeAttackGoal`（`canUse`/`canContinueToUse` 加 `!isSkillActive()`）
+    * `FlyingPursuitGoal` 的 `canUse`/`canContinueToUse`/`tick` 均加 `!isSkillActive()`（技能期间不贴脸、不 `doHurtTarget`）
+*   **新增基类辅助**：`isSkillActive()`（读 AaroncosSkill）与 `getCombatTarget()`（存活仇恨目标），供 goal 与子类复用
+*   **验证**：全模块 `compileJava` BUILD SUCCESSFUL
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：竞技场 BOSS 击杀机制统一（击杀即踢出 → 手动右键返回）
+
+*   **问题**：检测到 BOSS 击杀即把玩家踢回主世界（甚至只杀一只 BOSS 也会触发），多个离场机制重叠冲突。
+*   **统一为单一机制**：玩家击杀全部（左右手）BOSS 后进入 `VICTORY` 阶段并**留在竞技场**，开箱捡取战利品后**手动右键中心召唤方块**（`AaroncosHandSpawnBlock`）返回主世界。
+*   **删除自动踢出**：`PDArenaBossManager.triggerVictorySequence` 不再立即 `teleportAllPlayersToOverworld`；移除 410t 强制离场倒计时（`scheduleVictoryCountdown`）及 forceLeave 状态机（`ForceLeaveActive`/`ForceLeaveGen` 字段与 NBT）。
+*   **修复未召唤即判胜利**：死亡回调原本只检查存活标志（初始化即 false），未召唤时任意 BOSS 死亡回调就会误判"双手已灭"直接触发胜利。改为 `onLeftHandDeath`/`onRightHandDeath` **仅在 `FIGHTING` 阶段接受死亡判定**（未召唤/召唤中/已胜利阶段一律忽略）。
+*   **幂等保护**：双 BOSS 同 tick 死亡时胜利序列只触发一次（VICTORY 阶段直接忽略重复触发）。
+*   **修复残留 VICTORY 阶段误判**（未召唤却被传送回主世界）：`ArenaBossData` 为 SavedData，phase 会跨会话持久化；旧逻辑在 VICTORY 阶段跳过竞技场初始化，导致上一场残留的 VICTORY 无法清除，玩家进竞技场右键召唤方块即命中离场分支。改为 `PDArenaEvents` **仅当竞技场中没有其他玩家时初始化**（首个进入者重置 BOSS 状态，清除持久化残留阶段；已有玩家在场不重置，保护胜利战利品箱）。
+*   **联动清理**：`AaroncosHandChestBlockEntity` 移除开箱取消强制离场调用；语言文件删除 `loot_opened_leave_via_eye` 文案、更新胜利提示；smoke test `PDSecondDreamVerifyHooks` 改为断言「击杀后留场 + 手动右键离场补包」。
+*   **修复战利品箱悬空**：箱子原生成在 `ARENA_CENTER.below()`（(0,69,0)）——竞技场结构内部的高空，下方无支撑方块。竞技场中心地面实为 y=39 实心 `shadow_arena_block_0` 地基 + y=41 `shadow_fissure_5` 顶面（y=42 为 BOSS 战斗区地面）。新增 `VICTORY_CHEST_POS` 常量统一引用，箱子落在竞技场中心地面，玩家战斗结束走一步即达；smoke test 断言位置同步更新。
+*   **修复战利品箱卡地**：`VICTORY_CHEST_POS` 初版 (0,41,0) 直接替换中心 `shadow_fissure_5` 装饰方块，箱子嵌进地面（卡地里）→ 上提一格至 **(0,42,0)**，箱子站在 y=41 地面上方完整露出。
+*   **验证**：全模块 `compileJava` BUILD SUCCESSFUL。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：BOSS 过场后仍无敌 + 常规技能黑白闪移除 + 终结技重构 + 删除贴花系统
+
+*   **修复 BOSS 过场后无敌**：`AaroncosHandEntity.baseTick` 首次初始化时无条件 `pendingTasks.clear()`，清掉了 `onAddedToLevel` 排程的「召唤结束解除无敌」任务 → `isSummoning` 永不解除 → 过场后 BOSS 仍无敌。改为**仅非召唤状态清空**，召唤期间保留解除任务。
+*   **移除常规技能黑白闪**：普通受击、左手冲刺起手、重击三段、右手魔法弹发射、涡流爆发、狂暴的 ImpactFrame（全屏黑白闪）全部移除——黑白闪只保留给终结技，避免频繁闪屏影响战斗。
+*   **终结技重构（参考 Chesed BOSS 演出）**：
+    * t0 释放：只保留短促暗化铺垫（0.4 强度 60t），不再闪白
+    * 图腾 t400 充能：暗化蓄力铺垫（0.35 强度持续 82t，黑场蓄力压迫感）
+    * 图腾 t482 爆炸：**全屏黑场打击帧 + 屏幕晃动 + 暗化峰值（0.7 强度）**——高潮集中在爆炸时刻
+*   **删除贴花系统**：用户反馈"贴花没啥观赏性"，移除整个 Decal 子系统——API（`DecalData`/`DecalEffectAPI`/`DecalPayload`/`Decal`/`DecalHandler`）、网络接线、全部 BOSS 调用、调试命令 `/pasterdream vfx decal`、SKILL 文档贴花章节。
+*   **验证**：全模块 `compileJava` BUILD SUCCESSFUL。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 新增：屏幕晃动系统 ScreenShake + 终结技大演出（受击移除闪白）
+
+*   **新增屏幕晃动系统**：借鉴 FDLib `ScreenShake`/`DefaultShake` 思路独立实现。`ScreenShakeAPI`（服务端）→ `ScreenShakePayload`(in/stay/out/amplitude/frequency) → 客户端 `ScreenShakeHandler`（投影矩阵确定性随机偏移 + 三阶段衰减 + 上一帧 lerp 平滑）。`GameRendererMixin` 注入原版 `bobHurt`（受击视角晃动）HEAD，把晃动偏移 translate 进相机矩阵。
+*   **移除普通受击闪白**：`AaroncosHandEntity.hurt()` 不再每次受击触发全屏打击帧（打一下就闪白太频繁）。
+*   **终结技配屏幕晃动**：`tryTriggerTuneTotemFinale` t0 在原有「全屏黑场打击帧 + 暗化氛围」基础上新增**屏幕晃动**（in2/stay8/out14，amplitude 0.15），配合闪白形成终结技大冲击演出。
+*   **验证**：全模块 `compileJava` BUILD SUCCESSFUL。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 新增：亚伦柯斯 BOSS 全技能特效挂载
+
+将 7 个特效系统系统性地挂到亚伦柯斯双体 BOSS 的每个技能上（适中选择，每技能 1-2 特效点缀）：
+
+**左手 `AaroncosLefthand0Entity`**
+*   冲刺：t16 冲锋起手打击帧（`ImpactFrame(0.5,0.03,3)`）+ t17/t24 落地冲击波贴花（size4）
+*   重击：三段落地 t19/30/53 各打击帧 + 冲击波纹贴花（size 7→9→11 递增），第三段反相黑场
+*   剑雨：每段落点 t∈{57,70,83,88,95,105,112} 生成预警圈贴花（size2，短暂）
+
+**右手 `AaroncosRighthand0Entity`**
+*   魔法弹：t5 蓄力光团粒子发射器（灵魂火焰，30t）+ t35 发射打击帧
+*   涡流：t42 爆发反相打击帧 + BOSS 脚下漩涡贴花 + 每玩家落点预警圈贴花
+*   终结技调音图腾：t0 释放全屏黑场打击帧 + 暗化氛围（强度 0.6，100t）+ t21 图腾落点贴花
+
+**子实体**
+*   魔法弹 `ShadowMagicballEntity`：爆炸点暗影贴花
+*   调音图腾 `ShadowTuneTotemEntity`：t400 充能光柱粒子发射器（82t）+ t482 爆炸反相打击帧 + 爆炸贴花（size8）
+*   暗影之手 `ShadowHandEntity`：冲刺瞬间残影拖尾（20t，alpha40）
+
+**验证**：全模块 `compileJava` BUILD SUCCESSFUL。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：残影/贴花消失（渲染矩阵双重相机变换）
+
+用户反馈残影与贴花全部不可见。排查根因：
+
+*   **根因**：上一轮为修复"贴花跟随视角"误把残影和贴花的渲染矩阵从「`translate(pos - camPos)` 相对相机偏移」改成「`mulPose(modelViewMatrix)` + `translate(世界坐标)`」。但 `RenderType`（entityTranslucent / 实体渲染器）的 shader 会**再乘一次当前全局 ModelViewMat（相机 view）**，导致双重相机变换，顶点被渲染到视野外 → 两个特效都不可见。
+*   **修复**：残影与贴花全部恢复「相对相机偏移」方式（`new PoseStack()` + `translate(pos - camPos)`，不乘 modelView），shader 的 view 负责相机变换。同时贴花保留了最初缺的 `setNormal`，并真正修复了"跟随视角"问题（最初是多了 `mulPose(modelView)` 所致）。
+*   **验证**：`:PasterDreamAPI:compileJava` / `:PasterDream:compileJava` 通过。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：贴花跟随视角 + 残影独立淡出 + SKILL 更新
+
+*   **贴花跟随玩家视角 / 不对齐地面**：`Decal.render` 在调用方已乘模型视图矩阵（世界坐标 → 相机空间）后，又手动减相机位置 → 双重变换导致贴花"贴屏幕"跟随视角。已移除 `-camPos`，改为**直接 translate 世界坐标**（参照 SkyboxAPI.buildSkyPoseStack）；`Decal.render`/`DecalHandler.renderAll` 签名去掉 Camera 参数。贴花现在固定在世界空间、按 direction 对齐。
+*   **残影透明度统一变动**：原实现采样时用 `active.alpha * fade`（基于残影源年龄），所有快照共享 fade → 同时淡出。已改为**每个残影快照记录采样时初始 alpha，渲染时按自身 age 独立渐出**（拖尾越靠后越淡）；快照寿命恢复 12 tick，`partialTick` 恢复实时值（用户认可的最初版本效果）。
+*   **开发 API（SKILL）更新**：`pasterdream-vfx-api/SKILL.md` 追加残影/贴花/雾色三节 + 引用文件清单，description 更新为 7 个特效。
+*   **验证**：全模块 `compileJava` BUILD SUCCESSFUL。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：贴花崩溃（缺 Normal）+ 残影"自己动"
+
+*   **贴花崩溃**：`Decal.render` 用 `RenderType.entityTranslucent`（顶点格式含 Normal），但四顶点漏写 `setNormal` → `IllegalStateException: Missing elements in vertex: Normal`（`/pasterdream vfx decal` 崩溃）。已补 `.setNormal(0, 1, 0)`（平面法线局部坐标 +Y）。
+*   **残影"自己动"**：残影位置/朝向已冻结在采样点，但重渲染实体时**骨骼动画实时播放**（GeckoLib/玩家渲染器机制），导致残影播实时动画。修复：
+    * 残影快照寿命 12 → **3 tick**（快速淡出，动画变化不可见，视觉为"定格重影拖尾"，与 FDBosses 原版一致）
+    * 渲染 `partialTick` 固定传 0（使用上一完整 tick 姿态，进一步减弱动画运动感）
+*   **验证**：`:PasterDreamAPI:compileJava` / `:PasterDream:compileJava` 通过。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 新增：三个 BOSS 战特效（残影 / 贴花 / 雾色氛围，借鉴 FDBosses 设计思路独立实现）
+
+借鉴开源模组 Qliphoth Awakening 本体（FDBosses，作者 FINDERFEED）的 BOSS 特效编排（许可证禁止复制源码，仅借鉴思路），在现有特效系统基础上新增三个通用特效：
+
+*   **残影特效 GhostEffect**：`GhostEffectAPI`（服务端）→ `GhostPayload`(entityId/duration/alpha) → 客户端 `GhostHandler`（每 tick 采样实体位置生成残影快照，`RenderLevelStageEvent.AFTER_ENTITIES` 阶段用实体渲染器重渲染半透明副本）。核心 `ColoredVertexConsumer`（API `api/client/util/`）强制把顶点颜色替换为半透明白。**亚伦柯斯左手冲刺技能**（`executeSprintSkill` tick 16 冲锋后）触发 24 tick 残影拖尾
+*   **贴花特效 DecalEffect**：`DecalEffectAPI`（服务端）→ `DecalPayload`(pos/direction/in-stay-out/size/texture) → 客户端 `DecalHandler`/`Decal`（渲染 XZ 平面四顶点 + 方向旋转 + 三阶段 alpha 缓动）。**亚伦柯斯狂暴**时脚下生成灵魂沙纹理暗色法阵圈（10 渐入 / 100 持续 / 30 渐出）
+*   **雾色/暗化氛围 AtmosphereEffect**：`AtmosphereEffectAPI`（服务端）→ `AtmospherePayload`(kind/strength/duration) → 客户端 `AtmosphereHandler`（阻尼插值平滑进出）→ `PDEffectClientEvents` 的 `ViewportEvent.ComputeFogColor` 修改雾色（暗化灰雾 / 血色雾）。**亚伦柯斯狂暴**时全场血色雾（强度 0.9，持续 120 tick 后衰减退出）
+*   **网络**：3 个 S2C payload（`GhostPayload`/`DecalPayload`/`AtmospherePayload`）注册进 `PDNetwork`，经 `PDClientVfx` 反射落地（专用服安全）
+*   **验证**：全模块 `compileJava` BUILD SUCCESSFUL
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：过场调试命令环绕轨迹 + 清理调试日志
+
+*   **过场环绕轨迹**：`/pasterdream vfx cutscene` 原 3 个相机点都在 X=0 平面（仅 Z/Y 变化），表现为"向一个方向波浪运动"而非环绕。改为 4 个环绕点（前/右/后/左，X/Z 平面分布 + 上下起伏），CatmullRom 样条画出环绕轨迹。
+*   **清理调试日志**：移除 `PDClientVfx.handleStartCutscene` 的 `[PDClientVfx] 收到过场包` info 日志、`CutsceneCameraHandler.start` 的 `[CutsceneCameraHandler] 过场开始` info 日志、`resolveCameraType` 降级 warn 日志；保留 `过场启动失败` error 日志（仅异常时输出，用于故障诊断）。
+*   **验证**：`:PasterDreamAPI:compileJava` / `:PasterDream:compileJava` 通过。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修正：方解石笋（grass_5 / grass_6）不再作为植被
+
+用户反馈"方解石笋不是植被"。`grass_5` / `grass_6`（显示名"方解石笋"）此前按草地植被注册：被加入 `minecraft:small_flowers` 花标签、使用草音效、仅剪刀采集掉落自身。已改为**石质装饰方块**：
+
+*   **标签**：从 `minecraft:small_flowers`（花）标签移除（连带自动脱离 `minecraft:flowers`、`pasterdream:swayable_plants` 摇摆植物标签）；新增 `minecraft:mineable/pickaxe`（镐挖掘）
+*   **工具**：镐挖掘 + `requiresCorrectToolForDrops`——空手/其他工具破坏不掉落，用镐破坏掉落自身
+*   **破坏音效**：草音效 `SoundType.GRASS` → 方解石音效 `SoundType.CALCITE`（与原模组 `Grass5Block`/`Grass6Block` 一致）
+*   **实现**：新建 `CalciteSpikeBlock`（`PasterDream/.../block/CalciteSpikeBlock.java`，继承 `Block`、脱离 `FlowerBlock` 植被逻辑，`getDrops` 覆写为"镐挖掉自身"）；`grass_5`/`grass_6` 从 `GRASSES_SINGLE` 批量注册拆出单独注册，属性复制 `Blocks.CALCITE`；`PDBlockTagProvider` 补充镐挖掘标签
+*   **验证**：`:PasterDream:compileJava` 通过
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：过场动画 NPE（ClientCameraEntity 继承 LivingEntity 属性缺失）
+
+用户日志定位：过场启动失败 `java.lang.NullPointerException: Cannot invoke "...AttributeSupplier.getValue(Holder)" because "this.supplier" is null`。
+
+*   **根因**：`ClientCameraEntity` 原继承 `LivingEntity`，而 `LivingEntity.tick()` 访问属性系统（`AttributeMap.supplier`）。`client_camera` 实体类型未注册任何属性（`DefaultAttributes` 中没有），导致 `supplier == null` → NPE → 过场启动失败。
+*   **修复**：`ClientCameraEntity` 改为继承 **`Entity`**（非 `LivingEntity`）——相机实体只需位置/旋转，不需要属性、装备、药水效果等复杂逻辑。实现 `Entity` 抽象方法（`readAdditionalSaveData`/`addAdditionalSaveData`/`defineSynchedData` 空实现），覆写 `push(Vec3)`/`push(Entity)` 为空（防物理推动）。
+*   **验证**：`:PasterDreamAPI:compileJava` / `:PasterDream:compileJava` 通过。等待运行验证过场相机环绕。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：过场动画无效（相机实体 + 启动健壮性）
+
+用户反馈过场动画无效（打击帧/屏幕特效/粒子发射器均正常，仅过场不工作）。排查修复：
+
+*   **ClientCameraEntity 对齐 FDLib**：补上相机实体防物理干扰的关键覆写——`push` 系列空实现（防止相机实体被推动/推挤）、`hasEffect/getEffect` 转发到本地玩家（避免空 level 的 NPE）、`tick` 调 `super.tick()` 保持实体数据同步
+*   **过场启动健壮性**：`CutsceneCameraHandler.start()` 加 try-catch + 日志（`[CutsceneCameraHandler] 过场开始/启动失败`），启动失败不再静默
+*   **相机接管确保**：`tick()` 每帧 `ensureCameraEntity()`——vanilla 可能重置 `cameraEntity`，现在每 tick 确保相机实体接管
+*   **实体类型降级**：`resolveCameraType` 优先用已注册的 `client_camera` 实体类型；若注册失败或取值异常（极端场景）则现场构建 `EntityType` 兜底，保证过场可用
+*   **过场包日志**：`PDClientVfx.handleStartCutscene` 输出 `[PDClientVfx] 收到过场包: N ticks, N 个相机点`，便于确认网络包是否送达
+*   **验证**：`:PasterDreamAPI:compileJava` / `:PasterDream:compileJava` 通过
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：特效系统"看不到"问题（shader 资源 + 调试命令）
+
+针对用户反馈"原版下看不到特效"进行排查修复：
+
+*   **根因：ImpactFrame 后处理链无法加载**。`shaders/program/impact_frame.json` 的 `"vertex"` 误写为 `"blit_screen"`——vanilla 1.21.1 **不存在** `blit_screen` program（只有 `blit`），导致 PostChain 加载失败，被 `PostShaderManager` 静默捕获并从加载器表移除 → ImpactFrame 灰闪永不显示（且无日志）。已修正：
+    * program json：`"vertex": "blit"`（vanilla 存在的 program）+ 补全 `blend` 块、samplers/uniforms 对齐 vanilla 格式
+    * post json：pass 顺序改为「impact_frame 处理 main→swap，blit 拷贝回 main」（与已验证可用的 FDLib 结构一致）
+*   **新增特效调试命令** `/pasterdream vfx <impact|screen|particle|cutscene>`：无需进 BOSS 战即可手动触发各特效系统，便于运行验证。注册于 `PasterDreamMod` 构造器（`PDVfxCommand`）。
+*   **shader 加载失败日志**：`PostShaderManager.getChain` 加载失败时输出 `[PostShaderManager] 后处理链加载失败: ...`，不再静默。
+*   **验证**：`:PasterDreamAPI:compileJava` / `:PasterDream:compileJava` 通过。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 新增：PasterDreamAPI 特效系统（借鉴 Qliphoth Awakening / FDLib 设计思路独立实现）
+
+借鉴开源模组 FDLib（作者 FINDERFEED，Qliphoth Awakening 前置库）的 BOSS 战特效架构，在 PasterDreamAPI 内**从零重写**（其许可证禁止复制源码，仅借鉴思路）四个特效子系统，供主模 BOSS 战与附属模组使用：
+
+*   **后处理管线骨架**：API `api/client/effect/post/`（`PostShaderEvent` Level/Screen 事件 + `PostShaderManager` PostChain 惰性注册表）；主模 `GameRendererMixin` 双注入分发 + `PDShaderBootstrap` 注册加载器 + `shaders/post/impact_frame.json` 四件资源（全新建立仓库首个 shader 后处理管线）
+*   **屏幕特效 ScreenEffect**：API `api/effect/screen/`（`ScreenEffectType` 注册表 + `ScreenEffectAPI` Facade + `ScreenColorData`）+ 客户端 `api/client/effect/screen/`（`ScreenEffect` 三阶段生命周期 + `ScreenEffectOverlay` GUI 层）；主模 `PDHudLayers` 注册 screen_effect 层，支持渐入/持续/渐出
+*   **打击帧 ImpactFrame**：API `api/effect/impact/`（`ImpactFrame` record + `ImpactFrameAPI` Facade）+ 客户端 `ImpactFramesHandler`（队列 + uniform 控制灰闪）
+*   **过场动画 Cutscene**：API `api/effect/cutscene/`（`CutsceneData`/`CameraPos`/`CurveType`/`EasingType`/`CutsceneAPI` 含 `ENTITY_REGISTRY`）+ 客户端 `api/client/effect/cutscene/`（`ClientCameraEntity`/`CutsceneExecutor`/`CutsceneCameraHandler`，CatmullRom/Linear 路径插值）；主模 `LocalPlayerMixin`/`KeyboardInputMixin` + 相机/输入/HUD 接管事件
+*   **粒子发射器 ParticleEmitter**：API `api/effect/particle/`（`EmitterProcessor` 注册表 + `ParticleEmitterData` + 内置 CircleSpawn/BoundToEntity/Empty 处理器）+ 客户端 `ParticleEmitter`/`ParticleEmitterHandler`
+*   **网络**：5 个 S2C payload（`ScreenEffectPayload`/`ImpactFramesPayload`/`StartCutscenePayload`/`StopCutscenePayload`/`ParticleEmitterPayload`）注册进主模 `PDNetwork`，经 `PDClientVfx` 反射落地（专用服安全）
+*   **亚伦柯斯 BOSS 集成示范**：召唤时播放环绕过场（`PDArenaBossManager.triggerBossSummon`）、受击/狂暴触发打击帧 + 灵魂粒子发射器（`AaroncosHandEntity.hurt`/`tryBloodLock`）
+*   **验证**：`:PasterDreamAPI:compileJava` / `:PasterDream:compileJava` 通过（无警告）
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：特效系统崩溃隐患（专用服 ClassNotFound + 网络解码健壮性）
+
+针对特效系统进行崩溃审查与加固，消除以下运行时崩溃风险：
+
+*   **专用服 ClassNotFound**：`ScreenEffectAPI.sendScreenEffect` 原接收带客户端工厂的 `ScreenEffectType<D, S>`，服务端触发会加载客户端类（`ScreenColorEffect` 引用 `GuiGraphics`/`RenderSystem`）→ 专用服崩溃。已重构：
+    * `ScreenEffectType` 只保留服务端安全的 id + 数据编解码（去掉客户端工厂泛型）
+    * 新增客户端 `ScreenEffectFactoryRegistry`（id → 工厂），客户端反查创建实例
+    * `ScreenColorData.TYPE` 为通用元数据（服务端安全），`ScreenColorEffect` 为客户端实现
+    * `ScreenEffectAPI.sendScreenEffect` 用通用 `ScreenEffectType`，不引用客户端类
+*   **网络解码崩溃**：未知特效类型/粒子类型时原抛异常 → 客户端断连。已加固：
+    * `ScreenEffectPayload` 改为「typeId + 数据字节(长度前缀) + 时间」，未知类型解码返回 `data=null`，handler 静默跳过
+    * `ParticleEmitterData` 粒子列表改为「id + 长度 + 数据」，未知粒子类型安全跳过
+    * `EmitterProcessor.STREAM_CODEC` 未知处理器类型降级为 `EmptyEmitterProcessor` 而非抛异常
+*   **过场实体获取**：`CutsceneCameraHandler.start()` 原经 `ENTITY_REGISTRY.getEntries()` 反射遍历查实体类型（运行时脆弱），改为 `CutsceneAPI.CLIENT_CAMERA`（DeferredHolder）直接查询
+*   **shader 加载防御**：`PDShaderBootstrap.createImpactFrameChain` 增加主渲染目标 null 检查，避免渲染前触发 NPE
+*   **验证**：`:PasterDreamAPI:compileJava` / `:PasterDream:compileJava` 通过
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 改动：注册园艺钳到社区剪刀 tag（c:shears / forge:shears）
+
+*   **背景**：让我们的园艺钳（`pasterdream:pliers`）能被其他模组植被的「剪刀判定」识别，需要遵循社区通用 tag 约定，而非只依赖模组内 `pasterdream:shears`。
+*   **改动**：
+    * 新建 `data/c/tags/item/shears.json`（`c:shears`）：`minecraft:shears` + `pasterdream:pliers`
+    * 新建 `data/forge/tags/item/shears.json`（`forge:shears`，兼容旧约定）：`minecraft:shears` + `pasterdream:pliers`
+    * 配合 `PliersItem extends ShearsItem` 的 Java 层 `instanceof ShearsItem` 天然兼容，覆盖三类判定方式中的两类
+*   **说明**：1.21 生态目前尚无官方 `c:shears` / `forge:shears` 约定（Fabric convention tags 与 NeoForge `Tags.Items` 均无 SHEARS 常量），本改动为「播种」性质——若其他模组遵循此 tag 约定，即可识别园艺钳；硬编码 `"items": "minecraft:shears"` 的模组仍需原版剪刀，无法通过 tag 解决。
+*   **验证**：`:PasterDream:compileJava` 通过；`verify_resource_closure.py` 资源闭包 PASS。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 改动：望远镜观星十字高亮改用 golden_particle 金色十字星芒纹理
+
+*   **背景**：使用望远镜对准星座星点时，星中心会显示一个由线段绘制的十字高亮（`ConstellationSkyContent.renderAimCrosshairs`）。
+*   **改动**：
+    * 十字高亮从「线段三层光晕」改为 **golden_particle 金色十字星芒纹理** 广告牌渲染，三层叠加保留发光渐变（外 0.28 / 中 0.60 / 核 1.0 alpha）
+    * 使用 `pasterdream:textures/particle/golden_particle_{1,2,3}` 三帧循环动画（每 10 tick 一帧，与粒子定义 mcmeta `frametime=10` 对齐），呈现金色闪烁
+    * 尺寸匹配：新增 `CROSS_TEXTURE_FILL`（十字臂占 16px 图约 13px）把原「臂长」换算为广告牌半边长，使十字视觉跨度与原版一致；保留闪烁伸缩（`CROSS_ARM_BASE` / `CROSS_ARM_PULSE`）
+    * **粒子式淡入淡出**：新增 `smoothstep` 缓动 + `CROSS_FADE_MIN_SCALE`（55%）——淡入/淡出时透明度渐入渐出且尺寸从小到大/从大到小（淡入轻盈亮起、消散拖尾缩小），替代原线性 `aimState` 直接乘透明度
+    * 移除不再使用的旧线段常量：`CROSS_COLOR` / `CROSS_CORE_COLOR` / `CROSS_OUTER_WIDTH` / `CROSS_MID_WIDTH` / `CROSS_CORE_WIDTH`
+*   **修复**：纹理路径需带 `.png` 后缀（与星域/行星一致，如 `pasterdream:textures/particle/golden_particle_1.png`），否则加载不到 → 显示紫黑块（missing texture）
+*   **验证**：`:PasterDream:compileJava` 通过。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 改动：新增 `pasterdream:shears` item tag 统一剪刀类工具判定
+
+*   **背景**：园艺钳（`pasterdream:pliers`，继承 `ShearsItem`）应与原版剪刀功能一致，但此前各处判定方式不统一——有的用 `instanceof ShearsItem`（已涵盖园艺钳），有的用 `tool.is(Items.SHEARS)`（不含园艺钳），战利品表 JSON 则硬编码 `"items": "minecraft:shears"`。
+*   **改动**：
+    * 新建 item tag `data/pasterdream/tags/item/shears.json`：包含 `minecraft:shears` + `pasterdream:pliers`，后续新增同类工具只需追加此文件
+    * 新增 `PDItemTags.SHEARS` 常量（`registry/PDItemTags.java`，仿 `PDBlockTags`）
+    * Java 侧统一改用 `tool.is(PDItemTags.SHEARS)`：
+        * `DyedreamFlowerBlock` / `DyedreamDoublePlantBlock` / `BlazeFlowerBlock`（原 `instanceof ShearsItem`）
+        * `DyedreamLeavesBlock` / `DyedreamSeagrassBlock`（原 `tool.is(Items.SHEARS)`）
+    * 战利品表 JSON 统一改用 `"items": "#pasterdream:shears"`：`dyedream_leaves` / `dyedream_glowing_leaves` / `dyedream_worldtree_leaves` / `dyedream_seagrass` / `flower_6`
+*   **验证**：`:PasterDream:compileJava` 通过，相关 JSON 语法校验通过。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：染梦海草（dyedream_seagrass）任何工具都掉落自身
+
+*   **背景**：`DyedreamSeagrassBlock.getDrops()` 无条件返回自身（`List.of(new ItemStack(this))`），导致空手或任意工具破坏都会掉落本体，不符合原版海草「需剪刀/精准采集才掉落」的规则。
+*   **修复**：改为**仅剪刀或精准采集时掉落自身**，其它工具/空手不掉落任何物品：
+    * `tool.is(Items.SHEARS)` 判断剪刀
+    * 通过 `Enchantments.SILK_TOUCH` + `tool.getEnchantmentLevel(...) > 0` 判断精准采集
+    * 同步更新 `dyedream_seagrass.json` 战利品表：剪刀或精准采集（1.21.1 新格式 `predicates."minecraft:enchantments"`）→ 掉本体
+*   **验证**：`:PasterDream:compileJava` 通过。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 移除：aurora_glow 极光粒子及其全部调用
+
+*   删除粒子注册 `PDParticles.AURORA_GLOW`（`registry/PDParticles.java`）
+*   删除客户端 Provider 注册（`client/ClientSetup.java`）与粒子类 `client/particle/AuroraGlowParticle.java`
+*   `DyedreamEnvironmentRenderer` 移除 `biome_dyedream_3`（暖色海岸/海洋）与 `biome_dyedream_deep_ocean`（晶莹深海）的极光粒子分支与 `spawnAuroraGlow` 方法；这两个群系改回显式分支，改用**星尘**粒子且密度对齐原极光概率（0.003 / 0.004）
+*   删除资源文件：`particles/aurora_glow.json`、`textures/particle/aurora_glow.png`、`aurora_glow.png.mcmeta`
+*   **验证**：`:PasterDream:compileJava` 通过。
+
+---
+
+## v0.9.5 — 2026-08-07
+
+### 修复：亚伦柯斯左右手 BOSS 技能动画在战斗中不播放
+
+*   **排查结论**：动画资源文件**齐全且有效**（`animations/entity/aaroncos_{left,right}hand_0.animation.json` 含全部 `skill_*` 动画、`geo`/`textures` 均存在、JSON 校验通过），问题出在动画触发逻辑。
+*   **根因 1（动画被覆盖）**：`AaroncosHandEntity.movementPredicate` 用 `this.animationprocedure`（本地字段，只在服务端 `setAnimation` 赋值，**客户端永远为 "empty"**）判断是否播基础动画，导致客户端 movement 控制器始终播放 fly/idle，且注册顺序在 procedure 控制器之后 → **逐帧覆盖技能动画的骨骼变换**。正常实体（Terrorbeak/WindKnight）用的是 `getSyncedAnimation()`（同步 entity data）。
+*   **根因 2（同名技能不重播）**：`GeckoLibMobEntity.setAnimation` 对同名动画（右手 3 连 `skill_magicball`、左手 3 连 `skill_sprint`）不会标记脏数据 → 客户端收不到重新同步 → 第 2、3 次同名技能动画不播放。
 *   **修复**：
-    * 新增 `BlazeFlowerBlock`（继承 `DyedreamFlowerBlock`）：**剪刀采集掉自身**（不变），**正常采集（空手/其它工具）掉 1 个烈焰粉** `minecraft:blaze_powder`
-    * `PDBlocksVegetation` 将 `flower_6` 从 `FLOWERS_SINGLE` 批量注册中拆出，改用 `BlazeFlowerBlock` 单独注册（其余花不受影响）
-    * 同步更新 `flower_6.json` 战利品表：剪刀 → 掉本体，其余 → 掉烈焰粉
-*   **验证**：`:PasterDream:compileJava` 通过；其它花（flower_1/2/3/5/8/9…）掉落行为不变。
+    * `AaroncosHandEntity.movementPredicate`（`entity/mob/AaroncosHandEntity.java:500`）：改用 `getSyncedAnimation()`，技能动画激活时 movement 控制器返回 `STOP`，不再覆盖 procedure 技能动画
+    * `GeckoLibMobEntity.setAnimation`（`PasterDreamAPI/.../api/entity/base/GeckoLibMobEntity.java:60`）：同名动画时先写 `"empty"` 强制脏标记再写入目标动画，确保每次触发都重新同步
+    * `TerraswordWaveEntity.movementPredicate`（`entity/mob/TerraswordWaveEntity.java:215`）：同根因的 `animationprocedure` 字段改为 `getSyncedAnimation()`（"1"/"2"/"3" 战技段位动画同受影响）
+*   **验证**：`:PasterDream:compileJava` / `:PasterDreamAPI:compileJava` 通过。
+
+### 修复：BOSS 技能方向指向敌人而非最近玩家
+
+*   `AaroncosRighthand0Entity.executeMagicballSkill`（35 tick 瞄准）与 `AaroncosLefthand0Entity.executeSprintSkill`（16 tick 瞄准）原先用 `getNearestPlayer` 锁定方向，现改为锁定 **BOSS 当前攻击目标 `getTarget()`（敌人）**；无目标时不强行转向（保持当前朝向）。
+*   仅影响技能朝向逻辑，弹幕实体 `ShadowMagicballEntity` 的追踪行为不变。
 
 ---
 
-## v0.9.4 — 2026-08-06
+## v0.9.5 — 2026-08-07
 
-### 清理：移除 geo/animations 根目录冗余副本（63 个）
+### 改动：右手调音图腾改为终结技 + 图腾数值重做
 
-*   **背景**：资源审计发现 `geo/` 与 `animations/` 根目录存在大量与子目录（`geo/block/`、`geo/entity/`）内容重复的副本文件，是早期路径混乱遗留的冗余资源，增大 jar 体积但无功能影响。
-*   **清理 63 个文件**：
-    * **53 个**内容与子目录完全一致且未被任何代码/JSON 引用的副本（27 geo + 26 animations）
-    * **10 个**实体 geo 旧名孤儿副本（`geo/xxx.geo.json` → 实为 `geo/entity/xxx.geo.json` 的旧 identifier 遗留，如 `geometry.shyspirit`）
-*   **保留**：6 个被自定义 GeoModel 硬编码引用根路径的 geo（`angel_wing`、`dream_meter`、`forsakens_wing`、`machine_wing`、`shadow_hand_lantern`、`weakness_terrorbeak`）+ 4 个被硬编码引用的根目录 animations。
-*   **验证**：`verify_resource_closure.py` 闭包验证 PASS（3802 JSON），`compileJava` 通过，无任何引用破坏。
-*   新增工具脚本：`tools/clean_dup_geo_anim.py`、`tools/clean_dup_entity_geo.py`。
+*   **终结技释放条件**（`AaroncosRighthand0Entity.tryTriggerTuneTotemFinale`）：
+    *   双 BOSS（左右手）血量均低于各自最大血量的 **1/5**（各 500HP → 100HP）
+    *   或另一只手（左手）已死亡
+    *   全程 **有且只释放一次**（`AaroncosTuneTotemFinale` NBT 标记）
+*   **受击不再触发**：`onHurtTriggerSkill()` 改为空实现，调音图腾不再作为受击反击技。
+*   **释放效果**：播放 `skill_tunetotem` 动画 + 向 64 格内玩家广播高危提示
+    （`message.pasterdream.shadow_tune.finale_warning`，告知伤害极高、需尽快打掉图腾）+ 召唤图腾。
+*   **图腾数值**（`ShadowTuneTotemEntity`）：
+    *   **生命值 40 → 50**
+    *   爆炸改为**半径 50 格内 250 点魔法伤害**的巨型爆炸（原为 99 格内逐目标 5 格爆炸 + 暗影效果）
+    *   图腾被玩家打掉后**立即停止倒计时**，不再爆炸（规避手段）
+    *   倒计时提示文案更新：`charging` / `detonation_soon` 明确提示玩家摧毁图腾
+*   **验证**：`:PasterDream:compileJava` / `:PasterDreamAPI:compileJava` 通过，语言文件 JSON 校验通过。
 
----
+### 改动：BOSS 狂暴阈值从固定 100 血改为本体血量 1/3
 
-## v0.9.4 — 2026-08-06
-
-### 修复：4 个玩偶方块缺失动画文件（死资源）
-
-*   **审计发现**：`DefaultedBlockGeoModel("qin_doll_0" / "little_purple_doll_0" / "eoul_doll" / "love_u_doll")` 会解析 `animations/block/{name}.animation.json`，但 4 个玩偶的动画文件缺失（geo/texture 均存在，原版也无动画 → 静态模型）。
-*   **修复**：为 4 个玩偶创建空动画占位文件（内容与 `empty.animation.json` 一致），消除 GeckoLib "Couldn't load animation" 死资源引用。
-
----
-
-## v0.9.4 — 2026-08-06
-
-### 文档：战利品表 1.21.1 格式规范写入项目规则
-
-*   `AGENTS.md` 新增「战利品表 JSON 格式规范（NeoForge 1.21.1）」章节，固化 `match_tool` predicate 必须用 `predicates."minecraft:enchantments"` 新格式、路径用单数 `loot_table`、常见错误清单与批量校验方式
-*   `.github/skills/neoforge-block-drops/SKILL.md` 新增「4a. match_tool predicate 必须用 1.21.1 新格式」陷阱条目，含错误/正确格式对照表与批量校验命令
-*   目的：防止其他 AI / 后续开发再次使用 1.20 旧格式导致战利品表静默解析失败（矿石掉本体）
+*   `AaroncosHandEntity.tryBloodLock`（鲜血锁链/狂暴）：触发条件由 `getHealth() > 100` 改为
+    `getHealth() > getMaxHealth() / 3f`，即血量降至**最大血量的 1/3**（500HP → 约 166HP）时触发狂暴。
 
 ---
 
-## v0.9.4 — 2026-08-06
+## v0.9.5 — 2026-08-07
 
-### 修复：战利品表 match_tool 条件使用 1.20 旧格式导致全部解析失败
+### 修复：右手 BOSS 飞弹出生即炸自身（未飞出去）
 
-*   **真正的根因**（`data/pasterdream/loot_table/blocks/*.json`，23 个文件 62 处）：战利品表 JSON 中的 `match_tool` 条件用了 **1.20 旧格式**：
-    ```json
-    "predicate": { "enchantments": [ { "enchantment": "minecraft:silk_touch", "levels": { "min": 1 } } ] }
-    ```
-    而 1.21.1 的 `ItemPredicate`/`EnchantmentPredicate` 要求 **`predicates."minecraft:enchantments"` 嵌套 + `enchantments` 复数**。旧格式解析失败 → 战利品表整体退回 `LootTable.EMPTY` → 矿石挖出**本体**而非粗矿。
-*   **修复**：批量将 62 处 `match_tool` 的 predicate 转换为 1.21.1 正确格式：
-    ```json
-    "predicate": { "predicates": { "minecraft:enchantments": [ { "enchantments": "minecraft:silk_touch", "levels": { "min": 1 } } ] } }
-    ```
-*   **影响**：修复后钛矿石/炙炎金矿石/深层钛矿石、灵魂矿石、凝风矿石等所有带精准采集判断的方块，普通挖掘掉粗矿、精准采集掉本体，行为恢复正常。303 个战利品表 JSON 全部可解析、无残留错误格式。
-*   参考：原版 `data/minecraft/loot_table/blocks/diamond_ore.json` 结构确认。
+*   **根因**：`ShadowMagicballEntity.detectAndTriggerExplosion()` 检测飞弹周围 1.5 格内所有 `LivingEntity`，
+    而飞弹生成位置就在 BOSS 前方 1.5 格处（`executeMagicballSkill` 中 `boss + look * 1.5`），
+    飞弹第一个 tick 就把 BOSS 本体误判为"目标"触发爆炸 → 原地爆炸、飞不出去。
+*   **修复**（`entity/projectile/ShadowMagicballEntity.java`）：
+    *   碰撞检测排除**发射者**（`getOwner()`，生成时 `magicball.setOwner(boss)`）与 **`pasterdream:shadow_mob` 暗影系标签**（不再误炸 BOSS / 暗影召唤物）
+    *   `trackPlayer()` 改为只追踪非创造玩家（`getNearestPlayer(x, y, z, 64, predicate)`），仅剩创造玩家时保持直线飞行
 
----
+### 改动：BOSS 及其技能不再攻击创造模式玩家
 
-## v0.9.4 — 2026-08-06
-
-### 修复：SelfDropBlock 空战利品表兜底误伤矿石掉落
-
-*   **根因**（`PasterDreamAPI/api/block/SelfDropBlock.java`）：`SelfDropBlock.getDrops()` 原实现为"战利品表返回空列表时就回退掉落方块自身"。对矿石等有战利品表的方块，当战利品表因 `match_tool`/精准采集拦截、`requiresCorrectToolForDrops` 空掉落等原因返回空时，被错误兜底成掉落矿石本体，而非正确的粗矿。
-*   **修复**：改为仅当方块**没有实际战利品表**（`getLootTable()` 返回 `BuiltInLootTables.EMPTY`，或实际加载到 `LootTable.EMPTY`）时才回退掉落自身；有战利品表的方块完全交给战利品表，保留"需正确工具/条件不满足无掉落"语义。
-*   **影响面评估**：`registerSimpleBlocks` 27 个方块中 25 个有战利品表（含全部矿石），仅 `dyedream_deepstone`、`dyedream_sandstone` 两个纯装饰方块依赖兜底掉落，行为不变。
-*   新增 import：`ResourceKey`、`ServerLevel`、`BuiltInLootTables`、`LootTable`
+*   **AI 目标**（`AaroncosHandEntity.registerGoals`）：`NearestAttackableTargetGoal` 增加 predicate
+    `!(target instanceof Player && isCreative())`，创造玩家不会被锁定为目标。
+*   **基类统一判定**：新增 `isAttackablePlayer(Entity)`（存活且非创造），并应用到全部玩家遍历：
+    `hurtNearbyPlayers` / `hurtNearbyLivingWithConfusion` / `pushNearbyPlayers` / `tryBloodLock`（狂暴）。
+*   **左右手技能**：
+    *   右手 `executeVortexSkill`（涡流）：只影响可攻击玩家，创造玩家不再受击退/缓慢/脚下漩涡
+    *   左手 `triggerSwordSkill`（剑雨）初始混乱与多段 AoE：排除创造玩家
+*   **暗影漩涡方块**（`ShadowVortexBlockEntity`）：创造玩家**完全不受影响**（跳过伤害与黑暗/混乱/缓慢负面效果，
+    原仅跳过伤害仍会吃效果）
+*   **调音图腾爆炸**（`ShadowTuneTotemEntity`）：250 魔法伤害排除创造玩家（语义一致）
+*   **验证**：`:PasterDream:compileJava` 通过。
 
 ---
 
-## v0.9.4 — 2026-08-06
+## v0.9.5 — 2026-08-07
 
-### 修复：白厄花胸针合并注册至主模组
+### 修复：终结技释放条件强制右手血量 < 1/3 + 边界补释放
 
-*   **白厄花胸针（white_flower_body）原本只注册在 PasterDreamSanity 附属模组**，但主模组大量引用它（创造栏、亚伦柯斯手宝箱掉落、smoketest 等），导致仅安装主模组（不装附属）时物品缺失、引用无法解析
-*   **合并注册到主模组**（`PasterDream/.../registry/items/PDItemsCurios.java`）：
-    * 使用 `CurioAPI.create("white_flower_body").slot(CurioSlot.BODY)` 注册（pasterdream 命名空间，与原版 ID 一致），行为对齐既有 `MELTDREAM_ENERGY_0_RING` 迁移先例
-    * 新增主模组物品类 `item/WhiteFlowerBodyItem.java`（自 PasterDreamSanity 迁移，tooltip 文案一致）
-    * 主模组 `PDItems` re-export `WHITE_FLOWER_BODY`；创造栏 `PDCreativeTabsCurio` 改为直接显示，不再依赖运行时注册表查询
-    * 主模组 `data/curios/tags/item/body.json` 补充 `pasterdream:white_flower_body`
-    * **PasterDreamSanity 移除重复注册**（`PDSanityItems` 清空为占位注册器）并删除已迁移的孤儿类 `WhiteFlowerBodyItem.java`
-*   引用点确认：`PDSanityHelper` / `PDSanityEffects` 均按 ID 字符串查询，主模组注册后运行时正常解析，无需改动
-*   smoketest 注释同步更新
+*   `AaroncosRighthand0Entity.tryTriggerTuneTotemFinale` 释放条件调整：
+    *   **强制前置**：释放者（右手）自身血量必须低于最大血量的 **1/3**（500HP → 约 166HP），否则不释放
+    *   触发条件：左手已死亡，或左手血量低于其最大血量的 1/5
+    *   **边界修复**：条件不满足时不再写任何标记，避免「左手先死但右手血量未达标」时只评估一次就永久放弃——右手血量降至 1/3 后仍会重新评估并正常释放终结技
 
----
+### 修复：图腾爆炸粒子范围与 50 格伤害范围对齐
 
-## v0.9.4 — 2026-08-06
+*   `ShadowTuneTotemEntity` 爆炸时新增**多层同心圆环扩散粒子**（10/20/30/40/50 格半径，每环 24 个爆炸粒子），
+    让 50 格内的玩家都能直观看到爆炸波及范围，与 250 魔法伤害的 50 格半径一致。
 
-### 修复：灯影长床进入 / 暗影地牢冷却 / 地牢大门朝向 / 染梦晶芽掉落
+### 修复：终结技玩家提示合并为一行
 
-*   **灯影之下长床无法进入**（`block/TrueShadowBedBlock.java`）：
-    * 原误用 `achievement_shadow_start`（进入灯影世界后才授予 → 死锁），导致前置全完成后首次右键长床仍无法进入
-    * 改为对齐原版 `TrueShadowBedPr0Procedure`：判定「上方 y+2 为暮影之笼且 `key=true`（据点守卫完成）+ 已达成 `achievement_hide_9`」，夜晚/雷暴时右键真·影之床即传送至灯影之下
-*   **暗影地牢冷却不计时**（`block/ShadowDungeonPortalBlock.java`）：
-    * 修复后的完整地牢核心替换了 `BrokenShadowDungeonProtalBlock`，原冷却 tick（`cd` 递增 `time`，1800t 结束）只存在于破损版，替换后冷却永不走动
-    * 为 `ShadowDungeonPortalBlock` 补上 `onPlace`/`tick` 冷却逻辑，冷却计时恢复正常；时之沙刷新仍生效
-*   **地牢底部通往长床的大门方向出错**（`block/ShadowDungeonDoorBlock.java` + `assets/pasterdream/blockstates/shadow_dungeon_door_*.json` + `shadowdungeondoor_2/3.json`）：
-    * 根因：门方块缺 `FACING` 属性，`shadow_dungeon` 遗迹由 jigsaw 以 `RandomRotation` 随机旋转放置时门不跟随 → "遗迹横过来了大门没横过来"
-    * 为 `ShadowDungeonDoorBlock` 增加 `FACING`（放置/旋转/镜像），4 个 blockstates 补 facing 四方向 + y 旋转，结构旋转时门同步转向
-*   **染梦晶芽破坏掉落本体**（`block/DyedreamBudBlock.java`）：`getDrops` 由掉落花蕾本体改为掉落「染梦晶芽粒」（`dyedream_bud_nugget`）
+*   右手释放终结技时已广播完整的 `finale_warning`（含高伤害警告 + 打图腾指令）；
+    图腾生成时不再重复广播 `charging`，避免两条动作栏提示在 1 秒内互相覆盖、玩家看不清。
+    `detonation_soon`（爆炸前 15s 警告）保留。
+*   **验证**：`:PasterDream:compileJava` 通过。
 
 ---
 
-## v0.9.3 — 2026-08-06
+## v0.9.5 — 2026-08-07
 
-### 重构：清除天空盒相关调试日志输出
+### 修复：BOSS 战 BGM（亚伦柯斯之触）未播放
 
-*   **移除全部调试日志**（`client/sky/SkyboxRenderer.java` / `content/ConstellationSkyContent.java` / `data/SkyboxDataReloadListener.java`）：
-    * 删除 `SkyboxRenderer` 中 3 处 DEBUG 日志（渲染状态、每晚随机、黎明回退）与 `LOGGER` 字段
-    * 删除 `ConstellationSkyContent` 中望远镜对准 DEBUG 日志（`logAimed` 方法）及 `LOGGER`/节流字段——**观星成就授予逻辑保留**，内联到星点渲染处
-    * 删除 `SkyboxDataReloadListener` 数据重载 INFO 日志
-    * 无功能性改动，仅清理日志输出
-
----
-
-## v0.9.3 — 2026-08-06
-
-### 新增：白天到来时回退玩家夜间操作
-
-*   **黎明回退**（`client/sky/SkyboxRenderer.java` `checkDayRollback`）：
-    * 每帧检测"夜晚 → 白天"边沿（夜晚因子降至 0.5 以下），触发一次回退：
-        * **清空所有玩家用星空枕绘制的连线星体**（`PlayerSkyLinkData.clearAll`，新增）
-        * 重置连线星体透明度缓存
-        * 快捷栏上方提示"天亮了，昨夜绘制的星空星体已随风消散……"（`message.pasterdream.skylink.day_reset`，仅提示一次）
-    * 黄昏（白天 → 夜晚）重置提示标记，允许下一个黎明再次提示；维度切换后重置检测状态避免误触发
-*   **望远镜瞄准状态回退**（`client/sky/content/ConstellationSkyContent.java`）：夜晚因子 ≤ 0.5（白天）时所有星点的瞄准放大进度 `aimState[]` 强制归零——玩家观星/放大进度随天亮一并回退
-*   **新增语言键 2 个**（zh_cn/en_us 成对）：`message.pasterdream.skylink.day_reset`
-
----
-
-## v0.9.3 — 2026-08-06
-
-### 修复：羽星占卜图录 / 星空枕无法从融梦水晶箱开出
-
-*   **根因**（`block/MeltdreamChestBlock.java`）：融梦水晶箱的掉落是 **Java 代码硬编码**的三档品质池（普通/稀有/传说），**不读取 JSON 战利品表**。此前仅在 `data/pasterdream/loot_table/chests/*.json`（遗迹宝箱 `loots_relic_*`、深藏宝物 `loots_deep_treasure_*`）添加条目，对融梦水晶箱无效
+*   **根因**：`PDArenaEvents.playBossMusic()` 方法已实现但**从未被调用**；且 `sounds.json` 中
+    `aaroncos_music` 的 `"stream": false`（项目内其它音乐条目均为 `stream: true`），2.4MB 音乐非流式加载存在播放异常风险。
 *   **修复**：
-    * 稀有品质池（30% 概率档）新增 `memento_item_03`（羽星占卜图录）、`memento_item_08`（星空枕），权重各 6
-    * 传说品质池（20% 概率档）新增两件，权重各 8（更高概率开出）
-    * 遗迹宝箱 / 深藏宝箱的 JSON 条目保留（两条途径均有效）
-*   **tooltip 文案更新**（zh_cn/en_us）：获取方式由"可在染梦世界的宝箱中发现"改为"可在染梦世界的**遗迹宝箱或融梦水晶箱**中发现"
+    *   `PDArenaEvents.spawnAaroncosBosses`（BOSS 召唤统一入口）在召唤音效后调用 `playBossMusic(arenaLevel)`，
+        BOSS 战斗开始即播放 BGM
+    *   `sounds.json` 中 `aaroncos_music` 的 `"stream": false` → `"stream": true`，与其他音乐条目一致，流式加载长音乐
+*   **验证**：`:PasterDream:compileJava` 通过，`sounds.json` JSON 校验通过。
 
 ---
 
-## v0.9.3 — 2026-08-06
+## v0.9.5 — 2026-08-07
 
-### 调整：十字星发光效果放大
+### 修复：BOSS 飞弹（ShadowMagicball）trackPlayer 不追踪玩家
 
-*   **十字星改为大型发光效果**（`client/sky/content/ConstellationSkyContent.java` `renderAimCrosshairs`）：
-    * 臂长从星大小的 0.85~1.15 倍提升至 **2.6~3.3 倍**（`CROSS_ARM_BASE=2.6` + 闪烁伸缩 ±0.7），呈现"星星在发光"的辐射感
-    * 三层由外到内叠加（宽 0.17 暗光晕 → 中 0.10 中亮 → 细 0.045 亮核），颜色由暖白过渡到更白的亮核，形成发光渐变
-    * 闪烁循环、淡入淡出、Iris 兼容（仍为标准混合 + AFTER_SKY）保持不变
-
----
-
-## v0.9.3— 2026-08-06
-
-### 修复：昼夜/群系天空淡入淡出；望远镜需对准星心；占卜对地可用；极光加强5倍；观星特效
-
-*   **昼夜交替平滑淡入淡出**（`client/sky/SkyboxRenderer.java` `getNightFactor`）：
-    * 夜晚因子改为 `clamp(-cos×3)` + smoothstep 曲线——白天严格 0，黄昏/黎明更柔和连续地渐入渐出（原斜率 4 + 0.2 基线过渡偏硬）
-*   **群系切换淡入淡出**（`client/sky/SkyboxRenderer.java`）：
-    * 根因：群系切换立即替换候选，旧/新条目 alpha 交叉过快，视觉上星星与天体"突然消失/出现"
-    * 修复：新增 `lastBiomeSwitchTime` + 40 tick 过渡窗口，窗口内 alpha 交叉速度 ×0.35（约 2 秒平滑交叉）；维度切换时一并重置
-*   **望远镜需对准星星中心才触发**（`client/sky/content/ConstellationSkyContent.java` `isAimed`）：
-    * 阈值从固定 0.06 rad 改为按星大小动态计算：`size/天空半径 + 0.008 rad`——只有准星真正对准星本体（中心）才触发放大/成就
-*   **单星独立缓慢进入/退出动画**（`ConstellationSkyContent`）：
-    * 新增每颗星独立的 `aimState[]`（原全局静态 `aimProgress` 仅作望远镜开关与连线增亮）
-    * 对准时该星以 `AIM_TRANSITION_SPEED=0.045/tick`（约 1 秒）缓慢放大变亮，移开视线以同样速度缓慢退出
-*   **十字星循环闪烁**（`ConstellationSkyContent.renderAimCrosshairs`）：
-    * 对准的星中心新增暖白十字标记：沿 yaw/pitch 正交臂，淡入完成后按正弦循环变亮变暗（臂长随闪烁伸缩）
-    * 移开视线随 `aimState` 平滑淡出；松开望远镜立即隐藏
-*   **极光加强 5 倍**（`client/sky/content/AuroraSkyContent.java`）：
-    * 新增 `BRIGHTNESS_BOOST=5`：有效透明度（含双重 opacity）整体 ×5，峰值约 0.51 不过曝
-    * 保持 AFTER_SKY 挂载 + 标准混合，Iris 光影下兼容
-*   **修复占卜对地面/不对准天体也可用**（`item/DivinationItem.java`）：
-    * 根因：`AIM_THRESHOLD=0.15 rad` 过大 + 未限制视线方向——玩家看地面时逆变换的局部方向可能命中地平线附近的连线星体，且扫过即"对准"
-    * 修复：阈值收紧至 0.08 rad；新增 `MIN_LOOK_Y=-0.05`（看向地面/水平以下直接拒绝）；服务端同样校验抬头；双端均拒绝"对地占卜"
+*   **根因**：`trackPlayer()` 使用 `level().getNearestPlayer(x, y, z, 64.0, predicate)`——该方法内部基于
+    `TargetingConditions.forCombat().range(64.0)` 做**视线（line-of-sight）检查**。竞技场是封闭结构，
+    飞弹从两侧 BOSS 位置发射，到玩家的视线经常被结构/地面阻挡 → 返回 `null` → `trackPlayer` 完全不执行，
+    飞弹只靠初始速度直线飞行、不追踪。
+*   **修复**（`entity/projectile/ShadowMagicballEntity.java`）：
+    *   `trackPlayer()` 改为手动遍历 `level().players()` 取最近**存活非创造**玩家，**不依赖视线**，确保竞技场内必定能追踪到目标
+    *   平滑转向：7 成保留原速方向 + 3 成偏转目标，保持恒速 3.0；无初速时防御性直接朝目标
+*   **验证**：逻辑类型正确（`getEyePosition` / `distanceToSqr` / `players()` 均为项目既有 API）。
+    ⚠️ 当前全量 `compileJava` 被**他人进行中的包重构**阻塞（`registry.blocks`、`attachment`、`api.effect` 等
+    大量半完成文件导致"程序包不存在"连锁报错），需重构完成后复验。
 
 ---
 
-## v0.9.3 — 2026-08-06
+## v0.9.5 — 2026-08-07
 
-### 修复：望远镜放大仍过大 / 占卜未对准也能用；星空枕左键移除；夜间功能限制；夜空交互成就
+### 修复：BOSS 飞弹仍不移动 —— Projectile 基类 tick 不自动移动（核心根因）
 
-*   **望远镜放大进一步克制**（`client/sky/content/ConstellationSkyContent.java`）：
-    * 程序化星 ×1.6→×1.25、纹理星 ×1.25→×1.1、亮度 ×2.0→×1.8、对准阈值 0.07→0.06 rad——望远镜下星点仅轻微放大，不再遮挡星座全貌（星空枕连线星体大小保持原样）
-*   **白天禁用夜间功能**（`item/SkyLinkItem.java` + `item/DivinationItem.java` + `client/sky/SkyboxRenderer.java`）：
-    * 新增 `SkyboxRenderer.isNight()`（夜晚因子 > 0.5）；星空枕创建/移除、羽星占卜在白天使用均提示 `message.*.night_only`（"晚上再来试试吧~"）并拒绝执行
-*   **修复占卜"未对准也能用、双提示都触发"**：
-    * 根因：`isCelestialTargeted` 未检查夜晚，白天连线星体数据仍保留（星体不可见但可命中）→ 白天视线扫过隐藏星体即"对准"成功
-    * 修复：`isCelestialTargeted` 开头加夜晚检查（白天恒 false）；`DivinationItem` 服务端增加夜晚兜底校验（`isServerNight`），双端均拒绝白天占卜
-*   **占卜成功提示位置调整**（`item/DivinationItem.java`）：占卜结果由聊天框（`sendSystemMessage`）改为快捷栏上方 action bar（`displayClientMessage(..., true)`），与"请先对准天体"提示同位置
-*   **星空枕左键移除**（`item/SkyLinkItem.java` + 新增 `client/SkyLinkItemEvents.java`）：
-    * 右键仅负责创建星体；左键（`PlayerInteractEvent.LeftClickBlock`/`LeftClickEmpty`）对准已创建星体时移除（`SkyLinkItem.tryRemoveStarAt`）
-    * 对准方块左键移除成功后取消事件（不破坏方块）；白天左键同样提示晚上再用
-*   **连线星体开放链**（`client/sky/content/SkyLinkContent.java`）：移除首尾闭环，星体按创建顺序依次连接成开放链（不再闭合为集合体）
-*   **夜空交互成就 ×3**（`data/pasterdream/advancement/achievement_stargaze|skylink|divination.json`）：
-    * 观星者：用望远镜对准星座星点（`ConstellationSkyContent` 首次对准时授予）
-    * 织星者：用星空枕创建第一颗连线星体（`SkyLinkItem` 创建成功后授予）
-    * 星语占卜师：对准天体完成一次占卜（`DivinationItem` 服务端授予）
-    * 客户端授予统一走 `SkyboxRenderer.awardClient`（单机提交服务端线程 + 会话级防重复）
-*   **物品使用描述与获取方式**（`item/SkyLinkItem.java` + `item/DivinationItem.java` + 语言文件）：
-    * 星空枕/占卜图录新增 `appendHoverText`：使用描述（夜晚限定/右键创建左键移除/对准天体占卜）+ 获取方式（"可在染梦世界的宝箱中发现"）
-    * 战利品表：染梦 13 个宝箱（`loot_table/chests/loots_relic_0~9`、`loots_deep_treasure_0/1(_super)`）新增 `memento_item_03`、`memento_item_08` 低权重条目（weight 1，脚本 `tools/add_memento_to_chests.py`）
-*   **语言键**（zh_cn/en_us）：更新 `tooltip.pasterdream.memento_item_03/08.effect`；新增 `tooltip.*.source` ×2、`message.*.night_only` ×2、成就 title/descr ×6
+*   **真正的根因**：`ShadowMagicballEntity extends GeckoLibProjectileEntity extends Projectile`，
+    而 **`Projectile.tick()` 只调用 `baseTick()`，不会自动执行 `move(getDeltaMovement())`**——弹道移动与
+    方块碰撞检测逻辑在 `AbstractArrow` / `AbstractHurtingProjectile` / `ThrowableProjectile` 子类中实现。
+    项目内正常工作的投射物（`BoneWingFireBallProjectileEntity`、`SpellProjectileEntity`）都继承 `AbstractArrow`，
+    故能自动飞行；本飞弹直接继承 `Projectile` 从未移动，即便设置了 `deltaMovement`。
+*   **修复**（`entity/projectile/ShadowMagicballEntity.java`）：
+    *   `tick()` 服务端新增 `moveProjectile()`：每 tick 手动 `level().clip(ClipContext)` 检测方块碰撞
+        （命中 → `onHit` → 爆炸），未命中则 `setPos(position + deltaMovement)` 推进位置，
+        并按速度方向更新 `yRot` / `xRot` 供 fly 动画对齐
+    *   修正 `ClipContext` import：`net.minecraft.world.level.ClipContext`（1.21.1 实际包名）
+*   **验证**：`:PasterDream:compileJava` 过滤本文件无编译错误（全量编译仍被他人重构阻塞）。
 
 ---
 
-## v0.9.3 — 2026-08-06
+## v0.9.5 — 2026-08-07
 
-### 修复：白天天体残留 / 望远镜视角过近 / 星空枕错位；新增占卜对准要求
+### 修复：BOSS 大部分时间不面向敌人 → 技能空位
 
-*   **白天天体残留**（`client/sky/content/TexturedPlanetSystemSkyContent.java`）：
-    * 根因：行星 `targetAlpha` 覆写为 `weatherFactor × (0.55 + 0.45 × nightFactor)`，白天夜晚因子归 0 后仍有 0.55 → 行星/卫星白天也显示在天空
-    * 修复：改为返回 `context.visibility()`（与星空/星座一致，仅夜晚可见，白天完全消失）
-*   **望远镜视角过近**（`client/sky/content/ConstellationSkyContent.java`）：
-    * 根因：望远镜 FOV 收窄后，星座星点放大倍率（×2.2）过大，单颗星遮挡星空全貌
-    * 修复：克制放大——程序化星 ×2.2→×1.6、纹理星 ×1.4→×1.25、亮度 ×2.5→×2.0；对准阈值 0.09→0.07 rad（需更精确框住星体才触发放大）
-*   **星空枕放置错位**（`item/SkyLinkItem.java`）：
-    * 根因：上一轮坐标换算修正引入符号错误（`Y(-A)` 旋转方向写反），创建的星体偏离玩家实际瞄准方向
-    * 修复：恢复正确逆变换 `先 X(90°) 再 Y(-A)`（`sx=lx·cosA-ly·sinA, sy=-lz, sz=lx·sinA+ly·cosA`），与渲染正变换 `X(-90°)·Y(A)` 严格互逆
-*   **占卜需对准天体**（`item/DivinationItem.java` + `client/sky/SkyboxRenderer.java`）：
-    * 新行为：羽星占卜图录必须**对准天空中的天体**（星座星点、行星或星空枕连线星体）再右键，未对准时提示 `message.pasterdream.divination.aim_first`（"请先对准天空中的天体..."）且不触发占卜/冷却
-    * 实现：客户端将世界视线逆变换为天空局部坐标，经 `SkyboxRenderer.isCelestialTargeted` 检测当前候选天空中的星座（`ConstellationSkyContent.containsStarNear`）、行星（`TexturedPlanetSystemSkyContent.containsPlanetNear`）与玩家连线星体；未对准返回 `PASS`（不向服务端发包），对准返回 `SUCCESS` 触发服务端占卜
-    * `SkyPoint` 新增 `length()` 向量模长辅助方法
-*   **新增语言键 2 个**（zh_cn/en_us 成对）：`message.pasterdream.divination.aim_first`
+*   **技术根因**：技能发射点用 `this.lookAt(target, 360, 360)` → 内部是 `Mob.getLookControl().setLookAt()`
+    （`Mob.lookAt(Entity, float, float)` 委托给 LookControl），**只更新 `yHeadRot`/`xRot`，不更新 `yRot`**；
+    而 `getLookAngle()`（用于计算魔法弹/冲刺发射方向）基于 **`yRot`（身体朝向）**。
+    结果 BOSS 头转向目标了，但**发射方向仍用旧身体朝向**，技能打空。
+*   **修复**（`AaroncosHandEntity` / `AaroncosRighthand0Entity` / `AaroncosLefthand0Entity`）：
+    *   基类 `aiStep()`：非召唤且有目标时，每 tick `getLookControl().setLookAt(target, 30, 30)` 平滑转头，
+        并 `setYRot(getYHeadRot())` + `setYBodyRot(getYHeadRot())` 同步身体朝向 → BOSS 持续面对敌人
+    *   技能发射点（右手魔法弹 35t、左手冲刺 16t）：`lookAt` 后立即 `setYRot(getYHeadRot())` 同步，
+        确保发射/冲锋瞬间方向绝对对准敌人
 
----
+### 修复：退出重进世界后 BOSS 变傻（技能系统卡死）
 
-## v0.9.3 — 2026-08-06
+*   **根因**：技能中间状态（`AaroncosSkill` 及各计数器）通过 NBT 持久化，但**延迟任务队列
+    `pendingTasks` 不持久化**。若在技能释放中（`AaroncosSkill=1`）保存并重进，加载后 `skill` 卡死，
+    且没有 queueTask 来解锁 → `tickSkillCycle` 永久 return，BOSS 不再释放任何技能。
+*   **修复**（`AaroncosHandEntity.baseTick`）：首次初始化块（实体实例化后首 tick，含 chunk 重载）清零
+    技能中间状态 `AaroncosSkill` / `AaroncosMagicball` / `AaroncosVortex` / `AaroncosSprint` / `AaroncosHit` /
+    `AaroncosSword` 并清空 `pendingTasks`；**仅保留一次性标记**（`AaroncosBloodLock` / `AaroncosTuneTotemFinale`）。
+*   **验证**：`:PasterDream:compileJava` 过滤三个 BOSS 文件无编译错误（全量编译仍被他人重构阻塞）。
 
-### 修复：星空枕崩溃 / 望远镜观星失效 / 星空白天渲染
 
-*   **星空枕崩溃**（`client/sky/content/SkyLinkContent.java`）：
-    * 根因：玩家只创建 **1 颗连线星体**时，连线缓冲没有任何顶点，`buffer.buildOrThrow()` 抛 `IllegalStateException: BufferBuilder was empty` 直接崩溃（crash-report 指向 `SkyLinkContent.render` L93）
-    * 修复：连线仅在 `stars.size() > 1` 时绘制；星体缓冲与连线缓冲改用安全提交 `SkyGeometry.drawIfNotEmpty`（空缓冲静默跳过）
-*   **空缓冲统一防御**（`client/sky/render/SkyGeometry.java` + 全部 9 个内容类）：
-    * 新增 `SkyGeometry.drawIfNotEmpty(BufferBuilder)`：`build()` 判空后再提交，替代所有 `buildOrThrow()`（共 13 处），杜绝任意内容类因数据问题（某纹理帧无星、两点重合线段被跳过等）产生同类崩溃
-*   **望远镜观星放大失效**（`client/sky/content/ConstellationSkyContent.java`）：
-    * 根因 1：`renderGlowStars` 中 `aimed` 仅调用日志、**不改变星点绘制**（放大倍率常量未生效）
-    * 根因 2：`renderTexturedStars` 中 `starSize = size * (aimed ? 1.0F : 1.0F)` —— aimed 分支恒为 1.0F（笔误），对准放大完全失效
-    * 修复：对准星点真正放大（程序化星 ×2.2 / 纹理星 ×1.4）并变亮（×2.5），额外叠加亮核层；`aimed` 过渡仍由 `aimProgress` 平滑插值
-    * 附带：`logAimed` 增加 30 tick 节流（多星座实例共享静态状态曾导致 DEBUG 日志每帧刷屏）
-*   **星空白天渲染**（`client/sky/SkyboxRenderer.java` `getNightFactor`）：
-    * 根因：`getSunAngle()` 返回 `timeOfDay × 2π`，timeOfDay 语义为**正午 = 0、午夜 = π**——用 `sin` 判断太阳高度时正午与午夜 sin 均为 0，白天（正午）夜晚因子高达 0.2 → 星空/行星/极光等白天也渲染（日志实测午夜可见度仅 0.45）
-    * 修复：改用 **`cos`**（正午 1、午夜 -1）——白天夜晚因子归 0，午夜全亮 1；同时修正方法注释
-*   **星空枕坐标换算修正**（`item/SkyLinkItem.java`）：
-    * 根因：世界→天空球局部逆变换公式符号错误（`Y(-A)` 旋转写反），创建的星体会偏离玩家实际瞄准方向
-    * 修复：改为正确逆变换 `先 X(90°) 再 Y(-A)`，与渲染正变换 `X(-90°)·Y(A)` 及望远镜 `isAimed` 检测完全一致
-*   **羽星占卜图录核查**（`item/DivinationItem.java`）：确认安全——`use()` 仅在服务端执行占卜（纯 `ServerPlayer` + `PDEffects`），客户端仅同步冷却，无客户端类引用，无崩溃风险
-
----
-
-## v0.9.3 — 2026-08-06
-
-### 新增：夜空交互系统（望远镜观星 / 连线星体 / 天体占卜）+ 群系切换过渡
-
-*   **望远镜观星改造**（`PasterDream/src/main/java/.../client/sky/content/ConstellationSkyContent.java`）：
-    * 星座星点"放大变亮"效果改为**仅玩家手持望远镜（Spyglass）且正在放大观看时触发**（`isUsingItem && useItem == SPYGLASS`）
-    * 放大/缩小带**过渡动画**：`aimProgress` 0~1 平滑插值，星点大小（×2.2）与亮度（×2.5）随进度渐入渐出
-    * 望远镜对准/移开日志由 INFO 降为 DEBUG（避免刷屏）
-*   **星空夜间特有**：确认 `star_field` 等全部天象 `targetAlpha` 默认返回 `context.visibility()`（夜晚因子×天气×遮挡），白天不渲染
-*   **连线星体**（`memento_item_08` 星空枕）：新增 `item/SkyLinkItem.java` + `client/sky/PlayerSkyLinkData.java` + `client/sky/content/SkyLinkContent.java`
-    * 手持星空枕**抬头对准天空右键**：在视线方向生成一颗连线星体，按创建顺序依次连线（>2 颗时首尾闭环成星座环）
-    * **再次右键已创建的星体可取消**（角距离阈值判定）
-    * 数量上限**默认 8，可配置**：`PasterDream-Common.toml` → `Sky.skylink max stars`（范围 1~64）
-    * 坐标换算：世界视线方向按天空旋转逆变换存为天空球局部坐标，星体随夜空转动；纯客户端视觉数据（不跨存档持久化）
-    * 新增 `SkyboxRenderer.renderPlayerSkyLinks` 挂载至 `AFTER_SKY`，透明度按可见度淡入淡出
-*   **天体占卜**（`memento_item_03` 羽星占卜图录）：新增 `item/DivinationItem.java`
-    * 使用后随机占卜事件（3 选 1）：
-      * "今晚是个好梦~" → 梦境祝福 `dreamwish_buff`
-      * "运气真好~" → 寻梦者的祈愿 `memento_buff`（幸运 +10）
-      * "星光在你指尖流转~" → 染梦附魔 `dyedreamup_buff`
-    * 冷却 5 秒（100 tick）、BUFF 持续 10 秒（200 tick）；服务端随机与施加，客户端同步冷却显示
-*   **群系切换过渡**（`SkyboxRenderer.updateSelectedCandidate`）：群系变化时跳过 60 tick 防抖**立即切换候选**，由逐条目 alpha lerp 完成新旧天空交叉淡入淡出
-*   **新增语言键 9 个**（zh_cn/en_us 成对）：`tooltip.pasterdream.memento_item_03.effect`、`tooltip.pasterdream.memento_item_08.effect`、`message.pasterdream.divination.good_dream/lucky/starlight`、`message.pasterdream.skylink.added/removed/full/look_up`
-
----
-
-## v0.9.3 — 2026-08-06
-
-### 修复：染梦维度遗迹浮空/遁地（低地群系导致贴地结构泡水）
-
-*   **根因**：染梦维度地形调整（sea_level 63→55 + 新增海岸/河流/浅海群系）后，`#pasterdream:dyedream_biome` 结构专用群系标签包含了海岸（`biome_dyedream_shore`）、河流（`biome_dyedream_river`）与浅海（`biome_dyedream_3`）等**地形低于水面 55 的低地群系**，贴地遗迹（亭子/营地/酒馆等，底部为 dirt 地基、`start_height` 负偏移）按高度图偏移生成后底部沉入水下 → 视觉表现为「遁地/泡水」
-*   **修复**（`PasterDream/src/main/resources/data/pasterdream/tags/worldgen/biome/dyedream_biome.json`）：
-    * 从 `#pasterdream:dyedream_biome` 移除 `biome_dyedream_3`（浅海）、`biome_dyedream_shore`（海岸）、`biome_dyedream_river`（河流）三个低地群系
-    * 保留高地群系：`biome_dyedream_0/1/2`、`biome_dyedream_dense_forest`（地形均 ≥ 海平面 55，贴地结构底部不再泡水）
-    * 影响结构：`dream_church_0~9`、`dream_wishingtree_0/1`（不再在低地生成，悬浮高度恢复正常）
-*   **贴地结构浅海群系修正**（`worldgen/structure/*.json`）：
-    * `dyedream_pavilion_0.json`：biomes 由 `[biome_dyedream_0, biome_dyedream_3]` 收敛为 `biome_dyedream_0`
-    * `dyedream_pavilion_2.json`：biomes 由 `biome_dyedream_3`（浅海）改为 `biome_dyedream_0`（平原）
-*   **保留**：`big_bubbles_0~5`（云坠泡泡）、`dream_train`（染梦列车）、`dyedream_floating_temple`（悬浮寺庙）、`garden_decryption_2`（悬浮花园）在浅海群系生成——均为悬浮设计（底部为泡泡/云），浅海上空悬浮属正常
-*   **注意（破坏性）**：已有染梦维度存档需重新生成区块方可看到修复效果；`/locate` 定位新结构同样需要新区块
-
----
-
-## v0.9.3 — 2026-08-05
-
-### 重构：染梦维度地下结构（深层全方解石 / 地下岩浆改地下河 / 浅层染梦砂岩递减）
-
-*   **深层全方解石**：`PasterDream/src/main/resources/data/pasterdream/worldgen/noise_settings/dyedream_world.json` 删除 `deepstone_layer` 规则（原底部染梦深层石与方解石的混搭渐变），深层（Y-64~0）改为默认方块 `minecraft:calcite` 纯方解石
-*   **地下岩浆 → 地下河**（三路并除）：
-    * 含水层随机岩浆：`noise_router.lava` 由 `aquifer_lava` 噪声改为常数 `0.0`，深水区不再随机变岩浆
-    * 洞穴雕刻岩浆：新增 `pasterdream:dyedream_cave` / `dyedream_cave_extra_underground` / `dyedream_canyon` 三个自定义 configured carver（`lava_level` 降至 `absolute -2032`），染梦 9 个群系 `carvers` 引用同步替换
-    * 世界底部硬编码岩浆层：新增服务端 Mixin `NoiseBasedChunkGeneratorMixin`（已注册至 `pasterdream.mixins.json`），仅对默认方块为方解石的染梦维度拦截 `createFluidPicker`，将原版硬编码的 `y < -54 → LAVA` 替换为「低于海平面一律默认流体（水）」
-*   **浅层染梦砂岩由上到下递减**：删除原 `sandstone_layer`（仅深海群系、方向相反），新增全局规则「`minecraft:not` + `vertical_gradient`」——Y≥64（above_bottom≥128）为 100% 染梦砂岩，Y0~64 线性递减，Y<0 无砂岩（深层方解石）；对地表非染梦泥土的群系（雪原/沙地/海岸/河流）同样生效
-*   **保留**：各群系地表表层与填充层规则、`permafrost_layer`（biome_dyedream_2 深层永冻冰）
-*   **注意（破坏性）**：已有染梦维度存档需重新生成区块方可看到新地下结构
-
----
-
-## v0.9.3 — 2026-08-05
-
-### 新增：染梦世界夜空体系（仿照模组 Stellara 风格）
-
-*   **夜空装饰**：染梦世界夜晚新增群系主题星空（星星/行星/卫星/星座/流星/极光/光带/彩虹/tint），每个群系有专属配色与组合（温暖平原暖橙、炎热森林翠绿、寒冷冰雪冰蓝+强极光、海洋深海蓝+多行星、蘑菇平原菌紫、密林粉紫）
-*   **每晚随机天空**：每个群系配置 3 套天空变体，每晚（新的一天）从候选池随机选一套 → 每个夜晚出现不同的天空效果（强极光之夜 / 银河光带之夜 / 密集流星之夜等），保留群系风格
-*   **极光修正**：所有极光位于高空（min_pitch/max_pitch > 0），不再贴地
-*   **望远镜对准星座星点**：玩家视线对准星座中某颗星时，该星**放大 2.2 倍、变亮 2.5 倍**并额外绘制亮核；移开视线自动恢复
-*   **渲染架构（Iris 光影兼容）**：
-    * `RenderLevelStageEvent.AFTER_SKY` 事件渲染天空内容（`SkyboxClientEvents`）
-    * 内容类不设混合模式，统一标准混合（`SkyboxRenderer`）
-    * 星星/行星/星座纹理用 `getPositionTexShader`（纯纹理，避免粒子 shader 在光影下顶点色变黑）
-    * 极光/光带/流星用 `getPositionColorShader`
-*   **API 集成**：`SkyboxAPI` 新增 `buildSkyPoseStack` / `isAfterSky`；`api/client/sky/README.md` 完整集成指南（含 7 条易犯错误）；`SkyboxPresets` 预设库 + `SkyboxPresetLoader`
-*   **纹理**：`tools/gen_sky_textures.py` 程序化生成群系主题星星/行星/卫星；`tools/recolor_stellara_textures.py` 换色复用 Stellara 纹理；`tools/solidify_planets.py` 行星实心化（避免半透明/黑边）
-*   **配置**：`data/pasterdream/skyboxes/*.json` 数据驱动（基础 6 套 + 变体 18 套）；`tools/verify_skyboxes.py` 校验
-
----
-
-## v0.9.3 — 2026-08-05
-
-### 新增：融梦水晶箱开箱冷却改为 10 分钟，并接入配置界面
-
-*   **改动**：融梦水晶箱玩家开箱冷却由写死的 1 分钟（1200 tick）改为 10 分钟（12000 tick），且时长可配置
-*   **配置项**：`PasterDreamMeltDream` 新增 `chest cooldown` 配置键（`pasterdreammeltdream-common.toml`，默认 `12000`，范围 1 ~ `Integer.MAX_VALUE`）
-*   **接口**：`IMeltDreamEnergySystemConfig` 新增 `chestCooldownTicks()` 方法（`PasterDreamAPI`），主模组 `MeltdreamChestBlockEntity.setCooldown()` 改为动态读取配置；未安装融梦模组时注册表空实现回退 12000 tick，主模组独立运行不崩溃
-*   **配置界面**：新配置项注册到 `PDAddonConfigRegistry`，Mod 列表「配置」界面 → 融梦系统分类显示「水晶箱开箱冷却」（tick 输入），保存即写入 TOML
-*   **资源/文档**：中英文语言文件新增 `gui.pasterdream.config.meltdream_chest_cooldown`（含 tooltip）；`PasterDreamMeltDream/README.md` 配置表格同步
-
----
-
-## v0.9.3 — 2026-08-05
-
-### 重构：破风骑士祭坛 5 方块合并为单方块（STAGE 属性 + FACING 朝向）
-
-*   **改动**：`wind_knight_spawnblock_0..4` 五个独立方块/物品/方块实体合并为单一 `wind_knight_spawnblock`
-*   **机制**：拼装样式改由方块数据 `STAGE`(0..4) 决定——右键交互不再“每搭建一次替换方块”，而是写入 `STAGE` 值切换样式；阶段推进逻辑与原版一致（风行者水晶→1、凝风铁×3→2/3/4、闪电法术→86t 召唤风之骑士+四雷云→回 stage 0）
-*   **朝向**：新增 `FACING` 水平朝向，`getStateForPlacement` 取玩家朝向反向，GeckoLib 渲染自动按朝向旋转；实现 `rotate`/`mirror`
-*   **渲染**：`WindKnightSpawnblockModel` 按 STAGE 动态切换 `geo/block/wind_knight_spawnblock_N.geo.json`；纹理/动画统一单文件；BE 统一为 `WIND_KNIGHT_SPAWNBLOCK`
-*   **资源**：blockstates 合并（stage 变体）、loot/lang 合并；删除 `geo/` 根与 `animations/` 根重复文件
-*   **遗迹同步**：风之旅途 `lost_windknight_ruins` 结构 NBT 内引用的旧 ID `pasterdream:wind_knight_spawnblock_0` 已改写为新 ID（2 处，NBT 二进制重写；`tools/rewrite_structure_spawnblock_id.py`）；不改写则结构加载时祭坛变空气
-*   **追踪**：`pd_porting_manifest.json`（renames `_0` + excluded `_1.._4`）、`tag_audit.json`、VERIFY hooks 同步
-*   **注意（破坏性）**：旧档已放置的 `wind_knight_spawnblock_0..4` 会因 ID 合并消失，需重新放置；**已生成区块中遗迹里的旧 ID 祭坛会变空气**——新档/新探索区域正常生成，旧档可用 `/fill ... air replace pasterdream:wind_knight_spawnblock_0` 清理后重新生成
-
----
-
-## v0.9.3 — 2026-08-05
-
-### 移除：彻底删除 `/pasterdream` 指令树
-
-*   **改动**：删除整个 `/pasterdream` 指令（`dimension reset` / `arena locate` / `arena tp` / `bgm debug` / `bgm play` / `bgm list`），`PDCommands.java` 及 `command/` 目录一并移除
-*   **根因（顺带实锤）**：`bgm list` 将 `ResourceLocation` 直接传给 `Component.translatable()` 参数，而 `TranslatableContents` 只接受 `Component/Number/Boolean/String` → 触发 `IllegalArgumentException`（日志：`Was given pasterdream:music.dream_meadow for message.pasterdream.command.bgm_list_registered`），是 BGM 指令崩溃的元凶
-*   **清理范围**：
-    * `PasterDreamMod.java` 移除 `PDCommands::register` 注册监听与 import
-    * 中英文语言文件各移除 40 个 `message.pasterdream.command.*` 键
-    * `PDAaroncosArenaSpawnData` / `PDAaroncosArenaWorldgen` 注释中的指令引用一并修正
-    * `docs/验证复现.md` 指令相关说明同步更新（archive 历史文档保留）
-*   **保留**：`DimensionRegionHelper`（API 工具类，非指令，供维度重置相关逻辑复用）
-
-### 修复：暮影之笼（twilight_lantern）激活时与原版 BGM 双播
-
-*   **症状**：激活暮影之笼后，`shadow_music_0`（SoundSource.MUSIC）与原版背景音乐（如主世界 `music.game`）同时播放
-*   **根因**：1.21.1 `SoundEngine.play` 播放 `MUSIC` 源声音时不会停止原版 `MusicManager` 正在播放的音乐
-*   **修复**（`TwilightLanternMusicPayload.java` / `TwilightLanternMusicHandler.java` / `TwilightLanternMusicState.java` / `PDNetwork.java` / `PDClientVfx.java` / `TwilightLanternBlock.java`）：
-    * 新增 S2C 包 `TwilightLanternMusicPayload`（布尔 `active`），事件激活（+55t）广播 `true`、事件结束（+2600t）广播 `false`
-    * 客户端 `TwilightLanternMusicHandler` 监听 NeoForge `SelectMusicEvent`，激活期间 `setMusic(null)` 使原版 `MusicManager` 停止并保持静音，事件结束自动恢复
-    * **边界处理**（新增 `TwilightLanternMusicState` 服务端状态追踪）：
-        * 多笼并发：按「维度 → 激活事件计数」维护，任一笼子激活即静音，全部结束才恢复
-        * 玩家中途换维度/登录重连：按目标维度计数补发状态（离开事件维度立即恢复原版 BGM）
-        * 玩家断线/退出：客户端监听 `ClientPlayerNetworkEvent.LoggingOut` 重置标志，防残留
-
----
-
-## v0.9.3 — 2026-08-05
-
-### 新增：染梦遗迹奖励箱加入原版基础资源
-
-*   `loot_table/chests/loots_relic_0.json`（染梦世界遗迹通用）与 `loot_table/loots_relic_1.json`（染梦世界遗迹少量）的金属锭池（pool[5]）新增 8 种原版基础资源：
-    *   铁锭（weight 6，2–5）、煤炭（weight 5，3–8）、铜锭（weight 4，2–6）、金锭（weight 3，1–3）、红石（weight 3，2–6）、青金石（weight 2，1–4）、钻石（weight 1，1–2）、绿宝石（weight 1，1–2）
-*   条目插入在 `tabitem_1` 空占位之前，保留原文件格式与 `random_sequence` 字段
-
----
-
-## v0.9.3 — 2026-08-05
-
-### 修复：染梦列车遗迹由召唤方块改为完整多方块列车结构
-
-*   **症状**：染梦列车遗迹生成的是 1×1×1 的 `dream_train_structure` 召唤方块（右键仅提示「列车即将到站」），而非多方块列车
-*   **根因**：`template_pool/dream_train.json` 的 `location` 指向 `dream_train_platform` NBT（单方块占位）；完整列车 `dream_train.nbt`（25×43×228，24470 方块）从未被遗迹引用
-*   **修复**（`worldgen/template_pool/dream_train.json` / `worldgen/structure/dream_train.json`）：
-    * `location` 改为 `pasterdream:dream_train`，遗迹直接生成完整染梦列车结构
-    * `max_distance_from_center` 64 → 120（列车 Z 长 228 半长 114；受 1.21.1 codec 约束 `maxDistance+terrainOffset ≤ 128`）
-    * 高度保持原配置（55 + 地表高度，空中漂浮列车，与染梦结构约定一致）
-
----
-
-## v0.9.3 — 2026-08-05
-
-### 修复：暮影之笼（据点守卫）结构生成不刷怪
-
-*   **症状**：jigsaw 自然生成的据点里，暮影之笼点燃后 130 秒内不刷任何怪；玩家手动放置的笼子正常
-*   **根因**：结构生成走 `WorldGenRegion.setBlock` → `ProtoChunk`（FEATURES 阶段），该路径**不创建 BlockEntity、不调用 `onPlace`**，仅写入 `id=DUMMY` 占位 NBT；区块转 `LevelChunk` 时 `BlockEntity.loadStatic("DUMMY")` 找不到类型 → BE 永久缺失。后果：点燃时 `putBooleanAt("switch", true)` 静默失败（`FreeDataBlockEntity.putBooleanAt` 对 null BE 直接返回），且 tick 从未被调度 → 不刷怪
-*   **修复**（`TwilightLanternBlock.java` / `PasterBlockResetToolItem.java` / `PDTwilightLanternVerifyHooks.java`）：
-    * `TwilightLanternBlock.ensureBlockEntity()`：BE 缺失时按 `newBlockEntity` 补建；点燃分支、`onPlace`、重置工具均调用
-    * 点燃分支额外 `scheduleTick(20)` 启动计数循环（结构笼 `onPlace` 从未调度）
-    * VERIFY `twilight-lantern` 新增「BE 缺失自愈」回归项
 

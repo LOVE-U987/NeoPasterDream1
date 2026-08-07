@@ -624,7 +624,7 @@ public final class PDMainFlowVerifyHooks {
         acceptHard(out, hasAdvancement(player, "achievement_shadow_e_0"), "e_0 胜利", "boss manager");
         setFlag("e_0", true);
 
-        BlockPos chestPos = new BlockPos(0, 69, 0);
+        BlockPos chestPos = PDArenaBossManager.VICTORY_CHEST_POS;
         accept(out, arena.getBlockState(chestPos).is(PDBlocks.AARONCOS_HAND_CHEST.get()),
                 "胜利手箱生成", arena.getBlockState(chestPos).toString());
 

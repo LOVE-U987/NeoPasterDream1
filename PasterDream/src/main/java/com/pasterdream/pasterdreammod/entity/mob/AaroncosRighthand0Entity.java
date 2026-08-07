@@ -1,6 +1,10 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.effect.atmosphere.AtmosphereEffectAPI;
+import com.pasterdream.pasterdreammod.api.effect.particle.ParticleEmitterAPI;
+import com.pasterdream.pasterdreammod.api.effect.particle.ParticleEmitterData;
+import com.pasterdream.pasterdreammod.api.effect.particle.processors.CircleSpawnProcessor;
 import com.pasterdream.pasterdreammod.entity.projectile.ShadowMagicballEntity;
 import com.pasterdream.pasterdreammod.registry.PDArenaBossManager;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
@@ -10,6 +14,7 @@ import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -35,8 +40,8 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
  * 行为：
  * <ul>
  *   <li>飞行 BOSS，500HP，免疫击退和火焰伤害</li>
- *   <li>技能循环：魔法弹(3次) → 涡流，受击触发调音图腾召唤</li>
- *   <li>HP &lt; 100 时触发鲜血锁链（玩家减益）</li>
+ *   <li>技能循环：魔法弹(3次) → 涡流；终结技「调音图腾」在双 BOSS 低血量/单侧死亡时全场释放一次</li>
+ *   <li>HP &lt; 本体血量 1/3 时触发狂暴（鲜血锁链，玩家减益）</li>
  *   <li>粉色 BOSS 血条</li>
  * </ul>
  * <p>
@@ -120,10 +125,13 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
 
     /**
      * 受击时触发的技能。
+     * <p>
+     * 调音图腾已改为终结技（仅在双 BOSS 低血量 / 单侧死亡时由技能循环释放），
+     * 受击不再触发，故此处为空实现。
      */
     @Override
     protected void onHurtTriggerSkill() {
-        triggerTuneTotemSkill();
+        // 终结技由 tickSkillCycle 按血量条件释放，受击不触发
     }
 
     /**
@@ -136,7 +144,7 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
         CompoundTag data = this.getPersistentData();
         compound.putInt("AaroncosMagicball", data.getInt("AaroncosMagicball"));
         compound.putInt("AaroncosVortex", data.getInt("AaroncosVortex"));
-        compound.putInt("AaroncosTuneTotem", data.getInt("AaroncosTuneTotem"));
+        compound.putBoolean("AaroncosTuneTotemFinale", data.getBoolean("AaroncosTuneTotemFinale"));
     }
 
     /**
@@ -153,8 +161,8 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
         if (compound.contains("AaroncosVortex")) {
             data.putInt("AaroncosVortex", compound.getInt("AaroncosVortex"));
         }
-        if (compound.contains("AaroncosTuneTotem")) {
-            data.putInt("AaroncosTuneTotem", compound.getInt("AaroncosTuneTotem"));
+        if (compound.contains("AaroncosTuneTotemFinale")) {
+            data.putBoolean("AaroncosTuneTotemFinale", compound.getBoolean("AaroncosTuneTotemFinale"));
         }
     }
 
@@ -195,7 +203,7 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
      * <ul>
      *   <li>魔法弹(3次, 间隔约20+40 tick) → vortex 累计</li>
      *   <li>vortex == 3 → 触发涡流技能</li>
-     *   <li>受击 → 触发调音图腾技能</li>
+     *   <li>终结技：双 BOSS 血量均低于 1/5 或单侧死亡时 → 触发调音图腾（全场仅一次）</li>
      * </ul>
      * <p>
      * 召唤状态下技能系统被禁用。
@@ -211,22 +219,34 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
 
         if (!sw || skill == 1) return;
 
+        // 只对仇恨目标释放技能：无目标不放（脱战/和平模式站桩）
+        LivingEntity target = getCombatTarget();
+        if (target == null) return;
+
         int magicball = data.getInt("AaroncosMagicball");
         int vortex = data.getInt("AaroncosVortex");
 
-        // 魔法弹阶段：magicball 不为 1 且不为 3 时触发
-        if (magicball != 1 && magicball != 3) {
-            data.putInt("AaroncosSkill", 1);
-            data.putInt("AaroncosMagicball", 1);
-            executeMagicballSkill();
-            return;
-        }
+        // 远程技能：目标稍远（>6 格）才释放（远程手保持距离输出）
+        if (this.distanceToSqr(target) > 6.0 * 6.0) {
+            // 终结技优先判定：双 BOSS 低血量 / 单侧死亡时释放调音图腾，全场仅一次
+            if (tryTriggerTuneTotemFinale()) {
+                return;
+            }
 
-        // 涡流阶段：vortex == 3 时触发
-        if (vortex == 3) {
-            data.putInt("AaroncosSkill", 1);
-            data.putInt("AaroncosVortex", 4);
-            executeVortexSkill();
+            // 魔法弹阶段：magicball 不为 1 且不为 3 时触发
+            if (magicball != 1 && magicball != 3) {
+                data.putInt("AaroncosSkill", 1);
+                data.putInt("AaroncosMagicball", 1);
+                executeMagicballSkill();
+                return;
+            }
+
+            // 涡流阶段：vortex == 3 时触发
+            if (vortex == 3) {
+                data.putInt("AaroncosSkill", 1);
+                data.putInt("AaroncosVortex", 4);
+                executeVortexSkill();
+            }
         }
     }
 
@@ -247,23 +267,39 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
         CompoundTag data = this.getPersistentData();
         this.setAnimation("skill_magicball");
 
-        // 5 tick 后播放蓄力音效（SKILL0 + STONE_BREAK_0）
+        // 5 tick 后播放蓄力音效（SKILL0 + STONE_BREAK_0）+ 蓄力光团粒子发射器
         queueTask(5, () -> {
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
                     PDSounds.SKILL0.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
                     PDSounds.STONE_BREAK_0.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
+
+            // 蓄力光团：手部灵魂火焰粒子持续喷射（30 tick 覆盖蓄力过程）
+            if (this.level() instanceof ServerLevel sl) {
+                ParticleEmitterAPI.spawn(sl, this.position(), 99.0,
+                        ParticleEmitterData.builder(ParticleTypes.SOUL_FIRE_FLAME)
+                                .position(this.position().add(0, 1.5, 0))
+                                .lifetime(30)
+                                .particlesPerTick(3)
+                                .processor(new CircleSpawnProcessor(0.5f))
+                                .build());
+            }
         });
 
-        // 35 tick 后锁定最近玩家 + 爆炸效果 + 发射魔法弹
+        // 35 tick 后锁定当前攻击目标（敌人）+ 爆炸效果 + 发射魔法弹
         queueTask(35, () -> {
-            // 锁定最近玩家
-            Player nearest = this.level().getNearestPlayer(this, 64.0);
-            if (nearest != null) {
-                this.lookAt(nearest, 360.0F, 360.0F);
+            // 技能方向锁定 BOSS 当前攻击目标（敌人），而非最近玩家；
+            // 无目标时不强行转向，保持当前朝向发射。
+            LivingEntity target = this.getTarget();
+            if (target != null && target.isAlive()) {
+                this.lookAt(target, 360.0F, 360.0F);
+                // 关键：getLookAngle() 基于 yRot，Mob.lookAt 只更新 yHeadRot，
+                // 必须同步 yRot/yBodyRot，否则弹道方向仍用旧身体朝向导致打空
+                this.setYRot(this.getYHeadRot());
+                this.setYBodyRot(this.getYHeadRot());
             }
 
-            // 爆炸粒子
+            // 爆炸粒子（发射瞬间不再触发全屏打击帧，避免频繁黑白闪）
             if (this.level() instanceof ServerLevel sl) {
                 sl.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(),
                         16, 1, 1, 1, 0.2);
@@ -291,6 +327,8 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
                     magicball.moveTo(this.getX() + look.x * 1.5,
                             this.getY() + look.y * 1.5,
                             this.getZ() + look.z * 1.5);
+                    // 设置发射者，飞弹不会把 BOSS 本体误判为目标而原地爆炸
+                    magicball.setOwner(this);
                     magicball.setDeltaMovement(look.x * 3, look.y * 2, look.z * 3);
                     sl.addFreshEntity(magicball);
                 }
@@ -342,9 +380,9 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
                 sl.setBlockAndUpdate(bossPos, PDBlocks.SHADOW_VORTEX.get().defaultBlockState());
             }
 
-            // 64 格内玩家受到涡流影响
+            // 64 格内可攻击玩家（排除创造模式）受到涡流影响
             AABB box = this.getBoundingBox().inflate(64.0);
-            this.level().getEntitiesOfClass(Player.class, box, Entity::isAlive)
+            this.level().getEntitiesOfClass(Player.class, box, this::isAttackablePlayer)
                     .forEach(p -> {
                         p.hurt(this.damageSources().mobAttack(this), 4.0F);
                         p.setDeltaMovement(new Vec3(0, 0.2, 0));
@@ -370,87 +408,118 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
     }
 
     /**
-     * 受击触发的调音图腾技能 —— 播放调音图腾动画 + 召唤调音图腾 + 范围减益
+     * 终结技：调音图腾 —— 全场仅释放一次的巨大爆炸前置
      * <p>
-     * 流程：
+     * 释放条件（全部满足，且全场未释放过）：
      * <ul>
-     *   <li>0 tick：触发 skill_tunetotem 动画 + 抗性提升 + 下坠 + 范围混乱 + STONE_BREAK/SKILL2 音效</li>
-     *   <li>10 tick：自身缓慢 + 粒子</li>
-     *   <li>15 tick：二次粒子</li>
-     *   <li>21 tick：召唤 ShadowTuneTotemEntity + 后跳</li>
-     *   <li>120 tick：解锁技能状态</li>
-     *   <li>600 tick：重置调音图腾冷却</li>
+     *   <li>释放者（右手）当前血量低于自身最大血量的 <b>1/3</b>（强制前置）</li>
+     *   <li>另一只手（左手）已死亡，或左手血量低于其最大血量的 1/5</li>
      * </ul>
+     * 左手先死但右手血量未达标时不会释放，右手血量降至 1/3 后仍可正常补释放。
+     * 效果：
+     * <ul>
+     *   <li>0 tick：触发 skill_tunetotem 动画 + 抗性提升 + 下坠 + 范围混乱</li>
+     *   <li>0 tick：向场内玩家广播高危提示（伤害极高，需尽快打掉图腾）</li>
+     *   <li>21 tick：召唤 ShadowTuneTotemEntity（50 HP / 50 格 250 魔法伤害爆炸）+ 后跳</li>
+     *   <li>120 tick：解锁技能状态</li>
+     * </ul>
+     *
+     * @return 是否已释放终结技（true 时技能循环应直接返回）
      */
-    private void triggerTuneTotemSkill() {
+    private boolean tryTriggerTuneTotemFinale() {
         CompoundTag data = this.getPersistentData();
-        int skill = data.getInt("AaroncosSkill");
-        boolean sw = data.getBoolean("AaroncosSwitch");
-        int totem = data.getInt("AaroncosTuneTotem");
-
-        if (skill == 0 && sw && totem != 1 && this.getHealth() > 1) {
-            data.putInt("AaroncosSkill", 1);
-            data.putInt("AaroncosTuneTotem", 1);
-
-            this.setAnimation("skill_tunetotem");
-
-            // 抗性提升 + 下坠
-            this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 1, false, false));
-            this.setDeltaMovement(new Vec3(0, -2, 0));
-
-            // 初始 AoE 混乱效果：15 格内非暗影标签 LivingEntity 施加 CONFUSION 60 tick
-            List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class,
-                    this.getBoundingBox().inflate(15.0),
-                    e -> e != this && e.isAlive() && !e.getType().is(SHADOW_MOB_TAG));
-            for (LivingEntity entity : entities) {
-                entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 60, 0, false, false));
-            }
-
-            // 音效（SKILL2 + STONE_BREAK）
-            this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
-                    PDSounds.SKILL2.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
-            this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
-                    PDSounds.STONE_BREAK.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
-
-            // 10t 后粒子 + 自身缓慢
-            queueTask(10, () -> {
-                this.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 120, 4, false, false));
-                if (this.level() instanceof ServerLevel sl) {
-                    sl.sendParticles(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(),
-                            32, 1, 0, 1, 0.5);
-                }
-            });
-
-            // 15t 后二次粒子
-            queueTask(15, () -> {
-                if (this.level() instanceof ServerLevel sl) {
-                    sl.sendParticles(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(),
-                            32, 1, 0, 1, 0.5);
-                }
-            });
-
-            // 21t 后召唤调音图腾 + 后跳
-            queueTask(21, () -> {
-                // 召唤 ShadowTuneTotemEntity（前方 2 格）
-                if (this.level() instanceof ServerLevel serverLevel) {
-                    ShadowTuneTotemEntity tuneTotem = PDEntities.SHADOW_TUNE_TOTEM.get().create(serverLevel);
-                    if (tuneTotem != null) {
-                        tuneTotem.moveTo(this.getX() + this.getLookAngle().x * 2,
-                                this.getY(),
-                                this.getZ() + this.getLookAngle().z * 2);
-                        tuneTotem.setYRot(this.getRandom().nextFloat() * 360.0F);
-                        serverLevel.addFreshEntity(tuneTotem);
-                    }
-                }
-                // 后跳
-                Vec3 look = this.getLookAngle();
-                this.setDeltaMovement(new Vec3(look.x * (-1), 0, look.z * (-1)));
-            });
-
-            // 120 tick 后解锁技能
-            queueTask(120, () -> data.putInt("AaroncosSkill", 0));
-            // 600 tick 后重置调音图腾冷却
-            queueTask(600, () -> data.putInt("AaroncosTuneTotem", 0));
+        if (data.getBoolean("AaroncosTuneTotemFinale")) {
+            return false;
         }
+        if (this.getHealth() <= 1 || this.level().isClientSide()) {
+            return false;
+        }
+
+        // 强制前置：释放者（右手）自身血量必须低于最大血量的 1/3。
+        // 条件不满足时直接返回且不写任何标记，避免「左手先死但右手血量未达标」时
+        // 只评估一次就放弃——后续右手血量降到 1/3 仍可再次评估并释放。
+        if (this.getHealth() > this.getMaxHealth() / 3f) {
+            return false;
+        }
+
+        // 查询场内另一只手（左手）—— 竞技场半径约 99 格
+        List<AaroncosLefthand0Entity> lefts = this.level().getEntitiesOfClass(
+                AaroncosLefthand0Entity.class, this.getBoundingBox().inflate(99.0));
+        AaroncosLefthand0Entity left = lefts.isEmpty() ? null : lefts.get(0);
+
+        // 任一侧死亡 → 可释放
+        boolean partnerDead = left == null || !left.isAlive();
+        // 左手也低于自身最大血量 1/5 → 可释放
+        boolean partnerLow = left != null && left.getHealth() <= left.getMaxHealth() / 5f;
+
+        if (!partnerDead && !partnerLow) {
+            return false;
+        }
+
+        // —— 释放终结技 ——
+        data.putBoolean("AaroncosTuneTotemFinale", true);
+        data.putInt("AaroncosSkill", 1);
+
+        this.setAnimation("skill_tunetotem");
+
+        // 抗性提升 + 下坠
+        this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 1, false, false));
+        this.setDeltaMovement(new Vec3(0, -2, 0));
+
+        // 向 64 格内玩家广播高危提示
+        AABB warningBox = this.getBoundingBox().inflate(64.0);
+        this.level().getEntitiesOfClass(Player.class, warningBox, Entity::isAlive)
+                .forEach(p -> p.displayClientMessage(
+                        Component.translatable("message.pasterdream.shadow_tune.finale_warning"),
+                        true));
+
+        // 音效（SKILL2 + STONE_BREAK）+ 释放铺垫：短促暗化氛围（黑场闪白与晃动留给图腾爆炸高潮）
+        this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
+                PDSounds.SKILL2.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
+        this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
+                PDSounds.STONE_BREAK.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
+
+        if (this.level() instanceof ServerLevel sl) {
+            AtmosphereEffectAPI.darken(sl, this.position(), 99.0, 0.7f, 80);
+        }
+
+        // 10t 后粒子 + 自身缓慢
+        queueTask(10, () -> {
+            this.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 120, 4, false, false));
+            if (this.level() instanceof ServerLevel sl) {
+                sl.sendParticles(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(),
+                        32, 1, 0, 1, 0.5);
+            }
+        });
+
+        // 15t 后二次粒子
+        queueTask(15, () -> {
+            if (this.level() instanceof ServerLevel sl) {
+                sl.sendParticles(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(),
+                        32, 1, 0, 1, 0.5);
+            }
+        });
+
+        // 21t 后召唤调音图腾 + 后跳
+        queueTask(21, () -> {
+            // 召唤 ShadowTuneTotemEntity（前方 2 格）
+            if (this.level() instanceof ServerLevel serverLevel) {
+                ShadowTuneTotemEntity tuneTotem = PDEntities.SHADOW_TUNE_TOTEM.get().create(serverLevel);
+                if (tuneTotem != null) {
+                    tuneTotem.moveTo(this.getX() + this.getLookAngle().x * 2,
+                            this.getY(),
+                            this.getZ() + this.getLookAngle().z * 2);
+                    tuneTotem.setYRot(this.getRandom().nextFloat() * 360.0F);
+                    serverLevel.addFreshEntity(tuneTotem);
+                }
+            }
+            // 后跳
+            Vec3 look = this.getLookAngle();
+            this.setDeltaMovement(new Vec3(look.x * (-1), 0, look.z * (-1)));
+        });
+
+        // 120 tick 后解锁技能
+        queueTask(120, () -> data.putInt("AaroncosSkill", 0));
+        return true;
     }
 }

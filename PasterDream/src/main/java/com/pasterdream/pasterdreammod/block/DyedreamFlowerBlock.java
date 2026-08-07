@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.block;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.registry.PDBlockTags;
+import com.pasterdream.pasterdreammod.registry.PDItemTags;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -11,7 +12,6 @@ import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.core.BlockPos;
@@ -57,9 +57,9 @@ public class DyedreamFlowerBlock extends FlowerBlock {
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-        // 仅使用剪刀等相关工具破坏时掉落自身，空手或其他工具破坏不掉落
+        // 仅使用剪刀/园艺钳等剪刀类工具破坏时掉落自身，空手或其他工具破坏不掉落
         ItemStack tool = params.getParameter(LootContextParams.TOOL);
-        if (tool != null && !tool.isEmpty() && tool.getItem() instanceof ShearsItem) {
+        if (tool != null && !tool.isEmpty() && tool.is(PDItemTags.SHEARS)) {
             return List.of(new ItemStack(this));
         }
         return Collections.emptyList();

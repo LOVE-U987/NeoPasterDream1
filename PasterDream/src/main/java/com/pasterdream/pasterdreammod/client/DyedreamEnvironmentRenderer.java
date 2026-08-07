@@ -1,7 +1,6 @@
 package com.pasterdream.pasterdreammod.client;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
-import com.pasterdream.pasterdreammod.client.particle.AuroraGlowParticle;
 import com.pasterdream.pasterdreammod.client.particle.CrystalSnowflakeParticle;
 import com.pasterdream.pasterdreammod.client.particle.DreamSporeParticle;
 import com.pasterdream.pasterdreammod.client.particle.StardustParticle;
@@ -37,8 +36,8 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
  * biome_dyedream_0 (梦幻平原)         → DREAM_SPORE     概率 0.003
  * biome_dyedream_1 (温暖森林)         → STARDUST         概率 0.004
  * biome_dyedream_2 (寒冷染梦)         → CRYSTAL_SNOWFLAKE 概率 0.005
- * biome_dyedream_3 (暖色海岸/海洋)    → AURORA_GLOW      概率 0.003
- * biome_dyedream_deep_ocean (晶莹深海) → AURORA_GLOW     概率 0.004
+ * biome_dyedream_3 (暖色海岸/海洋)    → STARDUST          概率 0.003
+ * biome_dyedream_deep_ocean (晶莹深海) → STARDUST         概率 0.004
  * biome_dyedream_mushroom_plains (蘑菇平原) → DREAM_SPORE 概率 0.004 (绿色/蓝色变体)
  * biome_dyedream_shore (染梦海岸)     → DREAM_SPORE + STARDUST  各 0.003
  * biome_dyedream_river (染梦河流)     → STARDUST                  概率 0.005
@@ -99,9 +98,11 @@ public class DyedreamEnvironmentRenderer {
         } else if (PDBiomes.BIOME_DYEDREAM_2.equals(currentBiome)) {
             spawnCrystalSnowflake(mc, 0.005f);
         } else if (PDBiomes.BIOME_DYEDREAM_3.equals(currentBiome)) {
-            spawnAuroraGlow(mc, 0.003f);
+            // 暖色海岸/海洋：星尘（密度对齐原极光粒子）
+            spawnStardust(mc, 0.003f);
         } else if (PDBiomes.BIOME_DYEDREAM_DEEP_OCEAN.equals(currentBiome)) {
-            spawnAuroraGlow(mc, 0.004f);
+            // 晶莹深海：星尘（密度对齐原极光粒子）
+            spawnStardust(mc, 0.004f);
         } else if (PDBiomes.BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(currentBiome)) {
             // 蘑菇平原：梦幻孢子（绿色/蓝色变体），用自定义颜色速度
             spawnMushroomSporeVariant(mc, 0.004f);
@@ -229,42 +230,6 @@ public class DyedreamEnvironmentRenderer {
                     (random.nextDouble() - 0.5) * 0.003,
                     -0.01 - random.nextDouble() * 0.015,
                     (random.nextDouble() - 0.5) * 0.003
-            );
-        }
-    }
-
-    /**
-     * 生成极光粒子
-     * <p>
-     * 从玩家周围较高位置生成，水平缓慢漂移，
-     * 颜色在青/蓝/紫之间变化。
-     *
-     * @param mc         Minecraft 客户端实例
-     * @param probability 每 tick 的生成概率
-     */
-    private static void spawnAuroraGlow(Minecraft mc, float probability) {
-        var random = mc.player.getRandom();
-        if (random.nextFloat() >= probability) return;
-
-        long gameTime = mc.level.getGameTime();
-        double driftX = Math.sin(gameTime * DRIFT_SPEED * 0.5) * DRIFT_RADIUS;
-        double driftZ = Math.cos(gameTime * DRIFT_SPEED * 1.2 + 0.8) * DRIFT_RADIUS;
-
-        SimpleParticleType type = (SimpleParticleType) PDParticles.AURORA_GLOW.particleType();
-
-        int count = 1 + random.nextInt(2);
-        for (int i = 0; i < count; i++) {
-            double angle = random.nextDouble() * Math.PI * 2;
-            double dist = 3.0 + random.nextDouble() * 12.0;
-
-            mc.level.addParticle(
-                    type,
-                    mc.player.getX() + driftX + Math.cos(angle) * dist,
-                    mc.player.getY() + 6.0 + random.nextDouble() * 8.0,
-                    mc.player.getZ() + driftZ + Math.sin(angle) * dist,
-                    (random.nextDouble() - 0.5) * 0.002,
-                    (random.nextDouble() - 0.5) * 0.002,
-                    (random.nextDouble() - 0.5) * 0.002
             );
         }
     }

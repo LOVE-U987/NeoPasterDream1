@@ -65,7 +65,7 @@ public class AaroncosHandSpawnBlock extends BaseEntityBlock {
      *   <li>NOT_SUMMONED：召唤 BOSS</li>
      *   <li>SUMMONING：提示正在召唤</li>
      *   <li>FIGHTING：提示战斗中</li>
-     *   <li>VICTORY：传送玩家离开竞技场</li>
+     *   <li>VICTORY：传送玩家离开竞技场（击杀全部 BOSS 后的唯一离场途径）</li>
      * </ul>
      *
      * @param state     方块状态

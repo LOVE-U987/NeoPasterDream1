@@ -1,7 +1,7 @@
 {
   "generated_by": "tools/verify_resource_closure.py",
-  "json_files": 3802,
-  "registered_blocks_scanned": 229,
+  "json_files": 3804,
+  "registered_blocks_scanned": 230,
   "registered_items_scanned": 649,
   "failure_count": 0,
   "failures": {}

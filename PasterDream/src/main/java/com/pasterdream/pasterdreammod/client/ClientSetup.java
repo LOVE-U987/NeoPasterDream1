@@ -5,7 +5,6 @@ import com.pasterdream.pasterdreammod.client.model.Modelslime;
 import com.pasterdream.pasterdreammod.client.model.SporeEntityModel;
 import com.pasterdream.pasterdreammod.client.gui.config.PDConfigScreen;
 import com.pasterdream.pasterdreammod.client.particle.*;
-import com.pasterdream.pasterdreammod.client.particle.AuroraGlowParticle;
 import com.pasterdream.pasterdreammod.client.particle.CrystalSnowflakeParticle;
 import com.pasterdream.pasterdreammod.client.particle.DreamSporeParticle;
 import com.pasterdream.pasterdreammod.client.particle.StardustParticle;
@@ -236,7 +235,6 @@ public class ClientSetup {
         // ===== 4.3 染梦世界动态环境粒子 Provider 注册 =====
         event.registerSpriteSet((SimpleParticleType) PDParticles.DREAM_SPORE.particleType(), DreamSporeParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.CRYSTAL_SNOWFLAKE.particleType(), CrystalSnowflakeParticle.Provider::new);
-        event.registerSpriteSet((SimpleParticleType) PDParticles.AURORA_GLOW.particleType(), AuroraGlowParticle.Provider::new);
         event.registerSpriteSet((SimpleParticleType) PDParticles.STARDUST.particleType(), StardustParticle.Provider::new);
 
         // ===== 4.4 梦境炼药锅炼制粒子 =====

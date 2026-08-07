@@ -45,20 +45,24 @@ public class ConstellationSkyContent implements SkyContent {
     private static final float AIM_TRANSITION_SPEED = 0.045F;
     /** 十字星闪烁速度（循环变亮变暗） */
     private static final float CROSS_FLICKER_SPEED = 0.12F;
-    /** 十字星颜色（暖白光晕） */
-    private static final SkyColor CROSS_COLOR = new SkyColor(1.0F, 0.95F, 0.82F);
-    /** 十字星亮核颜色（更白更亮） */
-    private static final SkyColor CROSS_CORE_COLOR = new SkyColor(1.0F, 1.0F, 0.95F);
     /** 十字星臂长基数倍率（相对星大小；放大后呈现"星星发光"的辐射效果） */
     private static final float CROSS_ARM_BASE = 2.6F;
     /** 十字星臂长随闪烁伸缩幅度 */
     private static final float CROSS_ARM_PULSE = 0.7F;
-    /** 十字星最外层光晕线宽（由外到内 外/中/内 三层叠加出光晕） */
-    private static final float CROSS_OUTER_WIDTH = 0.17F;
-    /** 十字星中层光晕线宽 */
-    private static final float CROSS_MID_WIDTH = 0.10F;
-    /** 十字星内层亮核线宽 */
-    private static final float CROSS_CORE_WIDTH = 0.045F;
+    /** 十字高亮纹理（golden_particle 金色十字星芒，粒子三帧动画逐帧循环）
+     *  路径格式与星域/行星一致：带 textures/ 前缀与 .png 后缀的完整纹理路径 */
+    private static final ResourceLocation[] GOLDEN_PARTICLE_FRAMES = {
+            ResourceLocation.fromNamespaceAndPath("pasterdream", "textures/particle/golden_particle_1.png"),
+            ResourceLocation.fromNamespaceAndPath("pasterdream", "textures/particle/golden_particle_2.png"),
+            ResourceLocation.fromNamespaceAndPath("pasterdream", "textures/particle/golden_particle_3.png")
+    };
+    /** golden_particle 帧动画速率（帧/tick，与粒子定义 mcmeta frametime=10 一致） */
+    private static final float CROSS_FRAME_RATE = 0.1F;
+    /** golden_particle 十字臂占整张纹理的比例（16px 图中十字端到端约 13px，
+     *  用于把"臂长"换算为广告牌半边长，使纹理十字视觉跨度与原版线段十字一致） */
+    private static final float CROSS_TEXTURE_FILL = 13.0F / 16.0F;
+    /** 十字淡入淡出最小缩放（粒子式动画：淡入时从 55% 放大到 100%，淡出时反向缩小） */
+    private static final float CROSS_FADE_MIN_SCALE = 0.55F;
     /**
      * 望远镜缩放进度（0~1，平滑过渡动画）
      * <p>
@@ -325,8 +329,10 @@ public class ConstellationSkyContent implements SkyContent {
     /**
      * 渲染十字星标记 —— 对准的星中心出现十字闪光，循环变亮变暗
      * <p>
-     * 十字随该星 {@link #aimState} 淡入淡出；淡入完成后按正弦循环闪烁。
-     * 十字臂沿星的 yaw/pitch 两个正交方向绘制在天空球面上。
+     * 十字随该星 {@link #aimState} 做**粒子式淡入淡出**：smoothstep 缓动同时
+     * 驱动透明度渐入渐出与尺寸从小到大/从大到小（淡入轻盈亮起、淡出缩小消散），
+     * 淡入完成后按正弦循环闪烁。高亮使用 golden_particle 金色十字星芒纹理，
+     * 三层叠加呈现光晕渐变，十字尺寸随闪烁伸缩且按粒子帧动画逐帧循环。
      *
      * @param matrix     变换矩阵
      * @param tesselator 细分器
@@ -338,8 +344,14 @@ public class ConstellationSkyContent implements SkyContent {
      * @param aimEnabled 是否启用瞄准（望远镜缩放中）
      */
     private void renderAimCrosshairs(Matrix4f matrix, Tesselator tesselator, float time, float lookX, float lookY, float lookZ, float skyAngleRad, boolean aimEnabled) {
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        // 纯纹理 shader（与纹理星点一致，避免 Iris 光影下粒子 shader 顶点色变黑），
+        // 透明度由 RenderSystem.setShaderColor 的 alpha 通道逐层控制
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        // golden_particle 三帧动画（与粒子定义 mcmeta frametime=10 对齐），逐帧循环呈现金色闪烁
+        ResourceLocation texture = GOLDEN_PARTICLE_FRAMES[
+                Math.floorMod((int) (time * CROSS_FRAME_RATE), GOLDEN_PARTICLE_FRAMES.length)
+        ];
+        RenderSystem.setShaderTexture(0, texture);
         for (int index = 0; index < this.stars.size(); index++) {
             float state = this.aimState[index];
             // 未启用瞄准（未持望远镜）或未对准（含淡出中）的星不显示十字
@@ -347,31 +359,58 @@ public class ConstellationSkyContent implements SkyContent {
                 continue;
             }
             Star star = this.stars.get(index);
+            // 粒子式淡入淡出：smoothstep 缓动（起止都慢，进入轻盈、消散拖尾），
+            // 同时驱动透明度渐入渐出与尺寸从小到大/从大到小
+            float fade = smoothstep(state);
             // 循环闪烁：淡入完成后在 0.25~1 之间往复（未使用时 aimState=0 整体淡出）
             float flicker = 0.5F + 0.5F * Mth.sin(time * CROSS_FLICKER_SPEED + star.phase());
-            float crossAlpha = state * (0.25F + 0.75F * flicker);
+            float crossAlpha = fade * (0.25F + 0.75F * flicker);
             // 十字臂长：大幅放大（约 3 倍星大小）且随闪烁伸缩，呈现星星发光的辐射感
             float arm = star.size() * (CROSS_ARM_BASE + CROSS_ARM_PULSE * flicker);
-            // 从球面点反算 yaw/pitch，构建正交十字臂
-            float unitX = star.point().x() / SkyGeometry.SKY_RADIUS;
-            float unitY = star.point().y() / SkyGeometry.SKY_RADIUS;
-            float unitZ = star.point().z() / SkyGeometry.SKY_RADIUS;
-            float yaw = (float) Math.atan2(unitX, unitZ);
-            float pitch = (float) Math.asin(Mth.clamp(unitY, -1.0F, 1.0F));
-            float dAngle = arm / SkyGeometry.SKY_RADIUS;
-            SkyPoint h1 = SkyGeometry.point(yaw - dAngle, pitch);
-            SkyPoint h2 = SkyGeometry.point(yaw + dAngle, pitch);
-            SkyPoint v1 = SkyGeometry.point(yaw, pitch - dAngle);
-            SkyPoint v2 = SkyGeometry.point(yaw, pitch + dAngle);
-            // 三层由外到内叠加：宽光晕(暗) → 中光晕(中亮) → 细亮核(最亮)，产生发光渐变
-            SkyGeometry.addLine(buffer, matrix, h1, h2, CROSS_OUTER_WIDTH, CROSS_COLOR, crossAlpha * 0.28F);
-            SkyGeometry.addLine(buffer, matrix, v1, v2, CROSS_OUTER_WIDTH, CROSS_COLOR, crossAlpha * 0.28F);
-            SkyGeometry.addLine(buffer, matrix, h1, h2, CROSS_MID_WIDTH, CROSS_COLOR, crossAlpha * 0.6F);
-            SkyGeometry.addLine(buffer, matrix, v1, v2, CROSS_MID_WIDTH, CROSS_COLOR, crossAlpha * 0.6F);
-            SkyGeometry.addLine(buffer, matrix, h1, h2, CROSS_CORE_WIDTH, CROSS_CORE_COLOR, crossAlpha);
-            SkyGeometry.addLine(buffer, matrix, v1, v2, CROSS_CORE_WIDTH, CROSS_CORE_COLOR, crossAlpha);
+            // 纹理十字臂未填满整张图 → 按占比放大广告牌半边长，使十字视觉跨度与原版一致；
+            // 叠加粒子式缩放：淡入时从最小 55% 放大到 100%，淡出时反向缩小
+            float scale = CROSS_FADE_MIN_SCALE + (1.0F - CROSS_FADE_MIN_SCALE) * fade;
+            float size = arm / CROSS_TEXTURE_FILL * scale;
+            // 三层由外到内叠加（对应原三层线段光晕）：宽光晕(暗) → 中光晕(中亮) → 亮核(最亮)
+            drawCrossLayer(tesselator, matrix, star.point(), size * 1.45F, crossAlpha * 0.28F);
+            drawCrossLayer(tesselator, matrix, star.point(), size * 1.18F, crossAlpha * 0.60F);
+            drawCrossLayer(tesselator, matrix, star.point(), size * 1.00F, crossAlpha);
         }
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    /**
+     * 绘制一层 golden_particle 十字纹理广告牌
+     * <p>
+     * 广告牌以星中心为球面基准、半边长 {@code size}、无自旋（十字臂沿 yaw/pitch
+     * 正交方向），透明度通过 {@link RenderSystem#setShaderColor} 的 alpha 通道控制
+     * （POSITION_TEX 无顶点色，与纹理星点方案一致）。
+     *
+     * @param tesselator 细分器
+     * @param matrix     变换矩阵
+     * @param center     星中心（球面位置）
+     * @param size       广告牌半边长
+     * @param alpha      透明度（0~1）
+     */
+    private void drawCrossLayer(Tesselator tesselator, Matrix4f matrix, SkyPoint center, float size, float alpha) {
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
+        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        SkyGeometry.addTexturedBillboard(buffer, matrix, center, size, 0.0F);
         SkyGeometry.drawIfNotEmpty(buffer);
+    }
+
+    /**
+     * smoothstep 缓动（三次平滑曲线）
+     * <p>
+     * 输入 0~1 线性进度，输出 0~1 缓动曲线：起点与终点斜率均为 0
+     * （渐入渐出自然，无生硬突变），用于粒子式淡入淡出动画。
+     *
+     * @param t 线性进度（0~1，越界自动截断）
+     * @return 缓动后进度（0~1）
+     */
+    private static float smoothstep(float t) {
+        float x = Mth.clamp(t, 0.0F, 1.0F);
+        return x * x * (3.0F - 2.0F * x);
     }
 
     /**

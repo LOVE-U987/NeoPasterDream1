@@ -11,6 +11,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -23,6 +24,8 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+
+import java.util.ArrayList;
 
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
@@ -63,7 +66,8 @@ public class PDArenaEvents {
      * 监听玩家维度变化事件
      * <p>
      * 当玩家从任何维度传送到亚伦柯斯竞技场时触发。
-     * 如果竞技场中玩家数量少于 2，重新生成竞技场结构并清除非玩家实体。
+     * 若竞技场中没有其他玩家（首个进入者），重新生成竞技场结构、清除非玩家实体
+     * 并初始化 BOSS 战斗状态；已有其他玩家在场时不重置（保护进行中的战斗与胜利战利品箱）。
      * 所有玩家都会被传送到竞技场中心点并获得缓降效果。
      *
      * @param event 玩家维度变化事件
@@ -79,8 +83,18 @@ public class PDArenaEvents {
             return;
         }
 
-        // 只有当竞技场中玩家数量少于 2 时，才执行初始化操作
-        if (arenaLevel.players().size() < 2) {
+        // 仅当竞技场中没有其他玩家时才执行初始化：
+        // 1) 首个进入者重置竞技场与 BOSS 状态——同时清除持久化残留的 VICTORY 阶段，
+        //    避免"未召唤即被判定已胜利/右键即被传送"（SavedData 的 phase 跨会话保存）；
+        // 2) 已有其他玩家在场（含胜利者仍留场开箱）时不重置，保护既有战斗与胜利战利品箱。
+        boolean hasOtherPlayers = false;
+        for (Player p : arenaLevel.players()) {
+            if (p != entity) {
+                hasOtherPlayers = true;
+                break;
+            }
+        }
+        if (!hasOtherPlayers) {
             placeArenaStructure(arenaLevel);
             clearNonPlayerEntities(arenaLevel);
             // ⚔️ 初始化 BOSS 战斗状态（未召唤状态）
@@ -239,9 +253,11 @@ public class PDArenaEvents {
                 rightHandPos.getX() + 0.5, rightHandPos.getY() + 1.0, rightHandPos.getZ() + 0.5,
                 32, 2, 2, 2, 0.5);
 
-        // 播放召唤音效
-        arenaLevel.playSound(null, ARENA_CENTER,
-                PDSounds.AARONCOS_SPAWN.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
+        // 播放召唤音效（对每个在场玩家——ARENA_CENTER 高空位置受 16 格衰减限制听不到）
+        playArenaSoundForAll(arenaLevel, PDSounds.AARONCOS_SPAWN.get(), SoundSource.HOSTILE);
+
+        // 播放 BOSS 战 BGM（亚伦柯斯之触）—— 战斗中循环，胜利/离场自动停止
+        startBossMusicLoop(arenaLevel);
 
         // 更新战斗管理器中的存活状态
         PDArenaBossManager.setBossAlive(arenaLevel, leftHand != null, rightHand != null);
@@ -319,17 +335,99 @@ public class PDArenaEvents {
     }
 
     /**
-     * 播放亚伦柯斯战斗音乐
+     * 播放亚伦柯斯战斗音乐（单次，对竞技场所有在场玩家）
      * <p>
-     * 在竞技场中心播放 aaroncos_music 音效，音源类型为 WEATHER，
-     * 使所有玩家都能听到背景音乐。
+     * 使用 {@link ServerPlayer#playNotifySound} 播放：无位置、无距离衰减，
+     * 全场清晰可闻（背景音乐语义）。
+     * <p>
+     * 不能用 {@code arenaLevel.playSound}：音源若放 {@code ARENA_CENTER}(0,70,0) 高空，
+     * 玩家在 y≈42 战斗，距离 28 格远超 aaroncos_music 默认 16 格衰减范围，
+     * 客户端音量衰减到 0 → BGM 从一开始就听不到。
      *
      * @param arenaLevel 竞技场维度服务端世界
      */
     private static void playBossMusic(ServerLevel arenaLevel) {
-        arenaLevel.playSound(null, ARENA_CENTER,
-                PDSounds.AARONCOS_MUSIC.get(), SoundSource.WEATHER, 1.0F, 1.0F);
+        playArenaSoundForAll(arenaLevel, PDSounds.AARONCOS_MUSIC.get(), SoundSource.WEATHER);
         PDDebugLogger.mainDebug("[PDArenaEvents] 🎵 已播放亚伦柯斯战斗音乐");
+    }
+
+    /**
+     * 对竞技场所有在场玩家播放指定音效（无位置、无衰减）
+     * <p>
+     * 遍历当前在竞技场维度的玩家逐个 {@link ServerPlayer#playNotifySound}，
+     * 避免位置音效因音源过高/过远被距离衰减吞掉。
+     *
+     * @param arenaLevel 竞技场维度服务端世界
+     * @param event      要播放的音效
+     * @param source     音源分类（决定客户端音量滑块归属）
+     */
+    private static void playArenaSoundForAll(ServerLevel arenaLevel, SoundEvent event, SoundSource source) {
+        for (ServerPlayer player : new ArrayList<>(arenaLevel.players())) {
+            player.playNotifySound(event, source, 1.0F, 1.0F);
+        }
+    }
+
+    /**
+     * BGM 循环重播间隔（tick）。
+     * <p>
+     * {@code aaroncos_music.ogg} 时长为 149.4 秒 ≈ 2988 tick；
+     * 取 2980 tick 使其略短于整曲，重播时上一实例已近尾声，避免静音间隙。
+     */
+    private static final int BOSS_MUSIC_REPLAY_INTERVAL = 2980;
+
+    /**
+     * BGM 循环代际号 —— 每次召唤递增；旧代际的排队重播任务作废。
+     * <p>
+     * 防重复召唤（VICTORY 后再次右键）叠加多条 BGM 循环链。
+     */
+    private static int bossMusicLoopGen = 0;
+
+    /**
+     * 启动 BOSS 战 BGM 循环播放
+     * <p>
+     * 原模组 {@code AaroncoshandspawnblockPr1Procedure} 用 {@code time0} 计数器每 150 tick
+     * 周期性重新播放 aaroncos_music 实现战斗循环；单次 {@link #playBossMusic} 播放完
+     * 149 秒即静音，无法覆盖整场战斗，故改为服务端定时重播。
+     * <p>
+     * 循环规则：召唤时立即播放一次，之后每 {@link #BOSS_MUSIC_REPLAY_INTERVAL} tick 重播一次，
+     * 直到战斗阶段离开 SUMMONING/FIGHTING（VICTORY 或初始化重置）或竞技场无玩家为止。
+     *
+     * @param arenaLevel 竞技场维度服务端世界
+     */
+    private static void startBossMusicLoop(ServerLevel arenaLevel) {
+        int gen = ++bossMusicLoopGen;
+        playBossMusic(arenaLevel);
+        scheduleBossMusicReplay(arenaLevel, gen);
+    }
+
+    /**
+     * 调度下一轮 BGM 重播（内部循环链）
+     *
+     * @param arenaLevel 竞技场维度服务端世界
+     * @param gen        本轮召唤的 BGM 循环代际号
+     */
+    private static void scheduleBossMusicReplay(ServerLevel arenaLevel, int gen) {
+        ServerScheduler.schedule(BOSS_MUSIC_REPLAY_INTERVAL, () -> {
+            // 新召唤已开启新循环 → 旧代际作废
+            if (gen != bossMusicLoopGen) {
+                return;
+            }
+            if (arenaLevel == null || arenaLevel.isClientSide) {
+                return;
+            }
+            // 战斗结束（VICTORY / 重新初始化）或竞技场无人 → 停止循环
+            PDArenaBossManager.BossFightPhase phase = PDArenaBossManager.getPhase(arenaLevel);
+            if (phase != PDArenaBossManager.BossFightPhase.SUMMONING
+                    && phase != PDArenaBossManager.BossFightPhase.FIGHTING) {
+                PDDebugLogger.mainDebug("[PDArenaEvents] 🎵 BGM 循环停止（phase={}）", phase);
+                return;
+            }
+            if (arenaLevel.players().isEmpty()) {
+                return;
+            }
+            playBossMusic(arenaLevel);
+            scheduleBossMusicReplay(arenaLevel, gen);
+        });
     }
 
 }

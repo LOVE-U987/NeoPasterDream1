@@ -210,9 +210,12 @@ public class TerraswordWaveEntity extends GeckoLibMobEntity {
 
     /**
      * 剑气 idle 循环动画（原版 movementPredicate：animationprocedure 为空时循环 idle）
+     * <p>
+     * 注意：必须用 getSyncedAnimation()（同步 entity data），不能读 animationprocedure 本地字段，
+     * 否则客户端该字段永远为 "empty"，idle 会持续覆盖 "1"/"2"/"3" 战技段位动画。
      */
     private PlayState movementPredicate(AnimationState<TerraswordWaveEntity> state) {
-        if ("empty".equals(this.animationprocedure)) {
+        if ("empty".equals(this.getSyncedAnimation())) {
             return state.setAndContinue(RawAnimation.begin().thenLoop("idle"));
         }
         return PlayState.STOP;

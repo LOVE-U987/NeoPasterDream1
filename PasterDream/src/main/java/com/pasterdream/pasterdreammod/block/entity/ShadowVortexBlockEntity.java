@@ -147,8 +147,9 @@ public class ShadowVortexBlockEntity extends BlockEntity implements GeoBlockEnti
         );
 
         for (Entity entity : entities) {
-            // 排除特殊实体和暗影生物
-            if (entity.getType().is(specialEntityTag) || entity.getType().is(shadowMobTag)) {
+            // 排除特殊实体、暗影生物和创造模式玩家（BOSS 不攻击创造玩家）
+            if (entity.getType().is(specialEntityTag) || entity.getType().is(shadowMobTag)
+                    || (entity instanceof Player player && player.isCreative())) {
                 continue;
             }
 
@@ -159,10 +160,8 @@ public class ShadowVortexBlockEntity extends BlockEntity implements GeoBlockEnti
                 livingEntity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 20, 1));
                 livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 0));
 
-                // 造成伤害（跳过创造模式玩家）
-                if (!(entity instanceof Player player) || !player.isCreative()) {
-                    livingEntity.hurt(damageSource, DAMAGE_AMOUNT);
-                }
+                // 造成伤害
+                livingEntity.hurt(damageSource, DAMAGE_AMOUNT);
             }
         }
     }

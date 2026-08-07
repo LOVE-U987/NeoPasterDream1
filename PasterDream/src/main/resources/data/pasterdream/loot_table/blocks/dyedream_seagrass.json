@@ -6,7 +6,35 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "pasterdream:dyedream_seagrass"
+          "name": "pasterdream:dyedream_seagrass",
+          "conditions": [
+            {
+              "condition": "minecraft:any_of",
+              "terms": [
+                {
+                  "condition": "minecraft:match_tool",
+                  "predicate": {
+                    "items": "#pasterdream:shears"
+                  }
+                },
+                {
+                  "condition": "minecraft:match_tool",
+                  "predicate": {
+                    "predicates": {
+                      "minecraft:enchantments": [
+                        {
+                          "enchantments": "minecraft:silk_touch",
+                          "levels": {
+                            "min": 1
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
         }
       ],
       "conditions": [
@@ -15,5 +43,6 @@
         }
       ]
     }
-  ]
+  ],
+  "random_sequence": "pasterdream:blocks/dyedream_seagrass"
 }

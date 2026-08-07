@@ -6,7 +6,10 @@
   "refmap": "pasterdream.refmap.json",
   "client": [
     "MinecraftMixin",
-    "LevelRendererMixin"
+    "LevelRendererMixin",
+    "GameRendererMixin",
+    "LocalPlayerMixin",
+    "KeyboardInputMixin"
   ],
   "mixins": [
     "NoiseBasedChunkGeneratorMixin"

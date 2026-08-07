@@ -203,7 +203,8 @@ public class PDBlocksVegetation {
     // ========== API 批量注册：草（单格 + 双层） ==========
 
     private static final Map<String, DeferredBlock<Block>> GRASSES_SINGLE = BlockAPI.batchRegister("grass")
-            .indexList(1, 2, 3, 5, 6, 7, 8, 9, 11, 12, 13, 14)
+            // 注意：grass_5 / grass_6（方解石笋）是石质装饰方块，非植被，已从批量注册中拆出单独注册（见下方 GRASS_5 / GRASS_6）
+            .indexList(1, 2, 3, 7, 8, 9, 11, 12, 13, 14)
             .factory((index, props) -> new DyedreamFlowerBlock(MobEffects.MOVEMENT_SLOWDOWN, 100, props))
             .withProperties(flowerProps())
             .build();
@@ -218,8 +219,33 @@ public class PDBlocksVegetation {
     public static final DeferredBlock<Block> GRASS_2 = GRASSES_SINGLE.get("grass_2");
     public static final DeferredBlock<Block> GRASS_3 = GRASSES_SINGLE.get("grass_3");
     public static final DeferredBlock<Block> GRASS_4 = GRASSES_DOUBLE.get("grass_4");
-    public static final DeferredBlock<Block> GRASS_5 = GRASSES_SINGLE.get("grass_5");
-    public static final DeferredBlock<Block> GRASS_6 = GRASSES_SINGLE.get("grass_6");
+    /**
+     * 方解石笋 1 号（grass_5）：石质装饰方块，方解石音效、镐挖掘、需正确工具，见 {@link CalciteSpikeBlock}
+     */
+    public static final DeferredBlock<Block> GRASS_5 = PDBlocks.BLOCKS.registerBlock("grass_5",
+            p -> new CalciteSpikeBlock(p, Block.box(1, 0, 1, 15, 1, 15)), calciteSpikeProps());
+
+    /**
+     * 方解石笋 2 号（grass_6）：石质装饰方块，方解石音效、镐挖掘、需正确工具，见 {@link CalciteSpikeBlock}
+     */
+    public static final DeferredBlock<Block> GRASS_6 = PDBlocks.BLOCKS.registerBlock("grass_6",
+            p -> new CalciteSpikeBlock(p, Block.box(0, 0, 0, 16, 1, 16)), calciteSpikeProps());
+
+    /**
+     * 方解石笋属性：复制方解石（方解石音效 + 需正确工具），贴地装饰配置
+     * （无碰撞、贴片渲染、XZ 随机偏移）。
+     *
+     * @return 方解石笋方块属性
+     */
+    private static BlockBehaviour.Properties calciteSpikeProps() {
+        return BlockBehaviour.Properties.ofFullCopy(Blocks.CALCITE)
+                .noOcclusion()
+                .noCollission()
+                .dynamicShape()
+                .offsetType(BlockBehaviour.OffsetType.XZ)
+                .isRedstoneConductor((bs, br, bp) -> false);
+    }
+
     public static final DeferredBlock<Block> GRASS_7 = GRASSES_SINGLE.get("grass_7");
     public static final DeferredBlock<Block> GRASS_8 = GRASSES_SINGLE.get("grass_8");
     public static final DeferredBlock<Block> GRASS_9 = GRASSES_SINGLE.get("grass_9");

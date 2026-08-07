@@ -1,6 +1,17 @@
 package com.pasterdream.pasterdreammod.network;
 
+import com.pasterdream.pasterdreammod.api.network.ImpactFramesPayload;
+import com.pasterdream.pasterdreammod.api.network.GhostPayload;
+import com.pasterdream.pasterdreammod.api.network.AtmospherePayload;
+import com.pasterdream.pasterdreammod.api.network.ScreenShakePayload;
 import com.pasterdream.pasterdreammod.api.network.MeltDreamEnergyPayload;
+
+import com.pasterdream.pasterdreammod.api.network.ParticleEmitterPayload;
+
+import com.pasterdream.pasterdreammod.api.network.ScreenEffectPayload;
+
+import com.pasterdream.pasterdreammod.api.network.StartCutscenePayload;
+import com.pasterdream.pasterdreammod.api.network.StopCutscenePayload;
 
 import com.pasterdream.pasterdreammod.api.network.SanDataPayload;
 
@@ -78,6 +89,36 @@ public class PDNetwork {
         // ==================== S2C：暮影之笼事件 BGM 状态 ====================
         registrar.playToClient(TwilightLanternMusicPayload.TYPE, TwilightLanternMusicPayload.STREAM_CODEC,
                 PDNetwork::handleTwilightLanternMusicOnClient);
+
+        // ==================== S2C：特效系统（粒子发射器） ====================
+        registrar.playToClient(ParticleEmitterPayload.TYPE, ParticleEmitterPayload.STREAM_CODEC,
+                PDNetwork::handleParticleEmitterOnClient);
+
+        // ==================== S2C：特效系统（打击帧） ====================
+        registrar.playToClient(ImpactFramesPayload.TYPE, ImpactFramesPayload.STREAM_CODEC,
+                PDNetwork::handleImpactFramesOnClient);
+
+        // ==================== S2C：特效系统（残影） ====================
+        registrar.playToClient(GhostPayload.TYPE, GhostPayload.STREAM_CODEC,
+                PDNetwork::handleGhostOnClient);
+
+        // ==================== S2C：特效系统（雾色/暗化氛围） ====================
+        registrar.playToClient(AtmospherePayload.TYPE, AtmospherePayload.STREAM_CODEC,
+                PDNetwork::handleAtmosphereOnClient);
+
+        // ==================== S2C：特效系统（屏幕晃动） ====================
+        registrar.playToClient(ScreenShakePayload.TYPE, ScreenShakePayload.STREAM_CODEC,
+                PDNetwork::handleScreenShakeOnClient);
+
+        // ==================== S2C：特效系统（屏幕特效） ====================
+        registrar.playToClient(ScreenEffectPayload.TYPE, ScreenEffectPayload.STREAM_CODEC,
+                PDNetwork::handleScreenEffectOnClient);
+
+        // ==================== S2C：特效系统（过场动画） ====================
+        registrar.playToClient(StartCutscenePayload.TYPE, StartCutscenePayload.STREAM_CODEC,
+                PDNetwork::handleStartCutsceneOnClient);
+        registrar.playToClient(StopCutscenePayload.TYPE, StopCutscenePayload.STREAM_CODEC,
+                PDNetwork::handleStopCutsceneOnClient);
 
         // ==================== C2S：按键消息 ====================
         registrar.playToServer(TeleportationPayload.TYPE, TeleportationPayload.STREAM_CODEC,
@@ -171,6 +212,94 @@ public class PDNetwork {
     public static void handleTwilightLanternMusicOnClient(final TwilightLanternMusicPayload payload,
                                                           final IPayloadContext context) {
         invokeClientVfx("handleTwilightLanternMusic", TwilightLanternMusicPayload.class, payload);
+    }
+
+    /**
+     * 客户端：粒子发射器（转发到 PDClientVfx 落地）。
+     *
+     * @param payload 包
+     * @param context 上下文
+     */
+    public static void handleParticleEmitterOnClient(final ParticleEmitterPayload payload,
+                                                     final IPayloadContext context) {
+        invokeClientVfx("handleParticleEmitter", ParticleEmitterPayload.class, payload);
+    }
+
+    /**
+     * 客户端：打击帧（转发到 PDClientVfx 落地）。
+     *
+     * @param payload 包
+     * @param context 上下文
+     */
+    public static void handleImpactFramesOnClient(final ImpactFramesPayload payload,
+                                                  final IPayloadContext context) {
+        invokeClientVfx("handleImpactFrames", ImpactFramesPayload.class, payload);
+    }
+
+    /**
+     * 客户端：残影特效（转发到 PDClientVfx 落地）。
+     *
+     * @param payload 包
+     * @param context 上下文
+     */
+    public static void handleGhostOnClient(final GhostPayload payload,
+                                           final IPayloadContext context) {
+        invokeClientVfx("handleGhost", GhostPayload.class, payload);
+    }
+
+    /**
+     * 客户端：雾色/暗化氛围（转发到 PDClientVfx 落地）。
+     *
+     * @param payload 包
+     * @param context 上下文
+     */
+    public static void handleAtmosphereOnClient(final AtmospherePayload payload,
+                                                final IPayloadContext context) {
+        invokeClientVfx("handleAtmosphere", AtmospherePayload.class, payload);
+    }
+
+    /**
+     * 客户端：屏幕晃动（转发到 PDClientVfx 落地）。
+     *
+     * @param payload 包
+     * @param context 上下文
+     */
+    public static void handleScreenShakeOnClient(final ScreenShakePayload payload,
+                                                 final IPayloadContext context) {
+        invokeClientVfx("handleScreenShake", ScreenShakePayload.class, payload);
+    }
+
+    /**
+     * 客户端：屏幕特效（转发到 PDClientVfx 落地）。
+     *
+     * @param payload 包
+     * @param context 上下文
+     */
+    public static void handleScreenEffectOnClient(final ScreenEffectPayload payload,
+                                                  final IPayloadContext context) {
+        invokeClientVfx("handleScreenEffect", ScreenEffectPayload.class, payload);
+    }
+
+    /**
+     * 客户端：过场动画开始（转发到 PDClientVfx 落地）。
+     *
+     * @param payload 包
+     * @param context 上下文
+     */
+    public static void handleStartCutsceneOnClient(final StartCutscenePayload payload,
+                                                   final IPayloadContext context) {
+        invokeClientVfx("handleStartCutscene", StartCutscenePayload.class, payload);
+    }
+
+    /**
+     * 客户端：过场动画停止（转发到 PDClientVfx 落地）。
+     *
+     * @param payload 包
+     * @param context 上下文
+     */
+    public static void handleStopCutsceneOnClient(final StopCutscenePayload payload,
+                                                  final IPayloadContext context) {
+        invokeClientVfx("handleStopCutscene", StopCutscenePayload.class, payload);
     }
 
     /**

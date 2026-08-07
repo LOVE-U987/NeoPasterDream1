@@ -1,11 +1,12 @@
 package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.effect.cutscene.CameraPos;
+import com.pasterdream.pasterdreammod.api.effect.cutscene.CurveType;
+import com.pasterdream.pasterdreammod.api.effect.cutscene.CutsceneAPI;
+import com.pasterdream.pasterdreammod.api.effect.cutscene.CutsceneData;
+import com.pasterdream.pasterdreammod.api.effect.cutscene.EasingType;
 import com.pasterdream.pasterdreammod.block.entity.AaroncosHandChestBlockEntity;
-import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
-import com.pasterdream.pasterdreammod.entity.mob.AaroncosLefthand0Entity;
-import com.pasterdream.pasterdreammod.entity.mob.AaroncosRighthand0Entity;
-import com.pasterdream.pasterdreammod.entity.mob.TerrorbeakEntity;
 import com.pasterdream.pasterdreammod.world.PortalInfectionData;
 import com.pasterdream.pasterdreammod.world.PortalRestorationHandler;
 import net.minecraft.advancements.AdvancementHolder;
@@ -19,14 +20,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,10 +35,10 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
  * 功能：
  * <ul>
  *   <li>使用维度持久化数据存储 BOSS 存活状态和战斗阶段</li>
- *   <li>检测两只手都死亡后生成战利品箱</li>
- *   <li>触发成就、移除效果、传送玩家回主世界</li>
+ *   <li>两只手都死亡后进入 VICTORY 阶段并生成战利品箱</li>
+ *   <li>触发成就、移除效果；玩家手动右键召唤方块返回主世界</li>
  *   <li>管理战斗阶段：未召唤 → 召唤中 → 战斗中 → 已胜利</li>
- *   <li>胜利仅一条离开倒计时；开箱后取消强制离场，未开箱到期补发背包</li>
+ *   <li>胜利后不自动传送玩家；唯一离场途径为 VICTORY 阶段右键竞技场中心召唤方块</li>
  * </ul>
  * <p>
  * 工作流程：
@@ -49,8 +46,8 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
  *   <li>玩家进入竞技场时初始化为未召唤状态</li>
  *   <li>玩家右键召唤方块后进入召唤中状态，播放 spawn 动画</li>
  *   <li>召唤动画结束后进入战斗中状态，BOSS AI 激活</li>
- *   <li>两只手都死亡后触发胜利序列（放箱 + 唯一倒计时）</li>
- *   <li>右键开箱掉落并取消强制离场；或未开箱 410t 补发并回主</li>
+ *   <li>两只手都死亡后进入 VICTORY：生成战利品箱，玩家留在竞技场</li>
+ *   <li>玩家右键开箱捡物，再手动右键召唤方块返回主世界（未开箱则离场时补发背包）</li>
  * </ol>
  */
 public class PDArenaBossManager {
@@ -72,8 +69,20 @@ public class PDArenaBossManager {
     /** 竞技场中心坐标 */
     private static final BlockPos ARENA_CENTER = new BlockPos(0, 70, 0);
 
-    /** BOSS 检测半径（99 格） */
-    private static final double BOSS_CHECK_RADIUS = 99.0;
+    /**
+     * 胜利战利品箱生成位置 —— 竞技场中心地面上方（世界 (0, 42, 0)）。
+     * <p>
+     * 结构 aaroncos_arena.nbt 从 (-35, 0, -35) 放置，中心地面为：
+     * <ul>
+     *   <li>y=42：边缘实心（BOSS 战斗区地面），中心凹陷为空气</li>
+     *   <li>y=41：中心 {@code shadow_fissure_5}（完整方块，可站立的地面）</li>
+     *   <li>y=39：全层实心 {@code shadow_arena_block_0} 地基</li>
+     * </ul>
+     * 箱子放在 y=41 地面之上（y=42 格），底部贴合地面、完整露出，玩家从战斗层走一步即达。
+     * 切勿直接放 y=41：那会替换 {@code shadow_fissure_5}，箱子嵌进地面装饰层（卡地里）。
+     * 旧实现用 {@code ARENA_CENTER.below()}（(0,69,0)）在结构内部空中生成，箱子悬浮。
+     */
+    public static final BlockPos VICTORY_CHEST_POS = new BlockPos(0, 42, 0);
 
     /**
      * 维度持久化数据键名 —— 左手存活状态
@@ -89,16 +98,6 @@ public class PDArenaBossManager {
      * 维度持久化数据键名 —— 战斗阶段
      */
     private static final String BOSS_FIGHT_PHASE_KEY = "BossFightPhase";
-
-    /**
-     * 维度持久化数据键名 —— 是否仍调度强制离场
-     */
-    private static final String FORCE_LEAVE_ACTIVE_KEY = "ForceLeaveActive";
-
-    /**
-     * 维度持久化数据键名 —— 强制离场代际（作废陈旧 410t 回调）
-     */
-    private static final String FORCE_LEAVE_GEN_KEY = "ForceLeaveGen";
 
     /**
      * 维度持久化数据键名 —— 胜利后玩家返回的传送门位置
@@ -129,40 +128,8 @@ public class PDArenaBossManager {
         data.setLeftHandAlive(false);
         data.setRightHandAlive(false);
         data.setPhase(BossFightPhase.NOT_SUMMONED);
-        // 抬升代际，使上一轮仍排队的 410t / 倒计时文案全部 no-op
-        data.setForceLeaveActive(false);
-        data.setForceLeaveGen(data.getForceLeaveGen() + 1);
         data.setDirty();
         PDDebugLogger.mainDebug("[PDArenaBossManager] ⚔️ 已初始化 BOSS 战斗状态（未召唤）");
-    }
-
-    /**
-     * 玩家右键开箱后调用：取消本轮强制离场倒计时。
-     * <p>
-     * 只保留胜利瞬间调度的那一条倒计时；开箱后改由玩家自行捡物，
-     * 再右键之眼离场（不再另启 10 秒强制传出）。
-     */
-    public static void cancelForceLeaveOnChestOpen(ServerLevel arenaLevel) {
-        ArenaBossData data = getArenaBossData(arenaLevel);
-        if (!data.isForceLeaveActive()) {
-            return;
-        }
-        data.setForceLeaveActive(false);
-        // 抬升代际：已排队的 410t 回调 gen 不匹配 → no-op
-        data.setForceLeaveGen(data.getForceLeaveGen() + 1);
-        data.setDirty();
-        for (Player player : new ArrayList<>(arenaLevel.players())) {
-            player.displayClientMessage(
-                    Component.translatable("arena.pasterdream.loot_opened_leave_via_eye"), true);
-        }
-        PDDebugLogger.mainInfo("[PDArenaBossManager] 📦 已开箱，取消强制离场倒计时");
-    }
-
-    /**
-     * @return 本轮胜利强制离场倒计时是否仍有效
-     */
-    public static boolean isForceLeaveActive(ServerLevel arenaLevel) {
-        return getArenaBossData(arenaLevel).isForceLeaveActive();
     }
 
     /**
@@ -211,6 +178,17 @@ public class PDArenaBossManager {
         // 调用 PDArenaEvents 生成 BOSS
         PDArenaEvents.spawnAaroncosBosses(arenaLevel);
 
+        // 召唤瞬间向竞技场内玩家播放过场动画（相机环绕竞技场中心 + 渐暗）
+        Vec3 center = new Vec3(ARENA_CENTER.getX() + 0.5, ARENA_CENTER.getY(), ARENA_CENTER.getZ() + 0.5);
+        CutsceneAPI.startCutsceneForPlayers(arenaLevel, center, 99.0,
+                CutsceneData.create()
+                        .time(80)
+                        .moveCurveType(CurveType.CATMULLROM)
+                        .timeEasing(EasingType.SMOOTHSTEP)
+                        .addCameraPos(CameraPos.of(center.add(0, 10, 22), center))
+                        .addCameraPos(CameraPos.of(center.add(0, 16, 0), center))
+                        .addCameraPos(CameraPos.of(center.add(0, 10, -22), center)));
+
         return true;
     }
 
@@ -243,11 +221,18 @@ public class PDArenaBossManager {
     /**
      * 处理左手 BOSS 死亡事件
      * <p>
-     * 更新维度数据并检测是否两只手都死亡。
+     * 仅在 {@code FIGHTING} 战斗阶段接受死亡判定：未召唤 / 召唤中 / 已胜利阶段
+     * 收到死亡回调一律忽略（残留 BOSS 或非本场战斗实体的死亡不得误判胜利）。
+     * 战斗阶段内更新维度数据并检测是否两只手都已死亡。
      *
      * @param arenaLevel 竞技场维度服务端世界
      */
     public static void onLeftHandDeath(ServerLevel arenaLevel) {
+        if (getPhase(arenaLevel) != BossFightPhase.FIGHTING) {
+            PDDebugLogger.mainDebug("[PDArenaBossManager] ⛔ 非战斗阶段收到左手死亡回调，忽略（phase={}）",
+                    getPhase(arenaLevel));
+            return;
+        }
         ArenaBossData data = getArenaBossData(arenaLevel);
         data.setLeftHandAlive(false);
         data.setDirty();
@@ -263,11 +248,18 @@ public class PDArenaBossManager {
     /**
      * 处理右手 BOSS 死亡事件
      * <p>
-     * 更新维度数据并检测是否两只手都死亡。
+     * 仅在 {@code FIGHTING} 战斗阶段接受死亡判定：未召唤 / 召唤中 / 已胜利阶段
+     * 收到死亡回调一律忽略（残留 BOSS 或非本场战斗实体的死亡不得误判胜利）。
+     * 战斗阶段内更新维度数据并检测是否两只手都已死亡。
      *
      * @param arenaLevel 竞技场维度服务端世界
      */
     public static void onRightHandDeath(ServerLevel arenaLevel) {
+        if (getPhase(arenaLevel) != BossFightPhase.FIGHTING) {
+            PDDebugLogger.mainDebug("[PDArenaBossManager] ⛔ 非战斗阶段收到右手死亡回调，忽略（phase={}）",
+                    getPhase(arenaLevel));
+            return;
+        }
         ArenaBossData data = getArenaBossData(arenaLevel);
         data.setRightHandAlive(false);
         data.setDirty();
@@ -281,27 +273,37 @@ public class PDArenaBossManager {
     }
 
     /**
-     * 触发胜利序列 —— 生成战利品箱，等待玩家右键离开
+     * 触发胜利序列 —— 生成战利品箱，玩家留在竞技场自行离开
      * <p>
      * 根据原模组逻辑（AaroncoshandspawnblockPr1Procedure），执行：
      * <ol>
-     *   <li>在 (0, 69, 0) 生成战利品箱方块</li>
+     *   <li>在竞技场中心地面（{@link #VICTORY_CHEST_POS}）生成战利品箱方块</li>
      *   <li>播放音效和粒子效果</li>
      *   <li>触发成就（achievement_shadow_e_0）</li>
      *   <li>移除暗影窥视效果</li>
-     *   <li>显示胜利提示，玩家右键召唤方块离开</li>
+     *   <li>显示胜利提示，玩家手动右键召唤方块离开</li>
      * </ol>
+     * <p>
+     * 胜利后<b>不自动传送</b>、<b>不启动强制离场倒计时</b>：
+     * 玩家留在竞技场捡取战利品，再手动右键中心召唤方块返回主世界。
+     * 已处于 VICTORY 阶段时直接返回（双 BOSS 同 tick 死亡时防重复触发）。
      *
      * @param arenaLevel 竞技场维度服务端世界
      */
     private static void triggerVictorySequence(ServerLevel arenaLevel) {
+        // 🛡 幂等保护：双 BOSS 同 tick 死亡时左右手回调先后触发，第二次直接忽略
+        if (getPhase(arenaLevel) == BossFightPhase.VICTORY) {
+            PDDebugLogger.mainDebug("[PDArenaBossManager] 🛡 已在 VICTORY 阶段，忽略重复的胜利序列触发");
+            return;
+        }
+
         PDDebugLogger.mainInfo("[PDArenaBossManager] 🎉 两只手都已死亡，触发胜利序列！");
 
         // 🏆 切换到 VICTORY 阶段（玩家右键召唤方块离开）
         setPhase(arenaLevel, BossFightPhase.VICTORY);
 
-        // 🎁 生成战利品箱（竞技场中心下方一格）
-        BlockPos chestPos = ARENA_CENTER.below();
+        // 🎁 生成战利品箱（竞技场中心地面）
+        BlockPos chestPos = VICTORY_CHEST_POS;
         arenaLevel.setBlockAndUpdate(chestPos, PDBlocks.AARONCOS_HAND_CHEST.get().defaultBlockState());
 
         // 💫 战利品箱生成粒子效果（掉落改由玩家右键箱子触发，对齐 AaroncosHandChestPr0）
@@ -338,93 +340,8 @@ public class PDArenaBossManager {
         // 🌿 同步启动地形回滚：将主世界中所有被感染的传送门区域恢复为原始地形
         PortalRestorationHandler.startRestoration(overworld, portalPositions);
 
-        // 🚪 立即将所有玩家从传送门位置送回主世界，与回滚同时开始
-        teleportAllPlayersToOverworld(arenaLevel);
-
-        // ⏱ 保留一条离场倒计时作为兜底：若有玩家因异常未传送，410t 后强制清场
-        scheduleVictoryCountdown(arenaLevel);
-    }
-
-    /**
-     * 唯一离开倒计时：10 / 210 / 310 / 350 / 400 tick 提示，410 tick 强制回主 + 清场。
-     * 开箱 / 重开战后代际抬升，陈旧回调 no-op。
-     */
-    private static void scheduleVictoryCountdown(ServerLevel arenaLevel) {
-        ArenaBossData data = getArenaBossData(arenaLevel);
-        data.setForceLeaveActive(true);
-        int gen = data.getForceLeaveGen() + 1;
-        data.setForceLeaveGen(gen);
-        data.setDirty();
-
-        scheduleArenaMessage(arenaLevel, 10, gen, "离开倒计时 20秒");
-        scheduleArenaMessage(arenaLevel, 210, gen, "离开倒计时 10秒");
-        scheduleArenaMessage(arenaLevel, 310, gen, "离开倒计时 5秒");
-        scheduleArenaMessage(arenaLevel, 350, gen, "离开倒计时 3秒");
-        scheduleArenaMessage(arenaLevel, 400, gen, "离开倒计时 1秒");
-        ServerScheduler.schedule(410, () -> {
-            if (getPhase(arenaLevel) != BossFightPhase.VICTORY) {
-                return;
-            }
-            ArenaBossData d = getArenaBossData(arenaLevel);
-            if (!d.isForceLeaveActive() || d.getForceLeaveGen() != gen) {
-                PDDebugLogger.mainDebug(
-                        "[PDArenaBossManager] ⏱ 强制离场已取消或代际过期 gen={} current={}",
-                        gen, d.getForceLeaveGen());
-                return;
-            }
-            d.setForceLeaveActive(false);
-            d.setDirty();
-            // 未右键开箱：先把战利品塞进仍在场玩家背包，再 TP（原版 410t 会 discard 地面物）
-            grantUnclaimedChestLoot(arenaLevel);
-            teleportAllPlayersToOverworld(arenaLevel);
-            cleanupArena(arenaLevel);
-            PDDebugLogger.mainInfo("[PDArenaBossManager] ⏱ 胜利倒计时结束，已强制回主并清场");
-        });
-    }
-
-    /**
-     * 若场内仍有未开启的战利品箱，按各人 talent 将 loot 塞进背包后拆除箱
-     * （防强制离场 + cleanup 吞掉未捡掉落）。
-     */
-    private static void grantUnclaimedChestLoot(ServerLevel arenaLevel) {
-        BlockPos chestPos = ARENA_CENTER.below();
-        if (!(arenaLevel.getBlockEntity(chestPos) instanceof AaroncosHandChestBlockEntity chest)) {
-            return;
-        }
-        if (chest.isClaimed()) {
-            return;
-        }
-        List<ServerPlayer> recipients = new ArrayList<>(arenaLevel.players());
-        if (recipients.isEmpty()) {
-            return;
-        }
-        // 先按各人成就建包再统一 mark claimed（grantUnclaimedTo 单人路径会立刻 claimed）
-        for (ServerPlayer sp : recipients) {
-            for (ItemStack stack : AaroncosHandChestBlockEntity.buildLootFor(sp)) {
-                ItemHandlerHelper.giveItemToPlayer(sp, stack);
-            }
-        }
-        chest.markClaimedWithoutDrop();
-        if (arenaLevel.getBlockState(chestPos).is(PDBlocks.AARONCOS_HAND_CHEST.get())) {
-            arenaLevel.destroyBlock(chestPos, false);
-        }
-        PDDebugLogger.mainInfo("[PDArenaBossManager] 📦 强制离场：未开箱战利品已分给 {} 人",
-                recipients.size());
-    }
-
-    private static void scheduleArenaMessage(ServerLevel arenaLevel, int delay, int gen, String text) {
-        ServerScheduler.schedule(delay, () -> {
-            if (getPhase(arenaLevel) != BossFightPhase.VICTORY) {
-                return;
-            }
-            ArenaBossData d = getArenaBossData(arenaLevel);
-            if (!d.isForceLeaveActive() || d.getForceLeaveGen() != gen) {
-                return;
-            }
-            for (Player player : new ArrayList<>(arenaLevel.players())) {
-                player.displayClientMessage(Component.literal(text), true);
-            }
-        });
+        // 不自动传送、不启动强制倒计时：玩家留在竞技场开箱捡物，
+        // 再手动右键中心召唤方块（AaroncosHandSpawnBlock VICTORY 分支）返回主世界。
     }
 
     private static void grantAdvancement(ServerPlayer player, String path) {
@@ -443,9 +360,9 @@ public class PDArenaBossManager {
     }
 
     /**
-     * 传送单个玩家至主世界对应传送门位置并切换为生存模式。
+     * 传送单个玩家至主世界对应传送门位置并切换为生存模式 —— 竞技场唯一的离场途径。
      * <p>
-     * 当玩家在 VICTORY 阶段右键召唤方块时调用；
+     * 当玩家在 VICTORY 阶段右键中心召唤方块时调用；
      * 若箱未开，先把战利品塞进该玩家背包。
      * 优先使用胜利序列记录的返回传送门位置，无记录时回退到主世界出生点。
      *
@@ -456,8 +373,8 @@ public class PDArenaBossManager {
         if (!(player instanceof ServerPlayer serverPlayer)) {
             return;
         }
-        // 点之眼提前离场：未开箱则给该玩家一份，避免空手回主
-        BlockPos chestPos = ARENA_CENTER.below();
+        // 未开箱则给该玩家一份，避免空手回主
+        BlockPos chestPos = VICTORY_CHEST_POS;
         if (arenaLevel.getBlockEntity(chestPos) instanceof AaroncosHandChestBlockEntity chest
                 && !chest.isClaimed()) {
             chest.grantUnclaimedTo(serverPlayer);
@@ -496,37 +413,6 @@ public class PDArenaBossManager {
     }
 
     /**
-     * 传送竞技场内所有玩家至主世界出生点并切换为生存模式
-     * <p>
-     * 使用副本遍历避免传送过程中玩家列表并发修改异常。
-     *
-     * @param arenaLevel 竞技场维度服务端世界
-     */
-    private static void teleportAllPlayersToOverworld(ServerLevel arenaLevel) {
-        for (ServerPlayer serverPlayer : new ArrayList<>(arenaLevel.players())) {
-            teleportPlayersToOverworld(arenaLevel, serverPlayer);
-        }
-    }
-
-    /**
-     * 清理竞技场 99 格半径内所有非玩家实体
-     * <p>
-     * 以竞技场中心 (0, 70, 0) 为基准，使用 AABB 范围查询，
-     * 移除 BOSS 战斗残留的实体、掉落物、弹射物等。
-     *
-     * @param arenaLevel 竞技场维度服务端世界
-     */
-    private static void cleanupArena(ServerLevel arenaLevel) {
-        AABB cleanupArea = new AABB(ARENA_CENTER).inflate(BOSS_CHECK_RADIUS);
-        List<Entity> entities = arenaLevel.getEntitiesOfClass(Entity.class,
-                cleanupArea, e -> !(e instanceof Player));
-        for (Entity entity : entities) {
-            entity.discard();
-        }
-        PDDebugLogger.mainDebug("[PDArenaBossManager] 🧹 已清理竞技场内 {} 个非玩家实体", entities.size());
-    }
-
-    /**
      * 获取竞技场维度持久化数据
      * <p>
      * 使用 SavedData 机制存储 BOSS 存活状态，确保跨 tick 持久化。
@@ -559,12 +445,6 @@ public class PDArenaBossManager {
         /** 战斗阶段 */
         private BossFightPhase phase = BossFightPhase.NOT_SUMMONED;
 
-        /** 胜利强制离场倒计时是否仍有效（开箱后 false） */
-        private boolean forceLeaveActive = false;
-
-        /** 强制离场代际；每次 schedule / cancel / initialize 递增 */
-        private int forceLeaveGen = 0;
-
         /** 胜利后玩家返回的传送门位置；为 null 时回退到主世界出生点 */
         private BlockPos returnPortalPos = null;
 
@@ -582,8 +462,6 @@ public class PDArenaBossManager {
         public ArenaBossData(CompoundTag tag, HolderLookup.Provider registryLookup) {
             this.leftHandAlive = tag.getBoolean(LEFT_HAND_ALIVE_KEY);
             this.rightHandAlive = tag.getBoolean(RIGHT_HAND_ALIVE_KEY);
-            this.forceLeaveActive = tag.getBoolean(FORCE_LEAVE_ACTIVE_KEY);
-            this.forceLeaveGen = tag.getInt(FORCE_LEAVE_GEN_KEY);
             // 从 NBT 读取战斗阶段，默认 NOT_SUMMONED
             String phaseStr = tag.getString(BOSS_FIGHT_PHASE_KEY);
             if (!phaseStr.isEmpty()) {
@@ -653,22 +531,6 @@ public class PDArenaBossManager {
             this.phase = phase;
         }
 
-        public boolean isForceLeaveActive() {
-            return forceLeaveActive;
-        }
-
-        public void setForceLeaveActive(boolean forceLeaveActive) {
-            this.forceLeaveActive = forceLeaveActive;
-        }
-
-        public int getForceLeaveGen() {
-            return forceLeaveGen;
-        }
-
-        public void setForceLeaveGen(int forceLeaveGen) {
-            this.forceLeaveGen = forceLeaveGen;
-        }
-
         public BlockPos getReturnPortalPos() {
             return returnPortalPos;
         }
@@ -682,8 +544,6 @@ public class PDArenaBossManager {
             compound.putBoolean(LEFT_HAND_ALIVE_KEY, this.leftHandAlive);
             compound.putBoolean(RIGHT_HAND_ALIVE_KEY, this.rightHandAlive);
             compound.putString(BOSS_FIGHT_PHASE_KEY, this.phase.name());
-            compound.putBoolean(FORCE_LEAVE_ACTIVE_KEY, this.forceLeaveActive);
-            compound.putInt(FORCE_LEAVE_GEN_KEY, this.forceLeaveGen);
             if (this.returnPortalPos != null) {
                 compound.putLong(RETURN_PORTAL_POS_KEY, this.returnPortalPos.asLong());
             }

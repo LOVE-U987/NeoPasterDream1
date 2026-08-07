@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.effect.ghost.GhostEffectAPI;
 import com.pasterdream.pasterdreammod.registry.PDArenaBossManager;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
@@ -208,22 +209,29 @@ public class AaroncosLefthand0Entity extends AaroncosHandEntity {
 
         if (!sw || skill == 1) return;
 
+        // 只对仇恨目标释放技能：无目标不放（脱战/和平模式站桩）
+        LivingEntity target = getCombatTarget();
+        if (target == null) return;
+
         int sprint = data.getInt("AaroncosSprint");
         int hit = data.getInt("AaroncosHit");
 
-        // 冲刺阶段：sprint 不为 1 且不为 3 时触发
-        if (sprint != 1 && sprint != 3) {
-            data.putInt("AaroncosSkill", 1);
-            data.putInt("AaroncosSprint", 1);
-            executeSprintSkill();
-            return;
-        }
+        // 近战技能：目标近身（<12 格）才释放冲刺/重击
+        if (this.distanceToSqr(target) < 12.0 * 12.0) {
+            // 冲刺阶段：sprint 不为 1 且不为 3 时触发
+            if (sprint != 1 && sprint != 3) {
+                data.putInt("AaroncosSkill", 1);
+                data.putInt("AaroncosSprint", 1);
+                executeSprintSkill();
+                return;
+            }
 
-        // 重击阶段：skill_hit == 3 时触发
-        if (hit == 3) {
-            data.putInt("AaroncosSkill", 1);
-            data.putInt("AaroncosHit", 4);
-            executeHitSkill();
+            // 重击阶段：skill_hit == 3 时触发
+            if (hit == 3) {
+                data.putInt("AaroncosSkill", 1);
+                data.putInt("AaroncosHit", 4);
+                executeHitSkill();
+            }
         }
     }
 
@@ -242,13 +250,25 @@ public class AaroncosLefthand0Entity extends AaroncosHandEntity {
                     PDSounds.STONE_BREAK_0.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
         });
 
-        // 16 tick 后锁定最近玩家并冲锋
+        // 16 tick 后锁定当前攻击目标（敌人）并冲锋
         queueTask(16, () -> {
-            Player nearest = this.level().getNearestPlayer(this, 64.0);
-            if (nearest != null) {
-                this.lookAt(nearest, 360.0F, 360.0F);
+            // 技能方向锁定 BOSS 当前攻击目标（敌人），而非最近玩家；
+            // 无目标时不强行转向。
+            LivingEntity target = this.getTarget();
+            if (target != null && target.isAlive()) {
+                this.lookAt(target, 360.0F, 360.0F);
+                // 关键：getLookAngle() 基于 yRot，Mob.lookAt 只更新 yHeadRot，
+                // 必须同步 yRot/yBodyRot，否则冲锋方向仍用旧身体朝向导致打空
+                this.setYRot(this.getYHeadRot());
+                this.setYBodyRot(this.getYHeadRot());
                 Vec3 look = this.getLookAngle();
                 this.setDeltaMovement(look.x * 2.8, look.y - 0.2, look.z * 2.8);
+
+                // 冲锋过程开启残影拖尾（半透明虚影跟随 BOSS 位移）
+                if (this.level() instanceof ServerLevel sl) {
+                    GhostEffectAPI.startGhostTrail(sl, this.position(), 99.0,
+                            this.getId(), 24, 40);
+                }
             }
         });
 
@@ -386,10 +406,11 @@ public class AaroncosLefthand0Entity extends AaroncosHandEntity {
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
                     PDSounds.STONE_BREAK.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
 
-            // 初始 AoE 混乱效果（30 格）—— 对非暗影 LivingEntity 施加 CONFUSION 60 tick
+            // 初始 AoE 混乱效果（30 格）—— 对非暗影 LivingEntity（排除创造玩家）施加 CONFUSION 60 tick
             List<LivingEntity> initialEntities = this.level().getEntitiesOfClass(LivingEntity.class,
                     this.getBoundingBox().inflate(30.0),
-                    e -> e != this && e.isAlive() && !e.getType().is(SHADOW_MOB_TAG));
+                    e -> e != this && e.isAlive() && !e.getType().is(SHADOW_MOB_TAG)
+                            && !(e instanceof Player p && p.isCreative()));
             for (LivingEntity entity : initialEntities) {
                 entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 60, 0, false, false));
             }
@@ -421,10 +442,11 @@ public class AaroncosLefthand0Entity extends AaroncosHandEntity {
                                 1, 0, 0, 0, 0);
                     }
 
-                    // 16 格 AoE 伤害判定（排除自身与暗影系友军）
+                    // 16 格 AoE 伤害判定（排除自身、暗影系友军与创造玩家）
                     List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class,
                             this.getBoundingBox().inflate(16.0),
-                            e -> e != this && e.isAlive() && !e.getType().is(SHADOW_MOB_TAG));
+                            e -> e != this && e.isAlive() && !e.getType().is(SHADOW_MOB_TAG)
+                                    && !(e instanceof Player p && p.isCreative()));
                     for (LivingEntity entity : entities) {
                         entity.hurt(this.damageSources().generic(), 8.0F);
                         // 对玩家额外施加 CONFUSION 20 tick

@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.client.gui;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.client.effect.screen.ScreenEffectOverlay;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -45,8 +46,11 @@ public class PDHudLayers {
                 layerId("couldmist_hud"), new CloudmistHudOverlay());
         event.registerAbove(VanillaGuiLayers.PLAYER_HEALTH,
                 layerId("pd_health"), new PlayerHealthHudOverlay());
+        // 屏幕特效叠加层（全屏特效，置于 FOOD_LEVEL 之上，与 lose_mind_gui 同段）
+        event.registerAbove(VanillaGuiLayers.FOOD_LEVEL,
+                layerId("screen_effect"), new ScreenEffectOverlay());
         PDDebugLogger.mainDebug(
-                "[PDHudLayers] 注册 HUD 叠加层: meltdreamenergy_bar, san_bar, lose_mind_gui, couldmist_hud, pd_health");
+                "[PDHudLayers] 注册 HUD 叠加层: meltdreamenergy_bar, san_bar, lose_mind_gui, couldmist_hud, pd_health, screen_effect");
     }
 
     /**

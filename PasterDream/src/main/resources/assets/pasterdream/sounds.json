@@ -69,7 +69,7 @@
     "sounds": [
       {
         "name": "pasterdream:aaroncos_music",
-        "stream": false
+        "stream": true
       }
     ]
   },

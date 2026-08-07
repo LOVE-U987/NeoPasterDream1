@@ -74,7 +74,10 @@ public class PDBlockTagProvider extends ApiBlockTagProvider {
                 PDBlocks.CYAN_STONE_BRICK_WALL.get(),
                 PDBlocks.CYAN_STONE_PRESSURE_PLATE.get(),
                 PDBlocks.CYAN_STONE_BUTTON.get(),
-                PDBlocks.SALT_BLOCK.get()
+                PDBlocks.SALT_BLOCK.get(),
+                // 方解石笋（grass_5/grass_6）：石质装饰方块，用镐挖掘
+                PDBlocks.GRASS_5.get(),
+                PDBlocks.GRASS_6.get()
         );
 
         // ---- 锹挖掘 - shadow 泥土系列 ----

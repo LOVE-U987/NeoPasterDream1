@@ -2,7 +2,6 @@ package com.pasterdream.pasterdreammod.block.entity;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
-import com.pasterdream.pasterdreammod.registry.PDArenaBossManager;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
@@ -46,8 +45,8 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
  * <p>
  * GeckoLib 渲染；右键触发开启（对齐原版 {@code AaroncosHandChestPr0}）：
  * 音效 + 开启动画 → 40t 地面掉落 talent 分支战利品 → 41t 拆除箱体。
- * 开箱时 {@link PDArenaBossManager#cancelForceLeaveOnChestOpen} 取消胜利强制离场，
- * 玩家捡完后自行右键之眼离开。{@link #claimed} 保证只开一次。
+ * 玩家开箱捡完后自行右键中心召唤方块（{@code AaroncosHandSpawnBlock}）离开竞技场。
+ * {@link #claimed} 保证只开一次。
  */
 public class AaroncosHandChestBlockEntity extends BlockEntity implements GeoBlockEntity {
 
@@ -87,9 +86,6 @@ public class AaroncosHandChestBlockEntity extends BlockEntity implements GeoBloc
         claimed = true;
         setChanged();
         serverLevel.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
-
-        // 开箱即取消胜利强制离场：只保留开箱前那一条倒计时，不再另计 10 秒传出
-        PDArenaBossManager.cancelForceLeaveOnChestOpen(serverLevel);
 
         serverLevel.playSound(null, worldPosition,
                 PDSounds.SHADOW_DOOR.get(), SoundSource.NEUTRAL, 1.0F, 1.0F);

@@ -237,19 +237,6 @@ public class PDParticles {
             .build();
 
     /**
-     * 极光粒子（aurora_glow）
-     * <p>
-     * 半透明带状极光粒子，用于深海和极地生物群系的环境效果。
-     * 水平缓慢飘动，颜色在青/蓝/紫之间渐变，模拟微缩极光效果。
-     */
-    public static final ParticleResult AURORA_GLOW = ParticleAPI.createParticle("aurora_glow")
-            .alwaysShow(true)
-            .texture("pasterdream:aurora_glow")
-            .withGravity(-0.002f)
-            .generateJson(false)
-            .build();
-
-    /**
      * 星尘粒子（stardust）
      * <p>
      * 微小白点星尘，用于多种染梦生物群系的环境点缀效果。

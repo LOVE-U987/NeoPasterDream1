@@ -1,5 +1,9 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
+import com.pasterdream.pasterdreammod.api.effect.atmosphere.AtmosphereEffectAPI;
+import com.pasterdream.pasterdreammod.api.effect.particle.ParticleEmitterAPI;
+import com.pasterdream.pasterdreammod.api.effect.particle.ParticleEmitterData;
+import com.pasterdream.pasterdreammod.api.effect.particle.processors.CircleSpawnProcessor;
 import com.pasterdream.pasterdreammod.api.entity.damage.ConfigurableImmunityEntity;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
@@ -75,6 +79,12 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
 
     /** 技能系统初始化标记 */
     protected boolean skillSwitchInitialized = false;
+
+    /** 技能锁定时长计数器（防止技能状态卡死导致 BOSS 变傻） */
+    protected int skillLockTick = 0;
+
+    /** 技能锁定卡死阈值（tick）。超过则强制解锁技能状态，防止 BOSS 永久不放大招 */
+    protected static final int SKILL_LOCK_TIMEOUT = 300;
 
     /** 是否处于召唤动画状态（spawn 动画期间禁用 AI 和技能） */
     protected boolean isSummoning = false;
@@ -153,6 +163,33 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
      */
     protected abstract void tickSkillCycle();
 
+    // ======================== 技能与目标辅助 ========================
+
+    /**
+     * 技能是否激活（AaroncosSkill==1：技能执行中，应暂停普攻/追击）
+     * <p>
+     * 由 AI goal（近战/飞行追踪）在技能执行期间拦截普攻，
+     * 保证「技能 CD 好放技能、没好普攻」互斥。
+     *
+     * @return 技能激活返回 {@code true}
+     */
+    protected boolean isSkillActive() {
+        return this.getPersistentData().getInt("AaroncosSkill") == 1;
+    }
+
+    /**
+     * 获取当前仇恨目标（不存在或已死亡返回 {@code null}）
+     * <p>
+     * 技能只对仇恨目标释放：无目标时技能循环应直接返回。
+     *
+     * @return 存活仇恨目标，或 {@code null}
+     */
+    @org.jetbrains.annotations.Nullable
+    protected LivingEntity getCombatTarget() {
+        LivingEntity target = this.getTarget();
+        return target != null && target.isAlive() ? target : null;
+    }
+
     // ======================== 召唤状态 ========================
 
     /**
@@ -182,12 +219,13 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
 
     @Override
     protected void registerGoals() {
-        // 近战攻击
-        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, getMeleeAttackSpeed(), true));
+        // 近战攻击（技能激活期间暂停普攻）
+        this.goalSelector.addGoal(1, new BossMeleeAttackGoal(this, getMeleeAttackSpeed(), true));
         // 飞行追踪目标
         this.goalSelector.addGoal(2, new FlyingPursuitGoal());
-        // 攻击目标
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
+        // 攻击目标（排除创造模式玩家）
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class,
+                10, false, false, target -> !(target instanceof Player p && p.isCreative())));
         // 随机飞行
         this.goalSelector.addGoal(4, new RandomStrollGoal(this, 0.8, 20) {
             @Override
@@ -199,6 +237,20 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
                 return new Vec3(dx, dy, dz);
             }
         });
+    }
+
+    // ======================== 目标辅助 ========================
+
+    /**
+     * 判断实体是否为 BOSS 可攻击的玩家（排除创造模式玩家）
+     * <p>
+     * BOSS 及其所有技能不对创造模式玩家发动攻击，统一由此判定。
+     *
+     * @param entity 待判定的实体
+     * @return 是否为可攻击的存活非创造玩家
+     */
+    protected boolean isAttackablePlayer(Entity entity) {
+        return entity instanceof Player p && !p.isCreative() && p.isAlive();
     }
 
     // ======================== 免疫 ========================
@@ -221,6 +273,7 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
         }
         // 受击触发子类技能（服务端且存活时）
         if (!this.level().isClientSide() && !this.isDeadOrDying()) {
+            // 普通受击不再触发全屏打击帧（避免频繁闪白，闪白保留给终结技大演出）
             onHurtTriggerSkill();
         }
         // 伤害免疫由 ConfigurableImmunityEntity 统一管理
@@ -312,7 +365,24 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
 
             // 首次 tick 初始化技能开关
             if (!skillSwitchInitialized) {
-                this.getPersistentData().putBoolean("AaroncosSwitch", true);
+                CompoundTag data = this.getPersistentData();
+                data.putBoolean("AaroncosSwitch", true);
+                // 重进世界后重置技能中间状态：
+                // pendingTasks 延迟任务队列不持久化，若在技能释放中（AaroncosSkill=1）保存，
+                // 加载后 skill 卡死、且没有 queueTask 解锁，技能系统永久锁死（BOSS 变傻）。
+                // 这里清零技能中间状态，仅保留一次性标记（BloodLock / TuneTotemFinale）。
+                data.putInt("AaroncosSkill", 0);
+                data.putInt("AaroncosMagicball", 0);
+                data.putInt("AaroncosVortex", 0);
+                data.putInt("AaroncosSprint", 0);
+                data.putInt("AaroncosHit", 0);
+                data.putInt("AaroncosSword", 0);
+                // 仅在非召唤状态清空延迟任务：
+                // 召唤时 onAddedToLevel 已排程「召唤结束解除无敌」任务，若在此清空
+                // 会导致 isSummoning 永不解除 → BOSS 过场后仍无敌。
+                if (!isSummoning) {
+                    this.pendingTasks.clear();
+                }
                 skillSwitchInitialized = true;
             }
 
@@ -321,6 +391,19 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
 
             // 技能循环
             tickSkillCycle();
+
+            // 技能卡死防御：若 AaroncosSkill 长时间保持 1（解锁任务丢失/被打断），
+            // 强制解锁，避免 BOSS 永久不放大招"变傻"。
+            CompoundTag skillData = this.getPersistentData();
+            if (skillData.getInt("AaroncosSkill") == 1) {
+                skillLockTick++;
+                if (skillLockTick > SKILL_LOCK_TIMEOUT) {
+                    skillData.putInt("AaroncosSkill", 0);
+                    skillLockTick = 0;
+                }
+            } else {
+                skillLockTick = 0;
+            }
 
             // 鲜血锁链检测
             tryBloodLock();
@@ -339,6 +422,18 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
         super.aiStep();
         this.setNoGravity(true);
         this.updateSwingTime();
+
+        // —— 持续面向目标（敌人）——
+        // 关键：getLookAngle()（技能发射方向）基于 yRot 而非 yHeadRot。
+        // getLookControl().setLookAt() 只更新 yHeadRot/xRot，若不同步 yRot，
+        // 技能发射方向仍用身体朝向，导致技能空位。这里每 tick 把 yRot/yBodyRot
+        // 同步到视线方向，确保 BOSS 持续面对敌人且发射方向正确。
+        LivingEntity target = this.getTarget();
+        if (target != null && target.isAlive()) {
+            this.getLookControl().setLookAt(target, 30.0F, 30.0F);
+            this.setYRot(this.getYHeadRot());
+            this.setYBodyRot(this.getYHeadRot());
+        }
     }
 
     // ======================== 延迟任务队列 ========================
@@ -375,7 +470,7 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
     // ======================== 鲜血锁链系统 ========================
 
     /**
-     * 检测并触发鲜血锁链 —— 当 HP < 100 且未锁定时触发
+     * 检测并触发鲜血锁链（狂暴）—— 当 HP &lt; 本体血量 1/3 且未锁定时触发
      * <p>
      * 触发效果：
      * <ul>
@@ -387,7 +482,7 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
      */
     protected void tryBloodLock() {
         CompoundTag data = this.getPersistentData();
-        if (data.getBoolean("AaroncosBloodLock") || this.getHealth() > 100) return;
+        if (data.getBoolean("AaroncosBloodLock") || this.getHealth() > this.getMaxHealth() / 3f) return;
 
         data.putBoolean("AaroncosBloodLock", true);
 
@@ -396,6 +491,18 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
 
         // 召唤 4 个暗影之手并施加玩家减益（仅在 ServerLevel 执行）
         if (this.level() instanceof ServerLevel serverLevel) {
+            // 狂暴瞬间血色雾氛围（全场雾色染红，持续 6 秒后自动衰减；不触发黑白闪，留给终结技）
+            AtmosphereEffectAPI.bloodFog(serverLevel, this.position(), 99.0, 0.9f, 120);
+
+            // 狂暴瞬间灵魂粒子发射器（圆形向上喷射）
+            ParticleEmitterAPI.spawn(serverLevel, this.position(), 99.0,
+                    ParticleEmitterData.builder(ParticleTypes.SOUL)
+                            .position(this.position().add(0, 2.5, 0))
+                            .lifetime(40)
+                            .particlesPerTick(6)
+                            .processor(new CircleSpawnProcessor(2.5f))
+                            .build());
+
             for (int i = 0; i < 4; i++) {
                 ShadowHandEntity shadowHand = PDEntities.SHADOW_HAND.get().create(serverLevel);
                 if (shadowHand != null) {
@@ -408,7 +515,7 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
             }
 
             AABB box = this.getBoundingBox().inflate(80.0);
-            this.level().getEntitiesOfClass(Player.class, box, Entity::isAlive)
+            this.level().getEntitiesOfClass(Player.class, box, this::isAttackablePlayer)
                     .forEach(player -> {
                         player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 60, 0, false, false));
                         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1, false, false));
@@ -447,19 +554,19 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
     // ======================== 范围伤害辅助 ========================
 
     /**
-     * 对附近玩家造成伤害（排除特殊实体）
+     * 对附近可攻击玩家造成伤害（排除创造模式玩家与特殊实体）
      *
      * @param range  范围半径
      * @param damage 伤害量
      */
     protected void hurtNearbyPlayers(double range, float damage) {
         AABB box = this.getBoundingBox().inflate(range);
-        this.level().getEntitiesOfClass(Player.class, box, Entity::isAlive)
+        this.level().getEntitiesOfClass(Player.class, box, this::isAttackablePlayer)
                 .forEach(p -> p.hurt(this.damageSources().mobAttack(this), damage));
     }
 
     /**
-     * 对附近非暗影系 LivingEntity 造成伤害并附加 CONFUSION 效果
+     * 对附近非暗影系 LivingEntity 造成伤害并附加 CONFUSION 效果（排除创造模式玩家）
      *
      * @param range             范围半径
      * @param damage            伤害量
@@ -468,7 +575,8 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
     protected void hurtNearbyLivingWithConfusion(double range, float damage, int confusionDuration) {
         AABB box = this.getBoundingBox().inflate(range);
         List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class, box,
-                e -> e != this && e.isAlive() && !e.getType().is(SHADOW_MOB_TAG));
+                e -> e != this && e.isAlive() && !e.getType().is(SHADOW_MOB_TAG)
+                        && !(e instanceof Player p && p.isCreative()));
         for (LivingEntity entity : entities) {
             entity.hurt(this.damageSources().mobAttack(this), damage);
             entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, confusionDuration, 0, false, false));
@@ -476,7 +584,7 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
     }
 
     /**
-     * 改变附近玩家的速度向量
+     * 改变附近可攻击玩家的速度向量（排除创造模式玩家）
      *
      * @param x x 方向
      * @param y y 方向
@@ -484,7 +592,7 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
      */
     protected void pushNearbyPlayers(double x, double y, double z) {
         AABB box = this.getBoundingBox().inflate(15.0);
-        this.level().getEntitiesOfClass(Player.class, box, Entity::isAlive)
+        this.level().getEntitiesOfClass(Player.class, box, this::isAttackablePlayer)
                 .forEach(p -> p.setDeltaMovement(new Vec3(x, y, z)));
     }
 
@@ -497,7 +605,10 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
      * @return 播放状态
      */
     private PlayState movementPredicate(AnimationState<AaroncosHandEntity> state) {
-        if (this.animationprocedure.equals("empty")) {
+        // 注意：必须用 getSyncedAnimation()（服务端同步的 entity data），
+        // 不能读 animationprocedure 本地字段——该字段只在服务端 setAnimation 时赋值，
+        // 客户端永远保持 "empty"，会导致 movement 控制器持续播放并覆盖 procedure 技能动画。
+        if (this.getSyncedAnimation().equals("empty")) {
             if ((state.isMoving() || !(state.getLimbSwingAmount() > -0.15F && state.getLimbSwingAmount() < 0.15F)) && this.onGround()) {
                 return state.setAndContinue(RawAnimation.begin().thenLoop("walk"));
             }
@@ -544,6 +655,8 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
 
     /**
      * 飞行追踪目标的 AI 目标 —— 使 BOSS 持续向目标移动并在碰撞箱相交时攻击
+     * <p>
+     * 技能激活期间暂停追击与普攻（技能执行中不贴脸不普攻，技能播完恢复）。
      */
     protected class FlyingPursuitGoal extends Goal {
         public FlyingPursuitGoal() {
@@ -552,12 +665,13 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
 
         @Override
         public boolean canUse() {
-            return getTarget() != null && !getMoveControl().hasWanted();
+            return !isSkillActive() && getTarget() != null && !getMoveControl().hasWanted();
         }
 
         @Override
         public boolean canContinueToUse() {
-            return getMoveControl().hasWanted() && getTarget() != null && getTarget().isAlive();
+            return !isSkillActive() && getMoveControl().hasWanted()
+                    && getTarget() != null && getTarget().isAlive();
         }
 
         @Override
@@ -572,7 +686,7 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
         @Override
         public void tick() {
             LivingEntity target = getTarget();
-            if (target == null) return;
+            if (target == null || isSkillActive()) return;
 
             if (getBoundingBox().intersects(target.getBoundingBox())) {
                 doHurtTarget(target);
@@ -580,6 +694,35 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
                 Vec3 pos = target.getEyePosition(1);
                 moveControl.setWantedPosition(pos.x, pos.y, pos.z, 1.0);
             }
+        }
+    }
+
+    /**
+     * 近战攻击 goal —— 技能激活期间暂停普攻
+     * <p>
+     * 保证「技能 CD 好放技能、CD 没好普攻」互斥：
+     * 技能执行（AaroncosSkill==1）时该 goal 不激活、不继续。
+     */
+    protected class BossMeleeAttackGoal extends MeleeAttackGoal {
+        /**
+         * 构造 BOSS 近战攻击 goal
+         *
+         * @param mob       BOSS 实体
+         * @param speed     追击速度倍率
+         * @param following 是否持续追踪目标
+         */
+        BossMeleeAttackGoal(AaroncosHandEntity mob, double speed, boolean following) {
+            super(mob, speed, following);
+        }
+
+        @Override
+        public boolean canUse() {
+            return !isSkillActive() && super.canUse();
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return !isSkillActive() && super.canContinueToUse();
         }
     }
 }

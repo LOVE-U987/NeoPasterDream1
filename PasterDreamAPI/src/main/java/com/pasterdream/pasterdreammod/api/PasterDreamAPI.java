@@ -7,6 +7,8 @@ import com.pasterdream.pasterdreammod.api.blockentity.BlockEntityAPI;
 import com.pasterdream.pasterdreammod.api.curio.CurioAPI;
 import com.pasterdream.pasterdreammod.api.effect.MobEffectAPI;
 import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
+import com.pasterdream.pasterdreammod.api.effect.cutscene.CutsceneAPI;
+import com.pasterdream.pasterdreammod.api.effect.particle.processors.BuiltinEmitterProcessors;
 import com.pasterdream.pasterdreammod.api.fluid.FluidAPI;
 import com.pasterdream.pasterdreammod.api.fluid.FluidTypeAPI;
 import com.pasterdream.pasterdreammod.api.item.ItemAPI;
@@ -65,6 +67,10 @@ public final class PasterDreamAPI {
         ApiSoundRegistry.DIMENSION_SOUNDS.register(modEventBus);
         DecorationRegistry.FEATURES.register(modEventBus);
         PDPlayerAttachments.ATTACHMENT_TYPES.register(modEventBus);
+
+        // 特效系统：内置粒子发射器处理器类型注册 + 相机实体类型
+        BuiltinEmitterProcessors.registerAll();
+        CutsceneAPI.ENTITY_REGISTRY.register(modEventBus);
 
         LOGGER.debug("[PasterDreamAPI] 已统一注册 13 个 API 注册器到事件总线");
     }

@@ -7,11 +7,13 @@ import com.pasterdream.pasterdreammod.registry.PDGameRules;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsDreamnotes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
@@ -92,13 +94,28 @@ public class PlayerDataEvents {
      * 新创建存档的玩家与已创建的旧存档玩家，首次登录时均会获得一本；发放成功后在玩家
      * 持久 NBT 写入标记，保证同一存档内只发一次（丢弃书籍不补发）。
      * <p>
+     * 标记存放在 {@link Player#PERSISTED_NBT_TAG}（{@code PlayerPersisted}）子标签下：
+     * NeoForge 的 {@code ServerPlayer#restoreFrom} 在玩家克隆（死亡重生/末地返回）时
+     * <b>仅</b>复制该子标签下的数据，若直接写在 {@code persistentData} 顶层，玩家一旦
+     * 死亡重生标记即丢失，导致下次登录重复发放。历史存档中顶层旧标记在读取时自动迁移。
+     * <p>
      * Patchouli 为可选依赖：未安装时不发也不写标记，待玩家装上 Patchouli 后下次登录自动补发。
      *
      * @param player 登录的服务端玩家
      */
     private static void giveGuideBookIfNeeded(ServerPlayer player) {
         CompoundTag persistent = player.getPersistentData();
-        if (persistent.getBoolean(GUIDE_BOOK_GIVEN_KEY)) {
+        CompoundTag persisted = persistent.contains(Player.PERSISTED_NBT_TAG, Tag.TAG_COMPOUND)
+                ? persistent.getCompound(Player.PERSISTED_NBT_TAG)
+                : new CompoundTag();
+        // 迁移兼容：0.9.x 早期版本标记写在 persistentData 顶层，读到后迁入 PlayerPersisted。
+        boolean legacyFlag = persistent.getBoolean(GUIDE_BOOK_GIVEN_KEY);
+        boolean flag = persisted.getBoolean(GUIDE_BOOK_GIVEN_KEY) || legacyFlag;
+        if (legacyFlag && !persisted.getBoolean(GUIDE_BOOK_GIVEN_KEY)) {
+            persisted.putBoolean(GUIDE_BOOK_GIVEN_KEY, true);
+            persistent.put(Player.PERSISTED_NBT_TAG, persisted);
+        }
+        if (flag) {
             return;
         }
         if (!ModList.get().isLoaded("patchouli")) {
@@ -107,7 +124,8 @@ public class PlayerDataEvents {
         ItemStack book = PatchouliAPI.get().getBookStack(GUIDE_BOOK_ID);
         if (!book.isEmpty()) {
             ItemHandlerHelper.giveItemToPlayer(player, book);
-            persistent.putBoolean(GUIDE_BOOK_GIVEN_KEY, true);
+            persisted.putBoolean(GUIDE_BOOK_GIVEN_KEY, true);
+            persistent.put(Player.PERSISTED_NBT_TAG, persisted);
         }
     }
 
@@ -197,6 +215,9 @@ public class PlayerDataEvents {
      *   <li>非死亡：两类数据均由 NeoForge attachment 机制自动复制（等价原版 reviveCaps + 拷贝）</li>
      * </ul>
      * 随后全量同步（与原版 playerClone 末尾的 sync 一致）。
+     * <p>
+     * 注：{@code persistentData} 顶层的持久化标记（如《帕斯特指南》发放标记）不会随克隆复制，
+     * 需写入 {@link Player#PERSISTED_NBT_TAG} 子标签才能跨死亡保留（见 {@link #giveGuideBookIfNeeded}）。
      *
      * @param event 克隆事件
      */
