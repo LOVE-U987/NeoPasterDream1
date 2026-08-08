@@ -269,6 +269,9 @@ public class PasterDreamMod {
         // 客户端 Tick 事件和天空盒系统通过 @EventBusSubscriber(Dist.CLIENT)
         // 在 PDClientEvents 和 SkyboxClientEvents 中自动注册，避免服务端类加载
 
+        // 工具与方块交互转换（锄头开垦染梦耕地 / 斧头剥皮冷域木头）
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDToolConversionEvents::onBlockToolModification);
+
         // 特效系统调试命令（/pasterdream vfx impact|screen|particle|cutscene）
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.command.PDVfxCommand::register);
     }

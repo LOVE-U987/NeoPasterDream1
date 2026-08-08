@@ -140,6 +140,9 @@ public class PDBlocksSimple {
     public static final DeferredBlock<DyedreamGrassBlock> DYEDREAM_GRASS = PDBlocks.BLOCKS.registerBlock("dyedream_grass",
             DyedreamGrassBlock::new,
             BlockBehaviour.Properties.ofFullCopy(Blocks.GRASS_BLOCK));
+    /** 染梦耕地：湿润状态（moisture 0-7）、踩踏变染梦泥土 */
+    public static final DeferredBlock<DyedreamFarmlandBlock> DYEDREAM_FARMLAND = PDBlocks.BLOCKS.registerBlock("dyedream_farmland",
+            DyedreamFarmlandBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.FARMLAND));
 
     public static final DeferredBlock<DyedreamLogBlock> DYEDREAM_LOG = PDBlocks.BLOCKS.registerBlock("dyedream_log",
             DyedreamLogBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG));

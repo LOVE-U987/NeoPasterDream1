@@ -33,10 +33,11 @@ public class PDArmorMaterials {
 
     public static final DeferredHolder<ArmorMaterial, ArmorMaterial> COPPER_ARMOR = ARMOR_MATERIALS.register("copper_armor",
             () -> new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
-                map.put(ArmorItem.Type.HELMET, 1);
-                map.put(ArmorItem.Type.CHESTPLATE, 3);
-                map.put(ArmorItem.Type.LEGGINGS, 5);
-                map.put(ArmorItem.Type.BOOTS, 2);
+                // 原模组防御数组 {1,3,5,2} 按 [靴,腿,胸,头] 顺序 => 头2 胸5 腿3 靴1
+                map.put(ArmorItem.Type.HELMET, 2);
+                map.put(ArmorItem.Type.CHESTPLATE, 5);
+                map.put(ArmorItem.Type.LEGGINGS, 3);
+                map.put(ArmorItem.Type.BOOTS, 1);
                 map.put(ArmorItem.Type.BODY, 3);
             }),
             8,
@@ -49,9 +50,10 @@ public class PDArmorMaterials {
 
     public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TITANIUM_ARMOR = ARMOR_MATERIALS.register("titanium_armor",
             () -> new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
+                // 原模组防御数组 {3,6,8,3} 按 [靴,腿,胸,头] 顺序 => 头3 胸8 腿6 靴3
                 map.put(ArmorItem.Type.HELMET, 3);
-                map.put(ArmorItem.Type.CHESTPLATE, 6);
-                map.put(ArmorItem.Type.LEGGINGS, 8);
+                map.put(ArmorItem.Type.CHESTPLATE, 8);
+                map.put(ArmorItem.Type.LEGGINGS, 6);
                 map.put(ArmorItem.Type.BOOTS, 3);
                 map.put(ArmorItem.Type.BODY, 6);
             }),
@@ -65,9 +67,10 @@ public class PDArmorMaterials {
 
     public static final DeferredHolder<ArmorMaterial, ArmorMaterial> SCULK_ARMOR = ARMOR_MATERIALS.register("sculk_armor",
             () -> new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
+                // 原模组防御数组 {3,6,8,3} 按 [靴,腿,胸,头] 顺序 => 头3 胸8 腿6 靴3
                 map.put(ArmorItem.Type.HELMET, 3);
-                map.put(ArmorItem.Type.CHESTPLATE, 6);
-                map.put(ArmorItem.Type.LEGGINGS, 8);
+                map.put(ArmorItem.Type.CHESTPLATE, 8);
+                map.put(ArmorItem.Type.LEGGINGS, 6);
                 map.put(ArmorItem.Type.BOOTS, 3);
                 map.put(ArmorItem.Type.BODY, 6);
             }),
@@ -81,9 +84,10 @@ public class PDArmorMaterials {
 
     public static final DeferredHolder<ArmorMaterial, ArmorMaterial> DYEDREAM_ARMOR = ARMOR_MATERIALS.register("dyedream_armor",
             () -> new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
+                // 原模组防御数组 {3,6,8,3} 按 [靴,腿,胸,头] 顺序 => 头3 胸8 腿6 靴3
                 map.put(ArmorItem.Type.HELMET, 3);
-                map.put(ArmorItem.Type.CHESTPLATE, 6);
-                map.put(ArmorItem.Type.LEGGINGS, 8);
+                map.put(ArmorItem.Type.CHESTPLATE, 8);
+                map.put(ArmorItem.Type.LEGGINGS, 6);
                 map.put(ArmorItem.Type.BOOTS, 3);
                 map.put(ArmorItem.Type.BODY, 6);
             }),
@@ -97,10 +101,11 @@ public class PDArmorMaterials {
 
     public static final DeferredHolder<ArmorMaterial, ArmorMaterial> QIN_ARMOR = ARMOR_MATERIALS.register("qin",
             () -> new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
-                map.put(ArmorItem.Type.HELMET, 2);
+                // 原模组防御数组 {2,10,10,10} 按 [靴,腿,胸,头] 顺序 => 头10 胸10 腿10 靴2
+                map.put(ArmorItem.Type.HELMET, 10);
                 map.put(ArmorItem.Type.CHESTPLATE, 10);
                 map.put(ArmorItem.Type.LEGGINGS, 10);
-                map.put(ArmorItem.Type.BOOTS, 10);
+                map.put(ArmorItem.Type.BOOTS, 2);
                 map.put(ArmorItem.Type.BODY, 10);
             }),
             99,

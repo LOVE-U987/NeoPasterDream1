@@ -1,0 +1,3 @@
+#execute if block ~ ~ ~ minecraft:air if block ~ ~-1 ~ #trees:dirt run function trees:blossom/floor
+execute if entity @e[tag=tree,type=area_effect_cloud,distance=..12] if block ~ ~ ~ minecraft:oak_log if block ~ ~-1 ~ #trees:dirt run function trees:blossom/bush
+execute unless entity @e[tag=tree,type=area_effect_cloud,distance=..12] if block ~ ~ ~ minecraft:oak_log if block ~ ~-1 ~ #trees:dirt run function trees:blossom/tree

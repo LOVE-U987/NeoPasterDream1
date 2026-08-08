@@ -1,0 +1,3 @@
+execute if block ~ ~ ~ minecraft:air if block ~ ~-1 ~ #trees:dirt run function trees:mountain_forest/floor
+execute if block ~ ~ ~ minecraft:oak_log unless block ~ ~15 ~ minecraft:oak_log if block ~ ~-1 ~ #trees:dirt run function trees:mountain_forest/tree
+execute if block ~ ~ ~ minecraft:spruce_log unless block ~ ~15 ~ minecraft:oak_log if block ~ ~-1 ~ #trees:dirt run function trees:mountain_forest/oak

@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.block.entity.MeltdreamChestBlockEntity;
 import com.pasterdream.pasterdreammod.api.doll.DollAPI;
 import com.pasterdream.pasterdreammod.api.doll.DollResult;
+import com.pasterdream.pasterdreammod.config.MeltdreamChestLootConfig;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
@@ -207,7 +208,7 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
 
         // 2. 随机决定品质
         int quality = selectQuality(level.random);
-        LootEntry[] pool = switch (quality) {
+        MeltdreamChestLootConfig.LootEntry[] pool = switch (quality) {
             case 2 -> getRareLoot();
             case 3 -> getLegendaryLoot();
             default -> getCommonLoot();
@@ -283,7 +284,7 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
      * @param player  打开宝箱的玩家（用于判断唱片拥有情况）
      * @param quality 品质等级（1=普通, 2=稀有, 3=传说）
      */
-    private static void fillItems(ItemStackHandler handler, LootEntry[] pool, RandomSource random, Player player, int quality) {
+    private static void fillItems(ItemStackHandler handler, MeltdreamChestLootConfig.LootEntry[] pool, RandomSource random, Player player, int quality) {
         if (quality == 3) {
             // 传说品质：第 9 格固定 1 个融梦水晶碎片（弹出时生成水晶实体），前 8 格掉落传说稀有度物品
             for (int i = 0; i < 8; i++) {
@@ -388,106 +389,32 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
 
     // ==================== 刻调度（已移除 — 由 BlockEntity.serverTick 接管） ====================
 
-    /** 物品池条目：物品 + 权重 */
-    private record LootEntry(ItemStack stack, int weight) {}
-
-    /** 懒加载的普通品质物品池 */
-    private static LootEntry[] commonLoot = null;
-
-    /** 懒加载的稀有品质物品池 */
-    private static LootEntry[] rareLoot = null;
-
-    /** 懒加载的传说品质物品池 */
-    private static LootEntry[] legendaryLoot = null;
-
     /**
-     * 获取普通品质物品池 —— 仅包含简单食物（懒加载）
-     * <p>普通品质战利品只会掉落各种简单食物，不再掉落材料和融梦水晶碎片。</p>
-     * <p>仅在首次调用时初始化，避免在类加载阶段访问未注册的 {@link PDItems}。</p>
+     * 获取普通品质物品池 —— 从 {@link MeltdreamChestLootConfig} 读取（懒加载与回退逻辑内聚在配置类）。
+     * <p>普通品质战利品默认只掉落各种简单食物。</p>
      *
-     * @return 普通品质物品池数组（纯食物）
+     * @return 普通品质物品池数组
      */
-    private static LootEntry[] getCommonLoot() {
-        if (commonLoot == null) {
-            commonLoot = new LootEntry[] {
-                    new LootEntry(new ItemStack(PDItems.FRIED_EGG.get(), 2), 30),
-                    new LootEntry(new ItemStack(PDItems.CANDY_CANE.get(), 2), 25),
-                    new LootEntry(new ItemStack(PDItems.BUBBLE_GUM.get(), 3), 25),
-                    new LootEntry(new ItemStack(PDItems.CHOCOLATE.get(), 2), 25),
-                    new LootEntry(new ItemStack(PDItems.BERRY_BUNCAKE.get(), 2), 22),
-                    new LootEntry(new ItemStack(PDItems.CREAM_BUNCAKE.get(), 2), 22),
-                    new LootEntry(new ItemStack(PDItems.DYEDREAM_POPSICLE.get(), 2), 22),
-                    new LootEntry(new ItemStack(PDItems.GINGERBREAD_MAN.get(), 2), 20),
-                    new LootEntry(new ItemStack(PDItems.POTATO_BUNCAKE.get(), 2), 20),
-                    new LootEntry(new ItemStack(PDItems.PUMPKIN_BUNCAKE.get(), 2), 20),
-                    new LootEntry(new ItemStack(PDItems.JELLYFISH_JELLO.get(), 2), 18),
-                    new LootEntry(new ItemStack(PDItems.RICECAKE.get(), 1), 16),
-                    new LootEntry(new ItemStack(PDItems.SWISS_ROLL.get(), 1), 16),
-                    new LootEntry(new ItemStack(PDItems.BREAD_SLICE.get(), 3), 15),
-                    new LootEntry(new ItemStack(PDItems.FIG.get(), 2), 14),
-                    new LootEntry(new ItemStack(PDItems.STRAWBERRY_HEART.get(), 1), 12),
-                    new LootEntry(new ItemStack(PDItems.WAFER_BISCUIT.get(), 2), 10)
-            };
-        }
-        return commonLoot;
+    private static MeltdreamChestLootConfig.LootEntry[] getCommonLoot() {
+        return MeltdreamChestLootConfig.getCommonLoot();
     }
 
     /**
-     * 获取稀有品质物品池 —— 染梦高级材料与中级装备（懒加载）
-     * <p>含染梦锭、钛锭、黑金锭等金属材料。</p>
+     * 获取稀有品质物品池 —— 染梦高级材料与中级装备（懒加载）。
      *
      * @return 稀有品质物品池数组
      */
-    private static LootEntry[] getRareLoot() {
-        if (rareLoot == null) {
-            rareLoot = new LootEntry[] {
-                    new LootEntry(new ItemStack(PDItems.DYEDREAM_INGOT.get(), 2), 25),
-                    new LootEntry(new ItemStack(PDItems.TITANIUM_INGOT.get(), 2), 22),
-                    new LootEntry(new ItemStack(PDItems.BLACKMETAL_INGOT.get(), 2), 20),
-                    new LootEntry(new ItemStack(PDItems.WHITE_CRYSTAL.get(), 2), 18),
-                    new LootEntry(new ItemStack(PDItems.DREAMWISH.get(), 1), 18),
-                    new LootEntry(new ItemStack(PDItems.SOUL_ESSENCE.get(), 2), 16),
-                    new LootEntry(new ItemStack(PDItems.CHARGED_AMETHYST.get(), 2), 15),
-                    new LootEntry(new ItemStack(PDItems.WIND_IRON_INGOT.get(), 2), 15),
-                    new LootEntry(new ItemStack(PDItems.MOLTENGOLD_INGOT.get(), 2), 15),
-                    new LootEntry(new ItemStack(PDItems.DREAM_AURORIAN_STEEL.get(), 1), 12),
-                    new LootEntry(new ItemStack(PDItems.DYEDREAM_SWORD.get()), 12),
-                    new LootEntry(new ItemStack(PDItems.TITANIUM_SWORD.get()), 12),
-                    new LootEntry(new ItemStack(PDItems.PINKEGG.get(), 2), 10),
-                    new LootEntry(new ItemStack(PDItems.NIGHTMARE_FUEL.get(), 2), 10),
-                    // 夜空交互纪念品：羽星占卜图录 / 星空枕（稀有档也有机会开出）
-                    new LootEntry(new ItemStack(PDItems.MEMENTO_ITEM_03.get()), 6),
-                    new LootEntry(new ItemStack(PDItems.MEMENTO_ITEM_08.get()), 6)
-            };
-        }
-        return rareLoot;
+    private static MeltdreamChestLootConfig.LootEntry[] getRareLoot() {
+        return MeltdreamChestLootConfig.getRareLoot();
     }
 
     /**
-     * 获取传说品质物品池 —— 染梦维度顶级装备与稀有材料（懒加载）
-     * <p>含融梦水晶、暗影侵蚀系列武器、特殊饰品等。</p>
+     * 获取传说品质物品池 —— 染梦维度顶级装备与稀有材料（懒加载）。
      *
      * @return 传说品质物品池数组
      */
-    private static LootEntry[] getLegendaryLoot() {
-        if (legendaryLoot == null) {
-            legendaryLoot = new LootEntry[] {
-                    new LootEntry(new ItemStack(PDItems.MELTDREAM_CRYSTAL_0.get(), 1), 20),
-                    new LootEntry(new ItemStack(PDItems.SHADOW_EROSION_SWORD.get(), 1), 18),
-                    new LootEntry(new ItemStack(PDItems.ALLKINDS_RING.get(), 1), 15),
-                    new LootEntry(new ItemStack(PDItems.BOBO_PLUME.get(), 1), 15),
-                    new LootEntry(new ItemStack(PDItems.DYEDREAM_UPGRADE.get(), 1), 12),
-                    new LootEntry(new ItemStack(PDItems.TITANIUM_UPGRADE.get(), 1), 12),
-                    new LootEntry(new ItemStack(PDItems.SCULK_UPGRADE.get(), 1), 10),
-                    new LootEntry(new ItemStack(PDItems.DYEDREAM_TELEPORT_CRYSTAL.get(), 2), 10),
-                    new LootEntry(new ItemStack(PDItems.SWEETDREAM_DISC.get(), 1), 8),
-                    new LootEntry(new ItemStack(PDItems.DYEDREAM_WORLD_DISC.get(), 1), 8),
-                    // 夜空交互纪念品：羽星占卜图录 / 星空枕（传说档高概率开出）
-                    new LootEntry(new ItemStack(PDItems.MEMENTO_ITEM_03.get()), 8),
-                    new LootEntry(new ItemStack(PDItems.MEMENTO_ITEM_08.get()), 8)
-            };
-        }
-        return legendaryLoot;
+    private static MeltdreamChestLootConfig.LootEntry[] getLegendaryLoot() {
+        return MeltdreamChestLootConfig.getLegendaryLoot();
     }
 
     /**
@@ -497,12 +424,12 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
      * @param random 随机数源
      * @return 选中的物品（副本）
      */
-    private static ItemStack rollFromPool(LootEntry[] pool, net.minecraft.util.RandomSource random) {
+    private static ItemStack rollFromPool(MeltdreamChestLootConfig.LootEntry[] pool, net.minecraft.util.RandomSource random) {
         int totalWeight = 0;
-        for (LootEntry entry : pool) totalWeight += entry.weight();
+        for (MeltdreamChestLootConfig.LootEntry entry : pool) totalWeight += entry.weight();
         int roll = random.nextInt(totalWeight);
         int cumulative = 0;
-        for (LootEntry entry : pool) {
+        for (MeltdreamChestLootConfig.LootEntry entry : pool) {
             cumulative += entry.weight();
             if (roll < cumulative) {
                 return entry.stack().copy();

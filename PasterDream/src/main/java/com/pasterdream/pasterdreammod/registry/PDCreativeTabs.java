@@ -58,4 +58,7 @@ public class PDCreativeTabs {
     // --- PDCreativeTabsDebug ---
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> DEBUG_TAB = PDCreativeTabsDebug.DEBUG_TAB;
 
+    // --- PDCreativeTabsColdDomain ---
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> COLD_DOMAIN_TAB = PDCreativeTabsColdDomain.COLD_DOMAIN_TAB;
+
 }

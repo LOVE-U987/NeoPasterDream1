@@ -39,13 +39,26 @@ public class DebugStructureWandItem extends Item {
     /** 结构 NBT 路径（不含命名空间和扩展名），如 {@code dream_train} */
     private final String structurePath;
 
+    /** 是否以点击点为中心放置（true=结构中心对齐点击点，false=边角放置） */
+    private final boolean centered;
+
     /**
      * @param properties    物品属性
      * @param structurePath 结构 NBT 文件路径（不含命名空间和扩展名）
      */
     public DebugStructureWandItem(Properties properties, String structurePath) {
+        this(properties, structurePath, false);
+    }
+
+    /**
+     * @param properties    物品属性
+     * @param structurePath 结构 NBT 文件路径（不含命名空间和扩展名）
+     * @param centered      是否以点击点为中心放置（true=结构中心对齐点击点）
+     */
+    public DebugStructureWandItem(Properties properties, String structurePath, boolean centered) {
         super(properties);
         this.structurePath = structurePath;
+        this.centered = centered;
     }
 
     @Override
@@ -90,7 +103,13 @@ public class DebugStructureWandItem extends Item {
 
         Vec3i size = template.getSize();
         // flags=3 与原版/PDStructureBlock 一致（NOTIFY_NEIGHBORS|NOTIFY_CLIENTS），保证 BE 与客户端同步
-        boolean placed = template.placeInWorld(serverLevel, targetPos, targetPos.offset(
+        // centered=true 时结构中心对齐点击点（X/Z 偏移半尺寸，Y 保持点击面外侧=地表），
+        // 避免树冠/建筑从边角开始展开导致整体偏向一侧。
+        BlockPos startPos = targetPos;
+        if (centered) {
+            startPos = targetPos.offset(-(size.getX() - 1) / 2, 0, -(size.getZ() - 1) / 2);
+        }
+        boolean placed = template.placeInWorld(serverLevel, startPos, startPos.offset(
                 size.getX() - 1, size.getY() - 1, size.getZ() - 1
         ), settings, serverLevel.random, 3);
 

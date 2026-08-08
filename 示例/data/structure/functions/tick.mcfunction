@@ -1,0 +1,2 @@
+execute at @e[type=minecraft:husk,tag=termite,nbt={HurtTime:0s}] run particle block coarse_dirt ~ ~ ~ 0 0 0 0 2 force
+execute at @e[type=minecraft:husk,tag=termite,nbt=!{HurtTime:0s}] run particle block red_concrete ~ ~ ~ 0 0 0 0 2 force

@@ -7,7 +7,7 @@ import com.pasterdream.pasterdreammod.worldgen.feature.MegaCalcitePillarFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.MegaMushroomFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.PinkagaricClusterFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.SafeLakeFeature;
-import com.pasterdream.pasterdreammod.worldgen.feature.SuspendedCrystalFeature;
+import com.pasterdream.pasterdreammod.worldgen.tree.DyedreamStructureTreeFeature;
 import com.pasterdream.pasterdreammod.worldgen.tree.DyedreamTreeFeature;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -45,10 +45,6 @@ public class PDFeatures {
 
     // ==================== 地下生态特征 ====================
 
-    /** 悬浮水晶核心特征 —— 在大空腔中生成中央主水晶柱 + 环绕小水晶 */
-    public static final DeferredHolder<Feature<?>, SuspendedCrystalFeature> SUSPENDED_CRYSTAL =
-            FEATURES.register("suspended_crystal", SuspendedCrystalFeature::new);
-
     /** 发光菌体特征 —— 在洞穴天花板/墙壁悬挂生成粉色发光菌群 */
     public static final DeferredHolder<Feature<?>, CaveGlowMushroomFeature> CAVE_GLOW_MUSHROOM =
             FEATURES.register("cave_glow_mushroom", CaveGlowMushroomFeature::new);
@@ -56,6 +52,10 @@ public class PDFeatures {
     /** 染梦混合树特征 —— 自定义 Trunk/Foliage/Decorator 的方块树入口 */
     public static final DeferredHolder<Feature<?>, Feature<TreeConfiguration>> DYEDREAM_TREE =
             FEATURES.register("dyedream_tree", () -> new DyedreamTreeFeature(TreeConfiguration.CODEC));
+
+    /** 结构树特征 —— 自然生成 Better Biomes 移植树（结构 NBT 直接放置） */
+    public static final DeferredHolder<Feature<?>, DyedreamStructureTreeFeature> STRUCTURE_TREE =
+            FEATURES.register("structure_tree", () -> new DyedreamStructureTreeFeature(DyedreamStructureTreeFeature.Config.CODEC.codec()));
 
     /**
      * 安全水色湖 —— 对齐 LakeFeature 形貌，但不调用 getBiome 结冰检查

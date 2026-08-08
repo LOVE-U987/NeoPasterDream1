@@ -210,6 +210,18 @@ public class PDItems {
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_FANCY = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_FANCY;
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_GLOWING = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_GLOWING;
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_ICY = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_ICY;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_TALLBIRCH = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_TALLBIRCH;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_BLOSSOM = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_BLOSSOM;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_ASPEN = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_ASPEN;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_POPLAR = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_POPLAR;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_ASPEN_MID = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_ASPEN_MID;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_ASPEN_SMALL = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_ASPEN_SMALL;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_BUSH = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_BUSH;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_CHERRYBUSH = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_CHERRYBUSH;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_PLAIN = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_PLAIN;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_PALM = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_PALM;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_SNOW = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_SNOW;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TREE_CONIFER = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TREE_CONIFER;
     public static final DeferredItem<?> DEBUG_WAND_CRYSTAL_BALL = PDItemsFunctional.DEBUG_WAND_CRYSTAL_BALL;
     public static final DeferredItem<?> DEBUG_WAND_STONE_PILLAR_SKY = PDItemsFunctional.DEBUG_WAND_STONE_PILLAR_SKY;
     public static final DeferredItem<?> DEBUG_WAND_SHADOW_WORLD_DOOR = PDItemsFunctional.DEBUG_WAND_SHADOW_WORLD_DOOR;
@@ -955,5 +967,17 @@ public class PDItems {
     public static final DeferredItem<?> SHADOW_BRAZIER = PDItemsFurniture.SHADOW_BRAZIER;
     public static final DeferredItem<?> SHADOW_TRAP_0 = PDItemsFurniture.SHADOW_TRAP_0;
     public static final DeferredItem<?> TWILIGHT_LANTERN = PDItemsFurniture.TWILIGHT_LANTERN;
+
+    // ==================== 冷域维度 + 染梦耕地物品（新） ====================
+
+    // --- PDItemsColdDomain ---
+    public static final DeferredItem<?> COLD_DOMAIN_DIRT = PDItemsColdDomain.COLD_DOMAIN_DIRT;
+    public static final DeferredItem<?> COLD_DOMAIN_LOG = PDItemsColdDomain.COLD_DOMAIN_LOG;
+    public static final DeferredItem<?> STRIPPED_COLD_DOMAIN_LOG = PDItemsColdDomain.STRIPPED_COLD_DOMAIN_LOG;
+    public static final DeferredItem<?> SNOWY_COLD_DOMAIN_GRASS = PDItemsColdDomain.SNOWY_COLD_DOMAIN_GRASS;
+    public static final DeferredItem<?> COLD_DOMAIN_LEAVES = PDItemsColdDomain.COLD_DOMAIN_LEAVES;
+
+    // --- PDItemsBlocks（染梦耕地） ---
+    public static final DeferredItem<?> DYEDREAM_FARMLAND = PDItemsBlocks.DYEDREAM_FARMLAND;
 
 }

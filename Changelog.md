@@ -2,6 +2,276 @@
 
 ---
 
+## v0.9.17 — 2026-08-09
+
+### 调整：移植树密度改为噪声驱动，实现群系错落感
+
+*   **需求**：树木过密、均匀，缺乏群系内的疏密变化。
+*   **调整**（`worldgen/placed_feature/bb_trees_*.json`，10 个全部改为 `minecraft:noise_based_count`）：
+    *   **语义**：`count = ceil((BIOME_INFO_NOISE + offset) × ratio)`，噪声 -1~1 → offset 决定"出现区域占比"（0.4+ = 大片区域有树但稀疏，0.1~0.2 = 少数区块扎堆），ratio 决定每区块数量
+    *   **主树**（bush/plaintree/snowtree/cherrybush）：offset 0.4~0.45、ratio 2~3 → 大片区域稀疏铺底
+    *   **点缀树**（blossom/tallbirch/poplar/aspen）：offset 0.1~0.2、ratio 1 → 少数区块扎堆出现
+    *   **地标树**（conifer）：offset 0.08、ratio 1 → 零星巨型针叶，地标感
+*   **叠加控制**：`bb_forest_trees` 从 6 树型减至 4（bush+plaintree+aspen+blossom），避免多 placed_feature 叠加过密
+*   **模拟验证**：森林 ~5 棵/区块（14% 无树区块）、密林 1.9、平原 4.3、蘑菇 3.0、冰雪 1.3、海岸 1.4 —— 各群系有密有疏，错落自然
+*   **验证**：`:PasterDream:compileJava` + `runData` 通过（全部 JSON 可解析）
+
+---
+
+## v0.9.16 — 2026-08-09
+
+### 新增：Better Biomes 移植树写入地形生成器（结构树 Feature + 群系分配）
+
+*   **需求**：将 12 棵移植树接入染梦世界自然生成；灌木等贴地树与高树形成上下结构差异；部分群系改造为移植树主导。
+*   **结构树 Feature**（`PasterDream`，新）：
+    *   `DyedreamStructureTreeFeature`（`pasterdream:structure_tree`）：生成阶段从 `StructureTemplateManager` 加载 `bb_*.nbt` 结构并放置（`placeInWorld`，`WorldGenLevel extends ServerLevelAccessor` 直接可用）；origin 为水平中心，结构 -X/-Z 偏移半尺寸；超大树（22×22 conifer）origin 对齐区块中心防 far chunk
+    *   `Config(structurePath)` record + `MapCodec`（`.codec()` 转 `Codec`），已注册 `PDFeatures.STRUCTURE_TREE`
+*   **configured_feature**（10 个）：`bb_tree_{bush,cherrybush,plaintree,blossom,aspen,tallbirch,poplar,snowtree,conifer,palm}.json`
+*   **placed_feature**（10 个，上下结构差异 = 密度分层）：
+    *   低层贴地灌木：`bb_trees_bush`（count 24 密植）、`bb_trees_cherrybush`（count 16）
+    *   中层树：`bb_trees_plaintree`（8）、`bb_trees_aspen`（10）、`bb_trees_snowtree`（8）、`bb_trees_palm`（6，water_depth 1）
+    *   高层树：`bb_trees_tallbirch`（6）、`bb_trees_poplar`（6）、`bb_trees_blossom`（4）、`bb_trees_conifer`（2 稀疏巨树）
+*   **biome_modifier**（6 个，`neoforge:add_features` + `vegetal_decoration`，全部新增不动现有）：
+    *   `bb_forest_trees` → `biome_dyedream_1`（森林主导：bush+plaintree+aspen+blossom+tallbirch+poplar）
+    *   `bb_dense_forest_trees` → `biome_dyedream_dense_forest`（密林主导：bush+cherrybush+blossom+conifer）
+    *   `bb_plains_trees` → `biome_dyedream_0`（平原：bush+cherrybush+plaintree）
+    *   `bb_mushroom_trees` → `biome_dyedream_mushroom_plains`（低矮灌木：bush+cherrybush）
+    *   `bb_snow_trees` → `biome_dyedream_2`（雪树）
+    *   `bb_shore_trees` → `biome_dyedream_shore`（棕榈水边）
+*   **验证**：`:PasterDream:compileJava` + `runData` 通过（`structure_tree` codec 与全部 JSON 可解析）；资源闭包校验通过（configured↔placed↔biome_modifier 引用完整）；10+10+6 新文件入构建产物
+
+---
+
+## v0.9.15 — 2026-08-09
+
+### 修复：巨型针叶染梦树顶部被截断（补树冠段）
+
+*   **问题**：`debug_wand_dyedream_tree_conifer` 放置的巨型针叶树顶部被平切，高部分缺失。
+*   **根因**：数据包 `bigtree.mcfunction` 显示巨型针叶树是**两段拼接**设计 —— `conifers/conifer_a`（树干段，posY:-1）+ `conifers/conifer_b`（树冠段，posY:45），但下载包内**只有 `big1-0.nbt`（树干/中下段，22 层）**，树冠段 `conifer_b` 缺失。提取的 `bb_conifer_big` 顶部 y=20~21 仍是 17 个 log + 16 叶平铺（被平切截面）。
+*   **修复**（`tools/bb_conifer_crown.py`，新脚本）：在结构顶部追加**锥形针叶树冠**：
+    *   半径从 8 平滑收尖（平方曲线），log 内圈从 3×3 → 1×1 → 顶部无 log
+    *   高度 22 → **40 层**，顶层正好 1 方块尖顶（y=39 leaf:1）
+    *   新增 1814 方块，总 blocks 918 → 2732
+*   **验证**：补冠后 NBT 完整（size=[22,40,22]，palette 仅染梦 log/leaves）；`processResources` 复制到构建产物 BUILD SUCCESSFUL
+
+---
+
+## v0.9.14 — 2026-08-09
+
+### 调整：染梦河流热带鱼生成大幅削减
+
+*   **需求**：染梦河流群系每次刷新大量热带鱼，密度过高影响观感。
+*   **修复**（`PasterDream/src/main/resources/data/pasterdream/worldgen/biome/biome_dyedream_river.json`）：
+    *   热带鱼从 `water_creature`（错误分类，原版热带鱼属 `water_ambient`）移到 `water_ambient`，与其他染梦群系（深海/海岸）分类一致
+    *   密度削减：`weight` 10 → **4**，单次生成数量 `minCount 2 / maxCount 6` → **1 / 2**
+*   **说明**：其余群系 `water_creature` 检查无同类问题（glow_squid/jellyfish/dolphin 分类均正确）
+*   **验证**：JSON 解析校验通过；`:PasterDream:processResources` BUILD SUCCESSFUL
+
+---
+
+## v0.9.13 — 2026-08-09
+
+### 新增：Better Biomes 移植树批量扩充至 12 棵
+
+*   **需求**：在已移植 6 棵树基础上，批量移植数据包剩余可用树结构。
+*   **新增 6 棵**（`tools/bb_tree_import.py` 提取，方块替换为染梦 log/leaves，`centered=true` 居中放置）：
+    *   `bb_bush` 灌木（5×6×5，oak 叶+干）
+    *   `bb_cherrybush` 樱桃灌木（5×3×5，birch 叶+dark_oak 干）
+    *   `bb_plaintree` 平原树（13×14×12，oak 树冠大冠）
+    *   `bb_smallpalm1` 棕榈树（6×6×6，jungle 棕榈形态）
+    *   `bb_snowtree` 雪树（7×17×6，spruce + **保留雪方块** 49 格）
+    *   `bb_conifer_big` 巨型针叶树（22×22×22，spruce，568 原木 + 350 叶，数据包最大树）
+*   **调试水晶**（`DebugStructureWandItem` + `centered=true`）：
+    *   `debug_wand_dyedream_tree_bush` / `cherrybush` / `plain` / `palm` / `snow` / `conifer`
+    *   已加入调试创造栏 `PDCreativeTabsDebug.DEBUG_TAB`；中英语言条目补齐（429 注册项双语覆盖）
+    *   模型文件 `models/item/debug_wand_dyedream_tree_{bush,cherrybush,plain,palm,snow,conifer}.json`（life_crystal 纹理）
+*   **说明**：数据包实际存在的树结构 NBT 已全部移植（12 棵）；`prismarinespike` 为水下装饰非树未移植；函数引用的 `trees:redwood/*`、`trees:forest/*`、`trees:jungle/*`、`trees:mushroom/*`、`trees:willow/*`、`trees:conifers/tiny1|small1` 等 NBT 在数据包内缺失（下载版本不完整）
+*   **验证**：`:PasterDream:compileJava` + `processResources` 通过；12 个 `bb_*.nbt` 全部入构建产物；`check_lang.py` 全绿（429 注册项双语覆盖）
+
+---
+
+## v0.9.12 — 2026-08-09
+
+### 修复：Better Biomes 移植树以点击点为中心放置
+
+*   **需求**：Better Biomes 树结构 NBT 原本从边角展开，调试水晶右键放置时树冠/树干偏向 +X+Z 一侧（"按正方体边角放置"）。
+*   **分析**：结构 NBT 内容包围盒中心 = size 中心（平移量全 0），NBT 本身无偏移；问题在 `DebugStructureWandItem` 放置逻辑 —— 结构以点击点为**最小角**向 +X+Y+Z 展开。
+*   **修复**（`DebugStructureWandItem.java`）：
+    *   新增 `centered` 构造参数（默认 `false` 保持边角放置，兼容现有 48 个结构法杖）
+    *   `centered=true` 时放置起点改为 `targetPos.offset(-(sizeX-1)/2, 0, -(sizeZ-1)/2)`，结构中心对齐点击点，Y 保持点击面外侧（地表）
+    *   6 个 Better Biomes 移植树调试水晶（`debug_wand_dyedream_tree_*`）改用 `new DebugStructureWandItem(props, path, true)`
+*   **验证**：`:PasterDream:compileJava` 通过；奇数尺寸树（tallbirch/blossom/poplar）完全对称包裹点击点（-2..2 / -8..8），偶数尺寸树（aspen 系）偏差 ≤0.5 格
+
+---
+
+## v0.9.6 — 2026-08-09
+
+### 修复：染梦耕地不再变成原版泥土 + 湿润/干涸行为对齐原版
+
+*   **需求**：染梦耕地踩坏有概率变成原版泥土；湿润速度表现不对。
+*   **根因**：原版 `FarmBlock` 内部有 **4 条「退化为泥土」路径全部硬编码 `Blocks.DIRT`**（原版泥土），此前只覆写了其中 2 条：
+    1. `fallOn`（踩踏）：覆写中调用 `super.fallOn` 导致**二次踩踏判定** —— `FarmBlock.fallOn` 内部再次 `CommonHooks.onFarmlandTrample(..., Blocks.DIRT, ...)` 并 `turnToDirt`（原版泥土）覆盖染梦泥土 → **"有概率变原版泥土"根因**
+    2. `randomTick`（干涸+上方无作物 → 原版泥土）—— 委托 super 漏掉
+    3. `getStateForPlacement`（放置时上方不合法 → 直接给原版泥土）—— 未覆写
+    4. `tick`（支撑不足 → 原版泥土）—— 已修
+*   **修复**（`DyedreamFarmlandBlock` 完整重写）：
+    *   `fallOn`：**不再调用 `super.fallOn`**（避免二次判定 + 原版泥土覆盖），改为手动 `entity.causeFallDamage` 保留掉落伤害（等价原版 `Block#fallOn` 职责）
+    *   `randomTick`：复制原版湿润/干涸逻辑（`isNearWater` / `shouldMaintainFarmland` 原版为 private，已在子类复制），水边/下雨瞬间湿润到 7、干燥逐级 -1、干涸且无作物 → **染梦泥土**；保留作物 2 倍速加速
+    *   `getStateForPlacement`：上方不合法时兜底给 **染梦泥土**（替换原版泥土）
+    *   `tick`：支撑不足 → 染梦泥土（保持）
+*   **湿润速度说明**：湿润/干涸节奏与原版耕地**完全一致**（4 格内水源瞬间湿润到满，随机刻驱动）；此前表现异常是「变原版泥土」bug 干扰所致，修复后湿润状态可正确保持。
+*   **验证**：`:PasterDream:compileJava` 通过；已从 neoforge sources jar 核对 `FarmBlock` 全部 4 条 `Blocks.DIRT` 调用点均已覆写。
+
+---
+
+## v0.9.6 — 2026-08-08
+
+### 新增：染梦耕地完整农业交互 + 冷域木头剥皮
+
+*   **需求**：① 染梦耕地踩坏返回染梦泥土；② 染梦草方块/染梦泥土可用锄头改为染梦耕地；③ 染梦耕地作物生长 2 倍速；④ 冷域木头用斧头变为去皮冷域木头。
+*   **染梦耕地**（`DyedreamFarmlandBlock` extends `FarmBlock`）：
+    *   踩踏退化：`fallOn` 经 `CommonHooks.onFarmlandTrample` 判定后 → 染梦泥土（已有）
+    *   支撑退化：新增覆写 `tick`，上方被不透明方块遮挡（支撑不足）时 → 染梦泥土（替换原版硬编码原版泥土）
+    *   作物 2 倍速：新增覆写 `randomTick`，super 耕地逻辑后若上方是 `CropBlock` 作物，额外调用 `BlockState.randomTick` 触发一次作物生长判定（耕地已退化则跳过）
+*   **工具转换事件**（新增 `world/PDToolConversionEvents.java`）：监听 NeoForge `BlockEvent.BlockToolModificationEvent`（锄头/斧头右键经 `BlockState.getToolModifiedState` 触发）
+    *   `HOE_TILL`：染梦草方块 `dyedream_grass` / 染梦泥土 `dyedream_dirt` → 染梦耕地
+    *   `AXE_STRIP`：冷域木头 `cold_domain_log` → 去皮冷域木头（保留 AXIS 轴向）
+    *   音效/粒子/耐久由原版工具逻辑自动处理
+*   **注册**：`PasterDreamMod` 构造器 `NeoForge.EVENT_BUS.addListener(PDToolConversionEvents::onBlockToolModification)`
+*   **验证**：`:PasterDream:compileJava` 通过；已从 neoforge sources jar 确认 `HoeItem` 官方注释指引使用 `BlockToolModificationEvent` 实现自定义开垦
+
+---
+
+## v0.9.6 — 2026-08-08
+
+### 修复：冷域木头正反面交换 + 方向性放置确认
+
+*   **需求**：冷域木头（含去皮）的端面（年轮截面）与侧面（树皮）纹理切反，导致横放/竖放视觉无方向感。
+*   **修复**：重新切割「冷域木头的.png」「去皮的冷域木头.png」——`side`（树皮）取自拼贴图 `(0,1)` 行的深蓝格，`end`（年轮截面）取自 `(1,0)` 的亮蓝格，纹理文件 `cold_domain_log.png` / `cold_domain_log_top.png`（含 stripped 版）内容互换。
+*   **方向性放置**：方块类为 `RotatedPillarBlock`（AXIS 属性），DataGen 生成 `axis=x/y/z` 变体 blockstate（横放走 `cube_column_horizontal` + 旋转），放置时按点击面自动旋转轴向 —— 此前逻辑正确，正反面修正后竖放显示年轮截面、横放显示树皮侧面的方向感即可体现。
+*   **验证**：`:PasterDream:compileJava` + `processResources` 通过，build 产物纹理已刷新。
+
+---
+
+## v0.9.10 — 2026-08-08
+
+### 修复：配置界面描述文字自动换行，不再超出界面
+
+*   **问题**：配置界面中较长的提示文字（tooltip，如融梦水晶箱物品池的格式说明）以单行绘制，超出面板宽度溢出到界面外。
+*   **修复**：
+    *   `ConfigEntry`：提示文字改用 `font.split()` 按可用宽度自动换行；条目行高随提示文字行数动态伸缩（`getVisualHeight(int rowWidth)`），控件垂直居中改为相对整行动态高度
+    *   `ConfigEntry.ListEntry`：标题行同样支持提示文字换行，展开区偏移与标题行动态高度联动
+    *   `PDConfigScreen`：`getEntryVisualHeight` 增加行宽参数，滚动条/滚轮/点击检测/滚动边界计算全部使用动态高度，保证变高条目布局一致
+*   **验证**：`:PasterDream:compileJava` 及全模块编译通过
+
+---
+
+## v0.9.9 — 2026-08-08
+
+### 修复：装备数值对齐原模组（盔甲防御槽位 + 工具属性）
+
+*   **需求**：对比原模组（1.20.1）与新模组的盔甲/武器/工具数值，确保一致；故意修改项（融梦工具、terra_sword 等）予以规避。
+*   **盔甲防御槽位错位**（`PDArmorMaterials.java`）：原模组防御数组按 `[靴,腿,胸,头]` 顺序（1.20.1 `getSlot().getIndex()` 语义），新模组误按 `[头,胸,腿,靴]` 直抄导致槽位错位。已修正五套：
+    *   铜甲 `{1,3,5,2}` → 头2 胸5 腿3 靴1（原错位为 头1 胸3 腿5 靴2）
+    *   钛/幽匿/染梦 `{3,6,8,3}` → 头3 胸8 腿6 靴3（原胸腿对调）
+    *   Qym `{2,10,10,10}` → 头10 胸10 腿10 靴2（原头靴对调）
+    *   三件翅膀（天使/遗落/机械）槽位本就正确，未改动
+*   **工具属性模板化遗漏**（`PDItemsTools.java` / `PDItemsMaterials.java`）：镐类与染梦/融金/影蚀系列工具被套用原版工具模板（耐久 131/2031、挖速 9、附魔落默认 5、修复材料错用圆石/下界合金锭），逐项修正为原模组数值（耐久/挖速/伤害/攻速/附魔/修复材料，含 1.20 构造语义 1+bonus 的最终伤害换算）：
+    *   镐类：copper(225/4.0/2.5/12)、titanium(1721/9.0/4.5/17)、dyedream(1314/11.0/5.0/22)、dyedream_hammer(6570/3.0/10.0/22)、moltengold(251/14.0/3.0/23)、true_moltengold(1255/16.0/4.0/23)、shadow_erosion(1725/13.0/5.0/16)
+    *   斧/锹/锄：copper_axe(8.0)、copper_shovel(3.0) 等伤害换算修正；dyedream/moltengold/shadow_erosion 三系补齐耐久/挖速/伤害/附魔
+    *   修复材料统一改为对应金属锭（铜/钛/染梦/融金/黑金），并改用 `repairWith(Supplier)` 延迟加载避免静态初始化 unbound value 崩溃
+*   **规避项（故意修改，未改动）**：融梦工具四件（250/6/铁级/附魔5）、terra_sword（1561/8/附魔5）、white_sword 挖速 0→2（对剑无影响）、翅膀未设耐久=无限
+*   **验证**：`tools/verify_tool_stats.py` 42 项工具数值全对齐（0 差异）+ `:PasterDream:compileJava` 通过
+
+---
+
+## v0.9.8 — 2026-08-08
+
+### 新增：染梦世界解密玩法完整移植（花园解密 / 雪傀儡解密 / 冻结之花）
+
+*   **需求**：参考原模组花园解密等染梦世界解密玩法，完整移植且保证可用。
+*   **花园解密**（flower_11 → flower_12，原 `GardenDecryptionPr0Procedure`）：
+    *   新建 `DyedreamGardenDecryptFlowerBlock`（`PasterDream`）：染梦世界中花下 3 格为 `dyedream_desk` 且周围 2 格花阵正确（`flower_13`/`crop_3a`/`flower_8`/`crop_2a` + `grass_3`×4）时，右键花 11 触发：1 tick 后花阵销毁 → 裂纹/尘埃粒子 + `dream0` 音效 → 2 tick 后花 11 完整替换为花 12（双格）、书桌消失。
+    *   修复原版缺陷：双格植物成对替换为花 12（原版只替换被点击半格，残留半截花 11）。
+*   **雪傀儡解密**（flower_16 → flower_17，原 `Flower16Pr0Procedure`）：
+    *   新建 `DyedreamFlower16Block`：书桌 + 四方位 5 格花阵（`crop_0a`/`dyedream_sapling`/`flower_14`/`flower_9`）+ 9 格内雪傀儡与悦灵齐备时，右键献祭最近的雪傀儡与悦灵 → 花阵销毁 → 花 16 变花 17 → 书桌消失 → 雪花/雪球粒子 + `dream0` 音效。
+*   **冻结之花**（flower_17 随机刻，原 `Flower17Pr0/Pr1`）：
+    *   新建 `DyedreamFlower17Block`（`EntityBlock` + `randomTicks`）：随机刻播撒雪花粒子并循环 8 次随机偏移（-3..3/-1..0），空气凝结成雪、水源冻结成冰；随机偏移暂存于方块实体 NBT（复用 `SimpleMarkerBlockEntity` + `PDBlockEntities.FLOWER_17`）；物品提示"冻结周围的水源 并在地面凝结成雪"。
+    *   方块属性跟随原版：`flower_16/17` 发光等级 5、触碰效果为移动速度（flower_17 时长 100 tick）。
+*   **注册调整**（`PDBlocksVegetation.java`）：`flower_11/16/17` 从批量注册拆出，改用专属类注册（注册名/门面/创造栏不变）。
+*   **回归验证**（`PDDyedreamVerifyHooks`，`dyedream` 专项）：新增 `dyedream.garden.fail_wrong_layout`/`dyedream.garden.success`、`dyedream.snowpuzzle.fail_no_mobs`/`dyedream.snowpuzzle.success`、`dyedream.flower17.freeze` 五项，覆盖负例/正例/交互路径/随机刻冻结。
+
+---
+
+## v0.9.7 — 2026-08-08
+
+### 新增：Better Biomes 移植树（原封不动提取结构 NBT + 替换方块）
+
+*   **需求**：分析 Better Biomes 数据包（`示例/data/`）的树木结构，定点移植到染梦世界，并加入调试界面方便测试。采用「原封不动提取树结构 NBT、仅替换方块材质」方案，保证外形与数据包一致。
+*   **提取方案**（`tools/bb_tree_import.py`，完整 NBT 无损读写）：
+    *   从 `示例/data/trees/structures/` 提取 6 个树结构 NBT 到 `data/pasterdream/structure/bb_*.nbt`
+    *   palette 方块名替换：原版 `birch/oak/dark_oak/spruce/jungle/acacia/mangrove` 的 leaves → `pasterdream:dyedream_leaves`，log/wood → `pasterdream:dyedream_log`（`distance`/`persistent`/`axis` 属性原样保留，DataVersion 由 DFU 自动升级）
+    *   提取清单：`bb_tallbirch`(5×28×5)、`bb_blossom`(17×18×17)、`bb_aspen_big/mid/small`(8×17×8/6×13×7/4×12×4)、`bb_poplar`(5×27×5)；aspen_big 保留 1 个 cobblestone 装饰
+*   **调试水晶改用结构放置**（`DebugStructureWandItem`，直接放结构 NBT）：
+    *   `debug_wand_dyedream_tree_tallbirch` → `bb_tallbirch`、`blossom` → `bb_blossom`、`aspen` → `bb_aspen_big`、`poplar` → `bb_poplar`
+    *   新增 `debug_wand_dyedream_tree_aspen_mid` → `bb_aspen_mid`、`aspen_small` → `bb_aspen_small`
+    *   已加入调试创造栏 `PDCreativeTabsDebug.DEBUG_TAB`；中英语言条目补齐（423 注册项双语覆盖）
+*   **清理**：删除早期 Placer 模拟方案（`DyedreamTaperedTrunkPlacer` / `DyedreamProfileFoliagePlacer` 类与注册、4 个 configured_feature JSON）
+*   **工具脚本**（`tools/`）：新增 `bb_tree_import.py`（NBT 无损提取 + 方块替换）、`analyze_bb_tree_layers.py`（逐层布局分析）
+*   **验证**：`:PasterDream:compileJava` + `processResources`（结构 NBT 复制到 build 产物）+ 全模块编译通过；`check_lang.py` 全绿（423 注册项双语覆盖）
+
+---
+
+## v0.9.6 — 2026-08-08
+
+### 重构：染梦耕地归位染梦注册类
+
+*   **需求**：染梦耕地（dyedream_farmland）是染梦维度的方块，不应放在冷域（PDBlocksColdDomain / PDItemsColdDomain）注册类中。
+*   **调整**：方块注册移至 `PDBlocksSimple`（与 dyedream_dirt/grass/log 同区），物品注册移至 `PDItemsBlocks`（与 DYEDREAM_GRASS 相邻）；`PDBlocks` / `PDItems` 聚合引用同步更新；冷域类注释移除染梦耕地描述。
+*   **功能不变**：创造栏位仍为染梦标签页；`c:farmlands` 标签、湿润状态、踩踏变染梦泥土等行为不受影响。
+*   **验证**：`:PasterDream:compileJava` 通过。
+
+---
+
+## v0.9.6 — 2026-08-08
+
+### 新增：冷域维度（cold_domain_world）+ 冷域/染梦新方块
+
+*   **需求**：将「模型储存」目录的 7 张纹理注册为模组方块，写入正确创造栏位；「冷域」作为新维度，每个方块具备正确的功能/模型/标签。
+*   **冷域维度**（`PasterDream`）：
+    *   `PDDimensions.COLD_DOMAIN_WORLD` + `PDBiomes.BIOME_COLD_DOMAIN`（`cold_domain_biome`）
+    *   JSON：`dimension/cold_domain_world.json`（fixed 群系 + 冷域噪声设置）、`dimension_type/cold_domain_world.json`（自然/天空/床可用/无袭击/高度 384）、`worldgen/biome/cold_domain_biome.json`（寒冷降雪、freeze_top_layer、极地熊）
+    *   `worldgen/noise_settings/cold_domain_world.json`：基于染梦噪声设置，`default_block` 改石头，`surface_rule` 改为冷域地表（表层 `snowy_cold_domain_grass`、下 `cold_domain_dirt`、底部基岩）
+    *   `ClientSetup` 注册冷域维度特效（淡冰蓝天空/蓝紫黄昏/深蓝夜雾）
+*   **冷域方块**（`PDBlocksColdDomain` / `PDItemsColdDomain`）：
+    *   `cold_domain_log` 冷域木头、`stripped_cold_domain_log` 去皮冷域木头：轴向方块（RotatedPillarBlock），斧挖掘，`minecraft:logs` / `logs_that_burn` 标签（block+item），模型由 DataGen 生成（cube_column + axis blockstate）
+    *   `cold_domain_dirt` 冷域泥土：锹挖掘，`minecraft:dirt` 标签（可被草方块蔓延）
+    *   `snowy_cold_domain_grass` 雪地草坪：继承原版 `SpreadingSnowyDirtBlock`（随机蔓延/退化冷域泥土/雪覆盖切换 snowy 侧面纹理），锹挖掘
+    *   `cold_domain_leaves` 冷域树叶：原版 `LeavesBlock` 衰变行为，锄挖掘 + `minecraft:leaves` 标签，剪刀/精准采集掉落，可掉木棍
+    *   纹理：`冷域木头的.png`（side/end 切割）、`去皮的冷域木头.png`、`冷域木头的树叶.png`、`泥土的.png`、`雪地草坪.png`（top/side/bottom 切割）
+*   **染梦耕地**（`DyedreamFarmlandBlock` extends `FarmBlock`）：
+    *   `dyedream_farmland`：完整耕地行为（moisture 湿润/干涸、踩踏变染梦泥土），blockstate 按 moisture 0-6 干纹理 / 7 湿润纹理（`moist_dyedream_farmland`），`c:farmlands` 标签（block+item）
+*   **创造栏位**：新增「冷域」标签页 `PDCreativeTabsColdDomain`（雪地草坪/冷域泥土/冷域木头/去皮冷域木头/冷域树叶，图标雪地草坪）；染梦耕地加入染梦标签页
+*   **工具脚本**（`tools/`）：`gen_cold_domain_noise_settings.py`（生成噪声设置）、`update_cold_domain_tags.py`（追加标签）、`update_cold_domain_lang.py`（语言条目）、`verify_cold_domain_resources.py`（资源校验）
+*   **验证**：`:PasterDream:compileJava` 与全模块编译通过；`:PasterDream:runData` 生成冷域方块模型/方块状态/mineable 标签；资源校验脚本全绿（纹理/JSON/战利品表/维度/语言/标签）
+
+---
+
+## v0.9.5 — 2026-08-08
+
+### 新增：融梦水晶箱战利品自定义配置（配置界面可见）
+
+*   **需求**：允许玩家自定义融梦水晶箱三个品质（普通/稀有/传说）物品池中的任何物品，并可在配置界面中直接编辑。
+*   **实现**：
+    *   `PDCommonConfig`（`PasterDream-Common.toml`）新增 `Meltdream Chest` 配置段：`meltdream chest custom loot enabled`（总开关，默认 false）+ 三个 `List<String>` 物品池（`meltdream chest common/rare/legendary loot`，默认值为原内置池）
+    *   新增 `MeltdreamChestLootConfig`：解析「物品ID [数量] [权重]」格式，无命名空间时先按 `minecraft:` 再按 `pasterdream:` 解析；无效条目自动跳过，全部无效时回退内置默认池
+    *   `MeltdreamChestBlock`：物品池改为从配置读取，删除硬编码懒加载池与内部 `LootEntry`
+    *   配置界面：新增「融梦水晶箱」分类（`ConfigCategory.MELTDREAM_CHEST`）；`ConfigEntry` 新增 `ListEntry` 多行编辑控件（支持换行/方向键/Home/End/滚动，点击标题展开折叠），三个物品池均可在界面内直接编辑
+*   **配置**：`config/PasterDream-Common.toml` → `Meltdream Chest` 段，键名 `meltdream chest custom loot enabled` / `meltdream chest common loot` / `meltdream chest rare loot` / `meltdream chest legendary loot`，条目格式 `物品ID 数量 权重`
+*   **验证**：`:PasterDream:compileJava` 通过；语言文件 zh_cn/en_us JSON 校验通过
+
+---
+
 ## v0.9.5 — 2026-08-08
 
 ### 修复：河流群系不再出现在海洋/海岸带

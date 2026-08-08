@@ -666,6 +666,72 @@ public class PDItemsFunctional {
                     () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "dyedream_tree_icy"));
 
 
+    // ==================== Better Biomes 移植树调试水晶 ====================
+    // 原封不动提取 Better Biomes 数据包树结构 NBT（方块替换为染梦 log/leaves），
+    // 用 DebugStructureWandItem 直接放置结构，右键生成对应树。
+    // centered=true：结构中心对齐点击点，树冠以点击位置为中心展开。
+
+    /** 调试水晶 - 染梦高桦（提取 Better Biomes tallbirch） */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TREE_TALLBIRCH =
+            PDItems.ITEMS.register("debug_wand_dyedream_tree_tallbirch",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "bb_tallbirch", true));
+
+    /** 调试水晶 - 染梦樱花大冠树（提取 Better Biomes blossom） */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TREE_BLOSSOM =
+            PDItems.ITEMS.register("debug_wand_dyedream_tree_blossom",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "bb_blossom", true));
+
+    /** 调试水晶 - 染梦大白杨（提取 Better Biomes aspen/big） */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TREE_ASPEN =
+            PDItems.ITEMS.register("debug_wand_dyedream_tree_aspen",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "bb_aspen_big", true));
+
+    /** 调试水晶 - 染梦杨树（提取 Better Biomes poplar） */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TREE_POPLAR =
+            PDItems.ITEMS.register("debug_wand_dyedream_tree_poplar",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "bb_poplar", true));
+
+    /** 调试水晶 - 染梦中白杨（提取 Better Biomes aspen/mid） */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TREE_ASPEN_MID =
+            PDItems.ITEMS.register("debug_wand_dyedream_tree_aspen_mid",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "bb_aspen_mid", true));
+
+    /** 调试水晶 - 染梦小白杨（提取 Better Biomes aspen/small） */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TREE_ASPEN_SMALL =
+            PDItems.ITEMS.register("debug_wand_dyedream_tree_aspen_small",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "bb_aspen_small", true));
+
+    /** 调试水晶 - 染梦灌木（提取 Better Biomes bush） */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TREE_BUSH =
+            PDItems.ITEMS.register("debug_wand_dyedream_tree_bush",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "bb_bush", true));
+
+    /** 调试水晶 - 染梦樱桃灌木（提取 Better Biomes cherrybush） */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TREE_CHERRYBUSH =
+            PDItems.ITEMS.register("debug_wand_dyedream_tree_cherrybush",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "bb_cherrybush", true));
+
+    /** 调试水晶 - 染梦平原树（提取 Better Biomes plaintree） */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TREE_PLAIN =
+            PDItems.ITEMS.register("debug_wand_dyedream_tree_plain",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "bb_plaintree", true));
+
+    /** 调试水晶 - 染梦棕榈树（提取 Better Biomes smallpalm1） */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TREE_PALM =
+            PDItems.ITEMS.register("debug_wand_dyedream_tree_palm",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "bb_smallpalm1", true));
+
+    /** 调试水晶 - 染梦雪树（提取 Better Biomes snowtree，保留雪方块） */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TREE_SNOW =
+            PDItems.ITEMS.register("debug_wand_dyedream_tree_snow",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "bb_snowtree", true));
+
+    /** 调试水晶 - 染梦巨型针叶树（提取 Better Biomes conifers/big1-0） */
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TREE_CONIFER =
+            PDItems.ITEMS.register("debug_wand_dyedream_tree_conifer",
+                    () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "bb_conifer_big", true));
+
+
     // ==================== 结构方块补全调试水晶 ====================
     // 以下对应 PDStructureBlock 中尚未有独立调试水晶的结构方块，
     // 右键复现原结构方块的随机抽号、偏移与旋转逻辑。

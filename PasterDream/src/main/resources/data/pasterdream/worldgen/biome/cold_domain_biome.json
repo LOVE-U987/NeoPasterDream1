@@ -1,0 +1,51 @@
+{
+  "has_precipitation": true,
+  "temperature": 0,
+  "downfall": 0.9,
+  "carvers": {
+    "air": [
+      "pasterdream:dyedream_cave",
+      "pasterdream:dyedream_cave_extra_underground",
+      "pasterdream:dyedream_canyon"
+    ]
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "minecraft:freeze_top_layer"
+    ]
+  ],
+  "effects": {
+    "sky_color": 9807359,
+    "fog_color": 13689855,
+    "water_color": 4159204,
+    "water_fog_color": 329011
+  },
+  "spawners": {
+    "monster": [],
+    "creature": [
+      {
+        "type": "minecraft:polar_bear",
+        "weight": 10,
+        "minCount": 1,
+        "maxCount": 1
+      }
+    ],
+    "ambient": [],
+    "axolotls": [],
+    "underground_water_creature": [],
+    "water_creature": [],
+    "water_ambient": [],
+    "misc": []
+  },
+  "spawn_costs": {}
+}

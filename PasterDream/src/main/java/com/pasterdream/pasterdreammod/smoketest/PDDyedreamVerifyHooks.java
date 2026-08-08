@@ -1,5 +1,9 @@
 package com.pasterdream.pasterdreammod.smoketest;
 
+import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
+import com.pasterdream.pasterdreammod.block.DyedreamFlower16Block;
+import com.pasterdream.pasterdreammod.block.DyedreamFlower17Block;
+import com.pasterdream.pasterdreammod.block.DyedreamGardenDecryptFlowerBlock;
 import com.pasterdream.pasterdreammod.block.DyedreamLotusBlock;
 import com.pasterdream.pasterdreammod.block.GoldenFoxSculptureBlock;
 import com.pasterdream.pasterdreammod.entity.mob.GoldenFoxEntity;
@@ -11,6 +15,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.animal.SnowGolem;
+import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -80,6 +88,10 @@ public final class PDDyedreamVerifyHooks {
         verifyFoxRitual(dream, player, base.offset(0, 1, 0), out);
         verifyFlower12Multiblock(dream, base.offset(16, 1, 0), out);
         verifyDyedreamLotus(dream, base.offset(-16, 1, 0), out);
+        // 染梦解密玩法：花园解密（flower_11→12）、雪傀儡解密（flower_16→17）、冻结之花（flower_17 随机刻）
+        verifyGardenDecryption(dream, player, base.offset(16, 1, 16), out);
+        verifyFlower16Decryption(dream, player, base.offset(-16, 1, 16), out);
+        verifyFlower17Freeze(dream, base.offset(-16, 1, -16), out);
     }
 
     // ==================== 狐狸雕像 ====================
@@ -294,6 +306,165 @@ public final class PDDyedreamVerifyHooks {
                 }
             }
         }
+    }
+
+    // ==================== 花园解密（flower_11 → flower_12） ====================
+
+    private static void verifyGardenDecryption(ServerLevel level, ServerPlayer player, BlockPos origin, Consumer<Result> out) {
+        // 负例：花阵缺边 → 右键无反应
+        setupGardenDecryption(level, origin, false);
+        useBlock(level, player, origin);
+        boolean still11 = level.getBlockState(origin).is(PDBlocks.FLOWER_11.get());
+        boolean deskStill = level.getBlockState(origin.below(3)).is(PDBlocks.DYEDREAM_DESK.get());
+        out.accept(new Result(still11 && deskStill, "dyedream.garden.fail_wrong_layout",
+                "flower_11=" + still11 + " desk=" + deskStill));
+
+        // 正例：完整花阵 → 延迟 1 tick 花阵销毁、2 tick 花 11→12 + 书桌消失
+        setupGardenDecryption(level, origin, true);
+        useBlock(level, player, origin);
+        // 0 tick：花阵尚未销毁（queueServerWork(1) 未到期）
+        boolean intact0 = isGardenLayoutIntact(level, origin);
+        ServerScheduler.advanceForTest(1);
+        boolean flowersGone = !isGardenLayoutIntact(level, origin);
+        ServerScheduler.advanceForTest(1);
+        boolean lower12 = level.getBlockState(origin).is(PDBlocks.FLOWER_12.get())
+                && level.getBlockState(origin).getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.LOWER;
+        boolean upper12 = level.getBlockState(origin.above()).is(PDBlocks.FLOWER_12.get())
+                && level.getBlockState(origin.above()).getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER;
+        boolean deskGone = level.getBlockState(origin.below(3)).isAir();
+        out.accept(new Result(intact0 && flowersGone && lower12 && upper12 && deskGone,
+                "dyedream.garden.success",
+                "intact0=" + intact0 + " flowersGone=" + flowersGone
+                        + " flower12=" + lower12 + "/" + upper12 + " deskGone=" + deskGone));
+    }
+
+    /** 搭建花园解密布局：书桌（下 3 格）+ flower_11 双格 + 可选 8 格花阵 */
+    private static void setupGardenDecryption(ServerLevel level, BlockPos origin, boolean fullLayout) {
+        clearArea(level, origin, 3);
+        level.setBlock(origin.below(4), PDBlocks.DYEDREAM_DIRT.get().defaultBlockState(), 3);
+        level.setBlock(origin.below(3), PDBlocks.DYEDREAM_DESK.get().defaultBlockState(), 3);
+        level.setBlock(origin.below(2), Blocks.AIR.defaultBlockState(), 3);
+        level.setBlock(origin.below(1), PDBlocks.DYEDREAM_DIRT.get().defaultBlockState(), 3);
+        BlockState plant = PDBlocks.FLOWER_11.get().defaultBlockState();
+        level.setBlock(origin, plant.setValue(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER), 3);
+        level.setBlock(origin.above(), plant.setValue(DoublePlantBlock.HALF, DoubleBlockHalf.UPPER), 3);
+        if (fullLayout) {
+            level.setBlock(origin.offset(-2, 0, -2), PDBlocks.FLOWER_13.get().defaultBlockState(), 3);
+            level.setBlock(origin.offset(2, 0, -2), PDBlocks.CROP_3A.get().defaultBlockState(), 3);
+            level.setBlock(origin.offset(2, 0, 2), PDBlocks.FLOWER_8.get().defaultBlockState(), 3);
+            level.setBlock(origin.offset(-2, 0, 2), PDBlocks.CROP_2A.get().defaultBlockState(), 3);
+            level.setBlock(origin.offset(2, 0, 0), PDBlocks.GRASS_3.get().defaultBlockState(), 3);
+            level.setBlock(origin.offset(-2, 0, 0), PDBlocks.GRASS_3.get().defaultBlockState(), 3);
+            level.setBlock(origin.offset(0, 0, 2), PDBlocks.GRASS_3.get().defaultBlockState(), 3);
+            level.setBlock(origin.offset(0, 0, -2), PDBlocks.GRASS_3.get().defaultBlockState(), 3);
+        }
+    }
+
+    /** 8 格花阵是否完整（flower_13/crop_3a/flower_8/crop_2a + grass_3×4） */
+    private static boolean isGardenLayoutIntact(ServerLevel level, BlockPos origin) {
+        return level.getBlockState(origin.offset(-2, 0, -2)).is(PDBlocks.FLOWER_13.get())
+                && level.getBlockState(origin.offset(2, 0, -2)).is(PDBlocks.CROP_3A.get())
+                && level.getBlockState(origin.offset(2, 0, 2)).is(PDBlocks.FLOWER_8.get())
+                && level.getBlockState(origin.offset(-2, 0, 2)).is(PDBlocks.CROP_2A.get())
+                && level.getBlockState(origin.offset(2, 0, 0)).is(PDBlocks.GRASS_3.get())
+                && level.getBlockState(origin.offset(-2, 0, 0)).is(PDBlocks.GRASS_3.get())
+                && level.getBlockState(origin.offset(0, 0, 2)).is(PDBlocks.GRASS_3.get())
+                && level.getBlockState(origin.offset(0, 0, -2)).is(PDBlocks.GRASS_3.get());
+    }
+
+    // ==================== 雪傀儡解密（flower_16 → flower_17） ====================
+
+    private static void verifyFlower16Decryption(ServerLevel level, ServerPlayer player, BlockPos origin, Consumer<Result> out) {
+        // 负例：四方位花阵齐全但无雪傀儡/悦灵 → 右键无反应
+        setupFlower16(level, origin, true);
+        clearMobs(level, origin);
+        useBlock(level, player, origin);
+        boolean still16 = level.getBlockState(origin).is(PDBlocks.FLOWER_16.get());
+        boolean deskStill = level.getBlockState(origin.below(3)).is(PDBlocks.DYEDREAM_DESK.get());
+        out.accept(new Result(still16 && deskStill, "dyedream.snowpuzzle.fail_no_mobs",
+                "flower_16=" + still16 + " desk=" + deskStill));
+
+        // 正例：四方位花阵 + 雪傀儡/悦灵 → 同步解密
+        setupFlower16(level, origin, true);
+        clearMobs(level, origin);
+        EntityType.SNOW_GOLEM.spawn(level, origin.offset(2, 0, 0), MobSpawnType.COMMAND);
+        EntityType.ALLAY.spawn(level, origin.offset(0, 0, 2), MobSpawnType.COMMAND);
+        useBlock(level, player, origin);
+        boolean now17 = level.getBlockState(origin).is(PDBlocks.FLOWER_17.get());
+        boolean deskGone = level.getBlockState(origin.below(3)).isAir();
+        boolean arrayGone = !level.getBlockState(origin.offset(0, 0, 5)).is(PDBlocks.CROP_0A.get())
+                && !level.getBlockState(origin.offset(0, 0, -5)).is(PDBlocks.DYEDREAM_SAPLING.get())
+                && !level.getBlockState(origin.offset(5, 0, 0)).is(PDBlocks.FLOWER_14.get())
+                && !level.getBlockState(origin.offset(-5, 0, 0)).is(PDBlocks.FLOWER_9.get());
+        boolean mobsGone = level.getEntitiesOfClass(SnowGolem.class, new AABB(origin).inflate(15)).isEmpty()
+                && level.getEntitiesOfClass(Allay.class, new AABB(origin).inflate(15)).isEmpty();
+        out.accept(new Result(now17 && deskGone && arrayGone && mobsGone,
+                "dyedream.snowpuzzle.success",
+                "flower17=" + now17 + " deskGone=" + deskGone + " arrayGone=" + arrayGone
+                        + " mobsGone=" + mobsGone));
+    }
+
+    /** 搭建雪傀儡解密布局：书桌（下 3 格）+ flower_16 + 可选四方位 5 格花阵 */
+    private static void setupFlower16(ServerLevel level, BlockPos origin, boolean fullLayout) {
+        clearArea(level, origin, 7);
+        level.setBlock(origin.below(4), PDBlocks.DYEDREAM_DIRT.get().defaultBlockState(), 3);
+        level.setBlock(origin.below(3), PDBlocks.DYEDREAM_DESK.get().defaultBlockState(), 3);
+        level.setBlock(origin.below(2), Blocks.AIR.defaultBlockState(), 3);
+        level.setBlock(origin.below(1), PDBlocks.DYEDREAM_DIRT.get().defaultBlockState(), 3);
+        level.setBlock(origin, PDBlocks.FLOWER_16.get().defaultBlockState(), 3);
+        if (fullLayout) {
+            level.setBlock(origin.offset(0, 0, 5), PDBlocks.CROP_0A.get().defaultBlockState(), 3);
+            level.setBlock(origin.offset(0, 0, -5), PDBlocks.DYEDREAM_SAPLING.get().defaultBlockState(), 3);
+            level.setBlock(origin.offset(5, 0, 0), PDBlocks.FLOWER_14.get().defaultBlockState(), 3);
+            level.setBlock(origin.offset(-5, 0, 0), PDBlocks.FLOWER_9.get().defaultBlockState(), 3);
+        }
+    }
+
+    /** 清理验证区域内的雪傀儡/悦灵残留 */
+    private static void clearMobs(ServerLevel level, BlockPos origin) {
+        level.getEntitiesOfClass(SnowGolem.class, new AABB(origin).inflate(15)).forEach(e -> e.discard());
+        level.getEntitiesOfClass(Allay.class, new AABB(origin).inflate(15)).forEach(e -> e.discard());
+    }
+
+    // ==================== 冻结之花（flower_17 随机刻） ====================
+
+    private static void verifyFlower17Freeze(ServerLevel level, BlockPos origin, Consumer<Result> out) {
+        clearArea(level, origin, 5);
+        // 铺染梦土支撑 + 左半空气、右半水（保证随机偏移高概率同时命中空气与水）
+        for (int dx = -4; dx <= 4; dx++) {
+            for (int dz = -4; dz <= 4; dz++) {
+                level.setBlock(origin.offset(dx, -1, dz), PDBlocks.DYEDREAM_DIRT.get().defaultBlockState(), 3);
+                level.setBlock(origin.offset(dx, 0, dz), dx > 0 ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState(), 3);
+            }
+        }
+        level.setBlock(origin, PDBlocks.FLOWER_17.get().defaultBlockState(), 3);
+        boolean hasBe = level.getBlockEntity(origin) != null;
+        // 触发随机刻冻结效果（对应 Flower17Pr0 + 8×Pr1）
+        DyedreamFlower17Block.freezeAround(level, origin, level.getRandom());
+        // 统计冻结结果
+        int snow = 0;
+        int ice = 0;
+        for (int dx = -4; dx <= 4; dx++) {
+            for (int dz = -4; dz <= 4; dz++) {
+                for (int dy = -1; dy <= 0; dy++) {
+                    BlockState s = level.getBlockState(origin.offset(dx, dy, dz));
+                    if (s.is(Blocks.SNOW)) {
+                        snow++;
+                    }
+                    if (s.is(Blocks.ICE)) {
+                        ice++;
+                    }
+                }
+            }
+        }
+        out.accept(new Result(hasBe && snow > 0 && ice > 0, "dyedream.flower17.freeze",
+                "be=" + hasBe + " snow=" + snow + " ice=" + ice));
+    }
+
+    /** 以空手右键指定方块（走 BlockState.useItemOn 交互路径） */
+    private static void useBlock(ServerLevel level, ServerPlayer player, BlockPos pos) {
+        BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false);
+        level.getBlockState(pos).useItemOn(ItemStack.EMPTY, level, player, InteractionHand.MAIN_HAND, hit);
     }
 
     private static long countFox(ServerLevel level, BlockPos center, double range) {

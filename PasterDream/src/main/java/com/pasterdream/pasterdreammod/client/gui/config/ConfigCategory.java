@@ -29,6 +29,8 @@ public enum ConfigCategory {
     SAN("san"),
     /** 融梦能量 HUD 显示设置 */
     MELTDREAM("meltdream"),
+    /** 融梦水晶箱战利品配置 */
+    MELTDREAM_CHEST("meltdream_chest"),
     /** San 精神值系统设置（PasterDreamSanity 附属模组） */
     SANITY_SYSTEM("sanity_system"),
     /** 融梦能量系统设置（PasterDreamMeltDream 附属模组） */

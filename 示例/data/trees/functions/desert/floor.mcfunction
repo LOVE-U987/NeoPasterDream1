@@ -1,0 +1,4 @@
+execute if block ~ 3 ~ minecraft:bedrock if block ~ 2 ~ minecraft:bedrock if block ~ 1 ~ minecraft:bedrock if block ~ 1 ~ minecraft:bedrock run setblock ~ ~-1 ~ minecraft:coarse_dirt
+execute if block ~ 3 ~ minecraft:bedrock unless block ~ 1 ~ minecraft:bedrock run setblock ~ ~ ~ minecraft:cobblestone_slab
+execute if block ~ 4 ~ minecraft:bedrock unless block ~ 1 ~ minecraft:bedrock run setblock ~ ~ ~ dead_bush
+execute if block ~ 4 ~ minecraft:bedrock unless block ~ 4 ~-1 minecraft:bedrock unless block ~ 4 ~1 minecraft:bedrock unless block ~-1 4 ~ minecraft:bedrock unless block ~1 4 ~ minecraft:bedrock unless block ~1 4 ~-1 minecraft:bedrock unless block ~1 4 ~1 minecraft:bedrock unless block ~-1 4 ~-1 minecraft:bedrock unless block ~-1 4 ~1 minecraft:bedrock unless entity @e[type=minecraft:area_effect_cloud,tag=palm,distance=..7] run function trees:palm/handletree

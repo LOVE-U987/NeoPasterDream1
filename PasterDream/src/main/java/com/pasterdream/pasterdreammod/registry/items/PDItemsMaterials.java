@@ -209,13 +209,13 @@ public class PDItemsMaterials {
     /**
      * 铜斧 (copper_axe)
      * 使用 API ToolItemBuilder 注册
-     * 原模组：耐久 225，速度 5.0，伤害+7，攻速 -3.15
+     * 原模组：耐久 225，速度 5.0，伤害+7，攻速 -3.15（1.20 构造 1+7=8.0）
      */
     public static final DeferredItem<Item> COPPER_AXE =
             ItemAPI.toolItem("copper_axe")
                     .type(ToolType.AXE)
                     .durability(225).miningSpeed(5.0f)
-                    .attackDamage(7.0f).attackSpeed(-3.15f)
+                    .attackDamage(8.0f).attackSpeed(-3.15f)
                     .enchantment(12)
                     .repairWith(new ItemStack(Items.COPPER_INGOT))
                     .build();
@@ -223,13 +223,13 @@ public class PDItemsMaterials {
     /**
      * 铜锹 (copper_shovel)
      * 使用 API ToolItemBuilder 注册
-     * 原模组：耐久 225，速度 5.0，伤害+2，攻速 -3.0
+     * 原模组：耐久 225，速度 5.0，伤害+2，攻速 -3.0（1.20 构造 1+2=3.0）
      */
     public static final DeferredItem<Item> COPPER_SHOVEL =
             ItemAPI.toolItem("copper_shovel")
                     .type(ToolType.SHOVEL)
                     .durability(225).miningSpeed(5.0f)
-                    .attackDamage(2.0f).attackSpeed(-3.0f)
+                    .attackDamage(3.0f).attackSpeed(-3.0f)
                     .enchantment(12)
                     .repairWith(new ItemStack(Items.COPPER_INGOT))
                     .build();

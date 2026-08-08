@@ -569,4 +569,16 @@ public class PDBlocks {
     public static final DeferredBlock<?> SHADOW_TRAP_0 = PDBlocksFurniture.SHADOW_TRAP_0;
     public static final DeferredBlock<?> TWILIGHT_LANTERN = PDBlocksFurniture.TWILIGHT_LANTERN;
 
+    // ==================== 冷域维度 + 染梦耕地（新） ====================
+
+    // --- PDBlocksColdDomain ---
+    public static final DeferredBlock<?> COLD_DOMAIN_DIRT = PDBlocksColdDomain.COLD_DOMAIN_DIRT;
+    public static final DeferredBlock<?> COLD_DOMAIN_LOG = PDBlocksColdDomain.COLD_DOMAIN_LOG;
+    public static final DeferredBlock<?> STRIPPED_COLD_DOMAIN_LOG = PDBlocksColdDomain.STRIPPED_COLD_DOMAIN_LOG;
+    public static final DeferredBlock<?> SNOWY_COLD_DOMAIN_GRASS = PDBlocksColdDomain.SNOWY_COLD_DOMAIN_GRASS;
+    public static final DeferredBlock<?> COLD_DOMAIN_LEAVES = PDBlocksColdDomain.COLD_DOMAIN_LEAVES;
+
+    // --- PDBlocksSimple（染梦耕地） ---
+    public static final DeferredBlock<?> DYEDREAM_FARMLAND = PDBlocksSimple.DYEDREAM_FARMLAND;
+
 }

@@ -38,6 +38,7 @@ public class PDCreativeTabsDyedream {
                         // 天然方块
                         output.accept(PDBlocks.DYEDREAM_GRASS.get());
                         output.accept(PDBlocks.DYEDREAM_DIRT.get());
+                        output.accept(PDBlocks.DYEDREAM_FARMLAND.get());
                         output.accept(PDBlocks.DYEDREAM_SAND.get());
                         output.accept(PDBlocks.DYEDREAM_BLOCK.get());
                         output.accept(PDBlocks.ICESTONE.get());

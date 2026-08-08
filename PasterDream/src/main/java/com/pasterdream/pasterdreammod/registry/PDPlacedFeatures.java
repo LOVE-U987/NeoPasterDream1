@@ -60,8 +60,6 @@ public class PDPlacedFeatures {
     public static final ResourceKey<PlacedFeature> DYEDREAM_TREE_WORLDTREE = createKey("dyedream_tree_worldtree");
 
     // ==================== 地下生态特征 ====================
-    /** 悬浮水晶核心 */
-    public static final ResourceKey<PlacedFeature> SUSPENDED_CRYSTAL = createKey("suspended_crystal");
     /** 发光菌体 */
     public static final ResourceKey<PlacedFeature> CAVE_GLOW_MUSHROOM = createKey("cave_glow_mushroom");
 

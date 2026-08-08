@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "pasterdream:block/stripped_cold_domain_log_top",
+    "side": "pasterdream:block/stripped_cold_domain_log"
+  }
+}

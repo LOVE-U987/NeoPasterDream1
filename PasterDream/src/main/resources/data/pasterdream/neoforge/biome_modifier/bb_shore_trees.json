@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:biome_dyedream_shore",
+  "features": [
+    "pasterdream:bb_trees_palm"
+  ],
+  "step": "vegetal_decoration"
+}

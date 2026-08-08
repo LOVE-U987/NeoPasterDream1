@@ -48,6 +48,9 @@ public final class PDBiomes {
     /** 亚伦柯斯竞技场维度群系（对齐原模组：虚空竞技场使用的浅色群系，无粒子） */
     public static final ResourceKey<Biome> BIOME_AARONCOS_ARENA_DIM = create("aaroncos_arena_dim_biome");
 
+    /** 冷域群系（冷域维度唯一群系，寒冷降雪环境） */
+    public static final ResourceKey<Biome> BIOME_COLD_DOMAIN = create("cold_domain_biome");
+
     /**
      * 创建模组命名空间下的群系 ResourceKey
      *

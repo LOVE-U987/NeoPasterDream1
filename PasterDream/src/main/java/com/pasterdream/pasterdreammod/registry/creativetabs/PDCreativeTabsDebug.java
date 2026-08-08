@@ -80,6 +80,19 @@ public class PDCreativeTabsDebug {
                         output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_FANCY.get());
                         output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_GLOWING.get());
                         output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_ICY.get());
+                        // Better Biomes 移植树调试水晶
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_TALLBIRCH.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_BLOSSOM.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_ASPEN.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_ASPEN_MID.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_ASPEN_SMALL.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_POPLAR.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_BUSH.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_CHERRYBUSH.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_PLAIN.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_PALM.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_SNOW.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_TREE_CONIFER.get());
                         // 竞技场结构调试法杖
                         output.accept(PDItems.DEBUG_WAND_AARONCOS_ARENA.get());
                         // P0 移植遗迹调试水晶

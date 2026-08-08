@@ -1,0 +1,11 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:biome_dyedream_dense_forest",
+  "features": [
+    "pasterdream:bb_trees_bush",
+    "pasterdream:bb_trees_cherrybush",
+    "pasterdream:bb_trees_blossom",
+    "pasterdream:bb_trees_conifer"
+  ],
+  "step": "vegetal_decoration"
+}

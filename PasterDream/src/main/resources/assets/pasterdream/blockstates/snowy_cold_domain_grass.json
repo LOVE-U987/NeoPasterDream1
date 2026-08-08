@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "snowy=false": {
+      "model": "pasterdream:block/snowy_cold_domain_grass"
+    },
+    "snowy=true": {
+      "model": "pasterdream:block/snowy_cold_domain_grass_snowy"
+    }
+  }
+}

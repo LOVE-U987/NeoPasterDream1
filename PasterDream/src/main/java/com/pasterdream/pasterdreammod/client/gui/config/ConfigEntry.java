@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.jetbrains.annotations.Nullable;
 
@@ -122,11 +123,45 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
 
     public abstract void setPendingValue(T value);
 
+    // ==================== 动态高度与提示换行 ====================
+
+    /**
+     * 获取配置项当前视觉高度。
+     * <p>提示文字（tooltip）超出单行宽度时自动换行，行高随行数增加。</p>
+     *
+     * @param rowWidth 配置行宽度（px）
+     * @return 条目高度（px）
+     */
+    public int getVisualHeight(int rowWidth) {
+        return ConfigStyles.ROW_HEIGHT + Math.max(0, getTooltipLines(rowWidth) - 1) * (font.lineHeight + 1);
+    }
+
+    /**
+     * 计算提示文字自动换行后的行数。
+     *
+     * @param rowWidth 配置行宽度（px）
+     * @return 换行后的行数（至少 1）
+     */
+    protected int getTooltipLines(int rowWidth) {
+        return font.split(tooltip, getTooltipMaxWidth(rowWidth)).size();
+    }
+
+    /**
+     * 提示文字最大宽度（左侧文字区，右侧预留控件区）。
+     *
+     * @param rowWidth 配置行宽度（px）
+     * @return 提示文字最大宽度（px）
+     */
+    protected int getTooltipMaxWidth(int rowWidth) {
+        return Math.max(60, rowWidth - ConfigStyles.ROW_PADDING_X * 2 - 72);
+    }
+
     /**
      * 渲染配置项
      */
     public void render(GuiGraphics gui, int x, int y, int rowWidth, int mouseX, int mouseY, float partialTick) {
-        boolean hovered = mouseX >= x && mouseX < x + rowWidth && mouseY >= y && mouseY < y + ConfigStyles.ROW_HEIGHT;
+        int visualH = getVisualHeight(rowWidth);
+        boolean hovered = mouseX >= x && mouseX < x + rowWidth && mouseY >= y && mouseY < y + visualH;
 
         // 平滑悬停过渡
         if (hovered && hoverLerp < 1f) {
@@ -137,17 +172,17 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
 
         // 卡片背景：纯色 + 悬停过渡
         int bgColor = lerpColor(ConfigStyles.COLOR_CARD_BG, ConfigStyles.COLOR_CARD_HOVER, hoverLerp);
-        gui.fill(x, y, x + rowWidth, y + ConfigStyles.ROW_HEIGHT, bgColor);
+        gui.fill(x, y, x + rowWidth, y + visualH, bgColor);
 
         // 卡片 1px 边框（仅在悬停时渐显）
         if (hoverLerp > 0.01f) {
             int borderColor = ((int) (0x22 * hoverLerp) << 24) | (ConfigStyles.COLOR_BORDER & 0x00FFFFFF);
             gui.fill(x, y, x + rowWidth, y + 1, borderColor);
-            gui.fill(x, y + ConfigStyles.ROW_HEIGHT - 1, x + rowWidth, y + ConfigStyles.ROW_HEIGHT, borderColor);
+            gui.fill(x, y + visualH - 1, x + rowWidth, y + visualH, borderColor);
         }
 
         // 底部分割线
-        gui.fill(x, y + ConfigStyles.ROW_HEIGHT - 1, x + rowWidth, y + ConfigStyles.ROW_HEIGHT,
+        gui.fill(x, y + visualH - 1, x + rowWidth, y + visualH,
                 ConfigStyles.COLOR_DIVIDER);
 
         // 悬停时顶部能量光：模拟能量从行顶升起
@@ -162,24 +197,27 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
         if (barWidth > 0) {
             int glowAlpha = (int) (0x22 * hoverLerp);
             int glowColor = (glowAlpha << 24) | (ConfigStyles.COLOR_ROW_ACCENT_BAR & 0x00FFFFFF);
-            gui.fill(x - 1, y + 4, x + barWidth + 1, y + ConfigStyles.ROW_HEIGHT - 4, glowColor);
-            gui.fill(x, y + 5, x + barWidth - 1, y + ConfigStyles.ROW_HEIGHT - 5, ConfigStyles.COLOR_ROW_ACCENT_BAR);
+            gui.fill(x - 1, y + 4, x + barWidth + 1, y + visualH - 4, glowColor);
+            gui.fill(x, y + 5, x + barWidth - 1, y + visualH - 5, ConfigStyles.COLOR_ROW_ACCENT_BAR);
         }
 
         // 保存变更反馈闪烁
-        renderChangeFeedback(gui, x, y, rowWidth);
+        renderChangeFeedback(gui, x, y, rowWidth, visualH);
 
         // 标签文字（左对齐，靠上）
         int labelX = x + ConfigStyles.ROW_PADDING_X;
         int labelY = y + 5;
         gui.drawString(font, label, labelX, labelY, ConfigStyles.COLOR_LABEL);
 
-        // 提示文字（标签下方，紧凑）
+        // 提示文字（标签下方，自动换行，紧凑）
         int tooltipY = labelY + font.lineHeight + 1;
-        gui.drawString(font, tooltip, labelX, tooltipY, ConfigStyles.COLOR_HINT);
+        for (FormattedCharSequence line : font.split(tooltip, getTooltipMaxWidth(rowWidth))) {
+            gui.drawString(font, line, labelX, tooltipY, ConfigStyles.COLOR_HINT);
+            tooltipY += font.lineHeight + 1;
+        }
 
-        // 控件垂直居中
-        int controlCenterY = y + ConfigStyles.ROW_HEIGHT / 2;
+        // 控件垂直居中（相对整行动态高度）
+        int controlCenterY = y + visualH / 2;
         for (AbstractWidget widget : widgets) {
             widget.setY(controlCenterY - widget.getHeight() / 2);
             widget.render(gui, mouseX, mouseY, partialTick);
@@ -189,7 +227,7 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
     /**
      * 渲染变更反馈闪烁（柔和单色）
      */
-    protected void renderChangeFeedback(GuiGraphics gui, int x, int y, int rowWidth) {
+    protected void renderChangeFeedback(GuiGraphics gui, int x, int y, int rowWidth, int visualH) {
         if (changeFeedbackStart == 0) return;
         long elapsed = System.currentTimeMillis() - changeFeedbackStart;
 
@@ -197,7 +235,7 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
             float progress = 1f - (elapsed / ConfigStyles.CHANGE_FEEDBACK_MS);
             int alpha = (int) (progress * 0x1A);
             int color = (alpha << 24) | (ConfigStyles.COLOR_SUCCESS & 0x00FFFFFF);
-            gui.fill(x, y, x + rowWidth, y + ConfigStyles.ROW_HEIGHT, color);
+            gui.fill(x, y, x + rowWidth, y + visualH, color);
         } else {
             changeFeedbackStart = 0;
         }
@@ -726,6 +764,529 @@ public abstract class ConfigEntry<T> implements GuiEventListener {
                 return true;
             }
             return false;
+        }
+
+        @Override
+        protected void updateWidgetNarration(net.minecraft.client.gui.narration.NarrationElementOutput output) {
+            defaultButtonNarrationText(output);
+        }
+    }
+
+    // ========================================================================
+    // 字符串列表配置项（多行编辑，用于融梦水晶箱物品池等）
+    // ========================================================================
+
+    /**
+     * 字符串列表配置项。
+     * <p>
+     * 折叠时显示单行标题（标签 + 条目数 + 展开指示符），点击后展开为多行文本编辑框，
+     * 每行一个条目（如 {@code "pasterdream:fried_egg 2 30"}），保存时按行拆分写入底层配置。
+     * <p>
+     * 高度为动态值（折叠时标题行 + 提示文字换行行数，展开后叠加编辑框高度），
+     * 由 {@link com.pasterdream.pasterdreammod.client.gui.config.PDConfigScreen} 通过
+     * {@link #getVisualHeight(int)} 读取。
+     */
+    public static class ListEntry extends ConfigEntry<List<String>> {
+
+        /** 展开/折叠动画时长（毫秒） */
+        private static final float EXPAND_ANIM_MS = 200f;
+        /** 编辑框最小可视行数 */
+        private static final int MIN_VISIBLE_LINES = 3;
+        /** 编辑框最大可视行数（超出内部滚动） */
+        private static final int MAX_VISIBLE_LINES = 8;
+
+        /** 多行编辑框控件 */
+        private final MultiLineEditBox editBox;
+
+        /** 是否处于展开状态 */
+        private boolean expanded;
+        /** 展开动画起始时间 */
+        private long animStartTime;
+        /** 是否正在播放展开动画 */
+        private boolean animatingExpansion;
+
+        /**
+         * @param configValue 底层 List&lt;String&gt; 配置值引用
+         * @param category    所属分类
+         * @param index       全局序号，用于入场动画错峰
+         */
+        public ListEntry(ModConfigSpec.ConfigValue<List<String>> configValue, ConfigCategory category, int index) {
+            this(configValue, category, index, null);
+        }
+
+        /**
+         * @param configValue            底层 List&lt;String&gt; 配置值引用
+         * @param category               所属分类
+         * @param index                  全局序号
+         * @param translationKeyOverride 翻译键后缀覆盖值；为 null 时根据配置 path 自动生成
+         */
+        public ListEntry(ModConfigSpec.ConfigValue<List<String>> configValue, ConfigCategory category,
+                         int index, @Nullable String translationKeyOverride) {
+            super(configValue, category, index, translationKeyOverride);
+            this.editBox = new MultiLineEditBox(font, 0, 0, 100, 40, Component.empty());
+            this.editBox.setValue(joinLines(defaultValue));
+            this.editBox.setResponder(this::onTextChanged);
+            this.editBox.visible = false;
+            widgets.add(editBox);
+        }
+
+        // ==================== 状态 ====================
+
+        public boolean isExpanded() { return expanded; }
+
+        /** 切换展开/折叠状态 */
+        public void toggleExpanded() { setExpanded(!expanded); }
+
+        /**
+         * 设置展开/折叠状态并播放高度动画。
+         *
+         * @param expand true=展开, false=折叠
+         */
+        public void setExpanded(boolean expand) {
+            if (this.expanded == expand) return;
+            this.expanded = expand;
+            this.animStartTime = System.currentTimeMillis();
+            this.animatingExpansion = true;
+            this.editBox.visible = expanded;
+            if (expanded) {
+                // 展开后让光标定位到末尾，便于追加
+                editBox.setValue(editBox.getValue());
+            } else {
+                editBox.setFocused(false);
+            }
+        }
+
+        /** 展开动画进度（0=折叠, 1=完全展开） */
+        public float getExpandProgress() {
+            if (!animatingExpansion) return expanded ? 1f : 0f;
+            long elapsed = System.currentTimeMillis() - animStartTime;
+            float raw = Math.min(1f, elapsed / EXPAND_ANIM_MS);
+            float eased = 1f - (float) Math.pow(1f - raw, 3);
+            float p = expanded ? eased : 1f - eased;
+            if (raw >= 1f) {
+                animatingExpansion = false;
+                return expanded ? 1f : 0f;
+            }
+            return Math.max(0f, Math.min(1f, p));
+        }
+
+        /** 当前条目数（编辑框中的行数） */
+        public int getLineCount() {
+            String value = editBox.getValue();
+            if (value.isEmpty()) return 0;
+            int lines = 1;
+            for (int i = 0; i < value.length(); i++) {
+                if (value.charAt(i) == '\n') lines++;
+            }
+            return lines;
+        }
+
+        /**
+         * 获取条目当前视觉高度（含展开动画过渡）。
+         * <p>标题行高度随提示文字行数自适应，展开区叠加编辑框高度。</p>
+         *
+         * @param rowWidth 配置行宽度（px）
+         * @return 当前帧的视觉高度（px）
+         */
+        @Override
+        public int getVisualHeight(int rowWidth) {
+            float p = getExpandProgress();
+            int collapsedH = getTitleRowHeight(rowWidth);
+            int expandedH = collapsedH + getEditorHeight() + ConfigStyles.ROW_PADDING_Y * 2;
+            return collapsedH + (int) ((expandedH - collapsedH) * p);
+        }
+
+        /** 标题行高度（含提示文字换行） */
+        private int getTitleRowHeight(int rowWidth) {
+            return ConfigStyles.ROW_HEIGHT + Math.max(0, getTooltipLines(rowWidth) - 1) * (font.lineHeight + 1);
+        }
+
+        /** 标题行提示文字最大宽度（右侧预留条目数与展开指示符） */
+        @Override
+        protected int getTooltipMaxWidth(int rowWidth) {
+            return Math.max(60, rowWidth - ConfigStyles.ROW_PADDING_X * 2 - 88);
+        }
+
+        /** 编辑框高度（随行数在 MIN~MAX 可视行之间伸缩） */
+        private int getEditorHeight() {
+            int lines = Math.max(MIN_VISIBLE_LINES, Math.min(MAX_VISIBLE_LINES, getLineCount()));
+            return lines * (font.lineHeight + 1) + 8;
+        }
+
+        // ==================== 值同步 ====================
+
+        /** 将配置列表转换为编辑框多行文本 */
+        private static String joinLines(List<String> list) {
+            return String.join("\n", list);
+        }
+
+        /** 编辑框文本变化 → 按行拆分同步到待保存值（去掉空行） */
+        private void onTextChanged(String text) {
+            List<String> lines = new ArrayList<>();
+            for (String line : text.split("\n", -1)) {
+                String trimmed = line.trim();
+                if (!trimmed.isEmpty()) lines.add(trimmed);
+            }
+            pendingValue = lines;
+        }
+
+        @Override
+        public void setPendingValue(List<String> value) {
+            pendingValue = value;
+            editBox.setValue(joinLines(value));
+        }
+
+        // ==================== 渲染 ====================
+
+        @Override
+        public void render(GuiGraphics gui, int x, int y, int rowWidth, int mouseX, int mouseY, float partialTick) {
+            renderTitleRow(gui, x, y, rowWidth, mouseX, mouseY, partialTick);
+
+            float p = getExpandProgress();
+            if (p <= 0.01f) return;
+
+            int titleRowH = getTitleRowHeight(rowWidth);
+            int editorAreaTop = y + titleRowH;
+            int editorAreaH = getVisualHeight(rowWidth) - titleRowH;
+
+            // 裁剪展开区，使折叠动画中编辑框随高度平滑收缩
+            gui.enableScissor(x, editorAreaTop, x + rowWidth, editorAreaTop + editorAreaH);
+
+            // 编辑区背景
+            gui.fill(x, editorAreaTop, x + rowWidth, editorAreaTop + editorAreaH,
+                    ConfigStyles.COLOR_FIELD_BG);
+            gui.fill(x, editorAreaTop, x + rowWidth, editorAreaTop + 1, ConfigStyles.COLOR_DIVIDER);
+
+            // 编辑框位置与尺寸（覆盖 PDConfigScreen 的通用控件布局）
+            editBox.setX(x + ConfigStyles.ROW_PADDING_X);
+            editBox.setY(editorAreaTop + ConfigStyles.ROW_PADDING_Y);
+            editBox.setWidth(rowWidth - ConfigStyles.ROW_PADDING_X * 2);
+            editBox.setHeight(Math.max(10, (int) (getEditorHeight() * p)));
+            editBox.render(gui, mouseX, mouseY, partialTick);
+
+            gui.disableScissor();
+        }
+
+        /** 渲染标题行（标签 + 条目数 + 展开指示符），风格与普通配置项一致 */
+        private void renderTitleRow(GuiGraphics gui, int x, int y, int rowWidth, int mouseX, int mouseY, float partialTick) {
+            int titleRowH = getTitleRowHeight(rowWidth);
+            boolean hovered = mouseX >= x && mouseX < x + rowWidth && mouseY >= y && mouseY < y + titleRowH;
+
+            // 平滑悬停过渡
+            if (hovered && hoverLerp < 1f) {
+                hoverLerp = Math.min(1f, hoverLerp + ConfigStyles.HOVER_TRANSITION_RATE);
+            } else if (!hovered && hoverLerp > 0f) {
+                hoverLerp = Math.max(0f, hoverLerp - ConfigStyles.HOVER_TRANSITION_RATE);
+            }
+
+            // 卡片背景
+            int bgColor = lerpColor(ConfigStyles.COLOR_CARD_BG, ConfigStyles.COLOR_CARD_HOVER, hoverLerp);
+            gui.fill(x, y, x + rowWidth, y + titleRowH, bgColor);
+
+            // 悬停时顶部能量光
+            if (hoverLerp > 0.01f) {
+                int glowAlpha = (int) (0x33 * hoverLerp);
+                int glowColor = (glowAlpha << 24) | (ConfigStyles.COLOR_ROW_TOP_GLOW & 0x00FFFFFF);
+                gui.fill(x, y, x + rowWidth, y + 1, glowColor);
+            }
+
+            // 悬停时左侧能量条
+            int barWidth = (int) (2 + 2 * hoverLerp);
+            if (barWidth > 0) {
+                int glowAlpha = (int) (0x22 * hoverLerp);
+                int glowColor = (glowAlpha << 24) | (ConfigStyles.COLOR_ROW_ACCENT_BAR & 0x00FFFFFF);
+                gui.fill(x - 1, y + 4, x + barWidth + 1, y + titleRowH - 4, glowColor);
+                gui.fill(x, y + 5, x + barWidth - 1, y + titleRowH - 5, ConfigStyles.COLOR_ROW_ACCENT_BAR);
+            }
+
+            // 底部分割线
+            gui.fill(x, y + titleRowH - 1, x + rowWidth, y + titleRowH,
+                    ConfigStyles.COLOR_DIVIDER);
+
+            // 标签文字
+            int labelX = x + ConfigStyles.ROW_PADDING_X;
+            int labelY = y + 5;
+            gui.drawString(font, label, labelX, labelY, ConfigStyles.COLOR_LABEL);
+
+            // 条目数（右上）
+            String count = net.minecraft.network.chat.Component
+                    .translatable("gui.pasterdream.config.item_count", getLineCount())
+                    .getString();
+            gui.drawString(font, count, x + rowWidth - ConfigStyles.ROW_PADDING_X - font.width(count) - 10,
+                    labelY, ConfigStyles.COLOR_VALUE);
+
+            // 展开指示符
+            gui.drawString(font, expanded ? "▾" : "▸", x + rowWidth - ConfigStyles.ROW_PADDING_X - 4,
+                    labelY + 2, ConfigStyles.COLOR_ACCENT);
+
+            // 提示文字（自动换行）
+            int tooltipY = labelY + font.lineHeight + 1;
+            for (FormattedCharSequence line : font.split(tooltip, getTooltipMaxWidth(rowWidth))) {
+                gui.drawString(font, line, labelX, tooltipY, ConfigStyles.COLOR_HINT);
+                tooltipY += font.lineHeight + 1;
+            }
+        }
+
+        // ==================== 交互 ====================
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (button != 0) return false;
+            // 展开时点击编辑框 → 转交编辑框处理（聚焦/定位光标）
+            if (expanded && editBox.isMouseOver(mouseX, mouseY)) {
+                return super.mouseClicked(mouseX, mouseY, button);
+            }
+            // 其余区域 → 切换展开/折叠
+            toggleExpanded();
+            return true;
+        }
+    }
+
+    // ========================================================================
+    // 多行文本编辑框（用于字符串列表配置项）
+    // ========================================================================
+
+    /**
+     * 简易多行文本编辑框。
+     * <p>
+     * 支持回车换行、退格删除、上下左右/Home/End 光标移动；
+     * 内容超过可视行数时底部对齐自动滚动。用于 {@link ListEntry} 编辑物品池条目。
+     */
+    private static class MultiLineEditBox extends AbstractWidget {
+
+        /** 编辑框文本最大字符数 */
+        private static final int MAX_TEXT_LENGTH = 512;
+
+        private final Font font;
+        private String value = "";
+        private int cursorPos;
+        /** 可视区域起始行 */
+        private int scrollLine;
+        private long focusedTime;
+        private boolean valid = true;
+        private Consumer<String> responder;
+        /** 聚焦光晕动画进度 */
+        private float focusGlow;
+
+        MultiLineEditBox(Font font, int x, int y, int width, int height, Component msg) {
+            super(x, y, width, height, msg);
+            this.font = font;
+        }
+
+        void setResponder(Consumer<String> r) { this.responder = r; }
+
+        void setValue(String value) {
+            this.value = value == null ? "" : value;
+            if (this.value.length() > MAX_TEXT_LENGTH) {
+                this.value = this.value.substring(0, MAX_TEXT_LENGTH);
+            }
+            this.cursorPos = this.value.length();
+            this.scrollLine = 0;
+            if (responder != null) responder.accept(this.value);
+        }
+
+        String getValue() { return value; }
+        void setValid(boolean v) { this.valid = v; }
+        boolean isValid() { return valid; }
+
+        // ==================== 行/列计算 ====================
+
+        /** 总行数（空文本按 1 行） */
+        private int getLineCount() {
+            int lines = 1;
+            for (int i = 0; i < value.length(); i++) {
+                if (value.charAt(i) == '\n') lines++;
+            }
+            return lines;
+        }
+
+        /** 可视行数（由控件高度决定） */
+        private int getVisibleLines() {
+            return Math.max(1, getHeight() / (font.lineHeight + 1));
+        }
+
+        /** 光标所在行（0 基） */
+        private int lineOfIndex(int pos) {
+            int line = 0;
+            int end = Math.min(pos, value.length());
+            for (int i = 0; i < end; i++) {
+                if (value.charAt(i) == '\n') line++;
+            }
+            return line;
+        }
+
+        /** 指定行的起始字符索引 */
+        private int lineStart(int line) {
+            int idx = 0;
+            for (int l = 0; l < line; l++) {
+                int nl = value.indexOf('\n', idx);
+                if (nl < 0) return value.length();
+                idx = nl + 1;
+            }
+            return Math.min(idx, value.length());
+        }
+
+        /** 指定行的结束字符索引（不含行尾换行符） */
+        private int lineEnd(int line) {
+            int start = lineStart(line);
+            int nl = value.indexOf('\n', start);
+            return nl < 0 ? value.length() : nl;
+        }
+
+        /** 光标所在列（0 基） */
+        private int columnOf(int pos) {
+            return pos - lineStart(lineOfIndex(pos));
+        }
+
+        // ==================== 渲染 ====================
+
+        @Override
+        protected void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float partialTick) {
+            // 聚焦光晕动画
+            if (isFocused() && focusGlow < 1f) {
+                focusGlow = Math.min(1f, focusGlow + 0.18f);
+            } else if (!isFocused() && focusGlow > 0f) {
+                focusGlow = Math.max(0f, focusGlow - 0.12f);
+            }
+
+            boolean errored = !valid;
+            int borderColor = errored ? ConfigStyles.COLOR_FIELD_ERROR
+                    : (isFocused() ? ConfigStyles.COLOR_FIELD_FOCUS : ConfigStyles.COLOR_FIELD_BORDER);
+            int glowColor = errored ? ConfigStyles.COLOR_FIELD_ERROR_GLOW : ConfigStyles.COLOR_FIELD_FOCUS_GLOW;
+
+            // 聚焦光晕（极淡外发光）
+            if (focusGlow > 0.01f) {
+                int glowSpread = (int) (2 * focusGlow);
+                gui.fill(getX() - glowSpread, getY() - glowSpread,
+                        getX() + width + glowSpread, getY() + height + glowSpread,
+                        ((int) (0x22 * focusGlow) << 24) | (glowColor & 0x00FFFFFF));
+            }
+
+            // 外边框 + 背景
+            gui.fill(getX() - 1, getY() - 1, getX() + width + 1, getY() + height + 1, borderColor);
+            gui.fill(getX(), getY(), getX() + width, getY() + height, ConfigStyles.COLOR_FIELD_BG);
+
+            // 文本绘制（裁剪到控件内部，防止超宽行溢出）
+            int lineHeight = font.lineHeight + 1;
+            int cursorLine = lineOfIndex(cursorPos);
+            int visibleLines = getVisibleLines();
+
+            // 滚动：确保光标行可见
+            if (cursorLine < scrollLine) scrollLine = cursorLine;
+            if (cursorLine >= scrollLine + visibleLines) scrollLine = cursorLine - visibleLines + 1;
+
+            int textColor = valid ? ConfigStyles.COLOR_LABEL : ConfigStyles.COLOR_ERROR_TEXT;
+            int x0 = getX() + 4;
+            int y0 = getY() + 3;
+
+            gui.enableScissor(getX(), getY(), getX() + width, getY() + height);
+
+            for (int line = scrollLine; line < Math.min(scrollLine + visibleLines, getLineCount()); line++) {
+                int ty = y0 + (line - scrollLine) * lineHeight;
+                String lineText = value.substring(lineStart(line), lineEnd(line));
+                gui.drawString(font, lineText, x0, ty, textColor);
+            }
+
+            // 光标闪烁（仅聚焦时）
+            if (isFocused()) {
+                long elapsed = System.currentTimeMillis() - focusedTime;
+                if ((elapsed / 500) % 2 == 0) {
+                    int line = lineOfIndex(cursorPos);
+                    if (line >= scrollLine && line < scrollLine + visibleLines) {
+                        String beforeCursor = value.substring(lineStart(line), cursorPos);
+                        int cursorX = x0 + font.width(beforeCursor);
+                        int cursorY = y0 + (line - scrollLine) * lineHeight;
+                        gui.fill(cursorX, cursorY - 1, cursorX + 1, cursorY + font.lineHeight,
+                                ConfigStyles.COLOR_TITLE);
+                    }
+                }
+            }
+
+            gui.disableScissor();
+        }
+
+        // ==================== 输入 ====================
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (visible && mouseX >= getX() && mouseX < getX() + width
+                    && mouseY >= getY() && mouseY < getY() + height) {
+                setFocused(true);
+                focusedTime = System.currentTimeMillis();
+                // 点击定位光标到最近行（简化：按行估算，不精确到字符）
+                int line = (int) ((mouseY - getY() - 3) / (font.lineHeight + 1)) + scrollLine;
+                line = Math.max(0, Math.min(getLineCount() - 1, line));
+                cursorPos = lineStart(line);
+                return true;
+            }
+            setFocused(false);
+            return false;
+        }
+
+        @Override
+        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+            if (!isFocused()) return false;
+
+            switch (keyCode) {
+                case 259 -> { // Backspace
+                    if (cursorPos > 0) {
+                        value = value.substring(0, cursorPos - 1) + value.substring(cursorPos);
+                        cursorPos--;
+                        if (responder != null) responder.accept(value);
+                    }
+                    return true;
+                }
+                case 262 -> { // Right
+                    if (cursorPos < value.length()) cursorPos++;
+                    return true;
+                }
+                case 263 -> { // Left
+                    if (cursorPos > 0) cursorPos--;
+                    return true;
+                }
+                case 265 -> { // Up：保持列，移到上一行
+                    int line = lineOfIndex(cursorPos);
+                    if (line > 0) {
+                        int col = columnOf(cursorPos);
+                        int targetLine = line - 1;
+                        cursorPos = Math.min(lineStart(targetLine) + col, lineEnd(targetLine));
+                    }
+                    return true;
+                }
+                case 264 -> { // Down：保持列，移到下一行
+                    int line = lineOfIndex(cursorPos);
+                    if (line < getLineCount() - 1) {
+                        int col = columnOf(cursorPos);
+                        int targetLine = line + 1;
+                        cursorPos = Math.min(lineStart(targetLine) + col, lineEnd(targetLine));
+                    }
+                    return true;
+                }
+                case 268 -> { cursorPos = lineStart(lineOfIndex(cursorPos)); return true; } // Home → 行首
+                case 269 -> { cursorPos = lineEnd(lineOfIndex(cursorPos)); return true; }   // End → 行尾
+                case 257, 335 -> { // Enter / NumpadEnter：插入换行
+                    insertAtCursor('\n');
+                    return true;
+                }
+                default -> {
+                    return false;
+                }
+            }
+        }
+
+        @Override
+        public boolean charTyped(char codePoint, int modifiers) {
+            if (!isFocused() || Character.isISOControl(codePoint)) return false;
+            insertAtCursor(codePoint);
+            return true;
+        }
+
+        /** 在光标位置插入字符并后移光标 */
+        private void insertAtCursor(char ch) {
+            if (value.length() >= MAX_TEXT_LENGTH) return;
+            value = value.substring(0, cursorPos) + ch + value.substring(cursorPos);
+            cursorPos++;
+            if (responder != null) responder.accept(value);
         }
 
         @Override

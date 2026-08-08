@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "pasterdream:block/stripped_cold_domain_log_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "pasterdream:block/stripped_cold_domain_log"
+    },
+    "axis=z": {
+      "model": "pasterdream:block/stripped_cold_domain_log_horizontal",
+      "x": 90
+    }
+  }
+}

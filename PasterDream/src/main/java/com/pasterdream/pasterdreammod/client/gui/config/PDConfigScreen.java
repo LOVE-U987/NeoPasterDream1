@@ -284,6 +284,16 @@ public class PDConfigScreen extends Screen {
         // ==================== 附属模组系统设置（动态，仅安装时显示） ====================
         idx = buildAddonEntries(idx);
 
+        // ==================== Meltdream Chest (1 开关 + 3 物品池) ====================
+        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.MELTDREAM_CHEST_CUSTOM_LOOT_ENABLED,
+                ConfigCategory.MELTDREAM_CHEST, idx++));
+        allEntries.add(new ConfigEntry.ListEntry(PDCommonConfig.MELTDREAM_CHEST_COMMON_LOOT,
+                ConfigCategory.MELTDREAM_CHEST, idx++, "meltdream_chest_common_loot"));
+        allEntries.add(new ConfigEntry.ListEntry(PDCommonConfig.MELTDREAM_CHEST_RARE_LOOT,
+                ConfigCategory.MELTDREAM_CHEST, idx++, "meltdream_chest_rare_loot"));
+        allEntries.add(new ConfigEntry.ListEntry(PDCommonConfig.MELTDREAM_CHEST_LEGENDARY_LOOT,
+                ConfigCategory.MELTDREAM_CHEST, idx++, "meltdream_chest_legendary_loot"));
+
         // ==================== Debug (4 items) ====================
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.ENABLE_DEBUG_LOG, ConfigCategory.DEBUG, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.ENABLE_API_DEBUG_LOG, ConfigCategory.DEBUG, idx++));
@@ -374,11 +384,15 @@ public class PDConfigScreen extends Screen {
 
     /**
      * 获取条目的视觉高度。
+     * <p>普通 {@link ConfigEntry} 与 {@link ConfigEntry.ListEntry} 会根据提示文字换行数动态伸缩，
+     * {@link BgmGroupEntry} 按展开状态返回高度。</p>
      *
-     * @param entry {@link ConfigEntry} 或 {@link BgmGroupEntry}
+     * @param entry    配置条目
+     * @param rowWidth 行宽（px），用于计算提示文字换行宽度
      * @return 条目高度（px）
      */
-    private static int getEntryVisualHeight(Object entry) {
+    private static int getEntryVisualHeight(Object entry, int rowWidth) {
+        if (entry instanceof ConfigEntry<?> ce) return ce.getVisualHeight(rowWidth);
         if (entry instanceof BgmGroupEntry be) return be.getVisualHeight();
         return ConfigStyles.ROW_HEIGHT;
     }
@@ -846,7 +860,7 @@ public class PDConfigScreen extends Screen {
     private void recalculateScrollBounds() {
         int totalH = 0;
         for (Object entry : visibleEntries) {
-            totalH += getEntryVisualHeight(entry);
+            totalH += getEntryVisualHeight(entry, contentWidth);
         }
         int visibleH = listBottom - listTop;
         int maxScroll = Math.max(0, totalH - visibleH);
@@ -859,7 +873,7 @@ public class PDConfigScreen extends Screen {
     private void renderScrollbar(GuiGraphics gui, int mouseX, int mouseY) {
         int totalH = 0;
         for (Object entry : visibleEntries) {
-            totalH += getEntryVisualHeight(entry);
+            totalH += getEntryVisualHeight(entry, contentWidth);
         }
         int visibleH = listBottom - listTop;
         if (totalH <= visibleH) return;
@@ -944,7 +958,7 @@ public class PDConfigScreen extends Screen {
             if (entryProgress <= 0f) continue;
 
             int yOffset = (int) ((1f - entryProgress) * 14f);
-            int visualH = getEntryVisualHeight(entry);
+            int visualH = getEntryVisualHeight(entry, rowWidth);
             int y = accumulatedY + yOffset;
 
             if (y + visualH < listTop || y > listBottom) {
@@ -1046,7 +1060,11 @@ public class PDConfigScreen extends Screen {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (mouseX >= contentX && mouseX < contentX + contentWidth && mouseY >= listTop && mouseY < listBottom) {
-            int totalH = visibleEntries.size() * ConfigStyles.ROW_HEIGHT;
+            // 累加条目实际视觉高度（支持变高条目如 ListEntry / BgmGroupEntry）
+            int totalH = 0;
+            for (Object entry : visibleEntries) {
+                totalH += getEntryVisualHeight(entry, contentWidth);
+            }
             int visibleH = listBottom - listTop;
             int maxScroll = Math.max(0, totalH - visibleH);
             targetScrollOffset = (float) Math.max(0, Math.min(maxScroll, targetScrollOffset - scrollY * 28));
@@ -1086,7 +1104,7 @@ public class PDConfigScreen extends Screen {
             Object entry = visibleEntries.get(i);
             float entryProgress = getEntryProgress(getEntryIndex(entry), now);
             int yOffset = (int) ((1f - entryProgress) * 14f);
-            int visualH = getEntryVisualHeight(entry);
+            int visualH = getEntryVisualHeight(entry, contentWidth);
             int y = accumulatedY + yOffset;
 
             if (mouseX >= x && mouseX < x + contentWidth && mouseY >= y && mouseY < y + visualH) {

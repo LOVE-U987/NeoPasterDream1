@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:biome_dyedream_2",
+  "features": [
+    "pasterdream:bb_trees_snowtree"
+  ],
+  "step": "vegetal_decoration"
+}

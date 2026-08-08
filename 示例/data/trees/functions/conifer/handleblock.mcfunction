@@ -1,0 +1,3 @@
+#execute if block ~ ~ ~ minecraft:air if block ~ ~-1 ~ #trees:dirt run function trees:conifer/floor
+execute if block ~ ~ ~ minecraft:spruce_log[axis=y] if block ~ ~20 ~ spruce_log[axis=y] if block ~ ~-1 ~ #trees:dirt unless block ~1 ~ ~ cobblestone unless block ~-1 ~ ~ cobblestone unless block ~ ~ ~1 cobblestone unless block ~ ~ ~-1 cobblestone run function trees:conifer/bigtree
+execute if block ~ ~ ~ minecraft:spruce_log[axis=y] unless block ~ ~20 ~ spruce_log[axis=y] if block ~ ~-1 ~ #trees:dirt unless block ~1 ~ ~ cobblestone unless block ~-1 ~ ~ cobblestone unless block ~ ~ ~1 cobblestone unless block ~ ~ ~-1 cobblestone run function trees:conifer/midtree

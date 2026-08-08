@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "pasterdream:block/cold_domain_dirt",
+    "top": "pasterdream:block/snowy_cold_domain_grass_top",
+    "side": "pasterdream:block/snowy_cold_domain_grass_side"
+  }
+}

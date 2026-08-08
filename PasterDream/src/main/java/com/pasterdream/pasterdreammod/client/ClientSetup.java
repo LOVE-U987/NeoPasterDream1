@@ -326,6 +326,49 @@ public class ClientSetup {
     public static void registerDimensionSpecialEffects(RegisterDimensionSpecialEffectsEvent event) {
         registerDyedreamWorldEffects(event);
         registerAaroncosArenaEffects(event);
+        registerColdDomainWorldEffects(event);
+    }
+
+    /**
+     * 注册冷域维度特殊效果
+     * <p>
+     * 冷色天空/雾气：白天淡冰蓝，黄昏蓝紫，夜晚深蓝黑。
+     */
+    private static void registerColdDomainWorldEffects(RegisterDimensionSpecialEffectsEvent event) {
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "cold_domain_world");
+        event.register(id, new DimensionSpecialEffects(
+                        192.0f,
+                        true,
+                        DimensionSpecialEffects.SkyType.NORMAL,
+                        false,
+                        false
+                ) {
+                    @Override
+                    public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float sunHeight) {
+                        Vec3 dayColor = new Vec3(0.68, 0.82, 1.0);
+                        Vec3 sunsetColor = new Vec3(0.62, 0.68, 0.88);
+                        Vec3 nightColor = new Vec3(0.06, 0.10, 0.26);
+                        return interpolateTriColor(dayColor, sunsetColor, nightColor, sunHeight);
+                    }
+
+                    @Override
+                    @Nullable
+                    public float[] getSunriseColor(float timeOfDay, float partialTick) {
+                        float sunHeight = (float) Math.sin(timeOfDay * 2.0 * Math.PI);
+                        if (sunHeight < -0.1f || sunHeight > 0.2f) return null;
+
+                        float fade = (sunHeight + 0.1f) / 0.3f;
+                        float alpha = (float) Math.sin(fade * Math.PI) * 0.45f;
+
+                        return new float[]{0.72f, 0.85f, 1.0f, alpha};
+                    }
+
+                    @Override
+                    public boolean isFoggyAt(int x, int y) {
+                        return false;
+                    }
+                }
+        );
     }
 
     /**

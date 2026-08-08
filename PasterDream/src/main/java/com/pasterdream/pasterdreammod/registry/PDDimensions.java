@@ -53,6 +53,15 @@ public class PDDimensions {
     /** 风之旅途 DimensionType Key */
     public static final ResourceKey<DimensionType> WIND_JOURNEY_WORLD_TYPE_KEY;
 
+    /** 冷域维度 API 结果 */
+    public static final DimensionResult COLD_DOMAIN_WORLD;
+
+    /** 冷域 Level Key */
+    public static final ResourceKey<Level> COLD_DOMAIN_WORLD_LEVEL_KEY;
+
+    /** 冷域 DimensionType Key */
+    public static final ResourceKey<DimensionType> COLD_DOMAIN_WORLD_TYPE_KEY;
+
     static {
         DYEDREAM_WORLD = DimensionAPI.createDimension("dyedream_world")
                 .natural()
@@ -127,6 +136,35 @@ public class PDDimensions {
 
         WIND_JOURNEY_WORLD_LEVEL_KEY = WIND_JOURNEY_WORLD.levelKey();
         WIND_JOURNEY_WORLD_TYPE_KEY = WIND_JOURNEY_WORLD.typeKey();
+
+        // 冷域维度：寒冷冰雪世界（固定冷域群系，地表由雪地草坪/冷域泥土构成）
+        COLD_DOMAIN_WORLD = DimensionAPI.createDimension("cold_domain_world")
+                .natural()
+                .hasSkylight()
+                .bedWorks()
+                .hasRaids(false)
+                .withAmbientLight(0.35)
+                .minY(-64).height(384)
+                .monsterSpawnLight(0, 7)
+                .withDefaultBlock("minecraft:stone")
+                .withDefaultFluid("minecraft:water")
+                .withNoiseSettings("pasterdream:cold_domain_world")
+                // JSON 已手动编写（固定群系 + 冷域地表 surface_rule）
+                .generateJson(false)
+                .build();
+
+        COLD_DOMAIN_WORLD_LEVEL_KEY = COLD_DOMAIN_WORLD.levelKey();
+        COLD_DOMAIN_WORLD_TYPE_KEY = COLD_DOMAIN_WORLD.typeKey();
+    }
+
+    /**
+     * 判断当前维度是否为冷域维度
+     *
+     * @param level 目标维度
+     * @return 如果是冷域维度返回 true
+     */
+    public static boolean isColdDomainWorld(Level level) {
+        return COLD_DOMAIN_WORLD.isDimension(level);
     }
 
     /**

@@ -1,0 +1,1 @@
+execute if block ~ ~-1 ~ #trees:pris if predicate base:prismarine run function trees:prismarine/floor

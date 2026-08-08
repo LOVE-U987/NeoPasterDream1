@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:blasting",
+  "ingredient": {
+    "item": "pasterdream:windrunner_crystal_ore"
+  },
+  "experience": 0.7,
+  "cookingtime": 100,
+  "result": {
+    "id": "pasterdream:windrunner_crystal",
+    "count": 1
+  }
+}

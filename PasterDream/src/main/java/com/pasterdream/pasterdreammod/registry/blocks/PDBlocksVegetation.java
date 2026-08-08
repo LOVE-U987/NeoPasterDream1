@@ -167,14 +167,15 @@ public class PDBlocksVegetation {
     // ========== API 批量注册：花（单格 + 双层） ==========
 
     private static final Map<String, DeferredBlock<Block>> FLOWERS_SINGLE = BlockAPI.batchRegister("flower")
-            // 注意：flower_6（烈焰花）有专属掉落逻辑，单独注册，见下方 FLOWER_6
-            .indexList(1, 2, 3, 5, 8, 9, 13, 14, 15, 16, 17)
+            // 注意：flower_6（烈焰花）有专属掉落逻辑；flower_16/17（雪傀儡解密/冻结之花）有专属解密与随机刻逻辑，均单独注册，见下方对应字段
+            .indexList(1, 2, 3, 5, 8, 9, 13, 14, 15)
             .factory((index, props) -> new DyedreamFlowerBlock(MobEffects.HUNGER, 100, props))
             .withProperties(flowerProps())
             .build();
 
     private static final Map<String, DeferredBlock<Block>> FLOWERS_DOUBLE = BlockAPI.batchRegister("flower")
-            .indexList(7, 10, 11, 12, 18)
+            // 注意：flower_11（花园解密之花）有专属解密逻辑，单独注册，见下方 FLOWER_11
+            .indexList(7, 10, 12, 18)
             .factory((index, props) -> new DyedreamDoublePlantBlock())
             .withProperties(doublePlantProps())
             .build();
@@ -191,13 +192,28 @@ public class PDBlocksVegetation {
     public static final DeferredBlock<Block> FLOWER_8 = FLOWERS_SINGLE.get("flower_8");
     public static final DeferredBlock<Block> FLOWER_9 = FLOWERS_SINGLE.get("flower_9");
     public static final DeferredBlock<Block> FLOWER_10 = FLOWERS_DOUBLE.get("flower_10");
-    public static final DeferredBlock<Block> FLOWER_11 = FLOWERS_DOUBLE.get("flower_11");
+    /**
+     * 花园解密之花 (flower_11)：染梦书桌 + 周围花阵解密 → flower_12，见 {@link DyedreamGardenDecryptFlowerBlock}
+     */
+    public static final DeferredBlock<Block> FLOWER_11 = PDBlocks.BLOCKS.registerBlock("flower_11",
+            p -> new DyedreamGardenDecryptFlowerBlock(p),
+            doublePlantProps());
     public static final DeferredBlock<Block> FLOWER_12 = FLOWERS_DOUBLE.get("flower_12");
     public static final DeferredBlock<Block> FLOWER_13 = FLOWERS_SINGLE.get("flower_13");
     public static final DeferredBlock<Block> FLOWER_14 = FLOWERS_SINGLE.get("flower_14");
     public static final DeferredBlock<Block> FLOWER_15 = FLOWERS_SINGLE.get("flower_15");
-    public static final DeferredBlock<Block> FLOWER_16 = FLOWERS_SINGLE.get("flower_16");
-    public static final DeferredBlock<Block> FLOWER_17 = FLOWERS_SINGLE.get("flower_17");
+    /**
+     * 雪傀儡解密之花 (flower_16)：书桌 + 四方位花阵 + 雪傀儡/悦灵解密 → flower_17，见 {@link DyedreamFlower16Block}
+     */
+    public static final DeferredBlock<Block> FLOWER_16 = PDBlocks.BLOCKS.registerBlock("flower_16",
+            p -> new DyedreamFlower16Block(p),
+            flowerProps().lightLevel(s -> 5));
+    /**
+     * 冻结之花 (flower_17)：随机刻冻结周围水源/凝结雪，见 {@link DyedreamFlower17Block}
+     */
+    public static final DeferredBlock<Block> FLOWER_17 = PDBlocks.BLOCKS.registerBlock("flower_17",
+            p -> new DyedreamFlower17Block(p),
+            flowerProps().randomTicks().lightLevel(s -> 5));
     public static final DeferredBlock<Block> FLOWER_18 = FLOWERS_DOUBLE.get("flower_18");
 
     // ========== API 批量注册：草（单格 + 双层） ==========

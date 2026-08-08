@@ -67,6 +67,7 @@ public class PDItemsBlocks {
     public static final DeferredItem<BlockItem> CARVE_DYEDREAM_GLASS = PDItems.ITEMS.registerSimpleBlockItem("carve_dyedream_glass", PDBlocks.CARVE_DYEDREAM_GLASS);
     public static final DeferredItem<BlockItem> GOLD_CARVE_DYEDREAM_GLASS = PDItems.ITEMS.registerSimpleBlockItem("gold_carve_dyedream_glass", PDBlocks.GOLD_CARVE_DYEDREAM_GLASS);
     public static final DeferredItem<BlockItem> DYEDREAM_GRASS = PDItems.ITEMS.registerSimpleBlockItem("dyedream_grass", PDBlocks.DYEDREAM_GRASS);
+    public static final DeferredItem<BlockItem> DYEDREAM_FARMLAND = PDItems.ITEMS.registerSimpleBlockItem("dyedream_farmland", PDBlocks.DYEDREAM_FARMLAND);
     public static final DeferredItem<BlockItem> DYEDREAM_LOG = PDItems.ITEMS.registerSimpleBlockItem("dyedream_log", PDBlocks.DYEDREAM_LOG);
     public static final DeferredItem<BlockItem> DYEDREAM_WOOD = PDItems.ITEMS.registerSimpleBlockItem("dyedream_wood", PDBlocks.DYEDREAM_WOOD);
     public static final DeferredItem<BlockItem> PILLAR_DYEDREAMQUARTZ_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("pillar_dyedreamquartz_block", PDBlocks.PILLAR_DYEDREAMQUARTZ_BLOCK);

@@ -176,24 +176,27 @@ public class PDItemsTools {
 
     public static final DeferredItem<Item> COPPER_PICKAXE =
             ItemAPI.toolItem("copper_pickaxe")
-                    .type(ToolType.PICKAXE).durability(131).miningSpeed(4.0f)
-                    .attackDamage(2.0f).attackSpeed(-2.8f)
+                    .type(ToolType.PICKAXE).durability(225).miningSpeed(4.0f)
+                    .attackDamage(2.5f).attackSpeed(-2.8f)
+                    .enchantment(12)
                     .incorrectTag("minecraft:incorrect_for_stone_tool")
-                    .repairWith(new ItemStack(Items.COBBLESTONE))
+                    .repairWith(new ItemStack(Items.COPPER_INGOT))
                     .build();
     public static final DeferredItem<Item> DYEDREAM_HAMMER =
             ItemAPI.toolItem("dyedream_hammer")
-                    .type(ToolType.HAMMER).durability(2031).miningSpeed(9.0f)
-                    .attackDamage(5.0f).attackSpeed(-2.8f)
+                    .type(ToolType.HAMMER).durability(6570).miningSpeed(3.0f)
+                    .attackDamage(10.0f).attackSpeed(-3.3f)
+                    .enchantment(22)
                     .incorrectTag("minecraft:incorrect_for_netherite_tool")
-                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .repairWith(() -> new ItemStack(PDItems.DYEDREAM_INGOT.get()))
                     .build();
     public static final DeferredItem<Item> DYEDREAM_PICKAXE =
             ItemAPI.toolItem("dyedream_pickaxe")
-                    .type(ToolType.PICKAXE).durability(2031).miningSpeed(9.0f)
+                    .type(ToolType.PICKAXE).durability(1314).miningSpeed(11.0f)
                     .attackDamage(5.0f).attackSpeed(-2.8f)
+                    .enchantment(22)
                     .incorrectTag("minecraft:incorrect_for_netherite_tool")
-                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .repairWith(() -> new ItemStack(PDItems.DYEDREAM_INGOT.get()))
                     .build();
     /**
      * 融梦水晶镐 (meltdream_pickaxe) — 融梦修补
@@ -206,24 +209,27 @@ public class PDItemsTools {
                     () -> new MeltdreamPickaxeItem(new Item.Properties()));
     public static final DeferredItem<Item> MOLTENGOLD_PICKAXE =
             ItemAPI.toolItem("moltengold_pickaxe")
-                    .type(ToolType.PICKAXE).durability(131).miningSpeed(4.0f)
-                    .attackDamage(2.0f).attackSpeed(-2.7f)
+                    .type(ToolType.PICKAXE).durability(251).miningSpeed(14.0f)
+                    .attackDamage(3.0f).attackSpeed(-2.7f)
+                    .enchantment(23)
                     .incorrectTag("minecraft:incorrect_for_stone_tool")
-                    .repairWith(new ItemStack(Items.COBBLESTONE))
+                    .repairWith(() -> new ItemStack(PDItems.MOLTENGOLD_INGOT.get()))
                     .build();
     public static final DeferredItem<Item> SHADOW_EROSION_PICKAXE =
             ItemAPI.toolItem("shadow_erosion_pickaxe")
-                    .type(ToolType.PICKAXE).durability(2031).miningSpeed(9.0f)
+                    .type(ToolType.PICKAXE).durability(1725).miningSpeed(13.0f)
                     .attackDamage(5.0f).attackSpeed(-2.8f)
+                    .enchantment(16)
                     .incorrectTag("minecraft:incorrect_for_netherite_tool")
-                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .repairWith(() -> new ItemStack(PDItems.BLACKMETAL_INGOT.get()))
                     .build();
     public static final DeferredItem<Item> TITANIUM_PICKAXE =
             ItemAPI.toolItem("titanium_pickaxe")
-                    .type(ToolType.PICKAXE).durability(2031).miningSpeed(9.0f)
-                    .attackDamage(5.0f).attackSpeed(-2.8f)
+                    .type(ToolType.PICKAXE).durability(1721).miningSpeed(9.0f)
+                    .attackDamage(4.5f).attackSpeed(-2.8f)
+                    .enchantment(17)
                     .incorrectTag("minecraft:incorrect_for_netherite_tool")
-                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .repairWith(() -> new ItemStack(PDItems.TITANIUM_INGOT.get()))
                     .build();
 
     /**
@@ -273,56 +279,63 @@ public class PDItemsTools {
 
     public static final DeferredItem<Item> TRUE_MOLTENGOLD_PICKAXE =
             ItemAPI.toolItem("true_moltengold_pickaxe")
-                    .type(ToolType.PICKAXE).durability(131).miningSpeed(4.0f)
-                    .attackDamage(2.0f).attackSpeed(-2.6f)
+                    .type(ToolType.PICKAXE).durability(1255).miningSpeed(16.0f)
+                    .attackDamage(4.0f).attackSpeed(-2.6f)
+                    .enchantment(23)
                     .incorrectTag("minecraft:incorrect_for_stone_tool")
-                    .repairWith(new ItemStack(Items.COBBLESTONE))
+                    .repairWith(() -> new ItemStack(PDItems.MOLTENGOLD_INGOT.get()))
                     .build();
 
     // === Dyedream 工具 ===
     public static final DeferredItem<Item> DYEDREAM_AXE =
             ItemAPI.toolItem("dyedream_axe")
-                    .type(ToolType.AXE).durability(1314).miningSpeed(9.0f)
-                    .attackDamage(9.0f).attackSpeed(-3.0f)
+                    .type(ToolType.AXE).durability(1314).miningSpeed(11.0f)
+                    .attackDamage(9.5f).attackSpeed(-3.0f)
+                    .enchantment(22)
                     .incorrectTag("minecraft:incorrect_for_netherite_tool")
-                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .repairWith(() -> new ItemStack(PDItems.DYEDREAM_INGOT.get()))
                     .build();
     public static final DeferredItem<Item> DYEDREAM_SHOVEL =
             ItemAPI.toolItem("dyedream_shovel")
-                    .type(ToolType.SHOVEL).durability(1314).miningSpeed(9.0f)
+                    .type(ToolType.SHOVEL).durability(1314).miningSpeed(11.0f)
                     .attackDamage(5.5f).attackSpeed(-3.0f)
+                    .enchantment(22)
                     .incorrectTag("minecraft:incorrect_for_netherite_tool")
-                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .repairWith(() -> new ItemStack(PDItems.DYEDREAM_INGOT.get()))
                     .build();
     public static final DeferredItem<Item> DYEDREAM_HOE =
             ItemAPI.toolItem("dyedream_hoe")
-                    .type(ToolType.HOE).durability(1314).miningSpeed(9.0f)
-                    .attackDamage(0.5f).attackSpeed(0.0f)
+                    .type(ToolType.HOE).durability(1314).miningSpeed(11.0f)
+                    .attackDamage(1.0f).attackSpeed(0.0f)
+                    .enchantment(22)
                     .incorrectTag("minecraft:incorrect_for_netherite_tool")
-                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .repairWith(() -> new ItemStack(PDItems.DYEDREAM_INGOT.get()))
                     .build();
 
     // === Moltengold 工具 ===
     public static final DeferredItem<Item> MOLTENGOLD_AXE =
             ItemAPI.toolItem("moltengold_axe")
-                    .type(ToolType.AXE).durability(131).miningSpeed(4.0f)
-                    .attackDamage(6.0f).attackSpeed(-3.1f)
+                    .type(ToolType.AXE).durability(251).miningSpeed(14.0f)
+                    .attackDamage(8.0f).attackSpeed(-3.0f)
+                    .enchantment(23)
                     .incorrectTag("minecraft:incorrect_for_stone_tool")
-                    .repairWith(new ItemStack(Items.COBBLESTONE))
+                    .repairWith(() -> new ItemStack(PDItems.MOLTENGOLD_INGOT.get()))
                     .build();
     public static final DeferredItem<Item> MOLTENGOLD_SHOVEL =
             ItemAPI.toolItem("moltengold_shovel")
-                    .type(ToolType.SHOVEL).durability(131).miningSpeed(4.0f)
-                    .attackDamage(3.0f).attackSpeed(-3.0f)
+                    .type(ToolType.SHOVEL).durability(251).miningSpeed(14.0f)
+                    .attackDamage(3.5f).attackSpeed(-2.9f)
+                    .enchantment(23)
                     .incorrectTag("minecraft:incorrect_for_stone_tool")
-                    .repairWith(new ItemStack(Items.COBBLESTONE))
+                    .repairWith(() -> new ItemStack(PDItems.MOLTENGOLD_INGOT.get()))
                     .build();
     public static final DeferredItem<Item> MOLTENGOLD_HOE =
             ItemAPI.toolItem("moltengold_hoe")
-                    .type(ToolType.HOE).durability(131).miningSpeed(4.0f)
-                    .attackDamage(-1.0f).attackSpeed(0.0f)
+                    .type(ToolType.HOE).durability(251).miningSpeed(14.0f)
+                    .attackDamage(0.0f).attackSpeed(-0.5f)
+                    .enchantment(23)
                     .incorrectTag("minecraft:incorrect_for_stone_tool")
-                    .repairWith(new ItemStack(Items.COBBLESTONE))
+                    .repairWith(() -> new ItemStack(PDItems.MOLTENGOLD_INGOT.get()))
                     .build();
 
     // === Meltdream 工具（融梦修补：手持消耗融梦能量自动修复）===
@@ -357,24 +370,27 @@ public class PDItemsTools {
     // === Shadow Erosion 工具 ===
     public static final DeferredItem<Item> SHADOW_EROSION_AXE =
             ItemAPI.toolItem("shadow_erosion_axe")
-                    .type(ToolType.AXE).durability(1725).miningSpeed(9.0f)
-                    .attackDamage(9.0f).attackSpeed(-3.0f)
+                    .type(ToolType.AXE).durability(1725).miningSpeed(13.0f)
+                    .attackDamage(10.0f).attackSpeed(-3.0f)
+                    .enchantment(16)
                     .incorrectTag("minecraft:incorrect_for_netherite_tool")
-                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .repairWith(() -> new ItemStack(PDItems.BLACKMETAL_INGOT.get()))
                     .build();
     public static final DeferredItem<Item> SHADOW_EROSION_SHOVEL =
             ItemAPI.toolItem("shadow_erosion_shovel")
-                    .type(ToolType.SHOVEL).durability(1725).miningSpeed(9.0f)
-                    .attackDamage(5.5f).attackSpeed(-3.0f)
+                    .type(ToolType.SHOVEL).durability(1725).miningSpeed(13.0f)
+                    .attackDamage(6.0f).attackSpeed(-3.0f)
+                    .enchantment(16)
                     .incorrectTag("minecraft:incorrect_for_netherite_tool")
-                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .repairWith(() -> new ItemStack(PDItems.BLACKMETAL_INGOT.get()))
                     .build();
     public static final DeferredItem<Item> SHADOW_EROSION_HOE =
             ItemAPI.toolItem("shadow_erosion_hoe")
-                    .type(ToolType.HOE).durability(1725).miningSpeed(9.0f)
-                    .attackDamage(0.5f).attackSpeed(0.0f)
+                    .type(ToolType.HOE).durability(1725).miningSpeed(13.0f)
+                    .attackDamage(1.5f).attackSpeed(0.0f)
+                    .enchantment(16)
                     .incorrectTag("minecraft:incorrect_for_netherite_tool")
-                    .repairWith(new ItemStack(Items.NETHERITE_INGOT))
+                    .repairWith(() -> new ItemStack(PDItems.BLACKMETAL_INGOT.get()))
                     .build();
 
 }
