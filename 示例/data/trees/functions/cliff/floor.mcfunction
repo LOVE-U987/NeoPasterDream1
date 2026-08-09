@@ -1,1 +1,0 @@
-execute if block ~ 65 ~ stone run fill ~ 70 ~ ~ ~ ~ stone

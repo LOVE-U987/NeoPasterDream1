@@ -1,6 +1,0 @@
-execute if block ~ 20 ~ stone unless block ~ 3 ~ minecraft:bedrock if block ~ 1 ~ minecraft:bedrock if block ~ 2 ~ minecraft:bedrock unless block ~1 2 ~ minecraft:bedrock unless block ~-1 2 ~ minecraft:bedrock unless block ~ 2 ~-1 minecraft:bedrock unless block ~ 2 ~1 minecraft:bedrock run function trees:redwood/big_log
-execute unless block ~ 20 ~ stone unless block ~ 3 ~ minecraft:bedrock if block ~ 1 ~ minecraft:bedrock if block ~ 2 ~ minecraft:bedrock unless block ~1 2 ~ minecraft:bedrock unless block ~-1 2 ~ minecraft:bedrock unless block ~ 2 ~-1 minecraft:bedrock unless block ~ 2 ~1 minecraft:bedrock run function trees:redwood/rock
-execute if block ~ 1 ~ minecraft:bedrock if block ~ 3 ~ minecraft:bedrock unless block ~1 3 ~ minecraft:bedrock unless block ~-1 3 ~ minecraft:bedrock unless block ~ 3 ~-1 minecraft:bedrock unless block ~ 3 ~1 minecraft:bedrock run function trees:redwood/bush
-execute unless block ~ 1 ~ bedrock run setblock ~ ~-1 ~ podzol
-execute if block ~ 4 ~ bedrock run setblock ~ ~-1 ~ coarse_dirt
-execute if block ~ 4 ~ bedrock unless block ~ 1 ~ bedrock run setblock ~ ~-1 ~ gravel

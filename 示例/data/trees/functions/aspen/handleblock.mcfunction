@@ -1,2 +1,0 @@
-execute if block ~ ~ ~ minecraft:air if block ~ ~-1 ~ #trees:dirt run function trees:aspen/floor
-execute if block ~ ~ ~ minecraft:birch_log if block ~ ~-1 ~ #trees:undertree run function trees:aspen/tree

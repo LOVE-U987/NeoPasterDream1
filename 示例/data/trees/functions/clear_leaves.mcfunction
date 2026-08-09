@@ -1,1 +1,0 @@
-fill ^5 ^5 ^5 ^-5 ^-5 ^-5 air replace #minecraft:leaves

@@ -1,9 +1,0 @@
-execute unless block ~ ~ ~ water if block ~ 2 ~ minecraft:bedrock if block ~ 3 ~ minecraft:bedrock run setblock ~ ~-1 ~ minecraft:podzol
-execute unless block ~ 2 ~ minecraft:bedrock if block ~ 3 ~ minecraft:bedrock run setblock ~ ~-1 ~ minecraft:coarse_dirt
-execute unless block ~ ~ ~ water if block ~ ~-1 ~ minecraft:podzol if block ~ 2 ~ minecraft:bedrock if block ~ 4 ~ minecraft:bedrock run setblock ~ ~ ~ minecraft:red_mushroom
-
-execute if block ~ ~ ~ air if block ~ 3 ~ minecraft:bedrock if block ~ 1 ~ minecraft:bedrock run setblock ~ ~ ~ minecraft:fern
-execute if block ~ ~ ~ water if block ~ 3 ~ minecraft:bedrock if block ~ 2 ~ minecraft:bedrock if block ~ 1 ~ minecraft:bedrock run setblock ~ ~-1 ~ minecraft:coarse_dirt
-execute if block ~ 4 ~ minecraft:bedrock unless block ~ 1 ~ minecraft:bedrock run setblock ~ ~-1 ~ minecraft:mossy_cobblestone
-execute unless block ~ ~-1 ~ #trees:water unless block ~ 20 ~ stone if block ~ 4 ~ minecraft:bedrock if block ~ 3 ~ minecraft:bedrock unless block ~ 1 ~ minecraft:bedrock if block ~1 1 ~ minecraft:bedrock if block ~-1 1 ~ minecraft:bedrock if block ~ 1 ~1 minecraft:bedrock if block ~ 1 ~-1 minecraft:bedrock if block ~1 1 ~-1 minecraft:bedrock if block ~1 1 ~1 minecraft:bedrock if block ~-1 1 ~-1 minecraft:bedrock if block ~-1 1 ~1 minecraft:bedrock run function trees:willow/bigtree
-execute unless block ~ ~-1 ~ #trees:water if block ~ 20 ~ stone if block ~ 4 ~ minecraft:bedrock if block ~ 3 ~ minecraft:bedrock unless block ~ 1 ~ minecraft:bedrock if block ~1 1 ~ minecraft:bedrock if block ~-1 1 ~ minecraft:bedrock if block ~ 1 ~1 minecraft:bedrock if block ~ 1 ~-1 minecraft:bedrock if block ~1 1 ~-1 minecraft:bedrock if block ~1 1 ~1 minecraft:bedrock if block ~-1 1 ~-1 minecraft:bedrock if block ~-1 1 ~1 minecraft:bedrock run function trees:willow/midtree
