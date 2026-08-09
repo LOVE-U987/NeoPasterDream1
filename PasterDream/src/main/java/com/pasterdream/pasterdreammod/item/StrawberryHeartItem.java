@@ -22,7 +22,7 @@ public class StrawberryHeartItem extends Item {
      * @param properties 物品属性
      */
     public StrawberryHeartItem(Item.Properties properties) {
-        super(properties.stacksTo(64));
+        super(properties.stacksTo(1));
 }
 
     @Override
