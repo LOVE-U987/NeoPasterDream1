@@ -21,6 +21,9 @@ import java.util.Set;
  * 当两根支柱都能找到坚实地面时，生成完整的双柱+横梁冰门；
  * 当只有一根支柱能找到坚实地面时，生成倒塌变种（倾斜版或断柱版）。
  * 倒塌时横梁从柱顶坠落，在地面摔碎成冰带。
+ * <p>
+ * 生成方向随机：每座冰门的主轴（支柱分列方向）在 X/Z 中随机选择，
+ * 门洞朝主轴的垂直方向开口，避免全群系冰门朝向一致。
  */
 public class IceGateGenerator implements ICustomDecorationGenerator {
 
@@ -37,18 +40,22 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
         int halfWidth = random.nextIntBetweenInclusive(config.gateMinWidth(), config.gateMaxWidth()) / 2;
         int radius = config.pillarRadius();
 
-        int leftX = origin.getX() - halfWidth;
-        int rightX = origin.getX() + halfWidth;
+        boolean alongX = random.nextBoolean();
+
+        int leftPillarX = alongX ? origin.getX() - halfWidth : origin.getX();
+        int leftPillarZ = alongX ? origin.getZ() : origin.getZ() - halfWidth;
+        int rightPillarX = alongX ? origin.getX() + halfWidth : origin.getX();
+        int rightPillarZ = alongX ? origin.getZ() : origin.getZ() + halfWidth;
 
         int leftGroundY = WorldGenUtils.findGroundY(level, config.replaceable(),
-                leftX, origin.getY(), origin.getZ(), 35);
+                leftPillarX, origin.getY(), leftPillarZ, 35);
         int rightGroundY = WorldGenUtils.findGroundY(level, config.replaceable(),
-                rightX, origin.getY(), origin.getZ(), 35);
+                rightPillarX, origin.getY(), rightPillarZ, 35);
 
         boolean leftValid = leftGroundY != Integer.MIN_VALUE
-                && WorldGenUtils.isSolidSurface(level, new BlockPos(leftX, leftGroundY - 1, origin.getZ()));
+                && WorldGenUtils.isSolidSurface(level, at(origin, alongX, -halfWidth, 0, leftGroundY - 1));
         boolean rightValid = rightGroundY != Integer.MIN_VALUE
-                && WorldGenUtils.isSolidSurface(level, new BlockPos(rightX, rightGroundY - 1, origin.getZ()));
+                && WorldGenUtils.isSolidSurface(level, at(origin, alongX, halfWidth, 0, rightGroundY - 1));
 
         if (!leftValid && !rightValid) {
             return false;
@@ -59,19 +66,19 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
         if (leftValid && rightValid) {
             if (random.nextFloat() < 0.3f) {
                 boolean tiltLeft = random.nextBoolean();
-                int singleX = tiltLeft ? leftX : rightX;
+                int singleRelX = tiltLeft ? -halfWidth : halfWidth;
                 int singleGroundY = tiltLeft ? leftGroundY : rightGroundY;
                 int tiltDir = tiltLeft ? -1 : 1;
-                return placeFallenGate(level, random, config, origin, singleX, origin.getZ(),
+                return placeFallenGate(level, random, config, origin, alongX, singleRelX, 0,
                         singleGroundY, height, halfWidth, radius, tiltDir, placedPositions);
             }
-            return placeNormalGate(level, random, config, origin, leftX, rightX, origin.getZ(),
+            return placeNormalGate(level, random, config, origin, alongX,
                     leftGroundY, rightGroundY, height, halfWidth, radius, placedPositions);
         } else {
-            int singleX = leftValid ? leftX : rightX;
+            int singleRelX = leftValid ? -halfWidth : halfWidth;
             int singleGroundY = leftValid ? leftGroundY : rightGroundY;
             int tiltDir = leftValid ? -1 : 1;
-            return placeFallenGate(level, random, config, origin, singleX, origin.getZ(),
+            return placeFallenGate(level, random, config, origin, alongX, singleRelX, 0,
                     singleGroundY, height, halfWidth, radius, tiltDir, placedPositions);
         }
     }
@@ -84,7 +91,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
      * 横梁跨段（两柱之间）直接放置，延伸段（柱外）检查下方支撑。
      */
     private boolean placeNormalGate(WorldGenLevel level, RandomSource random, DecorationConfig config,
-                                     BlockPos origin, int leftX, int rightX, int centerZ,
+                                     BlockPos origin, boolean alongX,
                                      int leftGroundY, int rightGroundY,
                                      int height, int halfWidth, int radius,
                                      Set<BlockPos> placedPositions) {
@@ -99,10 +106,10 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                     ? radius + 1
                     : Math.max(1, radius - (int) (y - baseY) * (radius > 1 ? 1 : 0) / height);
 
-            boolean placedLeft = placePillar(level, random, config, origin, leftX, centerZ,
-                    y, currentRadius, baseY, topY, placedPositions);
-            boolean placedRight = placePillar(level, random, config, origin, rightX, centerZ,
-                    y, currentRadius, baseY, topY, placedPositions);
+            boolean placedLeft = placePillar(level, random, config, origin, alongX,
+                    -halfWidth, 0, y, currentRadius, baseY, topY, placedPositions);
+            boolean placedRight = placePillar(level, random, config, origin, alongX,
+                    halfWidth, 0, y, currentRadius, baseY, topY, placedPositions);
             if (placedLeft || placedRight) {
                 placedAny = true;
             }
@@ -118,7 +125,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                 int beamHalf = halfWidth + currentRadius;
                 for (int bx = -beamHalf; bx <= beamHalf; bx++) {
                     for (int bz = -currentRadius; bz <= currentRadius; bz++) {
-                        BlockPos beamPos = new BlockPos(leftX + halfWidth + bx, y, centerZ + bz);
+                        BlockPos beamPos = at(origin, alongX, bx, bz, y);
 
                         if (!WorldGenUtils.isReplaceable(level, config.replaceable(), beamPos)) {
                             continue;
@@ -134,11 +141,11 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                         BlockState beamState = (isSpan && config.topBlock() != null)
                             ? config.topBlock().getState(random, beamPos)
                             : config.bodyBlock().getState(random, beamPos);
-                    if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, beamPos, 1)) {
-                        level.setBlock(beamPos, beamState, 3);
-                        placedPositions.add(beamPos);
-                        placedAny = true;
-                    }
+                        if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, beamPos, 1)) {
+                            level.setBlock(beamPos, beamState, 3);
+                            placedPositions.add(beamPos);
+                            placedAny = true;
+                        }
                     }
                 }
             }
@@ -148,7 +155,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
             int dx = random.nextInt(halfWidth + radius + 3) - (halfWidth + radius + 3) / 2;
             int dz = random.nextInt(radius + 3) - (radius + 3) / 2;
             int dy = random.nextInt(height / 3);
-            BlockPos decoPos = new BlockPos(leftX + halfWidth + dx, baseY + dy + 1, centerZ + dz);
+            BlockPos decoPos = at(origin, alongX, dx, dz, baseY + dy + 1);
             if (hasSupport(level, decoPos, placedPositions)
                     && WorldGenUtils.isReplaceable(level, config.replaceable(), decoPos)
                     && WorldGenUtils.isWithinExpandedGenerationBounds(origin, decoPos, 1)
@@ -160,7 +167,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
             }
         }
 
-        addGlowDecorations(level, random, config, origin, leftX + halfWidth, centerZ, baseY, halfWidth);
+        addGlowDecorations(level, random, config, origin, alongX, baseY, halfWidth);
 
         return placedAny;
     }
@@ -173,7 +180,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
      * 横梁从顶部坠落，在柱底到对面方向形成碎裂冰带。
      */
     private boolean placeFallenGate(WorldGenLevel level, RandomSource random, DecorationConfig config,
-                                     BlockPos origin, int centerX, int centerZ, int groundY,
+                                     BlockPos origin, boolean alongX, int centerRelX, int centerRelZ, int groundY,
                                      int height, int halfWidth, int radius,
                                      int tiltDir, Set<BlockPos> placedPositions) {
         int topY = groundY + height;
@@ -185,23 +192,23 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
         boolean placedAny;
 
         if (isTilted) {
-            placedAny = placeTilted(level, random, config, origin, centerX, centerZ,
+            placedAny = placeTilted(level, random, config, origin, alongX, centerRelX, centerRelZ,
                     groundY, topY, radius, tiltDir, totalShift, halfWidth, placedPositions);
         } else {
-            placedAny = placeBroken(level, random, config, origin, centerX, centerZ,
+            placedAny = placeBroken(level, random, config, origin, alongX, centerRelX, centerRelZ,
                     groundY, topY, radius, tiltDir, halfWidth, placedPositions);
         }
 
         boolean beamStaked = random.nextFloat() < 0.4f;
         if (beamStaked) {
-            placedAny |= placeStakedBeam(level, random, config, origin,
-                    centerX, centerZ, groundY, tiltDir, halfWidth, height);
+            placedAny |= placeStakedBeam(level, random, config, origin, alongX,
+                    centerRelX, centerRelZ, groundY, tiltDir, halfWidth, height);
         } else {
-            placedAny |= placeFallenBeam(level, random, config, origin,
-                    centerX, centerZ, groundY, -tiltDir, halfWidth, height);
+            placedAny |= placeFallenBeam(level, random, config, origin, alongX,
+                    centerRelX, centerRelZ, groundY, -tiltDir, halfWidth, height);
         }
 
-        addGlowDecorations(level, random, config, origin, centerX, centerZ, groundY, halfWidth);
+        addGlowDecorations(level, random, config, origin, alongX, groundY, halfWidth);
 
         return placedAny;
     }
@@ -210,7 +217,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
      * 放置圆形截面柱子（用于完整冰门）
      */
     private boolean placePillar(WorldGenLevel level, RandomSource random, DecorationConfig config,
-                                 BlockPos origin, int centerX, int centerZ, int y, int radius,
+                                 BlockPos origin, boolean alongX, int relX, int relZ, int y, int radius,
                                  int baseY, int topY, Set<BlockPos> placedPositions) {
         boolean placed = false;
         for (int dx = -radius; dx <= radius; dx++) {
@@ -219,7 +226,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                 if (distSq > (radius + 0.5f) * (radius + 0.5f)) {
                     continue;
                 }
-                BlockPos pos = new BlockPos(centerX + dx, y, centerZ + dz);
+                BlockPos pos = at(origin, alongX, relX + dx, relZ + dz, y);
                 if (!WorldGenUtils.isReplaceable(level, config.replaceable(), pos)) {
                     continue;
                 }
@@ -246,16 +253,16 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
     /**
      * 倾斜版倒塌：整体均匀倾斜，顶端按 60% 斜率切割
      * <p>
-     * 从柱尖 (centerX + totalShift*tiltDir, topY) 向柱底方向，
+     * 从柱尖 (centerRelX + totalShift*tiltDir, topY) 向柱底方向，
      * 顶面按 60% 斜率（每水平1格垂直下降0.6格）切削。
      * 高于该斜面的方块被切除，形成自然的碎裂斜面。
      */
     private boolean placeTilted(WorldGenLevel level, RandomSource random, DecorationConfig config,
-                                 BlockPos origin, int centerX, int centerZ, int groundY, int topY,
-                                 int radius, int tiltDir, float totalShift, int halfWidth,
+                                 BlockPos origin, boolean alongX, int centerRelX, int centerRelZ,
+                                 int groundY, int topY, int radius, int tiltDir, float totalShift, int halfWidth,
                                  Set<BlockPos> placedPositions) {
         int height = topY - groundY;
-        int tipX = centerX + Math.round(totalShift * tiltDir);
+        int tipRelX = centerRelX + Math.round(totalShift * tiltDir);
         float cutSlope = 0.6f;
         boolean placedAny = false;
 
@@ -263,7 +270,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
             int relativeY = y - groundY;
             float progress = (float) relativeY / height;
             int currentOffset = Math.round(totalShift * progress);
-            int pillarX = centerX + currentOffset * tiltDir;
+            int pillarRelX = centerRelX + currentOffset * tiltDir;
 
             int currentRadius = Math.max(1, radius - (int) (progress * (radius - 1)));
 
@@ -274,13 +281,13 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                         continue;
                     }
 
-                    int bx = pillarX + dx;
-                    int towardCenter = (tipX - bx) * tiltDir;
+                    int bx = pillarRelX + dx;
+                    int towardCenter = (tipRelX - bx) * tiltDir;
                     if (towardCenter < 0) continue;
                     float cutY = topY - cutSlope * towardCenter;
                     if (y > cutY) continue;
 
-                    BlockPos pos = new BlockPos(bx, y, centerZ + dz);
+                    BlockPos pos = at(origin, alongX, bx, centerRelZ + dz, y);
                     if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
                         BlockState state = config.bodyBlock().getState(random, pos);
                         level.setBlock(pos, state, 3);
@@ -299,8 +306,8 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
      * 直立段从地面到折断点（约高度一半处），横躺段从柱脚向倾斜方向水平散落在地面。
      */
     private boolean placeBroken(WorldGenLevel level, RandomSource random, DecorationConfig config,
-                                 BlockPos origin, int centerX, int centerZ, int groundY, int topY,
-                                 int radius, int tiltDir, int halfWidth,
+                                 BlockPos origin, boolean alongX, int centerRelX, int centerRelZ,
+                                 int groundY, int topY, int radius, int tiltDir, int halfWidth,
                                  Set<BlockPos> placedPositions) {
         int height = topY - groundY;
         int breakPoint = groundY + (int) (height * (0.4 + random.nextDouble() * 0.15));
@@ -323,7 +330,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                         continue;
                     }
 
-                    BlockPos pos = new BlockPos(centerX + dx, y, centerZ + dz);
+                    BlockPos pos = at(origin, alongX, centerRelX + dx, centerRelZ + dz, y);
                     if (!WorldGenUtils.isReplaceable(level, config.replaceable(), pos)) {
                         continue;
                     }
@@ -339,9 +346,9 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                         ? Blocks.SNOW_BLOCK.defaultBlockState()
                         : config.bodyBlock().getState(random, pos);
                     if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
-                    level.setBlock(pos, state, 3);
-                    placedPositions.add(pos);
-                    placedAny = true;
+                        level.setBlock(pos, state, 3);
+                        placedPositions.add(pos);
+                        placedAny = true;
                     }
                 }
             }
@@ -354,7 +361,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
 
             int placeY = groundY;
             while (placeY > level.getMinBuildHeight()
-                    && !WorldGenUtils.isSolidSurface(level, new BlockPos(centerX + offsetX, placeY - 1, centerZ))) {
+                    && !WorldGenUtils.isSolidSurface(level, at(origin, alongX, centerRelX + offsetX, centerRelZ, placeY - 1))) {
                 placeY--;
             }
             if (placeY <= level.getMinBuildHeight()) continue;
@@ -366,7 +373,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
                         continue;
                     }
 
-                    BlockPos pos = new BlockPos(centerX + offsetX + dx, placeY, centerZ + dz);
+                    BlockPos pos = at(origin, alongX, centerRelX + offsetX + dx, centerRelZ + dz, placeY);
 
                     if (random.nextFloat() < 0.85f) {
                         if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
@@ -380,9 +387,9 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
             }
 
             if (height >= 25 && layer % 3 == 0 && random.nextFloat() < 0.3f) {
-                int scatterX = centerX + offsetX + random.nextInt(3) - 1;
-                int scatterZ = centerZ + random.nextInt(3) - 1;
-                BlockPos scatterPos = new BlockPos(scatterX, placeY, scatterZ);
+                int scatterRelX = centerRelX + offsetX + random.nextInt(3) - 1;
+                int scatterRelZ = centerRelZ + random.nextInt(3) - 1;
+                BlockPos scatterPos = at(origin, alongX, scatterRelX, scatterRelZ, placeY);
                 if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, scatterPos, 1)) {
                     if (random.nextBoolean()) {
                         level.setBlock(scatterPos, Blocks.ICE.defaultBlockState(), 3);
@@ -393,7 +400,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
             }
         }
 
-        addGlowDecorations(level, random, config, origin, centerX, centerZ, groundY, halfWidth);
+        addGlowDecorations(level, random, config, origin, alongX, groundY, halfWidth);
 
         return placedAny;
     }
@@ -406,8 +413,8 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
      * 不检查可替换，总是向下找固体地面放置。
      */
     private boolean placeFallenBeam(WorldGenLevel level, RandomSource random, DecorationConfig config,
-                                     BlockPos origin, int centerX, int centerZ, int groundY,
-                                     int tiltDir, int halfWidth, int height) {
+                                     BlockPos origin, boolean alongX, int centerRelX, int centerRelZ,
+                                     int groundY, int tiltDir, int halfWidth, int height) {
         boolean placedAny = false;
         int beamReach = halfWidth + random.nextIntBetweenInclusive(2, 4);
         int beamWidth = 2;
@@ -417,23 +424,23 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
 
         for (int dist = 0; dist <= beamReach; dist++) {
             float progress = (float) dist / beamReach;
-            int x = centerX + Math.round(dist * tiltDir);
+            int relX = centerRelX + Math.round(dist * tiltDir);
 
             float angleSlope = 1 - progress * 0.7f;
             int currentWidth = Math.max(1, Math.round(beamWidth * angleSlope));
 
             for (int dw = -currentWidth; dw <= currentWidth; dw++) {
                 double wobble = Math.sin(dist * 0.8 + random.nextDouble() * 0.3) * 0.6;
-                int z = centerZ + (int) Math.round(dw + wobble);
+                int relZ = centerRelZ + (int) Math.round(dw + wobble);
 
                 int idealY = groundY + Math.round(beamDrop * (1 - progress));
                 while (idealY > level.getMinBuildHeight()
-                        && !WorldGenUtils.isSolidSurface(level, new BlockPos(x, idealY - 1, z))) {
+                        && !WorldGenUtils.isSolidSurface(level, at(origin, alongX, relX, relZ, idealY - 1))) {
                     idealY--;
                 }
                 if (idealY <= level.getMinBuildHeight()) continue;
 
-                BlockPos pos = new BlockPos(x, idealY, z);
+                BlockPos pos = at(origin, alongX, relX, relZ, idealY);
 
                 if (progress < 0.45f) {
                     if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
@@ -458,10 +465,10 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
 
         int scatterRange = (beamReach + 3) * 2;
         for (int i = 0; i < scatterRange * 6; i++) {
-            int sx = centerX + random.nextInt(scatterRange * 2 + 1) - scatterRange;
-            int sz = centerZ + random.nextInt(scatterRange * 2 + 1) - scatterRange;
-            int dx = sx - centerX;
-            int dz = sz - centerZ;
+            int relSx = centerRelX + random.nextInt(scatterRange * 2 + 1) - scatterRange;
+            int relSz = centerRelZ + random.nextInt(scatterRange * 2 + 1) - scatterRange;
+            int dx = relSx - centerRelX;
+            int dz = relSz - centerRelZ;
             float distToCenter = (float) Math.sqrt(dx * dx + dz * dz);
 
             float placeChance = Math.max(0.03f, 0.6f - distToCenter / (scatterRange * 1.2f));
@@ -469,28 +476,28 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
 
             int sy = groundY;
             while (sy > level.getMinBuildHeight()
-                    && !WorldGenUtils.isSolidSurface(level, new BlockPos(sx, sy - 1, sz))) {
+                    && !WorldGenUtils.isSolidSurface(level, at(origin, alongX, relSx, relSz, sy - 1))) {
                 sy--;
             }
             if (sy <= level.getMinBuildHeight()) continue;
 
-            BlockPos sPos = new BlockPos(sx, sy, sz);
-                BlockState scatterState;
-                if (random.nextFloat() < 0.7f) {
-                    scatterState = Blocks.SNOW_BLOCK.defaultBlockState();
-                } else if (random.nextFloat() < 0.5f) {
-                    scatterState = Blocks.ICE.defaultBlockState();
-                } else {
-                    scatterState = Blocks.PACKED_ICE.defaultBlockState();
-                }
-                if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, sPos, 1)) {
-                    level.setBlock(sPos, scatterState, 3);
-                    scatterCount++;
-                    placedAny = true;
-                }
+            BlockPos sPos = at(origin, alongX, relSx, relSz, sy);
+            BlockState scatterState;
+            if (random.nextFloat() < 0.7f) {
+                scatterState = Blocks.SNOW_BLOCK.defaultBlockState();
+            } else if (random.nextFloat() < 0.5f) {
+                scatterState = Blocks.ICE.defaultBlockState();
+            } else {
+                scatterState = Blocks.PACKED_ICE.defaultBlockState();
+            }
+            if (WorldGenUtils.isWithinExpandedGenerationBounds(origin, sPos, 1)) {
+                level.setBlock(sPos, scatterState, 3);
+                scatterCount++;
+                placedAny = true;
+            }
         }
 
-        addGlowDecorations(level, random, config, origin, centerX, centerZ, groundY, halfWidth);
+        addGlowDecorations(level, random, config, origin, alongX, groundY, halfWidth);
 
         return placedAny;
     }
@@ -503,8 +510,8 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
      * 中间段完整平躺地面，尖端被砸开以冰块/雪块向四周溅射。
      */
     private boolean placeStakedBeam(WorldGenLevel level, RandomSource random, DecorationConfig config,
-                                     BlockPos origin, int centerX, int centerZ, int groundY,
-                                     int tiltDir, int halfWidth, int height) {
+                                     BlockPos origin, boolean alongX, int centerRelX, int centerRelZ,
+                                     int groundY, int tiltDir, int halfWidth, int height) {
         boolean placedAny = false;
         int beamReach = halfWidth + random.nextIntBetweenInclusive(1, 3);
         int beamWidth = 2;
@@ -514,22 +521,22 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
 
         for (int dist = 0; dist <= beamReach; dist++) {
             float progress = (float) dist / beamReach;
-            int z = centerZ + dist;
+            int relZ = centerRelZ + dist;
 
             int currentWidth = Math.max(1, beamWidth - (int) (progress * (beamWidth - 1)));
 
             for (int dx = -currentWidth; dx <= currentWidth; dx++) {
                 double wobble = Math.sin(dist * 0.6 + random.nextDouble() * 0.3) * 0.4;
-                int x = centerX + (int) Math.round(dx + wobble);
+                int relX = centerRelX + (int) Math.round(dx + wobble);
 
                 int idealY = groundY + Math.round(beamDrop * (1 - progress) * 0.5f);
                 while (idealY > level.getMinBuildHeight()
-                        && !WorldGenUtils.isSolidSurface(level, new BlockPos(x, idealY - 1, z))) {
+                        && !WorldGenUtils.isSolidSurface(level, at(origin, alongX, relX, relZ, idealY - 1))) {
                     idealY--;
                 }
                 if (idealY <= level.getMinBuildHeight()) continue;
 
-                BlockPos pos = new BlockPos(x, idealY, z);
+                BlockPos pos = at(origin, alongX, relX, relZ, idealY);
 
                 if (progress < 0.25f) {
                     if (random.nextFloat() < 0.4f) {
@@ -566,10 +573,10 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
 
         int scatterRange = (beamReach + 2) * 2;
         for (int i = 0; i < scatterRange * 3; i++) {
-            int sx = centerX + random.nextInt(scatterRange + 1) - scatterRange / 2;
-            int sz = centerZ + random.nextInt(scatterRange * 2 + 1) - scatterRange;
-            int dx = sx - centerX;
-            int dz = sz - centerZ;
+            int relSx = centerRelX + random.nextInt(scatterRange + 1) - scatterRange / 2;
+            int relSz = centerRelZ + random.nextInt(scatterRange * 2 + 1) - scatterRange;
+            int dx = relSx - centerRelX;
+            int dz = relSz - centerRelZ;
             float distToCenter = (float) Math.sqrt(dx * dx + dz * dz);
 
             float placeChance = Math.max(0.03f, 0.4f - distToCenter / (scatterRange * 1.5f));
@@ -577,12 +584,12 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
 
             int sy = groundY;
             while (sy > level.getMinBuildHeight()
-                    && !WorldGenUtils.isSolidSurface(level, new BlockPos(sx, sy - 1, sz))) {
+                    && !WorldGenUtils.isSolidSurface(level, at(origin, alongX, relSx, relSz, sy - 1))) {
                 sy--;
             }
             if (sy <= level.getMinBuildHeight()) continue;
 
-            BlockPos sPos = new BlockPos(sx, sy, sz);
+            BlockPos sPos = at(origin, alongX, relSx, relSz, sy);
             BlockState scatterState;
             if (random.nextFloat() < 0.7f) {
                 scatterState = Blocks.SNOW_BLOCK.defaultBlockState();
@@ -598,8 +605,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
             }
         }
 
-
-        addGlowDecorations(level, random, config, origin, centerX, centerZ, groundY, halfWidth);
+        addGlowDecorations(level, random, config, origin, alongX, groundY, halfWidth);
 
         return placedAny;
     }
@@ -609,18 +615,19 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
      * <p>
      * 在结构底部周围随机放置 ICE_BUD_0 发光方块作为装饰
      */
-    private void addGlowDecorations(WorldGenLevel level, RandomSource random, DecorationConfig config, BlockPos origin, int centerX, int centerZ, int groundY, int halfWidth) {
+    private void addGlowDecorations(WorldGenLevel level, RandomSource random, DecorationConfig config,
+                                    BlockPos origin, boolean alongX, int groundY, int halfWidth) {
         int glowCount = 1 + random.nextInt(3);
         for (int g = 0; g < glowCount; g++) {
-            int gx = centerX + random.nextInt(halfWidth * 2 + 3) - halfWidth - 1;
-            int gz = centerZ + random.nextInt(5) - 2;
+            int relX = random.nextInt(halfWidth * 2 + 3) - halfWidth - 1;
+            int relZ = random.nextInt(5) - 2;
             int gy = groundY;
             while (gy > level.getMinBuildHeight()
-                    && !WorldGenUtils.isSolidSurface(level, new BlockPos(gx, gy - 1, gz))) {
+                    && !WorldGenUtils.isSolidSurface(level, at(origin, alongX, relX, relZ, gy - 1))) {
                 gy--;
             }
             if (gy <= level.getMinBuildHeight()) continue;
-            BlockPos gPos = new BlockPos(gx, gy + 1, gz);
+            BlockPos gPos = at(origin, alongX, relX, relZ, gy + 1);
             if (!WorldGenUtils.isReplaceable(level, config.replaceable(), gPos)) continue;
             if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, gPos, 1)) continue;
             level.setBlock(gPos, com.pasterdream.pasterdreammod.registry.PDBlocks.ICE_BUD_0.get().defaultBlockState(), 3);
@@ -636,5 +643,17 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
             return true;
         }
         return WorldGenUtils.isSolidSurface(level, below);
+    }
+
+    /**
+     * 将逻辑坐标（主轴为 X）映射到世界坐标
+     * <p>
+     * alongX=true 时主轴为 X（原行为）；false 时主轴为 Z，X/Z 互换，
+     * 使冰门朝向随机化，门洞朝主轴垂直方向开口。
+     */
+    private static BlockPos at(BlockPos origin, boolean alongX, int relX, int relZ, int y) {
+        return alongX
+                ? new BlockPos(origin.getX() + relX, y, origin.getZ() + relZ)
+                : new BlockPos(origin.getX() + relZ, y, origin.getZ() + relX);
     }
 }
