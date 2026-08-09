@@ -51,7 +51,7 @@ public class PDSanityEffects {
     /**
      * 振奋 (cheerup_buff)。
      * <p>
-     * 有益效果，San 值高于阈值时获得：瞬身术冷却 -0.1、移速 +0.05、攻速 +0.05、战技冷却 -0.1。
+     * 有益效果，San 值高于阈值时获得：瞬身术冷却 -0.1、移速 +5%、攻速 +0.05、战技冷却 -0.1。
      */
     public static final DeferredHolder<MobEffect, MobEffect> CHEERUP_BUFF =
             MobEffectAPI.REGISTRY.register("cheerup_buff",
@@ -60,7 +60,7 @@ public class PDSanityEffects {
                             .addAttributeModifier(APIAttributes.TELEPORTATIONCD, modifierId("cheerup_buff_0"),
                                     -0.1, AttributeModifier.Operation.ADD_VALUE)
                             .addAttributeModifier(Attributes.MOVEMENT_SPEED, modifierId("cheerup_buff_1"),
-                                    0.05, AttributeModifier.Operation.ADD_VALUE)
+                                    0.05, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
                             .addAttributeModifier(Attributes.ATTACK_SPEED, modifierId("cheerup_buff_2"),
                                     0.05, AttributeModifier.Operation.ADD_VALUE)
                             .addAttributeModifier(APIAttributes.SKILLCD, modifierId("cheerup_buff_3"),
