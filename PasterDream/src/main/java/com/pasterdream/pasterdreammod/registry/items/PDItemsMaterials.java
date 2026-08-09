@@ -106,7 +106,7 @@ public class PDItemsMaterials {
     public static final DeferredItem<Item> DYEDREAM_DUST_PIECE = PDItems.ITEMS.registerSimpleItem("dyedream_dust_piece");
     public static final DeferredItem<Item> DYEDREAM_DYE = PDItems.ITEMS.registerSimpleItem("dyedream_dye");
     public static final DeferredItem<Item> DYEDREAM_NUGGET = PDItems.ITEMS.registerSimpleItem("dyedream_nugget");
-    public static final DeferredItem<Item> DYEDREAM_UPGRADE = PDItems.ITEMS.registerSimpleItem("dyedream_upgrade", new Item.Properties().stacksTo(64).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> DYEDREAM_UPGRADE = PDItems.ITEMS.registerSimpleItem("dyedream_upgrade", new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> EGGDOUGH = PDItems.ITEMS.registerSimpleItem("eggdough");
     public static final DeferredItem<Item> ELDER_GUARDIAN_SCALE = PDItems.ITEMS.registerSimpleItem("elder_guardian_scale");
     public static final DeferredItem<Item> ENHANCE_STONE_0 = PDItems.ITEMS.registerSimpleItem("enhance_stone_0");

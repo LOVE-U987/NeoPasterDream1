@@ -18,7 +18,7 @@ public class MossPhantomMembraneItem extends Item {
      * @param properties 物品属性
      */
     public MossPhantomMembraneItem(Item.Properties properties) {
-        super(properties.stacksTo(64));
+        super(properties.stacksTo(1));
 }
 
     @Override

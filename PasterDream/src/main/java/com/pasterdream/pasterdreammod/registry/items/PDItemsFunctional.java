@@ -117,7 +117,7 @@ public class PDItemsFunctional {
     public static final DeferredItem<Item> DYEDREAM_TELEPORT_CRYSTAL = PDItems.ITEMS.register("dyedream_teleport_crystal",
             () -> new DyedreamTeleportCrystal(new Item.Properties().stacksTo(16)));
     public static final DeferredItem<Item> DYEDREAM_PERFUME = PDItems.ITEMS.register("dyedream_perfume",
-            () -> new DyedreamPerfumeItem(new Item.Properties().stacksTo(64)
+            () -> new DyedreamPerfumeItem(new Item.Properties().stacksTo(16)
                     .food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible()
                             .effect(() -> new MobEffectInstance(PDEffects.DYEDREAM_PERFUME_BUFF.holder(), 1200, 0), 1.0f)
                             .build())));

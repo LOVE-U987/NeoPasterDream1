@@ -136,5 +136,5 @@ public class PDItemsCurios {
 
     // 非 Curio 实用物品
     public static final DeferredItem<PaleBoneneedleItem> PALE_BONENEEDLE = PDItems.ITEMS.register("pale_boneneedle",
-            () -> new PaleBoneneedleItem(new Item.Properties()));
+            () -> new PaleBoneneedleItem(new Item.Properties().stacksTo(1)));
 }

@@ -22,7 +22,7 @@ public class SquealWaveItem extends Item {
      * @param properties 物品属性
      */
     public SquealWaveItem(Item.Properties properties) {
-        super(properties.stacksTo(64));
+        super(properties.stacksTo(1));
 }
 
     @Override

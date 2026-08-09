@@ -22,7 +22,7 @@ public class MeltdreamCrystal0Item extends Item {
      * @param properties 物品属性
      */
     public MeltdreamCrystal0Item(Item.Properties properties) {
-        super(properties.stacksTo(64));
+        super(properties.stacksTo(16));
 }
 
     @Override

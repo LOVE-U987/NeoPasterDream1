@@ -4,6 +4,29 @@
 
 ## v0.9.5 — 2026-08-09
 
+### 新增：扫盘工具 — 物品堆叠 / BUFF 数值与原模组对齐检查
+
+*   **新增**（`tools/scan_stack_buff_parity.py`）：自动对比原模组（`libs/FixPasterDream-main`）与新模组的物品堆叠数量与 BUFF 属性修饰符
+    *   **物品堆叠**：解析 `stacksTo(N)` / `durability()`（自动堆叠 1）/ 默认 64，支持 `XxxItem::new`、`ItemAPI` builder、内部类注册（`XxxItem.Helmet()`）；基于 1.21.1 机制 `durability()` 强制堆叠 1、默认 64
+    *   **BUFF 数值**：解析 `addAttributeModifier` 元组（属性/数值/操作），操作名 1.20→1.21 映射（`ADDITION→ADD_VALUE` 等），`0.6 * fix` 表达式求值；覆盖主模 `PDEffects` + Sanity/MeltDream/Spells 附属模块
+    *   排除项：`cheerup_buff`（振奋）/ `strawberry_heart`（草莓甜心）/ `cradle_in_ones_arms`（怀中御守）
+*   **扫盘结果**：
+    *   BUFF 数值（45 项）全部对齐 ✅（fury/ice_spell 原版走 procedure 永久修饰符、insand 仅 1.21 属性改名 `ENTITY_REACH→ENTITY_INTERACTION_RANGE`、oppression 原版方法引用注册，均已核验一致）
+    *   报告输出：`scratchpad/scan_stack_buff_report.json`
+
+### 修复：物品堆叠数量对齐原版（扫盘发现的 10 项差异）
+
+*   **原 16 → 16**：`dyedream_perfume`（`PDItemsFunctional.java:119`）、`dyedream_upgrade`（`PDItemsMaterials.java:109`）、`meltdream_crystal_0`（`MeltdreamCrystal0Item.java:25`）
+*   **原 1 → 1**：
+    *   `meltdream_elixir_bottle` / `rage_elixir_0`（`PDItemsFoods.java`：GlassDrinkItem 加 `stacksTo(1)`）
+    *   `light_moss_phantom_membrane` / `moss_phantom_membrane` / `shadow_breath` / `squeal_wave`（对应 Item 类 `stacksTo(64)`→`stacksTo(1)`）
+    *   `pale_boneneedle`（`PDItemsCurios.java:138`：注册加 `stacksTo(1)`，原版 durability(1) 等效堆叠 1，改用 stacksTo 避免引入耐久语义）
+*   **验证**：重跑 `tools/scan_stack_buff_parity.py` 堆叠差异清零 ✅；`:PasterDream:compileJava` BUILD SUCCESSFUL
+
+---
+
+## v0.9.5 — 2026-08-09
+
 ### 调整：移植树密度改为噪声驱动，实现群系错落感
 
 *   **需求**：树木过密、均匀，缺乏群系内的疏密变化。
