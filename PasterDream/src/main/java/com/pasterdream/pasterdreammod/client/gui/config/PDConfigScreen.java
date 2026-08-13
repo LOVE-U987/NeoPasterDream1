@@ -1355,8 +1355,10 @@ public class PDConfigScreen extends Screen {
                 be.resetToDefault();
             }
         }
-        Minecraft.getInstance().player.displayClientMessage(
-                Component.translatable(LANG_PREFIX + ".reset.success"), true);
+        if (Minecraft.getInstance().player != null) {
+            Minecraft.getInstance().player.displayClientMessage(
+                    Component.translatable(LANG_PREFIX + ".reset.success"), true);
+        }
     }
 
     @Override
