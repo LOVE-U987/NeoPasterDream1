@@ -184,9 +184,6 @@ public class PDConfigScreen extends Screen {
         allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.LOADING_GUI_TIPS, ConfigCategory.HUD, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.PASTER_HEALTH_HUD, ConfigCategory.HUD, idx++));
 
-        // ==================== System (1 item) ====================
-        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.DYEDREAM_CRACK_GENERATE, ConfigCategory.SYSTEM, idx++));
-
         // ==================== Advancement Lock (2 + N items) ====================
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.ENABLE_ADVANCEMENT_LOCK, ConfigCategory.ADVANCEMENT_LOCK, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.CREATIVE_BYPASS_ADVANCEMENT_LOCK, ConfigCategory.ADVANCEMENT_LOCK, idx++));
