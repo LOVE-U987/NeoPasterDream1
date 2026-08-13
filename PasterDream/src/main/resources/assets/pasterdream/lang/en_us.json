@@ -657,7 +657,7 @@
   "entity.pasterdream.wind_knight": "§bWind Knight",
   "fluid.pasterdream.shadow_liquid": "Molten Shadow",
   "fluid_type.pasterdream.meltdream_liquid": "Meltdream Spring",
-  "fluid_type.pasterdream.shadow_liquid": "",
+  "fluid_type.pasterdream.shadow_liquid": "Molten Shadow",
   "gamerule.pasterdreamDebugmode": "PasterDream Debug Mode",
   "gamerule.pasterdreamDebugmode.description": "For development and debugging only",
   "gamerule.pasterdreamSanSystem": "San System",
@@ -983,7 +983,6 @@
   "gui.pasterdream.the_endless_book_of_dream_seekers_gui.button_dao_ru": "Import",
   "gui.pasterdream.weapon_workshop_gui.button_forging": "forging",
   "gui.pasterdream.workshop_anvil_gui.button_start": "start",
-  "gui.pasterdream.workshop_anvil_gui.label_empty": "",
   "item.minecraft.lingering_potion.effect.basalt": "Lingering Potion of Basalt",
   "item.minecraft.lingering_potion.effect.dreamwish_potion": "Lingering Potion of Dreamwish",
   "item.minecraft.lingering_potion.effect.expup_potion": "Lingering Potion of Experience Boost",
@@ -2588,7 +2587,6 @@
   "item.pasterdream.snowy_cold_domain_grass": "Snowy Cold Domain Grass",
   "item.pasterdream.dyedream_farmland": "Dyedream Farmland",
   "itemGroup.pasterdream.cold_domain_tab": "Cold Domain",
-  "pasterdream:meltdream_liquid":"Meltdream Liquid",
-  "pasterdream:shadow_liquid":"Shadow Liquid",
-  "fluid_type.paster dreamapi.shadow_liquid":"Shadow Liquid"
+  "fluid_type.pasterdreamapi.meltdream_liquid":"Meltdream Liquid",
+  "fluid_type.pasterdreamapi.shadow_liquid":"Shadow Liquid"
 }

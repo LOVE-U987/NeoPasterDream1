@@ -682,7 +682,6 @@
   "gui.pasterdream.the_endless_book_of_dream_seekers_gui.button_dao_ru": "导入",
   "gui.pasterdream.weapon_workshop_gui.button_forging": "锻造",
   "gui.pasterdream.workshop_anvil_gui.button_start": "开始锻造",
-  "gui.pasterdream.workshop_anvil_gui.label_empty": "",
   "item.minecraft.lingering_potion.effect.basalt": "滞留型玄岩药水",
   "item.minecraft.lingering_potion.effect.dreamwish_potion": "滞留型梦境祝福药水",
   "item.minecraft.lingering_potion.effect.expup_potion": "滞留型经验提升药水",
@@ -2586,7 +2585,6 @@
   "item.pasterdream.snowy_cold_domain_grass": "雪地草坪",
   "item.pasterdream.dyedream_farmland": "染梦耕地",
   "itemGroup.pasterdream.cold_domain_tab": "冷域",
-  "pasterdream:meltdream_liquid":"融梦涌泉液",
-  "pasterdream:shadow_liquid":"熔融阴影液",
-  "fluid_type.paster dreamapi.shadow_liquid":"熔融阴影液"
+  "fluid_type.pasterdreamapi.meltdream_liquid":"融梦涌泉液",
+  "fluid_type.pasterdreamapi.shadow_liquid":"熔融阴影液"
 }
