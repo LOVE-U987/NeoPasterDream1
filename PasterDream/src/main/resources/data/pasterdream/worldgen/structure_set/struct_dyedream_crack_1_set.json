@@ -6,7 +6,7 @@
     }
   ],
   "placement": {
-    "type": "minecraft:random_spread",
+    "type": "pasterdream:dyedream_crack_spread",
     "spacing": 37,
     "separation": 20,
     "salt": 2076406732

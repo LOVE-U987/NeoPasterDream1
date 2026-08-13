@@ -4,6 +4,7 @@ import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.ruin.RuinAPI;
 import com.pasterdream.pasterdreammod.api.ruin.RuinResult;
 import com.pasterdream.pasterdreammod.worldgen.structure.AaroncosArenaPortalStructure;
+import com.pasterdream.pasterdreammod.worldgen.structure.DyedreamCrackStructure;
 import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 
 import java.util.LinkedHashMap;
@@ -184,13 +185,14 @@ public class PDRuinsRegistration {
      * <p>
      * 在主世界 Y=32 处生成裂隙结构，包含 {@code dyedream_crack} 方块，
      * 玩家接触后可传送到染梦维度。
+     * 生成与否受配置 {@code DYEDREAM_CRACK_GENERATE} 控制（见 {@link DyedreamCrackStructure}）。
      */
     private static void registerDyedreamCrack() {
         RuinResult result = RuinAPI.createRuin("struct_dyedream_crack_1")
                 .biomeTag("minecraft:is_overworld")
                 .templatePool("pasterdream:struct_dyedream_crack_1")
-                .structureClass(JigsawStructure.class)
-                .codec(JigsawStructure.CODEC)
+                .structureClass(DyedreamCrackStructure.class)
+                .codec(DyedreamCrackStructure.CODEC)
                 .terrainAdaptation("none")
                 .step("surface_structures")
                 .size(1)

@@ -37,6 +37,7 @@ import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.registry.PDPotions;
 import com.pasterdream.pasterdreammod.registry.PDRegistrySanityCheck;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
+import com.pasterdream.pasterdreammod.registry.PDStructurePlacements;
 import com.pasterdream.pasterdreammod.registry.PDTreeDecorators;
 import com.pasterdream.pasterdreammod.registry.PDWorldgenRegistries;
 import com.pasterdream.pasterdreammod.worldgen.PDAaroncosArenaWorldgen;
@@ -180,6 +181,9 @@ public class PasterDreamMod {
         PDWorldgenRegistries.CHUNK_GENERATORS.register(modEventBus);
         PDWorldgenRegistries.BIOME_SOURCES.register(modEventBus);
 
+        // 注册结构放置策略类型（dyedream_crack_spread，供裂隙结构集 JSON 引用）
+        PDStructurePlacements.PLACEMENT_TYPES.register(modEventBus);
+
         // BiomeModifier 序列化器（dyedream_features + 历史 wind_lake_verify codec 兼容）
         com.pasterdream.pasterdreammod.worldgen.PDBiomeModifiers.BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
 
@@ -255,6 +259,8 @@ public class PasterDreamMod {
 
         // 灯影出生结构（shadow_world_spawn）；Warden→hide_7 / 远古守卫者鳞
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDLampShadowWorldgen::onLevelLoad);
+        // 主世界初始裂隙（0,0 原点，原版 GenerateWorldPr0 主世界裂隙分支，按配置放置）
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDOverworldOriginCrackWorldgen::onLevelLoad);
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDEntityDeathEvents::onLivingDeath);
 
         // 暮影之笼事件 BGM：玩家登录/切换维度时补发当前维度静音状态（防断线/换维残留）
