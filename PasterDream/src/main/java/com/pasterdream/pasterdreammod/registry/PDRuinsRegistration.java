@@ -5,6 +5,7 @@ import com.pasterdream.pasterdreammod.api.ruin.RuinAPI;
 import com.pasterdream.pasterdreammod.api.ruin.RuinResult;
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.worldgen.structure.AaroncosArenaPortalStructure;
+import com.pasterdream.pasterdreammod.worldgen.structure.DyedreamCrackStructure;
 import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 
 import java.util.LinkedHashMap;
@@ -190,10 +191,14 @@ public class PDRuinsRegistration {
      * <p>
      * 在主世界 Y=32 处生成裂隙结构，包含 {@code dyedream_crack} 方块，
      * 玩家接触后可传送到染梦维度。
+<<<<<<< HEAD
      * <p>
      * StructureType 无条件注册（不读配置）；自然生成是否启用由
      * {@link DyedreamCrackStructure#findGenerationPoint} 在生成阶段按
      * {@link PDCommonConfig#DYEDREAM_CRACK_GENERATE} 判断（配置关闭时返回空 → 不生成）。
+=======
+     * 生成与否受配置 {@code DYEDREAM_CRACK_GENERATE} 控制（见 {@link DyedreamCrackStructure}）。
+>>>>>>> 78e76f9ac8db1d4e43a7f83c4aca5b827277f1db
      */
     private static void registerDyedreamCrack() {
         RuinResult result = RuinAPI.createRuin("struct_dyedream_crack_1")
