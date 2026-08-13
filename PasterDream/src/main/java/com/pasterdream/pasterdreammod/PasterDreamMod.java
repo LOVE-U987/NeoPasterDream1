@@ -267,13 +267,8 @@ public class PasterDreamMod {
 
         // 灯影出生结构（shadow_world_spawn）；Warden→hide_7 / 远古守卫者鳞
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDLampShadowWorldgen::onLevelLoad);
-<<<<<<< HEAD
-        // 染梦裂隙出生结构（dyedreamcrack0）：主世界 0,0 原点裂隙 + 染梦世界出生点岛屿（受配置控制）
-        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDOriginCrackWorldgen::onLevelLoad);
-=======
-        // 主世界初始裂隙（0,0 原点，原版 GenerateWorldPr0 主世界裂隙分支，按配置放置）
+        // 染梦裂隙出生点放置（dyedreamcrack0）：主世界 0,0 原点裂隙 + 染梦世界出生点岛屿（受配置控制）
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDOverworldOriginCrackWorldgen::onLevelLoad);
->>>>>>> 78e76f9ac8db1d4e43a7f83c4aca5b827277f1db
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDEntityDeathEvents::onLivingDeath);
 
         // 暮影之笼事件 BGM：玩家登录/切换维度时补发当前维度静音状态（防断线/换维残留）

@@ -1,6 +1,54 @@
 # PasterDream Changelog
 
 ---
+## v0.9.7 — 2026-08-13
+
+### 修复：合并冲突残留导致的编译失败
+
+*   **根因**：合并 `momonyako` 分支（v0.9.6）时，4 处冲突标记未真正解决即被提交，导致 `:PasterDream:compileJava` 语法错误（`<<<<<<< HEAD` / `=======` / `>>>>>>>` 残留）
+*   **修复**（`PasterDream`）：
+    *   `PasterDreamMod.java`：裂隙出生点监听器注册统一为 v0.9.6 方案 `PDOverworldOriginCrackWorldgen::onLevelLoad`
+    *   `registry/PDRuinsRegistration.java`：`registerDyedreamCrack` 注释冲突合并（保留 HEAD 详细说明：StructureType 无条件注册 + 生成阶段按配置判断）
+    *   `worldgen/structure/DyedreamCrackStructure.java`：类注释/方法注释取详细版，配置判断用防御性写法 `Boolean.TRUE.equals(...)`（与 `DyedreamCrackPlacement` 一致）
+    *   `world/PDOriginCrackWorldgen.java`：删除——与 v0.9.6 引入的 `PDOverworldOriginCrackWorldgen` 功能完全重复（合并遗留的旧实现）
+*   **修复**（`Changelog.md`）：v0.9.6 条目上移至顶部，清除残留冲突标记块
+*   **验证**：`:PasterDream` / `:PasterDreamAPI` / `:PasterDreamMeltDream` / `:PasterDreamSanity` / `:PasterDreamSpells` 五模块 `compileJava` 全 BUILD SUCCESSFUL
+
+---
+
+## v0.9.6 — 2026-08-13
+
+#### 负责人：MomoNyako
+
+### 修复：染梦裂隙生成配置不生效与 `/locate` 卡死
+
+*   **修复**：关闭 `DYEDREAM_CRACK_GENERATE` 后裂隙仍会生成；且配置关闭时 `/locate` 裂隙结构会因扫描真实磁盘 region 文件而严重卡顿
+*   **新增**（`worldgen/structure/placement/DyedreamCrackPlacement.java`，新）：自定义结构放置策略 `dyedream_crack_spread`，继承 `RandomSpreadStructurePlacement`，配置关闭时通过两个拦截点禁用生成与定位：
+    *   `getPotentialStructureChunk`：配置关闭时返回世界边界外坐标（`Integer.MAX_VALUE`），`/locate` 候选点全部落到界外，`scanChunk` 对界外 chunk 快速失败，从源头消除磁盘 I/O 卡顿
+    *   `applyAdditionalChunkRestrictions`：配置关闭时返回 `false`，世界生成不产生候选；作为 `locate` 候选判定的兜底拦截
+*   **新增**（`registry/PDStructurePlacements.java`，新）：注册 `STRUCTURE_PLACEMENT` 类型的 `DeferredRegister` 与 `dyedream_crack_spread` 类型，供 `structure_set/struct_dyedream_crack_1_set.json` 的 `placement.type` 引用
+*   **新增**（`worldgen/structure/DyedreamCrackStructure.java`，新）：裂隙结构类，生成与否受 `DYEDREAM_CRACK_GENERATE` 控制；`PDRuinsRegistration.java:185` 的 `registerDyedreamCrack` 改用它替换 `JigsawStructure`
+*   **新增**（`world/PDOverworldOriginCrackWorldgen.java`，新）：出生点裂隙放置（SavedData 去重），对齐原版 `GenerateWorldPr0Procedure` 裂隙分支
+    *   主世界：`THE_ORIGIN_OF_THE_WORLD_INITIALLY_GENERATED_DYEDREAM_CRACK` 开启时在 `(0,0)` 附近放置 `dyedreamcrack0` 模板（可见天空放 `(-9,110,-10)`，否则 `(-9,160,-10)`）
+    *   染梦维度：`DYEDREAM_ORIGIN_SPAWNPOINT` 开启时在出生点放置（回主世界入口），`LevelEvent.Load` 时触发，每维度仅放置一次
+*   **结构 JSON 修正**：`struct_dyedream_crack_0/1`、`structure_set`、`template_pool` 的裂隙相关文件对齐新放置策略
+*   **验证**：`:PasterDream:compileJava` BUILD SUCCESSFUL
+
+### 修复：配置界面点击「恢复默认」导致游戏崩溃
+
+*   **修复**：`PDConfigScreen.resetAll()` 中 `Minecraft.getInstance().player.displayClientMessage(...)` 缺少判空
+    *   配置界面通过 Mod 列表的「配置」按钮打开，此时玩家尚未进入世界，`player` 为 `null`
+    *   崩溃栈：`NullPointerException: Cannot invoke "LocalPlayer.displayClientMessage(...)" because "Minecraft.getInstance().player" is null`（`PDConfigScreen.java:1358`）
+    *   补充 `player != null` 判空，与 `saveConfig()`（`PDConfigScreen.java:1318`）保持一致
+
+### 修复：染梦裂隙生成配置在「系统」与「基础机制」重复显示
+
+*   **修复**：`DYEDREAM_CRACK_GENERATE` 被重复注册到 `ConfigCategory.SYSTEM` 与 `ConfigCategory.BASIC` 两个分类
+    *   两个 `BooleanEntry` 共享同一 `ConfigValue` 却持有独立 `pendingValue`，只改一处时界面不同步、保存时互相覆盖
+    *   删除 `PDConfigScreen.java:188` 的 SYSTEM 入口，保留「基础机制」分类下的原有入口；「系统」分类无配置项后自动隐藏侧边栏按钮
+
+---
+
 ## v0.9.5 — 2026-08-13
 
 ### 修复：语言文件缺失翻译键 + 英文文件中的中文字符
@@ -111,45 +159,7 @@
 *   **注册 ID 校验**：全工作区确认 `dyedream_lantern` 无重复注册；与原模组拼写错误的 `dyedream_lartern`（染梦水晶灯，已移植）不冲突
 *   **验证**：`:PasterDream:compileJava` BUILD SUCCESSFUL
 
----
 
-<<<<<<< HEAD
-=======
-## v0.9.6 — 2026-08-13
-
-#### 负责人：MomoNyako
-
-### 修复：染梦裂隙生成配置不生效与 `/locate` 卡死
-
-*   **修复**：关闭 `DYEDREAM_CRACK_GENERATE` 后裂隙仍会生成；且配置关闭时 `/locate` 裂隙结构会因扫描真实磁盘 region 文件而严重卡顿
-*   **新增**（`worldgen/structure/placement/DyedreamCrackPlacement.java`，新）：自定义结构放置策略 `dyedream_crack_spread`，继承 `RandomSpreadStructurePlacement`，配置关闭时通过两个拦截点禁用生成与定位：
-    *   `getPotentialStructureChunk`：配置关闭时返回世界边界外坐标（`Integer.MAX_VALUE`），`/locate` 候选点全部落到界外，`scanChunk` 对界外 chunk 快速失败，从源头消除磁盘 I/O 卡顿
-    *   `applyAdditionalChunkRestrictions`：配置关闭时返回 `false`，世界生成不产生候选；作为 `locate` 候选判定的兜底拦截
-*   **新增**（`registry/PDStructurePlacements.java`，新）：注册 `STRUCTURE_PLACEMENT` 类型的 `DeferredRegister` 与 `dyedream_crack_spread` 类型，供 `structure_set/struct_dyedream_crack_1_set.json` 的 `placement.type` 引用
-*   **新增**（`worldgen/structure/DyedreamCrackStructure.java`，新）：裂隙结构类，生成与否受 `DYEDREAM_CRACK_GENERATE` 控制；`PDRuinsRegistration.java:185` 的 `registerDyedreamCrack` 改用它替换 `JigsawStructure`
-*   **新增**（`world/PDOverworldOriginCrackWorldgen.java`，新）：出生点裂隙放置（SavedData 去重），对齐原版 `GenerateWorldPr0Procedure` 裂隙分支
-    *   主世界：`THE_ORIGIN_OF_THE_WORLD_INITIALLY_GENERATED_DYEDREAM_CRACK` 开启时在 `(0,0)` 附近放置 `dyedreamcrack0` 模板（可见天空放 `(-9,110,-10)`，否则 `(-9,160,-10)`）
-    *   染梦维度：`DYEDREAM_ORIGIN_SPAWNPOINT` 开启时在出生点放置（回主世界入口），`LevelEvent.Load` 时触发，每维度仅放置一次
-*   **结构 JSON 修正**：`struct_dyedream_crack_0/1`、`structure_set`、`template_pool` 的裂隙相关文件对齐新放置策略
-*   **验证**：`:PasterDream:compileJava` BUILD SUCCESSFUL
-
-### 修复：配置界面点击「恢复默认」导致游戏崩溃
-
-*   **修复**：`PDConfigScreen.resetAll()` 中 `Minecraft.getInstance().player.displayClientMessage(...)` 缺少判空
-    *   配置界面通过 Mod 列表的「配置」按钮打开，此时玩家尚未进入世界，`player` 为 `null`
-    *   崩溃栈：`NullPointerException: Cannot invoke "LocalPlayer.displayClientMessage(...)" because "Minecraft.getInstance().player" is null`（`PDConfigScreen.java:1358`）
-    *   补充 `player != null` 判空，与 `saveConfig()`（`PDConfigScreen.java:1318`）保持一致
-
-### 修复：染梦裂隙生成配置在「系统」与「基础机制」重复显示
-
-*   **修复**：`DYEDREAM_CRACK_GENERATE` 被重复注册到 `ConfigCategory.SYSTEM` 与 `ConfigCategory.BASIC` 两个分类
-    *   两个 `BooleanEntry` 共享同一 `ConfigValue` 却持有独立 `pendingValue`，只改一处时界面不同步、保存时互相覆盖
-    *   删除 `PDConfigScreen.java:188` 的 SYSTEM 入口，保留「基础机制」分类下的原有入口；「系统」分类无配置项后自动隐藏侧边栏按钮
-
----
-
-## v0.9.5 — 2026-08-09
->>>>>>> 78e76f9ac8db1d4e43a7f83c4aca5b827277f1db
 
 ### 新增：扫盘工具 — 物品堆叠 / BUFF 数值与原模组对齐检查
 

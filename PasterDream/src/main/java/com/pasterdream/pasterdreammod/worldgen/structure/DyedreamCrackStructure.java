@@ -9,7 +9,6 @@ import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 import java.util.Optional;
 
 /**
-<<<<<<< HEAD
  * 主世界染梦裂隙结构（struct_dyedream_crack_1，Y=32 空中浮岛）。
  * <p>
  * 自然生成受配置 {@link PDCommonConfig#DYEDREAM_CRACK_GENERATE} 控制。
@@ -24,15 +23,6 @@ import java.util.Optional;
  * <p>
  * 效果与旧实现一致：配置关闭时主世界天空不再生成裂隙浮岛；
  * 结构 JSON / structure_set 始终可解析，不会产生数据包报错。
-=======
- * 主世界染梦裂隙结构 —— 受配置 {@code DYEDREAM_CRACK_GENERATE} 控制。
- * <p>
- * 当「染梦裂隙自然生成」配置关闭时，该结构不生成（返回空）；
- * 开启时委托内部 jigsaw 结构在 Y=32 天空生成裂隙浮岛。
- * <p>
- * 由于 {@link JigsawStructure} 为 final 类，本类采用<b>组合</b>方式包装
- * 一个 JigsawStructure 委托实例完成实际生成逻辑（同 {@link AaroncosArenaPortalStructure}）。
->>>>>>> 78e76f9ac8db1d4e43a7f83c4aca5b827277f1db
  */
 public final class DyedreamCrackStructure extends Structure {
 
@@ -64,24 +54,16 @@ public final class DyedreamCrackStructure extends Structure {
     }
 
     /**
-<<<<<<< HEAD
      * 生成点判定：配置关闭时禁止生成，否则委托 jigsaw 结构实际生成。
-=======
-     * 生成点判定：配置关闭时不生成裂隙；开启时委托 jigsaw 结构实际生成。
->>>>>>> 78e76f9ac8db1d4e43a7f83c4aca5b827277f1db
      *
      * @param context 结构生成上下文
      * @return 生成桩；配置关闭时为空
      */
     @Override
     public Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
-<<<<<<< HEAD
         // 配置关闭（dyedream crack generate=false）时跳过生成。
         // 此处为世界生成阶段，配置已加载，ConfigValue.get() 安全。
-        if (!PDCommonConfig.DYEDREAM_CRACK_GENERATE.get()) {
-=======
         if (!Boolean.TRUE.equals(PDCommonConfig.DYEDREAM_CRACK_GENERATE.get())) {
->>>>>>> 78e76f9ac8db1d4e43a7f83c4aca5b827277f1db
             return Optional.empty();
         }
         return delegate.findGenerationPoint(context);
@@ -90,11 +72,7 @@ public final class DyedreamCrackStructure extends Structure {
     /**
      * 返回本结构的类型（沿用被包装的 jigsaw 类型）。
      *
-<<<<<<< HEAD
      * @return 结构类型
-=======
-     * @return StructureType
->>>>>>> 78e76f9ac8db1d4e43a7f83c4aca5b827277f1db
      */
     @Override
     public StructureType<?> type() {
