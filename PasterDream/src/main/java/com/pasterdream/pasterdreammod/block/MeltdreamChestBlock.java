@@ -4,6 +4,8 @@ import com.mojang.serialization.MapCodec;
 import com.pasterdream.pasterdreammod.block.entity.MeltdreamChestBlockEntity;
 import com.pasterdream.pasterdreammod.api.doll.DollAPI;
 import com.pasterdream.pasterdreammod.api.doll.DollResult;
+import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyAPI;
+import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyConfigRegistry;
 import com.pasterdream.pasterdreammod.config.MeltdreamChestLootConfig;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
@@ -231,6 +233,13 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
         // 7. 宝藏成就（原版 MeltdreamChestPr0：先 treasure_start，再按维度）
         if (player instanceof ServerPlayer sp) {
             awardTreasureAdvancements(sp, level);
+        }
+
+        // 8. 融梦能量奖励（原版 MeltdreamChestPr0：开箱 +2 融梦能量）
+        //    系统启用时按「chest generation multiplier」倍率折算（默认 1.0 → +2）
+        if (MeltDreamEnergyConfigRegistry.get().enabled().get()) {
+            double multiplier = MeltDreamEnergyConfigRegistry.get().chestGenerationMultiplier().get();
+            MeltDreamEnergyAPI.addEnergy(player, 2.0 * multiplier);
         }
 
         return InteractionResult.CONSUME;

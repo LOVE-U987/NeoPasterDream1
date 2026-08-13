@@ -96,6 +96,16 @@ public class PasterDreamMod {
         // PasterDreamAPI 已作为独立前置 mod 加载，由其主类 PasterDreamAPIMod 统一注册 API 层 DeferredRegister，
         // 下游模组不再重复调用 registerAll，避免 "Cannot register DeferredRegister to more than one event bus"。
 
+        // 注册配置文件（文件名与原版一致：PasterDream-Client.toml / PasterDream-Common.toml）
+        // 使用 ConfigTracker.INSTANCE.registerConfig() 直接注册以捕获 ModConfig 引用，
+        // 用于配置界面保存时将修改持久化到 TOML 文件。
+        // ⚠️ 注意：registerConfig 仅注册配置规格，配置文件在 RegisterEvent 之后的
+        // ModConfigEvent.Loading 阶段才真正加载；构造器内直接 ConfigValue.get() 会抛
+        // IllegalStateException，注册阶段一律不得读取配置（需按配置分支的功能，
+        // 把判断下沉到运行时，如 DyedreamCrackStructure#findGenerationPoint）。
+        clientModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.CLIENT, PDClientConfig.SPEC, modContainer, "PasterDream-Client.toml");
+        commonModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.COMMON, PDCommonConfig.SPEC, modContainer, "PasterDream-Common.toml");
+
         // 注册玩偶 API 的 DeferredRegister
         DollAPI.BLOCK_REGISTRY.register(modEventBus);
         DollAPI.ITEM_REGISTRY.register(modEventBus);
@@ -150,6 +160,7 @@ public class PasterDreamMod {
 
         // 注册染梦遗迹结构（染梦列车、巨型染梦树、粉红菇屋等）
         // 必须在构造器中注册，因为 RuinBuilder.build() 会向 DeferredRegister 添加新条目
+        // （染梦裂隙类型无条件注册，生成与否由 DyedreamCrackStructure 在生成阶段按配置判断）
         PDRuinsRegistration.register();
 
         // 显式引用 PDMenus 的静态字段以触发类初始化，确保菜单静态字段填充到 MenuAPI.REGISTRY
@@ -212,13 +223,7 @@ public class PasterDreamMod {
         // [分区R] 注册自定义配方类型与序列化器（暗影高炉 shadow_blasting 数据包配方）
         PDRecipeTypes.register(modEventBus);
 
-        // 注册配置文件（文件名与原版一致：PasterDream-Client.toml / PasterDream-Common.toml）
-        // 使用 ConfigTracker.INSTANCE.registerConfig() 直接注册以捕获 ModConfig 引用，
-        // 用于配置界面保存时将修改持久化到 TOML 文件
-        clientModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.CLIENT, PDClientConfig.SPEC, modContainer, "PasterDream-Client.toml");
-        commonModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.COMMON, PDCommonConfig.SPEC, modContainer, "PasterDream-Common.toml");
-
-        // 注入调试日志开关（必须在配置文件注册之后，否则 Supplier 读取不到实际值）
+        // 注入调试日志开关（配置文件已在构造器最前部注册，Supplier 惰性读取实际值）
         PDDebugLogger.setApiLogger(PasterDreamAPI.LOGGER);
         PDDebugLogger.setMainLogger(LOGGER);
         PDDebugLogger.setMasterEnabled(PDCommonConfig.ENABLE_DEBUG_LOG::get);
@@ -231,6 +236,9 @@ public class PasterDreamMod {
         NeoForge.EVENT_BUS.addListener(PlayerDataEvents::onPlayerRespawn);
         NeoForge.EVENT_BUS.addListener(PlayerDataEvents::onPlayerChangedDimension);
         NeoForge.EVENT_BUS.addListener(PlayerDataEvents::onPlayerClone);
+
+        // 自定义出生维度/群系（PasterDream-Common.toml 的 Custom Spawn 段，默认关闭）
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDCustomSpawnEvents::onPlayerLoggedIn);
 
         // 理智环境 tick 已迁移至 PasterDreamSanity 模组
         // 风之旅途：日更风向 / 顺逆风 / 进维文案与主题曲
@@ -255,6 +263,8 @@ public class PasterDreamMod {
 
         // 灯影出生结构（shadow_world_spawn）；Warden→hide_7 / 远古守卫者鳞
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDLampShadowWorldgen::onLevelLoad);
+        // 染梦裂隙出生结构（dyedreamcrack0）：主世界 0,0 原点裂隙 + 染梦世界出生点岛屿（受配置控制）
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDOriginCrackWorldgen::onLevelLoad);
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDEntityDeathEvents::onLivingDeath);
 
         // 暮影之笼事件 BGM：玩家登录/切换维度时补发当前维度静音状态（防断线/换维残留）

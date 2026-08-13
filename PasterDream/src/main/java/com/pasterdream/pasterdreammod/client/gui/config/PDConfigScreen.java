@@ -227,8 +227,7 @@ public class PDConfigScreen extends Screen {
             allEntries.add(new ConfigEntry.BooleanEntry(PDClientConfig.MELTDREAM_ENERGY_SHOW_VALUE_ALWAYS, ConfigCategory.MELTDREAM, idx++));
         }
 
-        // ==================== Common Basic (7 items) ====================
-        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.DYEDREAM_CRACK_GENERATE, ConfigCategory.BASIC, idx++));
+        // ==================== Common Basic (6 items) ====================
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.THE_ORIGIN_OF_THE_WORLD_INITIALLY_GENERATED_DYEDREAM_CRACK, ConfigCategory.BASIC, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.MOD_ACCOUOCEMENT, ConfigCategory.BASIC, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.IN_LAMP_SHADOW_GIVE_PALE_BONENEEDLE, ConfigCategory.BASIC, idx++));
@@ -239,6 +238,11 @@ public class PDConfigScreen extends Screen {
         // ==================== Common Property (1 item) ====================
         allEntries.add(new ConfigEntry.NumberEntry((ModConfigSpec.ConfigValue<Number>) (ModConfigSpec.ConfigValue<?>) PDCommonConfig.PLAYER_TOTAL_TICK_UPDATE,
                 ConfigCategory.PROPERTY, idx++, 2, 20));
+
+        // ==================== Custom Spawn (2 items；维度/群系 ID 请直接编辑 PasterDream-Common.toml) ====================
+        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.CUSTOM_SPAWN_ENABLED, ConfigCategory.CUSTOM_SPAWN, idx++));
+        allEntries.add(new ConfigEntry.NumberEntry((ModConfigSpec.ConfigValue<Number>) (ModConfigSpec.ConfigValue<?>) PDCommonConfig.CUSTOM_SPAWN_SEARCH_RADIUS,
+                ConfigCategory.CUSTOM_SPAWN, idx++, 100, 100000));
 
         // ==================== Common Ban (4 items) ====================
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.BAN_ALL_THE_WINGS, ConfigCategory.BAN, idx++));

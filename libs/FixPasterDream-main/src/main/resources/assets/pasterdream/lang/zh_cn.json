@@ -1187,6 +1187,8 @@
   "pasterdream.entry.san.page3":"如果精神值过低的话，可能会看见异常情况。请留意自己的精神值。",
   "pasterdream.entry.meltdream":"融梦能量",
   "pasterdream.entry.meltdream.page0":"部分武器战技和强征传送塔使用时需要消耗融梦能量。潜行时可在左下角查看具体的融梦能量数值。",
-  "pasterdream.entry.meltdream.page1":"融梦能量目前可以通过佩戴融梦光环戒指等装备饰品，或食用染梦冰棒，染梦果汁回复。$(br)除此之外，开启融梦水晶箱可以回复2融梦能量。"
+  "pasterdream.entry.meltdream.page1":"融梦能量目前可以通过佩戴融梦光环戒指等装备饰品，或食用染梦冰棒，染梦果汁回复。$(br)除此之外，开启融梦水晶箱可以回复2融梦能量。",
+  "fluid_type.paster dreamapi.shadow_liquid":"熔融阴影液",
+  "pasterdream:meltdream_liquid":"融梦液"
 
 }

@@ -4,6 +4,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 /**
  * PasterDream 方块标签常量。
@@ -22,5 +23,15 @@ public final class PDBlockTags {
     public static final TagKey<Block> PLANTABLE_ON = TagKey.create(
             Registries.BLOCK,
             ResourceLocation.fromNamespaceAndPath("pasterdream", "plantable_on")
+    );
+
+    /**
+     * 灯笼标签 —— 社区约定标签 {@code c:lanterns}（与 Fabric Convention Tags 兼容），
+     * 供其他模组识别灯笼类方块（如挂载、照明联动等逻辑）。
+     * 包含染梦灯笼、染梦水晶灯及原版灯笼。
+     */
+    public static final TagKey<Block> LANTERNS = TagKey.create(
+            Registries.BLOCK,
+            ResourceLocation.fromNamespaceAndPath("c", "lanterns")
     );
 }

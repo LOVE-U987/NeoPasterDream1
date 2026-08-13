@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.registry;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.ruin.RuinAPI;
 import com.pasterdream.pasterdreammod.api.ruin.RuinResult;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.worldgen.structure.AaroncosArenaPortalStructure;
 import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 
@@ -10,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
+import com.pasterdream.pasterdreammod.worldgen.structure.DyedreamCrackStructure;
 /**
  * 染梦遗迹/结构注册 —— 使用 RuinAPI + JigsawStructure 注册 41 个遗迹结构
  * <p>
@@ -56,6 +58,9 @@ public class PDRuinsRegistration {
         registerDreamTrain();
         registerDyedreamWorldTree();
         registerPinkagaricHouses();
+        // 染梦裂隙自然生成受配置控制（PDCommonConfig.DYEDREAM_CRACK_GENERATE）：
+        // 类型无条件注册；配置判断下沉到生成阶段（见 DyedreamCrackStructure#findGenerationPoint），
+        // 因为配置在 RegisterEvent 之后才加载，注册阶段无法安全读取
         registerDyedreamCrack();
         registerDesertCottage();
         registerAaroncosArenaPortal();
@@ -85,7 +90,8 @@ public class PDRuinsRegistration {
         registerMeltdreamLiquidWell1();
 
         int count = REGISTERED_STRUCTURES.size();
-        PDDebugLogger.mainDebug("[PDRuinsRegistration] ✅ 染梦遗迹结构注册完成: 共 {} 个", count);
+        PDDebugLogger.mainDebug("[PDRuinsRegistration] ✅ 染梦遗迹结构注册完成: 共 {} 个"
+                + "（裂隙类型无条件注册，生成与否由配置在生成阶段控制）", count);
     }
 
     /**
@@ -184,13 +190,17 @@ public class PDRuinsRegistration {
      * <p>
      * 在主世界 Y=32 处生成裂隙结构，包含 {@code dyedream_crack} 方块，
      * 玩家接触后可传送到染梦维度。
+     * <p>
+     * StructureType 无条件注册（不读配置）；自然生成是否启用由
+     * {@link DyedreamCrackStructure#findGenerationPoint} 在生成阶段按
+     * {@link PDCommonConfig#DYEDREAM_CRACK_GENERATE} 判断（配置关闭时返回空 → 不生成）。
      */
     private static void registerDyedreamCrack() {
         RuinResult result = RuinAPI.createRuin("struct_dyedream_crack_1")
                 .biomeTag("minecraft:is_overworld")
                 .templatePool("pasterdream:struct_dyedream_crack_1")
-                .structureClass(JigsawStructure.class)
-                .codec(JigsawStructure.CODEC)
+                .structureClass(DyedreamCrackStructure.class)
+                .codec(DyedreamCrackStructure.CODEC)
                 .terrainAdaptation("none")
                 .step("surface_structures")
                 .size(1)

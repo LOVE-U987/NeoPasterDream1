@@ -261,6 +261,8 @@ public class PDItems {
     public static final DeferredItem<?> DYEDREAM_HANGING_VINE = PDItemsBlocks.DYEDREAM_HANGING_VINE;
     public static final DeferredItem<?> DYEDREAM_FALLEN_LEAVES = PDItemsBlocks.DYEDREAM_FALLEN_LEAVES;
     public static final DeferredItem<?> DYEDREAM_WORLDTREE_LEAVES = PDItemsBlocks.DYEDREAM_WORLDTREE_LEAVES;
+    public static final DeferredItem<?> DYEDREAM_DEEPSTONE = PDItemsBlocks.DYEDREAM_DEEPSTONE;
+    public static final DeferredItem<?> DYEDREAM_SANDSTONE = PDItemsBlocks.DYEDREAM_SANDSTONE;
     public static final DeferredItem<?> DYEDREAMQUARTZ_ORE = PDItemsBlocks.DYEDREAMQUARTZ_ORE;
     public static final DeferredItem<?> DYEDREAMDUST_ORE = PDItemsBlocks.DYEDREAMDUST_ORE;
     public static final DeferredItem<?> AMBER_CANDY_ORE = PDItemsBlocks.AMBER_CANDY_ORE;
@@ -291,6 +293,7 @@ public class PDItems {
     public static final DeferredItem<?> CARVE_DYEDREAM_GLASSPANE = PDItemsBlocks.CARVE_DYEDREAM_GLASSPANE;
     public static final DeferredItem<?> GOLD_CARVE_DYEDREAM_GLASSPANE = PDItemsBlocks.GOLD_CARVE_DYEDREAM_GLASSPANE;
     public static final DeferredItem<?> DYEDREAM_LARTERN = PDItemsBlocks.DYEDREAM_LARTERN;
+    public static final DeferredItem<?> DYEDREAM_LANTERN = PDItemsBlocks.DYEDREAM_LANTERN;
     public static final DeferredItem<?> TITANIUM_BLOCK = PDItemsBlocks.TITANIUM_BLOCK;
     public static final DeferredItem<?> RAW_TITANIUM_BLOCK = PDItemsBlocks.RAW_TITANIUM_BLOCK;
     public static final DeferredItem<?> MOLTENGOLD_BLOCK = PDItemsBlocks.MOLTENGOLD_BLOCK;

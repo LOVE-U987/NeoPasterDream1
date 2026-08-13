@@ -1,0 +1,672 @@
+[
+  {
+    "class": "PDCommonConfig",
+    "field": "DYEDREAM_CRACK_GENERATE",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 6,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\PasterDreamMod.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\registry\\PDRuinsRegistration.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\smoketest\\PDGalleryVerifyHooks.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\smoketest\\PDStructureVerifyHooks.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "ENABLE_ADVANCEMENT_LOCK",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 3,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\registry\\PDAdvancements.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "CREATIVE_BYPASS_ADVANCEMENT_LOCK",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 3,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\registry\\PDAdvancements.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "IN_LAMP_SHADOW_GIVE_PALE_BONENEEDLE",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\registry\\LampShadowEvents.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "THE_ORIGIN_OF_THE_WORLD_INITIALLY_GENERATED_DYEDREAM_CRACK",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 2,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "MOD_ACCOUOCEMENT",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\attachment\\PlayerDataEvents.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "NO_RETURN_DYEDREAM_CRACK",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 3,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\block\\DyedreamCrackBlock.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "DYEDREAM_ORIGIN_SPAWNPOINT",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 2,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "SHADOW_NPC_THIRD_DIALOGUE_AFTER_TP_PLAYER_BACK_TO_OVERWORLD",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\entity\\mob\\ShadowNpc0Entity.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "CUSTOM_SPAWN_ENABLED",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\world\\PDCustomSpawnEvents.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "CUSTOM_SPAWN_DIMENSION",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\world\\PDCustomSpawnEvents.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "CUSTOM_SPAWN_BIOME",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\world\\PDCustomSpawnEvents.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "CUSTOM_SPAWN_SEARCH_RADIUS",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\world\\PDCustomSpawnEvents.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "PLAYER_TOTAL_TICK_UPDATE",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 3,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\smoketest\\PDWindJourneyVerifyHooks.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\world\\WindJourneyEvents.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "SKYLINK_MAX_STARS",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\item\\SkyLinkItem.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "MELTDREAM_CHEST_CUSTOM_LOOT_ENABLED",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\config\\MeltdreamChestLootConfig.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "BAN_ALL_THE_WINGS",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 6,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\item\\armor\\AngelWingItem.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\item\\armor\\ForsakensWingItem.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\item\\armor\\MachineWingItem.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "BAN_TERRA_SWORD",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\item\\TerraSwordItem.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "BAN_FIRE_NECKLACE",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 2,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "BAN_TIME_HOURGLASS",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 8,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\item\\TimeHourglassItem.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\smoketest\\PDStaleCommentVerifyHooks.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "ENABLE_DEBUG_LOG",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\PasterDreamMod.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "ENABLE_API_DEBUG_LOG",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\PasterDreamMod.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "ENABLE_MAIN_DEBUG_LOG",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\PasterDreamMod.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDCommonConfig",
+    "field": "ENABLE_SMOKETEST_DEBUG_LOG",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\PasterDreamMod.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "STEALTH_DISPLAY_ATTRIBUTE_HUD",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 3,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\MeltdreamEnergyTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\SanTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "LOADING_GUI_TIPS",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 2,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "PASTER_HEALTH_HUD",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 3,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\PDHudEvents.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\PlayerHealthHudOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "ENABLE_MOD_UI",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 17,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\PDPackHandler.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\AaroncosBossBarOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\PDHudEvents.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\PlayerHealthHudOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\smoketest\\PDPortingVerifyTest.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "SHOW_SAN_HUD",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\SanTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "SAN_TANK_XBASE",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\SanTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "SAN_TANK_YBASE",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\SanTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "SAN_HUD_SCALE",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 3,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\SanTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "SAN_HUD_ANCHOR",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 3,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\SanTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "SAN_SHOW_VALUE_ALWAYS",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\SanTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "SHOW_MELTDREAM_ENERGY_HUD",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\MeltdreamEnergyTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "MELTDREAMENERGY_TANK_XBASE",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\MeltdreamEnergyTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "MELTDREAMENERGY_TANK_YBASE",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\MeltdreamEnergyTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "MELTDREAM_ENERGY_HUD_SCALE",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 3,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\MeltdreamEnergyTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "MELTDREAM_ENERGY_HUD_ANCHOR",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 3,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\MeltdreamEnergyTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "MELTDREAM_ENERGY_SHOW_VALUE_ALWAYS",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\MeltdreamEnergyTankOverlay.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_MASTER_ENABLED",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\audio\\ModMusicManager.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_MASTER_VOLUME",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 4,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\audio\\ModMusicManager.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_USE_SONG_COMPLETE_MODE",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\audio\\ModMusicManager.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_SONG_INTERVAL_SECONDS",
+    "status": "✅ 有业务读取",
+    "self_refs": 2,
+    "external_refs": 2,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\audio\\ModMusicManager.java",
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_DYEDREAM_WORLD",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_DYEDREAM_WORLD_VOLUME",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_DREAM_HEATH",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_DREAM_HEATH_VOLUME",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_DREAM_DELTA",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_DREAM_DELTA_VOLUME",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_DREAM_TAIGA",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_DREAM_TAIGA_VOLUME",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_SWEETDREAM",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_SWEETDREAM_VOLUME",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_SNOWFALL_DREAM",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_SNOWFALL_DREAM_VOLUME",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_WIND_JOURNEY_DEPARTURE",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_WIND_JOURNEY_DEPARTURE_VOLUME",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_WIND_JOURNEY_MIDSUMMER",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_WIND_JOURNEY_MIDSUMMER_VOLUME",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_DREAM_MEADOW_DAISY",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  },
+  {
+    "class": "PDClientConfig",
+    "field": "BGM_DREAM_MEADOW_DAISY_VOLUME",
+    "status": "⚠️ 仅配置界面引用",
+    "self_refs": 3,
+    "external_refs": 1,
+    "ref_files": [
+      "PasterDream\\src\\main\\java\\com\\pasterdream\\pasterdreammod\\client\\gui\\config\\PDConfigScreen.java"
+    ]
+  }
+]

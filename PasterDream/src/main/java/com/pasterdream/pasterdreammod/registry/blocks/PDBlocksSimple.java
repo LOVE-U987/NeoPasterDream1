@@ -222,4 +222,6 @@ public class PDBlocksSimple {
 
     public static final DeferredBlock<DyedreamLarternBlock> DYEDREAM_LARTERN = PDBlocks.BLOCKS.registerBlock("dyedream_lartern",
             DyedreamLarternBlock::new, DyedreamLarternBlock.larternProps());
+    public static final DeferredBlock<DyedreamLanternBlock> DYEDREAM_LANTERN = PDBlocks.BLOCKS.registerBlock("dyedream_lantern",
+            DyedreamLanternBlock::new, DyedreamLanternBlock.lanternProps());
 }

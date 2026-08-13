@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:jigsaw",
+  "type": "pasterdream:struct_dyedream_crack_1",
   "start_pool": "pasterdream:struct_dyedream_crack_1",
   "size": 1,
   "max_distance_from_center": 64,

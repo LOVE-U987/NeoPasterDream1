@@ -1119,5 +1119,7 @@
   "command.pasterdream.meltdreamenergy.meltdreamenergy.get": "%1$s的融梦能量为%2$f",
   "screen.pasterdream.pagenum": "Page %1$s",
   "jei.pasterdream.shadow_blast_furnace.probability": "%1$s%% probability of output",
-  "jei.pasterdream.shadow_blast_furnace.consumefluid": "consume %1$smB fuel"
+  "jei.pasterdream.shadow_blast_furnace.consumefluid": "consume %1$smB fuel",
+  "fluid_type.paster dreamapi.shadow_liquid":"熔融阴影液",
+  "pasterdream:meltdream_liquid":"融梦液"
 }

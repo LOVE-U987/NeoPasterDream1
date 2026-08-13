@@ -48,6 +48,17 @@ public class PDCommonConfig {
     /** 与无名第三次对话后强制传送回主世界（默认 true） */
     public static final ModConfigSpec.ConfigValue<Boolean> SHADOW_NPC_THIRD_DIALOGUE_AFTER_TP_PLAYER_BACK_TO_OVERWORLD;
 
+    // ==================== Custom Spawn ====================
+
+    /** 自定义出生总开关（默认 false，关闭时玩家按原版逻辑在主世界出生） */
+    public static final ModConfigSpec.ConfigValue<Boolean> CUSTOM_SPAWN_ENABLED;
+    /** 自定义出生维度 ID（格式：命名空间:路径，如 minecraft:overworld / pasterdream:dyedream_world） */
+    public static final ModConfigSpec.ConfigValue<String> CUSTOM_SPAWN_DIMENSION;
+    /** 自定义出生群系 ID（格式：命名空间:路径，如 minecraft:plains / pasterdream:dyedream） */
+    public static final ModConfigSpec.ConfigValue<String> CUSTOM_SPAWN_BIOME;
+    /** 出生群系搜索半径，单位：格（以维度出生点为中心向外搜索指定群系） */
+    public static final ModConfigSpec.ConfigValue<Integer> CUSTOM_SPAWN_SEARCH_RADIUS;
+
     // ==================== property ====================
 
     /** 玩家刻功能程序更新频率，单位 tick（默认 5，推荐 2~20） */
@@ -139,6 +150,21 @@ public class PDCommonConfig {
         SHADOW_NPC_THIRD_DIALOGUE_AFTER_TP_PLAYER_BACK_TO_OVERWORLD = builder
                 .comment("在与无名第三次对话后会被强制传送回主世界 默认：true")
                 .define("shadow npc third dialogue after tp player back to overworld", true);
+        builder.pop();
+
+        builder.push("Custom Spawn");
+        CUSTOM_SPAWN_ENABLED = builder
+                .comment("自定义出生维度/群系总开关（开启后，新玩家首次进入世界时会在指定维度与群系出生；关闭后按原版逻辑在主世界出生） 默认：false")
+                .define("custom spawn enabled", false);
+        CUSTOM_SPAWN_DIMENSION = builder
+                .comment("自定义出生维度 ID（格式：命名空间:路径，如 minecraft:overworld / pasterdream:dyedream_world） 默认：minecraft:overworld")
+                .define("custom spawn dimension", "minecraft:overworld");
+        CUSTOM_SPAWN_BIOME = builder
+                .comment("自定义出生群系 ID（格式：命名空间:路径，如 minecraft:plains / pasterdream:dyedream） 默认：minecraft:plains")
+                .define("custom spawn biome", "minecraft:plains");
+        CUSTOM_SPAWN_SEARCH_RADIUS = builder
+                .comment("出生群系搜索半径，单位：格（以目标维度出生点为中心向外搜索配置的群系；搜索不到时回退到维度出生点） 默认：10000 范围：100~100000")
+                .defineInRange("custom spawn search radius", 10000, 100, 100000);
         builder.pop();
 
         builder.push("property");

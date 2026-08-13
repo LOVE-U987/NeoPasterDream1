@@ -1,8 +1,118 @@
 # PasterDream Changelog
 
 ---
+## v0.9.5 — 2026-08-13
 
-## v0.9.5 — 2026-08-09
+### 修复：语言文件缺失翻译键 + 英文文件中的中文字符
+
+*   **补全缺失键**（`PasterDream` 主模块 `lang/zh_cn.json`、`lang/en_us.json`）：新增 `item.pasterdream.dyedream_deepstone`、`item.pasterdream.dyedream_sandstone` 翻译键（染梦深层石 / Dyedream Deepstone、染梦砂岩 / Dyedream Sandstone），消除 `tools/check_lang.py` 报告的 2 处缺失
+*   **清理中文字符**（`PasterDream` `lang/en_us.json`）：`painting.pasterdream.pasterdream_draw_0.author` 全角括号 `【pl】Mo` → `[pl] Mo`；`tooltip.pasterdream.calle_card.*` 全角引号 `『』` → 半角单引号（含 `card_drawn`、`card_title` 及 `name.1~9` 共 11 处）
+*   **清理中文字符**（`PasterDreamSpells` `lang/en_us.json`）：`itemGroup.pasterdreamspells` 中文竖线 `PasterDream丨Spells` → `PasterDream | Spells`
+*   **验证**：`tools/check_lang.py` 全部注册项（431 物品 / 290 方块）在中英文语言文件中均已找到对应翻译键；全项目 `en_us.json` CJK 字符扫描 0 残留
+
+---
+
+### 修复：染梦砂岩 / 染梦深岩破坏无掉落物
+
+*   **根因**（`PasterDream`）：`PDBlocksSimple.java` 用 `addCustom` 注册了 `dyedream_sandstone` 与 `dyedream_deepstone`，但 `PDItemsBlocks.java` 未注册对应 BlockItem、`data/pasterdream/loot_table/blocks/` 下缺失战利品表 JSON → `Block.asItem()` 返回 `Items.AIR` 且无战利品表 → 破坏零掉落（验证报告 `pd_verify_report.json` blocks 类目 `extra` 字段早已列出这两项）
+*   **修复**：
+    *   `registry/items/PDItemsBlocks.java`：新增 `DYEDREAM_DEEPSTONE`、`DYEDREAM_SANDSTONE` 的 `registerSimpleBlockItem` 注册
+    *   `registry/PDItems.java`：聚合区补两个 `PDItemsBlocks` 引用
+    *   `data/pasterdream/loot_table/blocks/dyedream_sandstone.json`、`dyedream_deepstone.json`：新增自掉落战利品表（对齐兄弟方块 `dyedream_block.json` 格式，无条件 + `survives_explosion`）
+*   **验证**：`:PasterDream:compileJava` BUILD SUCCESSFUL；两个新 JSON 解析校验通过；无 lint 错误
+
+---
+
+### 修复：融梦能量自然恢复 + 水晶箱开箱奖励（2 项功能补齐）
+
+*   **自然恢复**（`PasterDreamMeltDream`）：新增 `PDMeltDreamEvents.java`（`PlayerTickEvent.Post`），实现 `PasterDreamMeltDream-Common.toml` 中 `recover interval`（默认 1200 tick = 60 秒）与 `recover amount`（默认 0.1）两项配置——玩家在线期间按间隔自动恢复融梦能量；系统总开关关闭时跳过；按玩家独立 tickCount 差值计时，登录事件清理残留记录
+*   **水晶箱奖励**（`PasterDream` 主模块 `MeltdreamChestBlock.java`）：开箱成功时按原版 `MeltdreamChestPr0Procedure` 行为奖励 +2 融梦能量，并乘 `chest generation multiplier` 倍率（默认 1.0）；系统总开关关闭时不给能量
+*   **验证**：`:PasterDream:compileJava` + `:PasterDreamMeltDream:compileJava` BUILD SUCCESSFUL
+
+---
+
+### 完善：染梦灯笼（dyedream_lantern）正式纹理 + 灯笼标签
+
+*   **纹理**（`PasterDream`）：用原模组正式美术替换占位纹理
+    *   复制原模组 `ran_meng_deng_long_.png`（16×48，3 帧 frametime 4 灯光闪烁动画）至 `textures/block/dyedream_lantern.png`，并重命名去除拼音命名（原拼音 `ran_meng_deng_long_` → `dyedream_lantern`，同步复制 `.mcmeta`）
+    *   删除占位纹理生成脚本 `tools/gen_dyedream_lantern_tex.py`
+*   **模型**：按用户要求**复制原模组模型文件写法**（对齐 `dyedream_lartern`）
+    *   `models/block/dyedream_lantern.json` / `dyedream_lantern_hanging.json`：`parent: block/cube` 全方块模型 + `render_type: translucent`，六个面纹理统一引用重命名后的 `pasterdream:block/dyedream_lantern`
+    *   **修复**：上一版自定义 box 模型存在纹理变量 `#lantern` 未定义导致纹理不显示的 bug，复制原模组写法后直接引用具体纹理路径，纹理正确应用
+*   **模型与碰撞箱同步**（后续修正）：全方块模型与 LanternBlock 小灯笼碰撞箱（约 6×7×6）不匹配，改为 parent 原版 `template_lantern` / `template_hanging_lantern`
+    *   放置态 `dyedream_lantern.json`：主体 `[5,0,5]→[11,7,11]` + 顶部环 `[6,7,6]→[10,9,10]`，与 Java `AABB` 完全一致
+    *   悬挂态 `dyedream_lantern_hanging.json`：主体 `[5,1,5]→[11,8,11]` + 顶部环 `[6,8,6]→[10,10,10]`，与 Java `HANGING_AABB` 完全一致
+    *   `textures.lantern` 引用 `pasterdream:block/dyedream_lantern`，渲染为灯笼形状而非全方块
+*   **标签**（灯笼特征）：
+    *   `registry/PDBlockTags.java`：新增 `LANTERNS = c:lanterns` 社区约定标签常量（与 Fabric Convention Tags 兼容）
+    *   `data/PDBlockTagProvider.java`：`addExtraTags` 写入染梦灯笼、染梦水晶灯及原版 `lantern`/`soul_lantern`
+    *   `src/generated/resources/data/c/tags/block/lanterns.json`：手动生成等价标签文件（DataGen 被并行开发的配置加载问题阻塞期间，保证资源就位；待其修复后 runData 会重新生成同样内容）
+*   **验证**：`:PasterDream:compileJava` BUILD SUCCESSFUL；全部 JSON/纹理/mcmeta 校验通过
+*   **注意**：本轮 `runData` 受并行开发中的 `PasterDreamMod` 配置读取 bug（`Cannot get config value before config is loaded`）阻塞，标签已手动落盘，DataGen 代码同步就绪
+
+---
+
+### 修复：全库无效配置审计——补齐 4 项移植遗漏配置的功能实现
+
+*   **审计**（`tools/scan_config_usage.py` 新增）：全库引用扫描 6 个配置类（PDCommonConfig/PDClientConfig/PDMeltDreamConfig/PDSanityConfig/PDSpellsConfig）共 100+ 配置项，识别出「仅配置界面引用、无业务读取」的无效配置
+*   **补实现**（`PasterDream` 主模块）：
+    *   `ban fire necklace`（禁用业火项链）→ `Fire0NecklaceItem.curioTick` 补充 BAN 检查：禁用时提示"此物品已被禁用"；不禁用时脚下空气处点火 + 燃烧时急迫 I（对齐原版 `Fire0NecklacePr0Procedure`）
+    *   `loading gui tips`（加载界面 tips）→ 新增 `PDLoadingTipsClientEvents`（ScreenEvent.Render.Post）：连接/加载/进度界面底部绘制随机 tips，22 条文案沿用原版（对齐原版 `ClientEvent`）
+    *   `the origin of the world initially generated dyedream crack`（主世界 0,0 原点裂隙）+ `dyedream origin spawnpoint`（染梦出生点岛屿）→ 新增 `PDOriginCrackWorldgen`（LevelEvent.Load + SavedData 防重复，对齐原版 `GenerateWorldPr0Procedure`，高度逻辑 heightmap≤100 → (-9,110,-10) 否则 (-9,160,-10)）
+*   **报告**（`docs/invalid-config-audit.md`）：附属模块 15 项「配置预留但功能未实现」保留待实现——San 恢复/下界/末地/雨天/雷暴降值（6 项）、MeltDream 恢复/水晶箱倍率/上限（6 项）、Spells 法术倍率（3 项）
+*   **验证**：`:PasterDream:compileJava` + 三个附属模块 BUILD SUCCESSFUL
+
+---
+
+### 新增：自定义出生维度/群系（默认关闭）
+
+*   **新增**（`world/PDCustomSpawnEvents.java`）：玩家登录（新玩家首次进入世界）时，若配置开启且该玩家尚未执行过自定义出生，自动传送到配置指定的维度与群系位置并设置重生点
+    *   以目标维度出生点为中心，用 `ServerLevel.findClosestBiome3d` 搜索指定群系（搜索不到时回退到维度出生点）；用 `Heightmap.MOTION_BLOCKING` 计算安全地表高度
+    *   执行完成后在玩家 `PlayerPersisted` 子标签写入标记，同一存档内只生效一次（跨死亡/重登保留，与《帕斯特指南》发放标记同模式）
+    *   维度/群系 ID 非法或未注册时跳过并保留原版出生，不影响现有流程
+*   **配置**（`PDCommonConfig.java`）：`PasterDream-Common.toml` 新增 `[Custom Spawn]` 段
+    *   `custom spawn enabled`（默认 `false`）—— 总开关
+    *   `custom spawn dimension`（默认 `minecraft:overworld`）—— 出生维度 ID，如 `pasterdream:dyedream_world`
+    *   `custom spawn biome`（默认 `minecraft:plains`）—— 出生群系 ID，如 `pasterdream:dyedream`
+    *   `custom spawn search radius`（默认 `10000`，范围 `100~100000`）—— 群系搜索半径（格）
+*   **事件注册**（`PasterDreamMod.java`）：`NeoForge.EVENT_BUS` 注册 `PDCustomSpawnEvents::onPlayerLoggedIn`
+*   **配置界面**（`PDConfigScreen.java` / `ConfigCategory.java`）：新增「自定义出生 / Custom Spawn」分类，提供总开关与搜索半径条目（维度/群系 ID 请直接编辑 TOML）
+*   **语言**：`zh_cn` / `en_us` 新增分类标题与配置项翻译
+*   **验证**：`:PasterDream:compileJava` BUILD SUCCESSFUL
+
+---
+
+
+### 修复：禁用「染梦裂隙自然生成」配置不生效（主世界天空仍生成裂隙浮岛）
+
+*   **根因**（`PasterDream`）：
+    1. `PDCommonConfig.DYEDREAM_CRACK_GENERATE` 此前仅被配置界面引用，生成注册从未读取该值
+    2. `worldgen/structure/struct_dyedream_crack_1.json` 使用原版 `minecraft:jigsaw` 类型，结构生成完全由静态 JSON 驱动，与代码注册无关 → 只要 JSON 存在，主世界 Y=32 裂隙浮岛必生成
+    3. `PasterDreamMod` 构造器中配置注册（`registerConfig`）位于结构注册（`PDRuinsRegistration.register()`）之后，此时读取配置会抛 `IllegalStateException` 或读到默认值
+*   **修复**：
+    *   `PasterDreamMod.java`：配置文件注册提前至构造器最前部，确保后续代码可安全读取配置值
+    *   `PDRuinsRegistration.java`：`registerDyedreamCrack()` 增加配置判断（含方法内防御），关闭时跳过 `struct_dyedream_crack_1` 的 StructureType 注册并输出调试日志
+    *   `worldgen/structure/struct_dyedream_crack_1.json`：`type` 由 `minecraft:jigsaw` 改为 `pasterdream:struct_dyedream_crack_1`（RuinBuilder 注册的自定义类型）——配置关闭时该类型未注册 → 结构 JSON 解析失败 → structure_set 引用失效 → 不生成；配置开启（默认）时行为不变
+    *   `PDConfigScreen.java`：删除 BASIC 分类中重复的「染梦裂隙自然生成」条目（保留 System 分类），条目计数同步修正
+    *   `PDStructureVerifyHooks.java`：`verifyRuinApi` 断言随配置联动（关闭裂隙生成时期望数 42→41）
+*   **配置**：`PasterDream-Common.toml` → `[System]` → `dyedream crack generate`（默认 `true`；关闭后需新建世界生效）
+*   **验证**：`:PasterDream:compileJava` + `:PasterDream:processResources` BUILD SUCCESSFUL，构建输出 JSON 已同步新 type
+
+---
+
+
+### 新增：染梦灯笼（dyedream_lantern）悬挂式灯笼方块
+
+*   **新增**（`block/DyedreamLanternBlock.java`）：悬挂式灯笼，参考原版 `LanternBlock` 实现，支持悬挂（hanging）/放置双状态与含水（waterlogged）
+    *   玻璃音效、硬度 0.3、15 级光照、自发光、无遮挡、非红石导体（与染梦水晶灯同风格）
+*   **注册**（`PasterDream`）：方块 `PDBlocksSimple.DYEDREAM_LANTERN`、物品 `PDItemsBlocks.DYEDREAM_LANTERN`、门面 `PDBlocks`/`PDItems`、配置 `PDBlocks.putConfig("dyedream_lantern", mineable("pickaxe"))`（自动生成 `mineable/pickaxe` 标签）、创造标签 `PDCreativeTabsDyedream`
+*   **资源**：blockstates（hanging 双变体）、模型（parent 原版 `template_lantern`/`template_hanging_lantern`）、占位纹理 `textures/block/dyedream_lantern.png`（`tools/gen_dyedream_lantern_tex.py` 生成，待正式美术替换）、战利品表、合成配方（与染梦水晶灯同配方，产物 2 个）
+*   **语言**：`zh_cn` 染梦灯笼 / `en_us` Dyedream Lantern
+*   **注册 ID 校验**：全工作区确认 `dyedream_lantern` 无重复注册；与原模组拼写错误的 `dyedream_lartern`（染梦水晶灯，已移植）不冲突
+*   **验证**：`:PasterDream:compileJava` BUILD SUCCESSFUL
+
+---
+
 
 ### 新增：扫盘工具 — 物品堆叠 / BUFF 数值与原模组对齐检查
 
@@ -25,7 +135,6 @@
 
 ---
 
-## v0.9.5 — 2026-08-09
 
 ### 调整：移植树密度改为噪声驱动，实现群系错落感
 

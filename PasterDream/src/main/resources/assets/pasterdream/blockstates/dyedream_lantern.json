@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "hanging=false": {
+      "model": "pasterdream:block/dyedream_lantern"
+    },
+    "hanging=true": {
+      "model": "pasterdream:block/dyedream_lantern_hanging"
+    }
+  }
+}

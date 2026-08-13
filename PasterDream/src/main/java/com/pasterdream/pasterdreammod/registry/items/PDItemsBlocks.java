@@ -58,6 +58,8 @@ public class PDItemsBlocks {
     public static final DeferredItem<BlockItem> DYEDREAM_HANGING_VINE = PDItems.ITEMS.registerSimpleBlockItem("dyedream_hanging_vine", PDBlocks.DYEDREAM_HANGING_VINE);
     public static final DeferredItem<BlockItem> DYEDREAM_FALLEN_LEAVES = PDItems.ITEMS.registerSimpleBlockItem("dyedream_fallen_leaves", PDBlocks.DYEDREAM_FALLEN_LEAVES);
     public static final DeferredItem<BlockItem> DYEDREAM_WORLDTREE_LEAVES = PDItems.ITEMS.registerSimpleBlockItem("dyedream_worldtree_leaves", PDBlocks.DYEDREAM_WORLDTREE_LEAVES);
+    public static final DeferredItem<BlockItem> DYEDREAM_DEEPSTONE = PDItems.ITEMS.registerSimpleBlockItem("dyedream_deepstone", PDBlocks.DYEDREAM_DEEPSTONE);
+    public static final DeferredItem<BlockItem> DYEDREAM_SANDSTONE = PDItems.ITEMS.registerSimpleBlockItem("dyedream_sandstone", PDBlocks.DYEDREAM_SANDSTONE);
     public static final DeferredItem<BlockItem> DYEDREAMQUARTZ_ORE = PDItems.ITEMS.registerSimpleBlockItem("dyedreamquartz_ore", PDBlocks.DYEDREAMQUARTZ_ORE);
     public static final DeferredItem<BlockItem> DYEDREAMDUST_ORE = PDItems.ITEMS.registerSimpleBlockItem("dyedreamdust_ore", PDBlocks.DYEDREAMDUST_ORE);
     public static final DeferredItem<BlockItem> AMBER_CANDY_ORE = PDItems.ITEMS.registerSimpleBlockItem("amber_candy_ore", PDBlocks.AMBER_CANDY_ORE);
@@ -89,6 +91,7 @@ public class PDItemsBlocks {
     public static final DeferredItem<BlockItem> CARVE_DYEDREAM_GLASSPANE = PDItems.ITEMS.registerSimpleBlockItem("carve_dyedream_glasspane", PDBlocks.CARVE_DYEDREAM_GLASSPANE);
     public static final DeferredItem<BlockItem> GOLD_CARVE_DYEDREAM_GLASSPANE = PDItems.ITEMS.registerSimpleBlockItem("gold_carve_dyedream_glasspane", PDBlocks.GOLD_CARVE_DYEDREAM_GLASSPANE);
     public static final DeferredItem<BlockItem> DYEDREAM_LARTERN = PDItems.ITEMS.registerSimpleBlockItem("dyedream_lartern", PDBlocks.DYEDREAM_LARTERN);
+    public static final DeferredItem<BlockItem> DYEDREAM_LANTERN = PDItems.ITEMS.registerSimpleBlockItem("dyedream_lantern", PDBlocks.DYEDREAM_LANTERN);
 
 
     // ==================== Phase 1: 移植方块物品 ====================

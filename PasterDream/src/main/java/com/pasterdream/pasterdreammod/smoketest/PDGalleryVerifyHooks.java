@@ -6,6 +6,7 @@ import com.pasterdream.pasterdreammod.block.DyedreamSaplingBlock;
 import com.pasterdream.pasterdreammod.block.PDStructureBlock;
 import com.pasterdream.pasterdreammod.block.StarcallBlockBlock;
 import com.pasterdream.pasterdreammod.block.StarcallCrackBlock;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import net.minecraft.core.BlockPos;
@@ -189,7 +190,12 @@ public final class PDGalleryVerifyHooks {
         expectDim(byStructure, "dream_church_10", Dim.DYEDREAM, out);
         expectDim(byStructure, "shadow_dungeon", Dim.SHADOW, out);
         expectDim(byStructure, "windmoor_tree_0", Dim.WIND, out);
-        expectDim(byStructure, "struct_dyedream_crack_1", Dim.OVERWORLD, out);
+        // 染梦裂隙受配置控制：关闭自然生成时 struct_dyedream_crack_1 不注册，跳过注册表断言
+        if (PDCommonConfig.DYEDREAM_CRACK_GENERATE.get()) {
+            expectDim(byStructure, "struct_dyedream_crack_1", Dim.OVERWORLD, out);
+        } else {
+            out.accept(detail(true, "结构 struct_dyedream_crack_1 已按配置禁用自然生成", "dyedream crack generate=false"));
+        }
         expectDim(byStructure, "desert_cottage_0", Dim.OVERWORLD, out);
 
         out.accept(detail(unknown.size() < total * 0.15,

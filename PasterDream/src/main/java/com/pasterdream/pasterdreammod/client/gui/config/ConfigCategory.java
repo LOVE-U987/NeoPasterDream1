@@ -19,6 +19,8 @@ public enum ConfigCategory {
     ADVANCEMENT_LOCK("advancement_lock"),
     /** 通用基础游戏机制配置 */
     BASIC("basic"),
+    /** 自定义出生维度/群系配置 */
+    CUSTOM_SPAWN("custom_spawn"),
     /** 性能与更新频率配置 */
     PROPERTY("property"),
     /** 功能禁用配置 */

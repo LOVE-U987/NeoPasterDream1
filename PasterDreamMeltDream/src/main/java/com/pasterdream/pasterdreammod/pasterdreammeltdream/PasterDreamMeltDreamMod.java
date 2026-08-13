@@ -12,6 +12,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * PasterDreamMeltDream 模组主类。
@@ -50,6 +51,10 @@ public class PasterDreamMeltDreamMod {
         PDAddonConfigRegistry.registerCommonConfig(MOD_ID, commonModConfig);
 
         modEventBus.addListener(this::onCommonSetup);
+
+        // 注册融梦能量自然恢复的玩家 tick / 登录事件（服务端）
+        NeoForge.EVENT_BUS.addListener(PDMeltDreamEvents::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(PDMeltDreamEvents::onPlayerLoggedIn);
 
         PDDebugLogger.mainInfo("PasterDreamMeltDream 模组已初始化");
     }

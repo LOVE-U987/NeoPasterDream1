@@ -105,6 +105,8 @@ public class PDBlocks {
                 .tex("bottom", "pasterdream:block/dyedream_dirt"));
         BlockAPI.putConfig("dyedream_lartern", BlockConfig.of()
                 .mineable("pickaxe"));
+        BlockAPI.putConfig("dyedream_lantern", BlockConfig.of()
+                .mineable("pickaxe"));
         BlockAPI.putConfig("dyedream_desk", BlockConfig.of()
                 .mineable("axe"));
 
@@ -265,6 +267,7 @@ public class PDBlocks {
     public static final DeferredBlock<?> CARVE_DYEDREAM_GLASSPANE = PDBlocksSimple.CARVE_DYEDREAM_GLASSPANE;
     public static final DeferredBlock<?> GOLD_CARVE_DYEDREAM_GLASSPANE = PDBlocksSimple.GOLD_CARVE_DYEDREAM_GLASSPANE;
     public static final DeferredBlock<?> DYEDREAM_LARTERN = PDBlocksSimple.DYEDREAM_LARTERN;
+    public static final DeferredBlock<?> DYEDREAM_LANTERN = PDBlocksSimple.DYEDREAM_LANTERN;
 
     // --- PDBlocksVegetation ---
     public static final DeferredBlock<?> DYEDREAM_PLANKS_PANE = PDBlocksVegetation.DYEDREAM_PLANKS_PANE;

@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.smoketest;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.block.PDStructureBlock;
 import com.pasterdream.pasterdreammod.block.entity.DyedreamDeskBlockEntity;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.registry.PDRuinsRegistration;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksStructure;
 import net.minecraft.core.BlockPos;
@@ -152,10 +153,12 @@ public final class PDStructureVerifyHooks {
 
     private static void verifyRuinApi(Consumer<Result> out) {
         var all = PDRuinsRegistration.getAllRegisteredStructures();
-        // 含 dream_church_0~10 全 11 变体 + worldtree_0/1 → ≥42
-        out.accept(detail(all.size() >= 42,
+        // 裂隙类型无条件注册（生成与否由 DyedreamCrackStructure 在生成阶段按配置判断），期望数恒为 42
+        int expect = 42;
+        // 含 dream_church_0~10 全 11 变体 + worldtree_0/1 + 裂隙
+        out.accept(detail(all.size() >= expect,
                 "RuinAPI 注册遗迹 " + all.size(),
-                "期望 ≥42（含教堂 0–10、世界树 0/1）"));
+                "期望 ≥" + expect + "（含教堂 0–10、世界树 0/1、裂隙；裂隙生成由配置控制）"));
         for (String name : List.of("dream_train", "dyedream_worldtree_0", "dyedream_worldtree_1", "pinkagaric_house_0",
                 "dream_church_0", "dream_church_8", "dream_church_9", "dream_church_10",
                 "aaroncos_arena_portals", "desert_cottage_0")) {

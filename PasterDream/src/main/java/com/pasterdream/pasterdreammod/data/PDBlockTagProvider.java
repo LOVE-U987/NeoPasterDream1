@@ -3,10 +3,12 @@ package com.pasterdream.pasterdreammod.data;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.data.ApiBlockTagProvider;
 import com.pasterdream.pasterdreammod.api.doll.DollAPI;
+import com.pasterdream.pasterdreammod.registry.PDBlockTags;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -128,5 +130,15 @@ public class PDBlockTagProvider extends ApiBlockTagProvider {
         for (var reg : DollAPI.getRegistrations()) {
             mineableAxe.add(reg.block().get());
         }
+
+        // ==================== 灯笼标签（c:lanterns 社区约定） ====================
+        // 染梦灯笼 / 染梦水晶灯 加入 c:lanterns，供其他模组识别为灯笼类方块；
+        // 同时收录原版灯笼与灵魂灯笼，保证标签引用完整性。
+        tag(PDBlockTags.LANTERNS).add(
+                PDBlocks.DYEDREAM_LANTERN.get(),
+                PDBlocks.DYEDREAM_LARTERN.get(),
+                Blocks.LANTERN,
+                Blocks.SOUL_LANTERN
+        );
     }
 }

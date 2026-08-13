@@ -156,6 +156,7 @@ public class PDCreativeTabsDyedream {
                         output.accept(PDBlocks.GOLD_CARVE_DYEDREAM_GLASS.get());
                         output.accept(PDBlocks.GOLD_CARVE_DYEDREAM_GLASSPANE.get());
                         output.accept(PDBlocks.DYEDREAM_LARTERN.get());
+                        output.accept(PDBlocks.DYEDREAM_LANTERN.get());
 
                         // 染梦维度专属物品
                         output.accept(PDItems.DYEDREAM_INGOT.get());
