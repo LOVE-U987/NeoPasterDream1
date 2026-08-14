@@ -3,6 +3,18 @@
 ---
 ## v0.9.6 — 2026-08-13
 
+### 修复：草莓甜心（strawberry_heart）无法使用
+
+*   **根因**（`PasterDream` `item/StrawberryHeartItem.java`）：移植为普通 `Item`，未覆写任何 `use` / `getUseAnimation` / `getUseDuration` / `releaseUsing` 方法——右键无任何行为（不蓄力、不发射、不演奏），等同于"无法使用"的装饰物
+*   **修复**：参照 `ShadowVortexBookItem` 的"松开蓄力施法"范式重写 `StrawberryHeartItem.java`，还原原版 `StrawberryHeartItem` + `StrawberryHeartPr0Procedure` 行为：
+    *   右键蓄力（`UseAnim.BOW`，时长 72000），松手 `releaseUsing` 发射 `StrawberryHeartProjectileEntity`（动能 2、伤害 1、吉他发射音），弹药 = 魔法石（先双手后主背包），法杖自体 `hurtAndBreak(1)`，创造免弹药
+    *   施法冷却（`applyStrawberryHeartProcedure`）：佩戴俏皮鬼头饰 `qym_head` → 本法杖冷却 0；否则全部 `pasterdream:magic` 标签物品冷却 `12 * MAGICCD` tick（默认 1 → 12 tick = 0.6s，与 tooltip 一致）
+    *   潜行演奏：消耗 0.25 融梦能量（`PDAttachments.consumePlayerMeltDreamEnergy`）→ 播放 4 段吉他琶音（立即 + `ServerScheduler.schedule` 延迟 4/7/10 tick，音量 1.2/1.2/1.2/1.4、音调 0.8/1.0/1.2/1.7）→ 8 格半径内玩家获得瞬间治疗（4 点）、生命恢复 5s、力量 10s、速度 10s → 全部法术物品长冷却 `100 * MAGICCD`；能量不足显示 `message.pasterdream.strawberry_heart.no_energy`
+*   **新增**（`PasterDream` `lang/zh_cn.json`、`lang/en_us.json`）：`message.pasterdream.strawberry_heart.no_energy` 翻译键（融梦能量不足 / Not enough Meltdream Energy!）
+*   **验证**：`:PasterDream:compileJava` BUILD SUCCESSFUL；两个语言文件 JSON 解析合法且含新键
+
+---
+
 ### 修复：合并冲突残留导致的编译失败
 
 *   **根因**：合并 `momonyako` 分支（v0.9.6）时，4 处冲突标记未真正解决即被提交，导致 `:PasterDream:compileJava` 语法错误（`<<<<<<< HEAD` / `=======` / `>>>>>>>` 残留）
