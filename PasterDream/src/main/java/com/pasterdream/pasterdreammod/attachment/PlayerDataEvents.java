@@ -104,6 +104,10 @@ public class PlayerDataEvents {
      * @param player 登录的服务端玩家
      */
     private static void giveGuideBookIfNeeded(ServerPlayer player) {
+        // 配置「首次登录是否赠送《帕斯特指南》」关闭时不发放
+        if (!Boolean.TRUE.equals(PDCommonConfig.GIVE_GUIDE_BOOK.get())) {
+            return;
+        }
         CompoundTag persistent = player.getPersistentData();
         CompoundTag persisted = persistent.contains(Player.PERSISTED_NBT_TAG, Tag.TAG_COMPOUND)
                 ? persistent.getCompound(Player.PERSISTED_NBT_TAG)

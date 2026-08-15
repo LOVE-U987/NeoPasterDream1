@@ -1,7 +1,23 @@
 # PasterDream Changelog
 
 ---
-## v0.9.6 — 2026-08-13
+## v0.9.6 — 2026-08-15
+
+### 修复：配置日志刷屏死循环（PasterDream-Common.toml 无限纠正）
+
+*   **根因**（`PasterDream` `config/PDCommonConfig.java:186~194`）：`Meltdream Chest` 三个品质物品池（common/rare/legendary loot）用 `List.of(...)` 作默认值调用二参 `Builder.define(String, T)`。该重载生成的默认 validator 为 `default.getClass().isAssignableFrom(value.getClass())`——`List.of` 返回不可变 `ImmutableCollections$ListN`，而 nightconfig 从 TOML 读回的是 `ArrayList`，运行时类不匹配 → 配置**每次重载都被判 "Incorrect key ... was corrected to its default"**（日志 `from` 与 `to` 内容相同却仍判错误，正是类不同值相同）→ 纠正写盘 → NeoForge `FileWatcher` 检测文件变化 → 重载 → 再纠正 → **无限循环刷屏**（用户日志 5000~20000+ 行均为该 WARN）
+*   **修复**：三个物品池改为三参 `define(String, T, Predicate)`，显式传入 `o -> o instanceof List` validator——任意 List 实现（含 `ArrayList`）均通过校验，不再触发纠正，循环消除
+*   **验证**：`:PasterDream:compileJava` BUILD SUCCESSFUL；`lambda$define$0` 字节码确认默认 validator 为类兼容性检查，`instanceof List` 可覆盖所有 List 运行时类
+
+### 新增：首次登录是否赠送《帕斯特指南》配置选项
+
+*   **新增**（`PasterDream` `config/PDCommonConfig.java`）：`GIVE_GUIDE_BOOK` 布尔配置项（`Basic` 段，键 `give guide book`，默认 `true`）——关闭后首次登录不再赠送《帕斯特指南》Patchouli 图鉴
+*   **接入**（`PasterDream` `attachment/PlayerDataEvents.java:107`）：`giveGuideBookIfNeeded` 入口处判配置关闭则直接返回
+*   **接入**（`PasterDream` `client/gui/config/PDConfigScreen.java:230`）：`Basic` 分类注册 `GIVE_GUIDE_BOOK` 布尔条目
+*   **新增**（`PasterDream` `lang/zh_cn.json`、`lang/en_us.json`）：`gui.pasterdream.config.give_guide_book` + `.tooltip` 翻译键
+*   **验证**：`:PasterDream:compileJava` BUILD SUCCESSFUL；两个语言文件 JSON 解析合法且含新键
+
+---
 
 ### 修复：草莓甜心（strawberry_heart）无法使用
 

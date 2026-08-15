@@ -41,6 +41,8 @@ public class PDCommonConfig {
     public static final ModConfigSpec.ConfigValue<Boolean> THE_ORIGIN_OF_THE_WORLD_INITIALLY_GENERATED_DYEDREAM_CRACK;
     /** 启用模组进入游戏时的聊天栏公告（默认 true） */
     public static final ModConfigSpec.ConfigValue<Boolean> MOD_ACCOUOCEMENT;
+    /** 首次登录是否赠送《帕斯特指南》Patchouli 图鉴（默认 true） */
+    public static final ModConfigSpec.ConfigValue<Boolean> GIVE_GUIDE_BOOK;
     /** 禁止使用染梦世界的染梦裂隙向主世界返程传送（默认 false） */
     public static final ModConfigSpec.ConfigValue<Boolean> NO_RETURN_DYEDREAM_CRACK;
     /** 在染梦世界生成初始出生点岛屿（默认 true） */
@@ -141,6 +143,9 @@ public class PDCommonConfig {
         MOD_ACCOUOCEMENT = builder
                 .comment("启用模组进入游戏时的聊天栏公告 默认：true")
                 .define("mod accouocement", true);
+        GIVE_GUIDE_BOOK = builder
+                .comment("首次登录是否赠送《帕斯特指南》Patchouli 图鉴（需安装 Patchouli 才生效） 默认：true")
+                .define("give guide book", true);
         NO_RETURN_DYEDREAM_CRACK = builder
                 .comment("禁止在使用染梦世界的染梦裂隙向主世界的返程传送 默认：false")
                 .define("no return dyedream crack", false);
@@ -183,15 +188,22 @@ public class PDCommonConfig {
         MELTDREAM_CHEST_CUSTOM_LOOT_ENABLED = builder
                 .comment("融梦水晶箱自定义战利品总开关（开启后按下方三个品质的物品池生成掉落；关闭使用内置默认池） 默认：false")
                 .define("meltdream chest custom loot enabled", false);
+        // 注意：三个物品池必须传显式 validator（o instanceof List）。define(String,T) 的默认 validator
+        // 要求值运行时类为默认值运行时类的子类——List.of() 生成不可变 ImmutableCollections$ListN，
+        // 而 TOML 读回的是 ArrayList，类不匹配会触发 "Incorrect key ... was corrected" 无限纠正循环
+        // （FileWatcher 每次纠正写盘 → 重载 → 再纠正，日志刷屏数万行）。
         MELTDREAM_CHEST_COMMON_LOOT = builder
                 .comment("融梦水晶箱普通品质物品池（每行一个条目，格式：物品ID 数量 权重，如 \"pasterdream:fried_egg 2 30\") 默认：内置普通物品池")
-                .define("meltdream chest common loot", MeltdreamChestLootConfig.DEFAULT_COMMON_LOOT);
+                .define("meltdream chest common loot", MeltdreamChestLootConfig.DEFAULT_COMMON_LOOT,
+                        o -> o instanceof List);
         MELTDREAM_CHEST_RARE_LOOT = builder
                 .comment("融梦水晶箱稀有品质物品池（格式同上） 默认：内置稀有物品池")
-                .define("meltdream chest rare loot", MeltdreamChestLootConfig.DEFAULT_RARE_LOOT);
+                .define("meltdream chest rare loot", MeltdreamChestLootConfig.DEFAULT_RARE_LOOT,
+                        o -> o instanceof List);
         MELTDREAM_CHEST_LEGENDARY_LOOT = builder
                 .comment("融梦水晶箱传说品质物品池（格式同上） 默认：内置传说物品池")
-                .define("meltdream chest legendary loot", MeltdreamChestLootConfig.DEFAULT_LEGENDARY_LOOT);
+                .define("meltdream chest legendary loot", MeltdreamChestLootConfig.DEFAULT_LEGENDARY_LOOT,
+                        o -> o instanceof List);
         builder.pop();
 
         builder.push("Ban");

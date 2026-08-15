@@ -227,6 +227,7 @@ public class PDConfigScreen extends Screen {
         // ==================== Common Basic (6 items) ====================
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.THE_ORIGIN_OF_THE_WORLD_INITIALLY_GENERATED_DYEDREAM_CRACK, ConfigCategory.BASIC, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.MOD_ACCOUOCEMENT, ConfigCategory.BASIC, idx++));
+        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.GIVE_GUIDE_BOOK, ConfigCategory.BASIC, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.IN_LAMP_SHADOW_GIVE_PALE_BONENEEDLE, ConfigCategory.BASIC, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.NO_RETURN_DYEDREAM_CRACK, ConfigCategory.BASIC, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.DYEDREAM_ORIGIN_SPAWNPOINT, ConfigCategory.BASIC, idx++));

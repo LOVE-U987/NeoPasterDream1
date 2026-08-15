@@ -929,6 +929,8 @@
   "gui.pasterdream.config.meltdreamenergy_tank_ybase.tooltip": "Vertical base position of the Meltdream Energy bar on screen",
   "gui.pasterdream.config.mod_accouocement": "Mod Announcement",
   "gui.pasterdream.config.mod_accouocement.tooltip": "Show mod announcement in chat when entering the game",
+  "gui.pasterdream.config.give_guide_book": "Give PasterDream Guide Book",
+  "gui.pasterdream.config.give_guide_book.tooltip": "Whether to give the PasterDream Guide (Patchouli book) on first login (requires Patchouli)",
   "gui.pasterdream.config.nav": "Config Categories",
   "gui.pasterdream.config.no_return_dyedream_crack": "Disable Return Teleport",
   "gui.pasterdream.config.no_return_dyedream_crack.tooltip": "Prevent returning to the Overworld via Dyedream Cracks in the Dyedream World",

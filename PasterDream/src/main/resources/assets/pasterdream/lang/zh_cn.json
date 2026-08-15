@@ -1814,6 +1814,8 @@
   "gui.pasterdream.config.the_origin_of_the_world_initially_generated_dyedream_crack.tooltip": "初始生成世界时在 0,0 原点生成染梦裂隙",
   "gui.pasterdream.config.mod_accouocement": "进游公告",
   "gui.pasterdream.config.mod_accouocement.tooltip": "进入游戏时在聊天栏显示模组公告",
+  "gui.pasterdream.config.give_guide_book": "赠送帕斯特指南",
+  "gui.pasterdream.config.give_guide_book.tooltip": "首次登录是否赠送《帕斯特指南》Patchouli 图鉴（需安装 Patchouli 才生效）",
   "gui.pasterdream.config.in_lamp_shadow_give_pale_boneneedle": "灯影赠针",
   "gui.pasterdream.config.in_lamp_shadow_give_pale_boneneedle.tooltip": "进入主题梦境《灯影之下》时是否给予苍白骨针",
   "gui.pasterdream.config.no_return_dyedream_crack": "禁止返程传送",
