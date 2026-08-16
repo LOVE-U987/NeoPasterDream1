@@ -555,31 +555,204 @@ private BlockPos findSafePosition(ServerLevel world, ServerPlayer player) {
 
 ---
 
+## #15 染梦垂藤物品形态异常
+
+### 涉及文件
+
+- `PasterDream/src/main/resources/assets/pasterdream/models/item/dyedream_hanging_vine.json`
+- `PasterDream/src/main/resources/assets/pasterdream/models/block/dyedream_hanging_vine.json`
+
+### 根因
+
+物品模型 `models/item/dyedream_hanging_vine.json` 错误地引用了方块模型作为父模型：
+```json
+{
+  "parent": "pasterdream:block/dyedream_hanging_vine"  // ❌ 错误：引用了方块模型
+}
+```
+
+方块模型 `minecraft:block/vine` 是为**世界中方块状态渲染**设计的（支持 multipart 多方向贴图），不适合作为物品模型显示。
+
+**对比其他藤蔓方块的正确实现**:
+
+| 藤蔓方块 | 物品模型 parent | 纹理来源 |
+|---------|----------------|---------|
+| `vine_0` | `item/generated` | `block/vine_0` |
+| `fig_vine` | `item/generated` | `item/fig_vine` |
+| **`dyedream_hanging_vine`** | ❌ `pasterdream:block/dyedream_hanging_vine` | — |
+
+### 修复方向
+
+将物品模型改为 `item/generated`，并指定正确的纹理和渲染类型：
+```json
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "pasterdream:block/dyedream_hanging_vine"
+  },
+  "render_type": "cutout"
+}
+```
+
+---
+
+## #16 冰棱晶芽生成位置错误 + 缺少含水状态
+
+### 涉及文件
+
+- `PasterDream/src/main/java/com/pasterdream/pasterdreammod/block/IceBudBlock.java`
+- `PasterDream/src/main/resources/data/pasterdream/worldgen/placed_feature/ice_crystal_cluster.json`
+- `PasterDream/src/main/resources/data/pasterdream/worldgen/placed_feature/ice_crystal_garden.json`
+- `PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/OceanDecorations.java`
+- `PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/IceDecorations.java`
+
+### 问题现象
+
+冰棱晶芽 (`ice_bud_0`) 生成在地表/海底，而非预期的地下洞穴；且在水中生成时未设置含水状态。
+
+### 子问题分析
+
+| 子问题 | 根因 | 对比原版/预期 |
+|--------|------|--------------|
+| **生成在地表而非地下** | `ice_crystal_garden.json` 使用 `MOTION_BLOCKING` 高度图，定位到地表方块 | 应使用洞穴高度图或在地下生成 |
+| **生成在海底** | `ice_crystal_cluster.json` 使用 `OCEAN_FLOOR_WG` 高度图 | 海底生成可能是预期行为，但需确认 |
+| **水中未设置含水状态** | 世界生成使用 `defaultBlockState()`，`WATERLOGGED` 默认为 `false` | 应检测水环境并设置含水状态 |
+
+### 当前配置
+
+| 装饰品 | 高度图 | 生成位置 | 含水状态 |
+|--------|--------|---------|---------|
+| `ice_crystal_cluster` | `OCEAN_FLOOR_WG` | 海底 | ❌ 未设置 |
+| `ice_crystal_garden` | `MOTION_BLOCKING` | 地表 | ❌ 未设置 |
+
+### 修复方向
+
+| 问题 | 修复方案 |
+|------|---------|
+| **生成位置** | 将 `ice_crystal_garden` 的高度图改为洞穴相关配置，或调整 placed_feature 的生成阶段 |
+| **含水状态** | 在 `GenericDecorationFeature` 中检测水环境，或为冰晶系列装饰物创建专门的生成器，放置时设置 `WATERLOGGED=true` |
+
+---
+
+## #17 biome_dyedream_3 水面不结冰
+
+### 涉及文件
+
+- `PasterDream/src/main/resources/data/pasterdream/worldgen/biome/biome_dyedream_3.json`
+
+### 问题现象
+
+`biome_dyedream_3`（染梦深海）群系水面永远不会自动结冰，即使温度为 0.1（寒冷）。
+
+### 根因
+
+`biome_dyedream_3.json` 的 features 数组为空（行12-24），**缺少 `minecraft:freeze_top_layer` feature**。
+
+**对比其他寒冷群系**：
+
+| 群系 | 温度 | freeze_top_layer | 结冰 |
+|------|------|-----------------|------|
+| `cold_domain_biome` | 0 | ✅ 有 | 正常 |
+| `biome_dyedream_2` | 0 | ✅ 有 | 正常 |
+| **`biome_dyedream_3`** | 0.1 | ❌ **缺失** | **不结冰** |
+
+### 修复方案
+
+1. 在 `biome_dyedream_3.json` 的 features 数组中添加 `minecraft:freeze_top_layer`
+2. 建议将温度从 `0.1` 调整为 `0`，与其他寒冷群系保持一致
+
+---
+
+## #18 旁观模式打开染梦书桌导致连接丢失
+
+### 涉及文件
+
+- `PasterDream/src/main/java/com/pasterdream/pasterdreammod/block/DyedreamDeskBlock.java:170-180`
+
+### 问题现象
+
+在旁观模式（Spectator Mode）下右键打开染梦书桌（`dyedream_desk`）会导致连接丢失（单人模式）。
+
+### 根因
+
+`useWithoutItem` 方法未检查玩家游戏模式，直接尝试打开菜单。旁观者不应能与方块交互（原版 Minecraft 行为），强制执行 `openMenu` 导致异常。
+
+```java
+@Override
+protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+    if (level.isClientSide()) return InteractionResult.SUCCESS;
+
+    BlockEntity be = level.getBlockEntity(pos);
+    if (be instanceof DyedreamDeskBlockEntity desk) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(desk, pos);  // ⚠️ 未检查游戏模式
+        }
+    }
+    return InteractionResult.CONSUME;
+}
+```
+
+### 修复方案
+
+在打开菜单前检查玩家游戏模式，如果是旁观模式则返回 `InteractionResult.PASS`：
+
+```java
+@Override
+protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+    if (level.isClientSide()) return InteractionResult.SUCCESS;
+    
+    // 旁观者无法交互
+    if (player.isSpectator()) return InteractionResult.PASS;
+
+    BlockEntity be = level.getBlockEntity(pos);
+    if (be instanceof DyedreamDeskBlockEntity desk) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(desk, pos);
+        }
+    }
+    return InteractionResult.CONSUME;
+}
+```
+
+---
+
+## #19 调试水晶-染梦水晶球无法随机生成大水晶球
+
+### 涉及文件
+
+- `PasterDream/src/main/java/com/pasterdream/pasterdreammod/item/DebugStructureBlockWandItem.java:75`
+- `PasterDream/src/main/java/com/pasterdream/pasterdreammod/block/PDStructureBlock.java:271`
+
+### 问题现象
+
+使用调试水晶-染梦水晶球（`debug_wand_crystal_ball`）时，只能生成小水晶球（`crystal_ball_1`），无法生成大水晶球（`crystal_ball_0`）。
+
+### 根因
+
+`RandomSource.create()` 每次调用创建新实例，随机性不佳。应使用 `level.random`（World 级别的共享随机源）。
+
+```java
+// DebugStructureBlockWandItem.java:75
+number = Mth.nextInt(RandomSource.create(), 1, spec.randomRange());  // ❌ 每次创建新随机源
+
+// PDStructureBlock.java:271
+number = Mth.nextInt(RandomSource.create(), 1, spec.randomRange());  // ❌ 每次创建新随机源
+```
+
+### 修复方案
+
+将 `RandomSource.create()` 替换为 `serverLevel.random` 或 `level.random`：
+
+```java
+// DebugStructureBlockWandItem.java:75
+number = Mth.nextInt(serverLevel.random, 1, spec.randomRange());  // ✅ 使用 World 随机源
+
+// PDStructureBlock.java:271
+number = Mth.nextInt(level.random, 1, spec.randomRange());  // ✅ 使用 World 随机源
+```
+
+---
+
 ## 修复优先级
 
-| 优先级 | 序号 | 问题 |       修复难度        | 影响范围 |
-|:------:|:----:|------|:---------------------:|---------|
-| **P0** | #12 | 维度洞穴永久亮 |   低 (改 2 处数值)    | 全维度体验 |
-| **P0** | #13 | 染梦树苗无法生长 |          低           | 树苗系统 |
-| **P0** | #5 | 效果纹理缺失 |   低 (复制 1 文件)    | 视觉缺失 |
-| **P0** | #10.4.1 | 云团 heightmap=MOTION_BLOCKING |     低 (改 JSON)      | 全维度性能 |
-| **P0** | #10.4.2 | 云团 fillHang=true |     低 (改 JSON)      | 全维度性能 |
-| **P0** | #10.3.1 | biome_dyedream_1 注入 9 个树 placed_feature |          低           | 森林群系 |
-| **P0** | #10.3.2 | dyedream_trees_dense count=10 过高 |          低           | 茂密森林 |
-| **P0** | #10.1.1 | 风之旅 small_ballon 11 个独立结构集 |          中           | 风之旅维度 |
-| **P0** | #10.1.2 | biome_dyedream_0 承受 42 个结构集竞争 |          高           | 染梦核心群系 |
-| **P1** | #1 | 睡莲碰撞/破坏 |      低 (改属性)      | 核心交互 |
-| **P1** | #3 | 晶芽掉落 |   中 (改 getDrops)    | 经济系统 |
-| **P1** | #6 | 冰柱融化 |     中 (替换方块)     | 世界生成 |
-| **P1** | #10.2.1 | biome_dyedream_2 ice_crystal_spike rarity=1 |          低           | 冰雪群系 |
-| **P1** | #10.1.3 | desert_cottage_0 / wishingtree_1 ratio 异常 |          低           | 主世界/染梦 |
-| **P1** | #10.3.3 | random_selector 巨型树概率偏高 |          低           | 全维度 |
-| **P1** | #10.4.3 | 云团 rarity=2 密度过高 |     低 (改 JSON)      | 全维度性能 |
-| **P2** | #2 | 树叶腐烂 |    低 (改 1 方法)     | 设计决策需确认 |
-| **P2** | #4 | 星空枕/占卜 |   中高 (加校验逻辑)   | 游戏平衡 |
-| **P2** | #9 | 落叶/悬空 |   中 (改 decorator)   | 世界生成 |
-| **P2** | #10.2.2 | warm_crystal_spike 缺失 JSON |          中           | biome_1 |
-| **P2** | #10.4.4 | 云团 replaceable 包含 CAVE_AIR | 低 | 世界生成 |
-| **P2** | #10.4.5 | 云团注入到全部 9 个群系 | 低 | 全维度 |
-| **P2** | #14 | 裂隙传送后玩家未生成在裂隙旁 | 低~高 | 传送系统 |
-| **P3** | #8 | 水晶球水填充 | 高 (改 NBT/processor) | 特定结构 |
+> 📋 **完整优先级追踪请查看**: [issue-#11-priority-tracker.md](issue-#11-priority-tracker.md)
