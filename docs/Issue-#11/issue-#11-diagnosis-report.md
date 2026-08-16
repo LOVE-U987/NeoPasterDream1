@@ -495,6 +495,66 @@ private static final TreeGrower DYEDREAM_TREE_GROWER = new TreeGrower(
 
 ---
 
+## #14 染梦裂隙传送后玩家未生成在裂隙旁
+
+### 涉及文件
+
+- `PasterDream/src/main/java/com/pasterdream/pasterdreammod/block/DyedreamCrackBlock.java:136-192, 225-248`
+- `PasterDream/src/main/java/com/pasterdream/pasterdreammod/item/DyedreamTeleportCrystal.java:111-119`
+
+### 问题现象
+
+玩家通过染梦裂隙传送后，并非生成在裂隙旁，而是传送到重生点/世界出生点区域，可能导致玩家死亡。
+
+### 根因分析
+
+#### 14.1 [设计] 裂隙没有"配对传送门"机制
+
+传送目标始终是重生点/世界出生点，而非对应维度中另一个裂隙的位置。与原模组行为一致。
+
+```java
+// 传送逻辑完全忽略裂隙方块的 pos
+BlockPos targetPos = findSafePosition(targetWorld, player);  // 只用 player 和 targetWorld
+```
+
+#### 14.2 [P2] findSafePosition() 扫描算法缺陷
+
+```java
+private BlockPos findSafePosition(ServerLevel world, ServerPlayer player) {
+    BlockPos spawnPos;
+    if (player.getRespawnPosition() != null && player.getRespawnDimension().equals(world.dimension())) {
+        spawnPos = player.getRespawnPosition();
+    } else {
+        spawnPos = world.getSharedSpawnPos();
+    }
+
+    // ⚠️ 从最高处向下扫描，找第一个非空气方块
+    for (int y = world.getMaxBuildHeight() - 1; y > world.getMinBuildHeight(); y--) {
+        checkPos.setY(y);
+        if (world.isLoaded(checkPos) && !world.getBlockState(checkPos).isAir()) {
+            return checkPos.above(2).immutable();   // ⚠️ 可能命中洞穴天花板
+        }
+    }
+    return spawnPos.above(3);  // ⚠️ 未加载时高空坠落
+}
+```
+
+| 问题 | 影响 |
+|------|------|
+| 找第一个非空气块可能命中**洞穴天花板** | 玩家被卡在天花板上方 |
+| `spawnPos.above(3)` 无安全检测 | 区块未加载时高空坠落 |
+| 不检查是否有 2 格高空间 | 玩家可能窒息 |
+
+### 修复方向
+
+| 方案 | 说明 | 难度 |
+|------|------|:----:|
+| A. 使用 Heightmap | 用 `Heightmap.Types.MOTION_BLOCKING` 获取真实地表高度，替代逐格扫描 | 低 |
+| B. 安全空间检测 | 在目标位置检查是否有 2 格高的安全空间 | 低 |
+| C. 配对裂隙机制 | 记录裂隙位置，传送时传送到对应裂隙旁（设计变更，需确认） | 高 |
+
+---
+
 ## 修复优先级
 
 | 优先级 | 序号 | 问题 |       修复难度        | 影响范围 |
@@ -519,6 +579,7 @@ private static final TreeGrower DYEDREAM_TREE_GROWER = new TreeGrower(
 | **P2** | #4 | 星空枕/占卜 |   中高 (加校验逻辑)   | 游戏平衡 |
 | **P2** | #9 | 落叶/悬空 |   中 (改 decorator)   | 世界生成 |
 | **P2** | #10.2.2 | warm_crystal_spike 缺失 JSON |          中           | biome_1 |
-| **P2** | #10.4.4 | 云团 replaceable 包含 CAVE_AIR |          低           | 世界生成 |
-| **P2** | #10.4.5 | 云团注入到全部 9 个群系 |          低           | 全维度 |
+| **P2** | #10.4.4 | 云团 replaceable 包含 CAVE_AIR | 低 | 世界生成 |
+| **P2** | #10.4.5 | 云团注入到全部 9 个群系 | 低 | 全维度 |
+| **P2** | #14 | 裂隙传送后玩家未生成在裂隙旁 | 低~高 | 传送系统 |
 | **P3** | #8 | 水晶球水填充 | 高 (改 NBT/processor) | 特定结构 |
