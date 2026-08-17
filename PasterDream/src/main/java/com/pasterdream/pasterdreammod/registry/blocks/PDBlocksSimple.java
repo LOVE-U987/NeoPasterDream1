@@ -47,7 +47,7 @@ public class PDBlocksSimple {
                     .model("cube_all").tex("all", "pasterdream:block/pinkslime_block"))
             .addCustom("dyedream_block",
                     BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
-                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_block").plantable())
+                    BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedream_block"))
             .addCustom("dyedreamquartz_block",
                     BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).requiresCorrectToolForDrops(),
                     BlockConfig.of().mineable("pickaxe").model("cube_all").tex("all", "pasterdream:block/dyedreamquartz"))
