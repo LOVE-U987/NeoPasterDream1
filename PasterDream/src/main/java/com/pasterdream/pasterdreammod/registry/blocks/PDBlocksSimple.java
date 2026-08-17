@@ -29,7 +29,7 @@ public class PDBlocksSimple {
 
     private static final Map<String, DeferredBlock<Block>> SIMPLE_BLOCKS = BlockAPI.registerSimpleBlocks()
             .add("dyedream_dirt", Blocks.DIRT, BlockConfig.of()
-                    .mineable("shovel").model("cube_all").tex("all", "pasterdream:block/dyedream_dirt"))
+                    .mineable("shovel").model("cube_all").tex("all", "pasterdream:block/dyedream_dirt").plantable())
             .add("dyedream_sand", Blocks.SAND, BlockConfig.of()
                     .mineable("shovel").model("cube_all").tex("all", "pasterdream:block/dyedream_sand").plantable()
                     // 使用原版沙子类 ColoredFallingBlock：与沙子一致的重力下落物理行为，

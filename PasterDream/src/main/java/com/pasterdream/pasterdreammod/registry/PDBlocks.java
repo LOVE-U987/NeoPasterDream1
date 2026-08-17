@@ -102,7 +102,8 @@ public class PDBlocks {
                 .mineable("shovel").model("cube_top_bottom")
                 .tex("top", "pasterdream:block/dyedream_grass_top")
                 .tex("side", "pasterdream:block/dyedream_grass_side")
-                .tex("bottom", "pasterdream:block/dyedream_dirt"));
+                .tex("bottom", "pasterdream:block/dyedream_dirt")
+                .plantable());
         BlockAPI.putConfig("dyedream_lartern", BlockConfig.of()
                 .mineable("pickaxe"));
         BlockAPI.putConfig("dyedream_lantern", BlockConfig.of()

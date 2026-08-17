@@ -38,8 +38,8 @@ public class DyedreamSaplingBlock extends SaplingBlock {
      */
     private static final TreeGrower DYEDREAM_TREE_GROWER = new TreeGrower(
             "dyedream_tree",
-            Optional.of(TreeRegistry.TREE_SELECTOR),
             Optional.empty(),
+            Optional.of(TreeRegistry.TREE_SELECTOR),
             Optional.empty()
     );
 
