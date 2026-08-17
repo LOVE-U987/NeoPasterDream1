@@ -46,6 +46,6 @@ public class DyedreamGlowingLeavesBlock extends LeavesBlock {
 
     @Override
     public boolean isRandomlyTicking(BlockState state) {
-        return false;
+        return true;
     }
 }

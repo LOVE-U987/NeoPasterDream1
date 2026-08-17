@@ -25,8 +25,6 @@ import java.util.List;
 
 /**
  * 染梦树叶方块
- * <p>
- * 继承原版 LeavesBlock；不自然消失。掉落在代码中硬编码：
  * 树苗约 1/18、染梦果约 2/18、木棍小概率；剪刀/精准采集掉自身。
  */
 public class DyedreamLeavesBlock extends LeavesBlock {
@@ -62,7 +60,7 @@ public class DyedreamLeavesBlock extends LeavesBlock {
 
     @Override
     public boolean isRandomlyTicking(BlockState state) {
-        return false;
+        return true;
     }
 
     @Override
