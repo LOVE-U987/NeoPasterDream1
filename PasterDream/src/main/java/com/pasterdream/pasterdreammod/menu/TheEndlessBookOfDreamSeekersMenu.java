@@ -38,9 +38,10 @@ public class TheEndlessBookOfDreamSeekersMenu extends SimpleContainerMenu {
      * @param extraData 包含 BlockPos 的网络缓冲区
      */
     public TheEndlessBookOfDreamSeekersMenu(int id, Inventory inv, net.minecraft.network.FriendlyByteBuf extraData) {
-        // 防御：extraData 可能为 null（旁观者经 vanilla 单参 openMenu 打开时无附加数据），
-        // 兜底为 null BE → 空菜单，stillValid 返回 false 由服务端自动关闭
-        this(id, inv, extraData != null ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
+        // Defense: spectator's vanilla single-arg openMenu sends an empty buffer (readableBytes == 0),
+        // readBlockPos() would throw IndexOutOfBoundsException → connection lost.
+        this(id, inv, extraData != null && extraData.readableBytes() >= 8
+                ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
     }
 
     /**
@@ -56,19 +57,18 @@ public class TheEndlessBookOfDreamSeekersMenu extends SimpleContainerMenu {
         this.blockEntity = blockEntity instanceof TheEndlessBookOfDreamSeekersBlockEntity eb ? eb : null;
         bindBlockEntity(this.blockEntity);
 
-        if (this.blockEntity != null) {
-            IItemHandler handler = this.blockEntity.getItemHandler();
-
-            // 展示槽：原版 (115, 26)，仅可取出
-            this.addSlot(new SlotItemHandler(handler, TheEndlessBookOfDreamSeekersBlockEntity.SLOT_DISPLAY, 115, 26) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
-            // 导入槽：原版 (43, 26)
-            this.addSlot(new SlotItemHandler(handler, TheEndlessBookOfDreamSeekersBlockEntity.SLOT_IMPORT, 43, 26));
-        }
+        IItemHandler handler = this.blockEntity != null
+                ? this.blockEntity.getItemHandler()
+                : new net.neoforged.neoforge.items.ItemStackHandler(2);
+        // Display slot: original (115, 26), output only
+        this.addSlot(new SlotItemHandler(handler, TheEndlessBookOfDreamSeekersBlockEntity.SLOT_DISPLAY, 115, 26) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
+        // Import slot: original (43, 26)
+        this.addSlot(new SlotItemHandler(handler, TheEndlessBookOfDreamSeekersBlockEntity.SLOT_IMPORT, 43, 26));
 
         addPlayerInventory(inv, 84);
     }

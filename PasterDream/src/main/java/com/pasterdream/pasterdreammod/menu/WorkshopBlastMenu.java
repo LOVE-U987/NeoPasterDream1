@@ -46,9 +46,10 @@ public class WorkshopBlastMenu extends AbstractContainerMenu {
      * @param extraData 包含 BlockPos 的网络缓冲区
      */
     public WorkshopBlastMenu(int id, Inventory inv, net.minecraft.network.FriendlyByteBuf extraData) {
-        // 防御：extraData 可能为 null（旁观者经 vanilla 单参 openMenu 打开时无附加数据），
-        // 兜底为 null BE → 空菜单，stillValid 返回 false 由服务端自动关闭
-        this(id, inv, extraData != null ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
+        // Defense: spectator's vanilla single-arg openMenu sends an empty buffer (readableBytes == 0),
+        // readBlockPos() would throw IndexOutOfBoundsException → connection lost.
+        this(id, inv, extraData != null && extraData.readableBytes() >= 8
+                ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
     }
 
     /**
@@ -64,30 +65,29 @@ public class WorkshopBlastMenu extends AbstractContainerMenu {
         this.blockEntity = blockEntity instanceof WorkshopBlastBlockEntity wbe ? wbe : null;
         this.level = inv.player.level();
 
-        if (this.blockEntity != null) {
-            IItemHandler handler = this.blockEntity.getItemHandler();
-
-            // 槽位 0：原胚输入（原版坐标 79, 23）
-            this.addSlot(new SlotItemHandler(handler, 0, 79, 23));
-            // 槽位 1：镶嵌材料（原版坐标 25, 50）
-            this.addSlot(new SlotItemHandler(handler, 1, 25, 50));
-            // 槽位 2：岩浆桶输入（原版坐标 133, 32；注入由 BE 周期轮询处理）
-            this.addSlot(new SlotItemHandler(handler, 2, 133, 32));
-            // 槽位 3：空桶回收，仅可取出（原版坐标 133, 68）
-            this.addSlot(new SlotItemHandler(handler, 3, 133, 68) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
-            // 槽位 4：产物输出，仅可取出（原版坐标 79, 77）
-            this.addSlot(new SlotItemHandler(handler, 4, 79, 77) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
-        }
+        IItemHandler handler = this.blockEntity != null
+                ? this.blockEntity.getItemHandler()
+                : new net.neoforged.neoforge.items.ItemStackHandler(5);
+        // Slot 0: blank input (original coords 79, 23)
+        this.addSlot(new SlotItemHandler(handler, 0, 79, 23));
+        // Slot 1: inlay material (original coords 25, 50)
+        this.addSlot(new SlotItemHandler(handler, 1, 25, 50));
+        // Slot 2: lava bucket input (original coords 133, 32)
+        this.addSlot(new SlotItemHandler(handler, 2, 133, 32));
+        // Slot 3: empty bucket return, take only (original coords 133, 68)
+        this.addSlot(new SlotItemHandler(handler, 3, 133, 68) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
+        // Slot 4: output, take only (original coords 79, 77)
+        this.addSlot(new SlotItemHandler(handler, 4, 79, 77) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
 
         // 玩家背包：3×9 网格，起始 (8, 114)（原版偏移 0+8 / 30+84）
         for (int row = 0; row < 3; row++) {

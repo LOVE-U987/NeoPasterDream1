@@ -49,9 +49,10 @@ public class WorkshopAnvilMenu extends AbstractContainerMenu {
      * @param extraData 包含 BlockPos 的网络缓冲区
      */
     public WorkshopAnvilMenu(int id, Inventory inv, net.minecraft.network.FriendlyByteBuf extraData) {
-        // 防御：extraData 可能为 null（旁观者经 vanilla 单参 openMenu 打开时无附加数据），
-        // 兜底为 null BE → 空菜单，stillValid 返回 false 由服务端自动关闭
-        this(id, inv, extraData != null ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
+        // Defense: spectator's vanilla single-arg openMenu sends an empty buffer (readableBytes == 0),
+        // readBlockPos() would throw IndexOutOfBoundsException → connection lost.
+        this(id, inv, extraData != null && extraData.readableBytes() >= 8
+                ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
     }
 
     /**
@@ -67,19 +68,18 @@ public class WorkshopAnvilMenu extends AbstractContainerMenu {
         this.blockEntity = blockEntity instanceof WorkshopAnvilBlockEntity wbe ? wbe : null;
         this.level = inv.player.level();
 
-        if (this.blockEntity != null) {
-            IItemHandler handler = this.blockEntity.getItemHandler();
-
-            // 槽位 0：原胚输入（原版坐标 34, 78）
-            this.addSlot(new SlotItemHandler(handler, 0, 34, 78));
-            // 槽位 1：产物输出，仅可取出（原版坐标 124, 78）
-            this.addSlot(new SlotItemHandler(handler, 1, 124, 78) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
-        }
+        IItemHandler handler = this.blockEntity != null
+                ? this.blockEntity.getItemHandler()
+                : new net.neoforged.neoforge.items.ItemStackHandler(2);
+        // Slot 0: blank input (original coords 34, 78)
+        this.addSlot(new SlotItemHandler(handler, 0, 34, 78));
+        // Slot 1: output, take only (original coords 124, 78)
+        this.addSlot(new SlotItemHandler(handler, 1, 124, 78) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
 
         // 玩家背包：3×9 网格，起始 (8, 134)（原版偏移 0+8 / 50+84）
         for (int row = 0; row < 3; row++) {

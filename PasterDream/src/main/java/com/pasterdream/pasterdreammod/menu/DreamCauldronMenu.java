@@ -49,9 +49,10 @@ public class DreamCauldronMenu extends AbstractContainerMenu {
      * @param extraData 包含 BlockPos 的网络缓冲区
      */
     public DreamCauldronMenu(int id, Inventory inv, net.minecraft.network.FriendlyByteBuf extraData) {
-        // 防御：extraData 可能为 null（旁观者经 vanilla 单参 openMenu 打开时无附加数据），
-        // 兜底为 null BE → 空菜单，stillValid 返回 false 由服务端自动关闭
-        this(id, inv, extraData != null ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
+        // Defense: spectator's vanilla single-arg openMenu sends an empty buffer (readableBytes == 0),
+        // readBlockPos() would throw IndexOutOfBoundsException → connection lost.
+        this(id, inv, extraData != null && extraData.readableBytes() >= 8
+                ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
     }
 
     /**
@@ -67,32 +68,32 @@ public class DreamCauldronMenu extends AbstractContainerMenu {
         this.blockEntity = blockEntity instanceof DreamCauldronBlockEntity dce ? dce : null;
         this.level = inv.player.level();
 
-        if (this.blockEntity != null) {
-            IItemHandler handler = this.blockEntity.getItemHandler();
+        IItemHandler handler = this.blockEntity != null
+                ? this.blockEntity.getItemHandler()
+                : new net.neoforged.neoforge.items.ItemStackHandler(7);
 
-            // 槽位 0：引导药剂（原版坐标 17, 50）
-            this.addSlot(new SlotItemHandler(handler, 0, 17, 50));
-            // 槽位 1-3：炼药材料（原版坐标 61/89/117, 19）
-            this.addSlot(new SlotItemHandler(handler, 1, 61, 19));
-            this.addSlot(new SlotItemHandler(handler, 2, 89, 19));
-            this.addSlot(new SlotItemHandler(handler, 3, 117, 19));
-            // 槽位 4：液体桶输入（原版坐标 170, 23）
-            this.addSlot(new SlotItemHandler(handler, 4, 170, 23));
-            // 槽位 5：空桶回收，仅可取出（原版坐标 170, 77）
-            this.addSlot(new SlotItemHandler(handler, 5, 170, 77) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
-            // 槽位 6：成品输出，仅可取出（原版坐标 89, 50）
-            this.addSlot(new SlotItemHandler(handler, 6, 89, 50) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
-        }
+        // Slot 0: catalyst potion (original coords 17, 50)
+        this.addSlot(new SlotItemHandler(handler, 0, 17, 50));
+        // Slots 1-3: crafting materials (original coords 61/89/117, 19)
+        this.addSlot(new SlotItemHandler(handler, 1, 61, 19));
+        this.addSlot(new SlotItemHandler(handler, 2, 89, 19));
+        this.addSlot(new SlotItemHandler(handler, 3, 117, 19));
+        // Slot 4: fluid bucket input (original coords 170, 23)
+        this.addSlot(new SlotItemHandler(handler, 4, 170, 23));
+        // Slot 5: empty bucket return, take only (original coords 170, 77)
+        this.addSlot(new SlotItemHandler(handler, 5, 170, 77) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
+        // Slot 6: output, take only (original coords 89, 50)
+        this.addSlot(new SlotItemHandler(handler, 6, 89, 50) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
 
         // 玩家背包：3×9 网格，起始 (18, 114)（原版偏移）
         for (int row = 0; row < 3; row++) {

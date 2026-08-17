@@ -27,9 +27,11 @@ public class DreamnotesGui0Menu extends AbstractContainerMenu {
     public final int noteId;
 
     public DreamnotesGui0Menu(int id, Inventory inv, FriendlyByteBuf extraData) {
+        // Defense: spectator's vanilla single-arg openMenu sends an empty buffer (readableBytes == 0),
+        // readBlockPos()/readByte() would throw IndexOutOfBoundsException → connection lost.
         this(id, inv,
-                extraData != null ? extraData.readBlockPos() : inv.player.blockPosition(),
-                extraData != null ? extraData.readByte() : (byte) 0,
+                extraData != null && extraData.readableBytes() >= 3 ? extraData.readBlockPos() : inv.player.blockPosition(),
+                extraData != null && extraData.readableBytes() >= 1 ? extraData.readByte() : (byte) 0,
                 extraData != null && extraData.isReadable() ? extraData.readVarInt() : -1);
     }
 

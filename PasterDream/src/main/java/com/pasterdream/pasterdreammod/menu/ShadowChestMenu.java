@@ -24,9 +24,10 @@ public class ShadowChestMenu extends SimpleContainerMenu {
      * @param extraData 包含 BlockPos 的网络缓冲区
      */
     public ShadowChestMenu(int id, Inventory inv, net.minecraft.network.FriendlyByteBuf extraData) {
-        // 防御：extraData 可能为 null（旁观者经 vanilla 单参 openMenu 打开时无附加数据），
-        // 兜底为 null BE → 空菜单，stillValid 返回 false 由服务端自动关闭
-        this(id, inv, extraData != null ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
+        // Defense: spectator's vanilla single-arg openMenu sends an empty buffer (readableBytes == 0),
+        // readBlockPos() would throw IndexOutOfBoundsException → connection lost.
+        this(id, inv, extraData != null && extraData.readableBytes() >= 8
+                ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
     }
 
     /**
@@ -42,12 +43,11 @@ public class ShadowChestMenu extends SimpleContainerMenu {
         this.blockEntity = blockEntity instanceof ShadowChestBlockEntity sce ? sce : null;
         bindBlockEntity(this.blockEntity);
 
-        if (this.blockEntity != null) {
-            IItemHandler handler = this.blockEntity.getItemHandler();
-
-            // 影之箱库存槽位: 5×3 网格 (索引 0-14)
-            addContainerGrid(handler, 5, 3, 43, 15);
-        }
+        IItemHandler handler = this.blockEntity != null
+                ? this.blockEntity.getItemHandler()
+                : new net.neoforged.neoforge.items.ItemStackHandler(15);
+        // Shadow chest inventory: 5x3 grid (slots 0-14)
+        addContainerGrid(handler, 5, 3, 43, 15);
         // 玩家背包 (索引 15-50)，快捷栏 y=142
         addPlayerInventory(inv, 84);
     }

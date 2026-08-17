@@ -44,9 +44,10 @@ public class WeaponWorkshopMenu extends AbstractContainerMenu {
      * @param extraData 包含 BlockPos 的网络缓冲区
      */
     public WeaponWorkshopMenu(int id, Inventory inv, net.minecraft.network.FriendlyByteBuf extraData) {
-        // 防御：extraData 可能为 null（旁观者经 vanilla 单参 openMenu 打开时无附加数据），
-        // 兜底为 null BE → 空菜单，stillValid 返回 false 由服务端自动关闭
-        this(id, inv, extraData != null ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
+        // Defense: spectator's vanilla single-arg openMenu sends an empty buffer (readableBytes == 0),
+        // readBlockPos() would throw IndexOutOfBoundsException → connection lost.
+        this(id, inv, extraData != null && extraData.readableBytes() >= 8
+                ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
     }
 
     /**
@@ -62,23 +63,22 @@ public class WeaponWorkshopMenu extends AbstractContainerMenu {
         this.blockEntity = blockEntity instanceof WeaponWorkshopBlockEntity wwe ? wwe : null;
         this.level = inv.player.level();
 
-        if (this.blockEntity != null) {
-            IItemHandler handler = this.blockEntity.getItemHandler();
-
-            // 槽位 0-4：锻造材料（原版坐标 12/30/48/66/84, 18）
-            for (int slot = 0; slot < 5; slot++) {
-                this.addSlot(new SlotItemHandler(handler, slot, 12 + slot * 18, 18));
-            }
-            // 槽位 5：强化石（原版坐标 138, 18）
-            this.addSlot(new SlotItemHandler(handler, 5, 138, 18));
-            // 槽位 6：产物输出，仅可取出（原版坐标 138, 63）
-            this.addSlot(new SlotItemHandler(handler, 6, 138, 63) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
+        IItemHandler handler = this.blockEntity != null
+                ? this.blockEntity.getItemHandler()
+                : new net.neoforged.neoforge.items.ItemStackHandler(7);
+        // Slots 0-4: forging materials (original coords 12/30/48/66/84, 18)
+        for (int slot = 0; slot < 5; slot++) {
+            this.addSlot(new SlotItemHandler(handler, slot, 12 + slot * 18, 18));
         }
+        // Slot 5: enhancement stone (original coords 138, 18)
+        this.addSlot(new SlotItemHandler(handler, 5, 138, 18));
+        // Slot 6: output, take only (original coords 138, 63)
+        this.addSlot(new SlotItemHandler(handler, 6, 138, 63) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
 
         // 玩家背包：3×9 网格，起始 (13, 104)（原版偏移 5+8 / 20+84）
         for (int row = 0; row < 3; row++) {

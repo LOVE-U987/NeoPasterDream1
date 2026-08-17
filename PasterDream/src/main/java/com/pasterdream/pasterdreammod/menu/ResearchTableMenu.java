@@ -49,9 +49,10 @@ public class ResearchTableMenu extends AbstractContainerMenu {
      * @param extraData 包含 BlockPos 的网络缓冲区
      */
     public ResearchTableMenu(int id, Inventory inv, net.minecraft.network.FriendlyByteBuf extraData) {
-        // 防御：extraData 可能为 null（旁观者经 vanilla 单参 openMenu 打开时无附加数据），
-        // 兜底为 null BE → 空菜单，stillValid 返回 false 由服务端自动关闭
-        this(id, inv, extraData != null ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
+        // Defense: spectator's vanilla single-arg openMenu sends an empty buffer (readableBytes == 0),
+        // readBlockPos() would throw IndexOutOfBoundsException → connection lost.
+        this(id, inv, extraData != null && extraData.readableBytes() >= 8
+                ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
     }
 
     /**
@@ -67,52 +68,52 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         this.blockEntity = blockEntity instanceof ResearchTableBlockEntity rte ? rte : null;
         this.level = inv.player.level();
 
-        if (this.blockEntity != null) {
-            IItemHandler handler = this.blockEntity.getItemHandler();
+        IItemHandler handler = this.blockEntity != null
+                ? this.blockEntity.getItemHandler()
+                : new net.neoforged.neoforge.items.ItemStackHandler(6);
 
-            // 槽位 0：笔与墨（原版坐标 175, 19）
-            this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_PEN, 175, 19) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return stack.is(PDItems.PEN_AND_INK.get().asItem());
-                }
-            });
-            // 槽位 1：寻梦者笔记（原版坐标 40, 28，按 dreamnotes 标签过滤）
-            this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_NOTES, 40, 28) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return stack.is(ResearchTableBlockEntity.DREAMNOTES_TAG);
-                }
-            });
-            // 槽位 2：羊皮纸（原版坐标 40, 46）
-            this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_PERGAMYN, 40, 46) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return stack.is(PDItems.PERGAMYN.get().asItem());
-                }
-            });
-            // 槽位 3：复制产物，仅可取出（原版坐标 139, 37）
-            this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_COPY_RESULT, 139, 37) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
-            // 槽位 4：未知笔记（原版坐标 40, 82）
-            this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_UNKNOWN, 40, 82) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return stack.is(PDItems.UNKNOWNNOTES_0.get().asItem());
-                }
-            });
-            // 槽位 5：研究产物，仅可取出（原版坐标 139, 82）
-            this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_STUDY_RESULT, 139, 82) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
-        }
+        // Slot 0: pen & ink (original coords 175, 19)
+        this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_PEN, 175, 19) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return stack.is(PDItems.PEN_AND_INK.get().asItem());
+            }
+        });
+        // Slot 1: dreamer's notes (original coords 40, 28, filtered by dreamnotes tag)
+        this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_NOTES, 40, 28) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return stack.is(ResearchTableBlockEntity.DREAMNOTES_TAG);
+            }
+        });
+        // Slot 2: parchment (original coords 40, 46)
+        this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_PERGAMYN, 40, 46) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return stack.is(PDItems.PERGAMYN.get().asItem());
+            }
+        });
+        // Slot 3: copy result, take only (original coords 139, 37)
+        this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_COPY_RESULT, 139, 37) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
+        // Slot 4: unknown notes (original coords 40, 82)
+        this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_UNKNOWN, 40, 82) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return stack.is(PDItems.UNKNOWNNOTES_0.get().asItem());
+            }
+        });
+        // Slot 5: study result, take only (original coords 139, 82)
+        this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_STUDY_RESULT, 139, 82) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
 
         // 玩家背包：3×9 网格，起始 (23, 124)（原版偏移 15+8 / 40+84）
         for (int row = 0; row < 3; row++) {

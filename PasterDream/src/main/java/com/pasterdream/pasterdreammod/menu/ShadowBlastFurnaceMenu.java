@@ -50,9 +50,10 @@ public class ShadowBlastFurnaceMenu extends AbstractContainerMenu {
      * @param extraData 包含 BlockPos 的网络缓冲区
      */
     public ShadowBlastFurnaceMenu(int id, Inventory inv, net.minecraft.network.FriendlyByteBuf extraData) {
-        // 防御：extraData 可能为 null（旁观者经 vanilla 单参 openMenu 打开时无附加数据），
-        // 兜底为 null BE → 空菜单，stillValid 返回 false 由服务端自动关闭
-        this(id, inv, extraData != null ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
+        // Defense: spectator's vanilla single-arg openMenu sends an empty buffer (readableBytes == 0),
+        // readBlockPos() would throw IndexOutOfBoundsException → connection lost.
+        this(id, inv, extraData != null && extraData.readableBytes() >= 8
+                ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
     }
 
     /**
@@ -68,37 +69,37 @@ public class ShadowBlastFurnaceMenu extends AbstractContainerMenu {
         this.blockEntity = blockEntity instanceof ShadowBlastFurnaceBlockEntity sbf ? sbf : null;
         this.level = inv.player.level();
 
-        if (this.blockEntity != null) {
-            IItemHandler handler = this.blockEntity.getItemHandler();
+        IItemHandler handler = this.blockEntity != null
+                ? this.blockEntity.getItemHandler()
+                : new net.neoforged.neoforge.items.ItemStackHandler(6);
 
-            // 槽位 0：冶炼输入（原版坐标 25, 24）
-            this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_INPUT, 25, 24));
-            // 槽位 1：梦魇燃料（原版坐标 25, 69）
-            this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_FUEL, 25, 69));
-            // 槽位 2：主产物，仅可取出（原版坐标 61, 105）
-            this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_RESULT, 61, 105) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
-            // 槽位 3：副产物，仅可取出（原版坐标 97, 105）
-            this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_BY_RESULT, 97, 105) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
-            // 槽位 4：暗影液体桶输入（原版坐标 133, 24）
-            this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_BUCKET_IN, 133, 24));
-            // 槽位 5：空桶回收，仅可取出（原版坐标 133, 69）
-            this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_BUCKET_OUT, 133, 69) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-            });
-        }
+        // Slot 0: smelting input (original coords 25, 24)
+        this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_INPUT, 25, 24));
+        // Slot 1: nightmare fuel (original coords 25, 69)
+        this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_FUEL, 25, 69));
+        // Slot 2: main output, take only (original coords 61, 105)
+        this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_RESULT, 61, 105) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
+        // Slot 3: byproduct output, take only (original coords 97, 105)
+        this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_BY_RESULT, 97, 105) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
+        // Slot 4: shadow fluid bucket input (original coords 133, 24)
+        this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_BUCKET_IN, 133, 24));
+        // Slot 5: empty bucket return, take only (original coords 133, 69)
+        this.addSlot(new SlotItemHandler(handler, ShadowBlastFurnaceBlockEntity.SLOT_BUCKET_OUT, 133, 69) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+        });
 
         // 玩家背包：3×9 网格，起始 (8, 134)（原版偏移 0+8 / 50+84）
         for (int row = 0; row < 3; row++) {

@@ -39,9 +39,10 @@ public class DreamAccumulatorMenu extends AbstractContainerMenu {
      * @param extraData 包含 BlockPos 的网络缓冲区
      */
     public DreamAccumulatorMenu(int id, Inventory inv, net.minecraft.network.FriendlyByteBuf extraData) {
-        // 防御：extraData 可能为 null（旁观者经 vanilla 单参 openMenu 打开时无附加数据），
-        // 兜底为 null BE → 空菜单，stillValid 返回 false 由服务端自动关闭
-        this(id, inv, extraData != null ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
+        // Defense: spectator's vanilla single-arg openMenu sends an empty buffer (readableBytes == 0),
+        // readBlockPos() would throw IndexOutOfBoundsException → connection lost.
+        this(id, inv, extraData != null && extraData.readableBytes() >= 8
+                ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
     }
 
     /**
@@ -57,33 +58,31 @@ public class DreamAccumulatorMenu extends AbstractContainerMenu {
         this.blockEntity = blockEntity instanceof DreamAccumulatorBlockEntity dae ? dae : null;
         this.level = inv.player.level();
 
-        if (this.blockEntity != null) {
-            IItemHandler handler = this.blockEntity.getItemHandler();
+        IItemHandler handler = this.blockEntity != null
+                ? this.blockEntity.getItemHandler()
+                : new net.neoforged.neoforge.items.ItemStackHandler(2);
+        // Slot 0: sorbent slot (BE slot 1, original coords 78, 82)
+        this.addSlot(new SlotItemHandler(handler, DreamAccumulatorBlockEntity.SLOT_SORBENT, 78, 82) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return stack.is(PDItems.SORBENT.get().asItem());
+            }
+        });
+        // Slot 1: output slot (BE slot 0, original coords 78, 28); resets timer on take
+        this.addSlot(new SlotItemHandler(handler, DreamAccumulatorBlockEntity.SLOT_OUTPUT, 78, 28) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
 
-            // 菜单索引 0：吸附剂槽（BE 槽 1，原版坐标 78, 82；原版先添加此槽）
-            this.addSlot(new SlotItemHandler(handler, DreamAccumulatorBlockEntity.SLOT_SORBENT, 78, 82) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return stack.is(PDItems.SORBENT.get().asItem());
+            @Override
+            public void onTake(Player player, ItemStack stack) {
+                super.onTake(player, stack);
+                if (!player.level().isClientSide() && DreamAccumulatorMenu.this.blockEntity != null) {
+                    DreamAccumulatorMenu.this.blockEntity.resetTime();
                 }
-            });
-            // 菜单索引 1：产物槽（BE 槽 0，原版坐标 78, 28）；取走时重置蓄梦计时
-            this.addSlot(new SlotItemHandler(handler, DreamAccumulatorBlockEntity.SLOT_OUTPUT, 78, 28) {
-                @Override
-                public boolean mayPlace(ItemStack stack) {
-                    return false;
-                }
-
-                @Override
-                public void onTake(Player player, ItemStack stack) {
-                    super.onTake(player, stack);
-                    // 原版槽位消息（changeType 1/2）均触发 DreamAccumulatorPr1：计时归零 + dream1 音效
-                    if (!player.level().isClientSide()) {
-                        DreamAccumulatorMenu.this.blockEntity.resetTime();
-                    }
-                }
-            });
-        }
+            }
+        });
 
         // 玩家背包：3×9 网格，起始 (8, 124)（原版偏移 0+8 / 40+84）
         for (int row = 0; row < 3; row++) {

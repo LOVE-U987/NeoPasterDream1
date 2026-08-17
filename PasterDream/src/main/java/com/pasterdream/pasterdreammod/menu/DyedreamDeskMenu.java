@@ -30,9 +30,10 @@ public class DyedreamDeskMenu extends SimpleContainerMenu {
      * @param extraData 包含 BlockPos 的网络缓冲区
      */
     public DyedreamDeskMenu(int id, Inventory inv, net.minecraft.network.FriendlyByteBuf extraData) {
-        // 防御：extraData 可能为 null（旁观者经 vanilla 单参 openMenu 打开时无附加数据），
-        // 兜底为 null BE → 空菜单，stillValid 返回 false 由服务端自动关闭
-        this(id, inv, extraData != null ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
+        // Defense: spectator's vanilla single-arg openMenu sends an empty buffer (readableBytes == 0),
+        // readBlockPos() would throw IndexOutOfBoundsException → connection lost.
+        this(id, inv, extraData != null && extraData.readableBytes() >= 8
+                ? inv.player.level().getBlockEntity(extraData.readBlockPos()) : null);
     }
 
     /**
@@ -48,12 +49,11 @@ public class DyedreamDeskMenu extends SimpleContainerMenu {
         this.blockEntity = blockEntity instanceof DyedreamDeskBlockEntity dbe ? dbe : null;
         bindBlockEntity(this.blockEntity);
 
-        if (this.blockEntity != null) {
-            IItemHandler handler = this.blockEntity.getItemHandler();
-
-            // 书桌展示槽位：1 格，位置 (79, 26)
-            this.addSlot(new SlotItemHandler(handler, 0, 79, 26));
-        }
+        IItemHandler handler = this.blockEntity != null
+                ? this.blockEntity.getItemHandler()
+                : new net.neoforged.neoforge.items.ItemStackHandler(1);
+        // Desk display slot: 1 slot at (79, 26)
+        this.addSlot(new SlotItemHandler(handler, 0, 79, 26));
         addPlayerInventory(inv, 84);
     }
 
