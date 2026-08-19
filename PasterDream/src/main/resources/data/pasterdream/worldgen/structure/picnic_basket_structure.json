@@ -2,10 +2,10 @@
   "type": "minecraft:jigsaw",
   "biomes": [
     "plains",
-    "pasterdream:biome_dyedream_0",
-    "pasterdream:biome_dyedream_1",
-    "pasterdream:biome_dyedream_2",
-    "pasterdream:wind_journey_biome_0"
+    "pasterdream:dyedream_plains",
+    "pasterdream:dyedream_forest",
+    "pasterdream:dyedream_frozen_tundra",
+    "pasterdream:wind_journey_islands"
   ],
   "step": "surface_structures",
   "terrain_adaptation": "none",

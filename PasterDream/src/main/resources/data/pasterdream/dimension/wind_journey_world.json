@@ -6,7 +6,7 @@
       "type": "minecraft:multi_noise",
       "biomes": [
         {
-          "biome": "pasterdream:wind_journey_biome_0",
+          "biome": "pasterdream:wind_journey_islands",
           "parameters": {
             "temperature": [
               0,
@@ -33,7 +33,7 @@
           }
         },
         {
-          "biome": "pasterdream:wind_journey_biome_1",
+          "biome": "pasterdream:wind_journey_desert",
           "parameters": {
             "temperature": [
               -1,
@@ -209,7 +209,7 @@
             "if_true": {
               "type": "minecraft:biome",
               "biome_is": [
-                "pasterdream:wind_journey_biome_0"
+                "pasterdream:wind_journey_islands"
               ]
             },
             "then_run": {
@@ -278,7 +278,7 @@
             "if_true": {
               "type": "minecraft:biome",
               "biome_is": [
-                "pasterdream:wind_journey_biome_1"
+                "pasterdream:wind_journey_desert"
               ]
             },
             "then_run": {

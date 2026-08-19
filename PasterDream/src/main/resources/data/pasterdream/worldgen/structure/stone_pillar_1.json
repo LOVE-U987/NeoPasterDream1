@@ -11,8 +11,8 @@
   },
   "project_start_to_heightmap": "WORLD_SURFACE_WG",
   "biomes": [
-    "pasterdream:biome_dyedream_0",
-    "pasterdream:biome_dyedream_1"
+    "pasterdream:dyedream_plains",
+    "pasterdream:dyedream_forest"
   ],
   "use_expansion_hack": false
 }

@@ -1,8 +1,8 @@
 {
   "type": "minecraft:jigsaw",
   "biomes": [
-    "pasterdream:biome_dyedream_0",
-    "pasterdream:biome_dyedream_3"
+    "pasterdream:dyedream_plains",
+    "pasterdream:dyedream_cold_ocean"
   ],
   "step": "surface_structures",
   "terrain_adaptation": "none",

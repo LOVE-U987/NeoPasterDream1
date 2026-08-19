@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_features",
-  "biomes": "pasterdream:biome_dyedream_shore",
+  "biomes": "pasterdream:dyedream_shore",
   "features": [
     "pasterdream:bb_trees_palm"
   ],

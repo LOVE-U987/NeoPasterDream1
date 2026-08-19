@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_features",
-  "biomes": "pasterdream:biome_dyedream_1",
+  "biomes": "pasterdream:dyedream_forest",
   "features": [
     "pasterdream:dyedream_trees",
     "pasterdream:dyedream_trees_old_growth",

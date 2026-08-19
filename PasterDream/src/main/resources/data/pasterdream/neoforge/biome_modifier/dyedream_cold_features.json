@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_features",
-  "biomes": "pasterdream:biome_dyedream_2",
+  "biomes": "pasterdream:dyedream_frozen_tundra",
   "features": [
     "pasterdream:ice_spike",
     "pasterdream:ice_gate",

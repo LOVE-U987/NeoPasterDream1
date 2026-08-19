@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": "pasterdream:wind_journey_biome_0",
+  "biomes": "pasterdream:wind_journey_islands",
   "spawners": {
     "type": "pasterdream:small_stone_spirit",
     "weight": 20,

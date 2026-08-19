@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_features",
-  "biomes": "pasterdream:biome_dyedream_deep_ocean",
+  "biomes": "pasterdream:dyedream_deep_ocean",
   "features": [
     "pasterdream:patch_dyedream_seagrass",
     "pasterdream:ice_arch",

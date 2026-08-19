@@ -40,7 +40,7 @@ import java.util.Map.Entry;
  * <pre>{@code
  * {
  *   "fade_speed": 0.08, "weight": 100,
- *   "biomes": ["pasterdream:biome_dyedream_0"],
+ *   "biomes": ["pasterdream:dyedream_plains"],
  *   "dimensions": ["pasterdream:dyedream_world"],
  *   "time": { "from": 13000, "to": 23000 },
  *   "layers": [ { "type": "pasterdream:star_field", ... }, ... ]

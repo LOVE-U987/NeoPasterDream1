@@ -167,10 +167,10 @@ public class PDRuinsRegistration {
      */
     private static void registerDyedreamWorldTree() {
         // biome 在预置 JSON 中为 biome_dyedream_0；generateJson=false，biomeTag 仅元数据
-        buildRuin("dyedream_worldtree_0", "pasterdream:biome_dyedream_0", -25, "none");
+        buildRuin("dyedream_worldtree_0", "pasterdream:dyedream_plains", -25, "none");
         buildSet("dyedream_worldtree_0", "dyedream_worldtree_0_set", 156, 87, 1208134265);
 
-        buildRuin("dyedream_worldtree_1", "pasterdream:biome_dyedream_0", -25, "none");
+        buildRuin("dyedream_worldtree_1", "pasterdream:dyedream_plains", -25, "none");
         buildSet("dyedream_worldtree_1", "dyedream_worldtree_1_set", 289, 165, 1208711388);
     }
 

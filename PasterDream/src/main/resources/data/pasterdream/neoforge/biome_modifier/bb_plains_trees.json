@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_features",
-  "biomes": "pasterdream:biome_dyedream_0",
+  "biomes": "pasterdream:dyedream_plains",
   "features": [
     "pasterdream:bb_trees_bush",
     "pasterdream:bb_trees_cherrybush",

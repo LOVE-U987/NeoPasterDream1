@@ -10,6 +10,6 @@
     "absolute": 37
   },
   "project_start_to_heightmap": "WORLD_SURFACE_WG",
-  "biomes": "pasterdream:biome_dyedream_0",
+  "biomes": "pasterdream:dyedream_plains",
   "use_expansion_hack": false
 }

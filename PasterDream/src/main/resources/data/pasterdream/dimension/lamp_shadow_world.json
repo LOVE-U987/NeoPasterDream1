@@ -6,7 +6,7 @@
       "type": "minecraft:multi_noise",
       "biomes": [
         {
-          "biome": "pasterdream:biome_shadow_0",
+          "biome": "pasterdream:shadow_wastes",
           "parameters": {
             "temperature": [
               0,
@@ -33,7 +33,7 @@
           }
         },
         {
-          "biome": "pasterdream:biome_shadow_1",
+          "biome": "pasterdream:shadow_forest",
           "parameters": {
             "temperature": [
               -1,
@@ -60,7 +60,7 @@
           }
         },
         {
-          "biome": "pasterdream:biome_shadow_2",
+          "biome": "pasterdream:shadow_barrens",
           "parameters": {
             "temperature": [
               0,
@@ -449,7 +449,7 @@
             "if_true": {
               "type": "minecraft:biome",
               "biome_is": [
-                "pasterdream:biome_shadow_0"
+                "pasterdream:shadow_wastes"
               ]
             },
             "then_run": {
@@ -521,7 +521,7 @@
             "if_true": {
               "type": "minecraft:biome",
               "biome_is": [
-                "pasterdream:biome_shadow_1"
+                "pasterdream:shadow_forest"
               ]
             },
             "then_run": {
@@ -593,7 +593,7 @@
             "if_true": {
               "type": "minecraft:biome",
               "biome_is": [
-                "pasterdream:biome_shadow_2"
+                "pasterdream:shadow_barrens"
               ]
             },
             "then_run": {

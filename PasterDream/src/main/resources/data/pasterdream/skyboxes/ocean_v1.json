@@ -5,10 +5,10 @@
     "pasterdream:dyedream_world"
   ],
   "biomes": [
-    "pasterdream:biome_dyedream_3",
-    "pasterdream:biome_dyedream_deep_ocean",
-    "pasterdream:biome_dyedream_shore",
-    "pasterdream:biome_dyedream_river"
+    "pasterdream:dyedream_cold_ocean",
+    "pasterdream:dyedream_deep_ocean",
+    "pasterdream:dyedream_shore",
+    "pasterdream:dyedream_river"
   ],
   "layers": [
     {

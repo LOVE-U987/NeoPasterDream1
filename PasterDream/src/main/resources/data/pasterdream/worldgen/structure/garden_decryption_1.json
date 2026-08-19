@@ -1,6 +1,6 @@
 {
   "type": "minecraft:jigsaw",
-  "biomes": "pasterdream:biome_dyedream_2",
+  "biomes": "pasterdream:dyedream_frozen_tundra",
   "step": "surface_structures",
   "terrain_adaptation": "beard_thin",
   "spawn_overrides": {},

@@ -42,7 +42,7 @@ public class DyedreamDecorations {
                     BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.CAVE_AIR, PDBlocks.DYEDREAM_GRASS.get(), PDBlocks.DYEDREAM_DIRT.get()),
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
-                .biome("pasterdream:biome_dyedream_0")
+                .biome("pasterdream:dyedream_plains")
                 .rarity(2)
                 .regionCheck(true, 0.3f)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
@@ -70,7 +70,7 @@ public class DyedreamDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .checkHang(true)
-                .biome("pasterdream:biome_dyedream_0")
+                .biome("pasterdream:dyedream_plains")
                 .rarity(5)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("meltdream_crystal_pillar");
@@ -102,7 +102,7 @@ public class DyedreamDecorations {
                     BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.CAVE_AIR, PDBlocks.CLOUD.get(), PDBlocks.THICK_CLOUD.get()),
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
-                .biome("pasterdream:biome_dyedream_0")
+                .biome("pasterdream:dyedream_plains")
                 .rarity(4)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("floating_cloud_island");
@@ -139,7 +139,7 @@ public class DyedreamDecorations {
                     BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.CAVE_AIR, PDBlocks.DYEDREAM_GRASS.get(), PDBlocks.DYEDREAM_DIRT.get()),
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
-                .biome("pasterdream:biome_dyedream_1")
+                .biome("pasterdream:dyedream_forest")
                 .rarity(2)
                 .regionCheck(true, 0.3f)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
@@ -178,7 +178,7 @@ public class DyedreamDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .checkHang(true)
-                .biome("pasterdream:biome_dyedream_1")
+                .biome("pasterdream:dyedream_forest")
                 .rarity(4)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("warm_crystal_spike");
@@ -240,7 +240,7 @@ public class DyedreamDecorations {
                     BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.CAVE_AIR, PDBlocks.DYEDREAM_GRASS.get(), PDBlocks.DYEDREAM_DIRT.get()),
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
-                .biome("pasterdream:biome_dyedream_mushroom_plains")
+                .biome("pasterdream:dyedream_mushroom_plains")
                 .rarity(1)
                 .regionCheck(true, 0.3f)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)

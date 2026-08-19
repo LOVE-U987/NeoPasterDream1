@@ -10,6 +10,6 @@
     "absolute": -1
   },
   "project_start_to_heightmap": "WORLD_SURFACE_WG",
-  "biomes": "pasterdream:biome_shadow_1",
+  "biomes": "pasterdream:shadow_forest",
   "use_expansion_hack": false
 }

@@ -16,6 +16,6 @@
     }
   },
   "project_start_to_heightmap": "WORLD_SURFACE_WG",
-  "biomes": "pasterdream:wind_journey_biome_1",
+  "biomes": "pasterdream:wind_journey_desert",
   "use_expansion_hack": false
 }

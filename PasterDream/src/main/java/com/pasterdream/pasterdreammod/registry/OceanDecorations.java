@@ -59,7 +59,7 @@ public class OceanDecorations {
                 .waterRequired(true)
                 .checkHang(false)
                 .occupiedCheck(false)
-                .biome("pasterdream:biome_dyedream_3")
+                .biome("pasterdream:dyedream_cold_ocean")
                 .rarity(1)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("patch_coral_reef");
@@ -92,7 +92,7 @@ public class OceanDecorations {
                     BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.WATER, Blocks.ICE, Blocks.PACKED_ICE, Blocks.BLUE_ICE, Blocks.SAND, Blocks.GRAVEL, PDBlocks.DYEDREAM_SAND.get()),
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
-                .biome("pasterdream:biome_dyedream_3")
+                .biome("pasterdream:dyedream_cold_ocean")
                 .rarity(3)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("underwater_ice_spike");
@@ -123,7 +123,7 @@ public class OceanDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .checkHang(true)
-                .biome("pasterdream:biome_dyedream_3")
+                .biome("pasterdream:dyedream_cold_ocean")
                 .rarity(2)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("sea_ice_mound");
@@ -150,7 +150,7 @@ public class OceanDecorations {
                 .customGenerator("cloud_bubble")
                 .regionCheck(true, 0.3f)
                 .replaceable(BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.CAVE_AIR, Blocks.WATER))
-                .biome("pasterdream:biome_dyedream_3")
+                .biome("pasterdream:dyedream_cold_ocean")
                 .rarity(1)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("cloud_bubble");
@@ -179,7 +179,7 @@ public class OceanDecorations {
                     BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.WATER, Blocks.SNOW_BLOCK, PDBlocks.DYEDREAM_ICE.get(), PDBlocks.DYEDREAM_PACKED_ICE.get(), Blocks.SAND, Blocks.GRAVEL, PDBlocks.DYEDREAM_SAND.get()),
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
-                .biome("pasterdream:biome_dyedream_3")
+                .biome("pasterdream:dyedream_cold_ocean")
                 .rarity(2)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("floating_ice_mound");
@@ -219,7 +219,7 @@ public class OceanDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .checkHang(false)
-                .biome("pasterdream:biome_dyedream_3")
+                .biome("pasterdream:dyedream_cold_ocean")
                 .rarity(36)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("ice_arch");
@@ -253,7 +253,7 @@ public class OceanDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .checkHang(false)
-                .biome("pasterdream:biome_dyedream_3")
+                .biome("pasterdream:dyedream_cold_ocean")
                 .rarity(105)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("ice_arch_ruined");
@@ -285,7 +285,7 @@ public class OceanDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .checkHang(true)
-                .biome("pasterdream:biome_dyedream_3")
+                .biome("pasterdream:dyedream_cold_ocean")
                 .rarity(3)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("dyedream_ice_pillar");
@@ -320,7 +320,7 @@ public class OceanDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .checkHang(true)
-                .biome("pasterdream:biome_dyedream_3")
+                .biome("pasterdream:dyedream_cold_ocean")
                 .rarity(2)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("ice_crystal_cluster");
@@ -350,7 +350,7 @@ public class OceanDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .checkHang(true)
-                .biome("pasterdream:biome_dyedream_3")
+                .biome("pasterdream:dyedream_cold_ocean")
                 .rarity(3)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("frost_spike");

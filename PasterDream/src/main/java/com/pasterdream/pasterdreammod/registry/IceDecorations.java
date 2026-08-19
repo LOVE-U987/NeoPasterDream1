@@ -53,7 +53,7 @@ public class IceDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .checkHang(true)
-                .biome("pasterdream:biome_dyedream_2")
+                .biome("pasterdream:dyedream_frozen_tundra")
                 .rarity(2)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("ice_spike");
@@ -96,7 +96,7 @@ public class IceDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .checkHang(false)
-                .biome("pasterdream:biome_dyedream_2")
+                .biome("pasterdream:dyedream_frozen_tundra")
                 .rarity(5)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("ice_gate");
@@ -132,7 +132,7 @@ public class IceDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .checkHang(true)
-                .biome("pasterdream:biome_dyedream_1")
+                .biome("pasterdream:dyedream_forest")
                 .rarity(3)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("calcite_pillar");
@@ -165,7 +165,7 @@ public class IceDecorations {
                 .crystal(0.15f, new WeightedStateProvider(crystalList))
                 .clusterSize(8)
                 .checkHang(true)
-                .biome("pasterdream:biome_dyedream_2")
+                .biome("pasterdream:dyedream_frozen_tundra")
                 .rarity(2)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("ice_crystal_garden");
@@ -196,7 +196,7 @@ public class IceDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .checkHang(true)
-                .biome("pasterdream:biome_dyedream_2")
+                .biome("pasterdream:dyedream_frozen_tundra")
                 .rarity(1)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("ice_crystal_spike");
@@ -228,7 +228,7 @@ public class IceDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .checkHang(true)
-                .biome("pasterdream:biome_dyedream_2")
+                .biome("pasterdream:dyedream_frozen_tundra")
                 .rarity(3)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("ice_pillar");

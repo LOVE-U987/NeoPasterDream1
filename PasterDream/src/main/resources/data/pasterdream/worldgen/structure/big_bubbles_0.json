@@ -16,6 +16,6 @@
     }
   },
   "project_start_to_heightmap": "WORLD_SURFACE_WG",
-  "biomes": "pasterdream:biome_dyedream_3",
+  "biomes": "pasterdream:dyedream_cold_ocean",
   "use_expansion_hack": false
 }
