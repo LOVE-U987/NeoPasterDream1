@@ -388,39 +388,39 @@ public class ClientSetup {
                         ResourceKey<Biome> biome = PDClientEvents.currentBiomeKey;
                         Vec3 dayColor, sunsetColor, nightColor;
 
-                        if (PDBiomes.BIOME_DYEDREAM_0.equals(biome)) {
+                        if (PDBiomes.DYEDREAM_PLAINS.equals(biome)) {
                             dayColor = new Vec3(1.0, 0.71, 0.85);
                             sunsetColor = new Vec3(1.0, 0.56, 0.64);
                             nightColor = new Vec3(0.29, 0.10, 0.36);
-                        } else if (PDBiomes.BIOME_DYEDREAM_1.equals(biome)) {
+                        } else if (PDBiomes.DYEDREAM_FOREST.equals(biome)) {
                             dayColor = new Vec3(0.66, 0.90, 0.64);
                             sunsetColor = new Vec3(0.83, 0.64, 0.45);
                             nightColor = new Vec3(0.10, 0.23, 0.16);
-                        } else if (PDBiomes.BIOME_DYEDREAM_2.equals(biome)) {
+                        } else if (PDBiomes.DYEDREAM_FROZEN_TUNDRA.equals(biome)) {
                             dayColor = new Vec3(0.71, 0.85, 1.0);
                             sunsetColor = new Vec3(0.64, 0.71, 0.83);
                             nightColor = new Vec3(0.10, 0.16, 0.36);
-                        } else if (PDBiomes.BIOME_DYEDREAM_3.equals(biome)) {
+                        } else if (PDBiomes.DYEDREAM_COLD_OCEAN.equals(biome)) {
                             dayColor = new Vec3(0.64, 0.83, 0.90);
                             sunsetColor = new Vec3(0.83, 0.64, 0.64);
                             nightColor = new Vec3(0.04, 0.16, 0.23);
-                        } else if (PDBiomes.BIOME_DYEDREAM_DEEP_OCEAN.equals(biome)) {
+                        } else if (PDBiomes.DYEDREAM_DEEP_OCEAN.equals(biome)) {
                             dayColor = new Vec3(0.76, 0.64, 0.90);
                             sunsetColor = new Vec3(0.83, 0.53, 0.74);
                             nightColor = new Vec3(0.12, 0.04, 0.28);
-                        } else if (PDBiomes.BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(biome)) {
+                        } else if (PDBiomes.DYEDREAM_MUSHROOM_PLAINS.equals(biome)) {
                             dayColor = new Vec3(1.0, 0.82, 0.64);
                             sunsetColor = new Vec3(0.90, 0.64, 0.45);
                             nightColor = new Vec3(0.28, 0.16, 0.04);
-                        } else if (PDBiomes.BIOME_DYEDREAM_SHORE.equals(biome)) {
+                        } else if (PDBiomes.DYEDREAM_SHORE.equals(biome)) {
                             dayColor = new Vec3(0.71, 0.85, 1.0);
                             sunsetColor = new Vec3(0.83, 0.71, 0.83);
                             nightColor = new Vec3(0.16, 0.23, 0.36);
-                        } else if (PDBiomes.BIOME_DYEDREAM_RIVER.equals(biome)) {
+                        } else if (PDBiomes.DYEDREAM_RIVER.equals(biome)) {
                             dayColor = new Vec3(0.64, 0.78, 0.85);
                             sunsetColor = new Vec3(0.78, 0.64, 0.78);
                             nightColor = new Vec3(0.10, 0.16, 0.28);
-                        } else if (PDBiomes.BIOME_DYEDREAM_DENSE_FOREST.equals(biome)) {
+                        } else if (PDBiomes.DYEDREAM_DENSE_FOREST.equals(biome)) {
                             dayColor = new Vec3(0.56, 0.71, 0.56);
                             sunsetColor = new Vec3(0.71, 0.56, 0.64);
                             nightColor = new Vec3(0.08, 0.16, 0.10);

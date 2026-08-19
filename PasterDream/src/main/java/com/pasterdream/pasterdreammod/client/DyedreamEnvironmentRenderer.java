@@ -91,28 +91,28 @@ public class DyedreamEnvironmentRenderer {
         ResourceKey<Biome> currentBiome = biomeKey.get();
 
         // ===== 按群系分发粒子效果 =====
-        if (PDBiomes.BIOME_DYEDREAM_0.equals(currentBiome)) {
+        if (PDBiomes.DYEDREAM_PLAINS.equals(currentBiome)) {
             spawnDreamSpore(mc, 0.003f);
-        } else if (PDBiomes.BIOME_DYEDREAM_1.equals(currentBiome)) {
+        } else if (PDBiomes.DYEDREAM_FOREST.equals(currentBiome)) {
             spawnStardust(mc, 0.004f);
-        } else if (PDBiomes.BIOME_DYEDREAM_2.equals(currentBiome)) {
+        } else if (PDBiomes.DYEDREAM_FROZEN_TUNDRA.equals(currentBiome)) {
             spawnCrystalSnowflake(mc, 0.005f);
-        } else if (PDBiomes.BIOME_DYEDREAM_3.equals(currentBiome)) {
+        } else if (PDBiomes.DYEDREAM_COLD_OCEAN.equals(currentBiome)) {
             // 暖色海岸/海洋：星尘（密度对齐原极光粒子）
             spawnStardust(mc, 0.003f);
-        } else if (PDBiomes.BIOME_DYEDREAM_DEEP_OCEAN.equals(currentBiome)) {
+        } else if (PDBiomes.DYEDREAM_DEEP_OCEAN.equals(currentBiome)) {
             // 晶莹深海：星尘（密度对齐原极光粒子）
             spawnStardust(mc, 0.004f);
-        } else if (PDBiomes.BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(currentBiome)) {
+        } else if (PDBiomes.DYEDREAM_MUSHROOM_PLAINS.equals(currentBiome)) {
             // 蘑菇平原：梦幻孢子（绿色/蓝色变体），用自定义颜色速度
             spawnMushroomSporeVariant(mc, 0.004f);
-        } else if (PDBiomes.BIOME_DYEDREAM_SHORE.equals(currentBiome)) {
+        } else if (PDBiomes.DYEDREAM_SHORE.equals(currentBiome)) {
             // 海岸：梦幻孢子 + 星尘组合
             spawnDreamSpore(mc, 0.003f);
             spawnStardust(mc, 0.003f);
-        } else if (PDBiomes.BIOME_DYEDREAM_RIVER.equals(currentBiome)) {
+        } else if (PDBiomes.DYEDREAM_RIVER.equals(currentBiome)) {
             spawnStardust(mc, 0.005f);
-        } else if (PDBiomes.BIOME_DYEDREAM_DENSE_FOREST.equals(currentBiome)) {
+        } else if (PDBiomes.DYEDREAM_DENSE_FOREST.equals(currentBiome)) {
             // 密林：梦幻孢子 + 星尘组合
             spawnDreamSpore(mc, 0.002f);
             spawnStardust(mc, 0.002f);

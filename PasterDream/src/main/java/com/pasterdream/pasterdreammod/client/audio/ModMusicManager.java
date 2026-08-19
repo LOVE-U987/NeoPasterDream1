@@ -148,15 +148,15 @@ public class ModMusicManager {
      * 注册染梦维度的默认群系音乐配置。
      */
     public void initializeDefaultBiomeMusic() {
-        registerBiomeMusic("biome_dyedream_0", "dyedream_world");
-        registerBiomeMusic("biome_dyedream_1", "dream_heath", "dream_meadow_daisy");
-        registerBiomeMusic("biome_dyedream_2", "dream_delta");
-        registerBiomeMusic("biome_dyedream_3", "dream_taiga");
-        registerBiomeMusic("biome_dyedream_deep_ocean", "sweetdream_music");
-        registerBiomeMusic("biome_dyedream_mushroom_plains", "snowfall_dream_music");
-        registerBiomeMusic("biome_dyedream_dense_forest", "dream_heath", "dream_meadow_daisy");
-        registerBiomeMusic("biome_dyedream_shore", "sweetdream_music");
-        registerBiomeMusic("biome_dyedream_river", "dyedream_world");
+        registerBiomeMusic("dyedream_plains", "dyedream_world");
+        registerBiomeMusic("dyedream_forest", "dream_heath", "dream_meadow_daisy");
+        registerBiomeMusic("dyedream_frozen_tundra", "dream_delta");
+        registerBiomeMusic("dyedream_cold_ocean", "dream_taiga");
+        registerBiomeMusic("dyedream_deep_ocean", "sweetdream_music");
+        registerBiomeMusic("dyedream_mushroom_plains", "snowfall_dream_music");
+        registerBiomeMusic("dyedream_dense_forest", "dream_heath", "dream_meadow_daisy");
+        registerBiomeMusic("dyedream_shore", "sweetdream_music");
+        registerBiomeMusic("dyedream_river", "dyedream_world");
         registerBiomeMusic("wind_journey_biome_0", "wind_journey_departure", "wind_journey_midsummer");
         registerBiomeMusic("wind_journey_biome_1", "wind_journey_departure", "wind_journey_midsummer");
     }

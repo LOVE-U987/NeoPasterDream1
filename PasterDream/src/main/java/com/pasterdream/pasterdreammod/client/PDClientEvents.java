@@ -106,23 +106,23 @@ public class PDClientEvents {
         ResourceKey<Biome> currentBiome = currentBiomeKey;
 
         if (isDyedream) {
-            if (PDBiomes.BIOME_DYEDREAM_0.equals(currentBiome)) {
+            if (PDBiomes.DYEDREAM_PLAINS.equals(currentBiome)) {
                 spawnDreamfertiliter(mc);
-            } else if (PDBiomes.BIOME_DYEDREAM_1.equals(currentBiome)) {
+            } else if (PDBiomes.DYEDREAM_FOREST.equals(currentBiome)) {
                 spawnWhiteStar(mc);
-            } else if (PDBiomes.BIOME_DYEDREAM_2.equals(currentBiome)) {
+            } else if (PDBiomes.DYEDREAM_FROZEN_TUNDRA.equals(currentBiome)) {
                 spawnSilver(mc);
-            } else if (PDBiomes.BIOME_DYEDREAM_3.equals(currentBiome)) {
+            } else if (PDBiomes.DYEDREAM_COLD_OCEAN.equals(currentBiome)) {
                 spawnSnowflakeGround(mc);
-            } else if (PDBiomes.BIOME_DYEDREAM_DEEP_OCEAN.equals(currentBiome)) {
+            } else if (PDBiomes.DYEDREAM_DEEP_OCEAN.equals(currentBiome)) {
                 spawnDeepOceanBioluminescence(mc);
-            } else if (PDBiomes.BIOME_DYEDREAM_MUSHROOM_PLAINS.equals(currentBiome)) {
+            } else if (PDBiomes.DYEDREAM_MUSHROOM_PLAINS.equals(currentBiome)) {
                 spawnMushroomSpores(mc);
-            } else if (PDBiomes.BIOME_DYEDREAM_SHORE.equals(currentBiome)) {
+            } else if (PDBiomes.DYEDREAM_SHORE.equals(currentBiome)) {
                 spawnShoreSpray(mc);
-            } else if (PDBiomes.BIOME_DYEDREAM_RIVER.equals(currentBiome)) {
+            } else if (PDBiomes.DYEDREAM_RIVER.equals(currentBiome)) {
                 spawnRiverGlow(mc);
-            } else if (PDBiomes.BIOME_DYEDREAM_DENSE_FOREST.equals(currentBiome)) {
+            } else if (PDBiomes.DYEDREAM_DENSE_FOREST.equals(currentBiome)) {
                 spawnForestFireflies(mc);
             }
 
