@@ -197,7 +197,7 @@ public class IceDecorations {
                 ))
                 .checkHang(true)
                 .biome("pasterdream:dyedream_frozen_tundra")
-                .rarity(1)
+                .rarity(3)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("ice_crystal_spike");
     }
