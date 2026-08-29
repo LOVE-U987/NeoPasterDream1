@@ -23,7 +23,7 @@
     "base_radius": 5,
     "y_radius": 2,
     "irregularity": 0.35,
-    "fill_hang": true,
+    "fill_hang": false,
     "replaceable": {
       "type": "minecraft:matching_blocks",
       "blocks": [
