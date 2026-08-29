@@ -4,7 +4,7 @@
     "features": [
       {
         "feature": "pasterdream:dyedream_tree_colossal",
-        "chance": 0.04
+        "chance": 0.013
       },
       {
         "feature": "pasterdream:dyedream_tree_glowing",
@@ -24,7 +24,7 @@
       },
       {
         "feature": "pasterdream:dyedream_tree_giant",
-        "chance": 0.18
+        "chance": 0.06
       },
       {
         "feature": "pasterdream:dyedream_tree",
