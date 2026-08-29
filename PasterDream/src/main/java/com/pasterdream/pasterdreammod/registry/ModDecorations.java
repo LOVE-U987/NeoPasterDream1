@@ -56,10 +56,10 @@ public class ModDecorations {
                 .radius(6, 0)
                 .yRadius(2)
                 .irregularity(0.3f)
-                .fillHang(true)
+                .fillHang(false)
                 .regionCheck(true, 0.3f)
                 .replaceable(BlockPredicate.anyOf(
-                    BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.CAVE_AIR, PDBlocks.CLOUD.get(), PDBlocks.THICK_CLOUD.get(), PDBlocks.DARK_CLOUD.get()),
+                    BlockPredicate.matchesBlocks(Blocks.AIR, PDBlocks.CLOUD.get(), PDBlocks.THICK_CLOUD.get(), PDBlocks.DARK_CLOUD.get()),
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .biome("#pasterdream:is_dyedream")
@@ -93,10 +93,10 @@ public class ModDecorations {
                 .radius(5, 0)
                 .yRadius(2)
                 .irregularity(0.35f)
-                .fillHang(true)
+                .fillHang(false)
                 .regionCheck(true, 0.3f)
                 .replaceable(BlockPredicate.anyOf(
-                    BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.CAVE_AIR, PDBlocks.CLOUD.get(), PDBlocks.THICK_CLOUD.get(), PDBlocks.DARK_CLOUD.get()),
+                    BlockPredicate.matchesBlocks(Blocks.AIR, PDBlocks.CLOUD.get(), PDBlocks.THICK_CLOUD.get(), PDBlocks.DARK_CLOUD.get()),
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .biome("#pasterdream:is_dyedream")
