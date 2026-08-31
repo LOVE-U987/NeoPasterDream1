@@ -1,8 +1,20 @@
 {
-  "parent": "minecraft:block/vine",
-  "render_type": "cutout",
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "ambientocclusion": false,
   "textures": {
     "particle": "pasterdream:block/dyedream_hanging_vine",
     "vine": "pasterdream:block/dyedream_hanging_vine"
-  }
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0.8],
+      "to": [16, 16, 0.8],
+      "shade": false,
+      "faces": {
+        "north": { "uv": [16, 0, 0, 16], "texture": "#vine", "tintindex": 0 },
+        "south": { "uv": [0, 0, 16, 16], "texture": "#vine", "tintindex": 0 }
+      }
+    }
+  ]
 }
