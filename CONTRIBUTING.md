@@ -6,10 +6,24 @@
 
 PasterDream 是一个 NeoForge 1.21.1 模组，是原 PasterDream 模组的精神续作。我们的核心理念是：
 
-- 参考原模组呈现效果，但不直接复制或修改原代码
-- 相同效果，用不同技术方案重新实现
-- 原模组是 MCreator 生成，必须重写，MCreator 代码不可移植
+- 原模组（`libs/FixPasterDream-main/`）仅作为**参考**，部分开发方向已偏离原模组设计
+- 原模组是 MCreator 生成，代码不可移植，必须基于 NeoForge 1.21.1 API 重新实现
+- 不直接复制或修改原代码，相同效果用不同技术方案实现
 - 在原有的项目上，加入我们自己的，独特内容
+
+### 项目结构
+
+本项目采用多模块架构：
+
+| 模块 | 说明 |
+|------|------|
+| `PasterDreamAPI` | API 模块（Builder/Facade/Result/Config） |
+| `PasterDream` | 主模块（方块/物品/实体/渲染/注册） |
+| `PasterDreamSpells` | 附属模块：法术系统（thin 发行） |
+| `PasterDreamSanity` | 附属模块：理智系统（thin 发行） |
+| `PasterDreamMeltDream` | 附属模块：融梦能量系统（thin 发行） |
+
+> 附属模块均为 thin 发行模式，不内嵌 PasterDreamAPI（由主模组打包提供），运行时需主模组作为前置。
 
 ## 开发环境设置
 
@@ -30,8 +44,13 @@ cd NeoPasterDream1
 ### 构建项目
 
 ```bash
-# 编译项目
+# 编译所有模块
 .\gradlew compileJava
+
+# 编译单个模块（示例）
+.\gradlew :PasterDreamSpells:compileJava
+.\gradlew :PasterDreamSanity:compileJava
+.\gradlew :PasterDreamMeltDream:compileJava
 
 # 运行数据生成器
 .\gradlew runData
@@ -71,7 +90,7 @@ docs/username/update-readme
 
 ### 工作流程
 
-1. 从 `main` 分支创建功能分支
+1. 从 `main` 分支或基于主分支变基的个人分支创建功能分支
 2. 在功能分支上进行开发
 3. 完成开发后，创建 Pull Request，交由核心开发者审查
 4. 经过代码审查后合并到 `main`
@@ -103,18 +122,20 @@ docs/username/update-readme
 - `block` - 方块相关
 - `entity` - 实体相关
 - `item` - 物品相关
+- `model` - 模型相关
 - `render` - 渲染相关
 - `registry` - 注册系统
 - `client` - 客户端代码
 - `server` - 服务端代码
+- `refactor` - 重构
+- `code & docs` - 代码与文档
 
 ### 示例
 
 ```
-fix(api): correct loot table format
-feat(entity): add shadow golem AI
-docs: update contributing guide
-refactor(block): simplify cloud block logic
+fix(model): correct dyedream_hanging_vine item and drop form
+fix(code & docs): disable fillHang for cloud fall and update Issue-#11 tracker
+fix(refactor): reduce the formation of ice_crystal_spike
 ```
 
 ## 代码风格规范
@@ -160,7 +181,12 @@ refactor(block): simplify cloud block logic
 每次提交前，确保代码能够成功编译：
 
 ```bash
+# 全量编译（推荐）
 .\gradlew compileJava
+
+# 或仅编译变更涉及的模块
+.\gradlew :PasterDream:compileJava
+.\gradlew :PasterDreamSpells:compileJava
 ```
 
 ### 运行时测试

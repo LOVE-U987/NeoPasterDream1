@@ -17,24 +17,29 @@
 
 PasterDream NeoForge 1.21.1 模组开发项目。**核心理念:精神续作,而非代码移植。**
 
-- 参考原模组呈现效果,但**不直接复制或修改原代码**
-- 相同效果,用不同技术方案重新实现
-- 原模组是 MCreator 生成,必须重写,MCreator 代码不可移植
+- 原模组(`libs/FixPasterDream-main/`)仅作为**参考**,部分开发方向已偏离原模组设计
+- 原模组是 MCreator 生成,代码不可移植,必须基于 NeoForge 1.21.1 API 重新实现
+- **不直接复制或修改原代码**,相同效果用不同技术方案实现
 - 版本跨度:1.20.1 Forge → 1.21.1 NeoForge
 
 ## 项目结构
 
 ```
 NeoPasterDream1/
-├── PasterDreamAPI/          # API 模块(Builder/Facade/Result/Config)
+├── PasterDreamAPI/           # API 模块(Builder/Facade/Result/Config)
 │   └── src/main/java/.../api/
-├── PasterDream/             # 主模块(方块/物品/实体/渲染/注册)
+├── PasterDream/              # 主模块(方块/物品/实体/渲染/注册)
 │   └── src/main/java/.../
-├── src/                     # 旧目录(已归档 @Deprecated,不再参与构建)
-└── libs/FixPasterDream-main/  # 原模组(只读参考)
+├── PasterDreamSpells/        # 附属模块:法术系统(thin 发行,编译期依赖 API)
+├── PasterDreamSanity/        # 附属模块:理智系统(thin 发行,编译期依赖 API)
+├── PasterDreamMeltDream/     # 附属模块:融梦能量系统(thin 发行,编译期依赖 API)
+├── src/                      # 旧目录(已归档 @Deprecated,不再参与构建)
+└── libs/FixPasterDream-main/ # 原模组(只读参考)
 ```
 
-## API-Split 多模块架构策略:模块归属决策
+> **附属模块说明**: PasterDreamSpells/Sanity/MeltDream 均为 thin 发行模式,不内嵌 PasterDreamAPI(由 PasterDream 主模组打包提供)。运行时需主模组作为前置。
+
+## 多模块架构策略:模块归属决策
 
 新代码按以下条件判断归属:
 
@@ -44,24 +49,72 @@ NeoPasterDream1/
 | 会被多个业务模块引用的类 | → `PasterDreamAPI` |
 | 属于注册体系(DeferredRegister/DataGen) | → `PasterDreamAPI` |
 | 需要被其他模组作为库依赖 | → `PasterDreamAPI` |
+| 法术系统(卷轴/投射物/立场/法术效果) | → `PasterDreamSpells` |
+| 理智系统(San值/环境修饰/低San惩罚) | → `PasterDreamSanity` |
+| 融梦能量系统(能量池/恢复/消耗) | → `PasterDreamMeltDream` |
 | 以上均不满足(方块/物品/实体/渲染/客户端代码) | → `PasterDream` |
 
-> **口诀**:API/Builder/注册门面 → API 模块;方块/物品/实体/渲染 → 主模块。
+> **口诀**:API/Builder/注册门面 → API 模块;法术 → Spells;理智 → Sanity;融梦 → MeltDream;其余 → 主模块。
 
 ## 开发工作流
 
 1. **分析效果**:查看原模组资源文件,理解游戏机制
 2. **重新设计**:基于 NeoForge 1.21.1 API 实现
 3. **手写代码**:使用 `DeferredRegister`、DataGen、GeckoLib
-4. **编译测试**:`.\gradlew compileJava`(自动编译两个模块)→ `.\gradlew runData` → `.\gradlew runClient`
+4. **编译测试**:
+   - 全量编译:`.\gradlew compileJava`(编译所有模块)
+   - 单模块编译:`.\gradlew :PasterDreamSpells:compileJava` 等
+   - 数据生成:`.\gradlew runData`
+   - 客户端测试:`.\gradlew runClient`
 
 ## Git 提交信息规范
 
-> 由 TRAE `rules/git-commit-message.md` 迁移而来(2026-08-03)
+### 提交格式
+
+```
+类型(范围): 内容
+```
+
+**类型**: `feat` / `fix` / `docs` / `style` / `refactor` / `test` / `chore`
+
+**范围**(可选): `api` / `block` / `entity` / `item` / `model` / `render` / `registry` / `client` / `server` / `refactor` / `code & docs`
+
+**示例**:
+```
+fix(model): correct dyedream_hanging_vine item and drop form
+fix(code & docs): disable fillHang for cloud fall and update Issue-#11 tracker
+fix(refactor): reduce the formation of ice_crystal_spike
+```
+
+### 基本要求
 
 1. 语言准确,避免使用特殊字符,确保使用的语言为英文
 2. 提交信息简洁明了,避免使用复杂的语言
-3. 提交信息中包含相关代码的行号和文件名,方便定位问题
+
+## 分支策略
+
+### 分支命名
+
+使用 `类型/负责人/主题` 格式:
+
+- **类型**: `feature` / `fix` / `refactor` / `docs` / `test`
+- **负责人**: GitHub 用户名
+- **主题**: 简短描述,使用小写字母和连字符
+
+**示例**:
+```
+feature/momonyako/dream-meter
+fix/phantomdaze/loot-table
+refactor/username/cleanup-api
+```
+
+### 工作流程
+
+1. 从 `main` 分支或基于主分支变基的个人分支创建功能分支
+2. 在功能分支上进行开发
+3. 完成开发后,创建 Pull Request,交由核心开发者审查
+4. 经过代码审查后合并到 `main`
+5. 合并后及时删除功能分支
 
 ## 多线程开发策略
 
@@ -70,6 +123,7 @@ NeoPasterDream1/
 | 独立物品/方块 | 可并行 | 避免同时修改同一文件 |
 | 实体系统 | 可并行 | 需协调渲染器注册 |
 | 数据生成 | 可并行 | - |
+| 附属模块(Spells/Sanity/MeltDream) | 可并行 | 各模块独立,但共享 API |
 | 跨模块功能 | 串行/协调 | Capability、网络包等 |
 
 ## API 迁移对照
@@ -82,10 +136,50 @@ NeoPasterDream1/
 
 ## 代码规范
 
-- **命名**:类 PascalCase,方法 camelCase,常量 UPPER_SNAKE_CASE,注册名 snake_case
+### 命名约定
+
+- **类**:PascalCase(如 `ShadowGolemEntity`)
+- **方法**:camelCase(如 `createAttributes`)
+- **常量**:UPPER_SNAKE_CASE(如 `MOD_ID`)
+- **注册名**:snake_case(如 `shadow_golem`)
+
+### 格式规范
+
+- **缩进**:4 空格,禁止制表符
+- **大括号**:K&R 风格(右花括号在同一行)
+- **换行符**:LF(Unix 格式)
+- **行长度**:推荐 120 字符,最大 150 字符
+- **空格**:运算符周围、逗号后、冒号后
+
+### 编码规范
+
+- **非 MD 文件**:标准 ASCII 字符 + UTF-8 编码,禁止使用 Emoji
+- **MD 文件**:UTF-8 编码,允许 Unicode 和 Emoji
+- **代码注释**:允许使用 UTF-8 字符(如中文)
+
+### 导入顺序
+
+1. 项目内部导入
+2. 第三方库导入
+3. Java 标准库导入
+
+### 注册与实体
+
 - **注册**:必须使用 `DeferredRegister`
 - **实体**:继承 `GeckoLibMonsterEntity`/`GeckoLibAnimalEntity`
 - **注释**:类级+方法级注释,参数用 `@param`
+
+## 第三方库
+
+| 库 | 依赖方式 | 说明 |
+|----|---------|------|
+| GeckoLib | Maven | 实体/方块/物品 GeckoLib 渲染 |
+| Curios | Maven | 饰品系统集成 |
+| Player Animator | Maven (optional) | 玩家动画姿势(evasion/none) |
+| JEI | compileOnly + localRuntime | 可选:配方查看器;发布 jar 不携带 |
+| Patchouli | optional (纯数据) | 可选:图鉴手册包;无 Java 硬依赖 |
+
+> Curios/GeckoLib/playerAnimator 已从 git 剥离(原 `libs/` 目录),改走 Maven 依赖。
 
 ## 资源处理
 
