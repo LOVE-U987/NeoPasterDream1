@@ -72,54 +72,54 @@ public final class PDBiomes {
     public static final ResourceKey<Biome> AARONCOS_ARENA_VOID = create("aaroncos_arena_void");
 
     // ==================== 旧名称 (Deprecated Aliases) ====================
-    // 将在 0.9.10 版本移除
+    // 将在 0.11.0 版本移除
 
     /** @deprecated 使用 {@link #DYEDREAM_PLAINS} 代替 */
-    @Deprecated(since = "0.9.9", forRemoval = true)
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<Biome> BIOME_DYEDREAM_0 = create("biome_dyedream_0");
 
     /** @deprecated 使用 {@link #DYEDREAM_FOREST} 代替 */
-    @Deprecated(since = "0.9.9", forRemoval = true)
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<Biome> BIOME_DYEDREAM_1 = create("biome_dyedream_1");
 
     /** @deprecated 使用 {@link #DYEDREAM_FROZEN_TUNDRA} 代替 */
-    @Deprecated(since = "0.9.9", forRemoval = true)
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<Biome> BIOME_DYEDREAM_2 = create("biome_dyedream_2");
 
     /** @deprecated 使用 {@link #DYEDREAM_COLD_OCEAN} 代替 */
-    @Deprecated(since = "0.9.9", forRemoval = true)
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<Biome> BIOME_DYEDREAM_3 = create("biome_dyedream_3");
 
     /** @deprecated 使用 {@link #DYEDREAM_DEEP_OCEAN} 代替 */
-    @Deprecated(since = "0.9.9", forRemoval = true)
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<Biome> BIOME_DYEDREAM_DEEP_OCEAN = create("biome_dyedream_deep_ocean");
 
     /** @deprecated 使用 {@link #DYEDREAM_MUSHROOM_PLAINS} 代替 */
-    @Deprecated(since = "0.9.9", forRemoval = true)
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<Biome> BIOME_DYEDREAM_MUSHROOM_PLAINS = create("biome_dyedream_mushroom_plains");
 
     /** @deprecated 使用 {@link #DYEDREAM_SHORE} 代替 */
-    @Deprecated(since = "0.9.9", forRemoval = true)
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<Biome> BIOME_DYEDREAM_SHORE = create("biome_dyedream_shore");
 
     /** @deprecated 使用 {@link #DYEDREAM_RIVER} 代替 */
-    @Deprecated(since = "0.9.9", forRemoval = true)
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<Biome> BIOME_DYEDREAM_RIVER = create("biome_dyedream_river");
 
     /** @deprecated 使用 {@link #DYEDREAM_DENSE_FOREST} 代替 */
-    @Deprecated(since = "0.9.9", forRemoval = true)
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<Biome> BIOME_DYEDREAM_DENSE_FOREST = create("biome_dyedream_dense_forest");
 
     /** @deprecated 使用 {@link #AARONCOS_ARENA} 代替 */
-    @Deprecated(since = "0.9.9", forRemoval = true)
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<Biome> BIOME_AARONCOS_ARENA = create("aaroncos_arena_biome");
 
     /** @deprecated 使用 {@link #AARONCOS_ARENA_VOID} 代替 */
-    @Deprecated(since = "0.9.9", forRemoval = true)
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<Biome> BIOME_AARONCOS_ARENA_DIM = create("aaroncos_arena_dim_biome");
 
     /** @deprecated 使用 {@link #COLD_DOMAIN_TUNDRA} 代替 */
-    @Deprecated(since = "0.9.9", forRemoval = true)
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<Biome> BIOME_COLD_DOMAIN = create("cold_domain_biome");
 
     /**
