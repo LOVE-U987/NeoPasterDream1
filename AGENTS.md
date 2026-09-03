@@ -155,7 +155,8 @@ refactor/username/cleanup-api
 
 - **非 MD 文件**:标准 ASCII 字符 + UTF-8 编码,禁止使用 Emoji
 - **MD 文件**:UTF-8 编码,允许 Unicode 和 Emoji
-- **代码注释**:允许使用 UTF-8 字符(如中文)
+- **代码注释**:使用 UTF-8 字符，如中文，但禁止使用Emoji
+- **代码注释规范**:推荐使用中文
 
 ### 导入顺序
 

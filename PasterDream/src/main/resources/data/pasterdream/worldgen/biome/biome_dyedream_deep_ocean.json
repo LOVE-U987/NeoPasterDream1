@@ -51,12 +51,6 @@
     "underground_water_creature": [],
     "water_creature": [
       {
-        "type": "minecraft:glow_squid",
-        "weight": 15,
-        "minCount": 2,
-        "maxCount": 4
-      },
-      {
         "type": "minecraft:dolphin",
         "weight": 10,
         "minCount": 1,
@@ -64,6 +58,12 @@
       }
     ],
     "water_ambient": [
+      {
+        "type": "minecraft:glow_squid",
+        "weight": 8,
+        "minCount": 1,
+        "maxCount": 2
+      },
       {
         "type": "minecraft:tropical_fish",
         "weight": 20,

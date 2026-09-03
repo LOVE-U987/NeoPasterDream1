@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -286,6 +287,32 @@ public class PDEntityEvents {
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+    }
+
+    /**
+     * 限制原版发光鱿鱼（glow squid）在染梦维度中的自然生成
+     * 原版 {@code GlowSquid#checkGlowSquidSpawnRules} 仅要求生成位置为水方块，
+     * 不限深度/光照/天空。叠加 {@code dyedream_world} 噪声设置中
+     * {@code aquifers_enabled: true}（地下含水层）后，海洋群系覆盖区的地下
+     * 含水洞穴成为发光鱿鱼的大量生成点，导致部分区域异常大量刷新，进而造成游戏卡顿
+     * 本规则对其他维度保持原版行为（仅检查水方块）；染梦维度内仅允许露天
+     * 水体生成：生成点高度需不低于海床高度图（OCEAN_FLOOR_WG），被顶板
+     * 覆盖的含水层洞穴会被拒绝，露天海洋/湖泊水柱仍可正常生成。
+     *
+     * @param event 生成位置注册事件
+     */
+    @SubscribeEvent
+    public static void restrictGlowSquidSpawn(RegisterSpawnPlacementsEvent event) {
+        event.register(net.minecraft.world.entity.EntityType.GLOW_SQUID,
+                SpawnPlacementTypes.IN_WATER,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (entityType, level, spawnType, pos, random) ->
+                        level.getFluidState(pos).is(FluidTags.WATER)
+                                && (!PDDimensions.isDyedreamWorld(level.getLevel())
+                                    || pos.getY() >= level.getHeight(
+                                            Heightmap.Types.OCEAN_FLOOR_WG,
+                                            pos.getX(), pos.getZ())),
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 }
