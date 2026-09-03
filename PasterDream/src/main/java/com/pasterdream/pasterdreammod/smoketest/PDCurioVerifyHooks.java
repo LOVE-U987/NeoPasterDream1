@@ -850,8 +850,9 @@ public final class PDCurioVerifyHooks {
                 List.of("160", "360"), "desc-worldtree_seedpod");
         checkItemTooltipNumbers(out, "meltdream_energy_0_ring",
                 List.of("0.15"), "desc-meltdream_energy_0_ring");
+        // wearer-only design (no area aura): "7" removed from tooltip effect_1
         checkItemTooltipNumbers(out, "snow_vow_head",
-                List.of("7", "+3"), "desc-snow_vow_head");
+                List.of("+3"), "desc-snow_vow_head");
         checkItemTooltipNumbers(out, "ghost_face_head",
                 List.of("10%"), "desc-ghost_face_head");
         checkItemTooltipNumbers(out, "boboji_plume",
