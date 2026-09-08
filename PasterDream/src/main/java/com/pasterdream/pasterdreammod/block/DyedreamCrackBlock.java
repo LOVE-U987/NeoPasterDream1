@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.block;
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
+import com.pasterdream.pasterdreammod.worldgen.PDTeleportLanding;
 import net.minecraft.core.BlockPos;
 import java.util.List;
 import net.minecraft.network.chat.Component;
@@ -174,7 +175,14 @@ public class DyedreamCrackBlock extends Block implements SimpleWaterloggedBlock 
         }
 
         // 查找安全传送位置
-        BlockPos targetPos = findSafePosition(targetWorld, player);
+        BlockPos targetPos;
+        if (targetDimension.equals(PDDimensions.DYEDREAM_WORLD_LEVEL_KEY)) {
+            // 主世界 → 染梦：出生在 (0,0) 原点裂隙结构旁
+            targetPos = PDTeleportLanding.findDyedreamOriginArrival(targetWorld);
+        } else {
+            // 染梦 → 主世界：重生点 / 世界出生点安全降落
+            targetPos = PDTeleportLanding.findSafeRespawnLanding(targetWorld, player);
+        }
 
         DimensionTransition transition = new DimensionTransition(
             targetWorld,
@@ -208,43 +216,6 @@ public class DyedreamCrackBlock extends Block implements SimpleWaterloggedBlock 
                 "message.pasterdream.dyedream_crack.first_contact.3"), false);
         PDAdvancements.award(player, PDAdvancements.HIDE_5);
         PDAdvancements.award(player, PDAdvancements.START);
-    }
-
-    /**
-     * 在目标维度查找安全的传送位置
-     * <p>
-     * 优先使用玩家重生点（床），若玩家未设置重生点或重生点不在目标维度，
-     * 则回退到世界出生点，并从高处向下扫描找到安全地面。
-     * <p>
-     * 注意：只查询已加载的区块，避免因 getBlockState 触发区块生成导致的递归崩溃。
-     *
-     * @param world  目标世界
-     * @param player 传送的玩家
-     * @return 安全的传送位置
-     */
-    private BlockPos findSafePosition(ServerLevel world, ServerPlayer player) {
-        BlockPos spawnPos;
-
-        // 优先使用玩家重生点
-        if (player.getRespawnPosition() != null && player.getRespawnDimension().equals(world.dimension())) {
-            spawnPos = player.getRespawnPosition();
-        } else {
-            spawnPos = world.getSharedSpawnPos();
-        }
-
-        BlockPos.MutableBlockPos checkPos = spawnPos.atY(world.getMaxBuildHeight() - 1).mutable();
-
-        // 从最高处向下扫描，找到第一个非空气方块（即地面），然后在其上空 2 格处传送
-        // 注意：使用 isLoaded 检查区块是否已加载，避免触发区块生成
-        for (int y = world.getMaxBuildHeight() - 1; y > world.getMinBuildHeight(); y--) {
-            checkPos.setY(y);
-            if (world.isLoaded(checkPos) && !world.getBlockState(checkPos).isAir()) {
-                return checkPos.above(2).immutable();
-            }
-        }
-
-        // 若目标区块尚未加载或全是空气，使用世界出生点上空 3 格（也会触发区块生成，但 spawn 区块由世界自动保证）
-        return spawnPos.above(3);
     }
 
     @Override
