@@ -1,8 +1,8 @@
 {
   "type": "neoforge:add_features",
-  "biomes": "pasterdream:dyedream_plains",
+  "biomes": "pasterdream:dyedream_shore",
   "features": [
-    "pasterdream:bb_trees_cherrybush"
+    "pasterdream:dyedream_trees_shore"
   ],
   "step": "vegetal_decoration"
 }

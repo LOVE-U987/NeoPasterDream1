@@ -1,10 +1,10 @@
 {
-  "feature": "pasterdream:bb_tree_blossom",
+  "feature": "pasterdream:dyedream_tree_selector",
   "placement": [
     {
       "type": "minecraft:noise_based_count",
-      "noise_to_count_ratio": 1,
-      "noise_factor": 50.0,
+      "noise_to_count_ratio": 2,
+      "noise_factor": 45.0,
       "noise_offset": 0.15
     },
     {

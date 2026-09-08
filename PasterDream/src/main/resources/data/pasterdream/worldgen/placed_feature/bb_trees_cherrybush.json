@@ -3,9 +3,9 @@
   "placement": [
     {
       "type": "minecraft:noise_based_count",
-      "noise_to_count_ratio": 2,
+      "noise_to_count_ratio": 1,
       "noise_factor": 55.0,
-      "noise_offset": 0.4
+      "noise_offset": -0.05
     },
     {
       "type": "minecraft:in_square"
