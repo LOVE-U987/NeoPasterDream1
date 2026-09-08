@@ -5,6 +5,7 @@ import com.pasterdream.pasterdreammod.api.worldgen.WorldGenUtils;
 import com.pasterdream.pasterdreammod.worldgen.tree.trunk.DyedreamColossalTrunkPlacer;
 import com.pasterdream.pasterdreammod.worldgen.tree.trunk.DyedreamWorldTreeTrunkPlacer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
@@ -47,8 +48,9 @@ public class DyedreamTreeFeature extends Feature<TreeConfiguration> {
      * 对 {@link DyedreamColossalTrunkPlacer}（超巨型树）与 {@link DyedreamWorldTreeTrunkPlacer}
      * （世界树）两类横向跨度超过一个区块的巨木，将 origin 的 X/Z 对齐到所在区块中心，
      * 使树干与侧枝全程落在 features 阶段 ±1 区块写半径（中心 ±1，共 3×3 区块）内。
-     * Y 坐标保持不变（由 placed_feature 的 heightmap 定位，直接复用原值）。
-     * 其他普通染梦树直接透传原 context，分布不变。
+     * <p>
+     * X/Z 对齐后必须重新查询 heightmap：原始 heightmap 是在随机 X/Z 位置查询的，
+     * 对齐到区块中心后地形高度可能完全不同（如山坡→谷底），直接复用原 Y 会导致整棵树悬空。
      *
      * @param context 原始生成上下文
      * @return 对齐后的上下文（普通树为原对象）
@@ -62,8 +64,13 @@ public class DyedreamTreeFeature extends Feature<TreeConfiguration> {
             return context;
         }
 
-        // X/Z 对齐到区块中心，Y 保留 heightmap 定位结果
-        BlockPos alignedOrigin = WorldGenUtils.alignToChunkCenter(context.origin());
+        // X/Z 对齐到区块中心
+        BlockPos chunkCenter = WorldGenUtils.alignToChunkCenter(context.origin());
+        // 重新查询 heightmap 获取新位置的正确 Y，防止地形高差导致悬空
+        int correctedY = context.level().getHeight(
+                Heightmap.Types.MOTION_BLOCKING, chunkCenter.getX(), chunkCenter.getZ());
+        BlockPos alignedOrigin = new BlockPos(chunkCenter.getX(), correctedY, chunkCenter.getZ());
+
         return new FeaturePlaceContext<>(
                 context.topFeature(),
                 context.level(),

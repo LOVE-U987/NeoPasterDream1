@@ -4,11 +4,11 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
 /**
@@ -56,11 +56,11 @@ public final class PDAddonConfigRegistry {
     ) {
     }
 
-    /** 已注册的 COMMON 配置 ModConfig 引用：modId -> ModConfig */
-    private static final Map<String, ModConfig> COMMON_CONFIGS = new HashMap<>();
+    /** 已注册的 COMMON 配置 ModConfig 引用：modId -> ModConfig（并发安全：FML 模组构造为多线程并行） */
+    private static final Map<String, ModConfig> COMMON_CONFIGS = new ConcurrentHashMap<>();
 
-    /** 已注册的配置界面条目 */
-    private static final List<Entry> ENTRIES = new ArrayList<>();
+    /** 已注册的配置界面条目（并发安全：FML 模组构造为多线程并行） */
+    private static final List<Entry> ENTRIES = new CopyOnWriteArrayList<>();
 
     private PDAddonConfigRegistry() {
         throw new UnsupportedOperationException("PDAddonConfigRegistry 是静态注册表，不可实例化");

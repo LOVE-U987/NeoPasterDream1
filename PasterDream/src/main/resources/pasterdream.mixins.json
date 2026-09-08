@@ -12,6 +12,7 @@
     "KeyboardInputMixin"
   ],
   "mixins": [
-    "NoiseBasedChunkGeneratorMixin"
+    "NoiseBasedChunkGeneratorMixin",
+    "StructureTemplateAccessor"
   ]
 }

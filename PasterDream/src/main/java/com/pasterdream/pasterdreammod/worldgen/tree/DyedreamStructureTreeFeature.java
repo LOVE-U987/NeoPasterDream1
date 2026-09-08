@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.pasterdream.pasterdreammod.api.worldgen.WorldGenUtils;
+import com.pasterdream.pasterdreammod.mixin.StructureTemplateAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
@@ -11,6 +12,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -20,7 +22,10 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * 结构树 Feature —— 在染梦世界自然生成 Better Biomes 移植树（结构 NBT）
@@ -95,6 +100,11 @@ public class DyedreamStructureTreeFeature extends Feature<DyedreamStructureTreeF
                 .setMirror(Mirror.NONE)
                 .setIgnoreEntities(false);
 
+        // 底部支撑检测：最低占用层每列正下方必须为实体方块，防止斜坡放置产生悬空树木
+        if (!hasGroundSupport(level, template, startPos, settings)) {
+            return false;
+        }
+
         boolean placed = template.placeInWorld(
                 level,
                 startPos,
@@ -104,6 +114,55 @@ public class DyedreamStructureTreeFeature extends Feature<DyedreamStructureTreeF
                 2
         );
         return placed;
+    }
+
+    /**
+     * 检测结构底部支撑
+     * <p>
+     * 取模板中全部方块（与 {@link StructureTemplate#placeInWorld} 相同的坐标变换），
+     * 过滤空气与结构空位后找出最低占用层，要求该层每一个方块列的正下方
+     * 均为实体方块（{@link WorldGenUtils#isSolidSurface}，排除空气/树叶/植被类支撑）。
+     * 任一列悬空即判定不可放置，避免斜坡地形上出现悬空的树干裙边或灌木底座。
+     * <p>
+     * 不使用 {@code filterBlocks}：其第三参数会被 NeoForge 线程安全补丁用作
+     * ConcurrentHashMap 缓存键，且仅支持单一 Block 过滤，无法表达「取全部方块」。
+     * 此处通过 {@link StructureTemplateAccessor} 直接取得 palettes，再按
+     * placeInWorld 相同的方式选取调色板并做坐标变换。
+     *
+     * @param level     世界生成层
+     * @param template  结构模板
+     * @param startPos  结构放置起点
+     * @param settings  放置设置（坐标变换需与 placeInWorld 一致）
+     * @return true 表示底部支撑完整，可以放置
+     */
+    private static boolean hasGroundSupport(WorldGenLevel level, StructureTemplate template,
+                                            BlockPos startPos, StructurePlaceSettings settings) {
+        List<StructureTemplate.Palette> palettes =
+                ((StructureTemplateAccessor) (Object) template).getPalettes();
+        if (palettes.isEmpty()) {
+            return true;
+        }
+        int minY = Integer.MAX_VALUE;
+        Set<BlockPos> bottomColumns = new HashSet<>();
+        for (StructureTemplate.StructureBlockInfo info : settings.getRandomPalette(palettes, startPos).blocks()) {
+            if (info.state().isAir() || info.state().is(Blocks.STRUCTURE_VOID)) {
+                continue;
+            }
+            BlockPos pos = StructureTemplate.calculateRelativePosition(settings, info.pos()).offset(startPos);
+            if (pos.getY() < minY) {
+                minY = pos.getY();
+                bottomColumns.clear();
+            }
+            if (pos.getY() == minY) {
+                bottomColumns.add(pos);
+            }
+        }
+        for (BlockPos column : bottomColumns) {
+            if (!WorldGenUtils.isSolidSurface(level, column.below())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

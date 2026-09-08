@@ -65,10 +65,18 @@ public class DyedreamColossalTrunkPlacer extends TrunkPlacer {
 
     @Override
     public List<FoliagePlacer.FoliageAttachment> placeTrunk(LevelSimulatedReader level, BiConsumer<BlockPos, BlockState> blockSetter,
-                                                          RandomSource random, int freeTreeHeight, BlockPos pos,
-                                                          TreeConfiguration config) {
+                                                           RandomSource random, int freeTreeHeight, BlockPos pos,
+                                                           TreeConfiguration config) {
         List<FoliagePlacer.FoliageAttachment> list = Lists.newArrayList();
         BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
+
+        // 地面支撑检测：扫描 3x3 主柱 + 角柱（偏移2）覆盖范围内的最低地面 Y，
+        // 若最低地面低于树根点，向下延伸主柱填补悬空
+        int footprintRadius = 3; // 主柱±1 + 角柱偏移2 + cwOffset±1
+        int minGroundY = findMinGroundY(level, pos, footprintRadius);
+        if (minGroundY < pos.getY()) {
+            fillTrunkGap(level, blockSetter, random, pos, minGroundY, config);
+        }
 
         // 3x3 主柱
         for (int x = -1; x <= 1; x++) {
@@ -230,5 +238,85 @@ public class DyedreamColossalTrunkPlacer extends TrunkPlacer {
         }
         points.add(new BlockPos(x1, y1, z1));
         return points;
+    }
+
+    /**
+     * 扫描主柱足迹范围内所有列的最低地面 Y（地面上方可放置位置）
+     * <p>
+     * 扫描范围覆盖3x3主柱（中心 ±1）与角柱（偏移2 + cwOffset ±1），即中心 ± {@code radius}。
+     * 逐列向下搜索，返回所有列中最低的地面 Y+1。
+     * 若所有列均无地面支撑（深渊/虚空），返回 {@link Integer#MIN_VALUE}。
+     *
+     * @param level  模拟世界读取器
+     * @param pos    树根中心点
+     * @param radius 扫描半径
+     * @return 足迹范围内最低的地面放置 Y，或 Integer.MIN_VALUE 表示无地面
+     */
+    private static int findMinGroundY(LevelSimulatedReader level, BlockPos pos, int radius) {
+        int minGroundY = Integer.MAX_VALUE;
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                for (int dy = 0; dy <= 40; dy++) {
+                    mutable.set(pos.getX() + dx, pos.getY() - dy, pos.getZ() + dz);
+                    if (isSolidGround(level, mutable)) {
+                        int groundY = mutable.getY() + 1;
+                        if (groundY < minGroundY) {
+                            minGroundY = groundY;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return minGroundY == Integer.MAX_VALUE ? Integer.MIN_VALUE : minGroundY;
+    }
+
+    /**
+     * 判断指定位置是否为可承托树干的固体地面
+     * <p>
+     * 排除空气、树叶、植被类可替换方块，要求方块遮挡光线（实心不透明方块）。
+     * 使用 {@link net.minecraft.world.level.block.state.BlockState#canOcclude()} 判断，
+     * 无需 {@link net.minecraft.world.level.BlockGetter} 参数，兼容 {@link LevelSimulatedReader}。
+     *
+     * @param level 模拟世界读取器
+     * @param pos   检测位置
+     * @return true 表示该位置是固体地面
+     */
+    private static boolean isSolidGround(LevelSimulatedReader level, BlockPos pos) {
+        return level.isStateAtPosition(pos, state -> {
+            if (state.isAir()) return false;
+            if (state.is(net.minecraft.tags.BlockTags.LEAVES)
+                    || state.is(net.minecraft.tags.BlockTags.REPLACEABLE_BY_TREES)) return false;
+            return state.canOcclude();
+        });
+    }
+
+    /**
+     * 填补主柱底部悬空：从最低地面向上放置原木至 pos.Y()，消除树干与地面之间的空隙
+     * <p>
+     * 仅填充3x3主柱范围（中心 ±1），角柱由各自的放置逻辑独立处理。
+     * 仅替换空气方块，不破坏已有地形方块。
+     *
+     * @param level      模拟世界读取器
+     * @param blockSetter 方块放置回调
+     * @param random     随机源
+     * @param pos        树根中心点
+     * @param groundY    最低地面 Y（地面上方可放置位置）
+     * @param config     树配置
+     */
+    private static void fillTrunkGap(LevelSimulatedReader level, BiConsumer<BlockPos, BlockState> blockSetter,
+                                     RandomSource random, BlockPos pos, int groundY, TreeConfiguration config) {
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
+        for (int x = -1; x <= 1; x++) {
+            for (int z = -1; z <= 1; z++) {
+                for (int y = groundY; y < pos.getY(); y++) {
+                    mutable.set(pos.getX() + x, y, pos.getZ() + z);
+                    if (level.isStateAtPosition(mutable, BlockState::isAir)) {
+                        blockSetter.accept(mutable.immutable(), config.trunkProvider.getState(random, mutable));
+                    }
+                }
+            }
+        }
     }
 }
