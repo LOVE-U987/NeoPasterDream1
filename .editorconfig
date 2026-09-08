@@ -16,6 +16,10 @@ charset = utf-8
 charset = utf-8
 trim_trailing_whitespace = false
 
+# Match the Windows batch exception in .gitattributes
+[*.bat]
+end_of_line = crlf
+
 [*.nbt]
 charset = binary
 

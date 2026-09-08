@@ -1,5 +1,5 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Auto detect text files and use LF in the working tree
+* text=auto eol=lf
 
 # Java files
 *.java text eol=lf
