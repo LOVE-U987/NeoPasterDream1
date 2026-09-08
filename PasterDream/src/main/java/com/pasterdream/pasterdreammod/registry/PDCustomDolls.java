@@ -2,6 +2,8 @@ package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.api.doll.DollAPI;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 
 /**
  * 自定义玩偶注册
@@ -43,6 +45,14 @@ public final class PDCustomDolls {
                 .texture(ResourceLocation.fromNamespaceAndPath("pasterdream", "textures/block/wuyu_doll.png"))
                 .holdingModel(ResourceLocation.fromNamespaceAndPath("pasterdream", "geo/block/wuyu_doll_holding.geo.json"))
                 .canHoldItems(true)
+                .register();
+
+        // MomoNyako白猫玩偶：复用 eoul_doll 模型骨骼，仅替换皮肤纹理，不支持抱物
+        DollAPI.create("momonyako_doll")
+                .model(ResourceLocation.fromNamespaceAndPath("pasterdream", "geo/block/eoul_doll.geo.json"))
+                .texture(ResourceLocation.fromNamespaceAndPath("pasterdream", "textures/block/momonyako_doll.png"))
+                .canHoldItems(false)
+                .itemProperties(new Item.Properties().rarity(Rarity.EPIC).fireResistant())
                 .register();
     }
 }
