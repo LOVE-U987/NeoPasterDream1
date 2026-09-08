@@ -151,6 +151,15 @@ refactor/username/cleanup-api
 - **行长度**:推荐 120 字符,最大 150 字符
 - **空格**:运算符周围、逗号后、冒号后
 
+### Agent 写文件换行规范
+
+- Agent 新建或修改文本文件时，必须显式使用 LF；`.bat` 按 `.editorconfig` 和 `.gitattributes` 使用 CRLF。
+- `.editorconfig` 依赖编辑工具支持，`.gitattributes` 不会在脚本写入后自动转换换行符，不得仅凭配置存在就认为输出符合规则。
+- Python 文本写入必须指定 `newline="\n"`（如 `open(path, "w", encoding="utf-8", newline="\n")`），或先统一换行后用 `write_bytes()` 写入 UTF-8 字节；不得依赖 Windows 默认文本换行转换。
+- PowerShell 写入时，必须先将文本中的 CRLF 和孤立 CR 统一为 LF，再通过 `[System.IO.File]::WriteAllText()` 使用 UTF-8 无 BOM 编码保存；不得依赖 `Set-Content` / `Out-File` 的默认换行行为。
+- 使用补丁工具后也必须检查实际文件字节。交付前仅校验本次新建或修改的文本文件：除 `.bat` 外，不得含 CRLF 或孤立 CR；发现后须转换为 LF 并复查差异。
+- 不得为修复换行符批量重写无关文件、修改 `libs/`，或执行 Git 暂存、重置、检出等操作。
+
 ### 编码规范
 
 - **非 MD 文件**:标准 ASCII 字符 + UTF-8 编码,禁止使用 Emoji
