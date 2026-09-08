@@ -119,12 +119,13 @@ public class PinkSlimeEntity extends PathfinderMob {
 
     /**
      * 随机跳跃行为（原 PinkSlimePr0Procedure）
-     * 约 1/15 概率朝面向方向猛跳，实现史莱姆活泼的跳跃动画效果
+     * 约 1/15 概率朝面向方向轻跳，实现史莱姆活泼的跳跃动画效果
+     * 速度与原模组一致：水平 look/4、垂直 0.3，避免弹射冲刺
      */
     private void doRandomJump() {
         if (random.nextInt(15) == 5 && this.onGround()) {
             Vec3 look = this.getLookAngle();
-            this.setDeltaMovement(look.x * 3, 0.5, look.z * 3);
+            this.setDeltaMovement(look.x / 4, 0.3, look.z / 4);
             this.hasImpulse = true;
             this.level().broadcastEntityEvent(this, EntityEvent.JUMP);
         }
