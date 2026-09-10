@@ -5,14 +5,13 @@ import com.pasterdream.pasterdreammod.api.ruin.RuinAPI;
 import com.pasterdream.pasterdreammod.api.ruin.RuinResult;
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.worldgen.structure.AaroncosArenaPortalStructure;
-import com.pasterdream.pasterdreammod.worldgen.structure.DyedreamCrackStructure;
+import com.pasterdream.pasterdreammod.worldgen.structure.FloatingCrackStructure;
 import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
-import com.pasterdream.pasterdreammod.worldgen.structure.DyedreamCrackStructure;
 /**
  * 染梦遗迹/结构注册 —— 使用 RuinAPI + JigsawStructure 注册 41 个遗迹结构
  * <p>
@@ -25,7 +24,7 @@ import com.pasterdream.pasterdreammod.worldgen.structure.DyedreamCrackStructure;
  *   <li>{@code dream_train} — 染梦列车，Y=55 空中漂浮</li>
  *   <li>{@code dyedream_worldtree_0}/{@code dyedream_worldtree_1} — 巨型染梦树两变体（NBT {@code dyedream_worldtree} / {@code dyedream_worldtree_true}），Y=-25</li>
  *   <li>{@code pinkagaric_house_0~3} — 4 种粉红菇屋，Y=-4 地表</li>
- *   <li>{@code struct_dyedream_crack_1} — 主世界染梦裂隙入口，Y=32</li>
+ *   <li>{@code struct_dyedream_crack_0/1} — 染梦维度 / 主世界随机裂隙（高空浮岛，避让原点）</li>
  *   <li>{@code desert_cottage_0} — 主世界沙漠小屋，Y=0</li>
  *   <li>{@code aaroncos_arena_portals} — 亚伦柯斯竞技场入口，Y=-4</li>
  *   <li>{@code dyedream_floating_temple} — 染梦悬浮寺庙，Y=39 地标级</li>
@@ -59,9 +58,9 @@ public class PDRuinsRegistration {
         registerDreamTrain();
         registerDyedreamWorldTree();
         registerPinkagaricHouses();
-        // 染梦裂隙自然生成受配置控制（PDCommonConfig.DYEDREAM_CRACK_GENERATE）：
-        // 类型无条件注册；配置判断下沉到生成阶段（见 DyedreamCrackStructure#findGenerationPoint），
-        // 因为配置在 RegisterEvent 之后才加载，注册阶段无法安全读取
+        // 染梦裂隙随机结构：主世界受配置 DYEDREAM_CRACK_GENERATE 控制，
+        // 该配置由结构集放置策略 dyedream_crack_spread 在候选阶段拦截
+        // （配置在 RegisterEvent 之后才加载，故不在注册阶段读取）
         registerDyedreamCrack();
         registerDesertCottage();
         registerAaroncosArenaPortal();
@@ -187,29 +186,45 @@ public class PDRuinsRegistration {
     }
 
     /**
-     * 注册主世界 vs 染梦裂隙结构 —— struct_dyedream_crack_1
+     * 注册染梦裂隙随机结构 —— struct_dyedream_crack_0（染梦维度）/ struct_dyedream_crack_1（主世界）
      * <p>
-     * 在主世界 Y=32 处生成裂隙结构，包含 {@code dyedream_crack} 方块，
-     * 玩家接触后可传送到染梦维度。
+     * 两者均为高空浮岛样式（{@link FloatingCrackStructure}），并按
+     * {@code origin_exclusion_radius} 避让各自维度的原点浮岛裂隙（区块 0,0）。
      * <p>
-     * StructureType 无条件注册（不读配置）；自然生成是否启用由
-     * {@link DyedreamCrackStructure#findGenerationPoint} 在生成阶段按
-     * {@link PDCommonConfig#DYEDREAM_CRACK_GENERATE} 判断（配置关闭时返回空 → 不生成）。
+     * 主世界自然生成受 {@link PDCommonConfig#DYEDREAM_CRACK_GENERATE} 控制：
+     * 该配置由结构集放置策略 {@code dyedream_crack_spread} 在候选阶段拦截。
+     * 染梦维度随机裂隙沿用 {@code minecraft:random_spread}，不受该配置控制。
      */
     private static void registerDyedreamCrack() {
-        RuinResult result = RuinAPI.createRuin("struct_dyedream_crack_1")
+        // 主世界随机裂隙：高空浮岛，避让主世界原点浮岛（区块 0,0）
+        RuinResult overworld = RuinAPI.createRuin("struct_dyedream_crack_1")
                 .biomeTag("minecraft:is_overworld")
                 .templatePool("pasterdream:struct_dyedream_crack_1")
-                .structureClass(DyedreamCrackStructure.class)
-                .codec(DyedreamCrackStructure.CODEC)
+                .structureClass(FloatingCrackStructure.class)
+                .codec(FloatingCrackStructure.CODEC)
                 .terrainAdaptation("none")
                 .step("surface_structures")
                 .size(1)
                 .startHeight(32)
                 .generateJson(false)
                 .build();
-        REGISTERED_STRUCTURES.put("struct_dyedream_crack_1", result);
+        REGISTERED_STRUCTURES.put("struct_dyedream_crack_1", overworld);
         buildSet("struct_dyedream_crack_1", "struct_dyedream_crack_1_set", 37, 20, 2076406732);
+
+        // 染梦维度随机裂隙：高空浮岛，避让染梦维度原点浮岛（区块 0,0）
+        RuinResult dyedream = RuinAPI.createRuin("struct_dyedream_crack_0")
+                .biomeTag("pasterdream:dyedream_biome")
+                .templatePool("pasterdream:struct_dyedream_crack_0")
+                .structureClass(FloatingCrackStructure.class)
+                .codec(FloatingCrackStructure.CODEC)
+                .terrainAdaptation("none")
+                .step("surface_structures")
+                .size(1)
+                .startHeight(32)
+                .generateJson(false)
+                .build();
+        REGISTERED_STRUCTURES.put("struct_dyedream_crack_0", dyedream);
+        buildSet("struct_dyedream_crack_0", "struct_dyedream_crack_0", 37, 20, 2075829609);
     }
 
     /**

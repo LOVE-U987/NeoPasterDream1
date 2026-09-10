@@ -153,8 +153,9 @@ public final class PDStructureVerifyHooks {
 
     private static void verifyRuinApi(Consumer<Result> out) {
         var all = PDRuinsRegistration.getAllRegisteredStructures();
-        // 裂隙类型无条件注册（生成与否由 DyedreamCrackStructure 在生成阶段按配置判断），期望数恒为 42
-        int expect = 42;
+        // 裂隙类型无条件注册（主世界生成由放置策略 dyedream_crack_spread 在候选阶段按配置拦截），
+        // 含 struct_dyedream_crack_0（染梦）+ struct_dyedream_crack_1（主世界），期望数恒为 43
+        int expect = 43;
         // 含 dream_church_0~10 全 11 变体 + worldtree_0/1 + 裂隙
         out.accept(detail(all.size() >= expect,
                 "RuinAPI 注册遗迹 " + all.size(),

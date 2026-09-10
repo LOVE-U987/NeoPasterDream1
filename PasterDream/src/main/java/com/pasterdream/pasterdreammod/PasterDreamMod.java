@@ -103,7 +103,7 @@ public class PasterDreamMod {
         // ⚠️ 注意：registerConfig 仅注册配置规格，配置文件在 RegisterEvent 之后的
         // ModConfigEvent.Loading 阶段才真正加载；构造器内直接 ConfigValue.get() 会抛
         // IllegalStateException，注册阶段一律不得读取配置（需按配置分支的功能，
-        // 把判断下沉到运行时，如 DyedreamCrackStructure#findGenerationPoint）。
+        // 把判断下沉到运行时，如 DyedreamCrackPlacement#applyAdditionalChunkRestrictions）。
         clientModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.CLIENT, PDClientConfig.SPEC, modContainer, "PasterDream-Client.toml");
         commonModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.COMMON, PDCommonConfig.SPEC, modContainer, "PasterDream-Common.toml");
 
@@ -161,7 +161,8 @@ public class PasterDreamMod {
 
         // 注册染梦遗迹结构（染梦列车、巨型染梦树、粉红菇屋等）
         // 必须在构造器中注册，因为 RuinBuilder.build() 会向 DeferredRegister 添加新条目
-        // （染梦裂隙类型无条件注册，生成与否由 DyedreamCrackStructure 在生成阶段按配置判断）
+        // （染梦裂隙随机结构类型无条件注册，主世界生成由放置策略 dyedream_crack_spread
+        //  在候选阶段按配置 DYEDREAM_CRACK_GENERATE 拦截）
         PDRuinsRegistration.register();
 
         // 显式引用 PDMenus 的静态字段以触发类初始化，确保菜单静态字段填充到 MenuAPI.REGISTRY

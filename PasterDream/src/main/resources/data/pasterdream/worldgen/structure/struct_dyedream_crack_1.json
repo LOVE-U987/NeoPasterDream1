@@ -11,5 +11,10 @@
   "use_expansion_hack": false,
   "start_height": {
     "absolute": 32
-  }
+  },
+  "float_low_y": 110,
+  "float_high_y": 160,
+  "origin_exclusion_radius": 2,
+  "origin_chunk_x": 0,
+  "origin_chunk_z": 0
 }

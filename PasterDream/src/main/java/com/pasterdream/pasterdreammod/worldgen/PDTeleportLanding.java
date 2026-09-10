@@ -32,54 +32,60 @@ public final class PDTeleportLanding {
     /** 最大螺旋搜索半径（区块） */
     private static final int MAX_SPIRAL_RADIUS = 24;
 
+    /** Java 出生点浮岛裂隙放置基准坐标（对齐 PDOverworldOriginCrackWorldgen） */
+    private static final int ORIGIN_ISLAND_X = -9;
+    private static final int ORIGIN_ISLAND_Z = -10;
+    /** 浮岛模板尺寸（dyedreamcrack0 = 18 x 20 x 14） */
+    private static final int ORIGIN_ISLAND_SIZE_X = 18;
+    private static final int ORIGIN_ISLAND_SIZE_Y = 20;
+    private static final int ORIGIN_ISLAND_SIZE_Z = 14;
+
     private PDTeleportLanding() {
     }
 
     // =====================================================================
-    // 主世界 → 染梦：出生在 (0,0) 原点裂隙结构旁
+    // 主世界 → 染梦：出生在原点浮岛裂隙旁
     // =====================================================================
 
     /**
-     * 查找染梦维度 (0,0) 原点裂隙的安全出生位置。
+     * 查找染梦维度原点浮岛裂隙的安全出生位置。
      * <p>
      * 流程：
      * <ol>
-     *   <li>确保 (0,0) 区块已生成（传送目的地允许同步加载）</li>
-     *   <li>在 Origin 周围扫描裂隙方块，找到后在其面前 3 格处降落</li>
+     *   <li>确保浮岛所在区块已生成（传送目的地允许同步加载）</li>
+     *   <li>按 Java 放置逻辑推算浮岛高度（地表 ≤100 → Y=110，否则 Y=160）</li>
+     *   <li>在浮岛模板范围内扫描裂隙方块，找到后在其面前 3 格处降落</li>
      *   <li>若未找到裂隙，执行通用安全地面螺旋搜索</li>
      * </ol>
      *
      * @param dyedream 染梦维度 ServerLevel
-     * @return 安全出生位置（含朝向信息）
+     * @return 安全出生位置
      */
     public static BlockPos findDyedreamOriginArrival(ServerLevel dyedream) {
-        // 1. 确保 (0,0) 区块已生成
-        dyedream.getChunk(0, 0);
+        // 1. 确保浮岛所在区块已生成（模板 18x14 跨 4 个区块）
+        for (int cx = ORIGIN_ISLAND_X >> 4; cx <= (ORIGIN_ISLAND_X + ORIGIN_ISLAND_SIZE_X - 1) >> 4; cx++) {
+            for (int cz = ORIGIN_ISLAND_Z >> 4; cz <= (ORIGIN_ISLAND_Z + ORIGIN_ISLAND_SIZE_Z - 1) >> 4; cz++) {
+                dyedream.getChunk(cx, cz);
+            }
+        }
 
-        BlockPos origin = BlockPos.ZERO;
+        // 2. 推算浮岛高度（与 PDOverworldOriginCrackWorldgen.tryPlaceDyedreamCrack 一致）
+        int surfaceY = dyedream.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, -9, -9);
+        int islandY = surfaceY <= 100 ? 110 : 160;
 
-        // 2. 尝试在 Origin 附近找裂隙方块
+        // 3. 在浮岛模板范围内扫描裂隙方块
         DyedreamCrackBlock crackBlock = null;
         BlockPos crackPos = null;
-        float crackYaw = 0F;
-
-        List<BlockPos> nearby = scanRadius(origin, 16);
-        int surfaceY = dyedream.getHeight(Heightmap.Types.WORLD_SURFACE_WG, 0, 0);
-
-        for (BlockPos pos : nearby) {
-            if (pos.getY() < surfaceY - 8 || pos.getY() > surfaceY + 40) {
-                continue;
-            }
+        for (BlockPos pos : scanIslandBox(ORIGIN_ISLAND_X, islandY, ORIGIN_ISLAND_Z)) {
             BlockState state = dyedream.getBlockState(pos);
             if (state.getBlock() instanceof DyedreamCrackBlock block) {
                 crackBlock = block;
                 crackPos = pos;
-                crackYaw = yawForFacing(state);
                 break;
             }
         }
 
-        // 3. 找到裂隙 → 在其面前 3 格降落
+        // 4. 找到裂隙 → 在其面前 3 格降落
         if (crackBlock != null && crackPos != null) {
             Direction front = crackFront(crackBlock, crackPos, dyedream);
             if (front != null) {
@@ -91,24 +97,22 @@ public final class PDTeleportLanding {
                 }
             }
             // 裂隙面前不安全 → 尝试裂隙两侧
-            if (crackPos != null) {
-                for (Direction side : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST}) {
-                    BlockPos sideCandidate = crackPos.relative(side, 2);
-                    if (isSafeLanding(dyedream, sideCandidate)) {
-                        return sideCandidate;
-                    }
+            for (Direction side : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST}) {
+                BlockPos sideCandidate = crackPos.relative(side, 2);
+                if (isSafeLanding(dyedream, sideCandidate)) {
+                    return sideCandidate;
                 }
             }
         }
 
-        // 4. 未找到裂隙 / 裂隙附近不安全 → 螺旋搜索通用安全地面
-        BlockPos spiralResult = spiralSafeGround(dyedream, origin);
+        // 5. 未找到裂隙 / 裂隙附近不安全 → 螺旋搜索通用安全地面
+        BlockPos spiralResult = spiralSafeGround(dyedream, new BlockPos(ORIGIN_ISLAND_X, 0, ORIGIN_ISLAND_Z));
         if (spiralResult != null) {
             return spiralResult;
         }
 
-        // 5. 兜底：Origin 表面（最差情况）
-        return BlockPos.containing(0.5, surfaceY + 1, 0.5);
+        // 6. 兜底：浮岛基准位置
+        return new BlockPos(ORIGIN_ISLAND_X, islandY + 1, ORIGIN_ISLAND_Z);
     }
 
     // =====================================================================
@@ -232,20 +236,22 @@ public final class PDTeleportLanding {
     }
 
     /**
-     * 以指定中心向外螺旋扫描所有 XZ 位置（返回最近的优先）。
+     * 生成浮岛模板包围盒内的所有坐标（用于扫描裂隙方块）。
+     *
+     * @param originX 模板放置基准 X
+     * @param originY 模板放置基准 Y
+     * @param originZ 模板放置基准 Z
+     * @return 包围盒内全部坐标
      */
-    private static List<BlockPos> scanRadius(BlockPos center, int radius) {
+    private static List<BlockPos> scanIslandBox(int originX, int originY, int originZ) {
         List<BlockPos> result = new ArrayList<>();
-        int cx = center.getX();
-        int cz = center.getZ();
-
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dz = -radius; dz <= radius; dz++) {
-                result.add(new BlockPos(cx + dx, 0, cz + dz));
+        for (int dx = 0; dx < ORIGIN_ISLAND_SIZE_X; dx++) {
+            for (int dz = 0; dz < ORIGIN_ISLAND_SIZE_Z; dz++) {
+                for (int dy = 0; dy < ORIGIN_ISLAND_SIZE_Y; dy++) {
+                    result.add(new BlockPos(originX + dx, originY + dy, originZ + dz));
+                }
             }
         }
-
-        result.sort(Comparator.comparingDouble(p -> p.distSqr(center)));
         return result;
     }
 
@@ -258,21 +264,5 @@ public final class PDTeleportLanding {
             return state.getValue(HorizontalDirectionalBlock.FACING);
         }
         return null;
-    }
-
-    /**
-     * 根据方块朝向计算玩家 yaw（面朝裂隙方向）。
-     */
-    private static float yawForFacing(BlockState state) {
-        if (state.hasProperty(HorizontalDirectionalBlock.FACING)) {
-            return switch (state.getValue(HorizontalDirectionalBlock.FACING)) {
-                case NORTH -> 180F;
-                case SOUTH -> 0F;
-                case EAST -> 270F;
-                case WEST -> 90F;
-                default -> 0F;
-            };
-        }
-        return 0F;
     }
 }
