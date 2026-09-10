@@ -93,6 +93,13 @@ public class PDCommonConfig {
     /** 关闭并禁止时之沙的功能（默认 false） */
     public static final ModConfigSpec.ConfigValue<Boolean> BAN_TIME_HOURGLASS;
 
+    // ==================== Spawn Cap ====================
+
+    /** 发光鱿鱼刷新上限总开关（默认 true） */
+    public static final ModConfigSpec.ConfigValue<Boolean> GLOW_SQUID_SPAWN_CAP_ENABLED;
+    /** 染梦维度内单个玩家模拟距离范围内非持久化发光鱿鱼数量上限（默认 16） */
+    public static final ModConfigSpec.ConfigValue<Integer> GLOW_SQUID_SPAWN_CAP;
+
     // ==================== Debug ====================
 
     /** 调试日志总开关（默认 false） */
@@ -219,6 +226,15 @@ public class PDCommonConfig {
         BAN_TIME_HOURGLASS = builder
                 .comment("关闭并禁止时之沙的功能  默认：false")
                 .define("ban time hourglass", false);
+        builder.pop();
+
+        builder.push("Spawn Cap");
+        GLOW_SQUID_SPAWN_CAP_ENABLED = builder
+                .comment("发光鱿鱼刷新上限总开关（开启后，染梦维度内玩家模拟距离范围内的发光鱿鱼数量达到上限时不再自然刷新） 默认：true")
+                .define("glow squid spawn cap enabled", true);
+        GLOW_SQUID_SPAWN_CAP = builder
+                .comment("染梦维度内，单个玩家模拟距离范围内允许存在的非持久化发光鱿鱼数量上限 默认：16 范围：1~128")
+                .defineInRange("glow squid spawn cap", 16, 1, 128);
         builder.pop();
 
         builder.push("Debug");

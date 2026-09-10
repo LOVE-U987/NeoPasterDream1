@@ -1,15 +1,22 @@
 package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.api.entity.EntityAPI;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.FluidTags;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.GlowSquid;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
+import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 
 /**
  * 实体属性注册事件类
@@ -292,27 +299,65 @@ public class PDEntityEvents {
 
     /**
      * 限制原版发光鱿鱼（glow squid）在染梦维度中的自然生成
-     * 原版 {@code GlowSquid#checkGlowSquidSpawnRules} 仅要求生成位置为水方块，
-     * 不限深度/光照/天空。叠加 {@code dyedream_world} 噪声设置中
-     * {@code aquifers_enabled: true}（地下含水层）后，海洋群系覆盖区的地下
-     * 含水洞穴成为发光鱿鱼的大量生成点，导致部分区域异常大量刷新，进而造成游戏卡顿
-     * 本规则对其他维度保持原版行为（仅检查水方块）；染梦维度内仅允许露天
-     * 水体生成：生成点高度需不低于海床高度图（OCEAN_FLOOR_WG），被顶板
-     * 覆盖的含水层洞穴会被拒绝，露天海洋/湖泊水柱仍可正常生成。
+     * 原版 {@code GlowSquid#checkGlowSquidSpawnRules} 的判定为：
+     * {@code pos.getY() <= seaLevel - 33}（深度上限）+ {@code getRawBrightness(pos, 0) == 0}
+     * （生成点必须全黑）+ 生成位置为水方块。
+     * 叠加 {@code dyedream_world} 噪声设置中 {@code aquifers_enabled: true}（地下含水层）后，
+     * 海洋群系覆盖区的地下含水洞穴仍会成为发光鱿鱼的大量生成点，导致部分区域异常大量
+     * 刷新，进而造成游戏卡顿。
+     * 因此本规则在完整保留原版判定的基础上，额外要求生成点高度不低于海床高度图
+     * （OCEAN_FLOOR_WG）：被顶板覆盖的含水层洞穴会被拒绝，露天海洋/湖泊的黑暗深水
+     * 仍可正常生成；河流等浅水因原版深度上限天然被拒绝。
      *
      * @param event 生成位置注册事件
      */
     @SubscribeEvent
     public static void restrictGlowSquidSpawn(RegisterSpawnPlacementsEvent event) {
-        event.register(net.minecraft.world.entity.EntityType.GLOW_SQUID,
+        event.register(EntityType.GLOW_SQUID,
                 SpawnPlacementTypes.IN_WATER,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 (entityType, level, spawnType, pos, random) ->
-                        level.getFluidState(pos).is(FluidTags.WATER)
+                        GlowSquid.checkGlowSquidSpawnRules(entityType, level, spawnType, pos, random)
                                 && (!PDDimensions.isDyedreamWorld(level.getLevel())
                                     || pos.getY() >= level.getHeight(
                                             Heightmap.Types.OCEAN_FLOOR_WG,
                                             pos.getX(), pos.getZ())),
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
+    }
+
+    /**
+     * 发光鱿鱼刷新数量上限
+     * 在染梦维度内，统计生成点周围（半径 = 服务器 simulation-distance）内所有非持久化
+     * 发光鱿鱼；达到配置上限时拒绝本次自然生成。仅限制自然生成（NATURAL），不影响
+     * 刷怪笼、刷怪蛋与区块生成。统计排除持久化个体，口径与游戏原版刷怪上限一致。
+     *
+     * @param event 生物生成位置检测事件
+     */
+    @SubscribeEvent
+    public static void capGlowSquidSpawn(MobSpawnEvent.PositionCheck event) {
+        if (event.getSpawnType() != MobSpawnType.NATURAL) {
+            return;
+        }
+        if (!(event.getEntity() instanceof GlowSquid)) {
+            return;
+        }
+        if (!(event.getLevel() instanceof ServerLevel level)) {
+            return;
+        }
+        if (!PDDimensions.isDyedreamWorld(level)) {
+            return;
+        }
+        if (!PDCommonConfig.GLOW_SQUID_SPAWN_CAP_ENABLED.get()) {
+            return;
+        }
+        int cap = PDCommonConfig.GLOW_SQUID_SPAWN_CAP.get();
+        int radiusBlocks = level.getServer().getPlayerList().getSimulationDistance() * 16;
+        BlockPos pos = event.getEntity().blockPosition();
+        AABB area = new AABB(pos).inflate(radiusBlocks);
+        int count = level.getEntitiesOfClass(GlowSquid.class, area,
+                squid -> !squid.isPersistenceRequired() && !squid.requiresCustomPersistence()).size();
+        if (count >= cap) {
+            event.setResult(MobSpawnEvent.PositionCheck.Result.FAIL);
+        }
     }
 }
