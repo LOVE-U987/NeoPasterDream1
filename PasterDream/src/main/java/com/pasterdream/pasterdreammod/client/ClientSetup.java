@@ -53,6 +53,7 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import org.jetbrains.annotations.Nullable;
 
 import com.pasterdream.pasterdreammod.api.client.block.BlockTintClient;
+import com.pasterdream.pasterdreammod.api.client.shading.BiomeShadingAPI;
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 客户端设置类
@@ -85,6 +86,10 @@ public class ClientSetup {
         event.enqueueWork(() -> {
             CurioClientHandler.init();
             PDDebugLogger.mainDebug("[ClientSetup] 饰品身体渲染器初始化完成");
+
+            // 注册生物群系着色默认值
+            PDShadingRegistration.registerDefaults();
+            PDDebugLogger.mainDebug("[ClientSetup] 生物群系着色注册完成");
 
             // playeranimator 为 optional：仅在场时再触达 PDPlayerAnimation（类上有硬依赖符号）。
             // 判断必须用字面量 modId，不可写 PDPlayerAnimation.常量——否则 getstatic 会先加载该类。
@@ -293,33 +298,6 @@ public class ClientSetup {
     }
 
     /**
-     * 在三色间插值（白天色 → 黄昏色 → 夜色）
-     *
-     * @param day       白天雾色
-     * @param sunset    黄昏雾色
-     * @param night     夜晚雾色
-     * @param sunHeight 太阳高度（-1 ~ 1），负值=夜晚，0=地平线，正值=白天
-     * @return 插值后的雾色
-     */
-    private static Vec3 interpolateTriColor(Vec3 day, Vec3 sunset, Vec3 night, float sunHeight) {
-        if (sunHeight > 0.0f) {
-            float t = Math.min(sunHeight * 6.0f, 1.0f);
-            return new Vec3(
-                    sunset.x + (day.x - sunset.x) * t,
-                    sunset.y + (day.y - sunset.y) * t,
-                    sunset.z + (day.z - sunset.z) * t
-            );
-        } else {
-            float t = Math.min(-sunHeight * 5.0f, 1.0f);
-            return new Vec3(
-                    sunset.x + (night.x - sunset.x) * t,
-                    sunset.y + (night.y - sunset.y) * t,
-                    sunset.z + (night.z - sunset.z) * t
-            );
-        }
-    }
-
-    /**
      * 注册维度特殊效果（天空、雾色）
      */
     @SubscribeEvent
@@ -345,10 +323,8 @@ public class ClientSetup {
                 ) {
                     @Override
                     public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float sunHeight) {
-                        Vec3 dayColor = new Vec3(0.68, 0.82, 1.0);
-                        Vec3 sunsetColor = new Vec3(0.62, 0.68, 0.88);
-                        Vec3 nightColor = new Vec3(0.06, 0.10, 0.26);
-                        return interpolateTriColor(dayColor, sunsetColor, nightColor, sunHeight);
+                        ResourceKey<Biome> biome = PDClientEvents.currentBiomeKey;
+                        return BiomeShadingAPI.interpolateColor(biome, sunHeight);
                     }
 
                     @Override
@@ -386,51 +362,7 @@ public class ClientSetup {
                     @Override
                     public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float sunHeight) {
                         ResourceKey<Biome> biome = PDClientEvents.currentBiomeKey;
-                        Vec3 dayColor, sunsetColor, nightColor;
-
-                        if (PDBiomes.DYEDREAM_PLAINS.equals(biome)) {
-                            dayColor = new Vec3(1.0, 0.71, 0.85);
-                            sunsetColor = new Vec3(1.0, 0.56, 0.64);
-                            nightColor = new Vec3(0.29, 0.10, 0.36);
-                        } else if (PDBiomes.DYEDREAM_FOREST.equals(biome)) {
-                            dayColor = new Vec3(0.66, 0.90, 0.64);
-                            sunsetColor = new Vec3(0.83, 0.64, 0.45);
-                            nightColor = new Vec3(0.10, 0.23, 0.16);
-                        } else if (PDBiomes.DYEDREAM_FROZEN_TUNDRA.equals(biome)) {
-                            dayColor = new Vec3(0.71, 0.85, 1.0);
-                            sunsetColor = new Vec3(0.64, 0.71, 0.83);
-                            nightColor = new Vec3(0.10, 0.16, 0.36);
-                        } else if (PDBiomes.DYEDREAM_COLD_OCEAN.equals(biome)) {
-                            dayColor = new Vec3(0.64, 0.83, 0.90);
-                            sunsetColor = new Vec3(0.83, 0.64, 0.64);
-                            nightColor = new Vec3(0.04, 0.16, 0.23);
-                        } else if (PDBiomes.DYEDREAM_DEEP_OCEAN.equals(biome)) {
-                            dayColor = new Vec3(0.76, 0.64, 0.90);
-                            sunsetColor = new Vec3(0.83, 0.53, 0.74);
-                            nightColor = new Vec3(0.12, 0.04, 0.28);
-                        } else if (PDBiomes.DYEDREAM_MUSHROOM_PLAINS.equals(biome)) {
-                            dayColor = new Vec3(1.0, 0.82, 0.64);
-                            sunsetColor = new Vec3(0.90, 0.64, 0.45);
-                            nightColor = new Vec3(0.28, 0.16, 0.04);
-                        } else if (PDBiomes.DYEDREAM_SHORE.equals(biome)) {
-                            dayColor = new Vec3(0.71, 0.85, 1.0);
-                            sunsetColor = new Vec3(0.83, 0.71, 0.83);
-                            nightColor = new Vec3(0.16, 0.23, 0.36);
-                        } else if (PDBiomes.DYEDREAM_RIVER.equals(biome)) {
-                            dayColor = new Vec3(1.0, 0.71, 0.85);
-                            sunsetColor = new Vec3(1.0, 0.56, 0.64);
-                            nightColor = new Vec3(0.29, 0.10, 0.36);
-                        } else if (PDBiomes.DYEDREAM_DENSE_FOREST.equals(biome)) {
-                            dayColor = new Vec3(0.56, 0.71, 0.56);
-                            sunsetColor = new Vec3(0.71, 0.56, 0.64);
-                            nightColor = new Vec3(0.08, 0.16, 0.10);
-                        } else {
-                            dayColor = new Vec3(1.0, 0.71, 0.85);
-                            sunsetColor = new Vec3(1.0, 0.56, 0.64);
-                            nightColor = new Vec3(0.29, 0.10, 0.36);
-                        }
-
-                        return interpolateTriColor(dayColor, sunsetColor, nightColor, sunHeight);
+                        return BiomeShadingAPI.interpolateColor(biome, sunHeight);
                     }
 
                     @Override
