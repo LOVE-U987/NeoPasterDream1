@@ -42,8 +42,8 @@
 
 | 子问题 | 修复内容 | 文件 |
 |--------|---------|------|
-| #10.1.1 small_ballon 有 11 个 structure_sets | 跳过（需合并到 random_selector） | - |
-| #10.1.2 biome_dyedream_0 有 42 个 structure_sets | 跳过（需审查） | - |
+| #10.1.1 small_ballon 有 11 个 structure_sets | 已修复：11 set 合并为 `small_ballon_set`（spacing 10/2 → 32/8），同步治理全部 20 组同族结构集并统一无投影结构为地表相对放置 | `small_ballon_set.json` 等 20 个合并 set |
+| #10.1.2 biome_dyedream_0 有 42 个 structure_sets | 已修复：dream_church/pavilion/tower/wishingtree 等同族合并 + laboratory/tavern/campsite/garden 等间距提升 | `dream_church_set.json` 等 |
 | #10.1.3 desert_cottage/wishingtree 比率 0.8 | desert_cottage：spacing 60→90，sep 48→30；wishingtree_1：spacing 89→120，sep 72→40 | `desert_cottage_0_set.json`、`dream_wishingtree_1_set.json` |
 
 ---

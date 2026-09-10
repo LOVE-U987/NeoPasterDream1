@@ -1,0 +1,18 @@
+{
+  "structures": [
+    {
+      "structure": "pasterdream:wind_infested_stone_0",
+      "weight": 1
+    },
+    {
+      "structure": "pasterdream:wind_infested_stone_1",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 16,
+    "separation": 6,
+    "salt": 113947148
+  }
+}

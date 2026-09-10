@@ -1,0 +1,22 @@
+{
+  "structures": [
+    {
+      "structure": "pasterdream:traveler_house_0",
+      "weight": 1
+    },
+    {
+      "structure": "pasterdream:traveler_house_1",
+      "weight": 1
+    },
+    {
+      "structure": "pasterdream:traveler_house_2",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 96,
+    "separation": 40,
+    "salt": 52416098
+  }
+}

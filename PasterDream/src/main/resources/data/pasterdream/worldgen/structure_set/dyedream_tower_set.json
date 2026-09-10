@@ -1,0 +1,18 @@
+{
+  "structures": [
+    {
+      "structure": "pasterdream:dyedream_tower_0",
+      "weight": 1
+    },
+    {
+      "structure": "pasterdream:dyedream_tower_1",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 112,
+    "separation": 44,
+    "salt": 524768400
+  }
+}
