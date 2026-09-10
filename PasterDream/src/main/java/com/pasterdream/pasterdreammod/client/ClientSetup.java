@@ -417,9 +417,9 @@ public class ClientSetup {
                             sunsetColor = new Vec3(0.83, 0.71, 0.83);
                             nightColor = new Vec3(0.16, 0.23, 0.36);
                         } else if (PDBiomes.DYEDREAM_RIVER.equals(biome)) {
-                            dayColor = new Vec3(0.64, 0.78, 0.85);
-                            sunsetColor = new Vec3(0.78, 0.64, 0.78);
-                            nightColor = new Vec3(0.10, 0.16, 0.28);
+                            dayColor = new Vec3(1.0, 0.71, 0.85);
+                            sunsetColor = new Vec3(1.0, 0.56, 0.64);
+                            nightColor = new Vec3(0.29, 0.10, 0.36);
                         } else if (PDBiomes.DYEDREAM_DENSE_FOREST.equals(biome)) {
                             dayColor = new Vec3(0.56, 0.71, 0.56);
                             sunsetColor = new Vec3(0.71, 0.56, 0.64);

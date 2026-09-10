@@ -17,8 +17,8 @@
       "rivers": [
         {
           "river": "pasterdream:dyedream_river",
-          "size": 0.45,
-          "transition_size": 0.7,
+          "size": 0.50,
+          "transition_size": 0.65,
           "offset": 0,
           "can_generate_in_ocean": false
         }
