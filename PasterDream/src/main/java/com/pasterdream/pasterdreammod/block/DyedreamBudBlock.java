@@ -4,10 +4,14 @@ import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
@@ -26,6 +30,7 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -192,9 +197,57 @@ public class DyedreamBudBlock extends Block implements SimpleWaterloggedBlock {
         return state.is(Blocks.CALCITE) || state.is(PDBlocks.POLISHED_CALCITE.get());
     }
 
+    /**
+     * 染梦晶芽破坏时掉落「染梦晶芽粒」，数量随大小提升并受时运加成；
+     * 精准采集时掉落晶芽本体，不参与数量判定。
+     *
+     * @param state  被破坏时的方块状态
+     * @param params 战利品参数（含挖掘工具 {@link LootContextParams#TOOL}）
+     * @return 掉落物列表
+     */
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-        // 染梦晶芽破坏时掉落「染梦晶芽粒」，而非花蕾本体
-        return List.of(new ItemStack(PDItemsMaterials.DYEDREAM_BUD_NUGGET.get()));
+        ItemStack tool = params.getParameter(LootContextParams.TOOL);
+        ToolEnchants enchants = readToolEnchants(params.getLevel(), tool);
+        if (enchants.silkTouch()) {
+            return List.of(new ItemStack(this));
+        }
+        RandomSource random = params.getLevel().getRandom();
+        int count = switch (budSize) {
+            case 0 -> 2 + (random.nextFloat() < 0.5f ? 1 : 0);
+            case 1 -> 1 + (random.nextFloat() < 0.5f ? 1 : 0) + (random.nextFloat() < 0.2f ? 1 : 0);
+            case 2 -> 1 + (random.nextFloat() < 0.2f ? 1 : 0);
+            default -> 1;
+        };
+        // 原版矿石风格时运乘数：count * max(nextInt(fortune+2), 1)，时运 0 时恒为 1
+        count *= Math.max(random.nextInt(enchants.fortune() + 2), 1);
+        return List.of(new ItemStack(PDItemsMaterials.DYEDREAM_BUD_NUGGET.get(), count));
+    }
+
+    /**
+     * 挖掘工具附魔快照 —— 记录时运等级与是否含精准采集。
+     *
+     * @param fortune   时运等级（无时运为 0）
+     * @param silkTouch 是否含精准采集
+     */
+    private record ToolEnchants(int fortune, boolean silkTouch) {
+    }
+
+    /**
+     * 读取挖掘工具的时运与精准采集信息，空手或空工具视为无附魔。
+     *
+     * @param level 服务端世界，用于访问附魔注册表
+     * @param tool  挖掘工具（可能为 null 或空）
+     * @return 附魔快照
+     */
+    private ToolEnchants readToolEnchants(ServerLevel level, ItemStack tool) {
+        if (tool == null || tool.isEmpty()) {
+            return new ToolEnchants(0, false);
+        }
+        var enchantmentRegistry = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+        Holder<Enchantment> fortuneHolder = enchantmentRegistry.getHolderOrThrow(Enchantments.FORTUNE);
+        Holder<Enchantment> silkTouchHolder = enchantmentRegistry.getHolderOrThrow(Enchantments.SILK_TOUCH);
+        return new ToolEnchants(tool.getEnchantmentLevel(fortuneHolder),
+                tool.getEnchantmentLevel(silkTouchHolder) > 0);
     }
 }
