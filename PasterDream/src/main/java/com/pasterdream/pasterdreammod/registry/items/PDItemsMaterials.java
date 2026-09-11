@@ -118,7 +118,7 @@ public class PDItemsMaterials {
     public static final DeferredItem<Item> MOLTENGOLD_DUST = PDItems.ITEMS.registerSimpleItem("moltengold_dust");
     public static final DeferredItem<Item> MOLTENGOLD_INGOT = PDItems.ITEMS.registerSimpleItem("moltengold_ingot");
     public static final DeferredItem<Item> MOLTENGOLD_NUGGET = PDItems.ITEMS.registerSimpleItem("moltengold_nugget");
-    public static final DeferredItem<Item> MORTAR = PDItems.ITEMS.registerSimpleItem("mortar");
+    public static final DeferredItem<Item> MORTAR = PDItems.ITEMS.registerItem("mortar", MortarItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.COMMON));
     public static final DeferredItem<Item> NIGHTMARE_FUEL = PDItems.ITEMS.registerSimpleItem("nightmare_fuel");
     public static final DeferredItem<Item> PEN_AND_INK = PDItems.ITEMS.registerSimpleItem("pen_and_ink");
     public static final DeferredItem<Item> PERGAMYN = PDItems.ITEMS.registerSimpleItem("pergamyn");
