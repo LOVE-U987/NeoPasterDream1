@@ -139,36 +139,34 @@ public class IceDecorations {
     }
 
     /**
-     * 注册冰晶花园装饰物
+     * 注册染梦晶芽装饰物
      * <p>
-     * 在寒冷染梦（biome_dyedream_2）地表散布冰晶和冰蕾。
+     * 在染梦冰雪群系的地下洞穴中散布染梦花蕾，支持含水检测和簇状集群。
+     * 使用 BUD 类型，10% 概率生成 2~6 个晶芽簇。
      */
-    public static void registerIceCrystalGarden() {
-        SimpleWeightedRandomList<BlockState> iceCrystalBodyList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(PDBlocks.DYEDREAM_ICE.get().defaultBlockState(), 35)
-                .add(PDBlocks.DYEDREAM_PACKED_ICE.get().defaultBlockState(), 25)
-                .add(PDBlocks.ICESTONE.get().defaultBlockState(), 20)
-                .add(PDBlocks.ICE_BUD_0.get().defaultBlockState(), 10)
-                .add(Blocks.PACKED_ICE.defaultBlockState(), 5)
-                .add(Blocks.ICE.defaultBlockState(), 5)
-                .build();
-
-        SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 55)
-                .add(PDBlocks.ICE_BUD_0.get().defaultBlockState(), 30)
-                .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 15)
+    public static void registerBudDyedream() {
+        SimpleWeightedRandomList<BlockState> budList = SimpleWeightedRandomList.<BlockState>builder()
+                .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 33)
+                .add(PDBlocks.DYEDREAM_BUD_1.get().defaultBlockState(), 33)
+                .add(PDBlocks.DYEDREAM_BUD_2.get().defaultBlockState(), 34)
                 .build();
 
         DecorationBuilder.create()
-                .type(DecorationType.SCATTER)
-                .body(new WeightedStateProvider(iceCrystalBodyList))
-                .crystal(0.15f, new WeightedStateProvider(crystalList))
-                .clusterSize(8)
-                .checkHang(true)
+                .type(DecorationType.BUD)
+                .body(new WeightedStateProvider(budList))
+                .clusterChance(0.1f)
+                .clusterSize(6)
+                .clusterRadius(3)
+                .waterlog(true)
+                .replaceable(BlockPredicate.anyOf(
+                        BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.CAVE_AIR),
+                        BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
+                ))
+                .checkHang(false)
                 .biome("pasterdream:dyedream_frozen_tundra")
-                .rarity(2)
-                .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
-                .register("ice_crystal_garden");
+                .rarity(24)
+                .step(GenerationStep.Decoration.UNDERGROUND_DECORATION)
+                .register("bud_dyedream");
     }
 
     /**

@@ -13,9 +13,12 @@ import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
@@ -51,6 +54,7 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
         placers.put(DecorationType.GATE, this::placeGate);
         placers.put(DecorationType.SCATTER, this::placeScatter);
         placers.put(DecorationType.AQUATIC, this::placeAquatic);
+        placers.put(DecorationType.BUD, this::placeBud);
         placers.put(DecorationType.CUSTOM, this::placeCustom);
     }
 
@@ -1052,6 +1056,162 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
             }
             cursor.move(Direction.UP);
         }
+    }
+
+    // ======================== BUD (晶芽) ========================
+
+    /**
+     * 洞穴顶盖判定扫描深度 —— 候选位置上方需在该范围内找到实心方块
+     * <p>
+     * 覆盖绝大多数洞穴高度，保证高洞穴的地板/墙面位置不被误拒；
+     * 同时仍能排除低于海平面但头顶开放的露天海底。
+     */
+    private static final int CAVE_CEILING_DEPTH = 8;
+
+    /**
+     * 晶芽生成：在洞穴表面吸附放置，支持含水检测和簇状集群
+     * <ul>
+     *   <li>必须位于地下洞穴内（地表之下 + 上方 {@link #CAVE_CEILING_DEPTH} 格内有顶盖）</li>
+     *   <li>从 origin 向 6 方向扫描，寻找空气 + 相邻固体表面</li>
+     *   <li>计算 FACING 方向（背离支撑块、指向空气）</li>
+     *   <li>放置晶芽，设置 FACING + WATERLOGGED</li>
+     *   <li>概率判定是否生成簇状集群：{@code clusterSize} 为簇内晶芽总数（含首个），
+     *       随机目标数 2~clusterSize，按成功放置数量计数</li>
+     * </ul>
+     *
+     * @param context 特征放置上下文
+     * @return 是否放置了至少一个方块
+     */
+    private boolean placeBud(FeaturePlaceContext<DecorationConfig> context) {
+        DecorationConfig config = context.config();
+        WorldGenLevel level = context.level();
+        BlockPos origin = context.origin();
+        RandomSource random = context.random();
+
+        // Cave validation: underground + ceiling above (shared with cluster positions)
+        if (!isInCave(level, origin)) {
+            return false;
+        }
+
+        // Place single bud
+        boolean placedAny = placeBudAt(level, config, random, origin);
+
+        // Cluster generation: clusterSize is the TOTAL bud count of the cluster (including the first one)
+        if (placedAny && random.nextFloat() < config.clusterChance()) {
+            int target = random.nextIntBetweenInclusive(2, config.clusterSize());
+            int placed = 1;
+            int attempts = 0;
+            int maxAttempts = target * 4;
+            while (placed < target && attempts < maxAttempts) {
+                attempts++;
+                int dx = random.nextInt(-config.clusterRadius(), config.clusterRadius() + 1);
+                int dy = random.nextInt(-config.clusterRadius(), config.clusterRadius() + 1);
+                int dz = random.nextInt(-config.clusterRadius(), config.clusterRadius() + 1);
+                BlockPos clusterPos = origin.offset(dx, dy, dz);
+                // Every candidate position must pass the same cave validation
+                if (!isInCave(level, clusterPos)) {
+                    continue;
+                }
+                if (placeBudAt(level, config, random, clusterPos)) {
+                    placed++;
+                }
+            }
+        }
+
+        return placedAny;
+    }
+
+    /**
+     * 洞穴环境判定 —— 晶芽只允许生成在真正的地下洞穴内
+     * <p>
+     * 同时检查两个条件：
+     * <ul>
+     *   <li>位于地表之下（按候选点自身 X/Z 计算地表高度，集群偏移后不会误判）</li>
+     *   <li>上方 {@link #CAVE_CEILING_DEPTH} 格内存在实心顶盖，
+     *       排除低于海平面但头顶开放的露天海底</li>
+     * </ul>
+     *
+     * @param level 世界生成级别访问
+     * @param pos   候选位置
+     * @return true 表示该位置位于地下洞穴内
+     */
+    private boolean isInCave(WorldGenLevel level, BlockPos pos) {
+        int surfaceY = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, pos.getX(), pos.getZ());
+        if (pos.getY() >= surfaceY) {
+            return false;
+        }
+        for (int dy = 1; dy <= CAVE_CEILING_DEPTH; dy++) {
+            BlockPos abovePos = pos.above(dy);
+            if (level.getBlockState(abovePos).isSolidRender(level, abovePos)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 在指定位置放置单个晶芽 —— 扫描 6 方向寻找空气 + 固体表面
+     *
+     * @param level  世界生成级别访问
+     * @param config 装饰物配置
+     * @param random 随机数源
+     * @param origin 放置原点
+     * @return 是否成功放置
+     */
+    private boolean placeBudAt(WorldGenLevel level, DecorationConfig config,
+                               RandomSource random, BlockPos origin) {
+        // Validate origin is air/water (the actual placement position)
+        BlockState originState = level.getBlockState(origin);
+        boolean originOk = originState.isAir()
+            || (config.waterlog() && originState.getFluidState().is(FluidTags.WATER));
+        if (!originOk) {
+            return false;
+        }
+
+        Direction facing = null;
+
+        // Search adjacent blocks for a solid support surface
+        // dir points from the bud position to the support block, while FACING
+        // must point away from the support (canSurvive checks facing.getOpposite())
+        for (Direction dir : Direction.values()) {
+            BlockPos attachPos = origin.relative(dir);
+            BlockState attachState = level.getBlockState(attachPos);
+            if (attachState.isFaceSturdy(level, attachPos, dir.getOpposite())) {
+                facing = dir.getOpposite();
+                break;
+            }
+        }
+
+        if (facing == null) {
+            return false;
+        }
+
+        // Replaceable check
+        if (!WorldGenUtils.isReplaceable(level, config.replaceable(), origin)) {
+            return false;
+        }
+
+        // Get block state from provider
+        BlockState state = config.bodyBlock().getState(random, origin);
+
+        // Set FACING (points toward air, canSurvive checks opposite direction for support)
+        if (state.hasProperty(DirectionalBlock.FACING)) {
+            state = state.setValue(DirectionalBlock.FACING, facing);
+        }
+
+        // Set WATERLOGGED
+        if (config.waterlog() && state.hasProperty(BlockStateProperties.WATERLOGGED)) {
+            boolean isInWater = level.getFluidState(origin).is(FluidTags.WATER);
+            state = state.setValue(BlockStateProperties.WATERLOGGED, isInWater);
+        }
+
+        // Final survival check before placement
+        if (!state.canSurvive(level, origin)) {
+            return false;
+        }
+
+        level.setBlock(origin, state, 3);
+        return true;
     }
 
     // ======================== CUSTOM (自定义) ========================

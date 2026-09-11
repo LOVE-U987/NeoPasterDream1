@@ -144,6 +144,15 @@ public class DecorationBuilder {
     /** 自定义生成器键（CUSTOM 类型专用） */
     private String customGeneratorKey = "";
 
+    /** 晶芽集群概率（BUD 类型专用，0~1） */
+    private float clusterChance = 0.1f;
+
+    /** 晶芽集群散布半径（BUD 类型专用） */
+    private int clusterRadius = 3;
+
+    /** 是否检测含水状态（BUD 类型专用） */
+    private boolean waterlog = true;
+
     // ======================== 注册相关字段 ========================
 
     /** 目标群系 ID */
@@ -308,8 +317,11 @@ public class DecorationBuilder {
 
     /**
      * 设置团块方块总数
+     * <p>
+     * BUD 类型下该值表示晶芽簇内晶芽总数（含首个晶芽，最小 2），
+     * 实际生成时会随机取 2~clusterSize 作为目标数量并按成功放置数计数。
      *
-     * @param size 团块包含的方块总数
+     * @param size 团块包含的方块总数 / BUD 簇内晶芽总数
      * @return this（支持链式调用）
      */
     public DecorationBuilder clusterSize(int size) {
@@ -538,6 +550,46 @@ public class DecorationBuilder {
     }
 
     /**
+     * 设置晶芽集群概率（BUD 类型专用）
+     * <p>
+     * 控制晶芽生成时是否形成簇状集群。0=总是单个散布，1=必定集群。
+     *
+     * @param chance 集群生成概率（0~1，默认 0.1）
+     * @return this（支持链式调用）
+     */
+    public DecorationBuilder clusterChance(float chance) {
+        this.clusterChance = chance;
+        return this;
+    }
+
+    /**
+     * 设置晶芽集群散布半径（BUD 类型专用）
+     * <p>
+     * 集群模式下，额外晶芽在中心周围随机偏移的最大距离。
+     *
+     * @param radius 散布半径（默认 3）
+     * @return this（支持链式调用）
+     */
+    public DecorationBuilder clusterRadius(int radius) {
+        this.clusterRadius = radius;
+        return this;
+    }
+
+    /**
+     * 启用/禁用含水检测（BUD 类型专用）
+     * <p>
+     * 启用后，放置晶芽时会检测当前位置是否在水中，
+     * 若在水中则自动设置 {@code WATERLOGGED=true}。
+     *
+     * @param enabled true=检测含水（默认），false=不检测
+     * @return this（支持链式调用）
+     */
+    public DecorationBuilder waterlog(boolean enabled) {
+        this.waterlog = enabled;
+        return this;
+    }
+
+    /**
      * 设置目标群系
      *
      * @param biomeId 群系 ID（如 "minecraft:plains"）
@@ -601,6 +653,20 @@ public class DecorationBuilder {
             );
         }
 
+        // BUD type boundary validation
+        if (type == DecorationType.BUD) {
+            if (clusterSize < 2) {
+                throw new IllegalStateException(
+                        "[DecorationBuilder] BUD 类型装饰物 '" + name + "' 的集群数量(clusterSize)不能小于2，当前值: " + clusterSize
+                );
+            }
+            if (clusterRadius < 0) {
+                throw new IllegalStateException(
+                        "[DecorationBuilder] BUD 类型装饰物 '" + name + "' 的集群半径(clusterRadius)不能为负数，当前值: " + clusterRadius
+                );
+            }
+        }
+
         // 如果未设置顶部方块，使用主体方块作为默认值
         if (topBlock == null) {
             topBlock = bodyBlock;
@@ -641,7 +707,10 @@ public class DecorationBuilder {
                 claimCheck,
                 replaceable,
                 tiltIntensity,
-                customGeneratorKey
+                customGeneratorKey,
+                clusterChance,
+                clusterRadius,
+                waterlog
         );
 
         PDDebugLogger.apiDebug("[DecorationBuilder] 构建装饰物配置: name={}, type={}", name, type);

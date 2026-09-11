@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  * @param topWidth          顶部宽度（柱形用，0=尖顶）
  * @param baseRadius        底部半径（尖刺/圆形用）
  * @param topRadius         顶部半径（尖刺用，0=尖顶）
- * @param clusterSize       团块总方块数
+ * @param clusterSize       团块总方块数；BUD 类型下表示晶芽簇内总数（含首个晶芽，最小 2）
  * @param yRadius           团块垂直半径
  * @param irregularity      团块不规则度（0~1）
  * @param gateMinWidth      门框最小间距
@@ -55,6 +55,9 @@ import java.util.stream.Stream;
  * @param replaceable       可被替换的方块判定条件
  * @param tiltIntensity     尖刺倾斜程度（0=垂直，越大越倾斜）
  * @param customGeneratorKey 自定义生成器键（CUSTOM 类型专用）
+ * @param clusterChance     晶芽集群概率（BUD 类型专用，0~1，默认 0.1）
+ * @param clusterRadius     晶芽集群散布半径（BUD 类型专用，默认 3）
+ * @param waterlog          晶芽含水检测（BUD 类型专用，默认 true）
  */
 public record DecorationConfig(
     DecorationType type,
@@ -91,8 +94,31 @@ public record DecorationConfig(
     boolean claimCheck,
     @Nullable BlockPredicate replaceable,
     float tiltIntensity,
-    String customGeneratorKey
+    String customGeneratorKey,
+    float clusterChance,
+    int clusterRadius,
+    boolean waterlog
 ) implements FeatureConfiguration {
+
+    /**
+     * 统一参数校验 —— Builder 与 Codec 解码均经过此构造，保证两条路径约束一致
+     *
+     * @throws IllegalArgumentException 集群参数超出合法范围时抛出
+     */
+    public DecorationConfig {
+        if (clusterRadius < 0) {
+            throw new IllegalArgumentException(
+                "[DecorationConfig] 集群半径(clusterRadius)不能为负数，当前值: " + clusterRadius);
+        }
+        if (clusterSize < 2) {
+            throw new IllegalArgumentException(
+                "[DecorationConfig] 集群数量(clusterSize)不能小于2，当前值: " + clusterSize);
+        }
+        if (clusterChance < 0.0f || clusterChance > 1.0f) {
+            throw new IllegalArgumentException(
+                "[DecorationConfig] 集群概率(clusterChance)必须在0~1之间，当前值: " + clusterChance);
+        }
+    }
 
     @SuppressWarnings("deprecation")
     public static final MapCodec<DecorationConfig> CODEC = new MapCodec<>() {
@@ -137,6 +163,9 @@ public record DecorationConfig(
             prefix.add("avoid_ruins", Codec.BOOL.encodeStart(ops, config.avoidRuins()));
             prefix.add("claim_check", Codec.BOOL.encodeStart(ops, config.claimCheck()));
             prefix.add("tilt_intensity", Codec.FLOAT.encodeStart(ops, config.tiltIntensity()));
+            prefix.add("cluster_chance", Codec.FLOAT.encodeStart(ops, config.clusterChance()));
+            prefix.add("cluster_radius", Codec.INT.encodeStart(ops, config.clusterRadius()));
+            prefix.add("waterlog", Codec.BOOL.encodeStart(ops, config.waterlog()));
             if (config.replaceable() != null) {
                 prefix.add("replaceable", BlockPredicate.CODEC.encodeStart(ops, config.replaceable()));
             }
@@ -183,6 +212,9 @@ public record DecorationConfig(
             // 区域认领默认开启：旧 JSON 未配置该字段时同样生效
             DataResult<Boolean> claimCheck = decodeOptional(ops, input, "claim_check", Codec.BOOL, true);
             DataResult<Float> tiltIntensity = decodeOptional(ops, input, "tilt_intensity", Codec.FLOAT, 0.0f);
+            DataResult<Float> clusterChance = decodeOptional(ops, input, "cluster_chance", Codec.FLOAT, 0.1f);
+            DataResult<Integer> clusterRadius = decodeOptional(ops, input, "cluster_radius", Codec.INT, 3);
+            DataResult<Boolean> waterlog = decodeOptional(ops, input, "waterlog", Codec.BOOL, true);
             DataResult<BlockPredicate> replaceable = decodeOptional(ops, input, "replaceable", BlockPredicate.CODEC, null);
             DataResult<String> customGeneratorKey = decodeOptional(ops, input, "custom_generator_key", Codec.STRING, "");
 
@@ -203,7 +235,8 @@ public record DecorationConfig(
                 regionThreshold.getOrThrow(), undergroundCheck.getOrThrow(),
                 waterRequired.getOrThrow(), avoidRuins.getOrThrow(), claimCheck.getOrThrow(),
                 replaceable.getOrThrow(), tiltIntensity.getOrThrow(),
-                customGeneratorKey.getOrThrow()
+                customGeneratorKey.getOrThrow(),
+                clusterChance.getOrThrow(), clusterRadius.getOrThrow(), waterlog.getOrThrow()
             ));
         }
 
@@ -214,7 +247,8 @@ public record DecorationConfig(
                 "cluster_size", "y_radius", "irregularity", "gate_min_width", "gate_max_width",
                 "pillar_radius", "beam_thickness", "crystal_chance", "debris_count", "debris_radius",
                 "decoration_chance", "crystal_only_on_top", "check_hang", "fill_hang", "occupied_check", "region_check",
-                "region_threshold", "underground_check", "water_required", "avoid_ruins", "claim_check", "tilt_intensity",
+                "region_threshold",                 "underground_check", "water_required", "avoid_ruins", "claim_check", "tilt_intensity",
+                "cluster_chance", "cluster_radius", "waterlog",
                 "replaceable",
                 "custom_generator_key"
             ).map(ops::createString);

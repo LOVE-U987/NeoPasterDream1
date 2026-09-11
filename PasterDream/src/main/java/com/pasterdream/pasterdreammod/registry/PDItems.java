@@ -143,11 +143,11 @@ public class PDItems {
     public static final DeferredItem<?> DEBUG_WAND_ICE_ARCH = PDItemsFunctional.DEBUG_WAND_ICE_ARCH;
     public static final DeferredItem<?> DEBUG_WAND_ICE_ARCH_RUINED = PDItemsFunctional.DEBUG_WAND_ICE_ARCH_RUINED;
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_ICE_PILLAR = PDItemsFunctional.DEBUG_WAND_DYEDREAM_ICE_PILLAR;
-    public static final DeferredItem<?> DEBUG_WAND_ICE_CRYSTAL_CLUSTER = PDItemsFunctional.DEBUG_WAND_ICE_CRYSTAL_CLUSTER;
+    public static final DeferredItem<?> DEBUG_WAND_BUD_ICE = PDItemsFunctional.DEBUG_WAND_BUD_ICE;
     public static final DeferredItem<?> DEBUG_WAND_FROST_SPIKE = PDItemsFunctional.DEBUG_WAND_FROST_SPIKE;
     public static final DeferredItem<?> DEBUG_WAND_ICE_GATE = PDItemsFunctional.DEBUG_WAND_ICE_GATE;
     public static final DeferredItem<?> DEBUG_WAND_ICE_SPIKE = PDItemsFunctional.DEBUG_WAND_ICE_SPIKE;
-    public static final DeferredItem<?> DEBUG_WAND_ICE_CRYSTAL_GARDEN = PDItemsFunctional.DEBUG_WAND_ICE_CRYSTAL_GARDEN;
+    public static final DeferredItem<?> DEBUG_WAND_BUD_DYEDREAM = PDItemsFunctional.DEBUG_WAND_BUD_DYEDREAM;
     public static final DeferredItem<?> DEBUG_WAND_ICE_CRYSTAL_SPIKE = PDItemsFunctional.DEBUG_WAND_ICE_CRYSTAL_SPIKE;
     public static final DeferredItem<?> DEBUG_WAND_ICE_PILLAR = PDItemsFunctional.DEBUG_WAND_ICE_PILLAR;
     public static final DeferredItem<?> DEBUG_WAND_UNDERWATER_ICE_SPIKE = PDItemsFunctional.DEBUG_WAND_UNDERWATER_ICE_SPIKE;

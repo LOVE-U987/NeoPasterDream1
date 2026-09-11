@@ -1,0 +1,20 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "bud",
+    "body_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:ice_bud_0"
+      }
+    },
+    "cluster_size": 6,
+    "cluster_chance": 0.1,
+    "cluster_radius": 3,
+    "waterlog": true,
+    "replaceable": {
+      "type": "minecraft:replaceable"
+    },
+    "check_hang": false
+  }
+}

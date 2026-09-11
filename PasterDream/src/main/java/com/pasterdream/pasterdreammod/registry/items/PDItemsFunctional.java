@@ -278,11 +278,11 @@ public class PDItemsFunctional {
                     () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "dyedream_ice_pillar"));
 
     /**
-     * 调试法杖 - 冰晶丛
+     * 调试法杖 - 冰棱晶芽
      */
-    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_ICE_CRYSTAL_CLUSTER =
-            PDItems.ITEMS.register("debug_wand_ice_crystal_cluster",
-                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "ice_crystal_cluster"));
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_BUD_ICE =
+            PDItems.ITEMS.register("debug_wand_bud_ice",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "bud_ice"));
 
     /**
      * 调试法杖 - 冰霜尖刺
@@ -306,11 +306,11 @@ public class PDItemsFunctional {
                     () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "ice_spike"));
 
     /**
-     * 调试法杖 - 冰晶花园
+     * 调试法杖 - 染梦晶芽
      */
-    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_ICE_CRYSTAL_GARDEN =
-            PDItems.ITEMS.register("debug_wand_ice_crystal_garden",
-                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "ice_crystal_garden"));
+    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_BUD_DYEDREAM =
+            PDItems.ITEMS.register("debug_wand_bud_dyedream",
+                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "bud_dyedream"));
 
     /**
      * 调试法杖 - 冰晶刺

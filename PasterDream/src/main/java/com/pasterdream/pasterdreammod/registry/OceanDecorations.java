@@ -292,38 +292,28 @@ public class OceanDecorations {
     }
 
     /**
-     * 注册海底冰晶丛装饰物
+     * 注册海底冰晶芽装饰物
      * <p>
-     * 在染梦深海海底散布小型冰晶簇。
+     * 在染梦深海海底洞穴中散布冰棱晶芽，支持含水检测和簇状集群。
+     * 使用 BUD 类型，10% 概率生成 2~6 个晶芽簇。
      */
-    public static void registerIceCrystalCluster() {
-        SimpleWeightedRandomList<BlockState> crystalBodyList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(PDBlocks.ICE_BUD_0.get().defaultBlockState(), 40)
-                .add(PDBlocks.DYEDREAM_ICE.get().defaultBlockState(), 35)
-                .add(PDBlocks.DYEDREAM_PACKED_ICE.get().defaultBlockState(), 25)
-                .build();
-
-        SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 50)
-                .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 30)
-                .add(PDBlocks.DYEDREAM_BUD_1.get().defaultBlockState(), 20)
-                .build();
-
+    public static void registerBudIce() {
         DecorationBuilder.create()
-                .type(DecorationType.SCATTER)
-                .body(new WeightedStateProvider(crystalBodyList))
-                .crystal(0.15f, new WeightedStateProvider(crystalList))
+                .type(DecorationType.BUD)
+                .body(BlockStateProvider.simple(PDBlocks.ICE_BUD_0.get()))
+                .clusterChance(0.1f)
                 .clusterSize(6)
-                .regionCheck(true, 0.3f)
+                .clusterRadius(3)
+                .waterlog(true)
                 .replaceable(BlockPredicate.anyOf(
-                    BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.WATER, Blocks.SAND, Blocks.GRAVEL, PDBlocks.DYEDREAM_SAND.get()),
-                    BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
+                        BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.CAVE_AIR, Blocks.WATER),
+                        BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
-                .checkHang(true)
+                .checkHang(false)
                 .biome("pasterdream:dyedream_cold_ocean")
-                .rarity(2)
-                .step(GenerationStep.Decoration.VEGETAL_DECORATION)
-                .register("ice_crystal_cluster");
+                .rarity(16)
+                .step(GenerationStep.Decoration.UNDERGROUND_DECORATION)
+                .register("bud_ice");
     }
 
     /**

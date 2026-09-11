@@ -23,6 +23,8 @@ public enum DecorationType implements StringRepresentable {
     SCATTER("scatter"),
     /** 水下结构：在水体中生成的结构，需要水环境 */
     AQUATIC("aquatic"),
+    /** 晶芽：洞穴表面吸附放置，支持含水检测和簇状集群 */
+    BUD("bud"),
     /** 自定义：由用户提供生成逻辑的扩展类型 */
     CUSTOM("custom");
 

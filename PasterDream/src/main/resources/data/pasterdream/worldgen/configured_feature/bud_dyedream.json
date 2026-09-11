@@ -1,0 +1,37 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "bud",
+    "body_block": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 33,
+          "data": {
+            "Name": "pasterdream:dyedream_bud_0"
+          }
+        },
+        {
+          "weight": 33,
+          "data": {
+            "Name": "pasterdream:dyedream_bud_1"
+          }
+        },
+        {
+          "weight": 34,
+          "data": {
+            "Name": "pasterdream:dyedream_bud_2"
+          }
+        }
+      ]
+    },
+    "cluster_size": 6,
+    "cluster_chance": 0.1,
+    "cluster_radius": 3,
+    "waterlog": true,
+    "replaceable": {
+      "type": "minecraft:replaceable"
+    },
+    "check_hang": false
+  }
+}

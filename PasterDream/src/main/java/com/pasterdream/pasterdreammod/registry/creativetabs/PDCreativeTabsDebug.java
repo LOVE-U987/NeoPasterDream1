@@ -44,11 +44,11 @@ public class PDCreativeTabsDebug {
                         output.accept(PDItems.DEBUG_WAND_ICE_ARCH.get());
                         output.accept(PDItems.DEBUG_WAND_ICE_ARCH_RUINED.get());
                         output.accept(PDItems.DEBUG_WAND_DYEDREAM_ICE_PILLAR.get());
-                        output.accept(PDItems.DEBUG_WAND_ICE_CRYSTAL_CLUSTER.get());
+                        output.accept(PDItems.DEBUG_WAND_BUD_ICE.get());
                         output.accept(PDItems.DEBUG_WAND_FROST_SPIKE.get());
                         output.accept(PDItems.DEBUG_WAND_ICE_GATE.get());
                         output.accept(PDItems.DEBUG_WAND_ICE_SPIKE.get());
-                        output.accept(PDItems.DEBUG_WAND_ICE_CRYSTAL_GARDEN.get());
+                        output.accept(PDItems.DEBUG_WAND_BUD_DYEDREAM.get());
                         output.accept(PDItems.DEBUG_WAND_ICE_CRYSTAL_SPIKE.get());
                         output.accept(PDItems.DEBUG_WAND_ICE_PILLAR.get());
                         output.accept(PDItems.DEBUG_WAND_UNDERWATER_ICE_SPIKE.get());

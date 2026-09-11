@@ -136,7 +136,7 @@ public class ModDecorations {
         IceDecorations.registerIceSpike();
         IceDecorations.registerIceGate();
         IceDecorations.registerCalcitePillar();
-        IceDecorations.registerIceCrystalGarden();
+        IceDecorations.registerBudDyedream();
         IceDecorations.registerIceCrystalSpike();
         IceDecorations.registerIcePillar();
 
@@ -149,7 +149,7 @@ public class ModDecorations {
         OceanDecorations.registerIceArch();
         OceanDecorations.registerIceArchRuined();
         OceanDecorations.registerDyedreamIcePillar();
-        OceanDecorations.registerIceCrystalCluster();
+        OceanDecorations.registerBudIce();
         OceanDecorations.registerFrostSpike();
     }
 

@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:dyedream_cold_ocean",
+  "features": [
+    "pasterdream:bud_ice"
+  ],
+  "step": "underground_decoration"
+}

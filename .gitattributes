@@ -1,23 +1,63 @@
-# Auto detect text files and use LF in the working tree
+# ============================================================
+# Line-ending configuration for NeoPasterDream1
+# ============================================================
+
+# Global: auto-detect text files, normalize to LF in repo
 * text=auto eol=lf
 
-# Java files
-*.java text eol=lf
+# ── Source code ──────────────────────────────────────────────
+*.java          text eol=lf
+*.gradle        text eol=lf
+*.properties    text eol=lf
+*.toml          text eol=lf
+*.xml           text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.py            text eol=lf
 
-# Resource files
-*.json text eol=lf
-*.png binary
-*.nbt binary
-*.jpg binary
-*.gif binary
+# ── Shader files (GLSL) ─────────────────────────────────────
+*.fsh           text eol=lf
+*.vsh           text eol=lf
+*.gsh           text eol=lf
 
-# Documentation files
-*.md text eol=lf
+# ── Config & resource metadata ───────────────────────────────
+*.json          text eol=lf
+*.mcmeta        text eol=lf
+*.nbt           binary
+*.mca           binary
 
-# Build files
-*.gradle text eol=lf
-*.properties text eol=lf
+# ── Documentation ────────────────────────────────────────────
+*.md            text eol=lf
+*.txt           text eol=lf
 
-# Shell scripts
-*.sh text eol=lf
-*.bat text eol=crlf
+# ── IDE / editor ─────────────────────────────────────────────
+*.iml           text eol=lf
+*.launch        text eol=lf
+
+# ── Log & patch ──────────────────────────────────────────────
+*.log           text eol=lf
+*.patch         text eol=lf
+
+# ── Images (binary) ──────────────────────────────────────────
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.bmp           binary
+*.ico           binary
+
+# ── Audio (binary) ──────────────────────────────────────────
+*.ogg           binary
+*.mp3           binary
+*.wav           binary
+
+# ── Archives & binaries ──────────────────────────────────────
+*.jar           binary
+*.gz            binary
+*.zip           binary
+*.bak           binary
+*.bak2          binary
+
+# ── Gradle wrapper ───────────────────────────────────────────
+gradlew         text eol=lf
+gradlew.bat     text eol=crlf
