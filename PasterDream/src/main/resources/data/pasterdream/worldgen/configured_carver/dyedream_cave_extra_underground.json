@@ -19,7 +19,7 @@
     "lava_level": {
       "absolute": -2032
     },
-    "replaceable": "#minecraft:overworld_carver_replaceables",
+    "replaceable": "#pasterdream:dyedream_carver_replaceables",
     "horizontal_radius_multiplier": {
       "type": "minecraft:uniform",
       "min_inclusive": 0.7,

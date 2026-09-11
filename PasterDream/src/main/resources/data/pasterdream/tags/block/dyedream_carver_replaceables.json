@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:overworld_carver_replaceables",
+    "minecraft:calcite",
+    "minecraft:snow_block",
+    "pasterdream:dyedream_grass",
+    "pasterdream:dyedream_dirt",
+    "pasterdream:dyedream_sand",
+    "pasterdream:dyedream_sandstone",
+    "pasterdream:dyedream_packed_ice"
+  ]
+}
