@@ -1,17 +1,27 @@
 package com.pasterdream.pasterdreammod.api.worldgen;
 
+import com.pasterdream.pasterdreammod.api.ruin.RuinAPI;
+import com.pasterdream.pasterdreammod.api.ruin.RuinResult;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelSimulatedReader;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
+import net.minecraft.world.level.levelgen.structure.Structure;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 世界生成工具类 —— 提供多方块结构生成常用的共享方法
@@ -263,5 +273,101 @@ public final class WorldGenUtils {
                 origin.getY(),
                 (origin.getZ() >> 4) * 16 + 8
         );
+    }
+
+    // ======================== 遗迹避让 ========================
+
+    /** 遗迹扫描区块半径（3x3 区块，约 16~32 格的避让范围） */
+    public static final int RUIN_SCAN_CHUNK_RADIUS = 1;
+
+    /** 已注册遗迹结构的 ResourceKey 缓存（懒加载，注册完成后首次使用时生成） */
+    @Nullable
+    private static volatile Set<ResourceKey<Structure>> registeredRuinKeys;
+
+    /**
+     * 获取所有已注册遗迹结构的 ResourceKey 集合（懒加载缓存）
+     * <p>
+     * 通过 {@link RuinAPI#getAllRuins()} 获取当前模组注册的全部遗迹结构，
+     * 仅在首次调用时解析并缓存，避免每次地物生成都遍历注册缓存。
+     *
+     * @return 遗迹结构的 ResourceKey 集合（可能为空）
+     */
+    private static Set<ResourceKey<Structure>> getRegisteredRuinKeys() {
+        Set<ResourceKey<Structure>> keys = registeredRuinKeys;
+        if (keys == null) {
+            keys = RuinAPI.getAllRuins().values().stream()
+                .map(RuinResult::structureKey)
+                .collect(Collectors.toUnmodifiableSet());
+            registeredRuinKeys = keys;
+        }
+        return keys;
+    }
+
+    /**
+     * 检查指定位置是否靠近已注册的遗迹结构
+     * <p>
+     * 原理：遗迹生成时会将自身引用写入其覆盖的每个区块（structure references），
+     * 因此只需检查目标位置所在区块及其周围 ±1 区块是否引用了已注册的遗迹。
+     * FEATURES 生成阶段保证 ±1 区块已至少完成结构引用生成，查询安全不越界。
+     *
+     * @param level  世界生成级别访问
+     * @param origin 地物生成原点
+     * @return true 表示附近存在遗迹，应跳过生成
+     */
+    public static boolean isNearRegisteredRuin(WorldGenLevel level, BlockPos origin) {
+        Set<ResourceKey<Structure>> ruinKeys = getRegisteredRuinKeys();
+        if (ruinKeys.isEmpty()) {
+            return false;
+        }
+
+        Registry<Structure> structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        Set<Structure> ruinStructures = ruinKeys.stream()
+            .map(structureRegistry::get)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+        if (ruinStructures.isEmpty()) {
+            return false;
+        }
+
+        int originChunkX = origin.getX() >> 4;
+        int originChunkZ = origin.getZ() >> 4;
+
+        for (int dx = -RUIN_SCAN_CHUNK_RADIUS; dx <= RUIN_SCAN_CHUNK_RADIUS; dx++) {
+            for (int dz = -RUIN_SCAN_CHUNK_RADIUS; dz <= RUIN_SCAN_CHUNK_RADIUS; dz++) {
+                ChunkAccess chunk = getChunkForStructureCheck(level, originChunkX + dx, originChunkZ + dz);
+                if (chunk == null || !chunk.hasAnyStructureReferences()) {
+                    continue;
+                }
+                for (Structure structure : chunk.getAllReferences().keySet()) {
+                    if (ruinStructures.contains(structure)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 获取用于结构引用检查的区块（保证不越界、不触发额外加载）
+     * <p>
+     * 世界生成期间（{@link WorldGenRegion}）只查询生成步骤保证可用的区块，
+     * 避免触发 "Requested chunk unavailable during world generation" 崩溃；
+     * 非世界生成场景（如 {@code /place} 命令直接放置）使用非阻塞查询，未就绪返回 null。
+     *
+     * @param level  世界生成级别访问
+     * @param chunkX 区块 X 坐标
+     * @param chunkZ 区块 Z 坐标
+     * @return 目标区块，若不可用则返回 null
+     */
+    @Nullable
+    private static ChunkAccess getChunkForStructureCheck(WorldGenLevel level, int chunkX, int chunkZ) {
+        if (level instanceof WorldGenRegion region && region.hasChunk(chunkX, chunkZ)) {
+            return level.getChunk(chunkX, chunkZ, ChunkStatus.STRUCTURE_REFERENCES, true);
+        }
+        if (!(level instanceof WorldGenRegion)) {
+            return level.getChunk(chunkX, chunkZ, ChunkStatus.STRUCTURE_REFERENCES, false);
+        }
+        return null;
     }
 }
