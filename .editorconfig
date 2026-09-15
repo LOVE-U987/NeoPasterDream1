@@ -9,25 +9,11 @@ max_line_length = 120
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.{java,json,yaml,yml,xml,gradle}]
-charset = utf-8
-
 [*.md]
 charset = utf-8
 trim_trailing_whitespace = false
+max_line_length = off
 
-# Match the Windows batch exception in .gitattributes
+# Match the batch-file exception in the code style guide
 [*.bat]
 end_of_line = crlf
-
-[*.nbt]
-charset = binary
-
-[*.png]
-charset = binary
-
-[*.jpg]
-charset = binary
-
-[*.gif]
-charset = binary

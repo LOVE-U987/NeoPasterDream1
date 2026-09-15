@@ -14,6 +14,8 @@
 *.yml           text eol=lf
 *.yaml          text eol=lf
 *.py            text eol=lf
+*.cfg           text eol=lf
+*.ps1           text eol=lf
 
 # ── Shader files (GLSL) ─────────────────────────────────────
 *.fsh           text eol=lf
@@ -38,6 +40,10 @@
 *.log           text eol=lf
 *.patch         text eol=lf
 
+# ── Batch files (CRLF exception) ──────────────────────────────
+*.bat           text eol=crlf
+*.cmd           text eol=lf
+
 # ── Images (binary) ──────────────────────────────────────────
 *.png           binary
 *.jpg           binary
@@ -60,4 +66,3 @@
 
 # ── Gradle wrapper ───────────────────────────────────────────
 gradlew         text eol=lf
-gradlew.bat     text eol=crlf

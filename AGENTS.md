@@ -1,25 +1,41 @@
 # AGENTS.md — PasterDream 项目规则
 
-> 由 `Trae CN/.trae/rules/project_rules.md` 迁移而来
-> 迁移日期: 2026-08-03
+> AI Agent / 开发助手工作规则
+> 重写日期: 2026-09-14（基于新版文档体系）
+> 完整开发文档入口: [docs/README.md](docs/README.md)
+> AI 辅助开发规则分层说明: [docs/开发指南/Agent使用规范.md](docs/开发指南/Agent使用规范.md)
 
 ## ⚠️ 任务启动强制流程（最高优先级）
 
 **每次开始执行任何任务（开发/修复/排查/回答）前，必须先完成：**
 
-1. 读取个人全局规则文件：`.opencode/personal-rules.md`
-2. 逐条遵守其中的所有规则（沟通风格、代码规范、Git 规范、Python 脚本优先、Skills 优先等）
-3. 任务涉及物品/注册/实体/粒子/效果/遗迹/装饰/维度时，先读取 `.github/skills/` 中对应 SKILL 再动手
+1. 读取个人规则文件（如 `.opencode/personal-rules.md`——属个人工作区配置，非仓库文件；文件不存在或内容已自动注入上下文时跳过）
+2. 逐条遵守其中的所有规则（沟通风格、代码规范、Git 规范、Python 脚本优先等）；个人配置与本文件或 `docs/` 冲突时，以项目规范为准
+3. 任务涉及具体系统时，先查阅 `docs/` 下对应文档再动手
 
-> 若个人规则文件内容已自动注入上下文，可跳过第 1 步；否则必须读取。
+### 任务类型 → 必读文档
+
+| 任务类型 | 必读文档 |
+|---------|---------|
+| 注册方块/物品/实体/粒子/效果/维度/遗迹 | `docs/开发指南/注册指南.md` |
+| 添加新方块/实体/物品（完整流程） | `docs/教程/` 对应教程 |
+| 资源文件放置（模型/动画/纹理） | `docs/开发指南/资源规范.md` |
+| 判断代码放哪个模块 | `docs/架构/模块边界.md` |
+| 方块掉落/战利品表问题 | `docs/开发指南/问题排查.md` |
+| 编译/测试/VERIFY | `docs/开发指南/测试指南.md` |
+| API 迁移对照（1.20→1.21） | `docs/参考/版本迁移.md` |
+| API 上收/边界判定 | `docs/参考/API边界.md` |
 
 ## 项目概况
 
-PasterDream NeoForge 1.21.1 模组开发项目。**核心理念:精神续作,而非代码移植。**
+PasterDream 是面向 NeoForge 1.21.1 的**非官方移植项目**，以还原原模组的核心内容与玩法体验为目标，并针对新版本进行适配、修复和改进。
 
-- 原模组(`libs/FixPasterDream-main/`)仅作为**参考**,部分开发方向已偏离原模组设计
-- 原模组是 MCreator 生成,代码不可移植,必须基于 NeoForge 1.21.1 API 重新实现
-- **不直接复制或修改原代码**,相同效果用不同技术方案实现
+本项目未获得原作者的正式授权。原作者已知悉移植计划并公开给予鼓励，项目方将其理解为默许；这不代表正式授权。详见[项目定位与设计理念](docs/架构/架构总览.md#设计理念)。
+
+- 原模组(`libs/FixPasterDream-main/`)作为内容与玩法的参考基准，目录保持只读
+- 原模组由 MCreator 生成，技术实现必须基于 NeoForge 1.21.1 API 手写重实现
+- **不直接复制或修改原代码**；以内容和行为的还原结果验证移植质量
+- 对原版的修复、改进和有意差异需在设计文档中说明，并通过对应测试验收
 - 版本跨度:1.20.1 Forge → 1.21.1 NeoForge
 
 ## 项目结构
@@ -27,17 +43,30 @@ PasterDream NeoForge 1.21.1 模组开发项目。**核心理念:精神续作,而
 ```
 NeoPasterDream1/
 ├── PasterDreamAPI/           # API 模块(Builder/Facade/Result/Config)
-│   └── src/main/java/.../api/
 ├── PasterDream/              # 主模块(方块/物品/实体/渲染/注册)
-│   └── src/main/java/.../
 ├── PasterDreamSpells/        # 附属模块:法术系统(thin 发行,编译期依赖 API)
 ├── PasterDreamSanity/        # 附属模块:理智系统(thin 发行,编译期依赖 API)
 ├── PasterDreamMeltDream/     # 附属模块:融梦能量系统(thin 发行,编译期依赖 API)
-├── src/                      # 旧目录(已归档 @Deprecated,不再参与构建)
+├── docs/                     # 开发文档(新版文档体系)
+├── tools/                    # 工具脚本(Python)
 └── libs/FixPasterDream-main/ # 原模组(只读参考)
 ```
 
 > **附属模块说明**: PasterDreamSpells/Sanity/MeltDream 均为 thin 发行模式,不内嵌 PasterDreamAPI(由 PasterDream 主模组打包提供)。运行时需主模组作为前置。
+
+## 文档体系
+
+新版文档位于 `docs/`,入口为 [docs/README.md](docs/README.md):
+
+| 目录 | 内容 |
+|------|------|
+| `docs/入门/` | 新人入门:环境搭建/项目结构/首次贡献 |
+| `docs/架构/` | 架构文档:总览/模块边界/注册流程/客户端服务端 |
+| `docs/开发指南/` | 开发指南:代码规范/Git/注册/资源/测试/排查/Agent 使用 |
+| `docs/参考/` | 参考文档:版本迁移/API 边界 |
+| `docs/教程/` | 教程:添加方块/实体/物品 |
+
+> 旧版文档已移至 `docs/deprecated/`,后续将被移除,**勿引用**。
 
 ## 多模块架构策略:模块归属决策
 
@@ -55,6 +84,8 @@ NeoPasterDream1/
 | 以上均不满足(方块/物品/实体/渲染/客户端代码) | → `PasterDream` |
 
 > **口诀**:API/Builder/注册门面 → API 模块;法术 → Spells;理智 → Sanity;融梦 → MeltDream;其余 → 主模块。
+>
+> 详细判定规则与勿上收清单见 [docs/架构/模块边界.md](docs/架构/模块边界.md) 与 [docs/参考/API边界.md](docs/参考/API边界.md)。
 
 ## 开发工作流
 
@@ -65,74 +96,21 @@ NeoPasterDream1/
    - 全量编译:`.\gradlew compileJava`(编译所有模块)
    - 单模块编译:`.\gradlew :PasterDreamSpells:compileJava` 等
    - 数据生成:`.\gradlew runData`
-   - 客户端测试:`.\gradlew runClient`
+
+环境搭建与常用命令详见 [docs/入门/环境搭建.md](docs/入门/环境搭建.md)。
 
 ## Git 提交信息规范
 
-### 提交格式
+格式 `类型(范围): 内容`,使用英文,简洁明了:
+
+- **类型**: `feat` / `fix` / `docs` / `style` / `refactor` / `test` / `chore`
+- **范围**(可选): `api` / `block` / `entity` / `item` / `model` / `render` / `registry` / `client` / `server` / `worldgen` / `code & docs`
 
 ```
-类型(范围): 内容
+feat(api): add BiomeShading API for data-driven biome fog colors
 ```
 
-**类型**: `feat` / `fix` / `docs` / `style` / `refactor` / `test` / `chore`
-
-**范围**(可选): `api` / `block` / `entity` / `item` / `model` / `render` / `registry` / `client` / `server` / `refactor` / `code & docs`
-
-**示例**:
-```
-fix(model): correct dyedream_hanging_vine item and drop form
-fix(code & docs): disable fillHang for cloud fall and update Issue-#11 tracker
-fix(refactor): reduce the formation of ice_crystal_spike
-```
-
-### 基本要求
-
-1. 语言准确,避免使用特殊字符,确保使用的语言为英文
-2. 提交信息简洁明了,避免使用复杂的语言
-
-## 分支策略
-
-### 分支命名
-
-使用 `类型/负责人/主题` 格式:
-
-- **类型**: `feature` / `fix` / `refactor` / `docs` / `test`
-- **负责人**: GitHub 用户名
-- **主题**: 简短描述,使用小写字母和连字符
-
-**示例**:
-```
-feature/momonyako/dream-meter
-fix/phantomdaze/loot-table
-refactor/username/cleanup-api
-```
-
-### 工作流程
-
-1. 从 `main` 分支或基于主分支变基的个人分支创建功能分支
-2. 在功能分支上进行开发
-3. 完成开发后,创建 Pull Request,交由核心开发者审查
-4. 经过代码审查后合并到 `main`
-5. 合并后及时删除功能分支
-
-## 多线程开发策略
-
-| 模块 | 开发方式 | 注意 |
-|-----|---------|------|
-| 独立物品/方块 | 可并行 | 避免同时修改同一文件 |
-| 实体系统 | 可并行 | 需协调渲染器注册 |
-| 数据生成 | 可并行 | - |
-| 附属模块(Spells/Sanity/MeltDream) | 可并行 | 各模块独立,但共享 API |
-| 跨模块功能 | 串行/协调 | Capability、网络包等 |
-
-## API 迁移对照
-
-| 1.20.1 Forge | 1.21.1 NeoForge |
-|-------------|----------------|
-| `forge:` | `neoforge:` 或 `c:` |
-| `forge/tags/items/` | `c/tags/item/` |
-| `forge:fluid_container` | `neoforge:fluid_container` |
+详见 [docs/开发指南/Git规范.md](docs/开发指南/Git规范.md)。
 
 ## 代码规范
 
@@ -164,7 +142,7 @@ refactor/username/cleanup-api
 
 - **非 MD 文件**:标准 ASCII 字符 + UTF-8 编码,禁止使用 Emoji
 - **MD 文件**:UTF-8 编码,允许 Unicode 和 Emoji
-- **代码注释**:使用 UTF-8 字符，如中文，但禁止使用Emoji
+- **代码注释**:使用 UTF-8 字符,如中文,但禁止使用 Emoji
 - **代码注释规范**:推荐使用中文
 
 ### 导入顺序
@@ -179,17 +157,7 @@ refactor/username/cleanup-api
 - **实体**:继承 `GeckoLibMonsterEntity`/`GeckoLibAnimalEntity`
 - **注释**:类级+方法级注释,参数用 `@param`
 
-## 第三方库
-
-| 库 | 依赖方式 | 说明 |
-|----|---------|------|
-| GeckoLib | Maven | 实体/方块/物品 GeckoLib 渲染 |
-| Curios | Maven | 饰品系统集成 |
-| Player Animator | Maven (optional) | 玩家动画姿势(evasion/none) |
-| JEI | compileOnly + localRuntime | 可选:配方查看器;发布 jar 不携带 |
-| Patchouli | optional (纯数据) | 可选:图鉴手册包;无 Java 硬依赖 |
-
-> Curios/GeckoLib/playerAnimator 已从 git 剥离(原 `libs/` 目录),改走 Maven 依赖。
+详见 [docs/开发指南/代码规范.md](docs/开发指南/代码规范.md)。
 
 ## 资源处理
 
@@ -200,31 +168,20 @@ refactor/username/cleanup-api
 
 > ⚠️ **1.20 旧格式会导致整个战利品表解析失败 → 方块掉落本体/无掉落，且无任何报错！**
 
-**1. 数据包路径必须是单数 `loot_table`**（不是 1.20 的 `loot_tables`）：
-```
-data/<modid>/loot_table/blocks/<block_name>.json
-```
-
-**2. `match_tool` 条件的 predicate 必须是 1.21.1 新格式**：
+1. **数据包路径必须是单数 `loot_table`**（不是 1.20 的 `loot_tables`，复数目录会被静默忽略）：
+   `data/<modid>/loot_table/blocks/<block_name>.json`
+2. **`match_tool` 条件的 predicate 必须是 1.21.1 新格式**——外层需 `predicates."minecraft:enchantments"` 包装，`enchantment` → `enchantments`（复数）：
 
 | 版本 | 格式 |
 |------|------|
 | ❌ 1.20 旧（解析失败） | `"predicate": { "enchantments": [ { "enchantment": "minecraft:silk_touch", "levels": {"min": 1} } ] }` |
 | ✅ 1.21 新 | `"predicate": { "predicates": { "minecraft:enchantments": [ { "enchantments": "minecraft:silk_touch", "levels": {"min": 1} } ] } }` |
 
-关键差异：外层需 `predicates."minecraft:enchantments"` 包装，`enchantment` → `enchantments`（复数）。
+3. **权威对照**：`data/minecraft/loot_table/blocks/diamond_ore.json`
+4. **常见错误**：`loot_tables` 复数目录；predicate 用单数 `enchantment` 且无 `predicates` 包装；空数组 `"functions": []` / `"conditions": []`；文件名大小写/拼写不匹配
+5. **错误后果**：codec 解析失败 → 战利品表整体退回 `LootTable.EMPTY` → 普通 `Block` 无掉落、`SelfDropBlock` 兜底掉本体
 
-**参考原版**：`data/minecraft/loot_table/blocks/diamond_ore.json`（唯一权威对照）。
-
-**3. 格式错误后果**：`ItemPredicate` codec 解析失败 → 战利品表整体退回 `LootTable.EMPTY` → 普通 `Block` 无掉落、`SelfDropBlock` 兜底掉本体（矿石会掉矿石本体而非粗矿）。
-
-**4. 常见错误清单**：
-- ❌ 用 `loot_tables` 复数目录 → 静默忽略
-- ❌ `match_tool` predicate 用单数 `enchantment` + 无 `predicates` 包装 → 解析失败
-- ❌ 空数组 `"functions": []` / `"conditions": []` → 解析失败
-- ❌ 文件名大小写/拼写不匹配
-
-**5. 批量校验**：改完战利品表后，用项目脚本验证所有 JSON 可解析且无残留旧格式（参照 `tools/` 或临时脚本扫描 `"enchantment": "minecraft:silk_touch"` + 无 `predicates` 的情况）。
+改完战利品表后，用 `tools/` 下脚本批量校验 JSON 可解析且无旧格式残留。详见 [docs/开发指南/问题排查.md](docs/开发指南/问题排查.md)。
 
 ### GeckoLib 动画/模型文件目录规范
 
@@ -240,27 +197,33 @@ GeckoLib 的 `DefaultedGeoModel` 系列会根据 `subtype()` 自动决定资源�
 
 **> 口诀:entity → entity/、block → block/、item → item/,别一股脑全塞 entity/ 里!**
 
-#### 特殊情况处理
+特殊情况:
 
-1. **BlockItem/DualRenderer(方块 & 物品共用资源)**:方块渲染器走 `block/`,物品渲染器如果也使用 `DefaultedBlockGeoModel`,则物品的动画/模型也走 `block/` 路径。
-2. **自定义 `GeoModel` 子类**(如 `DreamMeterItemModel` 直接继承 `GeoModel`):路径完全由代码中硬编码的 `ResourceLocation` 决定,与上述约定无关。**修改代码中的路径字符串时,必须同时确认文件实际存在。**
+1. **BlockItem/DualRenderer(方块 & 物品共用资源)**:方块渲染器走 `block/`,物品渲染器若也使用 `DefaultedBlockGeoModel`,则动画/模型也走 `block/` 路径。
+2. **自定义 `GeoModel` 子类**:路径由代码硬编码的 `ResourceLocation` 决定,与上表无关。**修改代码路径字符串时,必须同时确认文件实际存在。**
 
-#### 常见错误
+常见错误:方块动画放 `entity/`、实体动画放 `animations/` 根目录、复制资源不分目录全塞 `entity/`——后果均为加载不到且无报错;自定义 GeoModel 改路径后不检查文件存在 → 运行时 FileNotFoundException。
 
-| ❌ 错误行为 | 后果 | ✅ 正确做法 |
-|-----------|------|-----------|
-| 把方块动画 `dream_cauldron.animation.json` 放到 `entity/` 目录 | 方块动画不播放,无报错 | 放到 `block/` 目录 |
-| 把实体动画放到 `animations/` 根目录 | 实体动画不播放,无报错 | 放到 `entity/` 目录 |
-| 复制原模组资源文件时不分目录一股脑全放 `entity/` | 方块/物品动画变孤儿文件,或无法加载 | 按上表分门别类放置 |
-| 自定义 GeoModel 改路径后不检查文件是否存在 | 运行时 FileNotFoundException | 改路径后确认目标文件实际存在 |
+**操作检查清单**(每次复制动画/模型/纹理后核对):
 
-#### 操作检查清单
-
-**每次从原模组复制动画/模型/纹理文件后,必须核对:**
-1. [ ] 文件放对子目录了?(entity/entity?block/block?item/item?)
+1. [ ] 文件放对子目录了?(entity/entity? block/block? item/item?)
 2. [ ] 对应的 Renderer 用了哪种 `DefaultedGeoModel`?
 3. [ ] 自定义 `GeoModel` 的硬编码路径与文件实际位置一致?
-4. [ ] 对于 `animations` 根目录、`animations/entity/`、`animations/block/`,每个目录里没有不相关的文件?
+4. [ ] `animations` 根目录及各子目录里没有不相关的文件?
+
+详见 [docs/开发指南/资源规范.md](docs/开发指南/资源规范.md)。
+
+## 第三方库
+
+| 库 | 依赖方式 | 说明 |
+|----|---------|------|
+| GeckoLib | Maven | 实体/方块/物品 GeckoLib 渲染 |
+| Curios | Maven | 饰品系统集成 |
+| Player Animator | Maven (optional) | 玩家动画姿势(evasion/none) |
+| JEI | compileOnly + localRuntime | 可选:配方查看器;发布 jar 不携带 |
+| Patchouli | optional (纯数据) | 可选:图鉴手册包;无 Java 硬依赖 |
+
+> Curios/GeckoLib/playerAnimator 已从 git 剥离(原 `libs/` 目录),改走 Maven 依赖。
 
 ## 禁止事项
 
@@ -269,4 +232,5 @@ GeckoLib 的 `DefaultedGeoModel` 系列会根据 `subtype()` 自动决定资源�
 3. ❌ 硬编码配置
 4. ❌ 忽略编译错误
 5. ❌ 跳过 DataGen
-6. ❌ 禁止主动对Git状态进行任何更改
+6. ❌ 禁止主动对 Git 状态进行任何更改
+7. ❌ 引用 `docs/deprecated/` 下的旧文档（后续将被移除）
