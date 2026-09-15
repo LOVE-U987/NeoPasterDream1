@@ -2,7 +2,7 @@
 
 简体中文 | [English](README_EN.md)
 
-**面向 Minecraft 1.21.1 / NeoForge 的《帕斯特之梦》非官方移植。**
+**面向 Minecraft 1.21.1 / NeoForge 的《帕斯特之梦》经原作者正式授权的移植。**
 
 在染梦、灯影与风之旅途之间探索，收集梦境中的知识，使用工坊、法术与饰品推进冒险。项目以还原原模组的核心内容与玩法体验为目标，并针对新版本进行适配、修复和改进。
 
@@ -12,7 +12,7 @@
 
 项目仍在开发中。各系统的还原状态、有意差异与开放项见[开发进度](docs/设计/开发进度.md)和[设计方向](docs/设计/设计方向.md)。
 
-本项目**未获得原作者的正式授权**。原作者已知悉公开的移植计划并给予鼓励，项目方将其理解为默许。相关事实与说明见[项目身份与授权状态](PERMISSIONS.md)。
+本项目**已获得原作者异星之尘（Aerolite_Dust）的正式授权**，由 NPD 团队独立开发和维护。相关记录见根目录[授权截图](授权截图.jpg)，版权归属及具体使用范围见[版权声明与授权状态](PERMISSIONS.md)。
 
 ## 内容概览
 
@@ -108,9 +108,9 @@ macOS / Linux 使用 `./gradlew`。`packageMod` 将四个发行 Jar 收集到 `b
 - **引用内容**：使用或改编自原模组、PDR 的代码、美术等，其原有部分版权归原创作者或相应权利人所有，保留署名并遵守各自的使用协议与授权范围。
 - **使用许可**：NPD 原创代码沿用现有 [MIT License](LICENSE)；非代码内容及第三方内容依其各自许可或明确授权使用。
 
-项目方计划将完整[版权声明与授权状态](PERMISSIONS.md)及项目介绍一并发送给原作者，告知当前声明和相关资产的版权归属。项目继续采用非官方移植定位；相关权利与许可按实际记录维护。
+完整[版权声明与授权状态](PERMISSIONS.md)记录正式授权状态、版权归属与适用许可；具体使用范围以实际授权记录及各内容的协议为准。
 
-感谢原作者**异星之尘（Aerolite_Dust）**及原模组贡献者创造了帕斯特之梦的内容与资源，感谢其对移植计划的鼓励。感谢本项目的所有[贡献者](https://github.com/LOVE-U987/NeoPasterDream1/graphs/contributors)，以及 [MomoNyako](https://www.mcmod.cn/author/40210.html)、[PhantomDaze](https://www.mcmod.cn/author/41210.html)。
+感谢原作者**异星之尘（Aerolite_Dust）**及原模组贡献者创造了帕斯特之梦的内容与资源，感谢其对本项目的正式授权与支持。感谢本项目的所有[贡献者](https://github.com/LOVE-U987/NeoPasterDream1/graphs/contributors)，以及 [MomoNyako](https://www.mcmod.cn/author/40210.html)、[PhantomDaze](https://www.mcmod.cn/author/41210.html)。
 
 ## 联系与反馈
 

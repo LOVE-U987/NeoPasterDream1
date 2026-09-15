@@ -6,22 +6,22 @@
 
 ### 项目身份
 
-| 项目     | 说明                          |
-| ------ | --------------------------- |
-| 项目名称   | 新帕斯特之梦 / NeoPasterDream     |
-| 原模组    | 帕斯特之梦 / PasterDream         |
-| 原作者    | 异星之尘 / Aerolite_Dust        |
-| 目标平台   | Minecraft 1.21.1 / NeoForge |
-| 项目性质   | 由移植项目维护者独立开发和维护的非官方移植       |
-| 正式授权状态 | 尚未获得原作者的正式授权                |
+| 项目     | 说明                                                   |
+| ------ |--------------------------------------------------------|
+| 项目名称   | 新帕斯特之梦 / NeoPasterDream                          |
+| 原模组    | 帕斯特之梦 / PasterDream                               |
+| 原作者    | 异星之尘 / Aerolite_Dust                               |
+| 目标平台   | Minecraft 1.21.1 / NeoForge                            |
+| 项目性质   | 由移植项目维护者独立开发和维护的经原作者正式授权的移植 |
+| 正式授权状态 | 已获得原作者的正式授权，见根目录[授权截图](授权截图.jpg)           |
 
-### 已知的原作者态度
+### 授权状态与沟通记录
 
-根据维护者提供的 MC 百科评论截图，移植计划于 2026-05-22 公开介绍，原作者于 2026-05-28 回复“wow 加油！”。项目方将这一公开鼓励理解为对移植计划的默许。
+根据项目维护者于 2026-09-15 的确认，NPD 已获得原作者异星之尘（Aerolite_Dust）的正式授权。该日期为声明更新日期，不作为授权授予日期。
 
-目前原作详情页面中将 NeoPasterDream 列于原模组页面的“其他分支版本”。其中“官方授权重制版”一栏属于 Forge 1.20.1 的 PasterDream: Reborn，不属于本项目。
+维护者提供的对话截图记录了项目定位、版权声明及新增内容的沟通。原作者表示不禁止团队在重置版中创作自己的新内容，并同意保留对话作为版权声明记录。截图中的项目定位属于历史沟通表述，当前授权状态依据维护者本次确认更新。
 
-这些记录说明原作者已知悉并鼓励移植计划。本文件记录当前版权声明与授权状态，不是一份正式授权书。
+本文件记录当前授权状态与版权归属，不替代原始授权记录，也不扩大实际授权范围。
 
 ### 版权归属与使用协议
 
@@ -34,8 +34,8 @@
 
 ### 版权告知与记录维护
 
-- 项目方计划将本版权声明及项目介绍一并发送给原作者，说明 NPD 当前的版权声明、相关资产的来源与版权归属，以及适用的使用协议。
-- 本次沟通用于告知上述情况，不提出项目身份或资源使用的新增授权请求。项目继续采用现有的**非官方移植**定位；是否收到回复不改变已有的权利归属与许可范围。
+- 授权沟通记录由项目维护者留存，相关资产的来源、版权归属及使用条件按实际记录维护。
+- NPD 已获得原作者正式授权；原有版权归属与署名继续保留，具体使用范围以实际授权记录及适用协议为准。
 - 若原作者或其他相关权利人对来源、署名、版权归属或使用条件提出更正、异议或调整要求，项目方将核实并处理受影响内容，同步维护相关说明。
 - PDR 已取得的项目授权不自动适用于 NPD；涉及 PDR 原创内容时，仍需遵守对应权利人的协议或授权。
 
@@ -51,16 +51,16 @@
 | Original mod         | 帕斯特之梦 / PasterDream                                                           |
 | Original author      | 异星之尘 / Aerolite_Dust                                                          |
 | Target platform      | Minecraft 1.21.1 / NeoForge                                                   |
-| Project type         | An unofficial port independently developed and maintained by its porting team |
-| Formal authorization | Not yet obtained from the original author                                     |
+| Project type         | A port formally authorized by the original author and independently developed and maintained by the NPD team |
+| Formal authorization | Obtained from the original author; see the [authorization screenshot](授权截图.jpg) in the repository root |
 
-### Known author response
+### Authorization status and communication records
 
-According to MCMod comment screenshots supplied by the maintainer, the porting effort was publicly introduced on May 22, 2026. On May 28, 2026, the original author replied “wow 加油！” (“Wow, keep it up!”). The project interprets this public encouragement as tacit acceptance of the porting effort.
+As confirmed by the project maintainer on September 15, 2026, NPD has received formal authorization from the original author, 异星之尘 (Aerolite_Dust). This is the statement update date, not the date authorization was granted.
 
-Now, the lists NeoPasterDream under “Other branch versions” on the original mod's page. The “officially authorized remake” label applies to the Forge 1.20.1 project PasterDream: Reborn, not to NeoPasterDream.
+The conversation screenshot supplied by the maintainer records discussions about project identity, copyright notices, and new content. The author stated that the team was not prohibited from creating its own new content in the remake and agreed to retaining the conversation as a copyright statement record. Earlier project descriptions in the conversation are historical; the current authorization status follows the latest maintainer confirmation.
 
-These records show awareness and encouragement. This document records the current copyright statement and authorization status; it is not a formal grant of permission.
+This document records current authorization status and copyright ownership. It does not replace the original authorization records or expand the actual scope of permission.
 
 ### Copyright ownership and applicable licenses
 
@@ -73,8 +73,8 @@ A file-by-file inventory of origins and permissions remains to be assembled. It 
 
 ### Copyright notification and record maintenance
 
-- The project plans to send this copyright statement and the project introductions to the original author, explaining NPD's current copyright statement, the origins and ownership of relevant assets, and the applicable usage terms.
-- This communication provides that information without requesting additional authorization for project status or resource use. NPD retains its current **unofficial port** designation. Whether a reply is received does not change existing ownership or permission scopes.
+- The project maintainer retains authorization communications and maintains records of asset origins, ownership, and usage conditions.
+- NPD has received formal authorization from the original author. Existing ownership and credits remain in place; usage follows actual authorization records and applicable licenses.
 - Corrections, objections, or requested changes concerning origins, attribution, ownership, or usage terms from the original author or other relevant rights holders will be reviewed and addressed for the affected material, with documentation updated accordingly.
 - Authorization granted to PDR does not automatically extend to NPD. PDR-original material remains subject to its respective rights holders' licenses or permissions.
 
