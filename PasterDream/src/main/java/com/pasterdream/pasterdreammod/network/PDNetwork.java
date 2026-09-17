@@ -125,6 +125,12 @@ public class PDNetwork {
                 PDNetwork::handleTeleportationOnServer);
         registrar.playToServer(CloakActivatePayload.TYPE, CloakActivatePayload.STREAM_CODEC,
                 PDNetwork::handleCloakActivateOnServer);
+
+        // ==================== S2C/C2S：旧存档备份/更新提示 ====================
+        registrar.playToClient(SaveUpgradePromptPayload.TYPE, SaveUpgradePromptPayload.STREAM_CODEC,
+                PDNetwork::handleSaveUpgradePromptOnClient);
+        registrar.playToServer(SaveUpgradeConfirmPayload.TYPE, SaveUpgradeConfirmPayload.STREAM_CODEC,
+                PDNetwork::handleSaveUpgradeConfirmOnServer);
     }
 
     /**
@@ -329,6 +335,49 @@ public class PDNetwork {
             vfx.getMethod(method, argType).invoke(null, arg);
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("PDClientVfx." + method + " failed", e);
+        }
+    }
+
+    /**
+     * 客户端：旧存档提示（经反射转发至 {@code PDSaveCompatClientEvents}）。
+     *
+     * @param payload 提示数据
+     * @param context 载荷上下文
+     */
+    public static void handleSaveUpgradePromptOnClient(final SaveUpgradePromptPayload payload,
+                                                       final IPayloadContext context) {
+        invokeClientSaveCompat("handleSaveUpgradePrompt", SaveUpgradePromptPayload.class, payload);
+    }
+
+    /**
+     * 服务端：玩家确认更新旧存档标记。
+     *
+     * @param payload 确认包
+     * @param context 载荷上下文
+     */
+    public static void handleSaveUpgradeConfirmOnServer(final SaveUpgradeConfirmPayload payload,
+                                                        final IPayloadContext context) {
+        if (context.player() instanceof ServerPlayer serverPlayer) {
+            com.pasterdream.pasterdreammod.compat.PDSaveCompatHandler.confirm(serverPlayer);
+        }
+    }
+
+    /**
+     * 反射调用客户端旧存档兼容落地类（仅 CLIENT 发行版执行）。
+     *
+     * @param method  方法名
+     * @param argType 参数类型
+     * @param arg     参数
+     */
+    private static void invokeClientSaveCompat(String method, Class<?> argType, Object arg) {
+        if (FMLEnvironment.dist != Dist.CLIENT) {
+            return;
+        }
+        try {
+            Class<?> client = Class.forName("com.pasterdream.pasterdreammod.client.PDSaveCompatClientEvents");
+            client.getMethod(method, argType).invoke(null, arg);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("PDSaveCompatClientEvents." + method + " failed", e);
         }
     }
 

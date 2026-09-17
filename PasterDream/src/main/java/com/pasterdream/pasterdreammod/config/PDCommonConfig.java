@@ -100,6 +100,13 @@ public class PDCommonConfig {
     /** 染梦维度内单个玩家模拟距离范围内非持久化发光鱿鱼数量上限（默认 16） */
     public static final ModConfigSpec.ConfigValue<Integer> GLOW_SQUID_SPAWN_CAP;
 
+    // ==================== Save Compat ====================
+
+    /** 旧存档备份/更新提示总开关（默认 true） */
+    public static final ModConfigSpec.ConfigValue<Boolean> SAVE_COMPAT_ENABLED;
+    /** 检测到旧存档时自动备份开关（默认 true） */
+    public static final ModConfigSpec.ConfigValue<Boolean> SAVE_COMPAT_AUTO_BACKUP;
+
     // ==================== Debug ====================
 
     /** 调试日志总开关（默认 false） */
@@ -235,6 +242,15 @@ public class PDCommonConfig {
         GLOW_SQUID_SPAWN_CAP = builder
                 .comment("染梦维度内，单个玩家模拟距离范围内允许存在的非持久化发光鱿鱼数量上限 默认：16 范围：1~128")
                 .defineInRange("glow squid spawn cap", 16, 1, 128);
+        builder.pop();
+
+        builder.push("Save Compat");
+        SAVE_COMPAT_ENABLED = builder
+                .comment("加载旧版本存档时提示备份与更新（关闭后不检测、不提示、不备份） 默认：true")
+                .define("save compat enabled", true);
+        SAVE_COMPAT_AUTO_BACKUP = builder
+                .comment("检测到旧版本存档时自动备份到游戏目录 backups/（备份在服务器启动阶段执行） 默认：true")
+                .define("save compat auto backup", true);
         builder.pop();
 
         builder.push("Debug");
