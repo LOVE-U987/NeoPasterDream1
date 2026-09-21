@@ -14,7 +14,7 @@ import net.minecraft.world.level.biome.Biome;
  * 群系音乐、世界生成等系统统一使用，避免在多个类中重复定义。
  * <p>
  * <b>命名规范</b>：采用 {@code {dimension}_{biome_type}} 格式，
- * 旧名称（如 {@code biome_dyedream_0}）已标记为废弃，将在 0.9.10 版本移除。
+ * 旧名称（如 {@code biome_dyedream_0}）已标记为废弃，将在 0.11.0 版本移除。
  */
 public final class PDBiomes {
 

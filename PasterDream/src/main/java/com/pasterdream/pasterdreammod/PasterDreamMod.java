@@ -31,6 +31,15 @@ import com.pasterdream.pasterdreammod.registry.PDMenusFurniture;
 import com.pasterdream.pasterdreammod.registry.ModDecorations;
 import com.pasterdream.pasterdreammod.registry.PDRuinsRegistration;
 import com.pasterdream.pasterdreammod.api.ApiCodeGenConfig;
+import com.pasterdream.pasterdreammod.api.ApiSoundRegistry;
+import com.pasterdream.pasterdreammod.api.block.BlockAPI;
+import com.pasterdream.pasterdreammod.api.blockentity.BlockEntityAPI;
+import com.pasterdream.pasterdreammod.api.compat.IdCompatAPI;
+import com.pasterdream.pasterdreammod.api.effect.MobEffectAPI;
+import com.pasterdream.pasterdreammod.api.item.ItemAPI;
+import com.pasterdream.pasterdreammod.api.menu.MenuAPI;
+import com.pasterdream.pasterdreammod.api.particle.ParticleAPI;
+import com.pasterdream.pasterdreammod.compat.PDIdAliases;
 import com.pasterdream.pasterdreammod.entity.damage.EntityImmunitySetup;
 
 import com.pasterdream.pasterdreammod.registry.PDParticles;
@@ -204,6 +213,23 @@ public class PasterDreamMod {
         Object unusedMeltdreamType = PDFluidsType.MELTDREAM_LIQUID_TYPE;
         Object unusedMeltdreamLiquid = PDFluids.MELTDREAM_LIQUID;
 
+        // ==================== 旧→新 ID 兼容别名 ====================
+        // 须在 RegisterEvent 之前登记（按具体 from 映射去重，避免 NeoForge 重复
+        // addAlias 抛 "Infinite alias loop"）；旧存档加载时由 NeoForge 注册表快照
+        // 自动重映射。别名自检在 commonSetup（注册完成后）执行。
+        PDIdAliases.registerAll();
+        int appliedIdAliases = IdCompatAPI.applyStatic(
+                BlockAPI.REGISTRY,
+                ItemAPI.REGISTRY,
+                PDItems.ITEMS,
+                EntityAPI.REGISTRY,
+                BlockEntityAPI.REGISTRY,
+                MenuAPI.REGISTRY,
+                MobEffectAPI.REGISTRY,
+                ParticleAPI.REGISTRY,
+                ApiSoundRegistry.DIMENSION_SOUNDS);
+        LOGGER.debug("[PDIdAliases] 已应用 {} 条旧→新 ID 别名", appliedIdAliases);
+
         // 配置刷怪蛋模型自动生成输出目录
         // 所有通过 EntityAPI 注册了 .spawnEgg() 的实体，在 build() 时自动生成模型 JSON
         EntityAPI.setSpawnEggModelsOutputDir(
@@ -289,6 +315,14 @@ public class PasterDreamMod {
 
         // 特效系统调试命令（/pasterdream vfx impact|screen|particle|cutscene）
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.command.PDVfxCommand::register);
+
+        // 旧存档兼容：新档写标记 / 旧档检测+自动备份 / 玩家登录投递提示
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.compat.PDSaveCompatHandler::onCreateSpawnPosition);
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.compat.PDSaveCompatHandler::onServerStarted);
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.compat.PDSaveCompatHandler::onPlayerLoggedIn);
+
+        // 存档兼容命令（/pasterdream save status|backup|upgrade）
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.command.PDSaveCommand::register);
     }
 
     /**
@@ -322,6 +356,9 @@ public class PasterDreamMod {
         // 注册表人口断言（M8）：注册阶段已结束，校验各分区锚点条目与类别人口，
         // 新分区漏在构造器显式引用时能立即在日志中暴露
         PDRegistrySanityCheck.verify();
+
+        // 旧→新 ID 别名自检（注册阶段已结束，别名应已在真实查找/数字 ID 路径生效）
+        IdCompatAPI.selfCheck();
 
         // 注册 API 装饰物（冰刺、冰之门等）
         ModDecorations.register();

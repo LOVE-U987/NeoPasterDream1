@@ -108,6 +108,15 @@
 | Curio 客户端桥 | `DefaultCurioClientBridge` | `CurioClientHandler` 日志 |
 | 树 Placer DR 门面 | `TreePlacerAPI` | `DyedreamTreePlacers` / `PDTreeDecorators` |
 
+### ID 兼容层上收 (2026-09-17)
+
+| 能力 | API | 主模 |
+|------|-----|------|
+| ID 别名兼容 | `api/compat`（`IdAlias` / `IdAliasTable` / `IdAliasRegistry` / `IdCompatAPI`） | `PDIdAliases` 具体映射表 + `PDSaveCompat*` 存档检测/备份/提示 |
+
+> 框架零具体 ID、零事件处理器、零命令体；具体旧→新映射表与存档逻辑留主模，
+> 详见 [存档兼容层](../设计/存档兼容层.md)。
+
 ---
 
 ## 勿上收清单
