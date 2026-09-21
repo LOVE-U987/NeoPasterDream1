@@ -11,6 +11,7 @@ import com.pasterdream.pasterdreammod.util.WeaponWorkshopVariables;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -30,6 +31,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -222,12 +226,27 @@ public class WeaponWorkshopBlockEntity extends BlockEntity implements GeoBlockEn
                     && itemHandler.getStackInSlot(2).is(recipe.in2().get())
                     && itemHandler.getStackInSlot(3).is(recipe.in3().get())
                     && itemHandler.getStackInSlot(4).is(recipe.in4().get())) {
+                // 先于扣减读取输入附魔，合并到产物（同名取最高等级）
+                ItemStack result = new ItemStack(recipe.result().get());
+                ItemEnchantments.Mutable merged = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+                for (int slot = 0; slot <= 4; slot++) {
+                    ItemEnchantments ench =
+                            EnchantmentHelper.getEnchantmentsForCrafting(itemHandler.getStackInSlot(slot));
+                    for (var entry : ench.entrySet()) {
+                        Holder<Enchantment> holder = entry.getKey();
+                        merged.set(holder, Math.max(merged.getLevel(holder), entry.getIntValue()));
+                    }
+                }
+                ItemEnchantments mergedEnchantments = merged.toImmutable();
+                if (!mergedEnchantments.isEmpty()) {
+                    EnchantmentHelper.setEnchantments(result, mergedEnchantments);
+                }
                 for (int slot = 0; slot <= 4; slot++) {
                     ItemStack stack = itemHandler.getStackInSlot(slot);
                     stack.shrink(1);
                     itemHandler.setStackInSlot(slot, stack);
                 }
-                itemHandler.setStackInSlot(SLOT_RESULT, new ItemStack(recipe.result().get()));
+                itemHandler.setStackInSlot(SLOT_RESULT, result);
                 this.inlay = true;
                 setChanged();
                 syncToClient();
