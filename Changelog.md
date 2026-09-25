@@ -3,22 +3,18 @@
 ---
 ## v0.10.0 — 2026-09-25
 
-> 依据 `docs/版本开发总结-v.0.10.0/重构融梦宝箱战利品+新增风泊悬挂藤与叶块合并.md` 整理。
+> 依据 `docs/版本开发总结-v.0.10.0/重构融梦宝箱战利品+新增风泊悬挂藤与叶块合并.md` 整理，战利品部分整合 `diff/momonyako/main`。
 
-### 重构：融梦水晶箱战利品改用原生 JSON 战利品表
+### 修复：融梦水晶箱只能开出万象神戒与啵啵鸡的华丽飞羽（战利品以 diff/momonyako/main 为准）
 
-*   **背景**：旧方案由 `MeltdreamChestLootConfig` 硬编码物品池 + `PasterDream-Common.toml` 三个物品池配置项驱动掉落，与数据包生态割裂，且配置项需用 `instanceof List` validator 绕开 List 实现类不匹配隐患
-*   **新增**（`PasterDream` `data/pasterdream/loot_table/chests/`，新）：三个 `"type": "minecraft:chest"` 战利品表——
-    *   `meltdream_common.json`：rolls=2，set_count 1~3，17 个食物条目
-    *   `meltdream_rare.json`：rolls=5，set_count 1~2，16 个稀有材料/装备条目
-    *   `meltdream_legendary.json`：rolls=6（10 个传说条目）+ rolls=1 固定 1 个 `meltdream_crystal_0`
-    *   原 `MeltdreamChestLootConfig` 三套默认物品池数据已完整迁移至上述 JSON
-*   **新增**（`PasterDream` `block/MeltdreamChestBlock.java:84~99`）：`COMMON_LOOT_TABLE` / `RARE_LOOT_TABLE` / `LEGENDARY_LOOT_TABLE` 三个 `ResourceKey<LootTable>`（`pasterdream:chests/meltdream_*`）
-*   **重构**（同文件 `fillItems` → `fillItemsWithLootTable`）：品质路由由 `getCommonLoot/Rare/Legendary` 改为 `switch → lootTableId`；新增 `generateFromLootTable()`，经 `reloadableRegistries().getLootTable()` + `LootTable.getRandomItems()` 生成物品。参数集必须用 `LootContextParamSets.CHEST` 且只传 `ORIGIN`（箱子中心）——CHEST 仅接受 `ORIGIN`(必需) 与 `THIS_ENTITY`(可选)，误传 `BLOCK_STATE` 会抛 `IllegalArgumentException`
-*   **保留**：唱片（`rollDisc`）与玩偶（`rollDoll`）仍为硬编码逻辑、优先玩家未拥有；传说品质第 9 格固定融梦水晶碎片、稀有品质 50% 概率额外玩偶、每品质 8/7 格填充的行为不变
-*   **删除**（`PasterDream` `config/MeltdreamChestLootConfig.java`，整文件 225 行）
-*   **删除**（`PasterDream` `config/PDCommonConfig.java`）：`MELTDREAM_CHEST_CUSTOM_LOOT_ENABLED` 与三个物品池配置项；同步移除 `client/gui/config/ConfigCategory.java` 的 `MELTDREAM_CHEST` 枚举与 `client/gui/config/PDConfigScreen.java` 的 4 个配置 UI 条目
-*   **破坏性变更**：玩家无法再通过 TOML 自定义融梦箱掉落；旧 `PasterDream-Common.toml` 中该 section 变为未知配置项（可能触发纠正日志，需实测确认）
+*   **根因**：移植时弃用原版战利品表 `loots_meltdream_chest_0/_1`，改为「3 品质手写配置池」（`config/MeltdreamChestLootConfig.java`）。原版该表含独立饰品池 11 件（`embryo_ring`/`embryo_necklace`/`health_0_necklace`/`rabbit_0_necklace`/`fire_0_necklace`/`red_dew_0_ring`/`red_dew_1_ring`/`embryo_belt`/`traveler_belt`/`garland`/`nature_belt`），移植默认池仅剩 `allkinds_ring`（万象神戒）与 `boboji_plume`（啵啵鸡的华丽飞羽）两件饰品，其余全部缺失。
+*   **修复**（`PasterDream` `data/pasterdream/loot_table/chests/`，新）：默认掉落改回原版维度战利品表 `loots_meltdream_chest_0.json` / `_1.json`（4 池：材料/宝石/饰品/装备）；`MeltdreamChestBlock.populateLoot` 按维度取表：染梦 → `_0`，风旅/灯影 → `_1`，其它维度或表缺失/无效（`LootTable.EMPTY`）回退隐藏默认池。
+*   **保留附加**：默认路径在战利品表基础上叠加移植版附加——稀有档 slot 0 唱片 + 50% 玩偶；传说档玩偶（基础件数 ≥2 时替换一槽，否则放空槽）+ slot 8 融梦水晶碎片；稀有/传说档约 10% 纪念品。
+*   **配置调整**（`PasterDream` `config/PDCommonConfig.java`）：三个物品池默认值改为空列表（内置池转为隐藏 `DEFAULT_*` 常量，不出现在 toml/GUI）；自定义开关保持，开启后玩家池逐条容错，留空/全无效回退隐藏默认池。新增 `config/MeltdreamChestLootConfigMigration.java` 一次性迁移：仅当配置值仍等于旧默认时清空，玩家自定义保留。
+*   **恢复**（`PasterDream` `client/gui/config/`）：恢复 `ConfigCategory.MELTDREAM_CHEST` 枚举与 `PDConfigScreen` 的 4 个配置 UI 条目（1 开关 + 3 物品池），与配置项保持一致。
+*   **移除**：main 侧新增的 `chests/meltdream_common|rare|legendary.json` 品质表随整合移除。
+*   **有意差异**：不再复刻原版「品质决定部分维度取表分支」，统一按维度取表；品质仅决定动画/音效与附加内容；非梦境维度走隐藏默认池。
+*   **同步**：`lang/zh_cn.json`、`lang/en_us.json` 四个 tooltip 文案；`docs/设计/融梦水晶箱战利品.md` 记录三层解析与槽位算法。
 
 ### 新增：风泊悬挂藤 windmoor_hanging_vine
 
@@ -69,15 +65,14 @@
 ### 遗留项（未处理）
 
 *   `PasterDream/tag_audit.json` 为一次性审计快照，仍列有 `windmoor_leaves_0/1/2` 的 tag 与 loot 条目，需重新生成
-*   `tools/check_chest_loot_ids.py` 的物品池为硬编码旧值（其中 `bobo_plume` 为笔误，真实 ID 为 `boboji_plume`）且未跟随本次迁移改为解析 JSON 战利品表，当前会误报
 *   战利品上下文使用 `LootContextParamSets.CHEST`（不含 `BlockPos` 与玩家信息），后续若需按位置或玩家做条件判断需扩展参数集
 
 ### 验证
 
 *   `.\gradlew :PasterDream:compileJava` BUILD SUCCESSFUL（`PasterDream` / `PasterDreamAPI` 任务实际执行，无错误；仅有既存的「使用了已过时 API」编译注记）
 *   `python tools/verify_resource_closure.py` PASS：JSON/模型/纹理/粒子/音效/注册资源/loot 闭包全部完整（3851 JSON、238 方块、669 物品）
-*   三个新增 chest 战利品表逐条核对：`meltdream_common`(17) / `meltdream_rare`(16) / `meltdream_legendary`(11) 条目均具备 `item.pasterdream.*` 或 `block.pasterdream.*` 语言键
-*   待游戏内实测：融梦箱三品质掉落分布、悬挂藤生长与骨粉催长、风之旅维度地表、粒子观感、5 个 NBT 结构变化
+*   战利品表逐条核对：`loots_meltdream_chest_0` 含 11 件饰品 ID，`loots_meltdream_chest_1` 含 `cyan_moss_stone`，条目均具备 `item.pasterdream.*` 或 `block.pasterdream.*` 语言键
+*   待游戏内实测：融梦箱按维度掉落分布、悬挂藤生长与骨粉催长、风之旅维度地表、粒子观感、5 个 NBT 结构变化
 
 ---
 ## v0.9.6 — 2026-08-15
