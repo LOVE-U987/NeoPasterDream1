@@ -178,7 +178,9 @@ public final class PDPortingVerifyTest {
          */
         ARENA_EXIT("arena-exit", "arena_exit", "boss-exit"),
         /** San 逐 tick 变化：SAN_VARIABILITY 属性被消费、San 随时间变动；不在 all */
-        SAN_TICK("san-tick", "santick", "san");
+        SAN_TICK("san-tick", "santick", "san"),
+        /** 荒漠英雄之墓阶段 3：升级为『沉荆门』朔漠后附魔不得丢失 */
+        DESERT_TOMB("desert-tomb", "desert", "tomb");
 
         private final String[] aliases;
 
@@ -274,7 +276,7 @@ public final class PDPortingVerifyTest {
                         LogUtils.getLogger().warn("[PDVerify] 未知套件名 '{}'，已忽略（合法: registry,core,dimensions,"
                                 + "spells,content,structures,workshop,struct-dim,gallery,entity-gallery,"
                                 + "twilight-lantern,wind-journey,wind-lake,second-dream,shadow-intrude,main-flow,"
-                                + "dyedream,arena-exit,san-tick 及快捷 all/quick/behavior/worldgen/galleries）", token);
+                                + "dyedream,arena-exit,san-tick,desert-tomb 及快捷 all/quick/behavior/worldgen/galleries）", token);
                     }
                 }
             }
@@ -600,6 +602,12 @@ public final class PDPortingVerifyTest {
             int w = cursor;
             at(w, PDPortingVerifyTest::workshopSuite);
             cursor = w + 5;
+        }
+
+        if (suite(Suite.DESERT_TOMB)) {
+            int dt = cursor;
+            at(dt, PDPortingVerifyTest::desertTombSuite);
+            cursor = dt + 5;
         }
 
         if (suite(Suite.STRUCT_DIM)) {
@@ -1494,6 +1502,13 @@ public final class PDPortingVerifyTest {
     private static void workshopSuite() {
         PDWorkshopVerifyHooks.verify(player(), r ->
                 checkDetail("workshop", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== S21 荒漠英雄之墓升级 ====================
+
+    private static void desertTombSuite() {
+        PDDesertTombVerifyHooks.verify(player(), r ->
+                checkDetail("desert-tomb", r.pass(), r.name(), r.detail()));
     }
 
     // ==================== S18 结构目标维度 ====================

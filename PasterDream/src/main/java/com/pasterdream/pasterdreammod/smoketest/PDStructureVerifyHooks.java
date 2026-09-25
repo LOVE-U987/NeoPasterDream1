@@ -6,6 +6,7 @@ import com.pasterdream.pasterdreammod.block.entity.DyedreamDeskBlockEntity;
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.registry.PDRuinsRegistration;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksStructure;
+import com.pasterdream.pasterdreammod.worldgen.structure.WindmoorTreeStructure;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
@@ -104,6 +106,7 @@ public final class PDStructureVerifyHooks {
      * @param out    断言输出
      */
     public static void verify(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
+        verifyWindmoorInterior(server, out);
         verifyDatapackRegistries(server, out);
         verifyRuinApi(out);
         verifyStructureBlocksRegistered(out);
@@ -120,6 +123,36 @@ public final class PDStructureVerifyHooks {
     }
 
     // ==================== 数据包注册表 ====================
+
+    /**
+     * 验证真实数据包中的风泊树策略：树冠可伸出岛缘，树干必须得到稳定支撑。
+     * @param server 服务端
+     * @param out 断言输出
+     */
+    private static void verifyWindmoorInterior(MinecraftServer server, Consumer<Result> out) {
+        var structure = server.registryAccess().registryOrThrow(Registries.STRUCTURE).get(rl("windmoor_tree_0"));
+        boolean custom = structure instanceof WindmoorTreeStructure;
+        out.accept(detail(custom, "windmoor-interior-type", "风泊树必须使用岛内生成策略"));
+        if (!(structure instanceof WindmoorTreeStructure tree)) {
+            return;
+        }
+        var bounds = new BoundingBox(0, 0, 0, 55, 60, 42);
+        out.accept(detail(tree.hasStableTrunkSupport(bounds, (x, z) -> 64),
+                "windmoor-interior-flat", "宽阔岛心允许生成"));
+        out.accept(detail(tree.hasStableTrunkSupport(bounds, (x, z) -> 64 + Math.floorMod(x + z, 5)),
+                "windmoor-interior-gentle", "缓坡岛心允许生成"));
+        out.accept(detail(tree.hasStableTrunkSupport(bounds,
+                (x, z) -> x >= 23 && x <= 31 && z >= 17 && z <= 25 ? 64 : 0),
+                "windmoor-interior-canopy-edge", "树冠伸出岛缘时仍允许生成"));
+        out.accept(detail(!tree.hasStableTrunkSupport(bounds, (x, z) -> 0),
+                "windmoor-interior-void", "虚空拒绝"));
+        out.accept(detail(!tree.hasStableTrunkSupport(bounds, (x, z) -> x == 27 ? 0 : 64),
+                "windmoor-interior-gap", "树干区域存在裂隙时拒绝"));
+        out.accept(detail(!tree.hasStableTrunkSupport(bounds, (x, z) -> x < 27 ? 32 : 64),
+                "windmoor-interior-cliff", "树干跨越高差悬崖时拒绝"));
+        out.accept(detail(tree.type() == BuiltInRegistries.STRUCTURE_TYPE.get(rl("windmoor_tree_0")),
+                "windmoor-interior-codec", "结构类型保留自定义限制"));
+    }
 
     private static void verifyDatapackRegistries(MinecraftServer server, Consumer<Result> out) {
         Set<String> structures = modPaths(server, Registries.STRUCTURE);

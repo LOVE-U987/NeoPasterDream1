@@ -6,6 +6,7 @@ import com.pasterdream.pasterdreammod.api.ruin.RuinResult;
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.worldgen.structure.AaroncosArenaPortalStructure;
 import com.pasterdream.pasterdreammod.worldgen.structure.FloatingCrackStructure;
+import com.pasterdream.pasterdreammod.worldgen.structure.WindmoorTreeStructure;
 import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 
 import java.util.LinkedHashMap;
@@ -88,6 +89,7 @@ public class PDRuinsRegistration {
         registerPicnicBasketStructure();
         registerMeltdreamLiquidWell0();
         registerMeltdreamLiquidWell1();
+        registerWindmoorTree();
 
         int count = REGISTERED_STRUCTURES.size();
         PDDebugLogger.mainDebug("[PDRuinsRegistration] ✅ 染梦遗迹结构注册完成: 共 {} 个"
@@ -255,7 +257,7 @@ public class PDRuinsRegistration {
      * 通过 structure_set 正常随机生成，但<b>每世界仅生成一次</b>：
      * 第一个候选点生成成功后记录坐标并"关门"，后续候选点不再生成；
      * 生成时由 {@link com.pasterdream.pasterdreammod.worldgen.PDAaroncosArenaWorldgen}
-     * 分帧刷写竞技场群系 {@code aaroncos_arena_biome} 并启动遗迹感染。
+     * 分帧刷写竞技场群系 {@code aaroncos_arena} 并启动遗迹感染。
      * <p>
      * 结构集配置：spacing=256, separation=128, salt=901277331（预置 JSON）。
      * 灯影世界的 {@code aaroncos_arena_portal}（单数，biome_shadow_0）不受影响，照常生成。
@@ -448,6 +450,22 @@ public class PDRuinsRegistration {
     private static void registerMeltdreamLiquidWell1() {
         buildRuin("meltdream_liquid_well_1", "pasterdream:is_dyedream", -33, "beard_thin");
         buildSet("meltdream_liquid_well_1", "meltdream_liquid_well_1_set", 56, 25, 1153377646);
+    }
+
+    /** 注册树干位于岛面的风泊树；树冠允许自然伸出岛缘。 */
+    private static void registerWindmoorTree() {
+        RuinResult result = RuinAPI.createRuin("windmoor_tree_0")
+                .biomeTag("pasterdream:wind_journey_islands")
+                .templatePool("pasterdream:windmoor_tree_0")
+                .structureClass(WindmoorTreeStructure.class)
+                .codec(WindmoorTreeStructure.CODEC)
+                .terrainAdaptation("none")
+                .step("top_layer_modification")
+                .size(1)
+                .startHeight(-8)
+                .generateJson(false)
+                .build();
+        REGISTERED_STRUCTURES.put("windmoor_tree_0", result);
     }
 
     /** 获取已注册的结构结果 */

@@ -128,7 +128,7 @@ public class PDClientEvents {
 
             spawnTreeLeaves(mc);
         } else if (isArena) {
-            boolean inArenaBiome = PDBiomes.BIOME_AARONCOS_ARENA.equals(currentBiome);
+            boolean inArenaBiome = PDBiomes.AARONCOS_ARENA_VOID.equals(currentBiome);
             tryShowArenaWhisper(mc, inArenaBiome);
             if (inArenaBiome) {
                 spawnArenaShadowMist(mc);
@@ -580,7 +580,7 @@ public class PDClientEvents {
     /**
      * 尝试显示竞技场遗迹群系的自言自语文本。
      * <p>
-     * 当玩家刚进入 {@link PDBiomes#BIOME_AARONCOS_ARENA} 且冷却结束时，
+     * 当玩家刚进入 {@link PDBiomes#AARONCOS_ARENA_VOID} 且冷却结束时，
      * 在聊天栏显示“我觉得这里不太对劲...”，使其比 action bar 更持久、更易察觉。
      * 冷却机制避免反复刷屏；离开群系后重新进入可再次触发。
      *

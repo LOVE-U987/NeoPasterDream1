@@ -389,7 +389,7 @@ public class ClientSetup {
      * 注册亚伦柯斯竞技场维度特殊效果
      * <p>
      * 对齐原模组 {@code AaroncosArenaWorldDimension}：无天空盒（SkyType.NONE）+ 灰色雾，
-     * 雾色取原模组配置的 (0.2, 0.2, 0.2)，与主世界遗迹区的暗色 {@code aaroncos_arena_biome} 区分开。
+     * 雾色取原模组配置的 (0.2, 0.2, 0.2)，与主世界遗迹区的暗色 {@code aaroncos_arena} 区分开。
      */
     private static void registerAaroncosArenaEffects(RegisterDimensionSpecialEffectsEvent event) {
         ResourceLocation arenaId = ResourceLocation.fromNamespaceAndPath(

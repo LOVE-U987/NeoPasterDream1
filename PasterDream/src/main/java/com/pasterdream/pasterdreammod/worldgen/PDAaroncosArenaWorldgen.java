@@ -28,7 +28,7 @@ import java.util.List;
  * <ul>
  *   <li>结构生成后（服务端主线程回调 {@link #onArenaGenerated}）：记录中心坐标、
  *       分帧生成周围 chunk 并用 {@link FillBiomeCommand} 刷写竞技场群系
- *       {@code pasterdream:aaroncos_arena_biome}，同时启动遗迹感染。</li>
+ *       {@code pasterdream:aaroncos_arena}，同时启动遗迹感染。</li>
  *   <li>服务器启动时（{@link #onServerStarting}）：仅恢复已记录的遗迹感染，
  *       不再强制生成任何地形。</li>
  * </ul>
@@ -95,7 +95,7 @@ public class PDAaroncosArenaWorldgen {
      */
     private static void setArenaBiomeAsync(ServerLevel level, BlockPos centerPos) {
         Holder<Biome> arenaBiome = level.registryAccess().lookupOrThrow(Registries.BIOME)
-                .getOrThrow(PDBiomes.BIOME_AARONCOS_ARENA);
+                .getOrThrow(PDBiomes.AARONCOS_ARENA);
 
         BlockPos from = centerPos.offset(-BIOME_RADIUS, -BIOME_RADIUS, -BIOME_RADIUS);
         BlockPos to = centerPos.offset(BIOME_RADIUS, BIOME_RADIUS, BIOME_RADIUS);

@@ -19,6 +19,9 @@ ROOT = Path(__file__).resolve().parents[1]
 MOD = ROOT / "PasterDream"
 RES = MOD / "src/main/resources"
 ASSETS = RES / "assets/pasterdream"
+# DataGen 产物（ApiBlockModelProvider 生成的方块模型/状态），已纳入构建 classpath 与 git。
+# 手写 item 模型的 parent 可能指向这些生成模型，故解析时需回退到此目录。
+ASSETS_GEN = MOD / "src/generated/resources/assets/pasterdream"
 DATA = RES / "data/pasterdream"
 JAVA = MOD / "src/main/java/com/pasterdream/pasterdreammod"
 MANIFEST = RES / "pd_porting_manifest.json"
@@ -48,13 +51,25 @@ def namespace_path(value: str, default_ns: str = "pasterdream") -> tuple[str, st
     return default_ns, value
 
 
+def resolve_asset(relative: str) -> Path:
+    # 优先 main 资源；缺失时回退到 generated 资源（DataGen 产物）。
+    # 两者都不存在时返回 main 路径，由调用方 exists() 判定为缺失。
+    main = ASSETS / relative
+    if main.exists():
+        return main
+    generated = ASSETS_GEN / relative
+    if generated.exists():
+        return generated
+    return main
+
+
 def local_model_path(value: str) -> Path | None:
     # 模型 parent 未带命名空间时由 Minecraft 按 minecraft: 解析；只有显式
     # pasterdream: 引用才落到本模组 models 目录。
     ns, path = namespace_path(value, default_ns="minecraft")
     if ns != "pasterdream":
         return None
-    return ASSETS / "models" / f"{path}.json"
+    return resolve_asset(f"models/{path}.json")
 
 
 def local_texture_path(value: str, particle: bool = False) -> Path | None:
@@ -64,7 +79,7 @@ def local_texture_path(value: str, particle: bool = False) -> Path | None:
         return None
     if particle and "/" not in path:
         path = "particle/" + path
-    return ASSETS / "textures" / f"{path}.png"
+    return resolve_asset(f"textures/{path}.png")
 
 
 def iter_json():
@@ -134,30 +149,38 @@ def scan_model(model: Path, failures, visiting: set[Path], checked: set[Path]):
 
 def scan_models_and_blockstates(failures):
     checked: set[Path] = set()
-    for model in (ASSETS / "models").rglob("*.json"):
-        scan_model(model, failures, set(), checked)
-
-    for state in (ASSETS / "blockstates").glob("*.json"):
-        try:
-            obj = load_json(state)
-        except Exception:
+    for base in (ASSETS, ASSETS_GEN):
+        models_dir = base / "models"
+        if not models_dir.exists():
             continue
-        refs: list[str] = []
-        def walk(value):
-            if isinstance(value, dict):
-                for k, v in value.items():
-                    if k == "model" and isinstance(v, str):
-                        refs.append(v)
-                    else:
+        for model in models_dir.rglob("*.json"):
+            scan_model(model, failures, set(), checked)
+
+    for base in (ASSETS, ASSETS_GEN):
+        states_dir = base / "blockstates"
+        if not states_dir.exists():
+            continue
+        for state in states_dir.glob("*.json"):
+            try:
+                obj = load_json(state)
+            except Exception:
+                continue
+            refs: list[str] = []
+            def walk(value):
+                if isinstance(value, dict):
+                    for k, v in value.items():
+                        if k == "model" and isinstance(v, str):
+                            refs.append(v)
+                        else:
+                            walk(v)
+                elif isinstance(value, list):
+                    for v in value:
                         walk(v)
-            elif isinstance(value, list):
-                for v in value:
-                    walk(v)
-        walk(obj)
-        for ref in refs:
-            target = local_model_path(ref)
-            if target is not None and not target.exists():
-                add(failures, "blockstate_model", state, ref)
+            walk(obj)
+            for ref in refs:
+                target = local_model_path(ref)
+                if target is not None and not target.exists():
+                    add(failures, "blockstate_model", state, ref)
 
 
 def scan_particles(failures):
@@ -204,15 +227,15 @@ def scan_registered_resources(failures):
     expected_blocks = {renames.get(n, n) for n in manifest.get("blocks", [])} - set(excluded.get("blocks", []))
 
     for name in sorted(blocks & expected_blocks):
-        state = ASSETS / "blockstates" / f"{name}.json"
+        state = resolve_asset(f"blockstates/{name}.json")
         if not state.exists():
             add(failures, "registered_blockstate", "registry", name)
-        item_model = ASSETS / "models/item" / f"{name}.json"
+        item_model = resolve_asset(f"models/item/{name}.json")
         if name in items and not item_model.exists():
             add(failures, "registered_block_item_model", "registry", name)
 
     for name in sorted(items - blocks):
-        model = ASSETS / "models/item" / f"{name}.json"
+        model = resolve_asset(f"models/item/{name}.json")
         if not model.exists():
             add(failures, "registered_item_model", "registry", name)
 
@@ -269,7 +292,8 @@ def main():
         "failures": dict(sorted(failures.items())),
     }
     args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    with args.report.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(json.dumps(report, ensure_ascii=False, indent=2))
 
     print("=" * 64)
     print("PasterDream 资源闭包验证")

@@ -15,6 +15,7 @@ import com.pasterdream.pasterdreammod.util.PasterItemData;
 import com.pasterdream.pasterdreammod.util.WeaponWorkshopVariables;
 import com.pasterdream.pasterdreammod.util.WorkshopMultiBlock;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -24,6 +25,10 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.Blocks;
 
@@ -83,6 +88,7 @@ public final class PDWorkshopVerifyHooks {
 
         try {
             verifyWeaponWorkshopForge(level, player, base.offset(0, 0, 0), out);
+            verifyWorkshopEnchantMerge(level, player, base.offset(0, 0, 0), out);
             verifyWorkshopBlast(level, player, base.offset(2, 0, 0), out);
             verifyWorkshopAnvil(level, player, base.offset(0, 0, 2), out);
             verifyQuenchAndGrind(level, player, base.offset(2, 0, 2), out);
@@ -235,6 +241,61 @@ public final class PDWorkshopVerifyHooks {
         out.accept(detail(menu.stillValid(player), "精铸工坊菜单 stillValid", "ok"));
         menu.removed(player);
 
+        level.removeBlock(pos, false);
+    }
+
+    /**
+     * 五真剑合一配方：验证 5 把输入剑的附魔合并进产物（同名取最高等级），
+     * 而非被新建产物栈整体丢弃。
+     */
+    private static void verifyWorkshopEnchantMerge(ServerLevel level, ServerPlayer player,
+                                                   BlockPos pos, Consumer<Result> out) {
+        pos = surface(level, pos);
+        level.setBlock(pos, PDBlocks.WEAPON_WORKSHOP.get().defaultBlockState(), 3);
+        BlockEntity raw = level.getBlockEntity(pos);
+        if (!(raw instanceof WeaponWorkshopBlockEntity be)) {
+            out.accept(new Result(false, "附魔合并：精铸工坊 BE 已创建", "got=" + raw));
+            level.removeBlock(pos, false);
+            return;
+        }
+
+        var enchantments = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+        Holder<Enchantment> sharpness = enchantments.getOrThrow(Enchantments.SHARPNESS);
+        Holder<Enchantment> unbreaking = enchantments.getOrThrow(Enchantments.UNBREAKING);
+        Holder<Enchantment> fireAspect = enchantments.getOrThrow(Enchantments.FIRE_ASPECT);
+
+        ItemStack sword0 = new ItemStack(item("truest_moltengold_sword"));
+        sword0.enchant(sharpness, 3);
+        ItemStack sword1 = new ItemStack(item("true_grass_sword"));
+        sword1.enchant(sharpness, 5);
+        sword1.enchant(unbreaking, 2);
+        ItemStack sword3 = new ItemStack(item("true_desert_sword"));
+        sword3.enchant(sharpness, 4);
+        sword3.enchant(fireAspect, 1);
+
+        var handler = be.getItemHandler();
+        handler.setStackInSlot(0, sword0);
+        handler.setStackInSlot(1, sword1);
+        handler.setStackInSlot(2, new ItemStack(item("true_tide_sword")));
+        handler.setStackInSlot(3, sword3);
+        handler.setStackInSlot(4, new ItemStack(item("broken_hero_sword")));
+        handler.setStackInSlot(WeaponWorkshopBlockEntity.SLOT_RESULT, ItemStack.EMPTY);
+
+        WeaponWorkshopMenu menu = new WeaponWorkshopMenu(9002, player.getInventory(), be);
+        menu.clickMenuButton(player, WeaponWorkshopMenu.BUTTON_FORGE);
+
+        ItemStack crafted = handler.getStackInSlot(WeaponWorkshopBlockEntity.SLOT_RESULT);
+        boolean isEmbryo = crafted.is(item("terrasword_embryo"));
+        ItemEnchantments result = EnchantmentHelper.getEnchantmentsForCrafting(crafted);
+        int sharp = result.getLevel(sharpness);
+        int unb = result.getLevel(unbreaking);
+        int fire = result.getLevel(fireAspect);
+        out.accept(detail(isEmbryo && sharp == 5 && unb == 2 && fire == 1,
+                "五真剑合一：附魔合并（同名取最高等级）",
+                "embryo=" + isEmbryo + " sharpness=" + sharp + " unbreaking=" + unb
+                        + " fireAspect=" + fire));
+
+        menu.removed(player);
         level.removeBlock(pos, false);
     }
 

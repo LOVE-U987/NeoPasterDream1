@@ -228,8 +228,9 @@ public class DesertHeroTombBlock extends BaseEntityBlock {
             if (player.getMainHandItem().getItem() == PDItemsTools.DESERT_SWORD.get()) {
                 W4DataBlockEntity.putDoubleAt(level, pos, "number", 4);
                 chat(player, "请君收下吧：此名为『沉荆门』朔漠");
-                ItemStack trueSword = new ItemStack(PDItemsTools.TRUE_DESERT_SWORD.get());
-                trueSword.setCount(1);
+                // 保留旧剑的全部数据组件（附魔、自定义名称、工坊强化、耐久）
+                ItemStack trueSword = player.getMainHandItem()
+                        .transmuteCopy(PDItemsTools.TRUE_DESERT_SWORD.get(), 1);
                 player.setItemInHand(InteractionHand.MAIN_HAND, trueSword);
                 player.getInventory().setChanged();
             } else {
