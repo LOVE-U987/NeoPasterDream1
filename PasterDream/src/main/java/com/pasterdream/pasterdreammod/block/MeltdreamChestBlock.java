@@ -7,6 +7,8 @@ import com.pasterdream.pasterdreammod.api.doll.DollAPI;
 import com.pasterdream.pasterdreammod.api.doll.DollResult;
 import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyAPI;
 import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyConfigRegistry;
+import com.pasterdream.pasterdreammod.config.MeltdreamChestLootConfig;
+import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
@@ -14,11 +16,11 @@ import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -81,20 +83,14 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
     /** 各品质等级的动画播放时长（tick），用于调度弹出阶段 */
     public static final int[] ANIMATION_DURATIONS = {0, 70, 90, 110};
 
-    /** 普通品质战利品表 */
-    private static final ResourceKey<LootTable> COMMON_LOOT_TABLE = ResourceKey.create(
-            Registries.LOOT_TABLE,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "chests/meltdream_common"));
-
-    /** 稀有品质战利品表 */
-    private static final ResourceKey<LootTable> RARE_LOOT_TABLE = ResourceKey.create(
-            Registries.LOOT_TABLE,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "chests/meltdream_rare"));
-
-    /** 传说品质战利品表 */
-    private static final ResourceKey<LootTable> LEGENDARY_LOOT_TABLE = ResourceKey.create(
-            Registries.LOOT_TABLE,
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "chests/meltdream_legendary"));
+    /** 染梦世界战利品表（隐藏默认，可由数据包覆盖） */
+    private static final ResourceKey<LootTable> LOOT_TABLE_DYEDREAM =
+            ResourceKey.create(Registries.LOOT_TABLE,
+                    ResourceLocation.fromNamespaceAndPath("pasterdream", "chests/loots_meltdream_chest_0"));
+    /** 风之旅途 / 灯影世界战利品表（隐藏默认，可由数据包覆盖） */
+    private static final ResourceKey<LootTable> LOOT_TABLE_DREAM_OTHER =
+            ResourceKey.create(Registries.LOOT_TABLE,
+                    ResourceLocation.fromNamespaceAndPath("pasterdream", "chests/loots_meltdream_chest_1"));
 
     private static final VoxelShape SHAPE_NORTH = Block.box(1, 0, 1, 15, 14, 15);
     private static final VoxelShape SHAPE_EAST = Block.box(1, 0, 1, 15, 14, 15);
@@ -200,11 +196,11 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
      * 右键点击融梦水晶箱时的完整流程：
      * <ol>
      *   <li>检查玩家冷却（每人独立）</li>
-     *   <li>随机决定品质（普通50%/稀有30%/传说20%）</li>
-     *   <li>向箱子填入 8 个随机战利品 + 最后 1 个融梦水晶</li>
+     *   <li>随机决定品质（普通50%/稀有30%/传说20%），仅用于动画/音效与附加档位</li>
+     *   <li>按解析优先级填充战利品（默认原版战利品表；自定义开关开启时走配置池）</li>
      *   <li>播放对应品质的音效</li>
      *   <li>设置方块 animation 属性 → GeckoLib 播放开启动画</li>
-     *   <li>记录该玩家的冷却时间（1 分钟）</li>
+     *   <li>记录该玩家的冷却时间</li>
      *   <li>状态机由 {@link MeltdreamChestBlockEntity#serverTick} 接管</li>
      * </ol>
      */
@@ -228,11 +224,11 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
             return InteractionResult.CONSUME;
         }
 
-        // 2. 随机决定品质
+        // 2. 随机决定品质（仅决定动画/音效，以及自定义模式下的池档位）
         int quality = selectQuality(level.random);
 
-        // 3. 填入物品（混合模式：唱片硬编码 + JSON 战利品表）
-        fillItemsWithLootTable(chest.getItemHandler(), level, pos, player, quality);
+        // 3. 填入战利品（默认走原版战利品表；自定义开关开启时走配置池）
+        populateLoot(chest.getItemHandler(), (ServerLevel) level, pos, player, quality);
 
         // 4. 播放音效
         SoundEvent sound = quality == 3 ? PDSounds.MELTDREAM_CHEST.get() : PDSounds.MELTDREAM_CHEST_0.get();
@@ -295,85 +291,199 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
     }
 
     /**
-     * 向存货中填入战利品 —— 混合模式：唱片硬编码 + JSON 战利品表
+     * 向存货中填入战利品 —— 根据品质决定掉落策略
      * <ul>
-     *   <li>唱片掉落使用 {@link #rollDisc} 硬编码逻辑（优先玩家未拥有的）</li>
-     *   <li>玩偶掉落使用 {@link #rollDoll} 硬编码逻辑（优先玩家未拥有的）</li>
-     *   <li>其余物品从对应品质的 JSON 战利品表（meltdream_common/rare/legendary）生成</li>
+     *   <li>普通品质 (1)：8 个随机食物，第 9 格空（不放水晶）</li>
+     *   <li>稀有品质 (2)：第 1 格唱片 + 第 2~7 格随机稀有材料，第 9 格空（不放水晶），50% 概率额外掉一个玩偶</li>
+     *   <li>传说品质 (3)：前 8 格随机传说物品（其中 1 格替换为玩偶），第 9 格固定 1 个融梦水晶碎片</li>
      * </ul>
      *
      * @param handler 存货处理器（9 格）
-     * @param level   箱子所在世界
-     * @param pos     箱子位置
-     * @param player  打开宝箱的玩家（用于判断唱片/玩偶拥有情况）
+     * @param pool    物品池数组
+     * @param random  随机数源
+     * @param player  打开宝箱的玩家（用于判断唱片拥有情况）
      * @param quality 品质等级（1=普通, 2=稀有, 3=传说）
      */
-    private static void fillItemsWithLootTable(ItemStackHandler handler, Level level, BlockPos pos, Player player, int quality) {
-        var random = level.random;
-        ResourceKey<LootTable> lootTable = switch (quality) {
-            case 2 -> RARE_LOOT_TABLE;
-            case 3 -> LEGENDARY_LOOT_TABLE;
-            default -> COMMON_LOOT_TABLE;
-        };
-
+    private static void fillItems(ItemStackHandler handler, MeltdreamChestLootConfig.LootEntry[] pool, RandomSource random, Player player, int quality) {
         if (quality == 3) {
-            // 传说品质：第 9 格固定 1 个融梦水晶碎片，前 8 格从传说战利品表生成
-            List<ItemStack> lootItems = generateFromLootTable(level, lootTable, pos, random);
-            for (int i = 0; i < Math.min(8, lootItems.size()); i++) {
-                handler.setStackInSlot(i, lootItems.get(i).copy());
+            // 传说品质：第 9 格固定 1 个融梦水晶碎片（弹出时生成水晶实体），前 8 格掉落传说稀有度物品
+            for (int i = 0; i < 8; i++) {
+                handler.setStackInSlot(i, rollFromPool(pool, random));
             }
             handler.setStackInSlot(8, new ItemStack(PDItems.MELTDREAM_CRYSTAL_0.get()));
-            // 额外：将前 8 格中的随机 1 格替换为玩偶
-            if (!lootItems.isEmpty()) {
-                int dollSlot = random.nextInt(8);
-                handler.setStackInSlot(dollSlot, rollDoll(player, random));
-            }
+            // 额外：将前 8 格中的随机 1 格替换为玩偶（优先玩家未拥有的）
+            int dollSlot = random.nextInt(8);
+            handler.setStackInSlot(dollSlot, rollDoll(player, random));
         } else if (quality == 1) {
-            // 普通品质：全部从普通战利品表生成
-            List<ItemStack> lootItems = generateFromLootTable(level, lootTable, pos, random);
-            for (int i = 0; i < Math.min(8, lootItems.size()); i++) {
-                handler.setStackInSlot(i, lootItems.get(i).copy());
+            // 普通品质：8 个随机食物，不放融梦水晶碎片
+            for (int i = 0; i < 8; i++) {
+                handler.setStackInSlot(i, rollFromPool(pool, random));
             }
             handler.setStackInSlot(8, ItemStack.EMPTY);
         } else {
-            // 稀有品质：第 1 格唱片 + 第 2~7 格从稀有战利品表生成
+            // 稀有品质：第 1 格唱片 + 第 2~7 格随机稀有材料，不放融梦水晶碎片
             handler.setStackInSlot(0, rollDisc(player, random));
-            List<ItemStack> lootItems = generateFromLootTable(level, lootTable, pos, random);
-            for (int i = 0; i < Math.min(7, lootItems.size()); i++) {
-                handler.setStackInSlot(i + 1, lootItems.get(i).copy());
+            for (int i = 1; i < 8; i++) {
+                handler.setStackInSlot(i, rollFromPool(pool, random));
             }
             handler.setStackInSlot(8, ItemStack.EMPTY);
-            // 额外：稀有品质有 50% 概率额外掉落一个玩偶
-            if (random.nextFloat() < 0.5f && !lootItems.isEmpty()) {
-                int slot = 1 + random.nextInt(7);
+            // 额外：稀有品质有 50% 概率额外掉落一个玩偶（优先玩家未拥有的）
+            if (random.nextFloat() < 0.5f) {
+                int slot = 1 + random.nextInt(8);
                 handler.setStackInSlot(slot, rollDoll(player, random));
             }
         }
     }
 
+    // ==================== 默认路径：原版战利品表 ====================
+
     /**
-     * 从 JSON 战利品表生成随机物品列表
-     * <p>
-     * 使用 NeoForge 战利品表 API 加载指定 ID 的战利品表，使用箱子战利品参数上下文
-     * 生成随机物品。回退策略：服务端不可用时返回空列表。
+     * 按解析优先级填充战利品：
+     * <ol>
+     *   <li>自定义开关开启：解析玩家配置池（逐条容错，空则回退隐藏默认池）</li>
+     *   <li>否则梦境维度：取原版战利品表，命中则基础填充 + 品质附加</li>
+     *   <li>非梦境维度 / 表缺失或无效：回退隐藏默认池</li>
+     * </ol>
      *
-     * @param level     箱子所在世界
-     * @param tableKey  战利品表键（如 {@link #COMMON_LOOT_TABLE}）
-     * @param pos       箱子位置，作为战利品上下文的 ORIGIN
-     * @param random    随机数源
-     * @return 生成的物品列表
+     * @param handler 存货处理器
+     * @param level   服务端世界
+     * @param pos     方块位置
+     * @param player  开箱玩家
+     * @param quality 品质（1=普通, 2=稀有, 3=传说）
      */
-    private static List<ItemStack> generateFromLootTable(Level level, ResourceKey<LootTable> tableKey, BlockPos pos, RandomSource random) {
-        if (!(level instanceof ServerLevel serverLevel)) {
-            return List.of();
+    private static void populateLoot(ItemStackHandler handler, ServerLevel level, BlockPos pos, Player player, int quality) {
+        if (PDCommonConfig.MELTDREAM_CHEST_CUSTOM_LOOT_ENABLED.get()) {
+            MeltdreamChestLootConfig.LootEntry[] pool = switch (quality) {
+                case 2 -> getRareLoot();
+                case 3 -> getLegendaryLoot();
+                default -> getCommonLoot();
+            };
+            fillItems(handler, pool, level.random, player, quality);
+            return;
         }
-        LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(tableKey);
-        // 三个品质表均声明 "type": "minecraft:chest"，须按 CHEST 参数集提供其必需的 ORIGIN。
-        // 注意：CHEST 只允许 ORIGIN(必需) 与 THIS_ENTITY(可选)，传入 BLOCK_STATE 会抛 IllegalArgumentException
-        LootParams params = new LootParams.Builder(serverLevel)
+        ResourceKey<LootTable> key = dimensionLootTable(level);
+        if (key != null) {
+            LootTable table = level.getServer().reloadableRegistries().getLootTable(key);
+            if (table != null && table != LootTable.EMPTY) {
+                int baseCount = fillFromLootTable(handler, table, level, pos, player);
+                applyQualityExtras(handler, level.random, player, quality, baseCount);
+                return;
+            }
+            PasterDreamMod.LOGGER.warn("[MeltdreamChest] 战利品表缺失或无效：{}，回退内置默认池", key.location());
+        }
+        fillItems(handler, MeltdreamChestLootConfig.getFallbackLoot(quality), level.random, player, quality);
+    }
+
+    /**
+     * 按维度选择战利品表：染梦 → {@code _0}；风旅/灯影 → {@code _1}；其它维度 → null（走隐藏默认池）。
+     *
+     * @param level 服务端世界
+     * @return 战利品表键；非梦境维度返回 null
+     */
+    @Nullable
+    private static ResourceKey<LootTable> dimensionLootTable(ServerLevel level) {
+        if (PDDimensions.isDyedreamWorld(level)) {
+            return LOOT_TABLE_DYEDREAM;
+        }
+        if (PDDimensions.isWindJourneyWorld(level) || PDDimensions.isLampShadowWorld(level)) {
+            return LOOT_TABLE_DREAM_OTHER;
+        }
+        return null;
+    }
+
+    /**
+     * 从战利品表顺序填入 0..n-1 槽，并清空其余槽位；预留 slot 8 供品质附加使用。
+     *
+     * @param handler 存货处理器
+     * @param table   战利品表
+     * @param level   服务端世界
+     * @param pos     方块位置
+     * @param player  开箱玩家
+     * @return 填入的基础物品件数（0~8）
+     */
+    private static int fillFromLootTable(ItemStackHandler handler, LootTable table, ServerLevel level, BlockPos pos, Player player) {
+        LootParams params = new LootParams.Builder(level)
                 .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
+                .withLuck(player.getLuck())
+                .withParameter(LootContextParams.THIS_ENTITY, player)
                 .create(LootContextParamSets.CHEST);
-        return lootTable.getRandomItems(params);
+        List<ItemStack> base = new ArrayList<>();
+        for (ItemStack stack : table.getRandomItems(params)) {
+            if (!stack.isEmpty()) {
+                base.add(stack);
+            }
+        }
+        int n = Math.min(base.size(), 8);
+        if (base.size() > 8) {
+            PasterDreamMod.LOGGER.warn("[MeltdreamChest] 战利品表产出 {} 件，超过 8 件已截断", base.size());
+        }
+        for (int i = 0; i < n; i++) {
+            handler.setStackInSlot(i, base.get(i));
+        }
+        for (int i = n; i < 9; i++) {
+            handler.setStackInSlot(i, ItemStack.EMPTY);
+        }
+        return n;
+    }
+
+    /**
+     * 在战利品表基础掉落之上叠加移植版附加内容（唱片/玩偶/水晶/纪念品）。
+     * <p>传说档：玩偶仅在基础件数 ≥2 时替换某个基础槽（保留至少一件），否则放空槽；
+     * slot 8 固定融梦水晶碎片且最后写入。</p>
+     *
+     * @param handler 存货处理器
+     * @param random  随机数源
+     * @param player  开箱玩家
+     * @param quality 品质（1=普通, 2=稀有, 3=传说）
+     * @param n       基础物品件数（0~8）
+     */
+    private static void applyQualityExtras(ItemStackHandler handler, RandomSource random, Player player, int quality, int n) {
+        if (quality == 3) {
+            if (n >= 2) {
+                handler.setStackInSlot(random.nextInt(n), rollDoll(player, random));
+            } else {
+                int slot = firstEmptySlot(handler);
+                if (slot >= 0) {
+                    handler.setStackInSlot(slot, rollDoll(player, random));
+                }
+            }
+            handler.setStackInSlot(8, new ItemStack(PDItems.MELTDREAM_CRYSTAL_0.get()));
+        } else if (quality == 2) {
+            if (n > 0) {
+                for (int i = n - 1; i >= 0; i--) {
+                    handler.setStackInSlot(i + 1, handler.getStackInSlot(i));
+                }
+            }
+            handler.setStackInSlot(0, rollDisc(player, random));
+            if (random.nextFloat() < 0.5f) {
+                int slot = firstEmptySlot(handler);
+                if (slot >= 0) {
+                    handler.setStackInSlot(slot, rollDoll(player, random));
+                }
+            }
+        }
+        if (quality >= 2 && random.nextFloat() < 0.10f) {
+            int slot = firstEmptySlot(handler);
+            if (slot >= 0) {
+                Item memento = random.nextBoolean() ? PDItems.MEMENTO_ITEM_03.get() : PDItems.MEMENTO_ITEM_08.get();
+                handler.setStackInSlot(slot, new ItemStack(memento));
+            }
+        }
+    }
+
+    /**
+     * 查找首个空槽位。
+     *
+     * @param handler 存货处理器
+     * @return 首个空槽下标；无空槽返回 -1
+     */
+    private static int firstEmptySlot(ItemStackHandler handler) {
+        for (int i = 0; i < handler.getSlots(); i++) {
+            if (handler.getStackInSlot(i).isEmpty()) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**
@@ -446,6 +556,57 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
             dolls.add(result.item().get());
         }
         return dolls;
+    }
+
+    // ==================== 刻调度（已移除 — 由 BlockEntity.serverTick 接管） ====================
+
+    /**
+     * 获取普通品质物品池 —— 从 {@link MeltdreamChestLootConfig} 读取（懒加载与回退逻辑内聚在配置类）。
+     * <p>普通品质战利品默认只掉落各种简单食物。</p>
+     *
+     * @return 普通品质物品池数组
+     */
+    private static MeltdreamChestLootConfig.LootEntry[] getCommonLoot() {
+        return MeltdreamChestLootConfig.getCommonLoot();
+    }
+
+    /**
+     * 获取稀有品质物品池 —— 染梦高级材料与中级装备（懒加载）。
+     *
+     * @return 稀有品质物品池数组
+     */
+    private static MeltdreamChestLootConfig.LootEntry[] getRareLoot() {
+        return MeltdreamChestLootConfig.getRareLoot();
+    }
+
+    /**
+     * 获取传说品质物品池 —— 染梦维度顶级装备与稀有材料（懒加载）。
+     *
+     * @return 传说品质物品池数组
+     */
+    private static MeltdreamChestLootConfig.LootEntry[] getLegendaryLoot() {
+        return MeltdreamChestLootConfig.getLegendaryLoot();
+    }
+
+    /**
+     * 从一个物品池中按权重随机抽取一个物品
+     *
+     * @param pool   物品池
+     * @param random 随机数源
+     * @return 选中的物品（副本）
+     */
+    private static ItemStack rollFromPool(MeltdreamChestLootConfig.LootEntry[] pool, net.minecraft.util.RandomSource random) {
+        int totalWeight = 0;
+        for (MeltdreamChestLootConfig.LootEntry entry : pool) totalWeight += entry.weight();
+        int roll = random.nextInt(totalWeight);
+        int cumulative = 0;
+        for (MeltdreamChestLootConfig.LootEntry entry : pool) {
+            cumulative += entry.weight();
+            if (roll < cumulative) {
+                return entry.stack().copy();
+            }
+        }
+        return pool[0].stack().copy();
     }
 
     // ==================== 方块破坏时掉落物品 ====================

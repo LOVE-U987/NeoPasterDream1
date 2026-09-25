@@ -286,6 +286,16 @@ public class PDConfigScreen extends Screen {
         // ==================== 附属模组系统设置（动态，仅安装时显示） ====================
         idx = buildAddonEntries(idx);
 
+        // ==================== Meltdream Chest (1 开关 + 3 物品池) ====================
+        allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.MELTDREAM_CHEST_CUSTOM_LOOT_ENABLED,
+                ConfigCategory.MELTDREAM_CHEST, idx++));
+        allEntries.add(new ConfigEntry.ListEntry(PDCommonConfig.MELTDREAM_CHEST_COMMON_LOOT,
+                ConfigCategory.MELTDREAM_CHEST, idx++, "meltdream_chest_common_loot"));
+        allEntries.add(new ConfigEntry.ListEntry(PDCommonConfig.MELTDREAM_CHEST_RARE_LOOT,
+                ConfigCategory.MELTDREAM_CHEST, idx++, "meltdream_chest_rare_loot"));
+        allEntries.add(new ConfigEntry.ListEntry(PDCommonConfig.MELTDREAM_CHEST_LEGENDARY_LOOT,
+                ConfigCategory.MELTDREAM_CHEST, idx++, "meltdream_chest_legendary_loot"));
+
         // ==================== Debug (4 items) ====================
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.ENABLE_DEBUG_LOG, ConfigCategory.DEBUG, idx++));
         allEntries.add(new ConfigEntry.BooleanEntry(PDCommonConfig.ENABLE_API_DEBUG_LOG, ConfigCategory.DEBUG, idx++));
