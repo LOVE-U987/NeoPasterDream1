@@ -29,7 +29,7 @@ public class CloudBubbleGenerator implements ICustomDecorationGenerator {
         int seaLevel = level.getSeaLevel();
         int waterSurfaceY = Math.max(surfaceY, seaLevel);
 
-        int centerY = waterSurfaceY + 25 + random.nextInt(20);
+        int centerY = waterSurfaceY + 45 + random.nextInt(25);
         int radius = 5 + random.nextInt(6);
         int innerRadius = Math.max(2, radius - 2);
         boolean placedAny = false;
