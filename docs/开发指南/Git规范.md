@@ -16,13 +16,13 @@
 
 | 类型 | 说明 | 示例 |
 |------|------|------|
-| `feat` | 新功能 | `feat(api): add BiomeShading API` |
-| `fix` | Bug 修复 | `fix(item): correct dyedream bud nugget drops` |
-| `docs` | 文档更新 | `docs(code & docs): update AGENTS.md` |
-| `style` | 代码格式 (不影响运行) | `style(registry): fix indentation in PDBlocks` |
-| `refactor` | 重构 | `refactor(entity): extract TeleportationService` |
-| `test` | 增加测试 | `test(api): add BlockAPI unit tests` |
-| `chore` | 构建/辅助工具变动 | `chore(tools): add verify_resource_closure.py` |
+| `feat` | 新功能 | `feat(api): 添加 BiomeShading API` |
+| `fix` | Bug 修复 | `fix(item): 修正染梦芽孢碎块掉落` |
+| `docs` | 文档更新 | `docs(code & docs): 更新 AGENTS.md` |
+| `style` | 代码格式 (不影响运行) | `style(registry): 修正 PDBlocks 缩进` |
+| `refactor` | 重构 | `refactor(entity): 提取 TeleportationService` |
+| `test` | 增加测试 | `test(api): 添加 BlockAPI 单元测试` |
+| `chore` | 构建/辅助工具变动 | `chore(tools): 添加 verify_resource_closure.py` |
 
 ### 范围 (可选)
 
@@ -46,19 +46,19 @@
 
 ```bash
 # 新功能
-git commit -m "feat(api): add BiomeShading API for data-driven biome fog colors"
+git commit -m "feat(api): 添加 BiomeShading API 以支持数据驱动的生物群系雾颜色"
 
 # Bug 修复
-git commit -m "fix(item): make dyedream bud nugget drops scale with bud size and fortune"
+git commit -m "fix(item): 使染梦芽孢碎块掉落随体积与时运缩放"
 
 # 文档更新
-git commit -m "docs(code & docs): disable fillHang for cloud fall and update Issue-#11 tracker"
+git commit -m "docs(code & docs): 关闭云瀑的 fillHang 并更新 Issue-#11 追踪"
 
 # 重构
-git commit -m "refactor(worldgen): rework bud generation logic"
+git commit -m "refactor(worldgen): 重写芽孢生成逻辑"
 
 # 多范围
-git commit -m "fix & (worldgen): adjust the generation logic and visual effects of the dyedream_river"
+git commit -m "fix & (worldgen): 调整染梦河的生成逻辑与视觉效果"
 ```
 
 ---
@@ -129,7 +129,7 @@ git checkout -b feature/your-username/my-feature
 
 # 提交更改
 git add .
-git commit -m "feat(scope): your commit message"
+git commit -m "feat(scope): 你的提交信息"
 ```
 
 ### 3. 推送到远程仓库
@@ -185,7 +185,7 @@ git push origin feature/your-username/my-feature
 
 ### 基本要求
 
-1. **语言**: 使用英文
+1. **语言**: 使用中文（类型与范围 token 保持英文小写）
 2. **长度**: 简洁明了,不超过 72 字符
 3. **格式**: `类型(范围): 内容`
 4. **内容**: 描述变更内容,不包含代码
@@ -194,14 +194,14 @@ git push origin feature/your-username/my-feature
 
 ```bash
 # 好 ✅
-feat(api): add BiomeShading API for data-driven biome fog colors
-fix(item): make dyedream bud nugget drops scale with bud size
-docs(code & docs): update AGENTS.md with new conventions
+feat(api): 添加 BiomeShading API 以支持数据驱动的生物群系雾颜色
+fix(item): 使染梦芽孢碎块掉落随体积与时运缩放
+docs(code & docs): 更新 AGENTS.md 中的新约定
 
 # 坏 ❌
-update code
-fix bug
-add new feature
+更新代码
+修复 bug
+添加新功能
 ```
 
 ---
@@ -253,7 +253,7 @@ git push origin feature/your-username/my-feature
 ```bash
 # 解决冲突后
 git add .
-git commit -m "fix: resolve merge conflict"
+git commit -m "fix: 解决合并冲突"
 ```
 
 ---

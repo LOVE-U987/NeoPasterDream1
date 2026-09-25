@@ -104,6 +104,10 @@ docs/username/update-readme
 类型(范围): 内容
 ```
 
+### 语言
+
+提交信息正文使用中文，类型与范围 token 保持英文小写。
+
 ### 类型
 
 - `feat` - 新功能
@@ -133,9 +137,9 @@ docs/username/update-readme
 ### 示例
 
 ```
-fix(model): correct dyedream_hanging_vine item and drop form
-fix(code & docs): disable fillHang for cloud fall and update Issue-#11 tracker
-fix(refactor): reduce the formation of ice_crystal_spike
+fix(model): 修正染梦悬挂藤的物品与掉落形态
+fix(code & docs): 关闭云瀑的 fillHang 并更新 Issue-#11 追踪
+fix(refactor): 减少冰晶锥的生成
 ```
 
 ## 代码风格规范

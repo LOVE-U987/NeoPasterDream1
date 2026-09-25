@@ -101,13 +101,13 @@ NeoPasterDream1/
 
 ## Git 提交信息规范
 
-格式 `类型(范围): 内容`,使用英文,简洁明了:
+格式 `类型(范围): 内容`,使用中文,简洁明了:
 
 - **类型**: `feat` / `fix` / `docs` / `style` / `refactor` / `test` / `chore`
 - **范围**(可选): `api` / `block` / `entity` / `item` / `model` / `render` / `registry` / `client` / `server` / `worldgen` / `code & docs`
 
 ```
-feat(api): add BiomeShading API for data-driven biome fog colors
+feat(api): 添加 BiomeShading API 以支持数据驱动的生物群系雾颜色
 ```
 
 详见 [docs/开发指南/Git规范.md](docs/开发指南/Git规范.md)。
