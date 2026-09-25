@@ -1,6 +1,12 @@
 {
   "variants": {
-    "": {
+    "age=0": {
+      "model": "pasterdream:block/windmoor_hanging_vine"
+    },
+    "age=1": {
+      "model": "pasterdream:block/windmoor_hanging_vine"
+    },
+    "age=2": {
       "model": "pasterdream:block/windmoor_hanging_vine"
     }
   }

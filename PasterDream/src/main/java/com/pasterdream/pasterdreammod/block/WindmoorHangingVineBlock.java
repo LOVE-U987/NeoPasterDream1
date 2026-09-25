@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -34,8 +33,6 @@ public class WindmoorHangingVineBlock extends Block implements BonemealableBlock
 
     /** 生长阶段（0=初始, 1=可生长, 2=成熟） */
     public static final IntegerProperty AGE = IntegerProperty.create("age", 0, 2);
-    /** 是否暂时抑制生长（防止链式触发） */
-    private static final BooleanProperty SUPPRESSED = BooleanProperty.create("suppressed");
 
     /** 生长概率（随机刻每 tick） */
     private static final float GROW_CHANCE = 0.05f;
@@ -47,14 +44,12 @@ public class WindmoorHangingVineBlock extends Block implements BonemealableBlock
      */
     public WindmoorHangingVineBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any()
-                .setValue(AGE, 0)
-                .setValue(SUPPRESSED, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(AGE, 0));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(AGE, SUPPRESSED);
+        builder.add(AGE);
     }
 
     // ==================== 放置条件 ====================
@@ -147,7 +142,6 @@ public class WindmoorHangingVineBlock extends Block implements BonemealableBlock
      */
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, net.minecraft.util.RandomSource random) {
-        if (state.getValue(SUPPRESSED)) return;
         if (random.nextFloat() < GROW_CHANCE) {
             tryGrowDown(level, pos, state);
         }

@@ -57,16 +57,26 @@
 *   **修改**（`lang/zh_cn.json`、`lang/en_us.json`）：新增 13 个生物群系翻译键（`biome.pasterdream.*`：染梦系 9 个 + 风旅系 4 个），并新增 `block.pasterdream.windmoor_leaves` 与 `block.pasterdream.windmoor_hanging_vine`
 *   **修改**（`pd_porting_manifest.json`）：两处 `windmoor_leaves_2` 替换为 `windmoor_hanging_vine`
 
-### 遗留项（建议后续清理）
+### 修复：树叶合并后的死引用、孤立资源与死状态清理
 
-*   `assets/pasterdream/blockstates/windmoor_leaves_0.json`、`windmoor_leaves_1.json` 与 `models/item/windmoor_leaves_0.json`、`windmoor_leaves_1.json` 在方块删除后已无引用（`models/block/` 下的同名模型仍被加权 blockstate 引用，须保留）
-*   语言文件中 `block.pasterdream.windmoor_leaves_0`、`windmoor_leaves_1` 键残留，指向已删除的方块
-*   `WindmoorHangingVineBlock` 的 `SUPPRESSED` 属性已注册且被 `randomTick` 读取，但 `tryGrowDown()` 从未写入它，实际不生效
+*   **修复**（`PasterDream` `pd_porting_manifest.json`）：清单中残留的 `windmoor_leaves_0` / `windmoor_leaves_1` 条目合并为 `windmoor_leaves`（两处），并使 `windmoor_hanging_vine` / `windmoor_leaves` 回归字母序
+*   **修复**（`lang/zh_cn.json`、`lang/en_us.json`）：删除指向已移除方块的 `block.pasterdream.windmoor_leaves_0` / `windmoor_leaves_1` 死键
+*   **删除**（孤立资源，4 个）：`blockstates/windmoor_leaves_0.json`、`blockstates/windmoor_leaves_1.json`、`models/item/windmoor_leaves_0.json`、`models/item/windmoor_leaves_1.json`——对应方块/物品已不存在；`models/block/windmoor_leaves_0|1.json` 仍被加权 blockstate 引用，保留
+*   **修复**（`PasterDream` `block/WindmoorHangingVineBlock.java`）：删除从未被写入的 `SUPPRESSED` 状态属性（含字段、默认状态、`createBlockStateDefinition`、`randomTick` 判断与 `BooleanProperty` 导入）——该属性只被读取、不被写入，恒为 `false`，属死状态，删除后同时消除了每个方块状态多出的无效变体
+*   **修复**（`assets/pasterdream/blockstates/windmoor_hanging_vine.json`）：变体键由 `""` 改为按 `age=0` / `age=1` / `age=2` 显式枚举——方块具备 `AGE` 属性时必须枚举，写法与同目录 `windmoor_log.json` 一致
+*   **确认（无代码变更）**：原模组 `windmoor_leaves_2` 为 `noCollission()` 且 `getVisualShape` 为空的隐形可穿行方块，合并后该可穿行行为不再存在。经检索，仓库内 5 个 `.nbt` 结构（含 HEAD 版本，`git grep -a` 二进制无命中）与全部数据/世界生成文件均未引用 `windmoor_leaves_0/1/2`，该变体在现有数据中零使用，故按「有碰撞」合并保留
+
+### 遗留项（未处理）
+
+*   `PasterDream/tag_audit.json` 为一次性审计快照，仍列有 `windmoor_leaves_0/1/2` 的 tag 与 loot 条目，需重新生成
+*   `tools/check_chest_loot_ids.py` 的物品池为硬编码旧值（其中 `bobo_plume` 为笔误，真实 ID 为 `boboji_plume`）且未跟随本次迁移改为解析 JSON 战利品表，当前会误报
 *   战利品上下文使用 `LootContextParamSets.CHEST`（不含 `BlockPos` 与玩家信息），后续若需按位置或玩家做条件判断需扩展参数集
 
 ### 验证
 
-*   `.\gradlew :PasterDream:compileJava` BUILD SUCCESSFUL（五模块任务均为最新，编译产物与当前工作区一致）
+*   `.\gradlew :PasterDream:compileJava` BUILD SUCCESSFUL（`PasterDream` / `PasterDreamAPI` 任务实际执行，无错误；仅有既存的「使用了已过时 API」编译注记）
+*   `python tools/verify_resource_closure.py` PASS：JSON/模型/纹理/粒子/音效/注册资源/loot 闭包全部完整（3851 JSON、238 方块、669 物品）
+*   三个新增 chest 战利品表逐条核对：`meltdream_common`(17) / `meltdream_rare`(16) / `meltdream_legendary`(11) 条目均具备 `item.pasterdream.*` 或 `block.pasterdream.*` 语言键
 *   待游戏内实测：融梦箱三品质掉落分布、悬挂藤生长与骨粉催长、风之旅维度地表、粒子观感、5 个 NBT 结构变化
 
 ---
