@@ -180,7 +180,7 @@ public class OceanDecorations {
                     BlockPredicate.matchesTag(BlockTags.REPLACEABLE)
                 ))
                 .biome("pasterdream:dyedream_cold_ocean")
-                .rarity(2)
+                .rarity(10)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("floating_ice_mound");
     }
@@ -220,7 +220,7 @@ public class OceanDecorations {
                 ))
                 .checkHang(false)
                 .biome("pasterdream:dyedream_cold_ocean")
-                .rarity(36)
+                .rarity(40)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("ice_arch");
     }
@@ -254,7 +254,7 @@ public class OceanDecorations {
                 ))
                 .checkHang(false)
                 .biome("pasterdream:dyedream_cold_ocean")
-                .rarity(105)
+                .rarity(80)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("ice_arch_ruined");
     }
@@ -286,7 +286,7 @@ public class OceanDecorations {
                 ))
                 .checkHang(true)
                 .biome("pasterdream:dyedream_cold_ocean")
-                .rarity(3)
+                .rarity(15)
                 .step(GenerationStep.Decoration.VEGETAL_DECORATION)
                 .register("dyedream_ice_pillar");
     }

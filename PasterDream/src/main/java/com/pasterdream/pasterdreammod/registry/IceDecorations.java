@@ -97,7 +97,7 @@ public class IceDecorations {
                 ))
                 .checkHang(false)
                 .biome("pasterdream:dyedream_frozen_tundra")
-                .rarity(5)
+                .rarity(30)
                 .step(GenerationStep.Decoration.TOP_LAYER_MODIFICATION)
                 .register("ice_gate");
     }
