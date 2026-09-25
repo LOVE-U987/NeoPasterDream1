@@ -184,6 +184,7 @@ public class DollBuilder {
         DollConfig config = new DollConfig(name, modelLoc, textureLoc, holdingLoc, canHoldItems, modelType);
         DollResult result = new DollResult(name, block, item, blockEntityType, config);
         DollAPI.putRegistration(name, result);
+        DollAPI.registerLootItem(item);
         return result;
     }
 
@@ -274,6 +275,7 @@ public class DollBuilder {
         DollConfig config = new DollConfig(name, modelLoc, textureLoc, holdingLoc, canHoldItems, modelType);
         DollResult result = new DollResult(name, deferredBlock, deferredItem, deferredBe, config);
         DollAPI.putRegistration(name, result);
+        DollAPI.registerLootItem(deferredItem);
 
         // 非本模组命名空间时，自动生成 KubeJS 资源目录下的 blockstates 与 item model，
         // 避免方块/物品因缺少 JSON 而显示紫黑占位。

@@ -5,6 +5,8 @@ import com.pasterdream.pasterdreammod.block.DollBlock;
 import com.pasterdream.pasterdreammod.block.entity.DollBlockEntity;
 import com.pasterdream.pasterdreammod.item.DollDisplayItem;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -12,12 +14,18 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * 玩偶注册 API 门面（Facade）
@@ -40,6 +48,9 @@ public final class DollAPI {
     private static final Map<String, DollResult> REGISTRATIONS = new HashMap<>();
     private static final IdentityHashMap<Block, DollConfig> CONFIG_CACHE = new IdentityHashMap<>();
     private static final IdentityHashMap<Block, DeferredHolder<BlockEntityType<?>, BlockEntityType<DollBlockEntity>>> BE_CACHE = new IdentityHashMap<>();
+
+    /** 可掉落战利品池（懒解析 Supplier，避免注册阶段 item.get() 未就绪） */
+    private static final LinkedHashSet<Supplier<? extends Item>> LOOT_ITEMS = new LinkedHashSet<>();
 
     private DollAPI() {
         throw new UnsupportedOperationException("DollAPI 是纯静态门面类，不可实例化");
@@ -185,6 +196,42 @@ public final class DollAPI {
      */
     public static Optional<BlockEntityType<DollBlockEntity>> getBlockEntityType(Block block) {
         return getBlockEntityHolder(block).map(DeferredHolder::get);
+    }
+
+    /**
+     * 将玩偶物品登记进"可掉落战利品池"。
+     * <p>支持 DeferredItem/Supplier：注册阶段仅保存 supplier，开箱时懒解析。</p>
+     *
+     * @param supplier 玩偶物品供应器
+     */
+    public static void registerLootItem(Supplier<? extends Item> supplier) {
+        if (supplier != null) {
+            LOOT_ITEMS.add(supplier);
+        }
+    }
+
+    /**
+     * 获取可掉落玩偶物品列表（懒解析，过滤未注册/空气/重复项）。
+     *
+     * @return 玩偶物品列表
+     */
+    public static List<Item> getLootItems() {
+        List<Item> items = new ArrayList<>();
+        Set<Item> seen = new HashSet<>();
+        for (Supplier<? extends Item> supplier : LOOT_ITEMS) {
+            Item item;
+            try {
+                item = supplier.get();
+            } catch (Exception e) {
+                PasterDreamMod.LOGGER.warn("[DollAPI] 玩偶战利品物品解析失败，跳过：{}", e.toString());
+                continue;
+            }
+            if (item == null || item == Items.AIR || !seen.add(item)) {
+                continue;
+            }
+            items.add(item);
+        }
+        return items;
     }
 
     /**

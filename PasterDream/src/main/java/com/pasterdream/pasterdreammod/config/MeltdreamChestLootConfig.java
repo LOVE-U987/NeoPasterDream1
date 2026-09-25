@@ -11,21 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 融梦水晶箱战利品配置（物品池解析与默认值）。
+ * 融梦水晶箱战利品配置（玩家自定义物品池解析）。
  * <p>
- * 三个品质（普通/稀有/传说）的物品池均可由玩家在配置界面中自定义，
- * 配置项定义在 {@link PDCommonConfig}（PasterDream-Common.toml 的 "Meltdream Chest" 段）。
+ * 自定义开关关闭时，默认掉落由数据包战利品表提供（维度主表 / 兜底表）；
+ * 开关开启时使用玩家在配置界面（PasterDream-Common.toml 的 "Meltdream Chest" 段）填写的物品池，
+ * 逐条容错，留空或全部无效则由调用方回退兜底战利品表。
  * <p>
  * 条目格式（每行一个）：{@code <物品ID> [数量] [权重]}
  * <ul>
- *   <li>物品ID：注册 ID，如 {@code pasterdream:fried_egg} 或 {@code minecraft:diamond}；
+ *   <li>物品ID：注册 ID，如 {@code pasterdream:dyedream_ingot} 或 {@code minecraft:diamond}；
  *       无命名空间时优先按 {@code minecraft:} 解析，失败再尝试 {@code pasterdream:}</li>
  *   <li>数量：可选，默认 1，范围 1~64</li>
  *   <li>权重：可选，默认 1，范围 1~9999</li>
  * </ul>
  * 解析失败的条目会被跳过（输出警告日志，不影响其他条目）。
- * 自定义开关关闭时，默认掉落由原版战利品表提供；开关开启时使用玩家配置池，
- * 留空或全部无效则回退到隐藏的内置默认池（不出现在 toml/GUI，见 {@code DEFAULT_*} 常量）。
  *
  * @author PasterDream
  */
@@ -34,7 +33,7 @@ public final class MeltdreamChestLootConfig {
     private MeltdreamChestLootConfig() {
     }
 
-    /** 物品池条目：物品 + 权重（与 {@link com.pasterdream.pasterdreammod.block.MeltdreamChestBlock} 原有记录一致） */
+    /** 物品池条目：物品 + 权重 */
     public record LootEntry(ItemStack stack, int weight) {
     }
 
@@ -98,136 +97,25 @@ public final class MeltdreamChestLootConfig {
             "pasterdream:memento_item_08 1 8"
     );
 
-    // ==================== 隐藏内置默认物品池（不出现在 toml/GUI） ====================
-    // 按原版四池（材料/宝石/饰品/装备）重映射为三档；仅在开关开启且玩家池无效、
-    // 非梦境维度、或战利品表缺失/无效时作为兜底
-
-    /** 隐藏普通档兜底池：原版池1 材料 */
-    public static final List<String> DEFAULT_COMMON_LOOT = List.of(
-            "pasterdream:dyedream_ingot 1 10",
-            "pasterdream:dyedream_dust 2 40",
-            "pasterdream:titanium_nugget 4 30",
-            "pasterdream:dream_coin_1 1 10",
-            "pasterdream:titanium_ingot 1 20",
-            "pasterdream:pink_slimeball 4 40",
-            "pasterdream:dyedream_nugget 2 20"
-    );
-
-    /** 隐藏稀有档兜底池：原版池2 宝石 + 池3 饰品 */
-    public static final List<String> DEFAULT_RARE_LOOT = List.of(
-            "minecraft:diamond 1 30",
-            "minecraft:gold_ingot 3 30",
-            "pasterdream:dream_coin_0 2 20",
-            "pasterdream:titanium_ingot 1 10",
-            "minecraft:emerald 2 20",
-            "pasterdream:moltengold_ingot 1 10",
-            "pasterdream:charged_amethyst 1 10",
-            "minecraft:netherite_scrap 1 10",
-            "pasterdream:pineapple_love_sea 1 10",
-            "pasterdream:embryo_ring 1 10",
-            "pasterdream:embryo_necklace 1 10",
-            "pasterdream:health_0_necklace 1 10",
-            "pasterdream:rabbit_0_necklace 1 10",
-            "pasterdream:fire_0_necklace 1 10",
-            "pasterdream:red_dew_0_ring 1 10",
-            "pasterdream:red_dew_1_ring 1 10",
-            "pasterdream:embryo_belt 1 10",
-            "pasterdream:traveler_belt 1 10",
-            "pasterdream:garland 1 20",
-            "pasterdream:nature_belt 1 20"
-    );
-
-    /** 隐藏传说档兜底池：原版池4 装备 + 顶级材料/饰品 */
-    public static final List<String> DEFAULT_LEGENDARY_LOOT = List.of(
-            "pasterdream:dyedream_armor_helmet 1 10",
-            "pasterdream:dyedream_armor_chestplate 1 10",
-            "pasterdream:dyedream_armor_leggings 1 10",
-            "pasterdream:dyedream_armor_boots 1 10",
-            "pasterdream:dyedream_sword 1 10",
-            "pasterdream:dyedream_axe 1 10",
-            "pasterdream:dyedream_shovel 1 10",
-            "pasterdream:dyedream_hoe 1 10",
-            "pasterdream:dyedream_pickaxe 1 10",
-            "pasterdream:meltdream_crystal_0 1 20",
-            "pasterdream:shadow_erosion_sword 1 18",
-            "pasterdream:allkinds_ring 1 15",
-            "pasterdream:boboji_plume 1 15",
-            "pasterdream:dyedream_upgrade 1 12",
-            "pasterdream:titanium_upgrade 1 12",
-            "pasterdream:sculk_upgrade 1 10",
-            "pasterdream:dyedream_teleport_crystal 2 10",
-            "pasterdream:sweetdream_disc 1 8",
-            "pasterdream:dyedream_world_disc 1 8",
-            "pasterdream:memento_item_03 1 8",
-            "pasterdream:memento_item_08 1 8"
-    );
-
-    // ==================== 公共入口 ====================
+    // ==================== 玩家自定义池 ====================
 
     /**
-     * 获取普通品质物品池。
-     * <p>自定义开关开启且物品池有效时使用自定义池，否则回退内置默认池。</p>
-     *
-     * @return 普通品质物品池数组（纯食物）
-     */
-    public static LootEntry[] getCommonLoot() {
-        return resolvePool(PDCommonConfig.MELTDREAM_CHEST_COMMON_LOOT.get(), DEFAULT_COMMON_LOOT);
-    }
-
-    /**
-     * 获取稀有品质物品池。
-     *
-     * @return 稀有品质物品池数组
-     */
-    public static LootEntry[] getRareLoot() {
-        return resolvePool(PDCommonConfig.MELTDREAM_CHEST_RARE_LOOT.get(), DEFAULT_RARE_LOOT);
-    }
-
-    /**
-     * 获取传说品质物品池。
-     *
-     * @return 传说品质物品池数组
-     */
-    public static LootEntry[] getLegendaryLoot() {
-        return resolvePool(PDCommonConfig.MELTDREAM_CHEST_LEGENDARY_LOOT.get(), DEFAULT_LEGENDARY_LOOT);
-    }
-
-    /**
-     * 获取指定品质的隐藏内置兜底物品池（忽略自定义开关与玩家配置）。
-     * <p>用于非梦境维度、战利品表缺失/无效、或开关开启但玩家池全部无效时的回退。</p>
+     * 解析指定品质的玩家自定义物品池（逐条容错，跳过无效条目）。
+     * <p>返回空数组表示未配置或全部无效，由调用方决定回退兜底战利品表。</p>
      *
      * @param quality 品质（1=普通, 2=稀有, 3=传说）
-     * @return 对应档位的隐藏默认物品池数组
+     * @return 解析后的物品池数组（可能为空）
      */
-    public static LootEntry[] getFallbackLoot(int quality) {
-        return switch (quality) {
-            case 2 -> parsePool(DEFAULT_RARE_LOOT);
-            case 3 -> parsePool(DEFAULT_LEGENDARY_LOOT);
-            default -> parsePool(DEFAULT_COMMON_LOOT);
+    public static LootEntry[] getCustomLoot(int quality) {
+        List<String> specs = switch (quality) {
+            case 2 -> PDCommonConfig.MELTDREAM_CHEST_RARE_LOOT.get();
+            case 3 -> PDCommonConfig.MELTDREAM_CHEST_LEGENDARY_LOOT.get();
+            default -> PDCommonConfig.MELTDREAM_CHEST_COMMON_LOOT.get();
         };
+        return parsePool(specs);
     }
 
     // ==================== 内部解析 ====================
-
-    /**
-     * 解析物品池：优先使用玩家自定义条目，无效/空时回退默认池。
-     *
-     * @param customSpecs 玩家自定义条目（来自配置）
-     * @param defaultSpecs 内置默认条目
-     * @return 解析后的物品池数组（保证至少 1 条）
-     */
-    private static LootEntry[] resolvePool(List<String> customSpecs, List<String> defaultSpecs) {
-        boolean customEnabled = PDCommonConfig.MELTDREAM_CHEST_CUSTOM_LOOT_ENABLED.get();
-        LootEntry[] custom = customEnabled ? parsePool(customSpecs) : new LootEntry[0];
-        if (custom.length > 0) {
-            return custom;
-        }
-        if (customEnabled) {
-            // 玩家开了自定义但全部条目无效 → 回退默认并提示
-            PasterDreamMod.LOGGER.warn("[MeltdreamChestLootConfig] 自定义物品池全部条目无效，回退到内置默认物品池");
-        }
-        return parsePool(defaultSpecs);
-    }
 
     /**
      * 将配置字符串列表解析为物品池数组，跳过无效条目。
@@ -237,6 +125,9 @@ public final class MeltdreamChestLootConfig {
      */
     private static LootEntry[] parsePool(List<String> specs) {
         List<LootEntry> entries = new ArrayList<>();
+        if (specs == null) {
+            return entries.toArray(new LootEntry[0]);
+        }
         for (String spec : specs) {
             if (spec == null || spec.isBlank()) continue;
             LootEntry entry = parseSpec(spec.trim());

@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.block.entity;
 import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyConfigRegistry;
 import com.pasterdream.pasterdreammod.block.MeltdreamChestBlock;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
+import com.pasterdream.pasterdreammod.registry.PDItemTags;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import com.pasterdream.pasterdreammod.api.util.StructureInventoryHelper;
 import net.minecraft.core.BlockPos;
@@ -48,7 +49,7 @@ import java.util.UUID;
  * - animation = 3：传说品质开启动画
  * <p>
  * 物品弹出机制：动画播放完毕后，逐 tick 将容器内物品弹出为 ItemEntity；
- * 最后一个槽位（下标 8）若为 meltdream_crystal_0 则生成水晶实体，否则以掉落物弹出。
+ * 最后一个槽位（下标 8）若为水晶标签（{@code pasterdream:meltdream_chest_crystal}）物品则生成水晶实体，否则以掉落物弹出。
  */
 public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEntity {
 
@@ -292,8 +293,8 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
             return true;
         }
 
-        // 第 9 格（下标 8）若为 meltdream_crystal_0，生成水晶实体（原版 MeltdreamChestPr4）；否则物品掉落
-        if (slot == 8 && stack.is(com.pasterdream.pasterdreammod.registry.PDItems.MELTDREAM_CRYSTAL_0.get())) {
+        // 第 9 格（下标 8）若为水晶标签物品，生成水晶实体（原版 MeltdreamChestPr4）；否则物品掉落
+        if (slot == 8 && stack.is(PDItemTags.MELTDREAM_CHEST_CRYSTAL)) {
             spawnCrystalEntity(level, pos);
         } else {
             spawnItemEntity(level, pos, stack);

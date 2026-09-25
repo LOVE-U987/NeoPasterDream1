@@ -16,6 +16,19 @@
 *   **有意差异**：不再复刻原版「品质决定部分维度取表分支」，统一按维度取表；品质仅决定动画/音效与附加内容；非梦境维度走隐藏默认池。
 *   **同步**：`lang/zh_cn.json`、`lang/en_us.json` 四个 tooltip 文案；`docs/设计/融梦水晶箱战利品.md` 记录三层解析与槽位算法。
 
+### 重构：融梦水晶箱战利品物品集合数据化解耦
+
+*   **背景**：上一轮修复后，水晶碎片/纪念品/唱片/玩偶/3 兜底池仍硬编码在 `MeltdreamChestBlock` 与 `MeltdreamChestLootConfig`，无法通过数据包/API 扩展。
+*   **水晶/纪念品**（`PasterDream` 资源，新）：新增附加战利品表 `loots_meltdream_chest_bonus_{common,rare,legendary}.json`；水晶必出（传说）、纪念品约 10%（沿用现值）。空条目沿用仓库惯例 `pasterdream:tabitem_1` + `set_count 0`。
+*   **唱片**（`PasterDream` `registry/PDItemTags.java` + 资源，新）：新增物品标签 `pasterdream:music_discs`（13 张），`rollDisc` 按标签取样并保留"优先未拥有"；不可复用 `minecraft:music_discs`（含全部原版唱片）。
+*   **玩偶**（`PasterDream` `api/doll/DollAPI.java`）：新增 `registerLootItem`/`getLootItems` 轻量战利品登记，`DollBuilder` 自动登记；新增 `registry/PDDollLootRegistrations.java` 登记旧 5 玩偶，动态玩偶自动入池；删除 `getAllDolls` 硬编码。
+*   **兜底池**（`PasterDream` 资源，新）：新增 `loots_meltdream_chest_fallback_{common,rare,legendary}.json`（rolls 8/7/8），删除 `MeltdreamChestLootConfig.DEFAULT_*`/`getFallbackLoot`/`resolvePool`；保留 `LEGACY_V1_*` 供迁移。
+*   **统一附加**（`PasterDream` `block/MeltdreamChestBlock.java`）：`fillBaseFromPool`/`fillFromLootTable` + 单一 `applyQualityExtras`（唱片/玩偶/附加表/水晶归位），三路行为对齐；空池/空标签/缺失表均容忍并告警。
+*   **实体判定**（`PasterDream` `block/entity/MeltdreamChestBlockEntity.java`）：slot 8 水晶判定改用标签 `pasterdream:meltdream_chest_crystal`。
+*   **有意差异**：配置池路径统一附加后也获得约 10% 纪念品；稀有档玩偶由"随机覆盖可能吞件"改为"追加不吞件"；兜底由硬编码池改为数据表（行为保留、机制变更）。
+*   **同步**：`docs/设计/融梦水晶箱战利品.md` 更新为数据驱动口径。
+*   **验证**：`:PasterDream:compileJava` BUILD SUCCESSFUL；新增战利品表/标签 JSON 解析合法。
+
 ### 新增：风泊悬挂藤 windmoor_hanging_vine
 
 *   **新增**（`PasterDream` `block/WindmoorHangingVineBlock.java`，新，232 行）：悬挂植被，`canSurvive` 要求上方为 `LOGS` / `PLANKS` / `LEAVES` / `STONE_ORE_REPLACEABLES` / `DEEPSLATE_ORE_REPLACEABLES`，否则 `neighborChanged` 中移除自身

@@ -137,6 +137,8 @@ public class PasterDreamMod {
         // 初始化 PDItems 门面时会同步加载笔记分区；禁止先 bootstrap 分区，
         // 否则 PDItems 的 DREAMNOTES_* re-export 会在分区初始化途中读到 null。
         PDItems.ITEMS.register(modEventBus);
+        // 登记旧玩偶/雕像进 DollAPI 可掉落战利品池（供融梦水晶箱玩偶附加掉落，去除硬编码）
+        com.pasterdream.pasterdreammod.registry.PDDollLootRegistrations.register();
         com.pasterdream.pasterdreammod.registry.PDMenusDreamnotes.bootstrap();
         com.pasterdream.pasterdreammod.data.BluePrintLoader.bootstrap();
 
