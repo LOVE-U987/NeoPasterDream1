@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.registry.blocks;
 import com.pasterdream.pasterdreammod.block.ArmorWreckBlock4Block;
 import com.pasterdream.pasterdreammod.block.FireflyNestBlock;
 import com.pasterdream.pasterdreammod.block.SmallStoneSpiritBlock;
+import com.pasterdream.pasterdreammod.block.WindmoorHangingVineBlock;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -129,17 +130,25 @@ public class PDBlocksWindJourney {
                 .isRedstoneConductor((bs, br, bp) -> false);
     }
 
-    /** 风泊树叶 0 号（原版为普通方块而非 LeavesBlock，无凋落逻辑，保持一致） */
-    public static final DeferredBlock<Block> WINDMOOR_LEAVES_0 = PDBlocks.BLOCKS.registerBlock("windmoor_leaves_0",
+    /**
+     * 风泊树叶（合并版）—— 使用 blockstate 随机模型实现纹理随机化
+     * <p>
+     * 替代原有两个独立方块（windmoor_leaves_0/1）的纹理随机化方案。
+     * blockstate 使用加权随机 variant 数组自动选择两个纹理之一。
+     */
+    public static final DeferredBlock<Block> WINDMOOR_LEAVES = PDBlocks.BLOCKS.registerBlock("windmoor_leaves",
             Block::new, windmoorLeavesProps());
 
-    /** 风泊树叶 1 号 */
-    public static final DeferredBlock<Block> WINDMOOR_LEAVES_1 = PDBlocks.BLOCKS.registerBlock("windmoor_leaves_1",
-            Block::new, windmoorLeavesProps());
-
-    /** 风泊树叶 2 号（无碰撞体积，可穿行） */
-    public static final DeferredBlock<Block> WINDMOOR_LEAVES_2 = PDBlocks.BLOCKS.registerBlock("windmoor_leaves_2",
-            Block::new, windmoorLeavesProps().noCollission());
+    /** 风泊悬挂藤 —— 垂钓植被，向下生长 fig_vine，支持骨粉催长 */
+    public static final DeferredBlock<WindmoorHangingVineBlock> WINDMOOR_HANGING_VINE = PDBlocks.BLOCKS.registerBlock("windmoor_hanging_vine",
+            WindmoorHangingVineBlock::new, BlockBehaviour.Properties.of()
+                    .ignitedByLava()
+                    .sound(SoundType.GRASS)
+                    .strength(0.01f, 0.1f)
+                    .noCollission()
+                    .randomTicks()
+                    .noOcclusion()
+                    .isRedstoneConductor((bs, br, bp) -> false));
 
     // ==================== 锈黑金属族（3 项） ====================
 

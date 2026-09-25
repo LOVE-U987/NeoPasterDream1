@@ -65,6 +65,12 @@ public class DyedreamEnvironmentRenderer {
     private static final double DRIFT_SPEED = 0.0008;
     /** 水平漂移半径（方块） */
     private static final double DRIFT_RADIUS = 6.0;
+    /** 粒子生成中心前移距离（沿玩家视线方向，让粒子更多出现在前方视野内） */
+    private static final double FORWARD_OFFSET = 6.0;
+    /** 粒子水平生成范围（最小） */
+    private static final double SPAWN_RADIUS_MIN = 2.0;
+    /** 粒子水平生成范围（最大） */
+    private static final double SPAWN_RADIUS_MAX = 12.0;
 
     // ======================== 事件处理 ========================
 
@@ -127,8 +133,9 @@ public class DyedreamEnvironmentRenderer {
     /**
      * 生成梦幻孢子粒子（默认粉紫色系）
      * <p>
-     * 从玩家周围 4~16 方块范围内、头顶 3~8 格高度生成，
-     * 缓慢上浮并带有周期性水平漂移。
+     * 从玩家前方偏移中心周围 2~12 方块范围内、头顶 3~8 格高度生成，
+     * 使用玩家视线方向偏移生成中心，使粒子更多出现在前方视野中。
+     * 速度分量大幅降低以延长粒子在视野中的停留时间。
      *
      * @param mc         Minecraft 客户端实例
      * @param probability 每 tick 的生成概率（0.0 ~ 1.0）
@@ -143,19 +150,25 @@ public class DyedreamEnvironmentRenderer {
 
         SimpleParticleType type = (SimpleParticleType) PDParticles.DREAM_SPORE.particleType();
 
+        // 计算沿玩家视线方向的偏移生成中心
+        double[] forward = getForwardSpawnCenter(mc);
+        double cx = forward[0] + driftX;
+        double cy = forward[1];
+        double cz = forward[2] + driftZ;
+
         int count = 1 + random.nextInt(2);
         for (int i = 0; i < count; i++) {
             double angle = random.nextDouble() * Math.PI * 2;
-            double dist = 4.0 + random.nextDouble() * 12.0;
+            double dist = SPAWN_RADIUS_MIN + random.nextDouble() * (SPAWN_RADIUS_MAX - SPAWN_RADIUS_MIN);
 
             mc.level.addParticle(
                     type,
-                    mc.player.getX() + driftX + Math.cos(angle) * dist,
-                    mc.player.getY() + 3.0 + random.nextDouble() * 5.0,
-                    mc.player.getZ() + driftZ + Math.sin(angle) * dist,
-                    (random.nextDouble() - 0.5) * 0.004,
-                    -0.003 - random.nextDouble() * 0.008,
-                    (random.nextDouble() - 0.5) * 0.004
+                    cx + Math.cos(angle) * dist,
+                    cy + 3.0 + random.nextDouble() * 5.0,
+                    cz + Math.sin(angle) * dist,
+                    (random.nextDouble() - 0.5) * 0.002,
+                    -0.002 - random.nextDouble() * 0.004,
+                    (random.nextDouble() - 0.5) * 0.002
             );
         }
     }
@@ -163,8 +176,7 @@ public class DyedreamEnvironmentRenderer {
     /**
      * 生成蘑菇平原变体孢子粒子（绿色/蓝色系）
      * <p>
-     * 从地面附近向上生成，使用与默认梦幻孢子相同的粒子类型，
-     * 但通过不同的运动参数模拟绿色/蓝色菌丝孢子的飘散效果。
+     * 从地面附近向前偏移区域内生成，速度分量减半以延长显示时长。
      *
      * @param mc         Minecraft 客户端实例
      * @param probability 每 tick 的生成概率
@@ -179,21 +191,25 @@ public class DyedreamEnvironmentRenderer {
 
         SimpleParticleType type = (SimpleParticleType) PDParticles.DREAM_SPORE.particleType();
 
+        // 计算沿玩家视线方向的偏移生成中心（贴近地面）
+        double[] forward = getForwardSpawnCenter(mc);
+        double cx = forward[0] + driftX;
+        double cz = forward[2] + driftZ;
         double playerFloorY = mc.player.getY() - 2.0;
 
         int count = 1 + random.nextInt(2);
         for (int i = 0; i < count; i++) {
             double angle = random.nextDouble() * Math.PI * 2;
-            double dist = 2.0 + random.nextDouble() * 14.0;
+            double dist = SPAWN_RADIUS_MIN + random.nextDouble() * (SPAWN_RADIUS_MAX - SPAWN_RADIUS_MIN);
 
             mc.level.addParticle(
                     type,
-                    mc.player.getX() + driftX + Math.cos(angle) * dist,
+                    cx + Math.cos(angle) * dist,
                     playerFloorY + 0.5 + random.nextDouble() * 4.0,
-                    mc.player.getZ() + driftZ + Math.sin(angle) * dist,
-                    (random.nextDouble() - 0.5) * 0.003,
-                    -0.005 - random.nextDouble() * 0.008,
-                    (random.nextDouble() - 0.5) * 0.003
+                    cz + Math.sin(angle) * dist,
+                    (random.nextDouble() - 0.5) * 0.002,
+                    -0.003 - random.nextDouble() * 0.004,
+                    (random.nextDouble() - 0.5) * 0.002
             );
         }
     }
@@ -201,7 +217,7 @@ public class DyedreamEnvironmentRenderer {
     /**
      * 生成水晶雪花粒子
      * <p>
-     * 从玩家上方 5~12 格高度生成，缓慢飘落，
+     * 从玩家前方上方 5~12 格高度生成，缓慢飘落，
      * 带有横向微风扰动，落地后自动消失。
      *
      * @param mc         Minecraft 客户端实例
@@ -217,19 +233,24 @@ public class DyedreamEnvironmentRenderer {
 
         SimpleParticleType type = (SimpleParticleType) PDParticles.CRYSTAL_SNOWFLAKE.particleType();
 
+        // 计算沿玩家视线方向的偏移生成中心
+        double[] forward = getForwardSpawnCenter(mc);
+        double cx = forward[0] + driftX;
+        double cz = forward[2] + driftZ;
+
         int count = 1 + random.nextInt(2);
         for (int i = 0; i < count; i++) {
             double angle = random.nextDouble() * Math.PI * 2;
-            double dist = 2.0 + random.nextDouble() * 16.0;
+            double dist = SPAWN_RADIUS_MIN + random.nextDouble() * (SPAWN_RADIUS_MAX - SPAWN_RADIUS_MIN);
 
             mc.level.addParticle(
                     type,
-                    mc.player.getX() + driftX + Math.cos(angle) * dist,
-                    mc.player.getY() + 5.0 + random.nextDouble() * 7.0,
-                    mc.player.getZ() + driftZ + Math.sin(angle) * dist,
-                    (random.nextDouble() - 0.5) * 0.003,
-                    -0.01 - random.nextDouble() * 0.015,
-                    (random.nextDouble() - 0.5) * 0.003
+                    cx + Math.cos(angle) * dist,
+                    forward[1] + 5.0 + random.nextDouble() * 7.0,
+                    cz + Math.sin(angle) * dist,
+                    (random.nextDouble() - 0.5) * 0.002,
+                    -0.005 - random.nextDouble() * 0.008,
+                    (random.nextDouble() - 0.5) * 0.002
             );
         }
     }
@@ -237,8 +258,7 @@ public class DyedreamEnvironmentRenderer {
     /**
      * 生成星尘粒子
      * <p>
-     * 从玩家周围大范围轻微上浮飘散，
-     * 尺寸极小但发光明显，产生星芒闪烁效果。
+     * 从玩家前方偏移区域生成，速度分量减半，延长显示时长。
      *
      * @param mc         Minecraft 客户端实例
      * @param probability 每 tick 的生成概率
@@ -253,21 +273,53 @@ public class DyedreamEnvironmentRenderer {
 
         SimpleParticleType type = (SimpleParticleType) PDParticles.STARDUST.particleType();
 
+        // 计算沿玩家视线方向的偏移生成中心
+        double[] forward = getForwardSpawnCenter(mc);
+        double cx = forward[0] + driftX;
+        double cy = forward[1];
+        double cz = forward[2] + driftZ;
+
         int count = 1 + random.nextInt(2);
         for (int i = 0; i < count; i++) {
             double angle = random.nextDouble() * Math.PI * 2;
-            double dist = 2.0 + random.nextDouble() * 16.0;
+            double dist = SPAWN_RADIUS_MIN + random.nextDouble() * (SPAWN_RADIUS_MAX - SPAWN_RADIUS_MIN);
 
             mc.level.addParticle(
                     type,
-                    mc.player.getX() + driftX + Math.cos(angle) * dist,
-                    mc.player.getY() + 1.0 + random.nextDouble() * 7.0,
-                    mc.player.getZ() + driftZ + Math.sin(angle) * dist,
-                    (random.nextDouble() - 0.5) * 0.004,
+                    cx + Math.cos(angle) * dist,
+                    cy + 1.0 + random.nextDouble() * 7.0,
+                    cz + Math.sin(angle) * dist,
+                    (random.nextDouble() - 0.5) * 0.002,
                     0.0,
-                    (random.nextDouble() - 0.5) * 0.004
+                    (random.nextDouble() - 0.5) * 0.002
             );
         }
+    }
+
+    /**
+     * 计算沿玩家视线方向的粒子生成中心偏移坐标
+     * <p>
+     * 使用玩家的偏航角（水平视线方向）将生成中心前移，
+     * 使粒子更多出现在前方视野内，避免视角转动时粒子飞向身后的现象。
+     *
+     * @param mc Minecraft 客户端实例
+     * @return [x, y, z] 生成中心坐标
+     */
+    private static double[] getForwardSpawnCenter(Minecraft mc) {
+        float yaw = mc.player.getYRot();
+        float pitch = mc.player.getXRot();
+        double radYaw = Math.toRadians(yaw);
+        double radPitch = Math.toRadians(pitch);
+        // 水平方向分量（忽略俯仰的垂直影响，保持粒子在玩家水平附近）
+        double forwardX = -Math.sin(radYaw) * FORWARD_OFFSET;
+        double forwardZ = Math.cos(radYaw) * FORWARD_OFFSET;
+        // 垂直方向：轻微俯仰补偿，但限制在合理范围内
+        double forwardY = -Math.sin(radPitch) * FORWARD_OFFSET * 0.3;
+        return new double[]{
+                mc.player.getX() + forwardX,
+                mc.player.getY() + forwardY,
+                mc.player.getZ() + forwardZ
+        };
     }
 
     // 工具类防止实例化

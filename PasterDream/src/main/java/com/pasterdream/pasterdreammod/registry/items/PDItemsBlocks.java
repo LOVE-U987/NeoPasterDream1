@@ -330,9 +330,8 @@ public class PDItemsBlocks {
     public static final DeferredItem<BlockItem> WINDMOOR_TRAPDOOR = PDItems.ITEMS.registerSimpleBlockItem("windmoor_trapdoor", PDBlocks.WINDMOOR_TRAPDOOR);
     public static final DeferredItem<BlockItem> WINDMOOR_PRESSURE_PLATE = PDItems.ITEMS.registerSimpleBlockItem("windmoor_pressure_plate", PDBlocks.WINDMOOR_PRESSURE_PLATE);
     public static final DeferredItem<BlockItem> WINDMOOR_BUTTON = PDItems.ITEMS.registerSimpleBlockItem("windmoor_button", PDBlocks.WINDMOOR_BUTTON);
-    public static final DeferredItem<BlockItem> WINDMOOR_LEAVES_0 = PDItems.ITEMS.registerSimpleBlockItem("windmoor_leaves_0", PDBlocks.WINDMOOR_LEAVES_0);
-    public static final DeferredItem<BlockItem> WINDMOOR_LEAVES_1 = PDItems.ITEMS.registerSimpleBlockItem("windmoor_leaves_1", PDBlocks.WINDMOOR_LEAVES_1);
-    public static final DeferredItem<BlockItem> WINDMOOR_LEAVES_2 = PDItems.ITEMS.registerSimpleBlockItem("windmoor_leaves_2", PDBlocks.WINDMOOR_LEAVES_2);
+    public static final DeferredItem<BlockItem> WINDMOOR_LEAVES = PDItems.ITEMS.registerSimpleBlockItem("windmoor_leaves", PDBlocks.WINDMOOR_LEAVES);
+    public static final DeferredItem<BlockItem> WINDMOOR_HANGING_VINE = PDItems.ITEMS.registerSimpleBlockItem("windmoor_hanging_vine", PDBlocks.WINDMOOR_HANGING_VINE);
 
     // --- 锈黑金属族 / 甲胄残骸族 / 弹射装置 / 风之旅地表 ---
     public static final DeferredItem<BlockItem> RUST_BLACK_METAL_BLOCK = PDItems.ITEMS.registerSimpleBlockItem("rust_black_metal_block", PDBlocks.RUST_BLACK_METAL_BLOCK);

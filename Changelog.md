@@ -1,6 +1,75 @@
 # PasterDream Changelog
 
 ---
+## v0.10.0 — 2026-09-25
+
+> 依据 `docs/版本开发总结-v.0.10.0/重构融梦宝箱战利品+新增风泊悬挂藤与叶块合并.md` 整理。
+
+### 重构：融梦水晶箱战利品改用原生 JSON 战利品表
+
+*   **背景**：旧方案由 `MeltdreamChestLootConfig` 硬编码物品池 + `PasterDream-Common.toml` 三个物品池配置项驱动掉落，与数据包生态割裂，且配置项需用 `instanceof List` validator 绕开 List 实现类不匹配隐患
+*   **新增**（`PasterDream` `data/pasterdream/loot_table/chests/`，新）：三个 `"type": "minecraft:chest"` 战利品表——
+    *   `meltdream_common.json`：rolls=2，set_count 1~3，17 个食物条目
+    *   `meltdream_rare.json`：rolls=5，set_count 1~2，16 个稀有材料/装备条目
+    *   `meltdream_legendary.json`：rolls=6（10 个传说条目）+ rolls=1 固定 1 个 `meltdream_crystal_0`
+    *   原 `MeltdreamChestLootConfig` 三套默认物品池数据已完整迁移至上述 JSON
+*   **新增**（`PasterDream` `block/MeltdreamChestBlock.java:84~99`）：`COMMON_LOOT_TABLE` / `RARE_LOOT_TABLE` / `LEGENDARY_LOOT_TABLE` 三个 `ResourceKey<LootTable>`（`pasterdream:chests/meltdream_*`）
+*   **重构**（同文件 `fillItems` → `fillItemsWithLootTable`）：品质路由由 `getCommonLoot/Rare/Legendary` 改为 `switch → lootTableId`；新增 `generateFromLootTable()`，经 `reloadableRegistries().getLootTable()` + `LootTable.getRandomItems()` 生成物品。参数集必须用 `LootContextParamSets.CHEST` 且只传 `ORIGIN`（箱子中心）——CHEST 仅接受 `ORIGIN`(必需) 与 `THIS_ENTITY`(可选)，误传 `BLOCK_STATE` 会抛 `IllegalArgumentException`
+*   **保留**：唱片（`rollDisc`）与玩偶（`rollDoll`）仍为硬编码逻辑、优先玩家未拥有；传说品质第 9 格固定融梦水晶碎片、稀有品质 50% 概率额外玩偶、每品质 8/7 格填充的行为不变
+*   **删除**（`PasterDream` `config/MeltdreamChestLootConfig.java`，整文件 225 行）
+*   **删除**（`PasterDream` `config/PDCommonConfig.java`）：`MELTDREAM_CHEST_CUSTOM_LOOT_ENABLED` 与三个物品池配置项；同步移除 `client/gui/config/ConfigCategory.java` 的 `MELTDREAM_CHEST` 枚举与 `client/gui/config/PDConfigScreen.java` 的 4 个配置 UI 条目
+*   **破坏性变更**：玩家无法再通过 TOML 自定义融梦箱掉落；旧 `PasterDream-Common.toml` 中该 section 变为未知配置项（可能触发纠正日志，需实测确认）
+
+### 新增：风泊悬挂藤 windmoor_hanging_vine
+
+*   **新增**（`PasterDream` `block/WindmoorHangingVineBlock.java`，新，232 行）：悬挂植被，`canSurvive` 要求上方为 `LOGS` / `PLANKS` / `LEAVES` / `STONE_ORE_REPLACEABLES` / `DEEPSLATE_ORE_REPLACEABLES`，否则 `neighborChanged` 中移除自身
+*   **状态**：`AGE`(0~2) 与 `SUPPRESSED`(防链式触发)；形状 `box(2, 0, 2, 14, 10, 14)`，无碰撞，`getVisualShape` 返回 `Shapes.empty()`
+*   **生长**：随机刻 5% 概率 `tryGrowDown()` 在下方空气格放置 `PDBlocks.FIG_VINE` 并推进 `AGE`；`countVineLength()` 限制单链最长 12 格（扫描上限 64）
+*   **骨粉**：`performBonemeal` 催长一格后按 60% 概率再长一格
+*   **新增**（`PasterDream` 资源，新）：`blockstates/windmoor_hanging_vine.json`、`models/block/windmoor_hanging_vine.json`（cross）、`models/item/windmoor_hanging_vine.json`、`loot_table/blocks/windmoor_hanging_vine.json`
+*   **注册**（`registry/blocks/PDBlocksWindJourney.java:142~151`）：`randomTicks()` + `noCollission()` + `noOcclusion()`；同步 `PDBlocks` / `PDItems` / `PDItemsBlocks` / `PDCreativeTabsWind` 门面与创造模式物品栏
+
+### 重构：风泊树叶三合一（windmoor_leaves_0/1/2 → windmoor_leaves）
+
+*   **重构**（`registry/blocks/PDBlocksWindJourney.java:133~140`）：删除 `WINDMOOR_LEAVES_0` / `_1` / `_2` 三个注册项，合并为单个 `windmoor_leaves`
+*   **新增**（`assets/pasterdream/blockstates/windmoor_leaves.json`，新）：`variants` 加权数组（各 `weight: 1`）随机选用 `block/windmoor_leaves_0` 与 `block/windmoor_leaves_1` 模型实现纹理随机化——故 `models/block/` 下同名模型与 `blockstates/windmoor_leaves_0/1.json` 得以保留
+*   **新增**（`models/item/windmoor_leaves.json`、`loot_table/blocks/windmoor_leaves.json`，新）
+*   **删除**：`blockstates/windmoor_leaves_2.json`、`models/block/windmoor_leaves_2.json`、`models/item/windmoor_leaves_2.json`、`loot_table/blocks/windmoor_leaves_0/1/2.json`
+*   **Tag 合并**：`data/minecraft/tags/block/leaves.json`、`data/minecraft/tags/item/leaves.json`、`data/c/tags/block/leaves.json`、`data/c/tags/item/leaves.json` 中的三个条目合并为 `pasterdream:windmoor_leaves`
+*   **⚠️ 行为差异**：旧 `windmoor_leaves_2` 为 `noCollission()` 可穿行方块，合并后所有风泊树叶统一使用 `windmoorLeavesProps()`，**可穿行变体消失**（需确认是否符合预期）
+*   **破坏性变更**：`windmoor_leaves_0/1/2` 的方块 ID 与 `BlockItem` 均不再存在，旧存档中的这些方块将丢失映射
+
+### 优化：染梦环境粒子前移生成与降速
+
+*   **修改**（`PasterDream` `client/DyedreamEnvironmentRenderer.java`）：新增常量 `FORWARD_OFFSET`(6.0)、`SPAWN_RADIUS_MIN`(2.0)、`SPAWN_RADIUS_MAX`(12.0)，新增 `getForwardSpawnCenter(Minecraft)` 按玩家偏航角/俯仰角计算前移生成中心（水平前移 6 格，俯仰按 0.3 系数轻微补偿）
+*   **修改**：梦幻孢子 / 蘑菇孢子 / 水晶雪花 / 星尘四类粒子由「以玩家为圆心、4~16 格」改为「以前移中心为圆心、水平 2~12 格」，避免转动视角时粒子出现在视野反方向
+*   **修改**：四类粒子的水平与垂直速度分量全部减半（如梦幻孢子 X 由 ±0.004 → ±0.002，Y 由 -0.003~-0.011 → -0.002~-0.006），延长粒子在视野中的停留时长
+
+### 新增：风之旅维度噪声设置
+
+*   **新增**（`PasterDream` `data/pasterdream/worldgen/noise_settings/wind_journey_world.json`，新，280 行）：`default_block` = `pasterdream:thick_cloud`，`noise.min_y` = 0、`noise.height` = 128、`island_noise_override` = true；`surface_rule` 为 sequence + 生物群系条件，`wind_journey_islands` 顶部铺 `cyan_moss_stone` 或水
+*   **更新**（二进制 NBT，5 个）：`lost_windknight_ruins.nbt`、`wind_island_0.nbt`、`wind_pond_0.nbt`、`windmill_lodge.nbt`、`windmoor_tree_0.nbt`（二进制差异无法静态评审，须游戏内实测）
+
+### 调整：标签与本地化
+
+*   **修改**（`data/pasterdream/tags/block/swayable_plants.json`）：新增 `fig_vine` 与 `windmoor_hanging_vine`（随风摆动）
+*   **修改**（`data/minecraft/tags/block/small_flowers.json`）：移除 4 个 `pinkagaric_0~3`，仅保留 `goldenrod`
+*   **修改**（`lang/zh_cn.json`、`lang/en_us.json`）：新增 13 个生物群系翻译键（`biome.pasterdream.*`：染梦系 9 个 + 风旅系 4 个），并新增 `block.pasterdream.windmoor_leaves` 与 `block.pasterdream.windmoor_hanging_vine`
+*   **修改**（`pd_porting_manifest.json`）：两处 `windmoor_leaves_2` 替换为 `windmoor_hanging_vine`
+
+### 遗留项（建议后续清理）
+
+*   `assets/pasterdream/blockstates/windmoor_leaves_0.json`、`windmoor_leaves_1.json` 与 `models/item/windmoor_leaves_0.json`、`windmoor_leaves_1.json` 在方块删除后已无引用（`models/block/` 下的同名模型仍被加权 blockstate 引用，须保留）
+*   语言文件中 `block.pasterdream.windmoor_leaves_0`、`windmoor_leaves_1` 键残留，指向已删除的方块
+*   `WindmoorHangingVineBlock` 的 `SUPPRESSED` 属性已注册且被 `randomTick` 读取，但 `tryGrowDown()` 从未写入它，实际不生效
+*   战利品上下文使用 `LootContextParamSets.CHEST`（不含 `BlockPos` 与玩家信息），后续若需按位置或玩家做条件判断需扩展参数集
+
+### 验证
+
+*   `.\gradlew :PasterDream:compileJava` BUILD SUCCESSFUL（五模块任务均为最新，编译产物与当前工作区一致）
+*   待游戏内实测：融梦箱三品质掉落分布、悬挂藤生长与骨粉催长、风之旅维度地表、粒子观感、5 个 NBT 结构变化
+
+---
 ## v0.9.6 — 2026-08-15
 
 ### 修复：配置日志刷屏死循环（PasterDream-Common.toml 无限纠正）

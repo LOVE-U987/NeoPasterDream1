@@ -467,9 +467,8 @@ public class PDBlocks {
     public static final DeferredBlock<?> WINDMOOR_TRAPDOOR = PDBlocksWindJourney.WINDMOOR_TRAPDOOR;
     public static final DeferredBlock<?> WINDMOOR_PRESSURE_PLATE = PDBlocksWindJourney.WINDMOOR_PRESSURE_PLATE;
     public static final DeferredBlock<?> WINDMOOR_BUTTON = PDBlocksWindJourney.WINDMOOR_BUTTON;
-    public static final DeferredBlock<?> WINDMOOR_LEAVES_0 = PDBlocksWindJourney.WINDMOOR_LEAVES_0;
-    public static final DeferredBlock<?> WINDMOOR_LEAVES_1 = PDBlocksWindJourney.WINDMOOR_LEAVES_1;
-    public static final DeferredBlock<?> WINDMOOR_LEAVES_2 = PDBlocksWindJourney.WINDMOOR_LEAVES_2;
+    public static final DeferredBlock<?> WINDMOOR_LEAVES = PDBlocksWindJourney.WINDMOOR_LEAVES;
+    public static final DeferredBlock<?> WINDMOOR_HANGING_VINE = PDBlocksWindJourney.WINDMOOR_HANGING_VINE;
 
     // --- PDBlocksWindJourney：锈黑金属族 / 甲胄残骸族 / 弹射装置 / 地表装饰 ---
     public static final DeferredBlock<?> RUST_BLACK_METAL_BLOCK = PDBlocksWindJourney.RUST_BLACK_METAL_BLOCK;

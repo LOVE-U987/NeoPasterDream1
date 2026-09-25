@@ -79,9 +79,8 @@ public class PDCreativeTabsWind {
                         output.accept(PDBlocks.WINDMOOR_TRAPDOOR.get());
                         output.accept(PDBlocks.WINDMOOR_PRESSURE_PLATE.get());
                         output.accept(PDBlocks.WINDMOOR_BUTTON.get());
-                        output.accept(PDBlocks.WINDMOOR_LEAVES_0.get());
-                        output.accept(PDBlocks.WINDMOOR_LEAVES_1.get());
-                        output.accept(PDBlocks.WINDMOOR_LEAVES_2.get());
+                        output.accept(PDBlocks.WINDMOOR_LEAVES.get());
+                        output.accept(PDBlocks.WINDMOOR_HANGING_VINE.get());
 
                         // 苍青岩系列
                         output.accept(PDBlocks.CYAN_STONE.get());

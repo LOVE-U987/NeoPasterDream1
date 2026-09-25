@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "pasterdream:block/windmoor_leaves_0"
+  }
+}

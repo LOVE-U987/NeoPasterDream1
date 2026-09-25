@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 2,
+      "entries": [
+        { "type": "minecraft:item", "name": "pasterdream:fried_egg", "weight": 30 },
+        { "type": "minecraft:item", "name": "pasterdream:candy_cane", "weight": 25 },
+        { "type": "minecraft:item", "name": "pasterdream:bubble_gum", "weight": 25 },
+        { "type": "minecraft:item", "name": "pasterdream:chocolate", "weight": 25 },
+        { "type": "minecraft:item", "name": "pasterdream:berry_buncake", "weight": 22 },
+        { "type": "minecraft:item", "name": "pasterdream:cream_buncake", "weight": 22 },
+        { "type": "minecraft:item", "name": "pasterdream:dyedream_popsicle", "weight": 22 },
+        { "type": "minecraft:item", "name": "pasterdream:gingerbread_man", "weight": 20 },
+        { "type": "minecraft:item", "name": "pasterdream:potato_buncake", "weight": 20 },
+        { "type": "minecraft:item", "name": "pasterdream:pumpkin_buncake", "weight": 20 },
+        { "type": "minecraft:item", "name": "pasterdream:jellyfish_jello", "weight": 18 },
+        { "type": "minecraft:item", "name": "pasterdream:ricecake", "weight": 16 },
+        { "type": "minecraft:item", "name": "pasterdream:swiss_roll", "weight": 16 },
+        { "type": "minecraft:item", "name": "pasterdream:bread_slice", "weight": 15 },
+        { "type": "minecraft:item", "name": "pasterdream:fig", "weight": 14 },
+        { "type": "minecraft:item", "name": "pasterdream:strawberry_heart", "weight": 12 },
+        { "type": "minecraft:item", "name": "pasterdream:wafer_biscuit", "weight": 10 }
+      ],
+      "functions": [
+        { "function": "minecraft:set_count", "count": { "min": 1, "max": 3 } }
+      ]
+    }
+  ]
+}

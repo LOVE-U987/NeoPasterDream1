@@ -789,9 +789,8 @@ public class PDItems {
     public static final DeferredItem<?> WINDMOOR_TRAPDOOR = PDItemsBlocks.WINDMOOR_TRAPDOOR;
     public static final DeferredItem<?> WINDMOOR_PRESSURE_PLATE = PDItemsBlocks.WINDMOOR_PRESSURE_PLATE;
     public static final DeferredItem<?> WINDMOOR_BUTTON = PDItemsBlocks.WINDMOOR_BUTTON;
-    public static final DeferredItem<?> WINDMOOR_LEAVES_0 = PDItemsBlocks.WINDMOOR_LEAVES_0;
-    public static final DeferredItem<?> WINDMOOR_LEAVES_1 = PDItemsBlocks.WINDMOOR_LEAVES_1;
-    public static final DeferredItem<?> WINDMOOR_LEAVES_2 = PDItemsBlocks.WINDMOOR_LEAVES_2;
+    public static final DeferredItem<?> WINDMOOR_LEAVES = PDItemsBlocks.WINDMOOR_LEAVES;
+    public static final DeferredItem<?> WINDMOOR_HANGING_VINE = PDItemsBlocks.WINDMOOR_HANGING_VINE;
 
     // --- 波次C：锈黑金属族 / 甲胄残骸族 / 弹射装置 / 风之旅地表 ---
     public static final DeferredItem<?> RUST_BLACK_METAL_BLOCK = PDItemsBlocks.RUST_BLACK_METAL_BLOCK;

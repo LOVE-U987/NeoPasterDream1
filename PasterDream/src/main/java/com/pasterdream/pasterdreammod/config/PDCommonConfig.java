@@ -71,17 +71,6 @@ public class PDCommonConfig {
     /** 星空枕(memento_item_08)在天空上可创建的连线星体数量上限（默认 8） */
     public static final ModConfigSpec.ConfigValue<Integer> SKYLINK_MAX_STARS;
 
-    // ==================== Meltdream Chest ====================
-
-    /** 融梦水晶箱自定义战利品总开关（默认 false，关闭时使用内置默认物品池） */
-    public static final ModConfigSpec.ConfigValue<Boolean> MELTDREAM_CHEST_CUSTOM_LOOT_ENABLED;
-    /** 融梦水晶箱普通品质物品池（每行一个条目：物品ID [数量] [权重]） */
-    public static final ModConfigSpec.ConfigValue<List<String>> MELTDREAM_CHEST_COMMON_LOOT;
-    /** 融梦水晶箱稀有品质物品池 */
-    public static final ModConfigSpec.ConfigValue<List<String>> MELTDREAM_CHEST_RARE_LOOT;
-    /** 融梦水晶箱传说品质物品池 */
-    public static final ModConfigSpec.ConfigValue<List<String>> MELTDREAM_CHEST_LEGENDARY_LOOT;
-
     // ==================== Ban ====================
 
     /** 关闭并禁止所有翅膀的功能（默认 false） */
@@ -189,28 +178,6 @@ public class PDCommonConfig {
         SKYLINK_MAX_STARS = builder
                 .comment("星空枕(memento_item_08)在天空上可创建的连线星体数量上限 默认：8 范围：1~64")
                 .defineInRange("skylink max stars", 8, 1, 64);
-        builder.pop();
-
-        builder.push("Meltdream Chest");
-        MELTDREAM_CHEST_CUSTOM_LOOT_ENABLED = builder
-                .comment("融梦水晶箱自定义战利品总开关（开启后按下方三个品质的物品池生成掉落；关闭使用内置默认池） 默认：false")
-                .define("meltdream chest custom loot enabled", false);
-        // 注意：三个物品池必须传显式 validator（o instanceof List）。define(String,T) 的默认 validator
-        // 要求值运行时类为默认值运行时类的子类——List.of() 生成不可变 ImmutableCollections$ListN，
-        // 而 TOML 读回的是 ArrayList，类不匹配会触发 "Incorrect key ... was corrected" 无限纠正循环
-        // （FileWatcher 每次纠正写盘 → 重载 → 再纠正，日志刷屏数万行）。
-        MELTDREAM_CHEST_COMMON_LOOT = builder
-                .comment("融梦水晶箱普通品质物品池（每行一个条目，格式：物品ID 数量 权重，如 \"pasterdream:fried_egg 2 30\") 默认：内置普通物品池")
-                .define("meltdream chest common loot", MeltdreamChestLootConfig.DEFAULT_COMMON_LOOT,
-                        o -> o instanceof List);
-        MELTDREAM_CHEST_RARE_LOOT = builder
-                .comment("融梦水晶箱稀有品质物品池（格式同上） 默认：内置稀有物品池")
-                .define("meltdream chest rare loot", MeltdreamChestLootConfig.DEFAULT_RARE_LOOT,
-                        o -> o instanceof List);
-        MELTDREAM_CHEST_LEGENDARY_LOOT = builder
-                .comment("融梦水晶箱传说品质物品池（格式同上） 默认：内置传说物品池")
-                .define("meltdream chest legendary loot", MeltdreamChestLootConfig.DEFAULT_LEGENDARY_LOOT,
-                        o -> o instanceof List);
         builder.pop();
 
         builder.push("Ban");

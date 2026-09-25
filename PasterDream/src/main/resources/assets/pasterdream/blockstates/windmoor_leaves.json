@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "pasterdream:block/windmoor_leaves_0",
+        "weight": 1
+      },
+      {
+        "model": "pasterdream:block/windmoor_leaves_1",
+        "weight": 1
+      }
+    ]
+  }
+}
