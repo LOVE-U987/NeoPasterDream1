@@ -65,85 +65,80 @@ git commit -m "fix & (worldgen): 调整染梦河的生成逻辑与视觉效果"
 
 ## 分支策略
 
-### 分支命名
+项目采用 `main` 稳定线 + 个人开发主分支 + 架构变动分支的模型:
 
-使用 `类型/负责人/主题` 格式:
+| 分支 | 命名 | 角色 | 生命周期 |
+|------|------|------|----------|
+| `main` | 固定 | 稳定/发布线;禁止在 main 上直接开发提交 | 永久 |
+| 个人开发主分支 | `<GitHub用户名>`(如 `momonyako`) | 个人日常开发 | 长期 |
+| 架构变动分支 | `milestone/<name>` | 跨模块大改,与 main 并行 | 阶段性 |
 
-```bash
-# 格式
-类型/GitHub用户名/简短描述
+### 命名规则
 
-# 示例
-feature/momonyako/dream-meter
-fix/phantomdaze/loot-table
-refactor/username/cleanup-api
-docs/username/update-readme
-```
+- 个人主分支:直接使用 GitHub 用户名,全部小写(如 `momonyako`、`phantomdaze`)。
+- 架构变动分支:`milestone/<name>`,`name` 为简短主题,小写加连字符(如 `milestone/api-refactor`)。
 
-### 分支类型
 
-| 类型 | 用途 | 示例 |
-|------|------|------|
-| `feature` | 新功能 | `feature/momonyako/dream-meter` |
-| `fix` | Bug 修复 | `fix/phantomdaze/loot-table` |
-| `refactor` | 代码重构 | `refactor/username/cleanup-api` |
-| `docs` | 文档更新 | `docs/username/update-readme` |
-| `test` | 测试相关 | `test/username/add-unit-tests` |
+### 分支流向
 
-### 分支命名规范
+- 个人主分支:`<用户名>` → `main`(经 PR 或维护者本地 merge)
+- 架构变动分支:`main` → `milestone/<name>` → `main`
+- 禁止在 `main` 上直接开发提交。代码须先存在于个人分支、`milestone/*` 或贡献分支,再集成到 `main`。
+- 维护者 bypass 仅用于集成「已在下游分支完成开发与验证」的代码,不得用于在 `main` 上直接开发。
 
-- 使用小写字母
-- 使用连字符 `-` 分隔单词
-- 主题简短描述 (不超过 3-4 个单词)
+### 同步与合并
 
-```bash
-# 正确 ✅
-feature/momonyako/dream-meter
-fix/phantomdaze/loot-table
-
-# 错误 ❌
-feature/Momonyako/DreamMeter
-fix/phantomdaze/Loot_Table
-```
+- 个人分支落后 `main`:默认 `git rebase main`;若分支已被他人基于其开发(共享),改用 `git merge main`。
+- 禁止对 `main` 与 `milestone/*` 强推;仅允许对个人分支使用 `git push --force-with-lease`。
+- `--force-with-lease` 被拒绝时,禁止改用 `git push --force`;应先用 `git fetch` 检查远端是否有他人提交。
+- 合入 `main`:PR + Squash,或维护者本地 merge 后推送,两者均可。
 
 ---
 
 ## 工作流程
 
-### 1. 从 main 分支创建功能分支
+### 1. 个人主分支开发
 
 ```bash
-# 确保 main 分支是最新的
+# 首次创建个人主分支(若尚不存在)
 git checkout main
 git pull origin main
+git checkout -b <你的GitHub用户名>
 
-# 创建功能分支
-git checkout -b feature/your-username/my-feature
-```
-
-### 2. 在功能分支上进行开发
-
-```bash
-# 进行修改
-# ...
-
-# 提交更改
+# 日常开发
 git add .
-git commit -m "feat(scope): 你的提交信息"
+git commit -m "类型(范围): 你的提交信息"
+git push origin <你的GitHub用户名>
 ```
 
-### 3. 推送到远程仓库
+### 2. 与 main 保持同步
 
 ```bash
-git push origin feature/your-username/my-feature
+git fetch origin
+
+# 个人分支未被共享时默认 rebase
+git rebase origin/main
+git push --force-with-lease origin <你的GitHub用户名>
+
+# 若分支已被他人基于其开发,改用 merge
+git merge origin/main
+git push origin <你的GitHub用户名>
+```
+
+### 3. 架构变动分支
+
+```bash
+git checkout main
+git pull origin main
+git checkout -b milestone/<name>
+# 完成后合回 main
 ```
 
 ### 4. 创建 Pull Request
 
-1. 访问 GitHub 仓库
-2. 点击 `Compare & pull request`
-3. 填写 PR 描述
-4. 提交 PR
+1. 推送分支(个人主分支或 `milestone/*`)
+2. 访问 GitHub 仓库,点击 `Compare & pull request`,目标分支选 `main`
+3. 填写 PR 描述,提交 PR
 
 ### 5. 代码审查
 
@@ -156,8 +151,10 @@ git push origin feature/your-username/my-feature
 审查通过后,维护者会:
 
 1. 使用 **Squash and Merge** 合并 PR
-2. 确保 CI/CD 通过
-3. 合并后删除功能分支
+2. 确保 CI 通过
+3. 合并后按需删除来源分支(个人主分支为长期分支,保留)
+
+> 维护者也可在本地将「已完成开发与验证」的下游分支 merge 后推送到 `main`;此路径仅用于集成,不得用于在 `main` 上直接开发。
 
 ---
 
@@ -229,18 +226,27 @@ git reset --soft HEAD~1
 git reset --hard HEAD~1
 ```
 
-### Q: 如何合并 main 分支的更改?
+### Q: 如何同步 main 分支的更改?
+
+个人分支落后 `main` 时,默认 rebase:
 
 ```bash
-# 切换到功能分支
-git checkout feature/your-username/my-feature
-
-# 合并 main 分支
-git merge main
-
-# 推送到远程
-git push origin feature/your-username/my-feature
+git checkout <你的GitHub用户名>
+git fetch origin
+git rebase origin/main
+git push --force-with-lease origin <你的GitHub用户名>
 ```
+
+若分支已被他人基于其开发,改用 merge:
+
+```bash
+git checkout <你的GitHub用户名>
+git fetch origin
+git merge origin/main
+git push origin <你的GitHub用户名>
+```
+
+若 `--force-with-lease` 被拒绝,禁止改用 `--force`;应先 `git fetch` 检查远端是否有他人提交。
 
 ### Q: 如何解决合并冲突?
 

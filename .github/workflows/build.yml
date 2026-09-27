@@ -1,6 +1,13 @@
 name: Build
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - 'milestone/**'
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:

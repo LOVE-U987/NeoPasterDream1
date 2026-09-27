@@ -64,37 +64,43 @@ cd NeoPasterDream1
 
 ## 分支策略
 
-### 分支命名规范
+项目采用 `main` 稳定线 + 个人开发主分支 + 架构变动分支的模型。
 
-本项目允许存在个人开发主分支，在合并前请先在个人分支完成测试
+### 分支类型
 
-使用 `类型/负责人/主题` 格式：
+| 分支 | 命名 | 角色 | 生命周期 |
+|------|------|------|----------|
+| `main` | 固定 | 稳定/发布线；禁止在 main 上直接开发提交 | 永久 |
+| 个人开发主分支 | `<GitHub用户名>`（如 `momonyako`） | 个人日常开发 | 长期 |
+| 架构变动分支 | `milestone/<name>` | 跨模块大改，与 main 并行 | 阶段性 |
 
-- **类型**（包括但不限于）：
-  - `feature` - 新功能开发
-  - `fix` - Bug 修复
-  - `refactor` - 代码重构
-  - `docs` - 文档更新
-  - `test` - 测试相关
-- **负责人**：GitHub 用户名
-- **主题**：简短描述，使用小写字母和连字符
+### 命名规则
 
-### 示例
+- 个人主分支：直接使用 GitHub 用户名，全部小写（如 `momonyako`、`phantomdaze`）
+- 架构变动分支：`milestone/<name>`，`name` 为简短主题，使用小写字母和连字符（如 `milestone/api-refactor`）
+- 不使用 `类型/负责人/主题` 短命分支，不使用 `dev/<owner>` 前缀，不引入 `develop`
 
-```
-feature/momonyako/dream-meter
-fix/phantomdaze/loot-table
-refactor/username/cleanup-api
-docs/username/update-readme
-```
+### 分支流向
+
+- 个人主分支：`<用户名>` → `main`（经 PR 或维护者本地 merge）
+- 架构变动分支：`main` → `milestone/<name>` → `main`
+- 禁止在 `main` 上直接开发提交。代码须先存在于个人分支、`milestone/*` 或贡献分支，再集成到 `main`
+- 维护者 bypass 仅用于集成「已在下游分支完成开发与验证」的代码，不得用于在 `main` 上直接开发
+
+### 同步与合并
+
+- 个人分支落后 `main`：默认 `git rebase main`；若分支已被他人基于其开发（共享），改用 `git merge main`
+- 禁止对 `main` 与 `milestone/*` 强推；仅允许对个人分支使用 `git push --force-with-lease`
+- `--force-with-lease` 被拒绝时，禁止改用 `git push --force`；应先用 `git fetch` 检查远端是否有他人提交
+- 合入 `main`：PR + Squash，或维护者本地 merge 后推送，两者均可
 
 ### 工作流程
 
-1. 从 `main` 分支或基于主分支变基的个人分支创建功能分支
-2. 在功能分支上进行开发
-3. 完成开发后，创建 Pull Request，交由核心开发者审查
+1. 创建个人开发主分支（若尚不存在），或从 `main` 创建 `milestone/<name>` 架构变动分支
+2. 在个人分支或 `milestone/*` 上进行开发，并确保在合并前完成测试
+3. 完成开发后，创建 Pull Request（目标分支 `main`），交由核心开发者审查
 4. 经过代码审查后合并到 `main`
-5. 合并后及时删除功能分支
+5. 个人主分支为长期分支，保留；`milestone/*` 合并后按需删除
 
 ## 提交信息规范
 
@@ -226,7 +232,7 @@ fix(refactor): 减少冰晶锥的生成
 
 - 审查通过后，使用 Squash and Merge
 - 确保 CI/CD 通过
-- 合并后删除功能分支
+- 个人主分支为长期分支，保留；`milestone/*` 合并后按需删除
 
 ## 审查流程
 
@@ -266,7 +272,7 @@ fix(refactor): 减少冰晶锥的生成
 ### Q: 如何开始贡献？
 
 1. Fork 项目
-2. 创建功能分支
+2. 创建个人开发主分支（或从 `main` 创建 `milestone/<name>` 架构变动分支）
 3. 进行开发
 4. 提交 Pull Request
 
