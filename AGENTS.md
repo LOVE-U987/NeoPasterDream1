@@ -222,6 +222,7 @@ GeckoLib 的 `DefaultedGeoModel` 系列会根据 `subtype()` 自动决定资源�
 | Player Animator | Maven (optional) | 玩家动画姿势(evasion/none) |
 | JEI | compileOnly + localRuntime | 可选:配方查看器;发布 jar 不携带 |
 | Patchouli | optional (纯数据) | 可选:图鉴手册包;无 Java 硬依赖 |
+| IMBlocker | localRuntime (optional) | Windows 输入法冲突修复;仅本地测试前置,不进发布 jar |
 
 > Curios/GeckoLib/playerAnimator 已从 git 剥离(原 `libs/` 目录),改走 Maven 依赖。
 
