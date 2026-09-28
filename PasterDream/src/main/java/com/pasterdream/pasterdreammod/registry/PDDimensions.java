@@ -68,7 +68,8 @@ public class PDDimensions {
                 .hasSkylight()
                 .bedWorks()
                 .hasRaids(true)
-                .withAmbientLight(0.5)
+                // 对齐风旅/原版：环境光照 0，避免夜间与洞穴恒亮（原值 0.5 会给光照贴图加 50% 底噪）
+                .withAmbientLight(0)
                 .minY(-64).height(384)
                 .monsterSpawnLight(0, 7)
                 .withDefaultBlock("pasterdream:dyedream_block")

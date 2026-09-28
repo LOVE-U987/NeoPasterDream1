@@ -322,15 +322,16 @@ public class ClientSetup {
                         false
                 ) {
                     @Override
-                    public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float sunHeight) {
+                    public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float brightness) {
                         ResourceKey<Biome> biome = PDClientEvents.currentBiomeKey;
-                        return BiomeShadingAPI.interpolateColor(biome, sunHeight);
+                        return BiomeShadingAPI.interpolateColor(biome, brightness);
                     }
 
                     @Override
                     @Nullable
                     public float[] getSunriseColor(float timeOfDay, float partialTick) {
-                        float sunHeight = (float) Math.sin(timeOfDay * 2.0 * Math.PI);
+                        // 与染梦同源修正：太阳高度用 cos，使霞光落在黄昏/黎明而非午夜/正午。
+                        float sunHeight = (float) Math.cos(timeOfDay * 2.0 * Math.PI);
                         if (sunHeight < -0.1f || sunHeight > 0.2f) return null;
 
                         float fade = (sunHeight + 0.1f) / 0.3f;
@@ -360,15 +361,18 @@ public class ClientSetup {
                         false
                 ) {
                     @Override
-                    public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float sunHeight) {
+                    public Vec3 getBrightnessDependentFogColor(Vec3 fogColor, float brightness) {
                         ResourceKey<Biome> biome = PDClientEvents.currentBiomeKey;
-                        return BiomeShadingAPI.interpolateColor(biome, sunHeight);
+                        return BiomeShadingAPI.interpolateColor(biome, brightness);
                     }
 
                     @Override
                     @Nullable
                     public float[] getSunriseColor(float timeOfDay, float partialTick) {
-                        float sunHeight = (float) Math.sin(timeOfDay * 2.0 * Math.PI);
+                        // timeOfDay 语义：0 = 正午，0.25 = 18:00，0.5 = 午夜。
+                        // 太阳高度必须用 cos（正午 1、地平线 0、午夜 -1）；用 sin 会把霞光
+                        // 搬到正午与午夜，真正的黄昏/黎明反而没有霞光。
+                        float sunHeight = (float) Math.cos(timeOfDay * 2.0 * Math.PI);
                         if (sunHeight < -0.1f || sunHeight > 0.2f) return null;
 
                         float fade = (sunHeight + 0.1f) / 0.3f;

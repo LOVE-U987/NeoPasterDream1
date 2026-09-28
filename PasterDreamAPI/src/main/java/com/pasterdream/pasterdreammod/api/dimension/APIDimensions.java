@@ -57,7 +57,8 @@ public final class APIDimensions {
                 .hasSkylight()
                 .bedWorks()
                 .hasRaids(true)
-                .withAmbientLight(0.5)
+                // 对齐风旅/原版：环境光照 0，避免夜间与洞穴恒亮（与 dimension_type JSON 保持一致）
+                .withAmbientLight(0)
                 .minY(-64).height(384)
                 .monsterSpawnLight(0, 7)
                 .withDefaultBlock("pasterdream:dyedream_block")

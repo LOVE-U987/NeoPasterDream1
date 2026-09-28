@@ -8,9 +8,9 @@ import net.minecraft.world.phys.Vec3;
  * 单个生物群系的着色配置
  *
  * @param biome       群系 Key
- * @param dayColor    日间雾色（太阳高度 > 0）
- * @param sunsetColor 黄昏雾色（太阳高度 ≈ 0）
- * @param nightColor  夜间雾色（太阳高度 < 0）
+ * @param dayColor    日间雾色（天空亮度 = 1，正午）
+ * @param sunsetColor 黄昏雾色（天空亮度 ≈ 0.5，地平线）
+ * @param nightColor  夜色雾色（天空亮度 = 0，午夜）
  */
 public record BiomeShadingEntry(
         ResourceKey<Biome> biome,
