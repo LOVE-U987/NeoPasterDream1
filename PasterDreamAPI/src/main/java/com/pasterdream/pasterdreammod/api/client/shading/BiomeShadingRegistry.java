@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.api.client.shading;
 
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.Vec3;
 
@@ -81,47 +82,60 @@ public final class BiomeShadingRegistry {
     }
 
     /**
-     * 根据太阳高度插值获取群系雾色
+     * 根据天空亮度插值获取群系雾色
+     * <p>
+     * 入参即 vanilla {@code FogRenderer} 传给
+     * {@code DimensionSpecialEffects#getBrightnessDependentFogColor} 的亮度因子
+     * {@code clamp(cos(timeOfDay * 2π) * 2 + 0.5, 0, 1)}：0 = 午夜，0.5 = 地平线
+     * （黄昏/黎明），1 = 正午。注意它不是 -1 ~ 1 的太阳高度。
      * <p>
      * 插值逻辑：
      * <ul>
-     *   <li>太阳高度 > 0：在黄昏与日间之间插值</li>
-     *   <li>太阳高度 <= 0：在黄昏与夜间之间插值</li>
+     *   <li>亮度 >= 0.5：在黄昏与日间之间插值（黄昏 → 日间）</li>
+     *   <li>亮度 &lt; 0.5：在夜色与黄昏之间插值（夜色 → 黄昏）</li>
      * </ul>
      *
-     * @param biome     群系 Key
-     * @param sunHeight 太阳高度（-1 ~ 1），负值=夜晚，0=地平线，正值=白天
+     * @param biome      群系 Key
+     * @param brightness 天空亮度（0 = 午夜，0.5 = 地平线，1 = 正午）
      * @return 插值后的雾色
      */
-    public static Vec3 interpolateColor(ResourceKey<Biome> biome, float sunHeight) {
+    public static Vec3 interpolateColor(ResourceKey<Biome> biome, float brightness) {
         BiomeShadingEntry entry = get(biome);
-        return interpolateTriColor(entry.dayColor(), entry.sunsetColor(), entry.nightColor(), sunHeight);
+        return interpolateTriColor(entry.dayColor(), entry.sunsetColor(), entry.nightColor(), brightness);
     }
 
     /**
-     * 三色插值：根据太阳高度在日间/黄昏/夜间颜色之间平滑过渡
+     * 三色插值：根据天空亮度在夜色/黄昏/日间颜色之间平滑过渡
      *
-     * @param day       日间雾色
-     * @param sunset    黄昏雾色
-     * @param night     夜间雾色
-     * @param sunHeight 太阳高度（-1 ~ 1）
+     * @param day        日间雾色
+     * @param sunset     黄昏雾色
+     * @param night      夜色雾色
+     * @param brightness 天空亮度（0 = 午夜，0.5 = 地平线，1 = 正午）
      * @return 插值后的雾色
      */
-    private static Vec3 interpolateTriColor(Vec3 day, Vec3 sunset, Vec3 night, float sunHeight) {
-        if (sunHeight > 0.0f) {
-            float t = Math.min(sunHeight * 6.0f, 1.0f);
-            return new Vec3(
-                    sunset.x + (day.x - sunset.x) * t,
-                    sunset.y + (day.y - sunset.y) * t,
-                    sunset.z + (day.z - sunset.z) * t
-            );
-        } else {
-            float t = Math.min(-sunHeight * 5.0f, 1.0f);
-            return new Vec3(
-                    sunset.x + (night.x - sunset.x) * t,
-                    sunset.y + (night.y - sunset.y) * t,
-                    sunset.z + (night.z - sunset.z) * t
-            );
+    private static Vec3 interpolateTriColor(Vec3 day, Vec3 sunset, Vec3 night, float brightness) {
+        float b = Mth.clamp(brightness, 0.0F, 1.0F);
+        if (b >= 0.5F) {
+            // 地平线 → 正午
+            return lerp(sunset, day, (b - 0.5F) * 2.0F);
         }
+        // 午夜 → 地平线
+        return lerp(night, sunset, b * 2.0F);
+    }
+
+    /**
+     * 线性插值：t = 0 取 from，t = 1 取 to
+     *
+     * @param from 起点颜色
+     * @param to   终点颜色
+     * @param t    插值系数（0 ~ 1）
+     * @return 插值后的颜色
+     */
+    private static Vec3 lerp(Vec3 from, Vec3 to, float t) {
+        return new Vec3(
+                from.x + (to.x - from.x) * t,
+                from.y + (to.y - from.y) * t,
+                from.z + (to.z - from.z) * t
+        );
     }
 }
