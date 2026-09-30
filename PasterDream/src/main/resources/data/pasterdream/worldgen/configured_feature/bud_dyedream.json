@@ -25,9 +25,9 @@
         }
       ]
     },
-    "cluster_size": 6,
-    "cluster_chance": 0.1,
-    "cluster_radius": 3,
+    "cluster_size": 8,
+    "cluster_chance": 0.4,
+    "cluster_radius": 4,
     "waterlog": true,
     "replaceable": {
       "type": "minecraft:replaceable"
