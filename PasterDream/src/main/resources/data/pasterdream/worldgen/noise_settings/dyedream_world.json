@@ -39,7 +39,12 @@
       "xz_scale": 1,
       "y_scale": 0.7142857142857143
     },
-    "lava": 0.0,
+    "lava": {
+      "type": "minecraft:noise",
+      "noise": "minecraft:aquifer_lava",
+      "xz_scale": 1,
+      "y_scale": 1
+    },
     "temperature": {
       "type": "minecraft:shifted_noise",
       "noise": "minecraft:temperature",

@@ -1,6 +1,21 @@
 # PasterDream Changelog
 
 ---
+## 未发布
+
+### 修复：染梦维度不生成岩浆（还原原模组岩浆生成链路）
+
+*   **根因**：原模组的岩浆由四层机制叠加产生，本项目四层全被切断——① 群系 `features[1]`（LAKES 步）为空且 `minecraft:lake_lava_underground` 未迁移为 biome modifier（`6fda3db8` 迁移遗漏）；② `noise_settings/dyedream_world.json` 的 `noise_router.lava` 被改为常量 `0.0`；③ `NoiseBasedChunkGeneratorMixin` 拦截 `createFluidPicker`，抹除 Y-64 ~ Y-55 底部岩浆层；④ 三个 `configured_carver/dyedream_*.json` 的 `lava_level` 被改为 `{"absolute": -2032}`。后三项来自同一提交 `6136a762`（意图「地下岩浆改为地下河」），本次经确认推翻。
+*   **新增**（`PasterDream` `data/pasterdream/neoforge/biome_modifier/dyedream_lava_lake.json`）：`neoforge:add_features` 挂 `minecraft:lake_lava_underground` 到 `#pasterdream:is_dyedream`，`step: "lakes"`（该步在此前 41 个既有 biome modifier 中从未使用，本文件为首例，现目录共 42 个）。
+*   **恢复**（`data/pasterdream/worldgen/noise_settings/dyedream_world.json`）：`noise_router.lava` 由 `0.0` 改回 `minecraft:aquifer_lava` 噪声（对齐原模组 `dimension/dyedream_world.json:160-165`），洞穴深处含水层岩浆池恢复生成。
+*   **恢复**（`data/pasterdream/worldgen/configured_carver/dyedream_cave.json` / `dyedream_cave_extra_underground.json` / `dyedream_canyon.json`）：`lava_level` 由 `{"absolute": -2032}` 改回 `{"above_bottom": 8}`（原版口径，Y = -56），洞穴雕刻底部岩浆恢复。保留本项目自定义 carver 及其 probability / y / yScale 调参，不回退原版 `minecraft:cave` 系列。
+*   **移除**（`PasterDream` `mixin/NoiseBasedChunkGeneratorMixin.java` + `src/main/resources/pasterdream.mixins.json`）：删除该 Mixin 及其注册条目，原版 `createFluidPicker` 的 `y < min(-54, seaLevel) → LAVA` 恢复生效（`StructureTemplateAccessor` 保留）。Mixin 仅在 `defaultBlock == minecraft:calcite` 时命中，项目中仅染梦维度受影响。
+*   **连带（已确认接受）**：染梦与冷域共用 `pasterdream:dyedream_cave` 系列 carver，`cold_domain_biome` / `cold_domain_tundra` 亦会生成 Y-56 以下洞穴岩浆。冷域 `noise_settings` 的 `lava: 0` 不改（本项目新维度，原模组无对照）；风旅 `noise_settings` / `dimension` 内联的 `lava: 0` 亦不改（原模组本就为 0）。
+*   **新增**（`tools/verify_dyedream_lava.py`）：四断点静态校验脚本（lakes biome modifier / aquifer_lava 噪声 / carver above_bottom / Mixin 已移除）。
+*   **验证**：`python tools/verify_dyedream_lava.py` 4/4 通过；`.\gradlew compileJava` BUILD SUCCESSFUL；`.\gradlew runData` 退出码 0（`written: 0`，未覆盖手写 JSON）；启动日志 `Preparing pasterdream.mixins.json (6)` 确认 Mixin 移除生效。
+*   **同步**：`docs/开发指南/问题排查.md` 新增「世界生成」章节（四层岩浆排查路径）；`docs/架构/主模组架构详解.md` 两处 mixin 类数登记 7 → 6（名单移除 NoiseBasedChunkGenerator）。
+
+---
 ## v0.10.1 — 2026-09-26
 
 ### 修复：染梦/风旅维度 BGM 与群系错位、蘑菇平原实际不生成
@@ -95,28 +110,6 @@
 *   **修复**（`PasterDream` `block/WindmoorHangingVineBlock.java`）：删除从未被写入的 `SUPPRESSED` 状态属性（含字段、默认状态、`createBlockStateDefinition`、`randomTick` 判断与 `BooleanProperty` 导入）——该属性只被读取、不被写入，恒为 `false`，属死状态，删除后同时消除了每个方块状态多出的无效变体
 *   **修复**（`assets/pasterdream/blockstates/windmoor_hanging_vine.json`）：变体键由 `""` 改为按 `age=0` / `age=1` / `age=2` 显式枚举——方块具备 `AGE` 属性时必须枚举，写法与同目录 `windmoor_log.json` 一致
 *   **确认（无代码变更）**：原模组 `windmoor_leaves_2` 为 `noCollission()` 且 `getVisualShape` 为空的隐形可穿行方块，合并后该可穿行行为不再存在。经检索，仓库内 5 个 `.nbt` 结构（含 HEAD 版本，`git grep -a` 二进制无命中）与全部数据/世界生成文件均未引用 `windmoor_leaves_0/1/2`，该变体在现有数据中零使用，故按「有碰撞」合并保留
-
-### 修复：竞技场遗迹感染系统恶性 BUG（结构查询触发不可逆感染 + 永久锁死结构生成）
-
-> 依据《帕斯特之梦_竞技场感染bug报告.md》与用户验收标准重写感染生命周期。
-
-*   **根因 1**（`worldgen/structure/AaroncosArenaPortalStructure.java`）：`findGenerationPoint` 是 MC 的结构查询/预测方法（只读语义），却被写入不可逆持久化副作用（`markPlaced` + 延迟 1 tick 启动感染 + 刷写 15625 格群系）——任何调用 `Structure.findGenerationPoint` / `Structure.generate` 的代码都会触发，实测探险家指南针（Explorer's Compass Enhance）一次搜索即让未接触模组的玩家被永久感染
-*   **根因 2**：`markPlaced` 早于实际组装且组装失败不回滚 → `isPlaced` 持久锁死 → 结构从此永不生成，玩家"只被感染、永远看不到竞技场"
-*   **根因 3**：`tryRegisterCenter`（200 格出生点校验）与结构路径（无校验）双轨不一致；`center` 单值多竞技场互相覆盖；`onServerStarting` 无条件恢复感染且无任何配置开关（310 项配置无一相关）
-*   **重构**（结构类 → 纯查询）：`findGenerationPoint` 仅做只读关门判定（读 `placed` 抑制后续候选），移除全部写入/调度/回滚；第三方结构查询/预览零副作用
-*   **新增**（`world/PDAaroncosArenaSpawnData.java`）：持久化字段 `biomePainted`（群系已刷写，防重复刷写）与 `defeated`（BOSS 已击败，感染永久退化）；删除不再使用的 `rollback()`
-*   **新增**（真实放置确认链，`worldgen/PDAaroncosArenaWorldgen.java`）：传送门方块在世界生成阶段真实落入主世界（`onPlace` 的 WorldGenRegion 上下文）→ 经线程安全 `ConcurrentLinkedQueue` 入队 → 主线程确认器（每 20 tick 排水）`confirmArenaPlacement` 落库 placed/center 并按配置启动群系刷写与感染——"结构已放置"由方块真实落地证明，结构查询永远无法伪造；同时解决 `ServerScheduler` 非线程安全问题（工作线程不再调用调度器）
-*   **重构**（`block/AaroncosArenaPortalsBlock.java`）：`onPlace` 按上下文分流——世界生成 → 入队确认；已加载世界（玩家/机器放置）→ 仅调度小范围感染 tick；删除 `tryRegisterCenter` 双轨路径
-*   **新增**（感染统一门控，`world/ArenaInfectionUtils.java`）：所有感染路径统一把关——① 配置开关开启（默认关闭）；② 仅主世界；③ BOSS 未击败；④ 目标列群系属于 `pasterdream:is_aaroncos_arena` 标签（含新旧群系键，兼容旧存档）——感染严格限制在竞技场群系范围内，有机形状越界抖动不再转化群系外方块
-*   **重构**（`world/ArenaRuinInfection.java`）：`start` 增加配置/击败守卫；自循环每批检查运行条件，配置中途关闭或 BOSS 胜利后自行终止；删除 `tryRegisterCenter`
-*   **新增**（配置，`config/PDCommonConfig.java`）：`arena ruin infection enabled`（默认 false）——关闭时不刷群系、不启动感染；已有感染的存档在服务器启动时被强制停止并自动清理（回滚被感染方块 + 还原竞技场群系 + 标记击败）；竞技场结构本身不受开关影响仍正常生成一次
-*   **新增**（治愈流程，`worldgen/PDAaroncosArenaWorldgen#cureInfection`）：BOSS 胜利（`registry/PDArenaBossManager`）或配置关闭强制清理时统一调用——停止感染 → 标记击败 → `PortalRestorationHandler` 分帧回滚全部被感染方块 → 分帧还原竞技场群系
-*   **新增**（群系还原，按噪声源重推导）：与 `FillBiomeCommand.fill` 完全对称的逆操作——区域内每个四分位单元经 `BiomeSource.getNoiseBiome`（世界生成群系本源，按种子确定）还原为原始群系，区域外保持现状；无需记录原始群系数据，对旧版存档刷写的群系同样有效；还原后 `resendBiomesForChunks` 同步客户端
-*   **服务器启动**（`onServerStarting`）：启动放置确认排水器（无论开关，保证"只生成一次"）；配置关闭 → 有感染的旧存档强制清理；配置开启且未击败 → 恢复感染（群系刷写中断自动补完）；已击败 → 保持退化不再恢复
-*   **事件注册**（`PasterDreamMod.java`）：新增 `PDAaroncosArenaWorldgen::onServerStopped` 清空放置确认队列
-*   **⚠️ 旧存档脏数据说明**：若旧存档的 `placed` 曾被第三方结构查询误置位（结构从未真实生成），升级后感染会被清理，但竞技场结构仍不会生成（`placed` 已锁死）；删除 `saves/<世界>/data/pasterdream_aaroncos_arena_spawn.dat` 可让结构按新逻辑重新生成一次
-*   **新增**（VERIFY 自动化套件，`smoketest/PDArenaInfectionVerifyHooks.java`，新）：专项 `arena-infection`（不进默认 `all`，需 `PASTERDREAM_VERIFY_SUITES=arena-infection`，要求非超平坦+开结构测试世界）——五阶段断言：① 模拟探险家指南针对结构 `Structure.generate` 连续查询 48 次零副作用（`placed` 不置位、感染不启动，直接回归原恶性 BUG 触发路径）② 配置关闭时群系内感染零转化 ③ 配置开启后竞技场群系内感染生效并记录回滚数据、群系外零转化 ④ 放置确认链落库 `placed`/`center` 且二次入队不覆盖中心 ⑤ 治愈流程（停止感染/标记击败/方块回滚/群系按噪声还原为原始群系）与击败后再感染零转化；`PDPortingVerifyTest` 注册 `ARENA_INFECTION` 套件，`needsNormalWorldWithStructures` 纳入该套件
-*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`PASTERDREAM_VERIFY_SUITES=arena-infection` 自动化测试 **13/13 全部 PASS**（`pd_verify_report.json`：含结构查询零副作用、群系门控、放置确认、治愈退化全链路）；全部修改文件 LF 行尾合规
 
 ### 遗留项（未处理）
 

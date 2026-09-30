@@ -17,7 +17,7 @@
       "max_exclusive": 0.9
     },
     "lava_level": {
-      "absolute": -2032
+      "above_bottom": 8
     },
     "replaceable": "#pasterdream:dyedream_carver_replaceables",
     "horizontal_radius_multiplier": {

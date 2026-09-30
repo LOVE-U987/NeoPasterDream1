@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#pasterdream:is_dyedream",
+  "features": [
+    "minecraft:lake_lava_underground"
+  ],
+  "step": "lakes"
+}
