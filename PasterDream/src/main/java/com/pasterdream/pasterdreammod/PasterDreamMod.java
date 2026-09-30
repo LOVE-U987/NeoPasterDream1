@@ -380,11 +380,12 @@ public class PasterDreamMod {
         PDDebugLogger.mainDebug("    ├ pasterdream:ore_amber_candy");
         PDDebugLogger.mainDebug("    ├ pasterdream:ore_dyedreamdust");
         PDDebugLogger.mainDebug("    └ pasterdream:ore_dyedreamquartz");
-        PDDebugLogger.mainDebug("  - neoforge/biome_modifier/dyedream_vegetation.json -> 注入树木与植被 (TOP_LAYER_MODIFICATION)");
-        PDDebugLogger.mainDebug("    ├ pasterdream:dyedream_trees");
-        PDDebugLogger.mainDebug("    ├ pasterdream:patch_dyedream_buds");
+        PDDebugLogger.mainDebug("  - neoforge/biome_modifier/dyedream_underground_features.json -> 注入洞穴地物 (UNDERGROUND_DECORATION)");
+        PDDebugLogger.mainDebug("    ├ pasterdream:cave_glow_mushroom");
+        PDDebugLogger.mainDebug("    └ pasterdream:bud_dyedream (染梦晶芽仅在洞穴生成)");
+        PDDebugLogger.mainDebug("  - neoforge/biome_modifier/dyedream_vegetation.json -> 注入植被 (VEGETAL_DECORATION)");
         PDDebugLogger.mainDebug("    ├ pasterdream:patch_pinkagaric");
-        PDDebugLogger.mainDebug("    └ pasterdream:patch_dyedream_seagrass");
+        PDDebugLogger.mainDebug("    └ pasterdream:flower_8/9/10/11/13/14/16, grass_3/4/7");
         PDDebugLogger.mainDebug("目标生物群系标签: #pasterdream:is_dyedream");
         PDDebugLogger.mainDebug("===== 地形生成系统初始化完成 =====");
     }

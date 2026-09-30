@@ -6,7 +6,6 @@ import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
-import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.stateproviders.WeightedStateProvider;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
@@ -22,15 +21,15 @@ public class DyedreamDecorations {
     /**
      * 注册染梦水晶簇装饰物 —— biome_dyedream_0 地表散布的发光水晶
      * <p>
-     * 使用 SCATTER 类型，在染梦平原地表散布染梦水晶灯和染梦花蕾，
+     * 使用 SCATTER 类型，在染梦平原地表散布染梦水晶灯，
      * 形成闪烁发光的水晶点缀效果。
+     * <p>
+     * 染梦晶芽仅允许在洞穴内生成（见 {@link IceDecorations#registerBudDyedream()}），
+     * 地表装饰物一律不再包含晶芽方块；后续如需地表晶芽外观，请另选可地表生成的方块。
      */
     public static void registerDyedreamCrystalCluster() {
         SimpleWeightedRandomList<BlockState> crystalBodyList = SimpleWeightedRandomList.<BlockState>builder()
                 .add(PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 40)
-                .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 30)
-                .add(PDBlocks.DYEDREAM_BUD_1.get().defaultBlockState(), 20)
-                .add(PDBlocks.DYEDREAM_BUD_2.get().defaultBlockState(), 10)
                 .build();
 
         DecorationBuilder.create()
@@ -52,7 +51,7 @@ public class DyedreamDecorations {
     /**
      * 注册融梦水晶灯柱装饰物 —— biome_dyedream_0 的高大发光灯柱
      * <p>
-     * 使用 PILLAR 类型，由染梦石英方块构成柱体，顶部放置融梦水晶灯，
+     * 使用 PILLAR 类型，由染梦石英方块构成柱体，顶部放置染梦水晶灯，
      * 在平原上形成神秘的发光地标。
      */
     public static void registerMeltdreamCrystalPillar() {
@@ -60,7 +59,6 @@ public class DyedreamDecorations {
                 .type(DecorationType.PILLAR)
                 .body(PDBlocks.DYEDREAMQUARTZ_BLOCK.get())
                 .top(PDBlocks.DYEDREAM_LARTERN.get())
-                .crystal(0.2f, BlockStateProvider.simple(PDBlocks.DYEDREAM_BUD_0.get()))
                 .debris(PDBlocks.DYEDREAMQUARTZ_BLOCK.get(), 4, 2)
                 .height(6, 12)
                 .width(2, 1)
@@ -111,7 +109,7 @@ public class DyedreamDecorations {
     /**
      * 注册方解石水晶花园装饰物 —— biome_dyedream_1 的温暖水晶景观
      * <p>
-     * 使用 SCATTER 类型，在温暖平原地表散布方解石、粉色蘑菇和染梦花蕾，
+     * 使用 SCATTER 类型，在温暖平原地表散布方解石、粉色蘑菇和染梦水晶灯，
      * 形成温暖梦幻的水晶花园效果。
      */
     public static void registerCalciteCrystalGarden() {
@@ -120,13 +118,10 @@ public class DyedreamDecorations {
                 .add(PDBlocks.POLISHED_CALCITE.get().defaultBlockState(), 25)
                 .add(PDBlocks.PINKAGARIC_0.get().defaultBlockState(), 20)
                 .add(PDBlocks.PINKAGARIC_1.get().defaultBlockState(), 15)
-                .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 5)
                 .build();
 
         SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
                 .add(PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 60)
-                .add(PDBlocks.DYEDREAM_BUD_1.get().defaultBlockState(), 25)
-                .add(PDBlocks.DYEDREAM_BUD_2.get().defaultBlockState(), 15)
                 .build();
 
         DecorationBuilder.create()
@@ -160,8 +155,6 @@ public class DyedreamDecorations {
                 .build();
 
         SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
-                .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 40)
-                .add(PDBlocks.DYEDREAM_BUD_1.get().defaultBlockState(), 30)
                 .add(PDBlocks.PINKAGARIC_3.get().defaultBlockState(), 30)
                 .build();
 
@@ -221,13 +214,10 @@ public class DyedreamDecorations {
                 .add(PDBlocks.PINKAGARIC_1.get().defaultBlockState(), 25)
                 .add(PDBlocks.PINKAGARIC_2.get().defaultBlockState(), 20)
                 .add(PDBlocks.PINKAGARIC_3.get().defaultBlockState(), 15)
-                .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 10)
                 .build();
 
         SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
                 .add(PDBlocks.DYEDREAM_LARTERN.get().defaultBlockState(), 50)
-                .add(PDBlocks.DYEDREAM_BUD_1.get().defaultBlockState(), 30)
-                .add(PDBlocks.DYEDREAM_BUD_2.get().defaultBlockState(), 20)
                 .build();
 
         DecorationBuilder.create()
