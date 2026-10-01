@@ -8,7 +8,7 @@ import com.pasterdream.pasterdreammod.api.effect.cutscene.CutsceneData;
 import com.pasterdream.pasterdreammod.api.effect.cutscene.EasingType;
 import com.pasterdream.pasterdreammod.block.entity.AaroncosHandChestBlockEntity;
 import com.pasterdream.pasterdreammod.world.PortalInfectionData;
-import com.pasterdream.pasterdreammod.world.PortalRestorationHandler;
+import com.pasterdream.pasterdreammod.worldgen.PDAaroncosArenaWorldgen;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
@@ -337,8 +337,9 @@ public class PDArenaBossManager {
         data.setReturnPortalPos(returnPortal);
         data.setDirty();
 
-        // 🌿 同步启动地形回滚：将主世界中所有被感染的传送门区域恢复为原始地形
-        PortalRestorationHandler.startRestoration(overworld, portalPositions);
+        // 🌿 同步治愈遗迹感染：停止感染循环、标记击败状态、
+        // 回滚主世界中所有被感染的传送门区域、还原竞技场群系（击败 BOSS 后感染退化）
+        PDAaroncosArenaWorldgen.cureInfection(overworld);
 
         // 不自动传送、不启动强制倒计时：玩家留在竞技场开箱捡物，
         // 再手动右键中心召唤方块（AaroncosHandSpawnBlock VICTORY 分支）返回主世界。

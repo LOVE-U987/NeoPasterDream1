@@ -11,8 +11,10 @@ import java.util.List;
 /**
  * 亚伦柯斯传送门区域地形回滚调度器。
  * <p>
- * BOSS 击败后调用，以可控速率将 {@link PortalInfectionData} 中记录的
- * 灯影之下方块逐块恢复为原始状态，营造“能量退去、世界复原”的演出效果。
+ * 由 {@code PDAaroncosArenaWorldgen#cureInfection} 统一调用（BOSS 击败触发
+ * 感染退化，或配置关闭时对旧存档的强制清理），以可控速率将
+ * {@link PortalInfectionData} 中记录的灯影之下方块逐块恢复为原始状态，
+ * 营造“能量退去、世界复原”的演出效果。
  */
 public final class PortalRestorationHandler {
 

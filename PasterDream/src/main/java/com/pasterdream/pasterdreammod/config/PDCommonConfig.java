@@ -93,6 +93,11 @@ public class PDCommonConfig {
     /** 关闭并禁止时之沙的功能（默认 false） */
     public static final ModConfigSpec.ConfigValue<Boolean> BAN_TIME_HOURGLASS;
 
+    // ==================== Aaroncos Arena ====================
+
+    /** 亚伦柯斯竞技场遗迹感染总开关（默认 false） */
+    public static final ModConfigSpec.ConfigValue<Boolean> ARENA_RUIN_INFECTION_ENABLED;
+
     // ==================== Spawn Cap ====================
 
     /** 发光鱿鱼刷新上限总开关（默认 true） */
@@ -233,6 +238,12 @@ public class PDCommonConfig {
         BAN_TIME_HOURGLASS = builder
                 .comment("关闭并禁止时之沙的功能  默认：false")
                 .define("ban time hourglass", false);
+        builder.pop();
+
+        builder.push("Aaroncos Arena");
+        ARENA_RUIN_INFECTION_ENABLED = builder
+                .comment("亚伦柯斯竞技场遗迹感染总开关（开启后：主世界竞技场遗迹生成时会在其周围刷写竞技场群系并启动持续感染，感染限制在竞技场群系范围内，击败竞技场BOSS后感染退化、群系还原；关闭后：不刷群系、不启动感染，已有存档的感染会在服务器启动时被强制停止并自动清理。竞技场遗迹结构本身不受此开关影响，仍会在主世界正常生成一次） 默认：false")
+                .define("arena ruin infection enabled", false);
         builder.pop();
 
         builder.push("Spawn Cap");

@@ -5,7 +5,7 @@ import com.pasterdream.pasterdreammod.registry.PDArenaBossManager;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.world.ArenaInfectionUtils;
-import com.pasterdream.pasterdreammod.world.ArenaRuinInfection;
+import com.pasterdream.pasterdreammod.worldgen.PDAaroncosArenaWorldgen;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -41,9 +41,15 @@ import java.util.List;
  * 传送条件（原 {@code AaroncosArenaPortalsPr0}）：已完成 {@code achievement_shadow_d_0}
  * 或创造模式；否则提示尚未完成前置进度。
  * <p>
- * 感染效果：方块周围小范围的地面方块会被转化为灯影之下风格的方块；
- * 群系级的大范围感染由竞技场遗迹本身承担（见 {@link ArenaInfectionUtils} 与
- * {@link com.pasterdream.pasterdreammod.world.ArenaRuinInfection}）。
+ * 感染效果：方块周围小范围的地面方块会被转化为灯影之下风格的方块，
+ * 受统一门控约束（配置开关/仅主世界/竞技场群系内/BOSS 未击败，见
+ * {@link ArenaInfectionUtils}）；群系级的大范围感染由竞技场遗迹本身承担
+ * （见 {@link com.pasterdream.pasterdreammod.world.ArenaRuinInfection}）。
+ * <p>
+ * <b>放置确认</b>：世界生成阶段本方块真实落入主世界时，经
+ * {@link PDAroncosArenaWorldgen#offerPendingPlacement} 入队，由主线程确认器
+ * 落库竞技场放置记录（保证只生成一次）并按配置启动群系/感染。
+ * 第三方结构查询/预览不会放置方块，因此永远不会误触发。
  */
 public class AaroncosArenaPortalsBlock extends SlabBlock {
 
@@ -86,6 +92,8 @@ public class AaroncosArenaPortalsBlock extends SlabBlock {
     /**
      * 每 tick 更新时触发感染效果。
      * 以受控速率将周围方块转化为灯影之下风格，保持动态可见但不过度刷屏。
+     * 感染受统一门控（配置开关/仅主世界/竞技场群系内/BOSS 未击败），
+     * 门控不满足时本调用为空操作。
      *
      * @param state  当前方块状态
      * @param level  当前世界
@@ -94,24 +102,32 @@ public class AaroncosArenaPortalsBlock extends SlabBlock {
      */
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        if (!level.isClientSide) {
-            // 旧存档兜底：区块加载后首次 tick 时补注册遗迹中心
-            ArenaRuinInfection.tryRegisterCenter(level, pos);
-            ArenaInfectionUtils.infectSurroundingBlocks(level, pos, NORMAL_RADIUS, NORMAL_CANDIDATES, random);
-        }
+        ArenaInfectionUtils.infectSurroundingBlocks(level, pos, NORMAL_RADIUS, NORMAL_CANDIDATES, random);
         level.scheduleTick(pos, this, NORMAL_INTERVAL);
     }
 
     /**
-     * 方块放置时立即开始感染流程，并尝试注册为遗迹中心。
+     * 方块放置时按放置上下文分流：
+     * <ul>
+     *   <li><b>世界生成</b>（非 ServerLevel 的生成区域 + 主世界维度）：
+     *       结构真实落地，转交主线程放置确认器记录"只生成一次"并按配置
+     *       启动群系刷写与遗迹感染；生成工作线程上下文禁止调用线程不安全
+     *       的调度器，故仅入线程安全队列；</li>
+     *   <li><b>已加载世界</b>（玩家/机器放置）：仅调度小范围感染 tick，
+     *       受统一门控约束，竞技场群系外的手动放置不产生感染。</li>
+     * </ul>
      */
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onPlace(state, level, pos, oldState, isMoving);
-        if (!level.isClientSide && level instanceof ServerLevel serverLevel) {
-            // 主世界结构放置时，由传送门方块补注册遗迹中心
-            ArenaRuinInfection.tryRegisterCenter(serverLevel, pos);
+        if (level.isClientSide) {
+            return;
+        }
+        if (level instanceof ServerLevel) {
             level.scheduleTick(pos, this, NORMAL_INTERVAL);
+        } else if (level.dimension().equals(Level.OVERWORLD)) {
+            // 世界生成阶段：本方块真实落入主世界 → 转交主线程放置确认
+            PDAaroncosArenaWorldgen.offerPendingPlacement(pos);
         }
     }
 

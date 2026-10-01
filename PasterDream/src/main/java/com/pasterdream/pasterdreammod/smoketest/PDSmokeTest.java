@@ -388,10 +388,10 @@ public final class PDSmokeTest {
                         PDPortingVerifyTest.ENABLED
                                 ? net.minecraft.world.Difficulty.EASY
                                 : net.minecraft.world.Difficulty.PEACEFUL;
-                // wind-lake 专项：非超平坦 + 开建筑，便于 LakeFeature 在真实噪声维复现/回归
+                // wind-lake / arena-infection 专项：非超平坦 + 开建筑，便于在真实噪声维复现/回归
                 final boolean normalWithStructures = PDPortingVerifyTest.needsNormalWorldWithStructures();
                 if (normalWithStructures) {
-                    PDDebugLogger.smoketestInfo(TAG + "creating NORMAL structures-on creative test world '{}' (wind-lake)", worldName);
+                    PDDebugLogger.smoketestInfo(TAG + "creating NORMAL structures-on creative test world '{}' (wind-lake/arena-infection)", worldName);
                 } else {
                     PDDebugLogger.smoketestInfo(TAG + "creating superflat creative test world '{}'", worldName);
                 }
