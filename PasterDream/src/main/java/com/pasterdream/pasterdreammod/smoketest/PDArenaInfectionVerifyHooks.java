@@ -139,7 +139,13 @@ public final class PDArenaInfectionVerifyHooks {
                     "感染限制在竞技场群系内（群系外零转化）",
                     "outsideState=" + ow.getBlockState(grassOutside).getBlock()));
 
-            // ===== Phase D：真实放置确认链（入队 → 主线程确认 → 只确认一次） =====
+            // ===== Phase D：放置确认链测试（offer → 主线程确认 → 只确认一次） =====
+            // 注意：本测试直接调用 offerPendingPlacement，绕过方块 onPlace → 队列的
+            // 上半个环节。完整链路（hasPostProcess=true → PostProcessing 列表 →
+            // 区块可 tick 时 postProcessGeneration 在主线程重设方块 → onPlace →
+            // offerPendingPlacement）已在 1.21.1 原版源码中端到端验证并用
+            // oldState.getBlock() == this 区分世界生成与玩家放置。本段仅验证
+            // 队列 → 确认器 → placed 落库的下半环节（新结构生成验证需真实游戏世界）。
             PDAaroncosArenaWorldgen.offerPendingPlacement(centerA);
             ServerScheduler.advanceForTest(DRAIN_TICKS);
             boolean confirmed = spawnData.isPlaced() && centerA.equals(spawnData.getCenter());

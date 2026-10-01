@@ -135,6 +135,7 @@ public class PDAaroncosArenaWorldgen {
         if (spawnData.isPlaced()) {
             return; // 已确认过（同结构多块传送门/竞态败者），保证只生成一次
         }
+        // placed 为 volatile，保证结构查询线程的锁内读取可见本写入
         spawnData.markPlaced();
         spawnData.setCenter(pos);
 
@@ -203,6 +204,21 @@ public class PDAaroncosArenaWorldgen {
                     center.toShortString());
         } else if (spawnData.isPlaced() && spawnData.isDefeated()) {
             PasterDreamMod.LOGGER.info("[PDAaroncosArenaWorldgen] 当前世界竞技场BOSS已被击败，遗迹感染保持退化状态");
+        }
+
+        // 还原中断续期：cureInfection（BOSS 击败）或 clearInfection（配置关闭清理）
+        // 启动的分帧还原若在完成前因服务器停止中断，PortalInfectionData 的残存记录
+        // 会永久滞留（defeated 在还原完成前已置位，若仅靠 !isDefeated() 门控则不会重试）。
+        // 此处不受 defeated 门控：只要仍有待处理记录就续期。
+        PortalInfectionData pendingData = PortalInfectionData.get(overworld);
+        if (!pendingData.isEmpty()) {
+            PasterDreamMod.LOGGER.info(
+                    "[PDAaroncosArenaWorldgen] 检测到未完成的遗迹感染还原记录（{} 个传送门），续期还原",
+                    pendingData.getPortalPositions().size());
+            PortalRestorationHandler.startRestoration(overworld, pendingData.getPortalPositions());
+            if (center != null && !spawnData.isBiomePainted()) {
+                restoreArenaBiomeAsync(overworld, center);
+            }
         }
     }
 

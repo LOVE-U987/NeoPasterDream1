@@ -227,12 +227,16 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
                             && player.getOffhandItem().getItem() == PDBlocksVegetation.SHADOW_LIGHT_0.get().asItem();
             if (lightMainMetalOff || metalMainLightOff) {
                 startRepair(level, pos, player);
-                ItemStack metal = new ItemStack(PDItemsMaterials.BLACKMETAL_INGOT.get());
-                player.getInventory().clearOrCountMatchingItems(
-                        s -> metal.getItem() == s.getItem(), 1, player.inventoryMenu.getCraftSlots());
-                ItemStack light = new ItemStack(PDBlocksVegetation.SHADOW_LIGHT_0.get());
-                player.getInventory().clearOrCountMatchingItems(
-                        s -> light.getItem() == s.getItem(), 1, player.inventoryMenu.getCraftSlots());
+                // 从主手/副手扣除材料（原代码用 player.inventoryMenu.getCraftSlots()
+                // 作为 clearOrCountMatchingItems 的搜索容器——那是制作槽不是存放材料的位置，
+                // 导致物品从未被实际消耗；改用直接缩减手持物品栈）
+                if (player.getMainHandItem().getItem() == PDItemsMaterials.BLACKMETAL_INGOT.get()) {
+                    player.getMainHandItem().shrink(1);
+                    player.getOffhandItem().shrink(1);
+                } else {
+                    player.getOffhandItem().shrink(1);
+                    player.getMainHandItem().shrink(1);
+                }
             } else if (!player.level().isClientSide()) {
                 player.displayClientMessage(Component.translatable("message.pasterdream.broken_dungeon.hold_to_repair"), true);
             }

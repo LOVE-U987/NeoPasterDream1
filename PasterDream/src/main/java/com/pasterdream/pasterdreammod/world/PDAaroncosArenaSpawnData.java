@@ -37,7 +37,7 @@ public class PDAaroncosArenaSpawnData extends SavedData {
     private static final SavedData.Factory<PDAaroncosArenaSpawnData> FACTORY =
             new SavedData.Factory<>(PDAaroncosArenaSpawnData::new, PDAaroncosArenaSpawnData::new, null);
 
-    private boolean placed = false;
+    private volatile boolean placed = false;
     private BlockPos center = null;
     private boolean biomePainted = false;
     private boolean defeated = false;
