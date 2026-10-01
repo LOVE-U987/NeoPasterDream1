@@ -81,8 +81,20 @@ public class DyedreamBiomeSource extends BiomeSource {
     /** 蘑菇平原噪声频率 */
     private static final float MUSHROOM_NOISE_FREQUENCY = 0.0022f;
 
-    /** 蘑菇平原噪声阈值，噪声绝对值超过此值时判定为蘑菇平原（值越大越稀有） */
-    private static final double MUSHROOM_PLAINS_THRESHOLD = 0.86;
+    /**
+     * 蘑菇平原噪声阈值，噪声绝对值超过此值时判定为蘑菇平原（值越大越稀有）
+     * <p>
+     * 实测（FBM 3 octaves，freq 0.0022，1677 万采样点）噪声命中率随阈值变化
+     * （注：该命中率为全图比例，蘑菇平原仅在大陆性 &gt;= 海岸阈值的陆地上判定，
+     * 故其实际占地比例约为命中率除以陆地占比）：
+     * <pre>
+     *   0.70 → 1.387%    0.75 → 0.506%    0.80 → 0.115%    0.86 → 0.0049%
+     * </pre>
+     * 取 0.75 对应约 0.5% 命中（斑块约 32 格见方）——稀有但可稳定找到。
+     * 此前的 0.86 命中率仅 0.005%（约每 2 万个区块 1 个区块），
+     * 实际等同于不生成，连带 {@code snowfall_dream_music} 这首 BGM 无人能听到。
+     */
+    private static final double MUSHROOM_PLAINS_THRESHOLD = 0.75;
 
     /**
      * 河流群系判定带宽 —— 仿 vanilla {@code overworld/river} 群系的 weirdness 窄带

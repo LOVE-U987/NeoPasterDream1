@@ -304,8 +304,10 @@ public class PasterDreamMod {
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.TwilightLanternMusicState::onPlayerLoggedIn);
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.TwilightLanternMusicState::onPlayerChangedDimension);
 
-        // 亚伦柯斯竞技场：服务器启动时在出生点附近放置遗迹并设置群系
+        // 亚伦柯斯竞技场：服务器启动时启动放置确认器并按配置恢复/强制清理遗迹感染
         NeoForge.EVENT_BUS.addListener(PDAaroncosArenaWorldgen::onServerStarting);
+        // 服务器停止时清空竞技场放置确认队列，避免跨存档残留
+        NeoForge.EVENT_BUS.addListener(PDAaroncosArenaWorldgen::onServerStopped);
         // 服务器停止时复位遗迹感染运行状态，避免跨存档残留
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.ArenaRuinInfection::onServerStopped);
 

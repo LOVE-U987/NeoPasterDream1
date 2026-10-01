@@ -177,6 +177,12 @@ public final class PDPortingVerifyTest {
          * 不在 all。见 docs/archive 审查后 BOSS 循环重进 bug 修复。
          */
         ARENA_EXIT("arena-exit", "arena_exit", "boss-exit"),
+        /**
+         * 竞技场遗迹感染生命周期专项（结构查询零副作用 / 配置·群系门控 /
+         * 放置确认链 / cureInfection 退化）；不在 all。
+         * 见 Changelog「竞技场遗迹感染系统恶性 BUG」与《竞技场遗迹感染修复验证清单.md》。
+         */
+        ARENA_INFECTION("arena-infection", "arena_infection", "infection"),
         /** San 逐 tick 变化：SAN_VARIABILITY 属性被消费、San 随时间变动；不在 all */
         SAN_TICK("san-tick", "santick", "san"),
         /** 荒漠英雄之墓阶段 3：升级为『沉荆门』朔漠后附魔不得丢失 */
@@ -276,7 +282,7 @@ public final class PDPortingVerifyTest {
                         LogUtils.getLogger().warn("[PDVerify] 未知套件名 '{}'，已忽略（合法: registry,core,dimensions,"
                                 + "spells,content,structures,workshop,struct-dim,gallery,entity-gallery,"
                                 + "twilight-lantern,wind-journey,wind-lake,second-dream,shadow-intrude,main-flow,"
-                                + "dyedream,arena-exit,san-tick,desert-tomb 及快捷 all/quick/behavior/worldgen/galleries）", token);
+                                + "dyedream,arena-exit,arena-infection,san-tick,desert-tomb 及快捷 all/quick/behavior/worldgen/galleries）", token);
                     }
                 }
             }
@@ -299,6 +305,7 @@ public final class PDPortingVerifyTest {
         all.remove(Suite.MAIN_FLOW);
         all.remove(Suite.DYEDREAM);
         all.remove(Suite.ARENA_EXIT);
+        all.remove(Suite.ARENA_INFECTION);
         all.remove(Suite.SAN_TICK);
         return all;
     }
@@ -310,9 +317,14 @@ public final class PDPortingVerifyTest {
     /**
      * 供 {@link PDSmokeTest} 建档门控：是否需要非超平坦 + 开建筑。
      * 与 {@link #SELECTED_SUITES} 同源，禁止二次解析 env。
+     * <p>
+     * {@code wind-lake} 需要 LakeFeature 在真实噪声维复现；
+     * {@code arena-infection} 需要 NoiseBasedChunkGenerator 走结构关门分支、
+     * 且地表需高于海平面以通过竞技场候选点预检（超平坦两者皆不满足）。
      */
     public static boolean needsNormalWorldWithStructures() {
-        return ENABLED && SELECTED_SUITES.contains(Suite.WIND_LAKE);
+        return ENABLED && (SELECTED_SUITES.contains(Suite.WIND_LAKE)
+                || SELECTED_SUITES.contains(Suite.ARENA_INFECTION));
     }
 
     /** 所选套件的逗号分隔主键，写入报告与启动日志 */
@@ -588,6 +600,13 @@ public final class PDPortingVerifyTest {
             at(ae, PDPortingVerifyTest::refreshPlayerBuffs);
             at(ae + 2, PDPortingVerifyTest::arenaExitSuite);
             cursor = ae + 20;
+        }
+
+        if (suite(Suite.ARENA_INFECTION)) {
+            int ai = cursor;
+            at(ai, PDPortingVerifyTest::refreshPlayerBuffs);
+            at(ai + 2, PDPortingVerifyTest::arenaInfectionSuite);
+            cursor = ai + 20;
         }
 
         if (suite(Suite.SAN_TICK)) {
@@ -1488,6 +1507,13 @@ public final class PDPortingVerifyTest {
     private static void arenaExitSuite() {
         PDArenaExitVerifyHooks.verify(server(), player(), r ->
                 checkDetail("arena-exit", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== 竞技场遗迹感染生命周期专项（arena-infection） ====================
+
+    private static void arenaInfectionSuite() {
+        PDArenaInfectionVerifyHooks.verify(server(), player(), r ->
+                checkDetail("arena-infection", r.pass(), r.name(), r.detail()));
     }
 
     // ==================== San 逐 tick 变化专项（san-tick） ====================

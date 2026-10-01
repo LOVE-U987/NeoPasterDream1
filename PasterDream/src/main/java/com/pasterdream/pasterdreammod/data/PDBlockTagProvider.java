@@ -131,6 +131,12 @@ public class PDBlockTagProvider extends ApiBlockTagProvider {
             mineableAxe.add(reg.block().get());
         }
 
+        // ---- 暗影书架（木质书架，使用斧快速挖掘） ----
+        mineableAxe.add(
+                PDBlocks.SHADOWSHELF.get(),
+                PDBlocks.SHADOWSHELF_WITH_KEY.get()
+        );
+
         // ==================== 灯笼标签（c:lanterns 社区约定） ====================
         // 染梦灯笼 / 染梦水晶灯 加入 c:lanterns，供其他模组识别为灯笼类方块；
         // 同时收录原版灯笼与灵魂灯笼，保证标签引用完整性。

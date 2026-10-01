@@ -107,10 +107,8 @@ public class PDCreativeTabsShadow {
                         output.accept(PDItems.SHADOW_BLAST_FURNACE_CORE.get());
                         output.accept(PDItems.SHADOW_BLAST_FURNACE.get());
                         // 暗影书架系列
-                        output.accept(PDItems.SHADOWSHELF_0.get());
-                        output.accept(PDItems.SHADOWSHELF_1.get());
-                        output.accept(PDItems.SHADOWSHELF_2.get());
-                        output.accept(PDItems.SHADOWSHELF_3.get());
+                        output.accept(PDItems.SHADOWSHELF.get());
+                        output.accept(PDItems.SHADOWSHELF_WITH_KEY.get());
                         // 暗影裂隙系列
                         output.accept(PDItems.SHADOW_FISSURE_0.get());
                         output.accept(PDItems.SHADOW_FISSURE_1.get());

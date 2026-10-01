@@ -91,7 +91,9 @@ public class DebugStructureWandItem extends Item {
             templateOpt = loadStructure(serverLevel, nbtLocation);
         }
         if (templateOpt.isEmpty()) {
-            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.structure_not_found", structureId));
+            // 注意：ResourceLocation 不能直接作为 translatable 参数（网络编码会抛 EncoderException 踢出玩家），
+            // 必须先 toString() 转为字符串
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.structure_not_found", structureId.toString()));
             return InteractionResultHolder.fail(itemStack);
         }
 
@@ -114,9 +116,9 @@ public class DebugStructureWandItem extends Item {
         ), settings, serverLevel.random, 3);
 
         if (placed) {
-            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.structure_placed", structureId, targetPos.toShortString()));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.structure_placed", structureId.toString(), targetPos.toShortString()));
         } else {
-            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.structure_empty", structureId));
+            player.sendSystemMessage(Component.translatable("message.pasterdream.debug_wand.structure_empty", structureId.toString()));
         }
         return InteractionResultHolder.success(itemStack);
     }

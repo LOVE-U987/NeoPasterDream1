@@ -1,0 +1,35 @@
+{
+  "type": "pasterdream:generic_decor",
+  "config": {
+    "type": "custom",
+    "body_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:windmoor_log"
+      }
+    },
+    "top_block": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "pasterdream:windmoor_leaves"
+      }
+    },
+    "custom_generator_key": "windmoor_tree_small_high_sparse",
+    "replaceable": {
+      "type": "minecraft:any_of",
+      "predicates": [
+        {
+          "type": "minecraft:matching_blocks",
+          "blocks": [
+            "minecraft:air",
+            "minecraft:cave_air",
+            "pasterdream:windmoor_leaves"
+          ]
+        },
+        {
+          "type": "minecraft:replaceable"
+        }
+      ]
+    }
+  }
+}

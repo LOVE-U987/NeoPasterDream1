@@ -59,6 +59,21 @@ public final class PDIdAliases {
         table.add(Registries.ITEM, id("debug_wand_ice_crystal_cluster"), id("debug_wand_bud_ice"));
         table.add(Registries.ITEM, id("debug_wand_ice_crystal_garden"), id("debug_wand_bud_dyedream"));
 
+        // 风泊树叶：纹理随机化方案修正。早期移植版误用三个独立方块（windmoor_leaves_0/1/2）
+        // 模拟纹理随机，现合并为单一 windmoor_leaves（blockstate 加权随机模型）；
+        // 其中 _2（无碰撞悬挂变体）独立为 windmoor_hanging_vine（垂钓植被，向下生长 fig_vine）。
+        aliasBlockAndItem(table, "windmoor_leaves_0", "windmoor_leaves");
+        aliasBlockAndItem(table, "windmoor_leaves_1", "windmoor_leaves");
+        aliasBlockAndItem(table, "windmoor_leaves_2", "windmoor_hanging_vine");
+
+        // 暗影书架：早期移植版注册四个独立方块（shadowshelf_0..3），
+        // 现 0/1/2 合并为单一 shadowshelf（blockstate 随机纹理），
+        // _3（带钥匙纹理变体）独立为 shadowshelf_with_key（掉落暗影地牢钥匙）。
+        aliasBlockAndItem(table, "shadowshelf_0", "shadowshelf");
+        aliasBlockAndItem(table, "shadowshelf_1", "shadowshelf");
+        aliasBlockAndItem(table, "shadowshelf_2", "shadowshelf");
+        aliasBlockAndItem(table, "shadowshelf_3", "shadowshelf_with_key");
+
         return table;
     }
 

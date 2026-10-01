@@ -13,6 +13,7 @@ import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;
+import com.pasterdream.pasterdreammod.registry.WindMoorTrees;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -28,6 +29,8 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.food.FoodProperties;
 import net.neoforged.neoforge.registries.DeferredItem;
+
+import java.util.List;
 
 
 /**
@@ -534,13 +537,6 @@ public class PDItemsFunctional {
                     () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "meltdream_liquid_well"));
 
     /**
-     * 调试法杖 - 染梦草
-     */
-    public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_GRASS =
-            PDItems.ITEMS.register("debug_wand_grass",
-                    () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "patch_dyedream_grass"));
-
-    /**
      * 调试法杖 - 染梦芽
      */
     public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_BUDS =
@@ -796,10 +792,94 @@ public class PDItemsFunctional {
             PDItems.ITEMS.register("debug_wand_windmoor_tree",
                     () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 21));
 
-    /** 调试水晶 - 热气球（对应 structure_block_22） */
-    public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_HOT_AIR_BALLOON =
+    // ==================== 风之旅途调试水晶（变体水晶） ====================
+    // 统一使用 pasterdream:item/debug_wand_wind_journey 共享模型；
+    // 多变体水晶以「潜行 + 滚轮」切换变体，tooltip 显示当前目标与变体序号。
+
+    /** 调试水晶 - 热气球（8 变体） */
+    public static final DeferredItem<DebugVariantWandItem> DEBUG_WAND_HOT_AIR_BALLOON =
             PDItems.ITEMS.register("debug_wand_hot_air_balloon",
-                    () -> new DebugStructureBlockWandItem(new Item.Properties().stacksTo(1), 22));
+                    () -> new DebugVariantWandItem(new Item.Properties().stacksTo(1), List.of(
+                            "hot_air_balloon_0", "hot_air_balloon_1", "hot_air_balloon_2", "hot_air_balloon_3",
+                            "hot_air_balloon_4", "hot_air_balloon_5", "hot_air_balloon_6", "hot_air_balloon_7"
+                    ), false, false));
+
+    /** 调试水晶 - 小热气球（11 变体） */
+    public static final DeferredItem<DebugVariantWandItem> DEBUG_WAND_SMALL_BALLOON =
+            PDItems.ITEMS.register("debug_wand_small_balloon",
+                    () -> new DebugVariantWandItem(new Item.Properties().stacksTo(1), List.of(
+                            "small_balloon_0", "small_balloon_1", "small_balloon_2", "small_balloon_3",
+                            "small_balloon_4", "small_balloon_5", "small_balloon_6", "small_balloon_7",
+                            "small_balloon_8", "small_balloon_9", "small_balloon_10"
+                    ), false, false));
+
+    /** 调试水晶 - 云泡泡（6 变体） */
+    public static final DeferredItem<DebugVariantWandItem> DEBUG_WAND_BIG_BUBBLES =
+            PDItems.ITEMS.register("debug_wand_big_bubbles",
+                    () -> new DebugVariantWandItem(new Item.Properties().stacksTo(1), List.of(
+                            "big_bubbles_0", "big_bubbles_1", "big_bubbles_2",
+                            "big_bubbles_3", "big_bubbles_4", "big_bubbles_5"
+                    ), false, false));
+
+    /** 调试水晶 - 风之岛 */
+    public static final DeferredItem<DebugVariantWandItem> DEBUG_WAND_WIND_ISLAND =
+            PDItems.ITEMS.register("debug_wand_wind_island",
+                    () -> new DebugVariantWandItem(new Item.Properties().stacksTo(1),
+                            List.of("wind_island_0"), false, false));
+
+    /** 调试水晶 - 风车小屋 */
+    public static final DeferredItem<DebugVariantWandItem> DEBUG_WAND_WINDMILL_LODGE =
+            PDItems.ITEMS.register("debug_wand_windmill_lodge",
+                    () -> new DebugVariantWandItem(new Item.Properties().stacksTo(1),
+                            List.of("windmill_lodge"), false, false));
+
+    /** 调试水晶 - 风池 */
+    public static final DeferredItem<DebugVariantWandItem> DEBUG_WAND_WIND_POND =
+            PDItems.ITEMS.register("debug_wand_wind_pond",
+                    () -> new DebugVariantWandItem(new Item.Properties().stacksTo(1),
+                            List.of("wind_pond_0"), false, false));
+
+    /** 调试水晶 - 风蚀石（2 变体） */
+    public static final DeferredItem<DebugVariantWandItem> DEBUG_WAND_WIND_INFESTED_STONE =
+            PDItems.ITEMS.register("debug_wand_wind_infested_stone",
+                    () -> new DebugVariantWandItem(new Item.Properties().stacksTo(1),
+                            List.of("wind_infested_stone_0", "wind_infested_stone_1"), false, false));
+
+    /** 调试水晶 - 破风幕 */
+    public static final DeferredItem<DebugVariantWandItem> DEBUG_WAND_BREAKWIND_CURTAIN =
+            PDItems.ITEMS.register("debug_wand_breakwind_curtain",
+                    () -> new DebugVariantWandItem(new Item.Properties().stacksTo(1),
+                            List.of("breakwind_curtain_0"), false, false));
+
+    /** 调试水晶 - 失落风骑士遗迹 */
+    public static final DeferredItem<DebugVariantWandItem> DEBUG_WAND_LOST_WINDKNIGHT_RUINS =
+            PDItems.ITEMS.register("debug_wand_lost_windknight_ruins",
+                    () -> new DebugVariantWandItem(new Item.Properties().stacksTo(1),
+                            List.of("lost_windknight_ruins"), false, false));
+
+    /** 调试水晶 - 四叶草 */
+    public static final DeferredItem<DebugVariantWandItem> DEBUG_WAND_FOURLEAF_CLOVER =
+            PDItems.ITEMS.register("debug_wand_fourleaf_clover",
+                    () -> new DebugVariantWandItem(new Item.Properties().stacksTo(1),
+                            List.of("fourleaf_clover_plant"), false, false));
+
+    /** 调试水晶 - bocchi（2 变体，彩蛋结构） */
+    public static final DeferredItem<DebugVariantWandItem> DEBUG_WAND_BOCCHI =
+            PDItems.ITEMS.register("debug_wand_bocchi",
+                    () -> new DebugVariantWandItem(new Item.Properties().stacksTo(1),
+                            List.of("bocchi_0", "bocchi_1"), false, false));
+
+    /** 调试水晶 - 博丽灵梦（彩蛋结构） */
+    public static final DeferredItem<DebugVariantWandItem> DEBUG_WAND_HAKUREI_REIMU =
+            PDItems.ITEMS.register("debug_wand_hakurei_reimu",
+                    () -> new DebugVariantWandItem(new Item.Properties().stacksTo(1),
+                            List.of("hakurei_reimu"), false, false));
+
+    /** 调试水晶 - 风之树（18 变体，程序化生成；装饰模式，潜行 + 滚轮切换） */
+    public static final DeferredItem<DebugVariantWandItem> DEBUG_WAND_WIND_TREE =
+            PDItems.ITEMS.register("debug_wand_wind_tree",
+                    () -> new DebugVariantWandItem(new Item.Properties().stacksTo(1),
+                            WindMoorTrees.variantNames(), true, false));
 
     /** 调试水晶 - 圣诞树（对应 structure_block_23） */
     public static final DeferredItem<DebugStructureBlockWandItem> DEBUG_WAND_CHRISTMAS_TREE =

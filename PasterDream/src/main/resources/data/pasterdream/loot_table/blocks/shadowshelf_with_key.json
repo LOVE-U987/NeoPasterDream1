@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pasterdream:shadow_dungeon_key"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "pasterdream:blocks/shadowshelf_with_key"
+}

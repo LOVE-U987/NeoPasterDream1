@@ -196,6 +196,15 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
+        // 防重复触发：修复流程已启动时不再响应右键。
+        // 关键——修复成功后需消耗黑金属锭 + 影灯，无此保护时 20 tick 修复窗口内
+        // 重复右键会重复扣物品并重复调度替换任务。
+        // 锁以「截止时刻」存储并按游戏时间自动过期：ServerScheduler 任务不持久化，
+        // 服务器重启/维度卸载会让任务丢失，恒真布尔锁残留会使传送门永久卡在修复中。
+        long now = level.getGameTime();
+        if (now < W4DataBlockEntity.getDoubleAt(level, pos, "repairing_until")) {
+            return InteractionResult.CONSUME;
+        }
         // ===== 破损状态修复逻辑（原 BrokenShadowDungeonProtalBlock 逻辑） =====
         if (pos.getY() <= 20) {
             if (!player.level().isClientSide()) {
@@ -218,12 +227,16 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
                             && player.getOffhandItem().getItem() == PDBlocksVegetation.SHADOW_LIGHT_0.get().asItem();
             if (lightMainMetalOff || metalMainLightOff) {
                 startRepair(level, pos, player);
-                ItemStack metal = new ItemStack(PDItemsMaterials.BLACKMETAL_INGOT.get());
-                player.getInventory().clearOrCountMatchingItems(
-                        s -> metal.getItem() == s.getItem(), 1, player.inventoryMenu.getCraftSlots());
-                ItemStack light = new ItemStack(PDBlocksVegetation.SHADOW_LIGHT_0.get());
-                player.getInventory().clearOrCountMatchingItems(
-                        s -> light.getItem() == s.getItem(), 1, player.inventoryMenu.getCraftSlots());
+                // 从主手/副手扣除材料（原代码用 player.inventoryMenu.getCraftSlots()
+                // 作为 clearOrCountMatchingItems 的搜索容器——那是制作槽不是存放材料的位置，
+                // 导致物品从未被实际消耗；改用直接缩减手持物品栈）
+                if (player.getMainHandItem().getItem() == PDItemsMaterials.BLACKMETAL_INGOT.get()) {
+                    player.getMainHandItem().shrink(1);
+                    player.getOffhandItem().shrink(1);
+                } else {
+                    player.getOffhandItem().shrink(1);
+                    player.getMainHandItem().shrink(1);
+                }
             } else if (!player.level().isClientSide()) {
                 player.displayClientMessage(Component.translatable("message.pasterdream.broken_dungeon.hold_to_repair"), true);
             }
@@ -236,6 +249,8 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
 
     /** 修复演出 + 20 tick 后替换为完整暗影地牢传送门 */
     private static void startRepair(Level level, BlockPos pos, Player player) {
+        // 立即写入修复触发锁（BE 数据持久化），阻止 20 tick 修复窗口内的重复右键
+        W4DataBlockEntity.putDoubleAt(level, pos, "repairing_until", level.getGameTime() + 60);
         // 修复演出：animation=1 + smithing_table 音效 + 末地烛粒子
         setAnimation(level, pos, 1);
         if (!level.isClientSide()) {
@@ -274,13 +289,23 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
         }
 
         if (W4DataBlockEntity.getBooleanAt(level, pos, "exit")) {
-            // 出口传送：倒计时后传送到地表
-            if (!level.isClientSide()) {
-                level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 2, 1);
+            // 防重复触发：已在出口传送倒计时中时吞掉后续右键，
+            // 避免 60 tick 倒计时窗口内重复调度多段倒计时/多次传送。
+            // 锁以「截止时刻」存储并按游戏时间自动过期：ServerScheduler 任务不持久化，
+            // 服务器重启/维度卸载后布尔锁残留会使出口传送永久失效。
+            long exitNow = level.getGameTime();
+            if (exitNow < W4DataBlockEntity.getDoubleAt(level, pos, "exiting_until")) {
+                return InteractionResult.CONSUME;
             }
+            W4DataBlockEntity.putDoubleAt(level, pos, "exiting_until", exitNow + 100);
+            // 出口传送：倒计时后传送到地表
+            level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 2, 1);
             setAnimation(level, pos, 0);
             setAnimation(level, pos, 1);
             countdownTeleport(level, pos, x + 0.5, y + 66, z + 2.5, false);
+            // 倒计时结束后复位动画（exit 标记保留，供再次使用出口；
+            // 锁本身按游戏时间自动过期，无需手动清除）
+            ServerScheduler.schedule(62, () -> setAnimation(level, pos, 0));
             return InteractionResult.SUCCESS;
         }
 
@@ -321,25 +346,23 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
     private static void countdownTeleport(Level level, BlockPos pos,
                                           double tx, double ty, double tz, boolean enterDungeon) {
         Vec3 center = new Vec3(pos.getX(), pos.getY(), pos.getZ());
-        for (Entity entity : level.getEntitiesOfClass(Entity.class,
+        // 按类型查询 Player：避免在范围内抓取物品/怪物等无关实体后逐个 instanceof 过滤
+        for (Player player : level.getEntitiesOfClass(Player.class,
                 new AABB(center, center).inflate(8 / 2d), e -> true)) {
-            if (!(entity instanceof Player)) {
-                continue;
-            }
-            message(entity, "传送倒计时：3");
-            ServerScheduler.schedule(20, () -> message(entity, "传送倒计时：2"));
-            ServerScheduler.schedule(40, () -> message(entity, "传送倒计时：1"));
+            message(player, "传送倒计时：3");
+            ServerScheduler.schedule(20, () -> message(player, "传送倒计时：2"));
+            ServerScheduler.schedule(40, () -> message(player, "传送倒计时：1"));
             if (enterDungeon) {
                 ServerScheduler.schedule(60, () -> {
-                    if (entity instanceof ServerPlayer sp
+                    if (player instanceof ServerPlayer sp
                             && hasAdvancement(sp, PDAdvancements.SHADOW_B_0.getPath())
                             && !hasAdvancement(sp, PDAdvancements.SHADOW_C_0.getPath())) {
                         awardAdvancement(sp, PDAdvancements.SHADOW_C_0.getPath());
                     }
-                    ServerScheduler.schedule(1, () -> teleport(entity, tx, ty, tz));
+                    ServerScheduler.schedule(1, () -> teleport(player, tx, ty, tz));
                 });
             } else {
-                ServerScheduler.schedule(60, () -> teleport(entity, tx, ty, tz));
+                ServerScheduler.schedule(60, () -> teleport(player, tx, ty, tz));
             }
         }
     }
@@ -395,6 +418,10 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
     }
 
     private static void teleport(Entity entity, double x, double y, double z) {
+        // 倒计时期间玩家可能已下线/被移除，此时不再传送，避免向已关闭的连接发包
+        if (entity.isRemoved()) {
+            return;
+        }
         entity.teleportTo(x, y, z);
         if (entity instanceof ServerPlayer sp) {
             sp.connection.teleport(x, y, z, entity.getYRot(), entity.getXRot());
@@ -402,7 +429,8 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
     }
 
     private static void message(Entity entity, String text) {
-        if (entity instanceof Player player && !player.level().isClientSide()) {
+        // 已移除的实体（下线/被 discard）不再投递倒计时提示
+        if (entity instanceof Player player && !player.isRemoved() && !player.level().isClientSide()) {
             player.displayClientMessage(Component.literal(text), true);
         }
     }

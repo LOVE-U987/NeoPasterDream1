@@ -173,10 +173,10 @@ public class PDBlocksDungeon {
                     .strength(3.0f, 1.0f)
                     .requiresCorrectToolForDrops());
 
-    // ==================== 暗影书架系列（4种样式） ====================
+    // ==================== 暗影书架系列 ====================
 
-    /** 暗影书架 0 — 朝向方块，可被岩浆点燃 */
-    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF_0 = PDBlocks.BLOCKS.registerBlock("shadowshelf_0",
+    /** 暗影书架 —— 朝向方块，可被岩浆点燃；三种样式由 blockstate 随机模型实现纹理随机化 */
+    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF = PDBlocks.BLOCKS.registerBlock("shadowshelf",
             ShadowshelfBlock::new, BlockBehaviour.Properties.of()
                     .instrument(NoteBlockInstrument.BASS)
                     .sound(SoundType.WOOD)
@@ -184,26 +184,8 @@ public class PDBlocksDungeon {
                     .ignitedByLava()
                     .requiresCorrectToolForDrops());
 
-    /** 暗影书架 1 */
-    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF_1 = PDBlocks.BLOCKS.registerBlock("shadowshelf_1",
-            ShadowshelfBlock::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASS)
-                    .sound(SoundType.WOOD)
-                    .strength(2.0f, 3.0f)
-                    .ignitedByLava()
-                    .requiresCorrectToolForDrops());
-
-    /** 暗影书架 2 */
-    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF_2 = PDBlocks.BLOCKS.registerBlock("shadowshelf_2",
-            ShadowshelfBlock::new, BlockBehaviour.Properties.of()
-                    .instrument(NoteBlockInstrument.BASS)
-                    .sound(SoundType.WOOD)
-                    .strength(2.0f, 3.0f)
-                    .ignitedByLava()
-                    .requiresCorrectToolForDrops());
-
-    /** 暗影书架 3 */
-    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF_3 = PDBlocks.BLOCKS.registerBlock("shadowshelf_3",
+    /** 有钥匙的暗影书架 —— 特殊正面纹理（含钥匙）的独立变体 */
+    public static final DeferredBlock<ShadowshelfBlock> SHADOWSHELF_WITH_KEY = PDBlocks.BLOCKS.registerBlock("shadowshelf_with_key",
             ShadowshelfBlock::new, BlockBehaviour.Properties.of()
                     .instrument(NoteBlockInstrument.BASS)
                     .sound(SoundType.WOOD)

@@ -15,6 +15,7 @@ import com.pasterdream.pasterdreammod.api.network.StopCutscenePayload;
 
 import com.pasterdream.pasterdreammod.api.network.SanDataPayload;
 
+import com.pasterdream.pasterdreammod.item.DebugVariantWandItem;
 import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyAPI;
 import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyData;
 import com.pasterdream.pasterdreammod.attachment.PDAttachments;
@@ -125,6 +126,10 @@ public class PDNetwork {
                 PDNetwork::handleTeleportationOnServer);
         registrar.playToServer(CloakActivatePayload.TYPE, CloakActivatePayload.STREAM_CODEC,
                 PDNetwork::handleCloakActivateOnServer);
+
+        // ==================== C2S：调试变体水晶变体切换 ====================
+        registrar.playToServer(DebugWandVariantPayload.TYPE, DebugWandVariantPayload.STREAM_CODEC,
+                PDNetwork::handleDebugWandVariantOnServer);
 
         // ==================== S2C/C2S：旧存档备份/更新提示 ====================
         registrar.playToClient(SaveUpgradePromptPayload.TYPE, SaveUpgradePromptPayload.STREAM_CODEC,
@@ -643,5 +648,33 @@ public class PDNetwork {
         return CuriosApi.getCuriosInventory(entity)
                 .map(handler -> handler.findFirstCurio(item).isPresent())
                 .orElse(false);
+    }
+
+    /**
+     * 服务端：写入调试变体水晶的选中变体。
+     * <p>
+     * 客户端滚轮切换后发来本包，服务端按当前物品实际变体数取模校验后写回该槽位，
+     * 并广播变更使两端物品组件一致（放置判定在服务端，必须与客户端选中项相同）。
+     *
+     * @param payload 变体选择包（槽位 + 变体序号）
+     * @param context 载荷上下文（服务端侧 player() 为 ServerPlayer）
+     */
+    public static void handleDebugWandVariantOnServer(final DebugWandVariantPayload payload,
+                                                      final IPayloadContext context) {
+        if (!(context.player() instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+        var inventory = serverPlayer.getInventory();
+        if (payload.slot() < 0 || payload.slot() >= inventory.getContainerSize()) {
+            return;
+        }
+        ItemStack current = inventory.getItem(payload.slot());
+        if (!(current.getItem() instanceof DebugVariantWandItem wand)) {
+            return;
+        }
+        ItemStack updated = current.copy();
+        DebugVariantWandItem.setVariant(updated, Math.floorMod(payload.variant(), wand.targetCount()));
+        inventory.setItem(payload.slot(), updated);
+        serverPlayer.containerMenu.broadcastChanges();
     }
 }

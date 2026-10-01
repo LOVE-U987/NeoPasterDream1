@@ -151,6 +151,9 @@ public class ModDecorations {
         OceanDecorations.registerDyedreamIcePillar();
         OceanDecorations.registerBudIce();
         OceanDecorations.registerFrostSpike();
+
+        // 风之旅途：风之树 18 变体（程序化生成，大中小 × 低中高 × 多/少枝节）
+        WindMoorTrees.register();
     }
 
 }
