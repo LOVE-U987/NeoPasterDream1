@@ -109,6 +109,22 @@ public class PDAaroncosArenaSpawnData extends SavedData {
     }
 
     /**
+     * 复位「群系已刷写」标记并持久化。
+     * <p>
+     * 供配置关闭时的存档清理路径使用：清理会把已刷写的群系还原为原始群系，
+     * 复位后管理员重新开启配置时可重新刷写，避免出现「群系已还原但
+     * biomePainted 仍为 true，重新开启后感染因群系门控全部空转」的失效态。
+     * <p>
+     * 注意：本方法<b>不会</b>复位 {@code defeated}（那是游戏成就，仅由 BOSS 胜利置位）。
+     */
+    public void resetBiomePainted() {
+        if (this.biomePainted) {
+            this.biomePainted = false;
+            setDirty();
+        }
+    }
+
+    /**
      * 竞技场 BOSS 是否已被击败（感染已永久退化）。
      *
      * @return true 若 BOSS 已被击败

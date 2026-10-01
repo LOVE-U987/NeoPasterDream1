@@ -167,8 +167,15 @@ public final class ArenaInfectionUtils {
 
     /**
      * 判断方块是否已经被感染为灯影之下风格。
+     * <p>
+     * 包内共享（{@link PortalRestorationHandler} 的回滚判定复用同一集合），
+     * 保证「回滚时认定为感染方块」与「感染时产生的方块」完全一致，
+     * 避免玩家用灯影前缀方块在被感染位置建造后被误覆盖。
+     *
+     * @param block 方块
+     * @return 属于感染产物集合返回 true
      */
-    private static boolean isAlreadyInfected(Block block) {
+    static boolean isAlreadyInfected(Block block) {
         return block == PDBlocks.SHADOW_BLOCK.get()
                 || block == PDBlocks.THICK_SHADOW_BLOCK.get()
                 || block == PDBlocks.SHADOW_STONE.get()

@@ -105,9 +105,10 @@ public final class PortalRestorationHandler {
      * 若玩家已手动替换为其他方块，则跳过恢复以尊重玩家改动。
      */
     private static boolean isInfectedBlock(BlockState state) {
-        // 这里不依赖 PDBlocks，避免循环引用；直接通过注册名判断。
-        String name = state.getBlockHolder().getRegisteredName();
-        return name.startsWith("pasterdream:shadow_") || name.startsWith("pasterdream:thick_shadow_");
+        // 与感染产物集合保持精确一致（ArenaInfectionUtils.isAlreadyInfected，同包无循环依赖）。
+        // 前缀匹配会额外命中 shadow_arena_block_0（竞技场结构自身方块）与
+        // shadow_dungeon_* 等非感染产物——若玩家在这些位置建造，会被记录的原始方块覆盖。
+        return ArenaInfectionUtils.isAlreadyInfected(state.getBlock());
     }
 
     /**

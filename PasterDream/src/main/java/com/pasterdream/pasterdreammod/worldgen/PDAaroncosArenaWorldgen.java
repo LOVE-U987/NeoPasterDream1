@@ -104,11 +104,18 @@ public class PDAaroncosArenaWorldgen {
      */
     private static void startConfirmDrainer(ServerLevel overworld) {
         ServerScheduler.schedule(CONFIRM_INTERVAL_TICKS, () -> {
+            // 先重排再处理：ServerScheduler 的 per-task catch 会吞掉任务体异常，
+            // 若重排在循环之后，单条确认抛异常会让排水器永久死亡、后续放置永不再确认
+            startConfirmDrainer(overworld);
             BlockPos pos;
             while ((pos = PENDING_CONFIRM.poll()) != null) {
-                confirmArenaPlacement(overworld, pos);
+                try {
+                    confirmArenaPlacement(overworld, pos);
+                } catch (Exception e) {
+                    PasterDreamMod.LOGGER.error(
+                            "[PDAaroncosArenaWorldgen] 确认竞技场放置失败（{}），跳过该条继续排水", pos, e);
+                }
             }
-            startConfirmDrainer(overworld);
         });
     }
 
@@ -154,8 +161,8 @@ public class PDAaroncosArenaWorldgen {
      * 服务器启动时：启动放置确认排水器，并按配置处理已有存档的感染。
      * <ul>
      *   <li>配置关闭（默认）：已有感染的存档被<b>强制停止并自动清理</b>
-     *       （停止感染循环、回滚被感染方块、还原竞技场群系、标记击败状态，
-     *       之后重启不再恢复感染）；</li>
+     *       （停止感染循环、回滚被感染方块、还原竞技场群系并复位群系刷写标记；
+     *       不标记击败——重新开启配置后感染与群系刷写可恢复）；</li>
      *   <li>配置开启且 BOSS 未击败：恢复遗迹感染（群系刷写中断的补完）；</li>
      *   <li>配置开启且 BOSS 已击败：保持退化状态，不再恢复。</li>
      * </ul>
@@ -174,13 +181,13 @@ public class PDAaroncosArenaWorldgen {
         PDAaroncosArenaSpawnData spawnData = PDAaroncosArenaSpawnData.get(overworld);
         BlockPos center = spawnData.getCenter();
 
-        // 配置关闭（默认）：强制停止已有感染并自动清理，之后不再恢复
+        // 配置关闭（默认）：强制停止已有感染并自动清理（不标记击败，可随配置恢复）
         if (!PDCommonConfig.ARENA_RUIN_INFECTION_ENABLED.get()) {
             if (spawnData.isPlaced() && center != null && !spawnData.isDefeated()) {
                 PasterDreamMod.LOGGER.info(
                         "[PDAaroncosArenaWorldgen] 感染功能已在配置中关闭，强制停止并自动清理存档中的遗迹感染（中心 {}）",
                         center.toShortString());
-                cureInfection(overworld);
+                clearInfection(overworld);
             }
             return;
         }
@@ -229,6 +236,41 @@ public class PDAaroncosArenaWorldgen {
         PDAaroncosArenaSpawnData spawnData = PDAaroncosArenaSpawnData.get(overworld);
         spawnData.markDefeated();
 
+        rollbackInfection(overworld, spawnData);
+    }
+
+    /**
+     * 清理遗迹感染（服务器启动时配置关闭的存档自动清理）。
+     * <p>
+     * 区别于 {@link #cureInfection}（BOSS 击败的治愈）：本方法<b>不标记击败状态</b>——
+     * 「击败」是游戏成就，只能由 BOSS 胜利路径置位；若配置关闭的清理也标记 defeated，
+     * 管理员重新开启配置后感染将因 defeated 门控永不恢复、群系永不重刷，
+     * 且此时 BOSS 实际并未被击败，存档永久处于「已击败」态无任何恢复路径。
+     * <p>
+     * 清理同时复位 biomePainted（群系已被还原，重新开启配置后可重新刷写）。
+     *
+     * @param overworld 主世界
+     */
+    public static void clearInfection(ServerLevel overworld) {
+        ArenaRuinInfection.stop();
+
+        PDAaroncosArenaSpawnData spawnData = PDAaroncosArenaSpawnData.get(overworld);
+        rollbackInfection(overworld, spawnData);
+        // 群系已被还原：复位刷写标记，重新开启配置后可重新刷写
+        spawnData.resetBiomePainted();
+    }
+
+    /**
+     * 回滚被感染方块并还原竞技场群系（治愈与清理共用的还原部分）。
+     * <p>
+     * 群系还原采用噪声源重推导：竞技场群系是覆盖在世界生成群系之上的，
+     * {@link BiomeSource#getNoiseBiome} 按种子确定性给出刷写前的原始群系，
+     * 因此无需记录原始群系数据即可精确还原（对旧版存档同样有效）。
+     *
+     * @param overworld 主世界
+     * @param spawnData 放置数据
+     */
+    private static void rollbackInfection(ServerLevel overworld, PDAaroncosArenaSpawnData spawnData) {
         PortalInfectionData infectionData = PortalInfectionData.get(overworld);
         PortalRestorationHandler.startRestoration(overworld, infectionData.getPortalPositions());
 
