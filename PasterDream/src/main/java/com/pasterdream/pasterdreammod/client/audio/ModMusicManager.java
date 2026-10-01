@@ -145,20 +145,46 @@ public class ModMusicManager {
     /**
      * 初始化默认群系音乐映射
      * <p>
-     * 注册染梦维度的默认群系音乐配置。
+     * 注册染梦维度与风之旅途维度的默认群系音乐配置。
+     * <p>
+     * <b>映射以曲名语义为准</b>（曲名中文译名见 {@code lang/zh_cn.json} 的
+     * {@code subtitle.pasterdream.music.*}）：
+     * <ul>
+     *   <li>梦幻雪林（dream_taiga）→ 染梦冰雪冻原</li>
+     *   <li>梦幻三角洲（dream_delta）→ 染梦河流</li>
+     *   <li>甜蜜的梦（sweetdream_music）→ 染梦深海 / 冰冻海洋 / 海岸</li>
+     *   <li>梦幻荒原（dream_heath）+ Daisy → 染梦森林 / 密林</li>
+     *   <li>落雪之梦（snowfall_dream_music）→ 染梦蘑菇平原</li>
+     *   <li>染梦世界（dyedream_world）→ 染梦平原（维度主 BGM）</li>
+     * </ul>
+     * <p>
+     * <b>群系 ID 必须与维度 JSON 中的实际群系一致</b>：风之旅途维度的群系为
+     * {@code wind_journey_islands} / {@code wind_journey_desert}
+     * （见 {@code dimension/wind_journey_world.json}），已废弃的
+     * {@code wind_journey_biome_0/1} 不再生成，挂在其上的音乐会永久无人播放。
+     * <p>
+     * 注意：本表是自定义维度内 BGM 的唯一权威来源——染梦/风旅维度由
+     * {@link com.pasterdream.pasterdreammod.mixin.MinecraftMixin} 屏蔽原版群系音乐，
+     * 群系 JSON 的 {@code music} 字段仅作为该 mixin 失效时的兜底，不代表实际播放结果。
      */
     public void initializeDefaultBiomeMusic() {
+        // ==================== 染梦维度 ====================
         registerBiomeMusic("dyedream_plains", "dyedream_world");
         registerBiomeMusic("dyedream_forest", "dream_heath", "dream_meadow_daisy");
-        registerBiomeMusic("dyedream_frozen_tundra", "dream_delta");
-        registerBiomeMusic("dyedream_cold_ocean", "dream_taiga");
+        registerBiomeMusic("dyedream_dense_forest", "dream_heath", "dream_meadow_daisy");
+        // 梦幻雪林 → 冰雪冻原
+        registerBiomeMusic("dyedream_frozen_tundra", "dream_taiga");
+        // 甜梦主题（深海）同时覆盖冰冻海洋与海岸
+        registerBiomeMusic("dyedream_cold_ocean", "sweetdream_music");
         registerBiomeMusic("dyedream_deep_ocean", "sweetdream_music");
         registerBiomeMusic("dyedream_mushroom_plains", "snowfall_dream_music");
-        registerBiomeMusic("dyedream_dense_forest", "dream_heath", "dream_meadow_daisy");
         registerBiomeMusic("dyedream_shore", "sweetdream_music");
-        registerBiomeMusic("dyedream_river", "dyedream_world");
-        registerBiomeMusic("wind_journey_biome_0", "wind_journey_departure", "wind_journey_midsummer");
-        registerBiomeMusic("wind_journey_biome_1", "wind_journey_departure", "wind_journey_midsummer");
+        // 梦幻三角洲 → 河流
+        registerBiomeMusic("dyedream_river", "dream_delta");
+
+        // ==================== 风之旅途维度 ====================
+        registerBiomeMusic("wind_journey_islands", "wind_journey_departure", "wind_journey_midsummer");
+        registerBiomeMusic("wind_journey_desert", "wind_journey_departure", "wind_journey_midsummer");
     }
 
     /**

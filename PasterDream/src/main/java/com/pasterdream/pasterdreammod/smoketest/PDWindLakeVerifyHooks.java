@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  * <p>
  * 在非超平坦 + 开建筑的测试世界上，校验正式常驻挂接的
  * {@code ground_feature_wind_journey_1}（{@code pasterdream:safe_lake}，经
- * {@code wind_journey_ground_surface} biome_modifier 注入 biome_0），进真实风维强制 gen 并断言：
+ * {@code wind_journey_ground_surface} biome_modifier 注入 wind_journey_islands），进真实风维强制 gen 并断言：
  * 不崩 + 扫描到 water + cyan_stone 湖形貌。
  * <p>
  * 套件门控仍用 {@link PDWindLakeBiomeModifier#isVerifyLakeEnabled()}（建档 NORMAL+structures）；
@@ -40,8 +40,14 @@ public final class PDWindLakeVerifyHooks {
     public record Result(boolean pass, String name, String detail) {
     }
 
-    private static final ResourceLocation BIOME_0 =
-            ResourceLocation.fromNamespaceAndPath("pasterdream", "wind_journey_biome_0");
+    /**
+     * 湖所在群系 —— 风之旅途维度的实际群系 ID。
+     * <p>
+     * 维度 JSON 使用 {@code wind_journey_islands}，旧的 {@code wind_journey_biome_0}
+     * 已不再生成（本套件曾因此恒失败）。
+     */
+    private static final ResourceLocation BIOME_ISLANDS =
+            ResourceLocation.fromNamespaceAndPath("pasterdream", "wind_journey_islands");
     private static final ResourceLocation LAKE_PLACED =
             ResourceLocation.fromNamespaceAndPath("pasterdream", "ground_feature_wind_journey_1");
     private static final ResourceLocation CYAN_STONE_ID =
@@ -58,7 +64,7 @@ public final class PDWindLakeVerifyHooks {
     }
 
     /**
-     * 同步：挂接校验 → TP 风维 → 落到 biome_0 → 强制 gen → 扫湖。
+     * 同步：挂接校验 → TP 风维 → 落到 wind_journey_islands → 强制 gen → 扫湖。
      * 若 LakeFeature 再次 FATAL，进程无法写完报告 → CI 失败（「不崩」判据）。
      */
     public static void verify(MinecraftServer server, ServerPlayer player, Consumer<Result> out) {
@@ -88,11 +94,11 @@ public final class PDWindLakeVerifyHooks {
             return;
         }
 
-        boolean featureWired = isLakeFeatureOnBiome0(wind);
+        boolean featureWired = isLakeFeatureOnIslands(wind);
         out.accept(new Result(featureWired, "wind_lake.feature_wired",
                 featureWired
-                        ? "biome_0 surface_structures 含 " + LAKE_PLACED
-                        : "biome_0 未注入 lake placed feature（modifier 未生效）"));
+                        ? "wind_journey_islands surface_structures 含 " + LAKE_PLACED
+                        : "wind_journey_islands 未注入 lake placed feature（modifier 未生效）"));
         if (!featureWired) {
             return;
         }
@@ -104,7 +110,7 @@ public final class PDWindLakeVerifyHooks {
 
         float yRot = player.getYRot();
         float xRot = player.getXRot();
-        // 先到风维原点高空，再螺旋找 biome_0 落点
+        // 先到风维原点高空，再螺旋找 wind_journey_islands 落点
         player.teleportTo(wind, 0.5D, 160.0D, 0.5D, yRot, xRot);
         boolean inWind = PDDimensions.isWindJourneyWorld(player.level());
         out.accept(new Result(inWind, "wind_lake.teleport",
@@ -113,10 +119,10 @@ public final class PDWindLakeVerifyHooks {
             return;
         }
 
-        BlockPos anchor = findBiome0Anchor(wind, new BlockPos(0, 120, 0), 48);
+        BlockPos anchor = findIslandsAnchor(wind, new BlockPos(0, 120, 0), 48);
         if (anchor == null) {
-            out.accept(new Result(false, "wind_lake.biome0",
-                    "未在搜索半径内找到 wind_journey_biome_0"));
+            out.accept(new Result(false, "wind_lake.biome_islands",
+                    "未在搜索半径内找到 wind_journey_islands"));
             return;
         }
         int surfaceY = wind.getHeight(Heightmap.Types.WORLD_SURFACE_WG, anchor.getX(), anchor.getZ());
@@ -128,7 +134,7 @@ public final class PDWindLakeVerifyHooks {
         double py = surfaceY + 2.0D;
         player.teleportTo(wind, px, py, pz, yRot, xRot);
         out.accept(new Result(true, "wind_lake.anchor",
-                "biome0@" + anchor.getX() + "," + surfaceY + "," + anchor.getZ()));
+                "islands@" + anchor.getX() + "," + surfaceY + "," + anchor.getZ()));
 
         int forced = forceChunks(wind, player.chunkPosition(), CHUNK_RADIUS);
         out.accept(new Result(forced > 0, "wind_lake.chunks",
@@ -142,9 +148,9 @@ public final class PDWindLakeVerifyHooks {
                         + " sample=" + scan.sample()));
     }
 
-    private static boolean isLakeFeatureOnBiome0(ServerLevel wind) {
+    private static boolean isLakeFeatureOnIslands(ServerLevel wind) {
         Optional<Holder.Reference<net.minecraft.world.level.biome.Biome>> biome =
-                wind.registryAccess().registryOrThrow(Registries.BIOME).getHolder(BIOME_0);
+                wind.registryAccess().registryOrThrow(Registries.BIOME).getHolder(BIOME_ISLANDS);
         if (biome.isEmpty()) {
             return false;
         }
@@ -167,9 +173,9 @@ public final class PDWindLakeVerifyHooks {
         return steps.get(step).contains(lake.get());
     }
 
-    /** 螺旋搜索 biome_0；步长 16 格。 */
-    private static BlockPos findBiome0Anchor(ServerLevel wind, BlockPos origin, int maxRing) {
-        if (isBiome0(wind, origin)) {
+    /** 螺旋搜索 wind_journey_islands；步长 16 格。 */
+    private static BlockPos findIslandsAnchor(ServerLevel wind, BlockPos origin, int maxRing) {
+        if (isIslands(wind, origin)) {
             return origin;
         }
         for (int ring = 1; ring <= maxRing; ring++) {
@@ -177,21 +183,21 @@ public final class PDWindLakeVerifyHooks {
             int r = ring * step;
             for (int dx = -r; dx <= r; dx += step) {
                 BlockPos a = origin.offset(dx, 0, -r);
-                if (isBiome0(wind, a)) {
+                if (isIslands(wind, a)) {
                     return a;
                 }
                 BlockPos b = origin.offset(dx, 0, r);
-                if (isBiome0(wind, b)) {
+                if (isIslands(wind, b)) {
                     return b;
                 }
             }
             for (int dz = -r + step; dz <= r - step; dz += step) {
                 BlockPos a = origin.offset(-r, 0, dz);
-                if (isBiome0(wind, a)) {
+                if (isIslands(wind, a)) {
                     return a;
                 }
                 BlockPos b = origin.offset(r, 0, dz);
-                if (isBiome0(wind, b)) {
+                if (isIslands(wind, b)) {
                     return b;
                 }
             }
@@ -199,12 +205,12 @@ public final class PDWindLakeVerifyHooks {
         return null;
     }
 
-    private static boolean isBiome0(ServerLevel wind, BlockPos pos) {
+    private static boolean isIslands(ServerLevel wind, BlockPos pos) {
         int y = wind.getHeight(Heightmap.Types.WORLD_SURFACE_WG, pos.getX(), pos.getZ());
         if (y <= wind.getMinBuildHeight()) {
             y = 80;
         }
-        return wind.getBiome(new BlockPos(pos.getX(), y, pos.getZ())).is(BIOME_0);
+        return wind.getBiome(new BlockPos(pos.getX(), y, pos.getZ())).is(BIOME_ISLANDS);
     }
 
     private static int forceChunks(ServerLevel wind, ChunkPos center, int radius) {
