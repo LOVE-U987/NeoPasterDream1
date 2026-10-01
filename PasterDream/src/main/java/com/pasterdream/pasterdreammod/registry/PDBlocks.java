@@ -405,10 +405,8 @@ public class PDBlocks {
     public static final DeferredBlock<?> SHADOW_DUNGEON_KEY_1 = PDBlocksDungeon.SHADOW_DUNGEON_KEY_1;
     public static final DeferredBlock<?> SHADOWCANDLE = PDBlocksDungeon.SHADOWCANDLE;
     public static final DeferredBlock<?> SHADOW_BLAST_FURNACE_CORE = PDBlocksDungeon.SHADOW_BLAST_FURNACE_CORE;
-    public static final DeferredBlock<?> SHADOWSHELF_0 = PDBlocksDungeon.SHADOWSHELF_0;
-    public static final DeferredBlock<?> SHADOWSHELF_1 = PDBlocksDungeon.SHADOWSHELF_1;
-    public static final DeferredBlock<?> SHADOWSHELF_2 = PDBlocksDungeon.SHADOWSHELF_2;
-    public static final DeferredBlock<?> SHADOWSHELF_3 = PDBlocksDungeon.SHADOWSHELF_3;
+    public static final DeferredBlock<?> SHADOWSHELF = PDBlocksDungeon.SHADOWSHELF;
+    public static final DeferredBlock<?> SHADOWSHELF_WITH_KEY = PDBlocksDungeon.SHADOWSHELF_WITH_KEY;
     public static final DeferredBlock<?> SHADOW_FISSURE_0 = PDBlocksDungeon.SHADOW_FISSURE_0;
     public static final DeferredBlock<?> SHADOW_FISSURE_1 = PDBlocksDungeon.SHADOW_FISSURE_1;
     public static final DeferredBlock<?> SHADOW_FISSURE_2 = PDBlocksDungeon.SHADOW_FISSURE_2;

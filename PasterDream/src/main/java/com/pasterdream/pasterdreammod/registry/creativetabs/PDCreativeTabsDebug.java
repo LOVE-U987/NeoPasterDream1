@@ -60,7 +60,6 @@ public class PDCreativeTabsDebug {
                         output.accept(PDItems.DEBUG_WAND_PINKAGARIC_CLUSTER.get());
                         output.accept(PDItems.DEBUG_WAND_CALCITE_PILLAR.get());
                         output.accept(PDItems.DEBUG_WAND_SEAGRASS.get());
-                        output.accept(PDItems.DEBUG_WAND_GRASS.get());
                         output.accept(PDItems.DEBUG_WAND_BUDS.get());
                         output.accept(PDItems.DEBUG_WAND_LOTUS.get());
                         output.accept(PDItems.DEBUG_WAND_LILY_PAD.get());
@@ -145,6 +144,20 @@ public class PDCreativeTabsDebug {
                         output.accept(PDItems.DEBUG_WAND_WINDMOOR_TREE.get());
                         output.accept(PDItems.DEBUG_WAND_HOT_AIR_BALLOON.get());
                         output.accept(PDItems.DEBUG_WAND_CHRISTMAS_TREE.get());
+                        // 风之旅途多变体调试水晶（潜行 + 滚轮切换变体）
+                        output.accept(PDItems.DEBUG_WAND_SMALL_BALLOON.get());
+                        output.accept(PDItems.DEBUG_WAND_BIG_BUBBLES.get());
+                        output.accept(PDItems.DEBUG_WAND_WIND_ISLAND.get());
+                        output.accept(PDItems.DEBUG_WAND_WINDMILL_LODGE.get());
+                        output.accept(PDItems.DEBUG_WAND_WIND_POND.get());
+                        output.accept(PDItems.DEBUG_WAND_WIND_INFESTED_STONE.get());
+                        output.accept(PDItems.DEBUG_WAND_BREAKWIND_CURTAIN.get());
+                        output.accept(PDItems.DEBUG_WAND_LOST_WINDKNIGHT_RUINS.get());
+                        output.accept(PDItems.DEBUG_WAND_FOURLEAF_CLOVER.get());
+                        output.accept(PDItems.DEBUG_WAND_BOCCHI.get());
+                        output.accept(PDItems.DEBUG_WAND_HAKUREI_REIMU.get());
+                        // 风之树 18 变体（程序化生成，装饰模式）
+                        output.accept(PDItems.DEBUG_WAND_WIND_TREE.get());
                         // W4：调试机关
                         output.accept(PDItems.GUARD_BLOCK.get());
                         output.accept(PDItems.RESTRAINMOVE_BLOCK.get());

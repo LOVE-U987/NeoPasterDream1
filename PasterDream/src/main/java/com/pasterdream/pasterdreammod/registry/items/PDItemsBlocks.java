@@ -260,10 +260,8 @@ public class PDItemsBlocks {
     public static final DeferredItem<BlockItem> SHADOW_BLAST_FURNACE_CORE = PDItems.ITEMS.registerSimpleBlockItem("shadow_blast_furnace_core", PDBlocks.SHADOW_BLAST_FURNACE_CORE);
 
     // 暗影书架系列
-    public static final DeferredItem<BlockItem> SHADOWSHELF_0 = PDItems.ITEMS.registerSimpleBlockItem("shadowshelf_0", PDBlocks.SHADOWSHELF_0);
-    public static final DeferredItem<BlockItem> SHADOWSHELF_1 = PDItems.ITEMS.registerSimpleBlockItem("shadowshelf_1", PDBlocks.SHADOWSHELF_1);
-    public static final DeferredItem<BlockItem> SHADOWSHELF_2 = PDItems.ITEMS.registerSimpleBlockItem("shadowshelf_2", PDBlocks.SHADOWSHELF_2);
-    public static final DeferredItem<BlockItem> SHADOWSHELF_3 = PDItems.ITEMS.registerSimpleBlockItem("shadowshelf_3", PDBlocks.SHADOWSHELF_3);
+    public static final DeferredItem<BlockItem> SHADOWSHELF = PDItems.ITEMS.registerSimpleBlockItem("shadowshelf", PDBlocks.SHADOWSHELF);
+    public static final DeferredItem<BlockItem> SHADOWSHELF_WITH_KEY = PDItems.ITEMS.registerSimpleBlockItem("shadowshelf_with_key", PDBlocks.SHADOWSHELF_WITH_KEY);
 
     // 暗影裂隙系列
     public static final DeferredItem<BlockItem> SHADOW_FISSURE_0 = PDItems.ITEMS.registerSimpleBlockItem("shadow_fissure_0", PDBlocks.SHADOW_FISSURE_0);

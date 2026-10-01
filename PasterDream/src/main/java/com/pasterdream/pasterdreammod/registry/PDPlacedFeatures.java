@@ -26,8 +26,6 @@ public class PDPlacedFeatures {
     public static final ResourceKey<PlacedFeature> ORE_DYEDREAMQUARTZ = createKey("ore_dyedreamquartz");
 
     // ==================== 植被 ====================
-    /** 染梦草地被草 */
-    public static final ResourceKey<PlacedFeature> PATCH_DYEDREAM_GRASS = createKey("patch_dyedream_grass");
     /** 染梦芽集合 */
     public static final ResourceKey<PlacedFeature> PATCH_DYEDREAM_BUDS = createKey("patch_dyedream_buds");
     /** 粉色蘑菇 */
