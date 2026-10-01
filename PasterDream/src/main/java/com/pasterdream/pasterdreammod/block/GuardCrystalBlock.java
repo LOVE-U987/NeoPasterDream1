@@ -25,6 +25,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -138,18 +139,38 @@ public class GuardCrystalBlock extends BaseEntityBlock {
 
     // ==================== 右键自毁流程（原 GuardCrystalPr0Procedure） ====================
 
+    /**
+     * 右键触发自毁序列。
+     * <p>
+     * <b>server-only</b>：交互入口统一在服务端执行。客户端预测路径若同样执行，
+     * 会把延迟任务调度进共享的 {@link ServerScheduler} 队列并捕获 {@code ClientLevel}，
+     * 导致"客户端本地移除方块、服务端不同步"的残影现象（残影需下一次方块更新才消失）。
+     * <p>
+     * <b>防重复触发</b>：以方块实体数据 {@code triggered} 作为触发锁。
+     * 不用 {@code ANIMATION} 属性——GeckoLib 动画控制器在动画播放完毕后会自动把
+     * {@code ANIMATION} 复位为 0，无法覆盖整段 +31 tick 的自毁延迟窗口；
+     * BE 数据随方块存档持久化，可靠锁定。
+     */
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hitResult) {
+        // 服务端独占：避免客户端预测调度 ClientLevel 任务
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+        // 已进入自毁流程的方块不再响应右键（BE 触发锁）
+        if (W4DataBlockEntity.getBooleanAt(level, pos, "triggered")) {
+            return InteractionResult.CONSUME;
+        }
+        W4DataBlockEntity.putBooleanAt(level, pos, "triggered", true);
+        // 0→1 状态转变驱动 GeckoLib 播放开启动画
+        level.setBlock(pos, state.setValue(ANIMATION, 1), 3);
+
         double x = pos.getX();
         double y = pos.getY();
         double z = pos.getZ();
-        if (!level.isClientSide()) {
-            level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 3, 1.2f);
-        }
+        level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 3, 1.2f);
         ServerScheduler.schedule(3, () -> {
-            setAnimation(level, pos, 0);
-            setAnimation(level, pos, 1);
             if (level instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(ParticleTypes.END_ROD, x + 0.5, y + 0.5, z + 0.5, 64, 1, 1, 1, 0.3);
             }
@@ -174,14 +195,34 @@ public class GuardCrystalBlock extends BaseEntityBlock {
                         p.displayClientMessage(Component.translatable("message.pasterdream.guard_crystal.guardian_destroyed"), false);
                     }
                 }
-                if (!level.isClientSide()) {
-                    level.explode(null, x + 0.5, y + 0.5, z + 0.5, 3, Level.ExplosionInteraction.TNT);
+                if (level instanceof ServerLevel serverLevel) {
+                    serverLevel.explode(null, x + 0.5, y + 0.5, z + 0.5, 3, Level.ExplosionInteraction.TNT);
+                    removeCrystal(serverLevel, pos);
+                } else {
+                    level.removeBlock(pos, false);
                 }
-                level.destroyBlock(pos, false);
-                ServerScheduler.schedule(1, () -> level.destroyBlock(pos, false));
+                ServerScheduler.schedule(1, () -> level.removeBlock(pos, false));
             });
         });
         return InteractionResult.SUCCESS;
+    }
+
+    /**
+     * 彻底移除守护者水晶：先移除方块实体再移除方块，并强制向客户端同步空状态。
+     * <p>
+     * 守护者水晶为 {@code ENTITYBLOCK_ANIMATED} + GeckoLib BER 方块，
+     * 常规 {@code destroyBlock} 在存在动画方块实体时可能残留在客户端的
+     * 方块实体渲染列表中，形成"残影"。显式移除 BE + {@code sendBlockUpdated}
+     * 可确保客户端立即清除该位置的渲染内容。
+     *
+     * @param level 服务端世界
+     * @param pos   方块位置
+     */
+    private static void removeCrystal(ServerLevel level, BlockPos pos) {
+        BlockState oldState = level.getBlockState(pos);
+        level.removeBlockEntity(pos);
+        level.removeBlock(pos, false);
+        level.sendBlockUpdated(pos, oldState, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
     }
 
     /** 设置 animation 属性 */

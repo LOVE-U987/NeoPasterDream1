@@ -196,6 +196,12 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
+        // 防重复触发：修复流程已启动（repairing 标记）时不再响应右键。
+        // 关键——修复成功后需消耗黑金属锭 + 影灯，无此保护时 20 tick 修复窗口内
+        // 重复右键会重复扣物品并重复调度替换任务。
+        if (W4DataBlockEntity.getBooleanAt(level, pos, "repairing")) {
+            return InteractionResult.CONSUME;
+        }
         // ===== 破损状态修复逻辑（原 BrokenShadowDungeonProtalBlock 逻辑） =====
         if (pos.getY() <= 20) {
             if (!player.level().isClientSide()) {
@@ -236,6 +242,8 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
 
     /** 修复演出 + 20 tick 后替换为完整暗影地牢传送门 */
     private static void startRepair(Level level, BlockPos pos, Player player) {
+        // 立即写入修复触发锁（BE 数据持久化），阻止 20 tick 修复窗口内的重复右键
+        W4DataBlockEntity.putBooleanAt(level, pos, "repairing", true);
         // 修复演出：animation=1 + smithing_table 音效 + 末地烛粒子
         setAnimation(level, pos, 1);
         if (!level.isClientSide()) {
@@ -274,13 +282,22 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
         }
 
         if (W4DataBlockEntity.getBooleanAt(level, pos, "exit")) {
-            // 出口传送：倒计时后传送到地表
-            if (!level.isClientSide()) {
-                level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 2, 1);
+            // 防重复触发：已在出口传送倒计时中时吞掉后续右键，
+            // 避免 60 tick 倒计时窗口内重复调度多段倒计时/多次传送
+            if (W4DataBlockEntity.getBooleanAt(level, pos, "exiting")) {
+                return InteractionResult.CONSUME;
             }
+            W4DataBlockEntity.putBooleanAt(level, pos, "exiting", true);
+            // 出口传送：倒计时后传送到地表
+            level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 2, 1);
             setAnimation(level, pos, 0);
             setAnimation(level, pos, 1);
             countdownTeleport(level, pos, x + 0.5, y + 66, z + 2.5, false);
+            // 倒计时结束后解锁（exit 标记保留，供再次使用出口）
+            ServerScheduler.schedule(62, () -> {
+                W4DataBlockEntity.putBooleanAt(level, pos, "exiting", false);
+                setAnimation(level, pos, 0);
+            });
             return InteractionResult.SUCCESS;
         }
 
