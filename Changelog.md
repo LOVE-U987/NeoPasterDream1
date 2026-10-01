@@ -1,9 +1,30 @@
 # PasterDream Changelog
 
 ---
+## v0.10.1 — 2026-09-26
+
+### 修复：染梦/风旅维度 BGM 与群系错位、蘑菇平原实际不生成
+
+*   **根因 1（映射语义错位）**：自定义维度内 BGM 的唯一权威来源是 `client/audio/ModMusicManager#initializeDefaultBiomeMusic()`（`mixin/MinecraftMixin` 在自定义维度内屏蔽原版群系音乐），但该表沿用旧群系 ID 重命名前的对应关系，曲名与群系语义错位——`梦幻三角洲`（`dream_delta`）挂在染梦冰雪冻原、`梦幻雪林`（`dream_taiga`）挂在染梦冰冻海洋。
+*   **根因 2（挂在不存在的群系上）**：风之旅途维度实际群系为 `wind_journey_islands`/`wind_journey_desert`（`dimension/wind_journey_world.json`），音乐表与 `smoketest/PDWindLakeVerifyHooks` 仍引用已不生成的 `wind_journey_biome_0/1` → 该维度被 mixin 静音后无人接管，**完全无 BGM**；`wind_journey_departure`/`wind_journey_midsummer` 两首从未被播放。
+*   **根因 3（群系实际不生成）**：`worldgen/chunkgen/DyedreamBiomeSource` 的 `MUSHROOM_PLAINS_THRESHOLD = 0.86`。用仓库内第三方 `FastNoise` 实测 1677 万采样点，覆盖率仅 **0.0049%**（约每 2 万个区块 1 个），等同不生成，连带 `snowfall_dream_music` 无人能听到。
+*   **修复**（`client/audio/ModMusicManager`）：染梦 9 群系按曲名语义重排——冰雪冻原→`梦幻雪林`、河流→`梦幻三角洲`、冰冻海洋/深海/海岸→`甜蜜的梦`、平原→`染梦世界`、森林/密林→`梦幻荒原`+`Daisy`、蘑菇平原→`落雪之梦`；风之旅途改挂 `wind_journey_islands`/`wind_journey_desert`。
+*   **修复**（`worldgen/chunkgen/DyedreamBiomeSource`）：蘑菇平原噪声阈值 `0.86 → 0.75`，实测覆盖率 **0.506%**（斑块约 32 格见方），稀有但可稳定找到；阈值-覆盖率实测数据写入常量注释。
+*   **修复**（`smoketest/PDWindLakeVerifyHooks`）：`wind_journey_biome_0 → wind_journey_islands`（常量、断言名、提示文案同步），该 VERIFY 套件此前因群系不存在恒失败。
+*   **同步**（`data/pasterdream/worldgen/biome/`，6 个染梦群系 JSON）：`music.sound` 字段与新映射对齐（该字段在自定义维度内仅作 mixin 失效时的兜底，不代表实际播放结果），并统一行尾为 LF。
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；蘑菇平原覆盖率由独立 FastNoise 采样程序实测（0.70→1.387%、0.75→0.506%、0.80→0.115%、0.86→0.0049%）。
+
 ## v0.10.0 — 2026-09-25
 
 > 依据 `docs/版本开发总结-v.0.10.0/重构融梦宝箱战利品+新增风泊悬挂藤与叶块合并.md` 整理，战利品部分整合 `diff/momonyako/main`。
+
+### 新增：pasterdream-api-guide 技能包（API 总览 + 缺失域教程，签名经源码核签）
+
+*   **新增**（`docs/deprecated/skills/pasterdream-api-guide/SKILL.md`，新，673 行）：API 使用总览教程——三件套模式（Facade+Builder+Result）、`registerAll` 生命周期（前置 mod `PasterDreamAPIMod` 独占挂接 15 个 DeferredRegister + 2 处特殊注册，下游禁止重复调用，否则 `Cannot register DeferredRegister to more than one event bus`）、共享门面命名空间语义（内容落 `pasterdream:`，FluidType 例外 `pasterdreamapi`）、成熟度速查；11 个无独立技能包域的核签快速上手（方块/物品/维度/流体/菜单/饰品/理智/融梦能量/法术/BGM/附属配置）+ Doll API（Java 侧）全貌（含 `.desc` 语言键、loot_table 手写、`bb_main` 几何约定、legacy 路径硬编码等坑位）
+*   **核签方法**：三路只读 Agent 逐项比对源码——入口精确签名、Builder 方法与默认值、Result 组件、真实调用示例（文件:行）
+*   **结论**（`docs/开发指南/注册指南.md`）：其方块/物品/维度/遗迹/菜单段示例签名**大面积失效**（`createBlock`/`createItem` 系列、`registerBlockItem`、`registerToTab`、`TerrainNegotiation` 等均不存在；`registerAll` 归属已变更）——新技能包内已标注勿参考；同内容副本 `docs/架构/注册流程.md` 一并待处置
+*   **核签结论**（9 个既有技能包，`docs/deprecated/skills/`）：均判「部分过时」，签名层总体健康；横切问题——7 个技能仍教开发者在主模构造器调 `registerAll`/`XXAPI.REGISTRY.register`（当前机制下照做即 double-register 崩溃）；点状失效——`neoforge-block-drops` 的 `DeferredBlock.toItem()` 代码不可编译、`pasterdream-mod-dev` 的 `GeckoLibAnimalEntity` 不存在/GeckoLib 4.7.3（应 4.8.4）/变体集与批量 Builder 示例缺参、`pasterdream-vfx-api` 的 `ScreenEffectAPI.registerType` 实为两参、`world-decoration-api` 参数一览漏 `claimCheck` 等 4 个新方法、`SelfDropBlock` 掉落策略语义已改为「无实际战利品表才回退自掉落」（影响 mod-dev/block-drops 两处口径）。修正清单已出，待确认后落地
+*   **删除**（旧档清理）：误导性旧教程 `docs/deprecated/docs/tutorials/kubejs-doll-tutorial.md`（内容已被 `docs/教程/KubeJS玩偶.md` 取代）；`docs/deprecated/docs/tutorials/doll-api-tutorial.md` 同判部分过时（战利品表/.desc/namespace/legacy 五坑），处置待定
 
 ### 修复：融梦水晶箱只能开出万象神戒与啵啵鸡的华丽飞羽（战利品以 diff/momonyako/main 为准）
 
@@ -74,6 +95,28 @@
 *   **修复**（`PasterDream` `block/WindmoorHangingVineBlock.java`）：删除从未被写入的 `SUPPRESSED` 状态属性（含字段、默认状态、`createBlockStateDefinition`、`randomTick` 判断与 `BooleanProperty` 导入）——该属性只被读取、不被写入，恒为 `false`，属死状态，删除后同时消除了每个方块状态多出的无效变体
 *   **修复**（`assets/pasterdream/blockstates/windmoor_hanging_vine.json`）：变体键由 `""` 改为按 `age=0` / `age=1` / `age=2` 显式枚举——方块具备 `AGE` 属性时必须枚举，写法与同目录 `windmoor_log.json` 一致
 *   **确认（无代码变更）**：原模组 `windmoor_leaves_2` 为 `noCollission()` 且 `getVisualShape` 为空的隐形可穿行方块，合并后该可穿行行为不再存在。经检索，仓库内 5 个 `.nbt` 结构（含 HEAD 版本，`git grep -a` 二进制无命中）与全部数据/世界生成文件均未引用 `windmoor_leaves_0/1/2`，该变体在现有数据中零使用，故按「有碰撞」合并保留
+
+### 修复：竞技场遗迹感染系统恶性 BUG（结构查询触发不可逆感染 + 永久锁死结构生成）
+
+> 依据《帕斯特之梦_竞技场感染bug报告.md》与用户验收标准重写感染生命周期。
+
+*   **根因 1**（`worldgen/structure/AaroncosArenaPortalStructure.java`）：`findGenerationPoint` 是 MC 的结构查询/预测方法（只读语义），却被写入不可逆持久化副作用（`markPlaced` + 延迟 1 tick 启动感染 + 刷写 15625 格群系）——任何调用 `Structure.findGenerationPoint` / `Structure.generate` 的代码都会触发，实测探险家指南针（Explorer's Compass Enhance）一次搜索即让未接触模组的玩家被永久感染
+*   **根因 2**：`markPlaced` 早于实际组装且组装失败不回滚 → `isPlaced` 持久锁死 → 结构从此永不生成，玩家"只被感染、永远看不到竞技场"
+*   **根因 3**：`tryRegisterCenter`（200 格出生点校验）与结构路径（无校验）双轨不一致；`center` 单值多竞技场互相覆盖；`onServerStarting` 无条件恢复感染且无任何配置开关（310 项配置无一相关）
+*   **重构**（结构类 → 纯查询）：`findGenerationPoint` 仅做只读关门判定（读 `placed` 抑制后续候选），移除全部写入/调度/回滚；第三方结构查询/预览零副作用
+*   **新增**（`world/PDAaroncosArenaSpawnData.java`）：持久化字段 `biomePainted`（群系已刷写，防重复刷写）与 `defeated`（BOSS 已击败，感染永久退化）；删除不再使用的 `rollback()`
+*   **新增**（真实放置确认链，`worldgen/PDAaroncosArenaWorldgen.java`）：传送门方块在世界生成阶段真实落入主世界（`onPlace` 的 WorldGenRegion 上下文）→ 经线程安全 `ConcurrentLinkedQueue` 入队 → 主线程确认器（每 20 tick 排水）`confirmArenaPlacement` 落库 placed/center 并按配置启动群系刷写与感染——"结构已放置"由方块真实落地证明，结构查询永远无法伪造；同时解决 `ServerScheduler` 非线程安全问题（工作线程不再调用调度器）
+*   **重构**（`block/AaroncosArenaPortalsBlock.java`）：`onPlace` 按上下文分流——世界生成 → 入队确认；已加载世界（玩家/机器放置）→ 仅调度小范围感染 tick；删除 `tryRegisterCenter` 双轨路径
+*   **新增**（感染统一门控，`world/ArenaInfectionUtils.java`）：所有感染路径统一把关——① 配置开关开启（默认关闭）；② 仅主世界；③ BOSS 未击败；④ 目标列群系属于 `pasterdream:is_aaroncos_arena` 标签（含新旧群系键，兼容旧存档）——感染严格限制在竞技场群系范围内，有机形状越界抖动不再转化群系外方块
+*   **重构**（`world/ArenaRuinInfection.java`）：`start` 增加配置/击败守卫；自循环每批检查运行条件，配置中途关闭或 BOSS 胜利后自行终止；删除 `tryRegisterCenter`
+*   **新增**（配置，`config/PDCommonConfig.java`）：`arena ruin infection enabled`（默认 false）——关闭时不刷群系、不启动感染；已有感染的存档在服务器启动时被强制停止并自动清理（回滚被感染方块 + 还原竞技场群系 + 标记击败）；竞技场结构本身不受开关影响仍正常生成一次
+*   **新增**（治愈流程，`worldgen/PDAaroncosArenaWorldgen#cureInfection`）：BOSS 胜利（`registry/PDArenaBossManager`）或配置关闭强制清理时统一调用——停止感染 → 标记击败 → `PortalRestorationHandler` 分帧回滚全部被感染方块 → 分帧还原竞技场群系
+*   **新增**（群系还原，按噪声源重推导）：与 `FillBiomeCommand.fill` 完全对称的逆操作——区域内每个四分位单元经 `BiomeSource.getNoiseBiome`（世界生成群系本源，按种子确定）还原为原始群系，区域外保持现状；无需记录原始群系数据，对旧版存档刷写的群系同样有效；还原后 `resendBiomesForChunks` 同步客户端
+*   **服务器启动**（`onServerStarting`）：启动放置确认排水器（无论开关，保证"只生成一次"）；配置关闭 → 有感染的旧存档强制清理；配置开启且未击败 → 恢复感染（群系刷写中断自动补完）；已击败 → 保持退化不再恢复
+*   **事件注册**（`PasterDreamMod.java`）：新增 `PDAaroncosArenaWorldgen::onServerStopped` 清空放置确认队列
+*   **⚠️ 旧存档脏数据说明**：若旧存档的 `placed` 曾被第三方结构查询误置位（结构从未真实生成），升级后感染会被清理，但竞技场结构仍不会生成（`placed` 已锁死）；删除 `saves/<世界>/data/pasterdream_aaroncos_arena_spawn.dat` 可让结构按新逻辑重新生成一次
+*   **新增**（VERIFY 自动化套件，`smoketest/PDArenaInfectionVerifyHooks.java`，新）：专项 `arena-infection`（不进默认 `all`，需 `PASTERDREAM_VERIFY_SUITES=arena-infection`，要求非超平坦+开结构测试世界）——五阶段断言：① 模拟探险家指南针对结构 `Structure.generate` 连续查询 48 次零副作用（`placed` 不置位、感染不启动，直接回归原恶性 BUG 触发路径）② 配置关闭时群系内感染零转化 ③ 配置开启后竞技场群系内感染生效并记录回滚数据、群系外零转化 ④ 放置确认链落库 `placed`/`center` 且二次入队不覆盖中心 ⑤ 治愈流程（停止感染/标记击败/方块回滚/群系按噪声还原为原始群系）与击败后再感染零转化；`PDPortingVerifyTest` 注册 `ARENA_INFECTION` 套件，`needsNormalWorldWithStructures` 纳入该套件
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`PASTERDREAM_VERIFY_SUITES=arena-infection` 自动化测试 **13/13 全部 PASS**（`pd_verify_report.json`：含结构查询零副作用、群系门控、放置确认、治愈退化全链路）；全部修改文件 LF 行尾合规
 
 ### 遗留项（未处理）
 
