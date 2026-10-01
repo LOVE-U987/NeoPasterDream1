@@ -46,8 +46,12 @@ import java.util.List;
  * {@link ArenaInfectionUtils}）；群系级的大范围感染由竞技场遗迹本身承担
  * （见 {@link com.pasterdream.pasterdreammod.world.ArenaRuinInfection}）。
  * <p>
- * <b>放置确认</b>：世界生成阶段本方块真实落入主世界时，经
- * {@link PDAroncosArenaWorldgen#offerPendingPlacement} 入队，由主线程确认器
+ * <b>放置确认</b>（{@code hasPostProcess = true} 可触发二层 onPlace）：
+ * 结构方块经 {@code WorldGenRegion.setBlock} 进入 ProtoChunk（首层无 onPlace），
+ * 但因 {@code hasPostProcess} 被标记进 PostProcessing 列表。区块可 tick 时
+ * {@code LevelChunk.postProcessGeneration()} 在主线程重设本方块，触发二层 onPlace——
+ * 此时 {@code oldState} 与世界生成时的状态属同一方块，证明已真实放置。
+ * 经 {@link PDAaroncosArenaWorldgen#offerPendingPlacement} 入队，由主线程确认器
  * 落库竞技场放置记录（保证只生成一次）并按配置启动群系/感染。
  * 第三方结构查询/预览不会放置方块，因此永远不会误触发。
  */
@@ -107,15 +111,21 @@ public class AaroncosArenaPortalsBlock extends SlabBlock {
     }
 
     /**
-     * 方块放置时按放置上下文分流：
-     * <ul>
-     *   <li><b>世界生成</b>（非 ServerLevel 的生成区域 + 主世界维度）：
-     *       结构真实落地，转交主线程放置确认器记录"只生成一次"并按配置
-     *       启动群系刷写与遗迹感染；生成工作线程上下文禁止调用线程不安全
-     *       的调度器，故仅入线程安全队列；</li>
-     *   <li><b>已加载世界</b>（玩家/机器放置）：仅调度小范围感染 tick，
-     *       受统一门控约束，竞技场群系外的手动放置不产生感染。</li>
-     * </ul>
+     * 方块放置时按上下文分流，基于 vanilla 的 PostProcessing 机制放置确认。
+     * <p>
+     * <b>世界生成路径</b>（Class-LevelHosted放置确认链的核心）：
+     * 结构方块经 {@code WorldGenRegion.setBlock} 落入 ProtoChunk（此时 {@code onPlace}
+     * 不触发）。因本方块设置了 {@code hasPostProcess = true}，被标记进 chunk 的
+     * PostProcessing 列表。区块可 tick 时 {@code LevelChunk.postProcessGeneration()}
+     * 在主线程用 {@code ServerLevel.setBlock(flags=20)} 重设所有标记方块 →
+     * {@code LevelChunk.setBlockState} 无条件调用 {@code onPlace}（已验证的原版机制）。
+     * 此时 {@code oldState} 即世界生成时真实落地的方块本身（新旧状态属同一方块），
+     * 转交主线程放置确认器落库 {@code placed}（保证只生成一次）；
+     * 第三方结构查询/预览不放置方块，因此永远不会误触发。
+     * <p>
+     * <b>玩家/机器放置</b>：{@code oldState} 非本方块，不产生确认——仅调度小范围感染
+     * tick，受统一门控约束（配置/仅主世界/竞技场群系内/BOSS 未击败，
+     * 见 {@link ArenaInfectionUtils}）。竞技场群系外的手动放置不产生感染。
      */
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
@@ -125,9 +135,12 @@ public class AaroncosArenaPortalsBlock extends SlabBlock {
         }
         if (level instanceof ServerLevel) {
             level.scheduleTick(pos, this, NORMAL_INTERVAL);
-        } else if (level.dimension().equals(Level.OVERWORLD)) {
-            // 世界生成阶段：本方块真实落入主世界 → 转交主线程放置确认
-            PDAaroncosArenaWorldgen.offerPendingPlacement(pos);
+            // 世界生成阶段：因 hasPostProcess=true 被标记进 PostProcessing 列表，
+            // 区块可 tick 时 postProcessGeneration 在主线程重设本方块触发本钩子——
+            // oldState 与 state 属同一方块，证明是真实放置（区别于玩家/机器放置）。
+            if (oldState.getBlock() == this) {
+                PDAaroncosArenaWorldgen.offerPendingPlacement(pos);
+            }
         }
     }
 
