@@ -1,0 +1,17 @@
+{
+  "title": {
+    "zh_cn": "§e恐惧",
+    "en_us": "§eFear"
+  },
+  "body": {
+    "zh_cn": "（占位正文，待内容迁移）\n\n这是寻梦者笔记 13 的占位正文。",
+    "en_us": "(Placeholder body pending content migration)\n\nThis is placeholder text for Dream Seeker Note 13."
+  },
+  "unlock": "pasterdream:achievement_hide_15",
+  "required": "pasterdream:achievement_hide_14",
+  "locate_shadow_base": false,
+  "give": [],
+  "extra_messages": [
+    "message.pasterdream.dreamnotes.palms_open"
+  ]
+}

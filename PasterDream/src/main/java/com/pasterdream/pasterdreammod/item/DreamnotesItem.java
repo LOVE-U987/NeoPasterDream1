@@ -1,42 +1,38 @@
 package com.pasterdream.pasterdreammod.item;
 
 import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesLogic;
-import com.pasterdream.pasterdreammod.menu.DreamnotesGui0Menu;
-import com.pasterdream.pasterdreammod.registry.PDMenusDreamnotes;
+import com.pasterdream.pasterdreammod.network.OpenNotePayload;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 
 /**
  * 寻梦者笔记 (dreamnotes_0..14)
  * <p>
- * 统一实现：stacksTo(1)、防火、合成保留自身、右键打开 {@link DreamnotesGui0Menu}，
+ * 统一数据驱动实现：stacksTo(1)、防火、合成保留自身、右键向客户端下发
+ * {@link OpenNotePayload}（客户端从同步注册表解析正文并按 18 行/120px 分页渲染），
  * 并按 noteId 触发原版 Pr0 成就/坐标逻辑；notes_8/9 选中时显示背面坐标。
- * <p>
- * 原版 MCreator 库存 Capability 对应 0 槽 GUI，无实际容器用途，1.21 移植省略。
  */
 public class DreamnotesItem extends Item {
 
-    /** 笔记序号 0..14，对应 GUI 页纹理 dreamnotes_gui{N} */
+    /** 笔记序号 0..14，对应定义 ID dreamnotes_N 与 GUI 页内容。 */
     private final int noteId;
     private final List<String> tooltipKeys;
 
     /**
      * @param noteId      0..14
-     * @param tooltipKeys 悬停描述的语言键列表（tooltip.pasterdream.dreamnotes_<id>.*）
+     * @param tooltipKeys 悬停描述的语言键列表
      */
     public DreamnotesItem(int noteId, List<String> tooltipKeys) {
         super(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.COMMON));
@@ -70,22 +66,7 @@ public class DreamnotesItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.openMenu(new MenuProvider() {
-                @Override
-                public Component getDisplayName() {
-                    return Component.literal("Dreamnotes " + noteId);
-                }
-
-                @Override
-                public AbstractContainerMenu createMenu(int id, Inventory inventory, Player p) {
-                    return new DreamnotesGui0Menu(id, inventory, p.blockPosition(),
-                            hand == InteractionHand.MAIN_HAND ? (byte) 0 : (byte) 1, noteId);
-                }
-            }, buf -> {
-                buf.writeBlockPos(player.blockPosition());
-                buf.writeByte(hand == InteractionHand.MAIN_HAND ? 0 : 1);
-                buf.writeVarInt(noteId);
-            });
+            PacketDistributor.sendToPlayer(serverPlayer, OpenNotePayload.fixed(noteId));
             DreamnotesLogic.onUse(noteId, level, player, stack);
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());

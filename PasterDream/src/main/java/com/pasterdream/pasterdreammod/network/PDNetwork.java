@@ -91,6 +91,13 @@ public class PDNetwork {
         registrar.playToClient(TwilightLanternMusicPayload.TYPE, TwilightLanternMusicPayload.STREAM_CODEC,
                 PDNetwork::handleTwilightLanternMusicOnClient);
 
+        // ==================== S2C：寻梦者笔记阅读/编辑界面 ====================
+        registrar.playToClient(OpenNotePayload.TYPE, OpenNotePayload.STREAM_CODEC,
+                PDNetwork::handleOpenNoteOnClient);
+        // ==================== C2S：可编辑笔记保存 ====================
+        registrar.playToServer(SaveNotePayload.TYPE, SaveNotePayload.STREAM_CODEC,
+                PDNetwork::handleSaveNoteOnServer);
+
         // ==================== S2C：特效系统（粒子发射器） ====================
         registrar.playToClient(ParticleEmitterPayload.TYPE, ParticleEmitterPayload.STREAM_CODEC,
                 PDNetwork::handleParticleEmitterOnClient);
@@ -340,6 +347,47 @@ public class PDNetwork {
             vfx.getMethod(method, argType).invoke(null, arg);
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("PDClientVfx." + method + " failed", e);
+        }
+    }
+
+    /**
+     * 客户端：打开寻梦者笔记界面（转发到 {@code PDClientNoteScreens} 落地）。
+     *
+     * @param payload 打开包
+     * @param context 上下文
+     */
+    public static void handleOpenNoteOnClient(final OpenNotePayload payload,
+                                              final IPayloadContext context) {
+        invokeClientNote("openNote", OpenNotePayload.class, payload);
+    }
+
+    /**
+     * 服务端：保存可编辑笔记（主手校验 + 语言白名单 + 字节上限）。
+     *
+     * @param payload 保存包
+     * @param context 上下文
+     */
+    public static void handleSaveNoteOnServer(final SaveNotePayload payload,
+                                              final IPayloadContext context) {
+        com.pasterdream.pasterdreammod.dreamnotes.DreamnotesEditableLogic.save(context.player(), payload);
+    }
+
+    /**
+     * 反射调用客户端笔记界面落地类（仅 CLIENT 发行版执行）。
+     *
+     * @param method  方法名
+     * @param argType 参数类型
+     * @param arg     参数
+     */
+    private static void invokeClientNote(String method, Class<?> argType, Object arg) {
+        if (FMLEnvironment.dist != Dist.CLIENT) {
+            return;
+        }
+        try {
+            Class<?> client = Class.forName("com.pasterdream.pasterdreammod.client.PDClientNoteScreens");
+            client.getMethod(method, argType).invoke(null, arg);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("PDClientNoteScreens." + method + " failed", e);
         }
     }
 

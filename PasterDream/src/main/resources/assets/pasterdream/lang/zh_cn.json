@@ -515,7 +515,6 @@
   "config.pasterdream.pasterdream_config_common": "PasterDream-Server",
   "container.pasterdream.dream_accumulator": "蓄梦池",
   "container.pasterdream.dream_cauldron": "梦境炼药锅",
-  "container.pasterdream.dreamnotes_gui_0": "寻梦者笔记",
   "container.pasterdream.dyedream_desk": "染梦书桌",
   "container.pasterdream.meltdream_chest": "融梦水晶箱",
   "container.pasterdream.picnic_basket": "野餐篮",
@@ -2633,5 +2632,9 @@
   "block.pasterdream.shadowshelf": "暗影书架",
   "block.pasterdream.shadowshelf_with_key": "有钥匙的暗影书架",
   "item.pasterdream.shadowshelf": "暗影书架",
-  "item.pasterdream.shadowshelf_with_key": "有钥匙的暗影书架"
+  "item.pasterdream.shadowshelf_with_key": "有钥匙的暗影书架",
+  "item.pasterdream.dreamseeker_notes": "寻梦者笔记·空白卷",
+  "gui.pasterdream.dreamseeker_notes.name": "笔记标题",
+  "gui.pasterdream.dreamseeker_notes.body": "笔记正文",
+  "gui.pasterdream.dreamseeker_notes.too_long": "笔记内容过长，无法保存，请精简后重试"
 }

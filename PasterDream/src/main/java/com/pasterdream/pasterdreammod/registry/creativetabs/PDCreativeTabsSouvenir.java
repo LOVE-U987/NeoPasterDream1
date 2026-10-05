@@ -71,6 +71,7 @@ public class PDCreativeTabsSouvenir {
                         output.accept(PDItemsDreamnotes.DREAMNOTES_12.get());
                         output.accept(PDItemsDreamnotes.DREAMNOTES_13.get());
                         output.accept(PDItemsDreamnotes.DREAMNOTES_14.get());
+                        output.accept(PDItems.DREAMSEEKER_NOTES.get());
                         output.accept(PDItems.BLUEPRINT_0.get());
                         output.accept(PDItems.BLUEPRINT_1.get());
                         output.accept(PDItems.DREAMHARP_OF_WANDERER.get());
