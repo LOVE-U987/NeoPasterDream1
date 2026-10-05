@@ -1,0 +1,17 @@
+{
+  "title": {
+    "zh_cn": "§e无翼鸟也有展翅的梦",
+    "en_us": "§eEven the Flightless Bird Dreams of Wings"
+  },
+  "body": {
+    "zh_cn": "（占位正文，待内容迁移）\n\n这是寻梦者笔记 14 的占位正文。",
+    "en_us": "(Placeholder body pending content migration)\n\nThis is placeholder text for Dream Seeker Note 14."
+  },
+  "unlock": "pasterdream:achievement_hide_16",
+  "required": "pasterdream:achievement_b_0",
+  "locate_shadow_base": false,
+  "give": [],
+  "extra_messages": [
+    "message.pasterdream.dreamnotes.tear_clouds"
+  ]
+}

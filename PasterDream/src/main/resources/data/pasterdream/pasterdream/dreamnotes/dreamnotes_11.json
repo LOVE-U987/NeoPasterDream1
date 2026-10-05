@@ -1,0 +1,15 @@
+{
+  "title": {
+    "zh_cn": "§e阴影游记",
+    "en_us": "§eShadow Travels"
+  },
+  "body": {
+    "zh_cn": "（占位正文，待内容迁移）\n\n这是寻梦者笔记 11 的占位正文。",
+    "en_us": "(Placeholder body pending content migration)\n\nThis is placeholder text for Dream Seeker Note 11."
+  },
+  "unlock": "pasterdream:achievement_hide_12",
+  "required": "pasterdream:achievement_hide_11",
+  "locate_shadow_base": false,
+  "give": [],
+  "extra_messages": []
+}

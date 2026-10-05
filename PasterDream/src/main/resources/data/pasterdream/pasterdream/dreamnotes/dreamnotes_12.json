@@ -1,0 +1,17 @@
+{
+  "title": {
+    "zh_cn": "§e暗影地牢",
+    "en_us": "§eShadow Dungeon"
+  },
+  "body": {
+    "zh_cn": "（占位正文，待内容迁移）\n\n这是寻梦者笔记 12 的占位正文。",
+    "en_us": "(Placeholder body pending content migration)\n\nThis is placeholder text for Dream Seeker Note 12."
+  },
+  "unlock": "pasterdream:achievement_hide_14",
+  "required": "pasterdream:achievement_hide_13",
+  "locate_shadow_base": false,
+  "give": [],
+  "extra_messages": [
+    "message.pasterdream.dreamnotes.fixed_dungeon"
+  ]
+}

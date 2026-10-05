@@ -1,0 +1,15 @@
+{
+  "title": {
+    "zh_cn": "§e粉红史莱姆",
+    "en_us": "§ePink Slime"
+  },
+  "body": {
+    "zh_cn": "（占位正文，待内容迁移）\n\n这是寻梦者笔记 3 的占位正文。",
+    "en_us": "(Placeholder body pending content migration)\n\nThis is placeholder text for Dream Seeker Note 3."
+  },
+  "unlock": "pasterdream:achievement_hide_0",
+  "required": "pasterdream:achievement_start",
+  "locate_shadow_base": false,
+  "give": [],
+  "extra_messages": []
+}

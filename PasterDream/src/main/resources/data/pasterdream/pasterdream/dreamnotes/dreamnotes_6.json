@@ -1,0 +1,15 @@
+{
+  "title": {
+    "zh_cn": "§e衍梦肥泥",
+    "en_us": "§eDream-derived Fertile Mud"
+  },
+  "body": {
+    "zh_cn": "（占位正文，待内容迁移）\n\n这是寻梦者笔记 6 的占位正文。",
+    "en_us": "(Placeholder body pending content migration)\n\nThis is placeholder text for Dream Seeker Note 6."
+  },
+  "unlock": "pasterdream:achievement_c_2",
+  "required": "pasterdream:achievement_start",
+  "locate_shadow_base": false,
+  "give": [],
+  "extra_messages": []
+}

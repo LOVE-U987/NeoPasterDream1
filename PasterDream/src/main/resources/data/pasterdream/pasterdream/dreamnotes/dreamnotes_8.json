@@ -1,0 +1,15 @@
+{
+  "title": {
+    "zh_cn": "§e阴影中的潜藏者",
+    "en_us": "§eThe Lurker in the Shadows"
+  },
+  "body": {
+    "zh_cn": "（占位正文，待内容迁移）\n\n这是寻梦者笔记 8 的占位正文。",
+    "en_us": "(Placeholder body pending content migration)\n\nThis is placeholder text for Dream Seeker Note 8."
+  },
+  "unlock": "pasterdream:achievement_hide_8",
+  "required": "pasterdream:achievement_hide_7",
+  "locate_shadow_base": true,
+  "give": [],
+  "extra_messages": []
+}

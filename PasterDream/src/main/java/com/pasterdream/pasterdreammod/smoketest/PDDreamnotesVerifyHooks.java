@@ -1,21 +1,20 @@
 package com.pasterdream.pasterdreammod.smoketest;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.api.text.NoteText;
 import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesItems;
-import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesLogic;
+import com.pasterdream.pasterdreammod.dreamnotes.NoteDefinition;
+import com.pasterdream.pasterdreammod.dreamnotes.PDNoteRegistry;
 import com.pasterdream.pasterdreammod.item.DreamnotesItem;
-import com.pasterdream.pasterdreammod.menu.DreamnotesGui0Menu;
 import com.pasterdream.pasterdreammod.registry.PDItems;
-import com.pasterdream.pasterdreammod.registry.PDMenusDreamnotes;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsDreamnotes;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -68,7 +67,7 @@ public final class PDDreamnotesVerifyHooks {
     /**
      * 执行全部笔记相关断言。
      *
-     * @param player   服务端玩家（用于 use / 研究台）
+     * @param player   服务端玩家
      * @param consumer 逐条结果回调（可 null）
      * @return 是否全部通过
      */
@@ -86,7 +85,20 @@ public final class PDDreamnotesVerifyHooks {
             }
         };
 
-        // 1) 全物品注册 + PDItems 门面别名初始化完整
+        checkItems(collect);
+        checkDefinitions(player, collect);
+        checkTag(collect);
+        checkNoteText(collect);
+        collect.accept(tryCopyNotesE2E(player));
+
+        long fail = results.stream().filter(r -> !r.pass()).count();
+        PDDebugLogger.smoketestInfo(TAG + "SUMMARY total={} pass={} fail={}", results.size(), results.size() - fail, fail);
+        PDDebugLogger.smoketestInfo(TAG + "RESULT {}", fail == 0 ? "ALL_PASS" : "HAS_FAILURES");
+        return fail == 0;
+    }
+
+    /** 全物品注册 + PDItems 门面别名检查。 */
+    private static void checkItems(Consumer<Result> collect) {
         boolean facadeHolderOk = PDItems.DREAMNOTES_0 != null
                 && PDItems.DREAMNOTES_0 == PDItemsDreamnotes.DREAMNOTES_0;
         collect.accept(new Result("facade_dreamnotes_0_non_null", facadeHolderOk,
@@ -99,66 +111,64 @@ public final class PDDreamnotesVerifyHooks {
             collect.accept(new Result("register_dreamnotes_" + i, present && holderOk && item != Items.AIR,
                     present ? item.toString() : "missing"));
         }
+    }
 
-        // 2) 菜单类型
-        boolean menuOk = PDMenusDreamnotes.DREAMNOTES_GUI_0.isBound()
-                && BuiltInRegistries.MENU.containsKey(
-                ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dreamnotes_gui_0"));
-        collect.accept(new Result("menu_dreamnotes_gui_0", menuOk, "bound=" + PDMenusDreamnotes.DREAMNOTES_GUI_0.isBound()));
+    /** 同步注册表定义加载（正文非空）+ 统一 Item 类型检查。 */
+    private static void checkDefinitions(ServerPlayer player, Consumer<Result> collect) {
+        if (player == null || player.server == null) {
+            collect.accept(new Result("definition_suite", false, "player/server null"));
+            return;
+        }
+        for (int i = 0; i < DreamnotesItems.count(); i++) {
+            NoteDefinition definition = PDNoteRegistry.get(player.server.registryAccess(), i);
+            boolean ok = definition != null && !definition.bodyOr("zh_cn").isEmpty();
+            collect.accept(new Result("definition_dreamnotes_" + i, ok,
+                    definition == null ? "missing" : "bodyLen=" + definition.bodyOr("zh_cn").length()));
+        }
+        Item item0 = DreamnotesItems.byId(0);
+        collect.accept(new Result("item_unified_class", item0 instanceof DreamnotesItem,
+                item0 == null ? "null" : item0.getClass().getSimpleName()));
+    }
 
-        // 3) tag 成员完整（0..14；blueprint_0 可选）
+    /** tag 成员完整（0..14；blueprint_0 可选）检查。 */
+    private static void checkTag(Consumer<Result> collect) {
         var tag = BuiltInRegistries.ITEM.getTag(DREAMNOTES_TAG);
         if (tag.isEmpty()) {
             collect.accept(new Result("tag_dreamnotes_loaded", false, "tag empty/missing"));
-        } else {
-            collect.accept(new Result("tag_dreamnotes_loaded", true, "ok"));
-            for (int i = 0; i < 15; i++) {
-                Item item = DreamnotesItems.byId(i);
-                boolean inTag = item != null && new ItemStack(item).is(DREAMNOTES_TAG);
-                collect.accept(new Result("tag_has_dreamnotes_" + i, inTag, inTag ? "member" : "not in tag"));
-            }
+            return;
         }
-
-        // 4) 右键打开菜单 + 内容索引可解析
-        if (player != null && player.serverLevel() != null) {
-            for (int i = 0; i < 15; i++) {
-                Item item = DreamnotesItems.byId(i);
-                if (item == null) {
-                    collect.accept(new Result("use_open_menu_" + i, false, "item null"));
-                    continue;
-                }
-                ItemStack stack = new ItemStack(item);
-                player.setItemInHand(InteractionHand.MAIN_HAND, stack);
-                // 直接构造菜单验证 noteId / 工厂
-                DreamnotesGui0Menu menu = new DreamnotesGui0Menu(
-                        1000 + i, player.getInventory(), player.blockPosition(), (byte) 0, i);
-                boolean idxOk = menu.noteId == i;
-                boolean holdingOk = DreamnotesLogic.isHoldingNote(player, i);
-                // 调用 use（服务端 openMenu）
-                item.use(player.level(), player, InteractionHand.MAIN_HAND);
-                boolean containerOpen = player.containerMenu instanceof DreamnotesGui0Menu
-                        || player.containerMenu != player.inventoryMenu;
-                collect.accept(new Result("use_open_menu_" + i, idxOk && holdingOk,
-                        "noteId=" + menu.noteId + " holding=" + holdingOk + " containerChanged=" + containerOpen));
-                player.closeContainer();
-            }
-            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-        } else {
-            collect.accept(new Result("use_open_menu_suite", false, "player null"));
+        collect.accept(new Result("tag_dreamnotes_loaded", true, "ok"));
+        for (int i = 0; i < 15; i++) {
+            Item item = DreamnotesItems.byId(i);
+            boolean inTag = item != null && new ItemStack(item).is(DREAMNOTES_TAG);
+            collect.accept(new Result("tag_has_dreamnotes_" + i, inTag, inTag ? "member" : "not in tag"));
         }
+    }
 
-        // 5) 研究台 copyNotes 端到端（反射，避免 worktree 无 ResearchTable 时编译失败）
-        collect.accept(tryCopyNotesE2E(player));
+    /** NoteText Markdown 解析自检（common 纯逻辑）。 */
+    private static void checkNoteText(Consumer<Result> collect) {
+        collect.accept(noteTextSelfCheck("plain", "hello", "hello"));
+        collect.accept(noteTextSelfCheck("italic", "*ab*", "ab"));
+        collect.accept(noteTextSelfCheck("color", "<red>ab</red>", "ab"));
+        collect.accept(noteTextSelfCheck("escape", "\\*ab\\*", "*ab*"));
+    }
 
-        long fail = results.stream().filter(r -> !r.pass()).count();
-        PDDebugLogger.smoketestInfo(TAG + "SUMMARY total={} pass={} fail={}", results.size(), results.size() - fail, fail);
-        PDDebugLogger.smoketestInfo(TAG + "RESULT {}", fail == 0 ? "ALL_PASS" : "HAS_FAILURES");
-        return fail == 0;
+    /**
+     * 解析单条 Markdown 并断言纯文本结果。
+     *
+     * @param name     断言名
+     * @param source   源文
+     * @param expected 期望纯文本
+     * @return 结果
+     */
+    private static Result noteTextSelfCheck(String name, String source, String expected) {
+        Component rendered = NoteText.render(source);
+        boolean ok = expected.equals(rendered.getString());
+        return new Result("notetext_" + name, ok, "got=" + rendered.getString());
     }
 
     /**
      * 复制行为 helper：供主测试直接调用。
-     * 在给定 handler 上执行与研究台相同的复制语义（不依赖 BE 存在）。
      *
      * @param pen       笔与墨
      * @param notes     笔记（须在 dreamnotes tag）
@@ -193,16 +203,12 @@ public final class PDDreamnotesVerifyHooks {
         try {
             Class<?> beClass = Class.forName(
                     "com.pasterdream.pasterdreammod.block.entity.ResearchTableBlockEntity");
-            Class<?> blockClass = Class.forName(
-                    "com.pasterdream.pasterdreammod.block.ResearchTableBlock");
             ServerLevel level = player.serverLevel();
-            BlockPos pos = player.blockPosition().above(3);
+            net.minecraft.core.BlockPos pos = player.blockPosition().above(3);
 
-            // 若研究台方块未注册则跳过为“软通过”说明
             var blockOpt = BuiltInRegistries.BLOCK.getOptional(
                     ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "research_table"));
             if (blockOpt.isEmpty()) {
-                // 退化为 helper 语义验证
                 Item notes = DreamnotesItems.byId(10);
                 Item pen = BuiltInRegistries.ITEM.get(
                         ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "pen_and_ink"));
@@ -234,7 +240,6 @@ public final class PDDreamnotesVerifyHooks {
             if (pen == Items.AIR || paper == Items.AIR || notes == null) {
                 return new Result("research_copy_e2e", false, "pen/paper/notes missing");
             }
-            // SLOT_PEN=0 NOTES=1 PERGAMYN=2 COPY=3
             handler.setStackInSlot(0, new ItemStack(pen));
             handler.setStackInSlot(1, new ItemStack(notes));
             handler.setStackInSlot(2, new ItemStack(paper, 3));
@@ -243,14 +248,14 @@ public final class PDDreamnotesVerifyHooks {
             Method copyNotes = beClass.getMethod("copyNotes", net.minecraft.world.entity.player.Player.class);
             copyNotes.invoke(be, player);
 
-            ItemStack out = handler.getStackInSlot(3);
+            ItemStack outStack = handler.getStackInSlot(3);
             ItemStack paperLeft = handler.getStackInSlot(2);
-            boolean ok = !out.isEmpty() && out.is(notes) && out.getCount() == 1 && paperLeft.getCount() == 2;
+            boolean ok = !outStack.isEmpty() && outStack.is(notes) && outStack.getCount() == 1
+                    && paperLeft.getCount() == 2;
             level.removeBlock(pos, false);
             return new Result("research_copy_e2e", ok,
-                    "copy=" + out + " paperLeft=" + paperLeft.getCount());
+                    "copy=" + outStack + " paperLeft=" + paperLeft.getCount());
         } catch (ClassNotFoundException e) {
-            // 工作树可能尚未合并研究台：helper 验证
             Item notes = DreamnotesItems.byId(7);
             Item pen = BuiltInRegistries.ITEM.getOptional(
                             ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "pen_and_ink"))
@@ -285,7 +290,6 @@ public final class PDDreamnotesVerifyHooks {
         }
         ranAuto = true;
         ServerPlayer player = server.getPlayerList().getPlayers().get(0);
-        // 确保分区类已加载
         PDItemsDreamnotes.bootstrap();
         verify(player, null);
     }

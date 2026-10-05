@@ -517,7 +517,6 @@
   "config.pasterdream.pasterdream_config_common": "PasterDream-Common",
   "container.pasterdream.dream_accumulator": "Dream Pool",
   "container.pasterdream.dream_cauldron": "Dream Cauldron",
-  "container.pasterdream.dreamnotes_gui_0": "Dream Seeker's Note",
   "container.pasterdream.dyedream_desk": "Dyedream Desk",
   "container.pasterdream.meltdream_chest": "Meltdream Crystal Chest",
   "container.pasterdream.picnic_basket": "Picnic Basket",
@@ -2635,5 +2634,9 @@
   "block.pasterdream.shadowshelf": "Shadow Bookshelf",
   "block.pasterdream.shadowshelf_with_key": "Shadow Bookshelf with Key",
   "item.pasterdream.shadowshelf": "Shadow Bookshelf",
-  "item.pasterdream.shadowshelf_with_key": "Shadow Bookshelf with Key"
+  "item.pasterdream.shadowshelf_with_key": "Shadow Bookshelf with Key",
+  "item.pasterdream.dreamseeker_notes": "Blank Dream Seeker's Note",
+  "gui.pasterdream.dreamseeker_notes.name": "Note Title",
+  "gui.pasterdream.dreamseeker_notes.body": "Note Body",
+  "gui.pasterdream.dreamseeker_notes.too_long": "Note is too long to save; please shorten it."
 }

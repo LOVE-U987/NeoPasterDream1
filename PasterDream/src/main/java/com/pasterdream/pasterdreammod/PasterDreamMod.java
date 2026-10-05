@@ -139,7 +139,7 @@ public class PasterDreamMod {
         PDItems.ITEMS.register(modEventBus);
         // 登记旧玩偶/雕像进 DollAPI 可掉落战利品池（供融梦水晶箱玩偶附加掉落，去除硬编码）
         com.pasterdream.pasterdreammod.registry.PDDollLootRegistrations.register();
-        com.pasterdream.pasterdreammod.registry.PDMenusDreamnotes.bootstrap();
+        com.pasterdream.pasterdreammod.dreamnotes.PDNoteRegistry.bootstrap();
         com.pasterdream.pasterdreammod.data.BluePrintLoader.bootstrap();
 
         // 注册盔甲材料

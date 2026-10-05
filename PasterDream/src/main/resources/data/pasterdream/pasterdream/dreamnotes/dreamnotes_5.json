@@ -1,0 +1,15 @@
+{
+  "title": {
+    "zh_cn": "§e苍白骨针",
+    "en_us": "§ePale Bone Needle"
+  },
+  "body": {
+    "zh_cn": "（占位正文，待内容迁移）\n\n这是寻梦者笔记 5 的占位正文。",
+    "en_us": "(Placeholder body pending content migration)\n\nThis is placeholder text for Dream Seeker Note 5."
+  },
+  "unlock": "pasterdream:achievement_hide_3",
+  "required": "pasterdream:achievement_a_1",
+  "locate_shadow_base": false,
+  "give": [],
+  "extra_messages": []
+}
