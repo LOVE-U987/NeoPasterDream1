@@ -5,12 +5,15 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
 /**
- * 纸面风格单行输入框：隐藏 vanilla 深色底框，使用深棕文字，叠于羊皮卷上。
+ * 名称输入框：整块深色底框（vanilla {@code EditBox} 底框）+ 浅色文字，字号与正文一致。
+ * <p>
+ * 深色底框上用深棕文字不可读，故文字改用 {@link PaperStyle#NAME_TEXT_COLOR} 浅色；字号沿用传入字体，
+ * 与 {@link PaperMultiLineEditBox} 正文同为默认字体/行高。
  */
 public class PaperEditBox extends EditBox {
 
     /**
-     * 构造纸面风格输入框。
+     * 构造名称输入框。
      *
      * @param font    字体
      * @param x       左缘 X（逻辑坐标）
@@ -21,8 +24,7 @@ public class PaperEditBox extends EditBox {
      */
     public PaperEditBox(Font font, int x, int y, int width, int height, Component message) {
         super(font, x, y, width, height, message);
-        this.setBordered(false);
-        this.setTextColor(PaperStyle.TEXT_COLOR);
-        this.setTextColorUneditable(PaperStyle.TEXT_COLOR);
+        this.setTextColor(PaperStyle.NAME_TEXT_COLOR);
+        this.setTextColorUneditable(PaperStyle.NAME_TEXT_COLOR);
     }
 }
