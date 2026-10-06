@@ -136,7 +136,7 @@ feat(api): 添加 BiomeShading API 以支持数据驱动的生物群系雾颜色
 - Python 文本写入必须指定 `newline="\n"`（如 `open(path, "w", encoding="utf-8", newline="\n")`），或先统一换行后用 `write_bytes()` 写入 UTF-8 字节；不得依赖 Windows 默认文本换行转换。
 - PowerShell 写入时，必须先将文本中的 CRLF 和孤立 CR 统一为 LF，再通过 `[System.IO.File]::WriteAllText()` 使用 UTF-8 无 BOM 编码保存；不得依赖 `Set-Content` / `Out-File` 的默认换行行为。
 - 使用补丁工具后也必须检查实际文件字节。交付前仅校验本次新建或修改的文本文件：除 `.bat` 外，不得含 CRLF 或孤立 CR；发现后须转换为 LF 并复查差异。
-- 不得为修复换行符批量重写无关文件、修改 `libs/`，或执行 Git 暂存、重置、检出等操作。
+- 不得为修复换行符批量重写无关文件或修改 `libs/`；Git 状态变更须遵守下方授权规则。
 
 ### 编码规范
 
@@ -233,5 +233,5 @@ GeckoLib 的 `DefaultedGeoModel` 系列会根据 `subtype()` 自动决定资源�
 3. ❌ 硬编码配置
 4. ❌ 忽略编译错误
 5. ❌ 跳过 DataGen
-6. ❌ 禁止主动对 Git 状态进行任何更改
+6. ❌ 未经用户对具体操作明确授权，禁止对 Git 状态进行任何更改（包括暂存、提交、推送、切换分支、重置等）；只读查询可执行
 7. ❌ 引用 `docs/deprecated/` 下的旧文档（后续将被移除）
