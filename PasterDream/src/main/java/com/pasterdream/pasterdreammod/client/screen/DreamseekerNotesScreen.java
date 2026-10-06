@@ -18,7 +18,7 @@ import java.util.Locale;
  * <p>
  * 共用羊皮卷底图；正文可滚动输入，标题可编辑；关闭时按当前客户端语言回写
  * {@link SaveNotePayload}。阅读态由 {@link DreamnoteScreen} 负责分页渲染。
- * 底图与控件位置由 {@link NoteGuiLayout} 统一缩放定位，编辑框为纸面风格（无黑底）。
+ * 底图与控件位置由 {@link NoteGuiLayout} 统一缩放定位；正文框为纸面透明自绘控件，名称框为深色输入框。
  */
 public class DreamseekerNotesScreen extends AbstractPaperScreen {
 

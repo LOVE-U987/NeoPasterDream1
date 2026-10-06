@@ -21,7 +21,7 @@ public final class NoteGuiLayout {
     /** 基准宽（固定参考基准，不随需求调整）。 */
     public static final int BASE_W = 200;
     /** 基础缩放比例（唯一可调旋钮）：调整后底图与全部元素等比缩放。 */
-    public static final float BASE_SCALE = 1.0f;
+    public static final float BASE_SCALE = 0.8f;
     /** 底图与屏幕边缘的最小留白（屏幕像素）。 */
     public static final int MARGIN = 8;
 
@@ -44,7 +44,7 @@ public final class NoteGuiLayout {
 
     /** 正文与名称框的控件高（逻辑像素）。 */
     private static final int NAME_H = 14;
-    /** 正文编辑框相对正文左移量，抵消 {@code MultiLineEditBox} 的内边距，使内文左对齐。 */
+    /** 正文编辑框相对正文左移量，抵消 {@code PaperMultiLineEditBox} 的内边距，使内文左对齐。 */
     private static final int BODYBOX_LEFT_INSET = 4;
     /** 正文编辑框内边距总量（左右各 4）。 */
     private static final int BODYBOX_PADDING = 8;
