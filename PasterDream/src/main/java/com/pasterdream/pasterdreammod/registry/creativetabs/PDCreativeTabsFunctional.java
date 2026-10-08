@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.registry.creativetabs;
 
 import com.pasterdream.pasterdreammod.registry.PDCreativeTabs;
 import com.pasterdream.pasterdreammod.registry.PDItems;
+import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -41,6 +42,12 @@ public class PDCreativeTabsFunctional {
                         output.accept(PDItems.BIRDS_NEST.get());
                         output.accept(PDItems.GOLDEN_FOX_SCULPTURE.get());
                         output.accept(PDItems.DESERT_HERO_TOMB.get());
+                        // 中性装饰与功能方块（原版散落于材料/工坊栏，移植时遗漏补全）
+                        output.accept(PDBlocks.LIGHTBALL.get());
+                        output.accept(PDBlocks.CLAY_POT_0.get());
+                        output.accept(PDBlocks.CLAYPAN_0.get());
+                        output.accept(PDBlocks.CLAYPAN_2.get());
+                        output.accept(PDBlocks.CHRISTMAS_LIGHTS.get());
                     })
                     .build());
 }

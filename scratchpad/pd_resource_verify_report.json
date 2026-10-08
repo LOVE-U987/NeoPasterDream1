@@ -1,8 +1,26 @@
 {
   "generated_by": "tools/verify_resource_closure.py",
-  "json_files": 3859,
-  "registered_blocks_scanned": 238,
-  "registered_items_scanned": 669,
-  "failure_count": 0,
-  "failures": {}
+  "json_files": 3901,
+  "registered_blocks_scanned": 236,
+  "registered_items_scanned": 678,
+  "failure_count": 3,
+  "failures": {
+    "original_loot_missing": [
+      {
+        "source": "libs\\FixPasterDream-main\\src\\main\\resources\\data\\pasterdream\\loot_tables\\blocks\\shadowshelf_0.json",
+        "target": "shadowshelf_0",
+        "detail": ""
+      },
+      {
+        "source": "libs\\FixPasterDream-main\\src\\main\\resources\\data\\pasterdream\\loot_tables\\blocks\\shadowshelf_1.json",
+        "target": "shadowshelf_1",
+        "detail": ""
+      },
+      {
+        "source": "libs\\FixPasterDream-main\\src\\main\\resources\\data\\pasterdream\\loot_tables\\blocks\\shadowshelf_2.json",
+        "target": "shadowshelf_2",
+        "detail": ""
+      }
+    ]
+  }
 }

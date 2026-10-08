@@ -14,15 +14,27 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
  * <p>
  * 对应的 JSON 定义存放在 data/pasterdream/worldgen/placed_feature/ 目录下，
  * 由数据驱动自动加载，此处仅提供 Java 侧的引用键。
+ * <p>
+ * <b>迁移说明</b>：世界生成正在迁移到
+ * {@link com.pasterdream.pasterdreammod.data.PDWorldgenProvider} 经 DataGen 统一生成。
+ * 标记为 {@link Deprecated} 的旧矿石键所对应的手写 JSON 将在 0.11.x 版本移除。
  */
 public class PDPlacedFeatures {
 
     // ==================== 矿石 ====================
-    /** 琥珀糖矿 */
+    /** 灵魂矿土（由 {@link com.pasterdream.pasterdreammod.data.PDWorldgenProvider} 经 DataGen 生成） */
+    public static final ResourceKey<PlacedFeature> SOUL_ORE = createKey("soul_ore");
+
+    /** @deprecated 旧手写世界生成矿石，待迁移至 DataGen 统一注册，将在 0.11.x 版本移除（见 PDWorldgenProvider TODO） */
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<PlacedFeature> ORE_AMBER_CANDY = createKey("ore_amber_candy");
-    /** 染梦尘矿 */
+
+    /** @deprecated 旧手写世界生成矿石，待迁移至 DataGen 统一注册，将在 0.11.x 版本移除（见 PDWorldgenProvider TODO） */
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<PlacedFeature> ORE_DYEDREAMDUST = createKey("ore_dyedreamdust");
-    /** 染梦石英矿 */
+
+    /** @deprecated 旧手写世界生成矿石，待迁移至 DataGen 统一注册，将在 0.11.x 版本移除（见 PDWorldgenProvider TODO） */
+    @Deprecated(since = "0.11.0", forRemoval = true)
     public static final ResourceKey<PlacedFeature> ORE_DYEDREAMQUARTZ = createKey("ore_dyedreamquartz");
 
     // ==================== 植被 ====================
