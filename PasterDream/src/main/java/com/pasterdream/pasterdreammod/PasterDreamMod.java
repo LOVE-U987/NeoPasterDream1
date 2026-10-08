@@ -6,6 +6,7 @@ import com.pasterdream.pasterdreammod.config.PDClientConfig;
 import com.pasterdream.pasterdreammod.config.PDCommonConfig;
 import com.pasterdream.pasterdreammod.data.PDBlockModelProvider;
 import com.pasterdream.pasterdreammod.data.PDBlockTagProvider;
+import com.pasterdream.pasterdreammod.data.PDWorldgenProvider;
 import com.pasterdream.pasterdreammod.network.PDNetwork;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
@@ -346,6 +347,9 @@ public class PasterDreamMod {
 
         generator.addProvider(event.includeClient(),
                 new PDBlockModelProvider(packOutput, existingFileHelper));
+
+        generator.addProvider(event.includeServer(),
+                new PDWorldgenProvider(packOutput, lookupProvider));
     }
 
     /**
