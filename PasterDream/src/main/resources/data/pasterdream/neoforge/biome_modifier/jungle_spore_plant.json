@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "minecraft:jungle",
+    "minecraft:bamboo_jungle",
+    "minecraft:sparse_jungle"
+  ],
+  "features": "pasterdream:jungle_spore_plant",
+  "step": "vegetal_decoration"
+}

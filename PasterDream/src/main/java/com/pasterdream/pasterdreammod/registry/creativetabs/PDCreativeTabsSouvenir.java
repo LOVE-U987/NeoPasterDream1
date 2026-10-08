@@ -51,6 +51,7 @@ public class PDCreativeTabsSouvenir {
                         output.accept(PDItems.MEMENTO_ITEM_08.get());
                         output.accept(PDItems.MEMENTO_ITEM_09.get());
                         output.accept(PDItems.MEMENTO_ITEM_10.get());
+                        output.accept(PDItems.MEMENTO_ITEM_11.get());
                         output.accept(PDItems.MEMORY_GEM_0.get());
                         output.accept(PDItems.BROKENNOTES_0.get());
                         output.accept(PDItems.UNKNOWNNOTES_0.get());
@@ -119,6 +120,7 @@ public class PDCreativeTabsSouvenir {
                         output.accept(PDItems.CALLE_CARD_7.get());
                         output.accept(PDItems.CALLE_CARD_8.get());
                         output.accept(PDItems.CALLE_CARD_9.get());
+                        output.accept(PDBlocks.CALLE_CARD_BLOCK.get());
                         // 标签图标物品（原版调试栏/拓展栏 tab_8/tab_9 图标）
                         output.accept(PDItems.TABITEM_1.get());
                         output.accept(PDItems.TABITEM_2.get());
