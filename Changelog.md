@@ -25,6 +25,14 @@
 *   **注册**（`PasterDream` `registry/blocks/PDBlocksMisc.java:154`）：`JUNGLE_SPORE_PLANT` 由 `new FlowerBlock(...)` 改为 `new JungleSporePlantBlock(...)`，属性链新增 `randomTicks()`；`PDBlocks` re-export 与 BlockItem 注册无需改动。
 *   **验证**：`.\gradlew :PasterDream:compileJava` 与 `.\gradlew compileJava` 均 BUILD SUCCESSFUL；无数据文件改动。
 
+### 调整：丛林孢子植株掉落受时运影响（每级独立 15% 额外）
+
+*   **背景**：原模组战利品表对本方块无时运加成；本项为**有意改进**（非还原项）。
+*   **公式**：普通掉落 `jungle_spore` 追加 `minecraft:apply_bonus` + `minecraft:binomial_with_bonus_count`（`extra=0`, `probability=0.15`）——每级时运独立一次 15% 概率 +1：Fortune I/II/III 最多 +1/+2/+3，期望 1.15/1.30/1.45。
+*   **改动**（`PasterDream` `data/pasterdream/loot_table/blocks/jungle_spore_plant.json`）：仅池 1（非精准采集）的 `functions` 在 `set_count` 之后追加 `apply_bonus`；精准采集池（掉本体）不变。
+*   **验证**：JSON 解析通过；`python tools/verify_resource_closure.py` 全库 JSON 可解析/无 BOM（仅报告 `libs/` 原模组 3 个 shadowshelf 历史缺失，与本改动无关）。
+*   **同步**：设计文档 `docs/设计/丛林孢子掉落时运.md`。
+
 ---
 ## v0.10.1 — 2026-09-26
 
