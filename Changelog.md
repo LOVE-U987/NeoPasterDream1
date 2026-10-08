@@ -15,6 +15,16 @@
 *   **验证**：`python tools/verify_dyedream_lava.py` 4/4 通过；`.\gradlew compileJava` BUILD SUCCESSFUL；`.\gradlew runData` 退出码 0（`written: 0`，未覆盖手写 JSON）；启动日志 `Preparing pasterdream.mixins.json (6)` 确认 Mixin 移除生效。
 *   **同步**：`docs/开发指南/问题排查.md` 新增「世界生成」章节（四层岩浆排查路径）；`docs/架构/主模组架构详解.md` 两处 mixin 类数登记 7 → 6（名单移除 NoiseBasedChunkGenerator）。
 
+### 新增：丛林孢子植株生长机制（类蘑菇蔓延 + 骨粉催生）
+
+*   **背景**：`pasterdream:jungle_spore_plant` 此前仅注册为普通 `FlowerBlock`，无任何生长机制；原模组 `JungleSporePlantBlock` 同样未实现 tick。本项为相对原模组的**有意改进**（非还原项）。
+*   **新增**（`PasterDream` `block/JungleSporePlantBlock.java`，新）：继承 `FlowerBlock` 并实现 `BonemealableBlock`，保留原中毒效果语义。
+*   **生长**：`randomTick` 以 1/25 概率复刻原版 `MushroomBlock.randomTick` 扩散算法——扫描 `origin ± (4,1,4)` 同类上限 5、目标点 `±1`（y 为 -1~+1）随机尝试 4 次、放置 flag 2；只复制自身。
+*   **忽略亮度**：`canSurvive` 沿 `FlowerBlock → BushBlock`（泥土类 / 耕地 / `canSustainPlant`）判定，不含原版蘑菇 `getRawBrightness < 13` 门槛，故明亮环境下同样蔓延；存活土壤维持原方块现行为。
+*   **骨粉**：`performBonemeal` 立即催生一次同样的蔓延（受同一密度上限约束），不做巨型化。
+*   **注册**（`PasterDream` `registry/blocks/PDBlocksMisc.java:154`）：`JUNGLE_SPORE_PLANT` 由 `new FlowerBlock(...)` 改为 `new JungleSporePlantBlock(...)`，属性链新增 `randomTicks()`；`PDBlocks` re-export 与 BlockItem 注册无需改动。
+*   **验证**：`.\gradlew :PasterDream:compileJava` 与 `.\gradlew compileJava` 均 BUILD SUCCESSFUL；无数据文件改动。
+
 ---
 ## v0.10.1 — 2026-09-26
 
