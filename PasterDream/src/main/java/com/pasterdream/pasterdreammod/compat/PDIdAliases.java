@@ -71,6 +71,15 @@ public final class PDIdAliases {
                 "shadowshelf_0", "shadowshelf_1", "shadowshelf_2");
         table.addBlockAndItem("shadowshelf_3", "shadowshelf_with_key");
 
+        // 0.11.x P0 音效批次：裸 _0 去后缀（ID 迁移第一批，见 docs/设计/存档兼容层.md 3.4）。
+        // 注意：meltdream_chest_0 / stone_break_0 / fury_spell_0 存在无数字基底名
+        // （meltdream_chest / stone_break / fury_spell），去后缀会撞车，属变体改名，另行语义化处理。
+        table.add(Registries.SOUND_EVENT, id("ding_0"), id("ding"));
+        table.add(Registries.SOUND_EVENT, id("shadow_biome_0"), id("shadow_biome"));
+        table.add(Registries.SOUND_EVENT, id("shadow_music_0"), id("shadow_music"));
+        table.add(Registries.SOUND_EVENT, id("shadow_trap_0"), id("shadow_trap"));
+        table.add(Registries.SOUND_EVENT, id("wind_knight_skill_0"), id("wind_knight_skill"));
+
         return table;
     }
 

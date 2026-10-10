@@ -98,6 +98,10 @@ def collect_code():
                 names = set()
                 for line in lines:
                     is_ref = any(m in line for m in REF_MARKERS)
+                    # 属性修饰符 ID（modifierId("xxx_0")）不是注册表注册名，
+                    # 且持久化于实体 NBT、改名会孤儿化旧修饰符，不纳入迁移基线。
+                    if "modifierId(" in line:
+                        continue
                     for lit in LIT_RE.findall(line):
                         if not is_numeric(lit):
                             continue
@@ -211,6 +215,7 @@ def build_doc():
     lines.append("| 数据包侧范围 | `src/main/resources/data/**` 下的注册目录文件名 |")
     lines.append("| 已排除 | `libs/`、`build/`、`docs/deprecated/`、`packs/`（原版 UI 覆盖包） |")
     lines.append("| 引用排除 | `DebugStructureWandItem` / `DebugDecorWandItem` / `LootstableCreateItem` 的结构 ID 参数不算注册名 |")
+    lines.append("| 修饰符排除 | `modifierId(...)` 行的属性修饰符 ID 不是注册名（持久化于实体 NBT，勿改名） |")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -302,8 +307,12 @@ def build_doc():
     lines.append("3. 语言文件 key（`assets/*/lang/*.json`）")
     lines.append("4. 引用: 配方、战利品表、标签、进度、结构引用、DataGen")
     lines.append("5. 快照: `PasterDream/src/main/resources/pd_porting_manifest.json`（PDPortingVerifyTest 校验基线）")
+    lines.append("6. 别名: 静态注册表在 `PDIdAliases` 用 `IdAliasTable` 便捷方法登记")
+    lines.append("   （`addBlockAndItem` / `addBlockAndItemFamily` / `addFamily`，0.11.x 起），")
+    lines.append("   并递增 `PDSaveSchema.CURRENT_ID_SCHEMA_VERSION`")
     lines.append("")
-    lines.append("**模板**: 群系已采用「新描述名 + 旧数字别名」双轨（见 `PDBiomes.java`），可作为其他类别的迁移范式。")
+    lines.append("**模板**: 群系已采用「新描述名 + 旧数字别名」双轨（见 `PDBiomes.java`），可作为其他类别的迁移范式；")
+    lines.append("改名标准范式详见 [存档兼容层 §5.1](存档兼容层.md)。")
     lines.append("")
 
     return "\n".join(lines) + "\n"

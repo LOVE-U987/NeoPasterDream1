@@ -45,7 +45,7 @@ public class WindVaneItem extends Item {
             player.displayClientMessage(Component.translatable("tooltip.pasterdream.wind_vane.angle_dir",
                     String.format("%.2f", player.getXRot()),
                     String.format("%.2f", player.getYRot())), true);
-            level.playSound(null, player.blockPosition(), PDSounds.DING_0.get(),
+            level.playSound(null, player.blockPosition(), PDSounds.DING.get(),
                     SoundSource.PLAYERS, 1.0f, 1.0f);
             int dir = level.getGameRules().getInt(PDGameRules.WIND_DIRECTION);
             if (dir < 0 || dir >= WIND_NAMES.length) {

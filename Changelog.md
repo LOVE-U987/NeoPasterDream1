@@ -3,6 +3,16 @@
 ---
 ## v0.11.0（开发中）— 2026-10-11
 
+### 迁移：P0 音效批次——5 个音效 ID 去 _0 后缀（ID 迁移第一批）
+
+*   **改名**（`PDSounds`）：`ding_0→ding`、`shadow_biome_0→shadow_biome`、`shadow_music_0→shadow_music`、`shadow_trap_0→shadow_trap`、`wind_knight_skill_0→wind_knight_skill`（注册名+常量同步，javadoc 标注旧名）；7 处代码调用点同步（暮影灯笼/暗影火盆/暗影陷阱方块/风之骑士/金狐雕像/方块重置工具/风向标）
+*   **资源**：sounds.json 5 条目（键/subtitle/sounds 引用）、`subtitle.*` 语言键 ×2 文件、群系 JSON `ambient/mood` 引用 ×6 文件 12 处、`sounds/*.ogg` ×5 重命名、`pd_porting_manifest.json` 音效区 5 处（方块/物品区的同名 `shadow_trap_0` 保留不动）
+*   **兼容**（`PDIdAliases`）：+5 条 `SOUND_EVENT` 别名；`PDSaveSchema.CURRENT_ID_SCHEMA_VERSION` 1→2
+*   **排除**（撞车项，另行语义化）：`meltdream_chest_0`/`stone_break_0`/`fury_spell_0` 存在无数字基底名（`meltdream_chest`/`stone_break`/`fury_spell`），去后缀会撞车
+*   **基线修正**（`tools/scan_numeric_registrations.py`）：过滤 `modifierId(...)` 行——原扫描将状态效果类 33 个属性修饰符 ID 误报为注册名（效果本体注册名本就干净；修饰符 ID 持久化于实体 NBT，改名会孤儿化旧修饰符）；基线文档重新生成
+*   **审计增强**（`tools/verify_id_aliases.py`）：broken/shadowed 校验改为按注册表精确匹配（按源文件名归属注册表，未归类文件保守并入），跨注册表同名（音效 `shadow_trap_0` vs 方块）不再误报遮蔽
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`verify_id_aliases.py` aliases=34 broken=0 shadowed=0 missing_coverage=0；`check_lang.py` 中英双语全过；`verify_resource_closure.py` failure_count 8→3（剩余 3 为 libs 原模组 shadowshelf 战利品表既有遗留，与本批次无关）
+
 ### 新增：api/compat 别名表便捷方法（ID 迁移里程碑 · API 先行批次）
 
 *   **新增**（`PasterDreamAPI` `api/compat/IdAliasTable`）：三个零具体 ID 的便捷登记方法——`addBlockAndItem(from, to)`（BlockItem 双注册表单条别名）、`addFamily(registryKey, to, froms...)`（同族多旧名合并到单新名）、`addBlockAndItemFamily(to, froms...)`（同族合并 + 双注册表）；注册路径统一用 `PasterDreamAPI.DATA_NAMESPACE` 构造，冲突校验复用既有 `add` 单点

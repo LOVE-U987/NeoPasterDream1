@@ -53,7 +53,7 @@ public class PasterBlockResetToolItem extends Item {
             }
             W4DataBlockEntity.putBooleanAt(level, pos, "switch", false);
             level.sendBlockUpdated(pos, level.getBlockState(pos), level.getBlockState(pos), 3);
-            level.playSound(null, pos, PDSounds.DING_0.get(), SoundSource.NEUTRAL, 1f, 1f);
+            level.playSound(null, pos, PDSounds.DING.get(), SoundSource.NEUTRAL, 1f, 1f);
             player.displayClientMessage(Component.translatable("tooltip.pasterdream.paster_block_reset_tool.reset_done"), false);
         }
         return InteractionResult.sidedSuccess(level.isClientSide());

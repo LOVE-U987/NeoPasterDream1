@@ -95,8 +95,34 @@ def collect_aliases():
     return aliases
 
 
+# 按源文件名归属注册表（用于按注册表精确做 broken/shadowed 校验；
+# 同名字符串跨注册表不算遮蔽，如音效 shadow_trap_0 与方块 shadow_trap_0 并存）。
+# 无法归类的文件进入 unknown 桶，保守地对所有注册表生效。
+FILE_REGISTRY_RULES = [
+    ("sound_event", lambda n: n in ("PDSounds.java", "PDSpellsSounds.java")),
+    ("mob_effect", lambda n: n in ("PDEffects.java", "PDSpellsEffects.java",
+                                   "PDSanityEffects.java", "PDMeltDreamEffects.java")),
+    ("particle", lambda n: "Particle" in n),
+    ("menu", lambda n: n.startswith("PDMenus")),
+    ("block_entity", lambda n: n.startswith("PDBlockEntities")),
+    ("entity", lambda n: n == "PDEntities.java"),
+    ("item", lambda n: "Items" in n),
+    ("block", lambda n: "Blocks" in n),
+    ("advancement", lambda n: n.startswith("PDAdvancements")),
+]
+
+
+def registry_of_file(filename):
+    """按文件名推断其注册名所属的注册表标签。"""
+    for registry, rule in FILE_REGISTRY_RULES:
+        if rule(filename):
+            return registry
+    return "unknown"
+
+
 def collect_registered_names():
-    names = set()
+    """按注册表收集注册名：{registry 标签: {name, ...}}，未归类文件进 unknown 桶。"""
+    by_registry = {}
     for base in REG_DIRS:
         if not base.is_dir():
             continue
@@ -105,22 +131,27 @@ def collect_registered_names():
                 text = path.read_text(encoding="utf-8", errors="replace")
             except OSError:
                 continue
-            names.update(REG_NAME_RE.findall(text))
-            names.update(REG_SIMPLE_RE.findall(text))
-    return names
+            bucket = by_registry.setdefault(registry_of_file(path.name), set())
+            bucket.update(REG_NAME_RE.findall(text))
+            bucket.update(REG_SIMPLE_RE.findall(text))
+    return by_registry
 
 
 def main():
     aliases = collect_aliases()
-    registered = collect_registered_names()
+    registered_by_reg = collect_registered_names()
     manifest_renames = json.loads(MANIFEST.read_text(encoding="utf-8")).get("renames", {})
+
+    def known(registry):
+        """别名所属注册表的已注册名集合（含未归类文件的保守并集）。"""
+        return registered_by_reg.get(registry, set()) | registered_by_reg.get("unknown", set())
 
     broken = []
     shadowed = []
     for registry, frm, to in aliases:
-        if to not in registered:
+        if to not in known(registry):
             broken.append((registry, frm, to))
-        if frm in registered:
+        if frm in known(registry):
             shadowed.append((registry, frm, to))
 
     covered_from = {frm for _, frm, _ in aliases}
