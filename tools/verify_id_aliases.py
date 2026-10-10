@@ -6,6 +6,13 @@
     2. 别名来源 (from) 不应仍被注册（否则别名被遮蔽、实际 no-op），仅告警。
     3. 已确认的「移植版内部改名」manifest 项必须被别名表覆盖。
 
+识别的调用形状:
+    - aliasBlockAndItem(table, "from", "to")            旧形状（历史兼容）
+    - table.add(Registries.X, id("from"), id("to"))     旧形状（历史兼容）
+    - table.addBlockAndItem("from", "to")               便捷方法（BlockItem 双注册表）
+    - table.addBlockAndItemFamily("to", "from0", ...)   便捷方法（同族合并 + 双注册表）
+    - table.addFamily(Registries.X, "to", "from0", ...) 便捷方法（同族合并）
+
 产物:
     build/reports/pd_id_aliases.md
 
@@ -35,6 +42,15 @@ PAIR_RE = re.compile(
     r'aliasBlockAndItem\(\s*table\s*,\s*"([a-z0-9_]+)"\s*,\s*"([a-z0-9_]+)"\s*\)')
 ADD_RE = re.compile(
     r'table\.add\(Registries\.(\w+)\s*,\s*id\("([a-z0-9_]+)"\)\s*,\s*id\("([a-z0-9_]+)"\)\s*\)')
+# IdAliasTable 便捷方法调用形状（0.11.x 起支持）：
+#   table.addBlockAndItem("from", "to")
+#   table.addBlockAndItemFamily("to", "from0", "from1", ...)
+#   table.addFamily(Registries.X, "to", "from0", "from1", ...)
+# 支持跨行与行内注释；字符串字面量按出现顺序解析。
+CALL_RE = re.compile(
+    r'table\s*\.\s*(addBlockAndItemFamily|addBlockAndItem|addFamily)\b\s*\(([^)]*)\)')
+REG_IN_CALL_RE = re.compile(r'Registries\.(\w+)')
+QUOTED_RE = re.compile(r'"([a-z0-9_]+)"')
 
 REG_NAME_RE = re.compile(
     r'register[A-Za-z]*\(\s*"([a-z0-9_]+)"')
@@ -47,9 +63,33 @@ REGISTRY_LABEL = {"BLOCK": "block", "ITEM": "item"}
 def collect_aliases():
     text = ALIASES_JAVA.read_text(encoding="utf-8")
     aliases = []
+    # 旧形状：aliasBlockAndItem(table, "from", "to")（历史调用，保持兼容）
     for frm, to in PAIR_RE.findall(text):
         aliases.append(("block", frm, to))
         aliases.append(("item", frm, to))
+    # 新形状：IdAliasTable 便捷方法（addBlockAndItem / addBlockAndItemFamily / addFamily）
+    for match in CALL_RE.finditer(text):
+        call, args_text = match.group(1), match.group(2)
+        # 剥离行内注释，避免注释中的引号字符串污染参数解析
+        args_code = re.sub(r"//[^\n]*", "", args_text)
+        names = QUOTED_RE.findall(args_code)
+        if call == "addBlockAndItem" and len(names) == 2:
+            frm, to = names
+            aliases.append(("block", frm, to))
+            aliases.append(("item", frm, to))
+        elif call == "addFamily":
+            reg = REG_IN_CALL_RE.search(args_code)
+            if reg is None or len(names) < 2:
+                continue
+            registry = REGISTRY_LABEL.get(reg.group(1), reg.group(1).lower())
+            to, froms = names[0], names[1:]
+            for frm in froms:
+                aliases.append((registry, frm, to))
+        elif call == "addBlockAndItemFamily" and len(names) >= 2:
+            to, froms = names[0], names[1:]
+            for frm in froms:
+                aliases.append(("block", frm, to))
+                aliases.append(("item", frm, to))
     for reg, frm, to in ADD_RE.findall(text):
         aliases.append((REGISTRY_LABEL.get(reg, reg.lower()), frm, to))
     return aliases

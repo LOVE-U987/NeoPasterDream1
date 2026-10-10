@@ -1,6 +1,17 @@
 # PasterDream Changelog
 
 ---
+## v0.11.0（开发中）— 2026-10-11
+
+### 新增：api/compat 别名表便捷方法（ID 迁移里程碑 · API 先行批次）
+
+*   **新增**（`PasterDreamAPI` `api/compat/IdAliasTable`）：三个零具体 ID 的便捷登记方法——`addBlockAndItem(from, to)`（BlockItem 双注册表单条别名）、`addFamily(registryKey, to, froms...)`（同族多旧名合并到单新名）、`addBlockAndItemFamily(to, froms...)`（同族合并 + 双注册表）；注册路径统一用 `PasterDreamAPI.DATA_NAMESPACE` 构造，冲突校验复用既有 `add` 单点
+*   **同步**（`tools/verify_id_aliases.py`）：审计解析器新增识别三种新调用形状（支持跨行参数与行内注释剥离），旧形状（`aliasBlockAndItem` / `table.add(Registries.X, id, id)`）保持兼容；docstring 登记识别范围
+*   **迁移**（`PasterDream` `compat/PDIdAliases`）：现有 29 条别名全部迁移到便捷方法（三处同族合并改用 `addBlockAndItemFamily`，单条改用 `addBlockAndItem`，移除私有 `aliasBlockAndItem` helper），别名集合与迁移前完全一致
+*   **文档**：`docs/设计/存档兼容层.md` §5 新增「5.1 改名标准范式（0.11.x 起）」——静态注册表走别名 API 四步、数据包双注册表走 `PDBiomes` 双轨；`docs/设计/ID迁移计划.md` 迁移同步清单新增第 6 项（别名登记与 schema 递增）
+*   **换行**：本次修改的代码/脚本/文档文件由 CRLF 归一为 LF（`.gitattributes eol=lf` 口径），产生整文件 diff
+*   **验证**：`gradlew compileJava` 全量 BUILD SUCCESSFUL；`python tools/verify_id_aliases.py` 输出 `aliases=29 broken=0 shadowed=0 missing_coverage=0`
+
 ## v0.10.1 — 2026-09-26
 
 ### 修复：染梦/风旅维度 BGM 与群系错位、蘑菇平原实际不生成

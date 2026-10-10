@@ -1549,6 +1549,10 @@ wind_iron_ingot_2
 3. 语言文件 key（`assets/*/lang/*.json`）
 4. 引用: 配方、战利品表、标签、进度、结构引用、DataGen
 5. 快照: `PasterDream/src/main/resources/pd_porting_manifest.json`（PDPortingVerifyTest 校验基线）
+6. 别名: 静态注册表在 `PDIdAliases` 用 `IdAliasTable` 便捷方法登记
+   （`addBlockAndItem` / `addBlockAndItemFamily` / `addFamily`，0.11.x 起），
+   并递增 `PDSaveSchema.CURRENT_ID_SCHEMA_VERSION`
 
-**模板**: 群系已采用「新描述名 + 旧数字别名」双轨（见 `PDBiomes.java`），可作为其他类别的迁移范式。
+**模板**: 群系已采用「新描述名 + 旧数字别名」双轨（见 `PDBiomes.java`），可作为其他类别的迁移范式；
+改名标准范式详见 [存档兼容层 §5.1](存档兼容层.md)。
 
