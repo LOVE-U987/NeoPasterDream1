@@ -147,7 +147,7 @@
 - `claypan_1`
 - `shadow_trap_0`
 
-### 物品（211 个）
+### 物品（208 个）
 
 `PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/items/PDItemsBlocks.java`（74）:
 
@@ -379,24 +379,18 @@
 
 - `wind_journey_1_disc`
 
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/items/PDItemsSpawnEggs.java`（4）:
+`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/items/PDItemsSpawnEggs.java`（1）:
 
-- `aaroncos_lefthand_0`
-- `aaroncos_righthand_0`
-- `shadow_npc_0`
 - `shadow_squeal_ghost_0`
 
 `PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/items/PDItemsTools.java`（1）:
 
 - `dyedream_sword_0`
 
-### 实体（4 个）
+### 实体（1 个）
 
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDEntities.java`（4）:
+`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDEntities.java`（1）:
 
-- `aaroncos_lefthand_0`
-- `aaroncos_righthand_0`
-- `shadow_npc_0`
 - `shadow_squeal_ghost_0`
 
 ### 音效（3 个）
@@ -428,19 +422,11 @@
 - `snowflake_1_particle`
 - `spell_snowflake_0_particle`
 
-### 菜单（3 个）
+### 菜单（1 个）
 
 `PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDMenus.java`（1）:
 
 - `storage_bag_0`
-
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDMenusBlueprint.java`（1）:
-
-- `blueprint_gui_0`
-
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDMenusDreamnotes.java`（1）:
-
-- `dreamnotes_gui_0`
 
 ### 进度（45 个）
 
@@ -543,7 +529,7 @@
 - `traveler_house_2_set`
 - `windmoor_tree_0`
 
-> 代码侧命中总计: **407** 个（跨文件去重前按分类分别统计）
+> 代码侧命中总计: **399** 个（跨文件去重前按分类分别统计）
 
 ---
 
@@ -1014,11 +1000,9 @@ ground_overworld_0
 vine_0
 ```
 
-### 战利品表（101 个）
+### 战利品表（99 个）
 
 ```
-aaroncos_lefthand_0
-aaroncos_righthand_0
 achievement_hide_1
 achievement_hide_2
 achievement_hide_4
@@ -1330,7 +1314,7 @@ wind_iron_ingot_2
 
 - `pasterdream_draw_0`
 
-> 数据包侧命中总计: **737** 个
+> 数据包侧命中总计: **735** 个
 
 ---
 
@@ -1392,8 +1376,6 @@ wind_iron_ingot_2
 
 ### 3.2 裸 `_0`（无同族，数字无意义，优先改名）
 
-- `aaroncos_lefthand_0`
-- `aaroncos_righthand_0`
 - `achievement_adventure_0`
 - `achievement_d_0`
 - `achievement_end_0`
@@ -1403,7 +1385,6 @@ wind_iron_ingot_2
 - `achievement_shadow_d_0`
 - `achievement_shadow_e_0`
 - `achievement_special_0`
-- `blueprint_gui_0`
 - `breakwind_curtain_0`
 - `brokennotes_0`
 - `clay_pot_0`
@@ -1413,7 +1394,6 @@ wind_iron_ingot_2
 - `debug_wand_worldtree_0`
 - `desert_cottage_0`
 - `desert_fortress_0`
-- `dreamnotes_gui_0`
 - `dyedream_campsite_0`
 - `dyedream_laboratory_0`
 - `dyedream_sword_0`
@@ -1429,7 +1409,6 @@ wind_iron_ingot_2
 - `red_dew_0`
 - `shadow_arena_block_0`
 - `shadow_light_0`
-- `shadow_npc_0`
 - `shadow_squeal_ghost_0`
 - `shadow_trap_0`
 - `stone_break_0`
