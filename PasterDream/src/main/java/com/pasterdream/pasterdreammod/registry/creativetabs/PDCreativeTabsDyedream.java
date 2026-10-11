@@ -41,6 +41,8 @@ public class PDCreativeTabsDyedream {
                         output.accept(PDBlocks.DYEDREAM_FARMLAND.get());
                         output.accept(PDBlocks.DYEDREAM_SAND.get());
                         output.accept(PDBlocks.DYEDREAM_BLOCK.get());
+                        output.accept(PDBlocks.DYEDREAM_DEEPSTONE.get());
+                        output.accept(PDBlocks.DYEDREAM_SANDSTONE.get());
                         output.accept(PDBlocks.ICESTONE.get());
                         output.accept(PDBlocks.DYEDREAM_ICE.get());
                         output.accept(PDBlocks.DYEDREAM_PACKED_ICE.get());
@@ -190,11 +192,19 @@ public class PDCreativeTabsDyedream {
                         // Phase 1: 移植方块
                         output.accept(PDBlocks.PEBBLE_0.get());
                         output.accept(PDBlocks.GOLDENROD.get());
+                        output.accept(PDBlocks.JUNGLE_SPORE_PLANT.get());
+                        output.accept(PDBlocks.FOURLEAF_CLOVER.get());
+                        output.accept(PDBlocks.FIG_VINE.get());
                         output.accept(PDBlocks.CROP_0A.get());
                         output.accept(PDBlocks.CROP_1A.get());
                         output.accept(PDBlocks.CROP_2A.get());
                         output.accept(PDBlocks.CROP_3A.get());
                         output.accept(PDBlocks.CROP_4A.get());
+                        output.accept(PDBlocks.CROP_0B.get());
+                        output.accept(PDBlocks.CROP_1B.get());
+                        output.accept(PDBlocks.CROP_2B.get());
+                        output.accept(PDBlocks.CROP_3B.get());
+                        output.accept(PDBlocks.CROP_4B.get());
                         output.accept(PDBlocks.VINE_0.get());
 
                         // 融梦水晶箱

@@ -194,6 +194,11 @@ dependencies {
     // KubeJS 运行需要 Rhino 脚本引擎，同样以 optional 形式挂载，不进入发布 jar
     compileOnly "maven.modrinth:sk9knFPE:${rhino_version}"
     localRuntime "maven.modrinth:sk9knFPE:${rhino_version}"
+
+    // ======================== IMBlocker 输入法冲突修复（本地测试前置 · 可选依赖） ========================
+    // 仅开发期经 localRuntime 挂载，修复 Windows 输入法与游戏输入冲突；
+    // Mixin Plugin 动态应用，服务端/数据运行安全；不进入发布 jar，玩家无需安装。
+    localRuntime "maven.modrinth:imblocker-original:${imblocker_version}"
 }
 
 // ======================== 分发：主模内嵌 API（附属独立发行） ========================

@@ -1059,14 +1059,51 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
     private static final int CAVE_CEILING_DEPTH = 8;
 
     /**
+     * 大型洞厅的深度兜底阈值 —— 距地表至少该深度时，进入扩展顶盖扫描
+     * （见 {@link #CAVE_CEILING_SCAN_MAX}），扫描到实心顶盖才视为洞穴内部
+     * <p>
+     * 深埋地下的空气袋被岩层包裹时可通过该兜底；开放海底等头顶无顶盖的
+     * 深位置会被扩展扫描排除，不会误判为洞穴。
+     */
+    private static final int CAVE_DEPTH_FALLBACK = 12;
+
+    /**
+     * 深度兜底时的向上扩展顶盖扫描上限（格数）
+     * <p>
+     * 快扫 {@link #CAVE_CEILING_DEPTH} 格未命中顶盖的深位置，最多再向上扫描
+     * 该距离寻找实心顶盖：超高顶大洞厅的地面/墙面可由该扫描确认洞穴属性；
+     * 开放海底向上只有海水直到海面，扫完无顶盖即拒绝。
+     */
+    private static final int CAVE_CEILING_SCAN_MAX = 64;
+
+    /**
+     * 晶芽向下寻找洞穴地面的搜索深度 —— 采样点落在实心岩层时，
+     * 最多向下搜索该格数，找到"空气 + 下方实心地面"后放置
+     * <p>
+     * 随机采样点大多位于岩层中，直接命中洞穴表面的比例很低；
+     * 该回退把采样点转换成附近的洞穴地面。搜索深度直接决定单次尝试
+     * 的命中率，过大时大洞厅几乎必中导致密度过高，需与
+     * placed_feature 的每区块尝试次数配套控制。
+     */
+    private static final int BUD_SEARCH_DEPTH = 3;
+
+    /**
+     * 晶芽簇尝试次数系数 —— 单次簇生成最多尝试 {@code 目标数量 * 该系数} 次
+     */
+    private static final int BUD_CLUSTER_ATTEMPT_FACTOR = 6;
+
+    /**
      * 晶芽生成：在洞穴表面吸附放置，支持含水检测和簇状集群
      * <ul>
-     *   <li>必须位于地下洞穴内（地表之下 + 上方 {@link #CAVE_CEILING_DEPTH} 格内有顶盖）</li>
-     *   <li>从 origin 向 6 方向扫描，寻找空气 + 相邻固体表面</li>
+     *   <li>必须位于地下洞穴内（地表之下 + 上方 {@link #CAVE_CEILING_DEPTH} 格内有顶盖，
+     *       或距地表至少 {@link #CAVE_DEPTH_FALLBACK} 格且扩展扫描能找到顶盖）</li>
+     *   <li>先尝试采样点本身；失败时向下 {@link #BUD_SEARCH_DEPTH} 格内寻找洞穴地面放置</li>
+     *   <li>从放置点向 6 方向扫描，寻找空气 + 相邻固体表面</li>
      *   <li>计算 FACING 方向（背离支撑块、指向空气）</li>
      *   <li>放置晶芽，设置 FACING + WATERLOGGED</li>
      *   <li>概率判定是否生成簇状集群：{@code clusterSize} 为簇内晶芽总数（含首个），
-     *       随机目标数 2~clusterSize，按成功放置数量计数</li>
+     *       随机目标数 2~clusterSize，按成功放置数量计数，
+     *       最多尝试 {@code 目标数量 * }{@link #BUD_CLUSTER_ATTEMPT_FACTOR} 次</li>
      * </ul>
      *
      * @param context 特征放置上下文
@@ -1083,21 +1120,29 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
             return false;
         }
 
-        // Place single bud
-        boolean placedAny = placeBudAt(level, config, random, origin);
+        // 先尝试采样点本身；采样点多为实心岩层，失败时向下寻找附近洞穴地面
+        BlockPos center;
+        if (placeBudAt(level, config, random, origin)) {
+            center = origin;
+        } else {
+            center = placeBudOnCaveFloor(level, config, random, origin);
+        }
+        if (center == null) {
+            return false;
+        }
 
         // Cluster generation: clusterSize is the TOTAL bud count of the cluster (including the first one)
-        if (placedAny && random.nextFloat() < config.clusterChance()) {
+        if (random.nextFloat() < config.clusterChance()) {
             int target = random.nextIntBetweenInclusive(2, config.clusterSize());
             int placed = 1;
             int attempts = 0;
-            int maxAttempts = target * 4;
+            int maxAttempts = target * BUD_CLUSTER_ATTEMPT_FACTOR;
             while (placed < target && attempts < maxAttempts) {
                 attempts++;
                 int dx = random.nextInt(-config.clusterRadius(), config.clusterRadius() + 1);
                 int dy = random.nextInt(-config.clusterRadius(), config.clusterRadius() + 1);
                 int dz = random.nextInt(-config.clusterRadius(), config.clusterRadius() + 1);
-                BlockPos clusterPos = origin.offset(dx, dy, dz);
+                BlockPos clusterPos = center.offset(dx, dy, dz);
                 // Every candidate position must pass the same cave validation
                 if (!isInCave(level, clusterPos)) {
                     continue;
@@ -1108,17 +1153,50 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
             }
         }
 
-        return placedAny;
+        return true;
+    }
+
+    /**
+     * 向下寻找洞穴地面放置单个晶芽 —— 采样点落在实心岩层时的密度回退
+     * <p>
+     * 只接受"空气 + 正下方为实心地面"的位置（与原模组一致，晶芽长在洞穴地面上），
+     * 向下 {@link #BUD_SEARCH_DEPTH} 格内找不到则返回 {@code null}。
+     *
+     * @param level  世界生成级别访问
+     * @param config 装饰物配置
+     * @param random 随机数源
+     * @param origin 采样原点
+     * @return 实际放置位置；未放置返回 {@code null}
+     */
+    @Nullable
+    private BlockPos placeBudOnCaveFloor(WorldGenLevel level, DecorationConfig config,
+                                         RandomSource random, BlockPos origin) {
+        for (int dy = 1; dy <= BUD_SEARCH_DEPTH; dy++) {
+            BlockPos candidate = origin.below(dy);
+            if (!isInCave(level, candidate)) {
+                continue;
+            }
+            BlockPos below = candidate.below();
+            if (!level.getBlockState(below).isFaceSturdy(level, below, Direction.UP)) {
+                continue;
+            }
+            if (placeBudAt(level, config, random, candidate)) {
+                return candidate;
+            }
+        }
+        return null;
     }
 
     /**
      * 洞穴环境判定 —— 晶芽只允许生成在真正的地下洞穴内
      * <p>
-     * 同时检查两个条件：
+     * 需同时满足"位于地表之下"，且满足以下任一条件：
      * <ul>
-     *   <li>位于地表之下（按候选点自身 X/Z 计算地表高度，集群偏移后不会误判）</li>
-     *   <li>上方 {@link #CAVE_CEILING_DEPTH} 格内存在实心顶盖，
-     *       排除低于海平面但头顶开放的露天海底</li>
+     *   <li>上方 {@link #CAVE_CEILING_DEPTH} 格内存在实心顶盖
+     *       （按候选点自身 X/Z 计算地表高度，集群偏移后不会误判）</li>
+     *   <li>距地表至少 {@link #CAVE_DEPTH_FALLBACK} 格（深洞兜底），
+     *       且向上扩展扫描（至多 {@link #CAVE_CEILING_SCAN_MAX} 格）能找到实心顶盖；
+     *       开放海底等头顶无顶盖的深位置即使够深也会被拒绝</li>
      * </ul>
      *
      * @param level 世界生成级别访问
@@ -1130,7 +1208,28 @@ public class GenericDecorationFeature extends Feature<DecorationConfig> {
         if (pos.getY() >= surfaceY) {
             return false;
         }
-        for (int dy = 1; dy <= CAVE_CEILING_DEPTH; dy++) {
+        if (hasSolidCeiling(level, pos, CAVE_CEILING_DEPTH)) {
+            return true;
+        }
+        // 深洞兜底：够深且向上扩展扫描能找到实心顶盖才视为洞穴，
+        // 开放海底（向上只有海水直到海面）在此被排除
+        if (pos.getY() > surfaceY - CAVE_DEPTH_FALLBACK) {
+            return false;
+        }
+        int maxScan = Math.min(surfaceY - pos.getY(), CAVE_CEILING_SCAN_MAX);
+        return hasSolidCeiling(level, pos, maxScan);
+    }
+
+    /**
+     * 自候选位置向上扫描实心顶盖
+     *
+     * @param level       世界生成级别访问
+     * @param pos         候选位置（不含，从其上方第 1 格开始扫）
+     * @param maxDistance 最大扫描格数（含）
+     * @return 在 {@code [1, maxDistance]} 范围内遇到实心方块返回 true
+     */
+    private boolean hasSolidCeiling(WorldGenLevel level, BlockPos pos, int maxDistance) {
+        for (int dy = 1; dy <= maxDistance; dy++) {
             BlockPos abovePos = pos.above(dy);
             if (level.getBlockState(abovePos).isSolidRender(level, abovePos)) {
                 return true;

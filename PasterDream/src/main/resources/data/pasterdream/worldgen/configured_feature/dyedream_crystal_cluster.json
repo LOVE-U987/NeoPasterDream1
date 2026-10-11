@@ -10,24 +10,6 @@
             "Name": "pasterdream:dyedream_lartern"
           },
           "weight": 40
-        },
-        {
-          "data": {
-            "Name": "pasterdream:dyedream_bud_0"
-          },
-          "weight": 30
-        },
-        {
-          "data": {
-            "Name": "pasterdream:dyedream_bud_1"
-          },
-          "weight": 20
-        },
-        {
-          "data": {
-            "Name": "pasterdream:dyedream_bud_2"
-          },
-          "weight": 10
         }
       ]
     },
