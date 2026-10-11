@@ -3,6 +3,15 @@
 ---
 ## v0.11.0（开发中）— 2026-10-11
 
+### 迁移：P0 菜单批次——2 个菜单 ID 去 _0 后缀（ID 迁移第三批）
+
+*   **改名**（`PDMenusBlueprint`/`PDMenusDreamnotes`）：`blueprint_gui_0→blueprint_gui`、`dreamnotes_gui_0→dreamnotes_gui`（注册名+常量+javadoc+调试文案）；引用同步 `BluePrintLoader`/屏幕注册/菜单构造/smoketest ×2 套件
+*   **资源**：蓝图屏幕背景纹理 `textures/screens/blueprint_gui_0.png→blueprint_gui.png`、语言键族 `gui.pasterdream.blueprint_gui_0.button_*`（×5 双语）、`container.pasterdream.dreamnotes_gui_0`（双语）、manifest ×2
+*   **排除**（撞车项）：`storage_bag_0` 基底 `storage_bag`（9 格版）已注册，去后缀撞车，另行语义化
+*   **兼容**（`PDIdAliases`）：+2 条 `MENU` 别名（aliases=42）；`PDBlueprintVerifyHooks` 断言文案同步
+*   **审计增强**（`tools/verify_id_aliases.py`）：注册名收集新增 `MenuAPI.createMenu` 门面形状（吸取 createEntity 教训，提前补齐）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；审计 aliases=42 broken=0 shadowed=0 missing_coverage=0；`check_lang` 双语全过
+
 ### 迁移：P0 实体批次——3 个实体 ID 去 _0 后缀（ID 迁移第二批）
 
 *   **改名**（`PDEntities`）：`aaroncos_lefthand_0→aaroncos_lefthand`、`aaroncos_righthand_0→aaroncos_righthand`、`shadow_npc_0→shadow_npc`（注册名+常量+javadoc）；刷怪蛋物品随实体名派生改名（`*_0_spawn_egg→*_spawn_egg` ×3）；常量桥接 `PDItems`/创造模式物品栏同步

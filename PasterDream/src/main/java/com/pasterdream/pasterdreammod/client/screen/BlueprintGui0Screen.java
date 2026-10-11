@@ -14,7 +14,7 @@ import net.minecraft.world.entity.player.Inventory;
 /**
  * 蓝图阅览 GUI 屏幕（还原原版 {@code BlueprintGui0Screen}）。
  * <p>
- * - 背景纹理 196×216：{@code textures/screens/blueprint_gui_0.png}
+ * - 背景纹理 196×216：{@code textures/screens/blueprint_gui.png}
  * - 页码标签：{@code screen.pasterdream.pagenum}
  * - 左右翻页按钮：通过 {@code handleInventoryButtonClick} → 菜单 {@code clickMenuButton}
  *   发送 1-based 目标页（等价原版 {@code BlueprintGui0ButtonMessage}）
@@ -24,7 +24,7 @@ import net.minecraft.world.entity.player.Inventory;
 public class BlueprintGui0Screen extends AbstractContainerScreen<BlueprintGui0Menu> {
 
     private static final ResourceLocation GUI_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "textures/screens/blueprint_gui_0.png");
+            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "textures/screens/blueprint_gui.png");
 
     private final ScreenVar screenVar = new ScreenVar();
 
@@ -85,7 +85,7 @@ public class BlueprintGui0Screen extends AbstractContainerScreen<BlueprintGui0Me
         super.init();
         // 原版左键：leftPos+11, topPos+58, 30×20
         Button buttonLeft = Button.builder(
-                Component.translatable("gui.pasterdream.blueprint_gui_0.button_empty"),
+                Component.translatable("gui.pasterdream.blueprint_gui.button_empty"),
                 b -> {
                     this.screenVar.subPage();
                     sendPageToServer();
@@ -95,7 +95,7 @@ public class BlueprintGui0Screen extends AbstractContainerScreen<BlueprintGui0Me
 
         // 原版右键：leftPos+153, topPos+58, 30×20
         Button buttonRight = Button.builder(
-                Component.translatable("gui.pasterdream.blueprint_gui_0.button_empty1"),
+                Component.translatable("gui.pasterdream.blueprint_gui.button_empty1"),
                 b -> {
                     this.screenVar.addPage();
                     sendPageToServer();

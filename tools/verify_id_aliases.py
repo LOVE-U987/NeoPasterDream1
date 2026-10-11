@@ -59,6 +59,8 @@ REG_SIMPLE_RE = re.compile(
 # EntityAPI 门面注册形状（PDEntities 经 createEntity 注册、刷怪蛋经 createSpawnEggItem）
 CREATE_ENTITY_RE = re.compile(r'createEntity\(\s*"([a-z0-9_]+)"')
 CREATE_SPAWN_EGG_RE = re.compile(r'createSpawnEggItem\([^,]*,\s*"([a-z0-9_]+)"')
+# MenuAPI 门面注册形状（菜单经 createMenu 注册）
+CREATE_MENU_RE = re.compile(r'createMenu\(\s*"([a-z0-9_]+)"')
 
 REGISTRY_LABEL = {"BLOCK": "block", "ITEM": "item"}
 
@@ -140,6 +142,7 @@ def collect_registered_names():
             bucket.update(CREATE_ENTITY_RE.findall(text))
             # 刷怪蛋物品 ID 由 EntityAPI 派生为 <name>_spawn_egg
             bucket.update(n + "_spawn_egg" for n in CREATE_SPAWN_EGG_RE.findall(text))
+            bucket.update(CREATE_MENU_RE.findall(text))
     return by_registry
 
 

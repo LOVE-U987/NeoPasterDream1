@@ -1178,10 +1178,10 @@
     "shadow_liquid"
   ],
   "menus": [
-    "blueprint_gui_0",
+    "blueprint_gui",
     "dream_accumulator_gui",
     "dream_cauldron_gui",
-    "dreamnotes_gui_0",
+    "dreamnotes_gui",
     "dyedream_desk_gui",
     "meltdream_chest_gui_0",
     "picnic_basket_gui",

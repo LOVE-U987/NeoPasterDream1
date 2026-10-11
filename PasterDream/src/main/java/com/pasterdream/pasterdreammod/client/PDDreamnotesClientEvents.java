@@ -21,13 +21,13 @@ public final class PDDreamnotesClientEvents {
     }
 
     /**
-     * 绑定 dreamnotes_gui_0 → DreamnotesGui0Screen
+     * 绑定 dreamnotes_gui → DreamnotesGui0Screen
      *
      * @param event 菜单屏幕注册事件
      */
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
-        event.register(PDMenusDreamnotes.DREAMNOTES_GUI_0.get(), DreamnotesGui0Screen::new);
-        PDDebugLogger.mainDebug("[PDDreamnotesClientEvents] 注册 GUI 屏幕: dreamnotes_gui_0 → DreamnotesGui0Screen");
+        event.register(PDMenusDreamnotes.DREAMNOTES_GUI.get(), DreamnotesGui0Screen::new);
+        PDDebugLogger.mainDebug("[PDDreamnotesClientEvents] 注册 GUI 屏幕: dreamnotes_gui → DreamnotesGui0Screen");
     }
 }

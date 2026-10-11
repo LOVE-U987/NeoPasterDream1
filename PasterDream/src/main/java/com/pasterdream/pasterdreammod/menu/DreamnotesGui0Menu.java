@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /**
- * 寻梦者笔记阅读 GUI 菜单 (dreamnotes_gui_0)
+ * 寻梦者笔记阅读 GUI 菜单 (dreamnotes_gui)
  * <p>
  * 原版 0 槽容器：仅用于打开客户端屏幕并播放翻书音效。
  * 额外写入 noteId，避免手持切换时页内容错位（向后兼容仅 pos+hand 的缓冲）。
@@ -36,7 +36,7 @@ public class DreamnotesGui0Menu extends AbstractContainerMenu {
     }
 
     public DreamnotesGui0Menu(int id, Inventory inv, BlockPos pos, byte hand, int noteId) {
-        super(PDMenusDreamnotes.DREAMNOTES_GUI_0.get(), id);
+        super(PDMenusDreamnotes.DREAMNOTES_GUI.get(), id);
         this.entity = inv.player;
         this.world = inv.player.level();
         this.x = pos.getX();

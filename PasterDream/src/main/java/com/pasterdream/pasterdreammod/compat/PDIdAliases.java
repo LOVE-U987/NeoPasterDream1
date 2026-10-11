@@ -90,6 +90,11 @@ public final class PDIdAliases {
         table.add(Registries.ITEM, id("aaroncos_righthand_0_spawn_egg"), id("aaroncos_righthand_spawn_egg"));
         table.add(Registries.ITEM, id("shadow_npc_0_spawn_egg"), id("shadow_npc_spawn_egg"));
 
+        // 0.11.x P0 菜单批次：裸 _0 去后缀（ID 迁移第三批）。
+        // storage_bag_0 存在无数字基底名（storage_bag 9 格版），撞车排除，另行语义化。
+        table.add(Registries.MENU, id("blueprint_gui_0"), id("blueprint_gui"));
+        table.add(Registries.MENU, id("dreamnotes_gui_0"), id("dreamnotes_gui"));
+
         return table;
     }
 
