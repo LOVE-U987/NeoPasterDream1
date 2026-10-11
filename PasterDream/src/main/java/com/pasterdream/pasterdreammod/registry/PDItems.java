@@ -930,6 +930,7 @@ public class PDItems {
     public static final DeferredItem<?> DREAMNOTES_12 = PDItemsDreamnotes.DREAMNOTES_12;
     public static final DeferredItem<?> DREAMNOTES_13 = PDItemsDreamnotes.DREAMNOTES_13;
     public static final DeferredItem<?> DREAMNOTES_14 = PDItemsDreamnotes.DREAMNOTES_14;
+    public static final DeferredItem<?> DREAMSEEKER_NOTES = PDItemsDreamseeker.DREAMSEEKER_NOTES;
 
     // ==================== [分区F] 容器/家具/杂项方块物品（W4） re-export ====================
 

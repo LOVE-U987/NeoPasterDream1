@@ -1,0 +1,15 @@
+{
+  "title": {
+    "zh_cn": "§e染梦世界",
+    "en_us": "§eDyedream World"
+  },
+  "body": {
+    "zh_cn": "（占位正文，待内容迁移）\n\n这是寻梦者笔记 2 的占位正文。",
+    "en_us": "(Placeholder body pending content migration)\n\nThis is placeholder text for Dream Seeker Note 2."
+  },
+  "unlock": "pasterdream:achievement_b_0",
+  "required": "pasterdream:achievement_a_0",
+  "locate_shadow_base": false,
+  "give": [],
+  "extra_messages": []
+}

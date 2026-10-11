@@ -1,0 +1,41 @@
+{
+  "steps": [
+    {
+      "required": "pasterdream:achievement_hide_14",
+      "product": {
+        "id": "pasterdream:dreamnotes_13",
+        "count": 1
+      }
+    },
+    {
+      "required": "pasterdream:achievement_hide_13",
+      "product": {
+        "id": "pasterdream:dreamnotes_12",
+        "count": 1
+      }
+    },
+    {
+      "required": "pasterdream:achievement_hide_12",
+      "product": {
+        "id": "pasterdream:blueprint_0",
+        "count": 1
+      }
+    },
+    {
+      "required": "pasterdream:achievement_hide_11",
+      "product": {
+        "id": "pasterdream:dreamnotes_11",
+        "count": 1
+      }
+    },
+    {
+      "required": "pasterdream:achievement_shadow_start",
+      "product": {
+        "id": "pasterdream:dreamnotes_10",
+        "count": 1
+      }
+    }
+  ],
+  "completion": "pasterdream:achievement_hide_15",
+  "completion_exp": 50
+}

@@ -1443,7 +1443,7 @@
     "particles": 34,
     "enchantments": 2,
     "fluids": 4,
-    "menus": 19,
+    "menus": 18,
     "block_entities": 79,
     "attributes": 12,
     "tabs": 10,
@@ -1451,6 +1451,10 @@
     "dimensions": 4
   },
   "excluded": {
+    "menus": [
+      "dreamnotes_gui_0"
+    ],
+    "_comment_menus": "寻梦者笔记重做：笔记 GUI 由 AbstractContainerMenu 改为 S2C/C2S Payload，dreamnotes_gui_0 刻意不注册",
     "attributes": [
       "san",
       "meltdreamenergy"

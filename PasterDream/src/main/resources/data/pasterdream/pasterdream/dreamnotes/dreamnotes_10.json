@@ -1,0 +1,15 @@
+{
+  "title": {
+    "zh_cn": "§e沉淀阴影",
+    "en_us": "§eThe Settled Shadow"
+  },
+  "body": {
+    "zh_cn": "（占位正文，待内容迁移）\n\n这是寻梦者笔记 10 的占位正文。",
+    "en_us": "(Placeholder body pending content migration)\n\nThis is placeholder text for Dream Seeker Note 10."
+  },
+  "unlock": "pasterdream:achievement_hide_11",
+  "required": "pasterdream:achievement_shadow_start",
+  "locate_shadow_base": false,
+  "give": [],
+  "extra_messages": []
+}

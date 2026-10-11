@@ -1,0 +1,20 @@
+{
+  "title": {
+    "zh_cn": "§e侵染教堂",
+    "en_us": "§eThe Infected Church"
+  },
+  "body": {
+    "zh_cn": "（占位正文，待内容迁移）\n\n这是寻梦者笔记 9 的占位正文。",
+    "en_us": "(Placeholder body pending content migration)\n\nThis is placeholder text for Dream Seeker Note 9."
+  },
+  "unlock": "pasterdream:achievement_hide_10",
+  "required": "pasterdream:achievement_b_0",
+  "locate_shadow_base": true,
+  "give": [
+    {
+      "id": "pasterdream:calle_card_0",
+      "count": 1
+    }
+  ],
+  "extra_messages": []
+}

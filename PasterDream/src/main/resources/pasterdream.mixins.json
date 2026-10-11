@@ -9,7 +9,10 @@
     "LevelRendererMixin",
     "GameRendererMixin",
     "LocalPlayerMixin",
-    "KeyboardInputMixin"
+    "KeyboardInputMixin",
+    "MultiLineEditBoxAccessor",
+    "MultilineTextFieldViewMixin",
+    "StringViewAccessor"
   ],
   "mixins": [
     "StructureTemplateAccessor"

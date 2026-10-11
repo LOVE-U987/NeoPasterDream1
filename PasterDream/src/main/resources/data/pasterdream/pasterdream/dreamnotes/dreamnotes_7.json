@@ -1,0 +1,15 @@
+{
+  "title": {
+    "zh_cn": "§e蓄梦池",
+    "en_us": "§eDream Reservoir"
+  },
+  "body": {
+    "zh_cn": "（占位正文，待内容迁移）\n\n这是寻梦者笔记 7 的占位正文。",
+    "en_us": "(Placeholder body pending content migration)\n\nThis is placeholder text for Dream Seeker Note 7."
+  },
+  "unlock": "pasterdream:achievement_c_3",
+  "required": "pasterdream:achievement_b_0",
+  "locate_shadow_base": false,
+  "give": [],
+  "extra_messages": []
+}

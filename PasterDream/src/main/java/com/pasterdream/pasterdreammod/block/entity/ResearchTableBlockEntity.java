@@ -1,6 +1,8 @@
 package com.pasterdream.pasterdreammod.block.entity;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.dreamnotes.PDNoteRegistry;
+import com.pasterdream.pasterdreammod.dreamnotes.ResearchChain;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.menu.ResearchTableMenu;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
@@ -177,14 +179,51 @@ public class ResearchTableBlockEntity extends BlockEntity implements GeoBlockEnt
         itemHandler.setStackInSlot(SLOT_UNKNOWN, unknown);
         level.playSound(null, worldPosition, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 1.2f, 1);
 
+        ResearchChain chain = PDNoteRegistry.research(level);
+        if (chain != null) {
+            applyResearchChain(player, serverPlayer, chain);
+        } else {
+            applyResearchFallback(player, serverPlayer);
+        }
+    }
+
+    /**
+     * 数据驱动研究梯度：完成成就优先给经验，否则取首个满足前置的步骤产物。
+     *
+     * @param player       玩家
+     * @param serverPlayer 服务端玩家
+     * @param chain        研究梯度链
+     */
+    private void applyResearchChain(Player player, ServerPlayer serverPlayer, ResearchChain chain) {
+        if (isAdvancementDone(serverPlayer, chain.completion().getPath())) {
+            player.closeContainer();
+            sendMessage(player, "笔记上的研究内容你都已经了解，但还是能给你带来些许启发", false);
+            sendMessage(player, "经验值+" + chain.completionExp(), false);
+            player.giveExperiencePoints(chain.completionExp());
+            return;
+        }
+        for (ResearchChain.Step step : chain.steps()) {
+            if (isAdvancementDone(serverPlayer, step.required().getPath())) {
+                grantStudyResult(player, step.product());
+                return;
+            }
+        }
+        grantStudyResult(player, "dreamnotes_10");
+    }
+
+    /**
+     * 注册表缺失时的硬编码梯度回退（与原版 ResearchTablePr0 逐梯度一致）。
+     *
+     * @param player       玩家
+     * @param serverPlayer 服务端玩家
+     */
+    private void applyResearchFallback(Player player, ServerPlayer serverPlayer) {
         boolean hide11 = isAdvancementDone(serverPlayer, "achievement_hide_11");
         boolean hide12 = isAdvancementDone(serverPlayer, "achievement_hide_12");
         boolean hide13 = isAdvancementDone(serverPlayer, "achievement_hide_13");
         boolean hide14 = isAdvancementDone(serverPlayer, "achievement_hide_14");
         boolean hide15 = isAdvancementDone(serverPlayer, "achievement_hide_15");
-
         if (hide14 && hide15) {
-            // 全部研究完成：关闭界面并补偿经验
             player.closeContainer();
             sendMessage(player, "笔记上的研究内容你都已经了解，但还是能给你带来些许启发", false);
             sendMessage(player, "经验值+50", false);
@@ -200,6 +239,24 @@ public class ResearchTableBlockEntity extends BlockEntity implements GeoBlockEnt
         } else {
             grantStudyResult(player, "dreamnotes_10");
         }
+    }
+
+    /**
+     * 把研究产物（物品栈）写入槽 5 并提示。
+     *
+     * @param player  玩家
+     * @param product 产物
+     */
+    private void grantStudyResult(Player player, ItemStack product) {
+        if (product == null || product.isEmpty()) {
+            PDDebugLogger.mainDebug("[ResearchTable] 研究产物为空，跳过发放");
+            return;
+        }
+        ItemStack result = product.copy();
+        result.setCount(1);
+        itemHandler.setStackInSlot(SLOT_STUDY_RESULT, result);
+        sendMessage(player, "残破的笔记被你重新排列，模糊的文字和图案被重新勾勒", false);
+        sendMessage(player, "已获得新的寻梦者笔记", false);
     }
 
     /**

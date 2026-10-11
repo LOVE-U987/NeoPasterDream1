@@ -27,7 +27,6 @@ import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesItems;
 import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesLogic;
 import com.pasterdream.pasterdreammod.entity.mob.ShadowNpc0Entity;
 import com.pasterdream.pasterdreammod.entity.mob.WindKnightEntity;
-import com.pasterdream.pasterdreammod.menu.DreamnotesGui0Menu;
 import com.pasterdream.pasterdreammod.menu.ShadowSelectEndMenu;
 import com.pasterdream.pasterdreammod.registry.PDArenaBossManager;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
@@ -40,6 +39,7 @@ import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -210,13 +210,9 @@ public final class PDMainFlowVerifyHooks {
         }
         ItemStack stack = new ItemStack(noteItem);
         player.setItemInHand(InteractionHand.MAIN_HAND, stack);
-        stack.use(level, player, InteractionHand.MAIN_HAND);
-        // 真实 use 会打开笔记 GUI；校验后关闭，避免残留界面干扰后续流程
-        boolean guiOpened = player.containerMenu instanceof DreamnotesGui0Menu;
-        accept(out, guiOpened, label + " 笔记 GUI 打开", player.containerMenu.getClass().getSimpleName());
-        if (guiOpened) {
-            player.closeContainer();
-        }
+        // 真实 use：服务端触发成就逻辑并向客户端下发 S2C 打开包（服务端无容器界面）
+        InteractionResultHolder<ItemStack> result = stack.use(level, player, InteractionHand.MAIN_HAND);
+        accept(out, result.getResult().consumesAction(), label + " 笔记使用成功", result.getResult().name());
     }
 
     private static boolean hasAdvancement(ServerPlayer player, String path) {
