@@ -42,11 +42,11 @@ public final class PDBlueprintVerifyHooks {
      */
     public static void verifyRegistry(List<String> failures) {
         try {
-            if (PDMenusBlueprint.BLUEPRINT_GUI.get() == null) {
-                failures.add("MenuType blueprint_gui is null");
+            if (PDMenusBlueprint.BLUEPRINT_GUI_0.get() == null) {
+                failures.add("MenuType blueprint_gui_0 is null");
             }
         } catch (Exception e) {
-            failures.add("MenuType blueprint_gui not available: " + e.getMessage());
+            failures.add("MenuType blueprint_gui_0 not available: " + e.getMessage());
         }
 
         checkItem(failures, "blueprint_0", PDItemsBlueprint.BLUEPRINT_0.get());

@@ -230,8 +230,7 @@ public class PasterDreamMod {
                 MenuAPI.REGISTRY,
                 MobEffectAPI.REGISTRY,
                 ParticleAPI.REGISTRY,
-                ApiSoundRegistry.DIMENSION_SOUNDS,
-                PDSounds.SOUND_EVENTS);
+                ApiSoundRegistry.DIMENSION_SOUNDS);
         LOGGER.debug("[PDIdAliases] 已应用 {} 条旧→新 ID 别名", appliedIdAliases);
 
         // 配置刷怪蛋模型自动生成输出目录

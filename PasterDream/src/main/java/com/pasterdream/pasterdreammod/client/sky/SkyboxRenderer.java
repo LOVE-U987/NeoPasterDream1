@@ -10,7 +10,6 @@ import com.pasterdream.pasterdreammod.api.client.sky.SkyboxRenderContext;
 import com.pasterdream.pasterdreammod.client.sky.content.ConstellationSkyContent;
 import com.pasterdream.pasterdreammod.client.sky.content.SkyLinkContent;
 import com.pasterdream.pasterdreammod.client.sky.content.TexturedPlanetSystemSkyContent;
-import com.pasterdream.pasterdreammod.client.sky.skystatic.StaticSkyRenderer;
 import com.pasterdream.pasterdreammod.client.sky.math.SkyPoint;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import net.minecraft.client.Camera;
@@ -245,10 +244,6 @@ public final class SkyboxRenderer {
      * @return 有活跃天空盒内容时返回 true
      */
     public static boolean shouldSuppressVanillaStars() {
-        // Static 模式始终接管星空（星盘由 NPD 替换绘制）
-        if (StaticSkyRenderer.shouldSkipAfterSky()) {
-            return true;
-        }
         if (MC.level == null || MC.player == null) {
             return false;
         }
@@ -295,16 +290,23 @@ public final class SkyboxRenderer {
      * @param poseStack 矩阵栈
      * @param context   渲染上下文
      */
-    /**
-     * 核心内容绘制循环（不包含 setup/cleanup，供 dynamic 和 static 共用）
-     *
-     * @param poseStack 已旋转的 PoseStack
-     * @param context   渲染上下文
-     */
-    private static void renderCore(PoseStack poseStack, SkyboxRenderContext context) {
+    private static void render(PoseStack poseStack, SkyboxRenderContext context) {
+        // 每帧检测黎明边沿：白天到来时回退玩家夜间操作（清除连线星体等）
         checkDayRollback();
+
+        RenderSystem.depthMask(false);
+        RenderSystem.enableDepthTest();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+        poseStack.pushPose();
+        poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(context.skyAngle()));
+
         List<SkyboxEntry> entries = SkyboxRegistry.entries();
         Candidate selected = updateSelectedCandidate(entries, context);
+
         for (SkyboxEntry entry : entries) {
             String id = entry.content().id().toString();
             float currentAlpha = ALPHAS.getOrDefault(id, 0.0F);
@@ -324,60 +326,12 @@ public final class SkyboxRenderer {
                 entry.content().render(context, nextAlpha);
             }
         }
-    }
-
-    /**
-     * Dynamic 模式渲染（AFTER_SKY 事件调用）
-     * <p>
-     * 完整 setup → pushPose/rotation → renderCore → popPose/cleanup。
-     *
-     * @param poseStack 原始矩阵栈
-     * @param context   渲染上下文
-     */
-    private static void render(PoseStack poseStack, SkyboxRenderContext context) {
-        // 每帧检测黎明边沿：白天到来时回退玩家夜间操作（清除连线星体等）
-        checkDayRollback();
-
-        RenderSystem.depthMask(false);
-        RenderSystem.enableDepthTest();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-        poseStack.pushPose();
-        poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
-        poseStack.mulPose(Axis.YP.rotationDegrees(context.skyAngle()));
-
-        renderCore(poseStack, context);
 
         poseStack.popPose();
         RenderSystem.depthMask(true);
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-    }
-
-    /**
-     * Static 模式渲染（renderSky @Inject 调用）
-     * <p>
-     * caller 提供的 PoseStack 已含 NPD 旋转（X(-90)Y(skyAngle)），
-     * 不做额外 rotation 也不做 cleanup——由 StaticSkyRenderer/vanilla 管理状态。
-     *
-     * @param poseStack   已旋转的 PoseStack
-     * @param camera      当前相机
-     * @param partialTick 帧间插值
-     */
-    public static void renderStatic(PoseStack poseStack, Camera camera, float partialTick) {
-        SkyboxRenderContext context = makeContext(poseStack, camera, partialTick);
-        if (context == null) return;
-
-        RenderSystem.depthMask(false);
-        RenderSystem.enableDepthTest();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        renderCore(poseStack, context);
-        // 不做 cleanup，caller 管理状态
     }
 
     /**
@@ -407,36 +361,6 @@ public final class SkyboxRenderer {
             SKY_LINK.render(context, skylinkAlpha);
         }
         poseStack.popPose();
-    }
-
-    /**
-     * Static 模式渲染玩家连线星体（renderSky @Inject 路径调用）
-     * <p>
-     * caller 提供的 PoseStack 已含 NPD 旋转，不重复旋转也不做 cleanup。
-     * 与动态路径的差异：显式启用标准混合（动态路径在 render() cleanup 后
-     * 混合已关闭，连线星体以不透明方式渲染；静态路径显式开混合以正确表现 alpha）。
-     *
-     * @param poseStack   已旋转的 PoseStack
-     * @param camera      当前相机
-     * @param partialTick 帧间插值
-     */
-    public static void renderPlayerSkyLinksStatic(PoseStack poseStack, Camera camera, float partialTick) {
-        SkyboxRenderContext context = makeContext(poseStack, camera, partialTick);
-        if (context == null) {
-            return;
-        }
-        // 静态路径显式设置混合与深度状态（renderCore 不做 cleanup，状态由本方法与 caller 管理）
-        RenderSystem.depthMask(false);
-        RenderSystem.enableDepthTest();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        float target = SKY_LINK.targetAlpha(context);
-        float speed = 0.15F * Math.max(context.partialTick(), 0.25F);
-        skylinkAlpha = Mth.lerp(speed, skylinkAlpha, target);
-        if (skylinkAlpha > 0.003F) {
-            SKY_LINK.render(context, skylinkAlpha);
-        }
     }
 
     /**

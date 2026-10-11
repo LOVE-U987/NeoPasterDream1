@@ -222,10 +222,10 @@ public class PDItemsSpawnEggs {
             EntityAPI.createSpawnEggItem(PDItems.ITEMS, "fox_fire", PDEntities.FOX_FIRE);
 
     /**
-     * 暗影 ??? NPC 刷怪蛋 (shadow_npc_spawn_egg)
+     * 暗影 ??? NPC 刷怪蛋 (shadow_npc_0_spawn_egg)
      */
-    public static final DeferredItem<Item> SHADOW_NPC_SPAWN_EGG =
-            EntityAPI.createSpawnEggItem(PDItems.ITEMS, "shadow_npc", PDEntities.SHADOW_NPC);
+    public static final DeferredItem<Item> SHADOW_NPC_0_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(PDItems.ITEMS, "shadow_npc_0", PDEntities.SHADOW_NPC_0);
 
     /**
      * 孢子实体刷怪蛋 (spore_entity_spawn_egg)
@@ -237,18 +237,18 @@ public class PDItemsSpawnEggs {
     // ==================== BOSS 刷怪蛋 ====================
 
     /**
-     * 亚伦柯斯之触 - 左刷怪蛋 (aaroncos_lefthand_spawn_egg)
-     * 颜色配置于 PDEntities.AARONCOS_LEFTHAND_RESULT 的 .spawnEgg()
+     * 亚伦柯斯之触 - 左刷怪蛋 (aaroncos_lefthand_0_spawn_egg)
+     * 颜色配置于 PDEntities.AARONCOS_LEFTHAND_0_RESULT 的 .spawnEgg()
      */
-    public static final DeferredItem<Item> AARONCOS_LEFTHAND_SPAWN_EGG =
-            EntityAPI.createSpawnEggItem(PDItems.ITEMS, "aaroncos_lefthand", PDEntities.AARONCOS_LEFTHAND);
+    public static final DeferredItem<Item> AARONCOS_LEFTHAND_0_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(PDItems.ITEMS, "aaroncos_lefthand_0", PDEntities.AARONCOS_LEFTHAND_0);
 
     /**
-     * 亚伦柯斯之触 - 右刷怪蛋 (aaroncos_righthand_spawn_egg)
-     * 颜色配置于 PDEntities.AARONCOS_RIGHTHAND_RESULT 的 .spawnEgg()
+     * 亚伦柯斯之触 - 右刷怪蛋 (aaroncos_righthand_0_spawn_egg)
+     * 颜色配置于 PDEntities.AARONCOS_RIGHTHAND_0_RESULT 的 .spawnEgg()
      */
-    public static final DeferredItem<Item> AARONCOS_RIGHTHAND_SPAWN_EGG =
-            EntityAPI.createSpawnEggItem(PDItems.ITEMS, "aaroncos_righthand", PDEntities.AARONCOS_RIGHTHAND);
+    public static final DeferredItem<Item> AARONCOS_RIGHTHAND_0_SPAWN_EGG =
+            EntityAPI.createSpawnEggItem(PDItems.ITEMS, "aaroncos_righthand_0", PDEntities.AARONCOS_RIGHTHAND_0);
 
 
     // ==================== 补充刷怪蛋（原版名称对齐） ====================

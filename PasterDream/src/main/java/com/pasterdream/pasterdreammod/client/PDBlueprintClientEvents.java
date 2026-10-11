@@ -25,7 +25,7 @@ public final class PDBlueprintClientEvents {
      */
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
-        event.register(PDMenusBlueprint.BLUEPRINT_GUI.get(), BlueprintGui0Screen::new);
-        PDDebugLogger.mainDebug("[PDBlueprintClientEvents] registered blueprint_gui → BlueprintGui0Screen");
+        event.register(PDMenusBlueprint.BLUEPRINT_GUI_0.get(), BlueprintGui0Screen::new);
+        PDDebugLogger.mainDebug("[PDBlueprintClientEvents] registered blueprint_gui_0 → BlueprintGui0Screen");
     }
 }

@@ -21,10 +21,10 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * 染梦睡莲方块——仿原生 LilyPadBlock 实现。
+ * 染梦荷叶方块——仿原生 LilyPadBlock 实现。
  * 继承 BushBlock，只能放置在水面上，提供 1.5 像素高的碰撞箱。
  * 与原生 LilyPadBlock 的区别：额外实现了 entityInside 防沉没逻辑，
- * 防止实体穿过薄碰撞箱掉入水中；不使用 XZ 随机偏移。
+ * 防止实体穿过薄碰撞箱掉入水中。
  */
 public class DyedreamLilyPadBlock extends BushBlock {
     public static final MapCodec<DyedreamLilyPadBlock> CODEC = simpleCodec(properties -> new DyedreamLilyPadBlock());
@@ -34,10 +34,10 @@ public class DyedreamLilyPadBlock extends BushBlock {
     public DyedreamLilyPadBlock() {
         super(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.PLANT)
-                // 瞬时破坏（对齐原模组 instabreak 与原版 lily_pad strength 0）
-                .instabreak()
+                .strength(0.5f)
                 .noOcclusion()
-                // 不使用 XZ 随机偏移，方块居中放置（有意差异，见 changelog）
+                .offsetType(BlockBehaviour.OffsetType.XZ)
+                .dynamicShape()
                 .sound(SoundType.LILY_PAD)
                 .pushReaction(PushReaction.DESTROY));
     }
@@ -72,7 +72,7 @@ public class DyedreamLilyPadBlock extends BushBlock {
 
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        // 防沉没逻辑：将实体轻轻托在睡莲表面
+        // 防沉没逻辑：将实体轻轻托在荷叶表面
         double topY = pos.getY() + 1.5 / 16.0;
         if (entity.getY() >= topY - 0.1) {
             Vec3 motion = entity.getDeltaMovement();

@@ -220,11 +220,11 @@ public class PDSounds {
                     ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "terrorbeak_roar")));
 
     /**
-     * 风之骑士技能音效 (wind_knight_skill，旧名 wind_knight_skill_0，0.11.x P0 改名，别名见 PDIdAliases)
+     * 风之骑士技能音效 (wind_knight_skill_0)
      */
-    public static final Supplier<SoundEvent> WIND_KNIGHT_SKILL = SOUND_EVENTS.register("wind_knight_skill",
+    public static final Supplier<SoundEvent> WIND_KNIGHT_SKILL_0 = SOUND_EVENTS.register("wind_knight_skill_0",
             () -> SoundEvent.createVariableRangeEvent(
-                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "wind_knight_skill")));
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "wind_knight_skill_0")));
 
     /**
      * 暗影音效 (shadow0)
@@ -326,20 +326,20 @@ public class PDSounds {
                     ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "shadow_hand_lantern")));
 
     /**
-     * 暗影背景音乐 (shadow_music，旧名 shadow_music_0，0.11.x P0 改名，别名见 PDIdAliases)
+     * 暗影背景音乐 (shadow_music_0)
      * 暗影群系或暗影地牢内播放的环境音乐。
      */
-    public static final Supplier<SoundEvent> SHADOW_MUSIC = SOUND_EVENTS.register("shadow_music",
+    public static final Supplier<SoundEvent> SHADOW_MUSIC_0 = SOUND_EVENTS.register("shadow_music_0",
             () -> SoundEvent.createVariableRangeEvent(
-                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "shadow_music")));
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "shadow_music_0")));
 
     /**
-     * 暗影陷阱音效 (shadow_trap，旧名 shadow_trap_0，0.11.x P0 改名，别名见 PDIdAliases)
-     * 暗影陷阱触发时的音效。同名方块 shadow_trap_0 属其他注册表，不受影响。
+     * 暗影陷阱音效 (shadow_trap_0)
+     * 暗影陷阱触发时的音效。
      */
-    public static final Supplier<SoundEvent> SHADOW_TRAP = SOUND_EVENTS.register("shadow_trap",
+    public static final Supplier<SoundEvent> SHADOW_TRAP_0 = SOUND_EVENTS.register("shadow_trap_0",
             () -> SoundEvent.createVariableRangeEvent(
-                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "shadow_trap")));
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "shadow_trap_0")));
 
     // ==================== 剑系技能音效 ====================
 
@@ -458,10 +458,10 @@ public class PDSounds {
             () -> SoundEvent.createVariableRangeEvent(
                     ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "crack")));
 
-    /** 批量补注册：ding（旧名 ding_0，0.11.x P0 改名，别名见 PDIdAliases） */
-    public static final Supplier<SoundEvent> DING = SOUND_EVENTS.register("ding",
+    /** 批量补注册：ding_0 */
+    public static final Supplier<SoundEvent> DING_0 = SOUND_EVENTS.register("ding_0",
             () -> SoundEvent.createVariableRangeEvent(
-                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "ding")));
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "ding_0")));
 
     /** 批量补注册：doll */
     public static final Supplier<SoundEvent> DOLL = SOUND_EVENTS.register("doll",
@@ -538,10 +538,10 @@ public class PDSounds {
             () -> SoundEvent.createVariableRangeEvent(
                     ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "roar0")));
 
-    /** 批量补注册：shadow_biome（旧名 shadow_biome_0，0.11.x P0 改名，别名见 PDIdAliases） */
-    public static final Supplier<SoundEvent> SHADOW_BIOME = SOUND_EVENTS.register("shadow_biome",
+    /** 批量补注册：shadow_biome_0 */
+    public static final Supplier<SoundEvent> SHADOW_BIOME_0 = SOUND_EVENTS.register("shadow_biome_0",
             () -> SoundEvent.createVariableRangeEvent(
-                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "shadow_biome")));
+                    ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "shadow_biome_0")));
 
     /** 批量补注册：starcall_crack */
     public static final Supplier<SoundEvent> STARCALL_CRACK = SOUND_EVENTS.register("starcall_crack",

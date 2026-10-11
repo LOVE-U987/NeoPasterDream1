@@ -53,7 +53,7 @@ public final class BluePrintLoader {
     static {
         // @EventBusSubscriber 类在模组构造期被扫描加载；借此强制初始化独立注册类，
         // 避免改动共享的 PasterDreamMod / PDMenus / PDItems。
-        Object menus = PDMenusBlueprint.BLUEPRINT_GUI;
+        Object menus = PDMenusBlueprint.BLUEPRINT_GUI_0;
         Object items = PDItemsBlueprint.BLUEPRINT_0;
         if (menus == null || items == null) {
             PasterDreamMod.LOGGER.warn("[BluePrintLoader] blueprint menu/item holders unexpectedly null during class init");
@@ -64,7 +64,7 @@ public final class BluePrintLoader {
     }
 
     public static void bootstrap() {
-        Object menus = PDMenusBlueprint.BLUEPRINT_GUI;
+        Object menus = PDMenusBlueprint.BLUEPRINT_GUI_0;
         PDItemsBlueprint.bootstrap();
     }
 

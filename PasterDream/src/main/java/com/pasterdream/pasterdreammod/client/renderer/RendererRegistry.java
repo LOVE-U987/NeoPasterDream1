@@ -214,17 +214,17 @@ public final class RendererRegistry {
         PDDebugLogger.mainDebug("[RendererRegistry] 注册实体渲染器: basalt_snail （GeckoLib）");
         event.registerEntityRenderer(PDEntities.FOX_FIRE.get(), FoxFireRenderer::new);
         PDDebugLogger.mainDebug("[RendererRegistry] 注册实体渲染器: fox_fire （GeckoLib）");
-        event.registerEntityRenderer(PDEntities.SHADOW_NPC.get(), ShadowNpc0Renderer::new);
-        PDDebugLogger.mainDebug("[RendererRegistry] 注册实体渲染器: shadow_npc （GeckoLib）");
+        event.registerEntityRenderer(PDEntities.SHADOW_NPC_0.get(), ShadowNpc0Renderer::new);
+        PDDebugLogger.mainDebug("[RendererRegistry] 注册实体渲染器: shadow_npc_0 （GeckoLib）");
         event.registerEntityRenderer(PDEntities.SPORE_ENTITY.get(), SporeEntityRenderer::new);
         PDDebugLogger.mainDebug("[RendererRegistry] 注册实体渲染器: spore_entity （自定义立方体模型 + 存活时不可见）");
         count += 4;
 
         // BOSS 系列
-        event.registerEntityRenderer(PDEntities.AARONCOS_LEFTHAND.get(), AaroncosLefthand0Renderer::new);
-        PDDebugLogger.mainDebug("[RendererRegistry] 注册实体渲染器: aaroncos_lefthand （GeckoLib BOSS）");
-        event.registerEntityRenderer(PDEntities.AARONCOS_RIGHTHAND.get(), AaroncosRighthand0Renderer::new);
-        PDDebugLogger.mainDebug("[RendererRegistry] 注册实体渲染器: aaroncos_righthand （GeckoLib BOSS）");
+        event.registerEntityRenderer(PDEntities.AARONCOS_LEFTHAND_0.get(), AaroncosLefthand0Renderer::new);
+        PDDebugLogger.mainDebug("[RendererRegistry] 注册实体渲染器: aaroncos_lefthand_0 （GeckoLib BOSS）");
+        event.registerEntityRenderer(PDEntities.AARONCOS_RIGHTHAND_0.get(), AaroncosRighthand0Renderer::new);
+        PDDebugLogger.mainDebug("[RendererRegistry] 注册实体渲染器: aaroncos_righthand_0 （GeckoLib BOSS）");
         count += 2;
 
         // 投射物
