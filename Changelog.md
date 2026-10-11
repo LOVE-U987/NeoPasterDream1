@@ -22,6 +22,36 @@
 *   **换行**：本次修改的代码/脚本/文档文件由 CRLF 归一为 LF（`.gitattributes eol=lf` 口径），产生整文件 diff
 *   **验证**：`gradlew compileJava` 全量 BUILD SUCCESSFUL；`python tools/verify_id_aliases.py` 输出 `aliases=29 broken=0 shadowed=0 missing_coverage=0`
 
+### 修复：染梦维度不生成岩浆（还原原模组岩浆生成链路）
+
+*   **根因**：原模组的岩浆由四层机制叠加产生，本项目四层全被切断——① 群系 `features[1]`（LAKES 步）为空且 `minecraft:lake_lava_underground` 未迁移为 biome modifier（`6fda3db8` 迁移遗漏）；② `noise_settings/dyedream_world.json` 的 `noise_router.lava` 被改为常量 `0.0`；③ `NoiseBasedChunkGeneratorMixin` 拦截 `createFluidPicker`，抹除 Y-64 ~ Y-55 底部岩浆层；④ 三个 `configured_carver/dyedream_*.json` 的 `lava_level` 被改为 `{"absolute": -2032}`。后三项来自同一提交 `6136a762`（意图「地下岩浆改为地下河」），本次经确认推翻。
+*   **新增**（`PasterDream` `data/pasterdream/neoforge/biome_modifier/dyedream_lava_lake.json`）：`neoforge:add_features` 挂 `minecraft:lake_lava_underground` 到 `#pasterdream:is_dyedream`，`step: "lakes"`（该步在此前 41 个既有 biome modifier 中从未使用，本文件为首例，现目录共 42 个）。
+*   **恢复**（`data/pasterdream/worldgen/noise_settings/dyedream_world.json`）：`noise_router.lava` 由 `0.0` 改回 `minecraft:aquifer_lava` 噪声（对齐原模组 `dimension/dyedream_world.json:160-165`），洞穴深处含水层岩浆池恢复生成。
+*   **恢复**（`data/pasterdream/worldgen/configured_carver/dyedream_cave.json` / `dyedream_cave_extra_underground.json` / `dyedream_canyon.json`）：`lava_level` 由 `{"absolute": -2032}` 改回 `{"above_bottom": 8}`（原版口径，Y = -56），洞穴雕刻底部岩浆恢复。保留本项目自定义 carver 及其 probability / y / yScale 调参，不回退原版 `minecraft:cave` 系列。
+*   **移除**（`PasterDream` `mixin/NoiseBasedChunkGeneratorMixin.java` + `src/main/resources/pasterdream.mixins.json`）：删除该 Mixin 及其注册条目，原版 `createFluidPicker` 的 `y < min(-54, seaLevel) → LAVA` 恢复生效（`StructureTemplateAccessor` 保留）。Mixin 仅在 `defaultBlock == minecraft:calcite` 时命中，项目中仅染梦维度受影响。
+*   **连带（已确认接受）**：染梦与冷域共用 `pasterdream:dyedream_cave` 系列 carver，`cold_domain_biome` / `cold_domain_tundra` 亦会生成 Y-56 以下洞穴岩浆。冷域 `noise_settings` 的 `lava: 0` 不改（本项目新维度，原模组无对照）；风旅 `noise_settings` / `dimension` 内联的 `lava: 0` 亦不改（原模组本就为 0）。
+*   **新增**（`tools/verify_dyedream_lava.py`）：四断点静态校验脚本（lakes biome modifier / aquifer_lava 噪声 / carver above_bottom / Mixin 已移除）。
+*   **验证**：`python tools/verify_dyedream_lava.py` 4/4 通过；`.\gradlew compileJava` BUILD SUCCESSFUL；`.\gradlew runData` 退出码 0（`written: 0`，未覆盖手写 JSON）；启动日志 `Preparing pasterdream.mixins.json (6)` 确认 Mixin 移除生效。
+*   **同步**：`docs/开发指南/问题排查.md` 新增「世界生成」章节（四层岩浆排查路径）；`docs/架构/主模组架构详解.md` 两处 mixin 类数登记 7 → 6（名单移除 NoiseBasedChunkGenerator）。
+
+### 新增：丛林孢子植株生长机制（类蘑菇蔓延 + 骨粉催生）
+
+*   **背景**：`pasterdream:jungle_spore_plant` 此前仅注册为普通 `FlowerBlock`，无任何生长机制；原模组 `JungleSporePlantBlock` 同样未实现 tick。本项为相对原模组的**有意改进**（非还原项）。
+*   **新增**（`PasterDream` `block/JungleSporePlantBlock.java`，新）：继承 `FlowerBlock` 并实现 `BonemealableBlock`，保留原中毒效果语义。
+*   **生长**：`randomTick` 以 1/25 概率复刻原版 `MushroomBlock.randomTick` 扩散算法——扫描 `origin ± (4,1,4)` 同类上限 5、目标点 `±1`（y 为 -1~+1）随机尝试 4 次、放置 flag 2；只复制自身。
+*   **忽略亮度**：`canSurvive` 沿 `FlowerBlock → BushBlock`（泥土类 / 耕地 / `canSustainPlant`）判定，不含原版蘑菇 `getRawBrightness < 13` 门槛，故明亮环境下同样蔓延；存活土壤维持原方块现行为。
+*   **骨粉**：`performBonemeal` 立即催生一次同样的蔓延（受同一密度上限约束），不做巨型化。
+*   **注册**（`PasterDream` `registry/blocks/PDBlocksMisc.java:154`）：`JUNGLE_SPORE_PLANT` 由 `new FlowerBlock(...)` 改为 `new JungleSporePlantBlock(...)`，属性链新增 `randomTicks()`；`PDBlocks` re-export 与 BlockItem 注册无需改动。
+*   **验证**：`.\gradlew :PasterDream:compileJava` 与 `.\gradlew compileJava` 均 BUILD SUCCESSFUL；无数据文件改动。
+
+### 调整：丛林孢子植株掉落受时运影响（每级独立 15% 额外）
+
+*   **背景**：原模组战利品表对本方块无时运加成；本项为**有意改进**（非还原项）。
+*   **公式**：普通掉落 `jungle_spore` 追加 `minecraft:apply_bonus` + `minecraft:binomial_with_bonus_count`（`extra=0`, `probability=0.15`）——每级时运独立一次 15% 概率 +1：Fortune I/II/III 最多 +1/+2/+3，期望 1.15/1.30/1.45。
+*   **改动**（`PasterDream` `data/pasterdream/loot_table/blocks/jungle_spore_plant.json`）：仅池 1（非精准采集）的 `functions` 在 `set_count` 之后追加 `apply_bonus`；精准采集池（掉本体）不变。
+*   **验证**：JSON 解析通过；`python tools/verify_resource_closure.py` 全库 JSON 可解析/无 BOM（仅报告 `libs/` 原模组 3 个 shadowshelf 历史缺失，与本改动无关）。
+*   **同步**：设计文档 `docs/设计/丛林孢子掉落时运.md`。
+
 ## v0.10.1 — 2026-09-26
 
 ### 修复：染梦/风旅维度 BGM 与群系错位、蘑菇平原实际不生成

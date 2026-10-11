@@ -7,6 +7,7 @@ import com.pasterdream.pasterdreammod.block.ClaypanPlateBlock;
 import com.pasterdream.pasterdreammod.block.DreamSpawner1Block;
 import com.pasterdream.pasterdreammod.block.DyedreamCropFlowerBlock;
 import com.pasterdream.pasterdreammod.block.FigVineBlock;
+import com.pasterdream.pasterdreammod.block.JungleSporePlantBlock;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.block.Block;
@@ -148,11 +149,12 @@ public class PDBlocksMisc {
 
     /**
      * 丛林孢子植株（世界生成硬依赖：configured_feature/jungle_spore_plant 引用）
-     * 触碰中毒效果，破坏掉落丛林孢子
+     * 触碰中毒效果，破坏掉落丛林孢子。随机刻类蘑菇蔓延，骨粉可催生（忽略亮度）。
      */
     public static final DeferredBlock<FlowerBlock> JUNGLE_SPORE_PLANT = PDBlocks.BLOCKS.registerBlock("jungle_spore_plant",
-            p -> new FlowerBlock(MobEffects.POISON, 100, p), BlockBehaviour.Properties.of()
+            p -> new JungleSporePlantBlock(MobEffects.POISON, 100, p), BlockBehaviour.Properties.of()
                     .mapColor(MapColor.PLANT)
+                    .randomTicks()
                     .sound(SoundType.GRASS)
                     .instabreak()
                     .noCollission()

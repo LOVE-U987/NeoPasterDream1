@@ -30,24 +30,6 @@
           }
         },
         {
-          "weight": 10,
-          "data": {
-            "Name": "pasterdream:dyedream_bud_0"
-          }
-        },
-        {
-          "weight": 10,
-          "data": {
-            "Name": "pasterdream:dyedream_bud_1"
-          }
-        },
-        {
-          "weight": 10,
-          "data": {
-            "Name": "pasterdream:dyedream_bud_2"
-          }
-        },
-        {
           "weight": 5,
           "data": {
             "Name": "minecraft:calcite"

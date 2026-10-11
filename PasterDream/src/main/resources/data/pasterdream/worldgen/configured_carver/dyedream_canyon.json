@@ -13,7 +13,7 @@
     },
     "yScale": 3.0,
     "lava_level": {
-      "absolute": -2032
+      "above_bottom": 8
     },
     "replaceable": "#pasterdream:dyedream_carver_replaceables",
     "vertical_rotation": {

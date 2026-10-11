@@ -23,7 +23,7 @@ import net.minecraft.world.phys.Vec3;
  * ));
  *
  * // 在 getBrightnessDependentFogColor 中获取插值雾色
- * Vec3 fogColor = BiomeShadingAPI.interpolateColor(biome, sunHeight);
+ * Vec3 fogColor = BiomeShadingAPI.interpolateColor(biome, brightness);
  * }</pre>
  *
  * @see BiomeShadingEntry
@@ -44,14 +44,15 @@ public final class BiomeShadingAPI {
     }
 
     /**
-     * 根据太阳高度插值获取群系雾色
+     * 根据天空亮度插值获取群系雾色
      *
-     * @param biome     群系 Key
-     * @param sunHeight 太阳高度（-1 ~ 1），负值=夜晚，0=地平线，正值=白天
+     * @param biome      群系 Key
+     * @param brightness 天空亮度（0 = 午夜，0.5 = 地平线，1 = 正午），
+     *                   即 vanilla {@code getBrightnessDependentFogColor} 的第二参数
      * @return 插值后的雾色
      */
-    public static Vec3 interpolateColor(ResourceKey<Biome> biome, float sunHeight) {
-        return BiomeShadingRegistry.interpolateColor(biome, sunHeight);
+    public static Vec3 interpolateColor(ResourceKey<Biome> biome, float brightness) {
+        return BiomeShadingRegistry.interpolateColor(biome, brightness);
     }
 
     /**

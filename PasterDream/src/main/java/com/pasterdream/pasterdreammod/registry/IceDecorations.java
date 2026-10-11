@@ -107,15 +107,13 @@ public class IceDecorations {
      * <p>
      * 历史曾有专用 CalcitePillarFeature；现使用 API 内置 PILLAR 类型，
      * 方形截面锥形柱体（巨型柱见 MegaCalcitePillarFeature）。
+     * 柱面晶体只使用矿石，不包含染梦晶芽（晶芽仅限洞穴生成）。
      */
     public static void registerCalcitePillar() {
         SimpleWeightedRandomList<BlockState> crystalList = SimpleWeightedRandomList.<BlockState>builder()
                 .add(PDBlocks.DYEDREAMQUARTZ_ORE.get().defaultBlockState(), 30)
                 .add(PDBlocks.DYEDREAMDUST_ORE.get().defaultBlockState(), 20)
                 .add(PDBlocks.AMBER_CANDY_ORE.get().defaultBlockState(), 15)
-                .add(PDBlocks.DYEDREAM_BUD_0.get().defaultBlockState(), 10)
-                .add(PDBlocks.DYEDREAM_BUD_1.get().defaultBlockState(), 10)
-                .add(PDBlocks.DYEDREAM_BUD_2.get().defaultBlockState(), 10)
                 .add(Blocks.CALCITE.defaultBlockState(), 5)
                 .build();
 
@@ -141,8 +139,13 @@ public class IceDecorations {
     /**
      * 注册染梦晶芽装饰物
      * <p>
-     * 在染梦冰雪群系的地下洞穴中散布染梦花蕾，支持含水检测和簇状集群。
-     * 使用 BUD 类型，10% 概率生成 2~6 个晶芽簇。
+     * 在染梦群系的地下洞穴中散布染梦花蕾，支持含水检测和簇状集群。
+     * 使用 BUD 类型，40% 概率生成 2~8 个晶芽簇（散布半径 4，最多尝试 目标数量*6 次）。
+     * <p>
+     * 这是染梦晶芽唯一的自然生成入口：晶芽只在洞穴内生成，
+     * 地表装饰物（水晶簇/花园/柱体/云团）一律不得引用晶芽方块。
+     * 注意：本装饰的 placed_feature 为手写洞穴放置配置（每区块 4 次尝试 + 高度范围 -60~40），
+     * 不由 DecorationJsonGenerator 生成。
      */
     public static void registerBudDyedream() {
         SimpleWeightedRandomList<BlockState> budList = SimpleWeightedRandomList.<BlockState>builder()
@@ -154,9 +157,9 @@ public class IceDecorations {
         DecorationBuilder.create()
                 .type(DecorationType.BUD)
                 .body(new WeightedStateProvider(budList))
-                .clusterChance(0.1f)
-                .clusterSize(6)
-                .clusterRadius(3)
+                .clusterChance(0.4f)
+                .clusterSize(8)
+                .clusterRadius(4)
                 .waterlog(true)
                 .replaceable(BlockPredicate.anyOf(
                         BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.CAVE_AIR),

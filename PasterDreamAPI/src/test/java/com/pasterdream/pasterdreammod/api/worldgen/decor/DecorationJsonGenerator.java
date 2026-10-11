@@ -183,6 +183,14 @@ public class DecorationJsonGenerator {
      * @throws IOException 文件写入失败时抛出
      */
     private static void generatePlacedFeatureJson(DecorationRegistry.DecorationEntry entry, Path dirPath) throws IOException {
+        // BUD 类型（染梦晶芽/冰棱晶芽）的 placed_feature 是手写洞穴放置配置（count + 高度范围），
+        // 生成器只会写出"稀有度 + 地表高度图"，会破坏"晶芽仅在洞穴生成"的约束，故跳过。
+        if (entry.type() == DecorationType.BUD) {
+            PasterDreamAPI.LOGGER.debug("[DecorationJsonGenerator] 跳过 BUD 类型的 placed_feature 生成（手写洞穴放置）: {}",
+                    entry.name());
+            return;
+        }
+
         JsonObject root = new JsonObject();
 
         // 引用对应的 configured_feature
