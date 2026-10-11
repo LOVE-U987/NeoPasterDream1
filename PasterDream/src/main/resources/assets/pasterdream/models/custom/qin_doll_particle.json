@@ -1,5 +1,5 @@
 {
-  "parent": "pasterdream:displaysettings/qin_doll_0.item",
+  "parent": "pasterdream:displaysettings/qin_doll.item",
   "textures": {
     "particle": "pasterdream:block/cloud"
   }

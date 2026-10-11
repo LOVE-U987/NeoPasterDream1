@@ -78,8 +78,8 @@ public class PDItems {
     // ==================== 子文件聚合引用 ====================
 
     // --- PDItemsDolls ---
-    public static final DeferredItem<?> QIN_DOLL_0 = PDItemsDolls.QIN_DOLL_0;
-    public static final DeferredItem<?> LITTLE_PURPLE_DOLL_0 = PDItemsDolls.LITTLE_PURPLE_DOLL_0;
+    public static final DeferredItem<?> QIN_DOLL = PDItemsDolls.QIN_DOLL;
+    public static final DeferredItem<?> LITTLE_PURPLE_DOLL = PDItemsDolls.LITTLE_PURPLE_DOLL;
     public static final DeferredItem<?> LOVE_U_DOLL = PDItemsDolls.LOVE_U_DOLL;
     public static final DeferredItem<?> EOUL_DOLL = PDItemsDolls.EOUL_DOLL;
     public static final DeferredItem<?> GOLDEN_FOX_SCULPTURE = PDItemsDolls.GOLDEN_FOX_SCULPTURE;
@@ -109,7 +109,7 @@ public class PDItems {
     public static final DeferredItem<?> HEART_CHOCOLATE_1 = PDItemsFunctional.HEART_CHOCOLATE_1;
     public static final DeferredItem<?> HEART_CHOCOLATE_2 = PDItemsFunctional.HEART_CHOCOLATE_2;
     public static final DeferredItem<?> LIGHT_MOSS_PHANTOM_MEMBRANE = PDItemsFunctional.LIGHT_MOSS_PHANTOM_MEMBRANE;
-    public static final DeferredItem<?> MELTDREAM_CRYSTAL_0 = PDItemsFunctional.MELTDREAM_CRYSTAL_0;
+    public static final DeferredItem<?> MELTDREAM_CRYSTAL = PDItemsFunctional.MELTDREAM_CRYSTAL;
     public static final DeferredItem<?> MEMENTO_ITEM_01 = PDItemsFunctional.MEMENTO_ITEM_01;
     public static final DeferredItem<?> MEMENTO_ITEM_02 = PDItemsFunctional.MEMENTO_ITEM_02;
     public static final DeferredItem<?> MEMENTO_ITEM_03 = PDItemsFunctional.MEMENTO_ITEM_03;
@@ -120,10 +120,10 @@ public class PDItems {
     public static final DeferredItem<?> MEMENTO_ITEM_08 = PDItemsFunctional.MEMENTO_ITEM_08;
     public static final DeferredItem<?> MEMENTO_ITEM_09 = PDItemsFunctional.MEMENTO_ITEM_09;
     public static final DeferredItem<?> MEMENTO_ITEM_10 = PDItemsFunctional.MEMENTO_ITEM_10;
-    public static final DeferredItem<?> MEMORY_GEM_0 = PDItemsFunctional.MEMORY_GEM_0;
+    public static final DeferredItem<?> MEMORY_GEM = PDItemsFunctional.MEMORY_GEM;
     public static final DeferredItem<?> MOSS_PHANTOM_MEMBRANE = PDItemsFunctional.MOSS_PHANTOM_MEMBRANE;
     public static final DeferredItem<?> POPPING_CANDY = PDItemsFunctional.POPPING_CANDY;
-    public static final DeferredItem<?> RED_DEW_0 = PDItemsFunctional.RED_DEW_0;
+    public static final DeferredItem<?> RED_DEW = PDItemsFunctional.RED_DEW;
     public static final DeferredItem<?> SHADOW_BREATH = PDItemsFunctional.SHADOW_BREATH;
     public static final DeferredItem<?> SQUEAL_WAVE = PDItemsFunctional.SQUEAL_WAVE;
     public static final DeferredItem<?> STRAWBERRY_HEART = PDItemsFunctional.STRAWBERRY_HEART;
@@ -172,15 +172,15 @@ public class PDItems {
     public static final DeferredItem<?> DEBUG_WAND_DREAM_CHURCH_8 = PDItemsFunctional.DEBUG_WAND_DREAM_CHURCH_8;
     public static final DeferredItem<?> DEBUG_WAND_DREAM_CHURCH_9 = PDItemsFunctional.DEBUG_WAND_DREAM_CHURCH_9;
     public static final DeferredItem<?> DEBUG_WAND_DREAM_CHURCH_10 = PDItemsFunctional.DEBUG_WAND_DREAM_CHURCH_10;
-    public static final DeferredItem<?> DEBUG_WAND_DESERT_FORTRESS_0 = PDItemsFunctional.DEBUG_WAND_DESERT_FORTRESS_0;
+    public static final DeferredItem<?> DEBUG_WAND_DESERT_FORTRESS = PDItemsFunctional.DEBUG_WAND_DESERT_FORTRESS;
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TOWER_0 = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TOWER_0;
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TOWER_1 = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TOWER_1;
-    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_LABORATORY_0 = PDItemsFunctional.DEBUG_WAND_DYEDREAM_LABORATORY_0;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_LABORATORY = PDItemsFunctional.DEBUG_WAND_DYEDREAM_LABORATORY;
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_TAVERN = PDItemsFunctional.DEBUG_WAND_DYEDREAM_TAVERN;
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_PAVILION_0 = PDItemsFunctional.DEBUG_WAND_DYEDREAM_PAVILION_0;
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_PAVILION_1 = PDItemsFunctional.DEBUG_WAND_DYEDREAM_PAVILION_1;
     public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_PAVILION_2 = PDItemsFunctional.DEBUG_WAND_DYEDREAM_PAVILION_2;
-    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_CAMPSITE_0 = PDItemsFunctional.DEBUG_WAND_DYEDREAM_CAMPSITE_0;
+    public static final DeferredItem<?> DEBUG_WAND_DYEDREAM_CAMPSITE = PDItemsFunctional.DEBUG_WAND_DYEDREAM_CAMPSITE;
     public static final DeferredItem<?> DEBUG_WAND_DREAM_WISHINGTREE_0 = PDItemsFunctional.DEBUG_WAND_DREAM_WISHINGTREE_0;
     public static final DeferredItem<?> DEBUG_WAND_DREAM_WISHINGTREE_1 = PDItemsFunctional.DEBUG_WAND_DREAM_WISHINGTREE_1;
     public static final DeferredItem<?> DEBUG_WAND_TRAVELER_HOUSE_0 = PDItemsFunctional.DEBUG_WAND_TRAVELER_HOUSE_0;
@@ -341,7 +341,7 @@ public class PDItems {
     public static final DeferredItem<?> DYEDREAM_BUD_0 = PDItemsBlocks.DYEDREAM_BUD_0;
     public static final DeferredItem<?> DYEDREAM_BUD_1 = PDItemsBlocks.DYEDREAM_BUD_1;
     public static final DeferredItem<?> DYEDREAM_BUD_2 = PDItemsBlocks.DYEDREAM_BUD_2;
-    public static final DeferredItem<?> ICE_BUD_0 = PDItemsBlocks.ICE_BUD_0;
+    public static final DeferredItem<?> ICE_BUD = PDItemsBlocks.ICE_BUD;
     public static final DeferredItem<?> DYEDREAM_LILY_PAD = PDItemsBlocks.DYEDREAM_LILY_PAD;
     public static final DeferredItem<?> DYEDREAM_LOTUS = PDItemsBlocks.DYEDREAM_LOTUS;
     public static final DeferredItem<?> DYEDREAM_SEAGRASS = PDItemsBlocks.DYEDREAM_SEAGRASS;
@@ -520,7 +520,7 @@ public class PDItems {
     public static final DeferredItem<?> BLACKMETAL_INGOT = PDItemsMaterials.BLACKMETAL_INGOT;
     public static final DeferredItem<?> BLACKSTICK = PDItemsMaterials.BLACKSTICK;
     public static final DeferredItem<?> BLUE_HEART_OF_THE_SEA = PDItemsMaterials.BLUE_HEART_OF_THE_SEA;
-    public static final DeferredItem<?> BROKENNOTES_0 = PDItemsMaterials.BROKENNOTES_0;
+    public static final DeferredItem<?> BROKENNOTES = PDItemsMaterials.BROKENNOTES;
     public static final DeferredItem<?> CHARGED_AMETHYST = PDItemsMaterials.CHARGED_AMETHYST;
     public static final DeferredItem<?> COARSE_SALT = PDItemsMaterials.COARSE_SALT;
     public static final DeferredItem<?> CONGEAL_WIND = PDItemsMaterials.CONGEAL_WIND;
@@ -579,11 +579,11 @@ public class PDItems {
     public static final DeferredItem<?> SOUL_ESSENCE = PDItemsMaterials.SOUL_ESSENCE;
     public static final DeferredItem<?> SPOOL = PDItemsMaterials.SPOOL;
     public static final DeferredItem<?> STAR_WISH_ROD_EMBRYO = PDItemsMaterials.STAR_WISH_ROD_EMBRYO;
-    public static final DeferredItem<?> SWORD_EMBRYO_0 = PDItemsMaterials.SWORD_EMBRYO_0;
+    public static final DeferredItem<?> SWORD_EMBRYO = PDItemsMaterials.SWORD_EMBRYO;
     public static final DeferredItem<?> TERRASWORD_EMBRYO = PDItemsMaterials.TERRASWORD_EMBRYO;
     public static final DeferredItem<?> TITANIUM_NUGGET = PDItemsMaterials.TITANIUM_NUGGET;
     public static final DeferredItem<?> TITANIUM_UPGRADE = PDItemsMaterials.TITANIUM_UPGRADE;
-    public static final DeferredItem<?> UNKNOWNNOTES_0 = PDItemsMaterials.UNKNOWNNOTES_0;
+    public static final DeferredItem<?> UNKNOWNNOTES = PDItemsMaterials.UNKNOWNNOTES;
     public static final DeferredItem<?> WHITE_COROLLA = PDItemsMaterials.WHITE_COROLLA;
     public static final DeferredItem<?> WHITE_CRYSTAL = PDItemsMaterials.WHITE_CRYSTAL;
     public static final DeferredItem<?> WHITE_SWORD_EMBRYO = PDItemsMaterials.WHITE_SWORD_EMBRYO;
@@ -675,7 +675,7 @@ public class PDItems {
     public static final DeferredItem<?> POTATO_BUNCAKE = PDItemsFoods.POTATO_BUNCAKE;
     public static final DeferredItem<?> PUMPKIN_BUNCAKE = PDItemsFoods.PUMPKIN_BUNCAKE;
     public static final DeferredItem<?> QUEER_SOUP = PDItemsFoods.QUEER_SOUP;
-    public static final DeferredItem<?> RAGE_ELIXIR_0 = PDItemsFoods.RAGE_ELIXIR_0;
+    public static final DeferredItem<?> RAGE_ELIXIR = PDItemsFoods.RAGE_ELIXIR;
     public static final DeferredItem<?> RICECAKE = PDItemsFoods.RICECAKE;
     public static final DeferredItem<?> SANDWICH = PDItemsFoods.SANDWICH;
     public static final DeferredItem<?> STUFFED_WAFER_COOKIES = PDItemsFoods.STUFFED_WAFER_COOKIES;

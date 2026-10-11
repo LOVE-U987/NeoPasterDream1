@@ -14,7 +14,7 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
  */
 public class QymDoll0BlockRenderer extends GeoBlockRenderer<QymDoll0BlockEntity> {
 
-    private static final String NAME = "qin_doll_0";
+    private static final String NAME = "qin_doll";
 
     /**
      * 构造娇小琴雨梦玩偶方块渲染器

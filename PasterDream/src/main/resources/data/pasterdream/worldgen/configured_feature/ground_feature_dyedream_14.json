@@ -9,7 +9,7 @@
           "to_place": {
             "type": "minecraft:simple_state_provider",
             "state": {
-              "Name": "pasterdream:ice_bud_0",
+              "Name": "pasterdream:ice_bud",
               "Properties": {
                 "waterlogged": "false",
                 "facing": "north"

@@ -252,7 +252,7 @@ public class TwilightLanternBlock extends BaseEntityBlock {
 
         // 主世界侧：需要 achievement_hide_8 或 achievement_hide_10
         if (hasAdvancement(player, "achievement_hide_8") || hasAdvancement(player, "achievement_hide_10")) {
-            if (player.getMainHandItem().getItem() == PDItemsFunctional.MELTDREAM_CRYSTAL_0.get()
+            if (player.getMainHandItem().getItem() == PDItemsFunctional.MELTDREAM_CRYSTAL.get()
                     && !W4DataBlockEntity.getBooleanAt(level, pos, "switch")) {
                 // 结构生成的笼子 BE 可能缺失（ProtoChunk 不创建 BE）→ 点燃前自愈补建，
                 // 否则 switch 写入静默失败且 tick 从未调度 → 不刷怪
@@ -265,7 +265,7 @@ public class TwilightLanternBlock extends BaseEntityBlock {
                 W4DataBlockEntity.putBooleanAt(level, pos, "switch", true);
                 // 结构生成的笼子 onPlace 从未调度 tick → 点燃时手动启动 20t 计数循环
                 level.scheduleTick(pos, this, 20);
-                ItemStack toRemove = new ItemStack(PDItemsFunctional.MELTDREAM_CRYSTAL_0.get());
+                ItemStack toRemove = new ItemStack(PDItemsFunctional.MELTDREAM_CRYSTAL.get());
                 player.getInventory().clearOrCountMatchingItems(
                         s -> toRemove.getItem() == s.getItem(), 1, player.inventoryMenu.getCraftSlots());
                 if (!level.isClientSide()) {

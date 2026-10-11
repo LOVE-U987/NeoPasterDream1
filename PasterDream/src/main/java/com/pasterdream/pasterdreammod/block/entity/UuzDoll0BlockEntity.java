@@ -24,7 +24,7 @@ public class UuzDoll0BlockEntity extends BlockEntity implements GeoBlockEntity {
      * @param state 方块状态
      */
     public UuzDoll0BlockEntity(BlockPos pos, BlockState state) {
-        super(PDBlockEntities.LITTLE_PURPLE_DOLL_0.get(), pos, state);
+        super(PDBlockEntities.LITTLE_PURPLE_DOLL.get(), pos, state);
     }
 
     /**

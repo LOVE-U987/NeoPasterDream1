@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "pasterdream:ice_bud_0"
+          "name": "pasterdream:ice_bud"
         }
       ],
       "conditions": [

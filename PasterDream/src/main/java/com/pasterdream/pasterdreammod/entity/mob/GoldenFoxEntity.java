@@ -238,7 +238,7 @@ public class GoldenFoxEntity extends GeckoLibMobEntity {
         if (namespace.equals("pasterdream") && path.equals("dream_coin_1")) {
             return SacrificeType.DREAM_COIN;
         }
-        if (namespace.equals("pasterdream") && path.equals("meltdream_crystal_0")) {
+        if (namespace.equals("pasterdream") && path.equals("meltdream_crystal")) {
             return SacrificeType.MELTDREAM_CRYSTAL;
         }
         if (namespace.equals("pasterdream") && path.equals("memento_item_11")) {

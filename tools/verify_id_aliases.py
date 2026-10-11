@@ -61,6 +61,8 @@ CREATE_ENTITY_RE = re.compile(r'createEntity\(\s*"([a-z0-9_]+)"')
 CREATE_SPAWN_EGG_RE = re.compile(r'createSpawnEggItem\([^,]*,\s*"([a-z0-9_]+)"')
 # MenuAPI 门面注册形状（菜单经 createMenu 注册）
 CREATE_MENU_RE = re.compile(r'createMenu\(\s*"([a-z0-9_]+)"')
+# BlockEntityAPI 门面注册形状（方块实体经 createBlockEntity 注册）
+CREATE_BLOCK_ENTITY_RE = re.compile(r'createBlockEntity\(\s*"([a-z0-9_]+)"')
 
 REGISTRY_LABEL = {"BLOCK": "block", "ITEM": "item"}
 
@@ -109,7 +111,7 @@ FILE_REGISTRY_RULES = [
                                    "PDSanityEffects.java", "PDMeltDreamEffects.java")),
     ("particle", lambda n: "Particle" in n),
     ("menu", lambda n: n.startswith("PDMenus")),
-    ("block_entity", lambda n: n.startswith("PDBlockEntities")),
+    ("block_entity_type", lambda n: n.startswith("PDBlockEntities")),
     ("entity_type", lambda n: n == "PDEntities.java"),
     ("item", lambda n: "Items" in n),
     ("block", lambda n: "Blocks" in n),
@@ -143,6 +145,7 @@ def collect_registered_names():
             # 刷怪蛋物品 ID 由 EntityAPI 派生为 <name>_spawn_egg
             bucket.update(n + "_spawn_egg" for n in CREATE_SPAWN_EGG_RE.findall(text))
             bucket.update(CREATE_MENU_RE.findall(text))
+            bucket.update(CREATE_BLOCK_ENTITY_RE.findall(text))
     return by_registry
 
 

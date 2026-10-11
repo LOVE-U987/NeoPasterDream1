@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "id": "pasterdream:meltdream_crystal_0"
+      "id": "pasterdream:meltdream_crystal"
     },
     "title": {
       "translate": "advancements.achievement_d_0.title"
@@ -21,7 +21,7 @@
         "items": [
           {
             "items": [
-              "pasterdream:meltdream_crystal_0"
+              "pasterdream:meltdream_crystal"
             ],
             "count": {
               "min": 1,

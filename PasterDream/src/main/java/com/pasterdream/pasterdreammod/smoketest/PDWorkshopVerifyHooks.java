@@ -151,7 +151,7 @@ public final class PDWorkshopVerifyHooks {
 
         // 配方关键材料
         String[] mats = {
-                "meltdream_crystal_0", "titanium_ingot", "blackstick",
+                "meltdream_crystal", "titanium_ingot", "blackstick",
                 "dyedream_dust", "dyedreamquartz", "dream_wand_embryo",
                 "enhance_stone_0", "enhance_stone_1", "tabitem_1"
         };
@@ -199,7 +199,7 @@ public final class PDWorkshopVerifyHooks {
                 "期望 " + WeaponWorkshopBlockEntity.SLOT_COUNT));
 
         // 填充聚梦法杖原胚配方
-        handler.setStackInSlot(0, new ItemStack(item("meltdream_crystal_0")));
+        handler.setStackInSlot(0, new ItemStack(item("meltdream_crystal")));
         handler.setStackInSlot(1, new ItemStack(item("titanium_ingot")));
         handler.setStackInSlot(2, new ItemStack(item("blackstick")));
         handler.setStackInSlot(3, new ItemStack(item("dyedream_dust")));

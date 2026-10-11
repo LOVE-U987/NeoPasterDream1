@@ -27,20 +27,20 @@ public class PDBlocksDolls {
     // ==================== 玩偶/雕像方块 ====================
 
     /**
-     * 娇小琴雨梦玩偶方块 (qin_doll_0)
+     * 娇小琴雨梦玩偶方块 (qin_doll)
      * GeckoLib 3D 静态装饰玩偶
      */
-    public static final DeferredBlock<QymDoll0Block> QIN_DOLL_0 = PDBlocks.BLOCKS.register("qin_doll_0",
+    public static final DeferredBlock<QymDoll0Block> QIN_DOLL = PDBlocks.BLOCKS.register("qin_doll",
             () -> new QymDoll0Block(BlockBehaviour.Properties.of()
                     .sound(SoundType.DECORATED_POT)
                     .strength(1.0f)
                     .noOcclusion()));
 
     /**
-     * 娇小幼幼紫玩偶方块 (little_purple_doll_0)
+     * 娇小幼幼紫玩偶方块 (little_purple_doll)
      * GeckoLib 3D 静态装饰玩偶
      */
-    public static final DeferredBlock<UuzDoll0Block> LITTLE_PURPLE_DOLL_0 = PDBlocks.BLOCKS.register("little_purple_doll_0",
+    public static final DeferredBlock<UuzDoll0Block> LITTLE_PURPLE_DOLL = PDBlocks.BLOCKS.register("little_purple_doll",
             () -> new UuzDoll0Block(BlockBehaviour.Properties.of()
                     .sound(SoundType.DECORATED_POT)
                     .strength(1.0f)

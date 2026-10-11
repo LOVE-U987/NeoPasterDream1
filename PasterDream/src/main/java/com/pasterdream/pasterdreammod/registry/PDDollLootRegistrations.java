@@ -21,8 +21,8 @@ public final class PDDollLootRegistrations {
      * 登记旧玩偶/雕像。必须在模组构造阶段（注册阶段）调用。
      */
     public static void register() {
-        DollAPI.registerLootItem(PDItems.QIN_DOLL_0);
-        DollAPI.registerLootItem(PDItems.LITTLE_PURPLE_DOLL_0);
+        DollAPI.registerLootItem(PDItems.QIN_DOLL);
+        DollAPI.registerLootItem(PDItems.LITTLE_PURPLE_DOLL);
         DollAPI.registerLootItem(PDItems.GOLDEN_FOX_SCULPTURE);
         DollAPI.registerLootItem(PDItems.LOVE_U_DOLL);
         DollAPI.registerLootItem(PDItems.EOUL_DOLL);

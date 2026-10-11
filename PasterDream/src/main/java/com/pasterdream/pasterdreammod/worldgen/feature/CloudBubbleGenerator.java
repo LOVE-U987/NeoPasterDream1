@@ -99,7 +99,7 @@ public class CloudBubbleGenerator implements ICustomDecorationGenerator {
             BlockPos gPos = new BlockPos(gx, gy + 1, gz);
             if (!WorldGenUtils.isReplaceable(level, config.replaceable(), gPos)) continue;
             if (!WorldGenUtils.isWithinGenerationBounds(origin, gPos)) continue;
-            level.setBlock(gPos, PDBlocks.ICE_BUD_0.get().defaultBlockState(), 3);
+            level.setBlock(gPos, PDBlocks.ICE_BUD.get().defaultBlockState(), 3);
         }
     }
 }

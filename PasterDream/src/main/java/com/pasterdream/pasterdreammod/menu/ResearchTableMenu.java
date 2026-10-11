@@ -104,7 +104,7 @@ public class ResearchTableMenu extends AbstractContainerMenu {
         this.addSlot(new SlotItemHandler(handler, ResearchTableBlockEntity.SLOT_UNKNOWN, 40, 82) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.is(PDItems.UNKNOWNNOTES_0.get().asItem());
+                return stack.is(PDItems.UNKNOWNNOTES.get().asItem());
             }
         });
         // Slot 5: study result, take only (original coords 139, 82)

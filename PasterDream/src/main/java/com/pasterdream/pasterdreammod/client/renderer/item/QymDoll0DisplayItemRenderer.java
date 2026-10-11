@@ -13,7 +13,7 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
  */
 public class QymDoll0DisplayItemRenderer extends GeoItemRenderer<QymDoll0DisplayItem> {
 
-    private static final String NAME = "qin_doll_0";
+    private static final String NAME = "qin_doll";
 
     /**
      * 构造娇小琴雨梦玩偶显示物品渲染器

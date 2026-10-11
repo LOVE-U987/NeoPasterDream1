@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/rage_elixir_0"
+    "layer0": "pasterdream:item/brokennotes"
   }
 }

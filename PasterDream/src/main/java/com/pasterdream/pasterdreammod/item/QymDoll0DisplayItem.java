@@ -21,7 +21,7 @@ public class QymDoll0DisplayItem extends AbstractGeoDisplayItem {
      * @param properties 物品属性
      */
     public QymDoll0DisplayItem(Item.Properties properties) {
-        super(PDBlocks.QIN_DOLL_0.get(), properties);
+        super(PDBlocks.QIN_DOLL.get(), properties);
     }
 
     /**

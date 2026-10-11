@@ -28,7 +28,7 @@
     "ore_block": {
       "type": "minecraft:simple_state_provider",
       "state": {
-        "Name": "pasterdream:ice_bud_0"
+        "Name": "pasterdream:ice_bud"
       }
     },
     "min_height": 30,

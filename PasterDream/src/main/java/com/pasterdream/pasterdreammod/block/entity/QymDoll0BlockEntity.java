@@ -24,7 +24,7 @@ public class QymDoll0BlockEntity extends BlockEntity implements GeoBlockEntity {
      * @param state 方块状态
      */
     public QymDoll0BlockEntity(BlockPos pos, BlockState state) {
-        super(PDBlockEntities.QIN_DOLL_0.get(), pos, state);
+        super(PDBlockEntities.QIN_DOLL.get(), pos, state);
     }
 
     /**

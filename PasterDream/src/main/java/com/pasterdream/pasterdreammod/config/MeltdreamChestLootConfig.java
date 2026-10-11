@@ -83,7 +83,7 @@ public final class MeltdreamChestLootConfig {
 
     /** 旧传说品质默认物品池（迁移比对用） */
     public static final List<String> LEGACY_V1_LEGENDARY_LOOT = List.of(
-            "pasterdream:meltdream_crystal_0 1 20",
+            "pasterdream:meltdream_crystal 1 20",
             "pasterdream:shadow_erosion_sword 1 18",
             "pasterdream:allkinds_ring 1 15",
             "pasterdream:boboji_plume 1 15",

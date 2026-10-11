@@ -1309,7 +1309,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "pasterdream:red_dew_0",
+          "name": "pasterdream:red_dew",
           "weight": 1,
           "functions": [
             {

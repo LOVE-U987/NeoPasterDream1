@@ -40,7 +40,7 @@ public class PDCreativeTabsSouvenir {
                         output.accept(PDItems.DREAM_COIN_0.get());
                         output.accept(PDItems.DREAM_COIN_1.get());
                         output.accept(PDItems.BLUE_DEW.get());
-                        output.accept(PDItems.RED_DEW_0.get());
+                        output.accept(PDItems.RED_DEW.get());
                         output.accept(PDItems.MEMENTO_ITEM_01.get());
                         output.accept(PDItems.MEMENTO_ITEM_02.get());
                         output.accept(PDItems.MEMENTO_ITEM_03.get());
@@ -52,9 +52,9 @@ public class PDCreativeTabsSouvenir {
                         output.accept(PDItems.MEMENTO_ITEM_09.get());
                         output.accept(PDItems.MEMENTO_ITEM_10.get());
                         output.accept(PDItems.MEMENTO_ITEM_11.get());
-                        output.accept(PDItems.MEMORY_GEM_0.get());
-                        output.accept(PDItems.BROKENNOTES_0.get());
-                        output.accept(PDItems.UNKNOWNNOTES_0.get());
+                        output.accept(PDItems.MEMORY_GEM.get());
+                        output.accept(PDItems.BROKENNOTES.get());
+                        output.accept(PDItems.UNKNOWNNOTES.get());
                         // 寻梦者笔记完整卷册（原版 paster_tab_6）
                         output.accept(PDItemsDreamnotes.DREAMNOTES_0.get());
                         output.accept(PDItemsDreamnotes.DREAMNOTES_1.get());
@@ -92,8 +92,8 @@ public class PDCreativeTabsSouvenir {
                         output.accept(PDItems.WHITE_COROLLA.get());
                         output.accept(PDItems.PALE_BONENEEDLE.get());
                         // 玩偶/雕像
-                        output.accept(PDItems.QIN_DOLL_0.get());
-                        output.accept(PDItems.LITTLE_PURPLE_DOLL_0.get());
+                        output.accept(PDItems.QIN_DOLL.get());
+                        output.accept(PDItems.LITTLE_PURPLE_DOLL.get());
                         output.accept(PDItems.LOVE_U_DOLL.get());
                         output.accept(PDItems.EOUL_DOLL.get());
                         output.accept(PDItems.GOLDEN_FOX_SCULPTURE.get());

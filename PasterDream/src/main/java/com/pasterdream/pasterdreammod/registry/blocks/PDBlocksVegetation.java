@@ -79,10 +79,10 @@ public class PDBlocksVegetation {
     }
 
     /**
-     * 冰蕾 (ice_bud_0)
+     * 冰蕾 (ice_bud)
      * SimpleWaterloggedBlock，FACING 六面朝向，发光等级9
      */
-    public static final DeferredBlock<IceBudBlock> ICE_BUD_0 = PDBlocks.BLOCKS.registerBlock("ice_bud_0",
+    public static final DeferredBlock<IceBudBlock> ICE_BUD = PDBlocks.BLOCKS.registerBlock("ice_bud",
             IceBudBlock::new, BlockBehaviour.Properties.of()
                     .sound(SoundType.AMETHYST_CLUSTER)
                     .strength(1f, 0f)

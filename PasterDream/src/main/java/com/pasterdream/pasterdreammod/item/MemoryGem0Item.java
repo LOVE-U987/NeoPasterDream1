@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
 /**
- * memory_gem_0 物品类
+ * memory_gem 物品类
  * 原版稀有度: COMMON
  */
 public class MemoryGem0Item extends Item {

@@ -613,7 +613,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
     /**
      * 在冰门结构外围点缀发光冰芽
      * <p>
-     * 在结构底部周围随机放置 ICE_BUD_0 发光方块作为装饰
+     * 在结构底部周围随机放置 ICE_BUD 发光方块作为装饰
      */
     private void addGlowDecorations(WorldGenLevel level, RandomSource random, DecorationConfig config,
                                     BlockPos origin, boolean alongX, int groundY, int halfWidth) {
@@ -630,7 +630,7 @@ public class IceGateGenerator implements ICustomDecorationGenerator {
             BlockPos gPos = at(origin, alongX, relX, relZ, gy + 1);
             if (!WorldGenUtils.isReplaceable(level, config.replaceable(), gPos)) continue;
             if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, gPos, 1)) continue;
-            level.setBlock(gPos, com.pasterdream.pasterdreammod.registry.PDBlocks.ICE_BUD_0.get().defaultBlockState(), 3);
+            level.setBlock(gPos, com.pasterdream.pasterdreammod.registry.PDBlocks.ICE_BUD.get().defaultBlockState(), 3);
         }
     }
 

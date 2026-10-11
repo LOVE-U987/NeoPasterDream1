@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "pasterdream:item/red_dew_0"
+    "layer0": "pasterdream:item/sword_embryo"
   }
 }

@@ -126,7 +126,7 @@ public class PDItemsFoods {
                     return 24;
                 }
             });
-    public static final DeferredItem<Item> RAGE_ELIXIR_0 = PDItems.ITEMS.register("rage_elixir_0",
+    public static final DeferredItem<Item> RAGE_ELIXIR = PDItems.ITEMS.register("rage_elixir",
             () -> new GlassDrinkItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build()), PDItems.ELIXIR_BOTTLE::get));
     public static final DeferredItem<Item> RICECAKE = PDItems.ITEMS.registerSimpleItem("ricecake",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.4f).build()));

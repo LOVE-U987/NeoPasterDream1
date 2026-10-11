@@ -89,7 +89,7 @@ public class FloatingIceGenerator implements ICustomDecorationGenerator {
             if (!WorldGenUtils.isReplaceable(level, config.replaceable(), cPos)) continue;
             if (!WorldGenUtils.isSolidSurface(level, cPos.below())) continue;
             if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, cPos, 1)) continue;
-            level.setBlock(cPos, PDBlocks.ICE_BUD_0.get().defaultBlockState(), 3);
+            level.setBlock(cPos, PDBlocks.ICE_BUD.get().defaultBlockState(), 3);
         }
 
         addGlowDecorations(level, random, origin, centerX, centerZ, seaLevel, radius);
@@ -119,7 +119,7 @@ public class FloatingIceGenerator implements ICustomDecorationGenerator {
             BlockState existing = level.getBlockState(gPos);
             if (!existing.isAir() && !existing.liquid()) continue;
             if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, gPos, 1)) continue;
-            level.setBlock(gPos, PDBlocks.ICE_BUD_0.get().defaultBlockState(), 3);
+            level.setBlock(gPos, PDBlocks.ICE_BUD.get().defaultBlockState(), 3);
         }
     }
 }

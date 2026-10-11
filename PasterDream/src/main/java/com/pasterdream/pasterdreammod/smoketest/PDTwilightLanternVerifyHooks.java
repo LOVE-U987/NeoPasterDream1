@@ -125,9 +125,9 @@ public final class PDTwilightLanternVerifyHooks {
         out.accept(ok(PDBlocksFurniture.TRUE_SHADOW_BED.get() != null,
                 "true_shadow_bed 方块注册",
                 String.valueOf(BuiltInRegistries.BLOCK.getKey(PDBlocksFurniture.TRUE_SHADOW_BED.get()))));
-        out.accept(ok(PDItemsFunctional.MELTDREAM_CRYSTAL_0.get() != null,
-                "meltdream_crystal_0 物品注册",
-                String.valueOf(BuiltInRegistries.ITEM.getKey(PDItemsFunctional.MELTDREAM_CRYSTAL_0.get()))));
+        out.accept(ok(PDItemsFunctional.MELTDREAM_CRYSTAL.get() != null,
+                "meltdream_crystal 物品注册",
+                String.valueOf(BuiltInRegistries.ITEM.getKey(PDItemsFunctional.MELTDREAM_CRYSTAL.get()))));
 
         out.accept(ok(PDEntities.SHADOW_GHOST.get() != null, "实体 SHADOW_GHOST", "ok"));
         out.accept(ok(PDEntities.SHADOW_SQUEAL_GHOST.get() != null, "实体 SHADOW_SQUEAL_GHOST", "ok"));

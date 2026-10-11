@@ -94,20 +94,20 @@ public class PDBlockEntities {
      * 娇小琴雨梦玩偶方块实体类型
      * 用于渲染 GeckoLib 3D 模型
      */
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QymDoll0BlockEntity>> QIN_DOLL_0 =
-            BlockEntityAPI.<QymDoll0BlockEntity>createBlockEntity("qin_doll_0")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QymDoll0BlockEntity>> QIN_DOLL =
+            BlockEntityAPI.<QymDoll0BlockEntity>createBlockEntity("qin_doll")
                     .factory(QymDoll0BlockEntity::new)
-                    .validBlock(PDBlocks.QIN_DOLL_0)
+                    .validBlock(PDBlocks.QIN_DOLL)
                     .build();
 
     /**
      * 娇小幼幼紫玩偶方块实体类型
      * 用于渲染 GeckoLib 3D 模型
      */
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<UuzDoll0BlockEntity>> LITTLE_PURPLE_DOLL_0 =
-            BlockEntityAPI.<UuzDoll0BlockEntity>createBlockEntity("little_purple_doll_0")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<UuzDoll0BlockEntity>> LITTLE_PURPLE_DOLL =
+            BlockEntityAPI.<UuzDoll0BlockEntity>createBlockEntity("little_purple_doll")
                     .factory(UuzDoll0BlockEntity::new)
-                    .validBlock(PDBlocks.LITTLE_PURPLE_DOLL_0)
+                    .validBlock(PDBlocks.LITTLE_PURPLE_DOLL)
                     .build();
 
     /**

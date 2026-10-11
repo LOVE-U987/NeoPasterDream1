@@ -54,7 +54,7 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
  *       槽 1 为 pasterdream:dreamnotes 标签物品且槽 2 为羊皮纸 →
  *       笔记复制到槽 3、消耗 1 羊皮纸、笔与墨损耗 1 点耐久；</li>
  *   <li>{@link #studyNotes 研究}（原版 ResearchTablePr0）：槽 0 需笔与墨、槽 4 为
- *       unknownnotes_0 且槽 5 为空 → 校验 achievement_shadow_start 前置成就后，
+ *       unknownnotes 且槽 5 为空 → 校验 achievement_shadow_start 前置成就后，
  *       按 achievement_hide_11..15 成就梯度产出下一级寻梦者笔记
  *       （dreamnotes_10..13 / blueprint_0），并播放翻书音效。</li>
  * </ul>
@@ -157,7 +157,7 @@ public class ResearchTableBlockEntity extends BlockEntity implements GeoBlockEnt
             sendMessage(player, "缺少笔与墨", false);
             return;
         }
-        if (!itemHandler.getStackInSlot(SLOT_UNKNOWN).is(PDItems.UNKNOWNNOTES_0.get().asItem())
+        if (!itemHandler.getStackInSlot(SLOT_UNKNOWN).is(PDItems.UNKNOWNNOTES.get().asItem())
                 || !itemHandler.getStackInSlot(SLOT_STUDY_RESULT).isEmpty()) {
             return;
         }
