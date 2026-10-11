@@ -473,7 +473,7 @@ public final class PDMainFlowVerifyHooks {
         accept(out, lamp.getBlockState(door).isAir(), "下层门持钥打开", "ok");
 
         // 无名 NPC
-        var npcType = PDEntities.SHADOW_NPC_0.get(); // 确认注册名
+        var npcType = PDEntities.SHADOW_NPC.get(); // 确认注册名
         ShadowNpc0Entity npc = npcType.create(lamp);
         acceptHard(out, npc != null, "生成 shadow_npc_0", npc == null ? "null" : "ok");
         if (npc == null) return;
@@ -853,7 +853,7 @@ accept(out, wind.getBlockState(altar).getValue(WindKnightSpawnblockBlock.STAGE) 
         if (!existing.isEmpty()) {
             return existing.get(0);
         }
-        var npcType = PDEntities.SHADOW_NPC_0.get();
+        var npcType = PDEntities.SHADOW_NPC.get();
         ShadowNpc0Entity npc = npcType.create(lamp);
         if (npc != null) {
             npc.moveTo(site.getX() + 0.5, site.getY(), site.getZ() + 0.5, 0, 0);

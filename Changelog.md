@@ -3,6 +3,17 @@
 ---
 ## v0.11.0（开发中）— 2026-10-11
 
+### 迁移：P0 实体批次——3 个实体 ID 去 _0 后缀（ID 迁移第二批）
+
+*   **改名**（`PDEntities`）：`aaroncos_lefthand_0→aaroncos_lefthand`、`aaroncos_righthand_0→aaroncos_righthand`、`shadow_npc_0→shadow_npc`（注册名+常量+javadoc）；刷怪蛋物品随实体名派生改名（`*_0_spawn_egg→*_spawn_egg` ×3）；常量桥接 `PDItems`/创造模式物品栏同步
+*   **引用**（18 个 Java 文件）：渲染器注册、实体标签、免疫配置、竞技场事件、实体事件、死亡事件、注册表 sanity 锚点、`getDefaultTexture` 返回值、smoketest 三套件断言与提示文案
+*   **资源**：GeckoLib geo/animation ×6、纹理 ×5（含 aaroncos `_light` 发光变体 ×2）、刷怪蛋物品模型 ×3、实体战利品表 ×2、`entity.*`/`item.*_spawn_egg` 语言键 ×6（双语）、实体类型标签 `shadow_mob.json` ×2、manifest 实体区+物品区 ×6
+*   **NBT 修补**：`shadow_dungeon_npc_0/1.nbt` 箱内刷怪蛋物品 ID ×2（新增通用工具 `tools/rewrite_structure_ids.py`，泛化自 spawnblock 先例：gzip 解包 + TAG_String 长度前缀修正 + 重压缩，支持 dry-run 与多对替换）；实体本体未嵌入任何结构 NBT（解压后全量扫描确认）
+*   **兼容**（`PDIdAliases`）：+3 条 `ENTITY_TYPE` 别名 + 3 条刷怪蛋 `ITEM` 别名（aliases=40）；`shadow_squeal_ghost_0` 存在无数字基底名（`shadow_squeal_ghost` 强化变体），撞车排除另行语义化
+*   **审计增强**（`tools/verify_id_aliases.py`）：注册名收集新增 `EntityAPI.createEntity`/`createSpawnEggItem` 门面形状（刷怪蛋按 `<name>_spawn_egg` 派生展开）；实体桶标签对齐 `entity_type`
+*   **排除说明**：实体 Java 类名（`AaroncosLefthand0Entity` 等）与成就 ID（`achievement_shadow_npc_0` 系列，属后续进度批次）不变；`PDMainFlowVerifyHooks` 内成就串经定向替换零误伤
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL（首次失败暴露 `PDItems`/创造物品栏桥接常量遗漏，已补齐）；审计 aliases=40 broken=0 shadowed=0 missing_coverage=0；`check_lang` 双语全过；资源闭包 failure_count=3（libs 既有遗留）
+
 ### 迁移：P0 音效批次——5 个音效 ID 去 _0 后缀（ID 迁移第一批）
 
 *   **改名**（`PDSounds`）：`ding_0→ding`、`shadow_biome_0→shadow_biome`、`shadow_music_0→shadow_music`、`shadow_trap_0→shadow_trap`、`wind_knight_skill_0→wind_knight_skill`（注册名+常量同步，javadoc 标注旧名）；7 处代码调用点同步（暮影灯笼/暗影火盆/暗影陷阱方块/风之骑士/金狐雕像/方块重置工具/风向标）

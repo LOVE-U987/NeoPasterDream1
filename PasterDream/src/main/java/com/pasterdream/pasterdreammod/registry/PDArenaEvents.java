@@ -222,7 +222,7 @@ public class PDArenaEvents {
         AaroncosRighthand0Entity rightHand = null;
 
         // 生成左手 BOSS（召唤状态）
-        leftHand = PDEntities.AARONCOS_LEFTHAND_0.get().create(arenaLevel);
+        leftHand = PDEntities.AARONCOS_LEFTHAND.get().create(arenaLevel);
         if (leftHand != null) {
             leftHand.moveTo(leftHandPos.getX() + 0.5, leftHandPos.getY(), leftHandPos.getZ() + 0.5,
                     180.0F, 0.0F); // 面朝中心
@@ -234,7 +234,7 @@ public class PDArenaEvents {
         }
 
         // 生成右手 BOSS（召唤状态）
-        rightHand = PDEntities.AARONCOS_RIGHTHAND_0.get().create(arenaLevel);
+        rightHand = PDEntities.AARONCOS_RIGHTHAND.get().create(arenaLevel);
         if (rightHand != null) {
             rightHand.moveTo(rightHandPos.getX() + 0.5, rightHandPos.getY(), rightHandPos.getZ() + 0.5,
                     0.0F, 0.0F); // 面朝中心

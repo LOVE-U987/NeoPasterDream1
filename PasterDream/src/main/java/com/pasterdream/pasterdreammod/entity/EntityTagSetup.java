@@ -63,8 +63,8 @@ public final class EntityTagSetup {
                 PDEntities.CRAZY_TERRORBEAK.get(),
                 PDEntities.WEAKENESS_TERRORBEAK.get(),
                 // 暗影 BOSS
-                PDEntities.AARONCOS_LEFTHAND_0.get(),
-                PDEntities.AARONCOS_RIGHTHAND_0.get()
+                PDEntities.AARONCOS_LEFTHAND.get(),
+                PDEntities.AARONCOS_RIGHTHAND.get()
         );
     }
 

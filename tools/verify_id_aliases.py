@@ -56,6 +56,9 @@ REG_NAME_RE = re.compile(
     r'register[A-Za-z]*\(\s*"([a-z0-9_]+)"')
 REG_SIMPLE_RE = re.compile(
     r'registerSimple[A-Za-z]*\(\s*"([a-z0-9_]+)"')
+# EntityAPI 门面注册形状（PDEntities 经 createEntity 注册、刷怪蛋经 createSpawnEggItem）
+CREATE_ENTITY_RE = re.compile(r'createEntity\(\s*"([a-z0-9_]+)"')
+CREATE_SPAWN_EGG_RE = re.compile(r'createSpawnEggItem\([^,]*,\s*"([a-z0-9_]+)"')
 
 REGISTRY_LABEL = {"BLOCK": "block", "ITEM": "item"}
 
@@ -105,7 +108,7 @@ FILE_REGISTRY_RULES = [
     ("particle", lambda n: "Particle" in n),
     ("menu", lambda n: n.startswith("PDMenus")),
     ("block_entity", lambda n: n.startswith("PDBlockEntities")),
-    ("entity", lambda n: n == "PDEntities.java"),
+    ("entity_type", lambda n: n == "PDEntities.java"),
     ("item", lambda n: "Items" in n),
     ("block", lambda n: "Blocks" in n),
     ("advancement", lambda n: n.startswith("PDAdvancements")),
@@ -134,6 +137,9 @@ def collect_registered_names():
             bucket = by_registry.setdefault(registry_of_file(path.name), set())
             bucket.update(REG_NAME_RE.findall(text))
             bucket.update(REG_SIMPLE_RE.findall(text))
+            bucket.update(CREATE_ENTITY_RE.findall(text))
+            # 刷怪蛋物品 ID 由 EntityAPI 派生为 <name>_spawn_egg
+            bucket.update(n + "_spawn_egg" for n in CREATE_SPAWN_EGG_RE.findall(text))
     return by_registry
 
 

@@ -55,7 +55,7 @@ public final class PDShadowIntrudeVerifyHooks {
     private static final String ADV_NPC_4 = "achievement_shadow_npc_4";
     private static final String ADV_NPC_5 = "achievement_shadow_npc_5";
     private static final String ADV_E_0 = "achievement_shadow_e_0";
-    private static final String ADV_NPC_0 = "achievement_shadow_npc_0";
+    private static final String ADV_NPC_0 = "achievement_shadow_npc";
     private static final String ADV_NPC_1 = "achievement_shadow_npc_1";
 
     private PDShadowIntrudeVerifyHooks() {
@@ -104,9 +104,9 @@ public final class PDShadowIntrudeVerifyHooks {
         out.accept(ok(PDEntities.SHADOW_HAND.get() != null,
                 "实体 shadow_hand 注册",
                 String.valueOf(BuiltInRegistries.ENTITY_TYPE.getKey(PDEntities.SHADOW_HAND.get()))));
-        out.accept(ok(PDEntities.SHADOW_NPC_0.get() != null,
-                "实体 shadow_npc_0 注册",
-                String.valueOf(BuiltInRegistries.ENTITY_TYPE.getKey(PDEntities.SHADOW_NPC_0.get()))));
+        out.accept(ok(PDEntities.SHADOW_NPC.get() != null,
+                "实体 shadow_npc 注册",
+                String.valueOf(BuiltInRegistries.ENTITY_TYPE.getKey(PDEntities.SHADOW_NPC.get()))));
 
         out.accept(ok(PDSounds.SHADOW_DOOR.get() != null,
                 "音效 shadow_door 注册",
@@ -337,8 +337,8 @@ public final class PDShadowIntrudeVerifyHooks {
             }
         }
 
-        ShadowNpc0Entity npc = PDEntities.SHADOW_NPC_0.get().create(lamp);
-        out.accept(ok(npc != null, "生成 shadow_npc_0 for Stage4", npc == null ? "null" : "ok"));
+        ShadowNpc0Entity npc = PDEntities.SHADOW_NPC.get().create(lamp);
+        out.accept(ok(npc != null, "生成 shadow_npc for Stage4", npc == null ? "null" : "ok"));
         if (npc == null) {
             return;
         }

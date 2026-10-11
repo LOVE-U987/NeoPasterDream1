@@ -13,7 +13,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
  */
 public class ShadowNpc0Renderer extends GeoEntityRenderer<ShadowNpc0Entity> {
 
-    private static final String NAME = "shadow_npc_0";
+    private static final String NAME = "shadow_npc";
 
     /**
      * 构造无名 NPC 渲染器

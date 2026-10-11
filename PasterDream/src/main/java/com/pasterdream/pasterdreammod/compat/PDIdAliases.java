@@ -80,6 +80,16 @@ public final class PDIdAliases {
         table.add(Registries.SOUND_EVENT, id("shadow_trap_0"), id("shadow_trap"));
         table.add(Registries.SOUND_EVENT, id("wind_knight_skill_0"), id("wind_knight_skill"));
 
+        // 0.11.x P0 实体批次：裸 _0 去后缀（ID 迁移第二批）。
+        // 刷怪蛋物品 ID 由实体名派生（<name>_spawn_egg），须同步登记物品别名。
+        // shadow_squeal_ghost_0 存在无数字基底名（shadow_squeal_ghost），撞车排除，另行语义化。
+        table.add(Registries.ENTITY_TYPE, id("aaroncos_lefthand_0"), id("aaroncos_lefthand"));
+        table.add(Registries.ENTITY_TYPE, id("aaroncos_righthand_0"), id("aaroncos_righthand"));
+        table.add(Registries.ENTITY_TYPE, id("shadow_npc_0"), id("shadow_npc"));
+        table.add(Registries.ITEM, id("aaroncos_lefthand_0_spawn_egg"), id("aaroncos_lefthand_spawn_egg"));
+        table.add(Registries.ITEM, id("aaroncos_righthand_0_spawn_egg"), id("aaroncos_righthand_spawn_egg"));
+        table.add(Registries.ITEM, id("shadow_npc_0_spawn_egg"), id("shadow_npc_spawn_egg"));
+
         return table;
     }
 

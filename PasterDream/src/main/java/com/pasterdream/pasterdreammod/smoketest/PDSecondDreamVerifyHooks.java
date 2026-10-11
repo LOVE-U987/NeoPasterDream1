@@ -175,8 +175,8 @@ public final class PDSecondDreamVerifyHooks {
                 "pale_boneneedle 注册",
                 str(BuiltInRegistries.ITEM.getKey(PDItems.PALE_BONENEEDLE.get()))));
         out.accept(ok(PDEntities.TERRORBEAK.get() != null, "实体 TERRORBEAK", "ok"));
-        out.accept(ok(PDEntities.AARONCOS_LEFTHAND_0.get() != null, "实体 AARONCOS_LEFTHAND_0", "ok"));
-        out.accept(ok(PDEntities.AARONCOS_RIGHTHAND_0.get() != null, "实体 AARONCOS_RIGHTHAND_0", "ok"));
+        out.accept(ok(PDEntities.AARONCOS_LEFTHAND.get() != null, "实体 AARONCOS_LEFTHAND", "ok"));
+        out.accept(ok(PDEntities.AARONCOS_RIGHTHAND.get() != null, "实体 AARONCOS_RIGHTHAND", "ok"));
 
         ServerLevel lamp = server.getLevel(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY);
         ServerLevel arena = server.getLevel(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY);

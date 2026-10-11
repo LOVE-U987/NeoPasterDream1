@@ -67,7 +67,7 @@ public class AaroncosLefthand0Entity extends AaroncosHandEntity {
      */
     @Override
     protected String getDefaultTexture() {
-        return "aaroncos_lefthand_0";
+        return "aaroncos_lefthand";
     }
 
     // ======================== 子类差异实现 ========================
