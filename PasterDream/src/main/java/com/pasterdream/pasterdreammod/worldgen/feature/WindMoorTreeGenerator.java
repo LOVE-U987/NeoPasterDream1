@@ -5,8 +5,10 @@ import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationConfig;
 import com.pasterdream.pasterdreammod.api.worldgen.decor.ICustomDecorationGenerator;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
@@ -31,10 +33,13 @@ import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 public class WindMoorTreeGenerator implements ICustomDecorationGenerator {
 
     /** 叶簇内层留孔概率（避免实心球） */
-    private static final double LEAF_HOLLOW_CHANCE = 0.45;
+    private static final double LEAF_HOLLOW_CHANCE = 0.25;
 
     /** 叶簇外层随机缺失概率（形成蓬松边缘） */
-    private static final double LEAF_SKIP_CHANCE = 0.18;
+    private static final double LEAF_SKIP_CHANCE = 0.10;
+
+    /** 角度不规则幅度 —— 打破球体对称，避免圆弧切面 */
+    private static final double ANGLE_WIGGLE = 0.35;
 
     /** 枝节起始高度占主干高度的比例 */
     private static final double BRANCH_START_RATIO = 0.40;
@@ -118,7 +123,7 @@ public class WindMoorTreeGenerator implements ICustomDecorationGenerator {
         boolean placed = false;
         for (int i = 0; i < height; i++) {
             BlockPos pos = base.above(i);
-            if (!WorldGenUtils.isWithinGenerationBounds(origin, pos)) {
+            if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
                 break;
             }
             if (!WorldGenUtils.isReplaceable(level, config.replaceable(), pos)) {
@@ -158,6 +163,9 @@ public class WindMoorTreeGenerator implements ICustomDecorationGenerator {
             double baseAngle = random.nextDouble() * Math.PI * 2;
             for (int side = 0; side < 2; side++) {
                 double angle = baseAngle + side * Math.PI + (random.nextDouble() - 0.5) * 0.6;
+                // 枝条水平方向的最主要轴向（用于 RotatedPillarBlock 朝向）
+                Direction.Axis branchAxis = Math.abs(Math.cos(angle)) > Math.abs(Math.sin(angle))
+                        ? Direction.Axis.X : Direction.Axis.Z;
                 int length = 2 + random.nextInt(3);
                 BlockPos tip = attach;
                 for (int step = 1; step <= length; step++) {
@@ -165,13 +173,15 @@ public class WindMoorTreeGenerator implements ICustomDecorationGenerator {
                     int bz = attach.getZ() + (int) Math.round(Math.sin(angle) * step);
                     int by = attach.getY() + (step >= 2 ? 1 : 0);
                     BlockPos pos = new BlockPos(bx, by, bz);
-                    if (!WorldGenUtils.isWithinGenerationBounds(origin, pos)) {
+                    if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
                         break;
                     }
                     if (!WorldGenUtils.isReplaceable(level, config.replaceable(), pos)) {
                         break;
                     }
-                    level.setBlock(pos, PDBlocks.WINDMOOR_LOG.get().defaultBlockState(), 3);
+                    // 枝条原木按实际方向设置 axis，避免截面纹理错位
+                    level.setBlock(pos, PDBlocks.WINDMOOR_LOG.get().defaultBlockState()
+                            .setValue(RotatedPillarBlock.AXIS, branchAxis), 3);
                     tip = pos;
                 }
                 // 枝端叶簇 + 垂吊植被
@@ -182,7 +192,7 @@ public class WindMoorTreeGenerator implements ICustomDecorationGenerator {
     }
 
     /**
-     * 生长树冠 —— 顶端多层椭球叶簇，半径逐层收缩
+     * 生长树冠 —— 顶端多层椭球叶簇，下层比上层宽以贴合主干
      *
      * @param level  世界生成级别
      * @param config 装饰配置
@@ -194,7 +204,7 @@ public class WindMoorTreeGenerator implements ICustomDecorationGenerator {
     private void placeCanopy(WorldGenLevel level, DecorationConfig config, RandomSource random,
                              BlockPos origin, BlockPos base, int height) {
         for (int layer = 0; layer < 3; layer++) {
-            int radius = Math.max(1, canopyRadius - layer);
+            int radius = Math.max(1, canopyRadius - layer + (layer == 0 ? 1 : 0));
             BlockPos center = base.above(height + layer - 1);
             placeLeafBlob(level, config, random, origin, center, radius);
         }
@@ -216,12 +226,20 @@ public class WindMoorTreeGenerator implements ICustomDecorationGenerator {
                                BlockPos origin, BlockPos center, int radius) {
         int r = Math.max(1, radius);
         double outerSq = (r + 0.5) * (r + 0.5);
-        double innerSq = (r - 1) * (r - 1);
+        double innerSq = (r * 0.6) * (r * 0.6);
         for (int dx = -r; dx <= r; dx++) {
             for (int dy = -r; dy <= r; dy++) {
                 for (int dz = -r; dz <= r; dz++) {
                     double distSq = dx * dx + dy * dy + dz * dz;
-                    if (distSq > outerSq) {
+                    // 角度不规则度：按方向打破球面，避免产生圆弧切面
+                    double angleNoise = 1.0;
+                    if (distSq > innerSq * 0.5) {
+                        double hAngle = Math.atan2(dz, dx);
+                        double vAngle = Math.acos(dy / Math.max(0.001, Math.sqrt(distSq)));
+                        angleNoise = 1.0 + ANGLE_WIGGLE * Math.sin(hAngle * 2.7 + vAngle * 3.1 + 0.5);
+                    }
+                    double adjustedSq = outerSq * angleNoise * angleNoise;
+                    if (distSq > adjustedSq) {
                         continue;
                     }
                     if (distSq < innerSq && random.nextDouble() < LEAF_HOLLOW_CHANCE) {
@@ -231,7 +249,7 @@ public class WindMoorTreeGenerator implements ICustomDecorationGenerator {
                         continue;
                     }
                     BlockPos pos = center.offset(dx, dy, dz);
-                    if (!WorldGenUtils.isWithinGenerationBounds(origin, pos)) {
+                    if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, pos, 1)) {
                         continue;
                     }
                     if (!WorldGenUtils.isReplaceable(level, config.replaceable(), pos)) {

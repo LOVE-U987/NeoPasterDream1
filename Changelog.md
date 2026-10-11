@@ -44,6 +44,20 @@
 
 ## v0.10.1 — 2026-09-26
 
+### 修复：染梦荷叶/染梦莲花瞬时破坏、水下透视透明与放置随机偏移
+
+*   **根因 1（破坏速度）**：两个水面方块（`dyedream_lily_pad`/`dyedream_lotus`）移植时硬编码 `strength(0.5f)`，而原模组与原版 lily_pad 均为 `instabreak()`（硬度 0），手挖需约 0.75 秒。
+*   **修复 1**（`block/DyedreamLilyPadBlock`/`DyedreamLotusBlock`）：`strength(0.5f)` → `instabreak()`，对齐原模组与原版，可瞬间破坏。
+*   **根因 2（水下透视透明）**：两个 custom 模型为 Blockbench 零厚度平面（from/to y=0），与原版 1.21.1 `lily_pad` 模型不一致——原版平面悬浮于 y=0.25 且带 `ambientocclusion: false`；移植版平面正好贴在方块边界且未关闭 AO，水下从下方观察时平面渲染异常（透视透明）。
+*   **修复 2**（`models/custom/dyedream_lily_pad.json`/`dyedream_lotus.json`）：添加 `ambientocclusion: false`，零厚度平面 y=0 → y=0.25，对齐原版模型结构。
+*   **根因 3（放置随机偏移）**：两个方块均带 `offsetType(OffsetType.XZ)` 视觉随机偏移（原模组/原版特性，本项目判定为缺陷）。
+*   **修复 3**（`block/DyedreamLilyPadBlock`/`DyedreamLotusBlock`）：移除 `offsetType(XZ)` 与随之失去意义的 `dynamicShape()`，方块居中放置。**有意差异**：不再复刻原版/原模组的睡莲随机偏移。
+*   **恢复命名**（`lang/zh_cn.json`）：`block.pasterdream.dyedream_lily_pad` 染梦荷叶 → **染梦睡莲**（对齐原模组）；调试杖 `item.pasterdream.debug_wand_lily_pad` 同步为 调试水晶-睡莲；`PDBlocksVegetation`/`DyedreamLilyPadBlock`/`PDItemsFunctional` 相关注释同步。英文名与原模组一致，无需改动。
+*   **清理**（`lang/zh_cn.json`/`lang/en_us.json`）：删除 `item.pasterdream.dyedream_lily_pad`/`dyedream_lotus` 共 4 个死条目（BlockItem 显示名委托给 block 键，原版 lang 亦无 `item.minecraft.lily_pad` 可证）；`tools/check_lang.py` 校验通过，442 物品 + 287 方块翻译键齐全。
+*   **根因 4（实跑复核后定位，水下透视透明的真正根因）**：游戏内实测只有一方底盘水下不可见——反编译 1.21.1 确认面剔除链（`ModelBlockRenderer` → `Block.shouldRenderFace`，down 面无 cullface 进 unculled 列表始终渲染），真正根因是**贴图 UV 采样区**：`dyedream_lotus` 贴图为 32x32 双区域设计（上半区 = 底座形状 + 花瓣形状，下半区全透明），其 custom 模型底座 down 面 UV `[8,8,0,16]`（texture_size 32 → 采样 y 16-32 空白区）→ 底面从下方必然不可见；`dyedream_lily_pad` 贴图 16x16 且 down 面采样全图（有形状），底面正常。
+*   **修复 4**（`models/custom/dyedream_lotus.json`）：底座 down 面 UV `[8,8,0,16]` → `[8,8,0,0]`，与顶面同区域采样底座形状，底面从下方可见（镜像显示，同原版惯例）。修复 2 的 AO/高度对齐保留（原版 parity）。
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；游戏内实跑确认水下底盘渲染正常；同步修改的文件行尾统一为 LF。
+
 ### 修复：染梦/风旅维度 BGM 与群系错位、蘑菇平原实际不生成
 
 *   **根因 1（映射语义错位）**：自定义维度内 BGM 的唯一权威来源是 `client/audio/ModMusicManager#initializeDefaultBiomeMusic()`（`mixin/MinecraftMixin` 在自定义维度内屏蔽原版群系音乐），但该表沿用旧群系 ID 重命名前的对应关系，曲名与群系语义错位——`梦幻三角洲`（`dream_delta`）挂在染梦冰雪冻原、`梦幻雪林`（`dream_taiga`）挂在染梦冰冻海洋。
@@ -54,6 +68,31 @@
 *   **修复**（`smoketest/PDWindLakeVerifyHooks`）：`wind_journey_biome_0 → wind_journey_islands`（常量、断言名、提示文案同步），该 VERIFY 套件此前因群系不存在恒失败。
 *   **同步**（`data/pasterdream/worldgen/biome/`，6 个染梦群系 JSON）：`music.sound` 字段与新映射对齐（该字段在自定义维度内仅作 mixin 失效时的兜底，不代表实际播放结果），并统一行尾为 LF。
 *   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；蘑菇平原覆盖率由独立 FastNoise 采样程序实测（0.70→1.387%、0.75→0.506%、0.80→0.115%、0.86→0.0049%）。
+
+### 新增：Static Sky 渲染模式（Iris 光影兼容）
+
+*   **背景**：NPD 的 8 类自定义天体（星野/行星/星座/极光/光带/流星/彩虹/天空染色）此前全部通过 `RenderLevelStageEvent.AFTER_SKY` 事件绘制。无光影时完美工作，但在部分 Iris 光影包（Complementary/BSL）的 composite 阶段中 AFTER_SKY 内容被覆盖。
+*   **根因**：问题不在于"怎么画"（内容类仅使用 vanilla core shaders，Iris 自身兼容），而在于**画太晚了**——AFTER_SKY 触发时 Iris 的 sky 管线已关闭，内容写入主 framebuffer 后被 composite 覆盖。
+*   **架构**（`mixin/LevelRendererMixin`）：在 `LevelRenderer.renderSky()` 的 starBuffer 绘制后、`disableBlend()` 前新增 `@Inject` 注入点。此时 Iris 仍在 sky pass 阶段，所有 vanilla core shader 的绘制被拦截写入 colortex 供 composite 使用。
+*   **新增**（`client/sky/skystatic/`）：`StaticSkyRenderer.java`（编排器）+ `IrisDetector.java`（运行时检测 Iris/Oculus，无需编译期依赖）。
+*   **重构**（`SkyboxRenderer`）：提取 `renderCore()` 核心循环，新增 `renderStatic()` 入口供静态模式使用（不做 rotation 和 cleanup，由 caller 管理状态）。
+*   **配置**（`config/PDCommonConfig`）：新增 `SkyRenderMode` 枚举（DYNAMIC / STATIC / AUTO）。AUTO 为默认模式：检测到 Iris/Oculus 时自动启用 STATIC，否则回退 DYNAMIC，无需用户手动干预。
+*   **完善**（`SkyboxRenderer`）：新增 `renderPlayerSkyLinksStatic()`——静态模式下 AFTER_SKY 被跳过后，星空枕连线星体改由 renderSky 注入路径补渲染（否则会消失）；静态路径显式启用标准混合以正确表现 alpha。
+*   **完善**（`StaticSkyRenderer`）：NPD 内容渲染后恢复星盘段的 additive blend（防御性措施，确保 Iris 对 sky pass 状态的预期不被破坏）。
+*   **验证**：`.\gradlew compileJava` BUILD SUCCESSFUL。全部 8 内容类、数据驱动层（JSON/预设/重载监听器）、API 模块均无改动。
+*   **实测**（2026-10-11）：AUTO 模式 + Complementary / BSL 光影包游戏内验证通过——天体全部正常显示，Complementary 自带星云天空未覆盖 NPD 内容。
+
+### 新增：风之旅途调试水晶体系（变体水晶 + 潜行滚轮切换）与风之树 18 变体地物
+
+*   **变体水晶**（`item/DebugVariantWandItem`，新）：一个水晶承载多变体，支持「潜行 + 滚轮」切换；选中项存物品 `CUSTOM_DATA`，tooltip 显示当前目标与变体序号；支持结构模式（NBT 路径）与装饰模式（ConfiguredFeature 名）双模。
+*   **滚轮同步**（`client/DebugWandClientEvents`，新 + `network/DebugWandVariantPayload`，新 + `network/PDNetwork` 接线）：客户端滚轮切换后发 C2S 包，服务端按变体数取模校验写回槽位并广播；切换时抬头显示栏即时显示「当前变体 (x/N)」。
+*   **风之树 18 变体**（`worldgen/feature/WindMoorTreeGenerator`，新 + `registry/WindMoorTrees`，新）：按染梦基准程序化实现——贴合地表落脚、主干、分层上扬枝节（枝端叶簇）、多层椭球树冠（角度不规则打破球面切面）、枝端按概率挂风泊悬挂藤；大中小 × 低中高 × 多/少枝节 = 18 种参数组合，装饰模式共用 1 个调试水晶；装饰数据（configured/placed/biome_modifier，`tools/gen_windmoor_tree_jsons.py` 生成）对齐既有 `generic_decor` 范式，新增群系标签 `tags/worldgen/biome/is_wind_journey.json`。
+*   **现有风旅结构补水晶**（`PDItemsFunctional`/`PDItems`/`PDCreativeTabsDebug`）：热气球升级为 8 变体水晶；新增小热气球（11 变体）、云泡泡（6 变体）、风之岛、风车小屋、风池、风蚀石（2 变体）、破风幕、失落风骑士遗迹、四叶草、bocchi（2 变体）、博丽灵梦。
+*   **共享资源**：`textures/item/wind_journey_debug_crystal.png` + `models/item/debug_wand_wind_journey.json`（16×16 菱形青蓝晶体，风格对齐现有调试水晶；生成脚本 `tools/gen_wind_journey_debug_crystal.py`）；13 个水晶模型统一一行 parent 复用。
+*   **小热气球 NBT 补齐**（`data/pasterdream/structure/small_balloon_0..10.nbt`，11 个，新）：从原模组 `structures/`（1.20 复数路径）搬入 1.21.1 单数 `structure/`；模板池 `location` 为双 o `small_balloon_N` 与原文件名一致，无需改名。此前该维度 11 个小热气球结构定义在、NBT 缺席。
+*   **工具修复**（`tools/inspect_structure_nbt.py`）：路径改为必填（原先写死 `NBT_PATH` 指向 shadow_world_door.nbt，传参无效导致误读其它结构）；输出通用化（palette 截断、关注方块可配置）并加固空列表解析。
+*   **修复（树切面）**：`WindMoorTreeGenerator` 枝条原木按水平方向设置 `RotatedPillarBlock.AXIS`（原先一律默认 `axis=y`，水平枝条年轮/树皮面错位出现切面）；生成边界 `isWithinGenerationBounds`（仅同区块）→ `isWithinExpandedGenerationBounds(±1 区块)`（原点近区块边缘时越界半棵树被静默裁成平面）；叶簇加角度不规则度并调整留孔/缺失率。
+*   **验证**：`gradlew compileJava` 全模块 BUILD SUCCESSFUL；`runData` 通过且日志无数据包解析错误；`check_lang` 门禁绿（所有注册项中英齐全）；36 个结构变体目标 NBT 与 18 个风之树变体（Java↔configured↔placed↔biome_modifier）交叉一致性校验通过；物品 ID 无重复。潜行滚轮手感与树形待游戏内实跑确认。
 
 ## v0.10.0 — 2026-09-25
 

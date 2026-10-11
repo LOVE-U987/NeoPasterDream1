@@ -551,7 +551,7 @@ public class PDItemsFunctional {
                     () -> new DebugDecorWandItem(new Item.Properties().stacksTo(1), "patch_dyedream_lotus"));
 
     /**
-     * 调试法杖 - 荷叶
+     * 调试法杖 - 睡莲
      */
     public static final DeferredItem<DebugDecorWandItem> DEBUG_WAND_LILY_PAD =
             PDItems.ITEMS.register("debug_wand_lily_pad",
