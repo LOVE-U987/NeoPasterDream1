@@ -47,7 +47,7 @@ public final class PDRegistrySanityCheck {
             new Anchor(BuiltInRegistries.BLOCK, "angel_block"),            // PDBlocksWindJourney
             // 实体 / 效果 / 粒子 / 声音
             new Anchor(BuiltInRegistries.ENTITY_TYPE, "wind_knight"),
-            new Anchor(BuiltInRegistries.ENTITY_TYPE, "shadow_npc"),
+            new Anchor(BuiltInRegistries.ENTITY_TYPE, "shadow_npc_0"),
             new Anchor(BuiltInRegistries.MOB_EFFECT, "machine_wing_effect"),
             new Anchor(BuiltInRegistries.PARTICLE_TYPE, "feather_white_particle"),
             new Anchor(BuiltInRegistries.SOUND_EVENT, "cloak"));

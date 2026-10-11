@@ -531,8 +531,8 @@ public class PDEntities {
      * 暗影地牢中徘徊的神秘 GeckoLib NPC，右键交互对话
      * 尺寸: 0.6f x 1.8f
      */
-    private static final EntityResult<ShadowNpc0Entity> SHADOW_NPC_RESULT =
-            EntityAPI.createEntity("shadow_npc")
+    private static final EntityResult<ShadowNpc0Entity> SHADOW_NPC_0_RESULT =
+            EntityAPI.createEntity("shadow_npc_0")
                     .category(MobCategory.CREATURE)
                     .size(0.6f, 1.8f)
                     .trackingRange(64)
@@ -563,13 +563,13 @@ public class PDEntities {
     // ==================== BOSS 实体 ====================
 
     /**
-     * 亚伦柯斯之触 - 左 (aaroncos_lefthand)
+     * 亚伦柯斯之触 - 左 (aaroncos_lefthand_0)
      * 双体 BOSS 的左手，飞行巨手形态，500HP
      * 尺寸: 3.5f x 3.5f
      * 颜色：背景 -15987700 (0x0735D4)，高光 -11246213 (0x53FA7B)
      */
-    private static final EntityResult<AaroncosLefthand0Entity> AARONCOS_LEFTHAND_RESULT =
-            EntityAPI.createEntity("aaroncos_lefthand")
+    private static final EntityResult<AaroncosLefthand0Entity> AARONCOS_LEFTHAND_0_RESULT =
+            EntityAPI.createEntity("aaroncos_lefthand_0")
                     .category(MobCategory.MONSTER)
                     .size(3.5f, 3.5f)
                     .trackingRange(64)
@@ -581,13 +581,13 @@ public class PDEntities {
                     .build();
 
     /**
-     * 亚伦柯斯之触 - 右 (aaroncos_righthand)
+     * 亚伦柯斯之触 - 右 (aaroncos_righthand_0)
      * 双体 BOSS 的右手，飞行巨手形态，500HP
      * 尺寸: 3.5f x 3.5f
      * 颜色：背景 -15593198 (0x132F12)，高光 -11189920 (0x559F60)
      */
-    private static final EntityResult<AaroncosRighthand0Entity> AARONCOS_RIGHTHAND_RESULT =
-            EntityAPI.createEntity("aaroncos_righthand")
+    private static final EntityResult<AaroncosRighthand0Entity> AARONCOS_RIGHTHAND_0_RESULT =
+            EntityAPI.createEntity("aaroncos_righthand_0")
                     .category(MobCategory.MONSTER)
                     .size(3.5f, 3.5f)
                     .trackingRange(64)
@@ -771,10 +771,10 @@ public class PDEntities {
             FOX_FIRE_RESULT.entityTypeSupplier();
 
     /**
-     * 暗影 ??? NPC 实体 (shadow_npc) — 向后兼容引用
+     * 暗影 ??? NPC 实体 (shadow_npc_0) — 向后兼容引用
      */
-    public static final Supplier<EntityType<ShadowNpc0Entity>> SHADOW_NPC =
-            SHADOW_NPC_RESULT.entityTypeSupplier();
+    public static final Supplier<EntityType<ShadowNpc0Entity>> SHADOW_NPC_0 =
+            SHADOW_NPC_0_RESULT.entityTypeSupplier();
 
     /**
      * 孢子实体 (spore_entity) — 向后兼容引用
@@ -785,16 +785,16 @@ public class PDEntities {
     // ======================== BOSS 实体向后兼容常量 ========================
 
     /**
-     * 亚伦柯斯之触 - 左 (aaroncos_lefthand) — 向后兼容引用
+     * 亚伦柯斯之触 - 左 (aaroncos_lefthand_0) — 向后兼容引用
      */
-    public static final Supplier<EntityType<AaroncosLefthand0Entity>> AARONCOS_LEFTHAND =
-            AARONCOS_LEFTHAND_RESULT.entityTypeSupplier();
+    public static final Supplier<EntityType<AaroncosLefthand0Entity>> AARONCOS_LEFTHAND_0 =
+            AARONCOS_LEFTHAND_0_RESULT.entityTypeSupplier();
 
     /**
-     * 亚伦柯斯之触 - 右 (aaroncos_righthand) — 向后兼容引用
+     * 亚伦柯斯之触 - 右 (aaroncos_righthand_0) — 向后兼容引用
      */
-    public static final Supplier<EntityType<AaroncosRighthand0Entity>> AARONCOS_RIGHTHAND =
-            AARONCOS_RIGHTHAND_RESULT.entityTypeSupplier();
+    public static final Supplier<EntityType<AaroncosRighthand0Entity>> AARONCOS_RIGHTHAND_0 =
+            AARONCOS_RIGHTHAND_0_RESULT.entityTypeSupplier();
 
     // ==================== 弹射物实体注册 ====================
 

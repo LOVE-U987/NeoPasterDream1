@@ -501,10 +501,10 @@ public class PDItems {
     public static final DeferredItem<?> ASH_BONE_WING_SPAWN_EGG = PDItemsSpawnEggs.ASH_BONE_WING_SPAWN_EGG;
     public static final DeferredItem<?> BASALT_SNAIL_SPAWN_EGG = PDItemsSpawnEggs.BASALT_SNAIL_SPAWN_EGG;
     public static final DeferredItem<?> FOX_FIRE_SPAWN_EGG = PDItemsSpawnEggs.FOX_FIRE_SPAWN_EGG;
-    public static final DeferredItem<?> SHADOW_NPC_SPAWN_EGG = PDItemsSpawnEggs.SHADOW_NPC_SPAWN_EGG;
+    public static final DeferredItem<?> SHADOW_NPC_0_SPAWN_EGG = PDItemsSpawnEggs.SHADOW_NPC_0_SPAWN_EGG;
     public static final DeferredItem<?> SPORE_ENTITY_SPAWN_EGG = PDItemsSpawnEggs.SPORE_ENTITY_SPAWN_EGG;
-    public static final DeferredItem<?> AARONCOS_LEFTHAND_SPAWN_EGG = PDItemsSpawnEggs.AARONCOS_LEFTHAND_SPAWN_EGG;
-    public static final DeferredItem<?> AARONCOS_RIGHTHAND_SPAWN_EGG = PDItemsSpawnEggs.AARONCOS_RIGHTHAND_SPAWN_EGG;
+    public static final DeferredItem<?> AARONCOS_LEFTHAND_0_SPAWN_EGG = PDItemsSpawnEggs.AARONCOS_LEFTHAND_0_SPAWN_EGG;
+    public static final DeferredItem<?> AARONCOS_RIGHTHAND_0_SPAWN_EGG = PDItemsSpawnEggs.AARONCOS_RIGHTHAND_0_SPAWN_EGG;
     public static final DeferredItem<?> TERRASWORD_WAVE_SPAWN_EGG = PDItemsSpawnEggs.TERRASWORD_WAVE_SPAWN_EGG;
 
     // --- PDItemsMaterials ---

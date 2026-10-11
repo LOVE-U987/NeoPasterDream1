@@ -69,12 +69,12 @@ public class PDEntityEvents {
         // 染梦新生物
         EntityAPI.registerAttributes(event, "basalt_snail");
         EntityAPI.registerAttributes(event, "fox_fire");
-        EntityAPI.registerAttributes(event, "shadow_npc");
+        EntityAPI.registerAttributes(event, "shadow_npc_0");
         EntityAPI.registerAttributes(event, "spore_entity");
 
         // BOSS 实体
-        EntityAPI.registerAttributes(event, "aaroncos_lefthand");
-        EntityAPI.registerAttributes(event, "aaroncos_righthand");
+        EntityAPI.registerAttributes(event, "aaroncos_lefthand_0");
+        EntityAPI.registerAttributes(event, "aaroncos_righthand_0");
 
         // 技能投射物/剑气
         EntityAPI.registerAttributes(event, "terrasword_wave");
@@ -264,7 +264,7 @@ public class PDEntityEvents {
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         // 暗影 ??? NPC：地面生成（被动NPC）
-        event.register(PDEntities.SHADOW_NPC.get(),
+        event.register(PDEntities.SHADOW_NPC_0.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,
@@ -283,14 +283,14 @@ public class PDEntityEvents {
         // ==================== BOSS 实体 ====================
 
         // 亚伦柯斯之触 - 左：地面生成（飞行 BOSS，初始生成在地面）
-        event.register(PDEntities.AARONCOS_LEFTHAND.get(),
+        event.register(PDEntities.AARONCOS_LEFTHAND_0.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         // 亚伦柯斯之触 - 右：地面生成（飞行 BOSS，初始生成在地面）
-        event.register(PDEntities.AARONCOS_RIGHTHAND.get(),
+        event.register(PDEntities.AARONCOS_RIGHTHAND_0.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,

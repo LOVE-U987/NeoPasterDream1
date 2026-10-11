@@ -135,7 +135,7 @@ public class ShadowTrap0Block extends BaseEntityBlock {
         setAnimation(level, pos, 0);
         setAnimation(level, pos, 1);
         if (!level.isClientSide()) {
-            level.playSound(null, pos, PDSounds.SHADOW_TRAP.get(), SoundSource.NEUTRAL, 1, 1);
+            level.playSound(null, pos, PDSounds.SHADOW_TRAP_0.get(), SoundSource.NEUTRAL, 1, 1);
         }
         entity.hurt(level.damageSources().magic(), 5);
         if (entity instanceof Player player) {

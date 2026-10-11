@@ -12,7 +12,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
- * 寻梦者笔记菜单分区注册 (dreamnotes_gui)。
+ * 寻梦者笔记菜单分区注册 (dreamnotes_gui_0)。
  * <p>
  * 经 {@link MenuAPI} 写入 API 的 DeferredRegister；本类由
  * {@link EventBusSubscriber} 扫描加载，确保条目在 RegisterEvent 前填充。
@@ -21,9 +21,9 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 @EventBusSubscriber(modid = PasterDreamMod.MOD_ID)
 public final class PDMenusDreamnotes {
 
-    /** 笔记阅读 GUI（原版注册名 dreamnotes_gui） */
-    public static final DeferredHolder<MenuType<?>, MenuType<DreamnotesGui0Menu>> DREAMNOTES_GUI =
-            MenuAPI.<DreamnotesGui0Menu>createMenu("dreamnotes_gui")
+    /** 笔记阅读 GUI（原版注册名 dreamnotes_gui_0） */
+    public static final DeferredHolder<MenuType<?>, MenuType<DreamnotesGui0Menu>> DREAMNOTES_GUI_0 =
+            MenuAPI.<DreamnotesGui0Menu>createMenu("dreamnotes_gui_0")
                     .factory(DreamnotesGui0Menu::new)
                     .build();
 
@@ -32,12 +32,12 @@ public final class PDMenusDreamnotes {
 
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
-        PDDebugLogger.mainDebug("[PDMenusDreamnotes] dreamnotes_gui 菜单分区已加载");
+        PDDebugLogger.mainDebug("[PDMenusDreamnotes] dreamnotes_gui_0 菜单分区已加载");
     }
 
     /** 显式触发类加载（同时拉起物品分区） */
     public static void bootstrap() {
-        Object unused = DREAMNOTES_GUI;
+        Object unused = DREAMNOTES_GUI_0;
         PDItemsDreamnotes.bootstrap();
     }
 }

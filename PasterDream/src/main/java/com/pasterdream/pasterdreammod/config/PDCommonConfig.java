@@ -71,9 +71,6 @@ public class PDCommonConfig {
     /** 星空枕(memento_item_08)在天空上可创建的连线星体数量上限（默认 8） */
     public static final ModConfigSpec.ConfigValue<Integer> SKYLINK_MAX_STARS;
 
-    /** 天空渲染模式：DYNAMIC（AFTER_SKY），STATIC（renderSky注入，Iris兼容），AUTO（自动检测） */
-    public static final ModConfigSpec.ConfigValue<SkyRenderMode> SKY_RENDER_MODE;
-
     // ==================== Meltdream Chest ====================
 
     /** 融梦水晶箱自定义战利品总开关（默认 false，关闭时使用内置默认物品池） */
@@ -204,9 +201,6 @@ public class PDCommonConfig {
         SKYLINK_MAX_STARS = builder
                 .comment("星空枕(memento_item_08)在天空上可创建的连线星体数量上限 默认：8 范围：1~64")
                 .defineInRange("skylink max stars", 8, 1, 64);
-        SKY_RENDER_MODE = builder
-                .comment("天空渲染模式：DYNAMIC（兼容模式，AFTER_SKY事件渲染），STATIC（renderSky注入，Iris兼容），AUTO（自动检测：有光影时用STATIC，否则DYNAMIC） 默认：AUTO")
-                .defineEnum("sky render mode", SkyRenderMode.AUTO);
         builder.pop();
 
         builder.push("Meltdream Chest");
@@ -329,18 +323,5 @@ public class PDCommonConfig {
                 "achievement_hide_12", "achievement_hide_13", "achievement_hide_14", "achievement_hide_15",
                 "achievement_hide_16"
         };
-    }
-
-    /**
-     * 天空盒渲染模式
-     * <p>
-     * DYNAMIC — 当前 AFTER_SKY 事件方式（默认/兼容模式）<br>
-     * STATIC  — renderSky @Inject 注入方式（Iris 光影兼容）<br>
-     * AUTO    — 检测到 Iris/Oculus 时自动用 STATIC，否则 DYNAMIC
-     */
-    public enum SkyRenderMode {
-        DYNAMIC,
-        STATIC,
-        AUTO
     }
 }
