@@ -51,11 +51,11 @@ public class PDClientItemExtensions {
 
         // ==================== 玩偶/雕像 ====================
 
-        registerDisplayItem(event, PDItems.QIN_DOLL_0.get(), new QymDoll0DisplayItemRenderer());
-        PDDebugLogger.mainDebug("[PDClientItemExtensions] 注册显示物品: qin_doll_0 → QymDoll0DisplayItemRenderer（GeckoLib 3D）");
+        registerDisplayItem(event, PDItems.QIN_DOLL.get(), new QymDoll0DisplayItemRenderer());
+        PDDebugLogger.mainDebug("[PDClientItemExtensions] 注册显示物品: qin_doll → QymDoll0DisplayItemRenderer（GeckoLib 3D）");
 
-        registerDisplayItem(event, PDItems.LITTLE_PURPLE_DOLL_0.get(), new UuzDoll0DisplayItemRenderer());
-        PDDebugLogger.mainDebug("[PDClientItemExtensions] 注册显示物品: little_purple_doll_0 → UuzDoll0DisplayItemRenderer（GeckoLib 3D）");
+        registerDisplayItem(event, PDItems.LITTLE_PURPLE_DOLL.get(), new UuzDoll0DisplayItemRenderer());
+        PDDebugLogger.mainDebug("[PDClientItemExtensions] 注册显示物品: little_purple_doll → UuzDoll0DisplayItemRenderer（GeckoLib 3D）");
 
         registerDisplayItem(event, PDItems.GOLDEN_FOX_SCULPTURE.get(), new GoldenFoxSculptureDisplayItemRenderer());
         PDDebugLogger.mainDebug("[PDClientItemExtensions] 注册显示物品: golden_fox_sculpture → GoldenFoxSculptureDisplayItemRenderer（GeckoLib 3D）");

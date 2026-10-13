@@ -86,7 +86,7 @@ public class PDItemsMaterials {
     public static final DeferredItem<Item> BLACKMETAL_INGOT = PDItems.ITEMS.registerSimpleItem("blackmetal_ingot");
     public static final DeferredItem<Item> BLACKSTICK = PDItems.ITEMS.registerSimpleItem("blackstick");
     public static final DeferredItem<Item> BLUE_HEART_OF_THE_SEA = PDItems.ITEMS.registerSimpleItem("blue_heart_of_the_sea");
-    public static final DeferredItem<Item> BROKENNOTES_0 = PDItems.ITEMS.registerSimpleItem("brokennotes_0");
+    public static final DeferredItem<Item> BROKENNOTES = PDItems.ITEMS.registerSimpleItem("brokennotes");
     public static final DeferredItem<Item> CHARGED_AMETHYST = PDItems.ITEMS.registerSimpleItem("charged_amethyst");
     public static final DeferredItem<Item> COARSE_SALT = PDItems.ITEMS.registerSimpleItem("coarse_salt");
     public static final DeferredItem<Item> CONGEAL_WIND = PDItems.ITEMS.registerSimpleItem("congeal_wind");
@@ -163,11 +163,11 @@ public class PDItemsMaterials {
     public static final DeferredItem<Item> SOUL_ESSENCE = PDItems.ITEMS.registerSimpleItem("soul_essence");
     public static final DeferredItem<Item> SPOOL = PDItems.ITEMS.registerSimpleItem("spool");
     public static final DeferredItem<Item> STAR_WISH_ROD_EMBRYO = PDItems.ITEMS.registerSimpleItem("star_wish_rod_embryo");
-    public static final DeferredItem<Item> SWORD_EMBRYO_0 = PDItems.ITEMS.registerSimpleItem("sword_embryo_0", new Item.Properties().stacksTo(1));
+    public static final DeferredItem<Item> SWORD_EMBRYO = PDItems.ITEMS.registerSimpleItem("sword_embryo", new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> TERRASWORD_EMBRYO = PDItems.ITEMS.registerSimpleItem("terrasword_embryo");
     public static final DeferredItem<Item> TITANIUM_NUGGET = PDItems.ITEMS.registerSimpleItem("titanium_nugget");
     public static final DeferredItem<Item> TITANIUM_UPGRADE = PDItems.ITEMS.registerSimpleItem("titanium_upgrade");
-    public static final DeferredItem<Item> UNKNOWNNOTES_0 = PDItems.ITEMS.register("unknownnotes_0",
+    public static final DeferredItem<Item> UNKNOWNNOTES = PDItems.ITEMS.register("unknownnotes",
             () -> new com.pasterdream.pasterdreammod.item.Unknownnotes0Item());
     public static final DeferredItem<Item> WHITE_COROLLA = PDItems.ITEMS.registerSimpleItem("white_corolla");
     public static final DeferredItem<Item> WHITE_CRYSTAL = PDItems.ITEMS.registerSimpleItem("white_crystal");

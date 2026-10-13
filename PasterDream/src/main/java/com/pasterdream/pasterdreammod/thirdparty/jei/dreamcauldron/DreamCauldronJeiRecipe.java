@@ -109,7 +109,7 @@ public class DreamCauldronJeiRecipe {
         // 引导药剂 + 兰花 + 雪球 + 冰芽 → 冰冻法术
         ice.ifPresent(item -> recipes.add(new DreamCauldronJeiRecipe(
                 PDItems.GUIDING_DRUG.get(), Items.BLUE_ORCHID, Items.SNOWBALL,
-                PDItems.ICE_BUD_0.get(), PDItems.MELTDREAM_LIQUID_BUCKET.get(),
+                PDItems.ICE_BUD.get(), PDItems.MELTDREAM_LIQUID_BUCKET.get(),
                 Items.BUCKET, item)));
 
         return recipes;

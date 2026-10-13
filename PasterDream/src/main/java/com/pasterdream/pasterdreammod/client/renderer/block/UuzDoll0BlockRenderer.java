@@ -14,7 +14,7 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
  */
 public class UuzDoll0BlockRenderer extends GeoBlockRenderer<UuzDoll0BlockEntity> {
 
-    private static final String NAME = "little_purple_doll_0";
+    private static final String NAME = "little_purple_doll";
 
     /**
      * 构造娇小幼幼紫玩偶方块渲染器

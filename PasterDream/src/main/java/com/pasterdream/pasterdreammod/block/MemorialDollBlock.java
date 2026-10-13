@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * 纪念玩偶方块基类 (Memorial Doll Block)
  * <p>
- * 与 qin_doll_0 / golden_fox_sculpture 等方块保持一致：可水平旋转、支持水浸、
+ * 与 qin_doll / golden_fox_sculpture 等方块保持一致：可水平旋转、支持水浸、
  * 使用方块实体渲染 GeckoLib 3D 模型。额外提供“手持物品右击”交互，将物品存入方块实体。
  */
 public abstract class MemorialDollBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {

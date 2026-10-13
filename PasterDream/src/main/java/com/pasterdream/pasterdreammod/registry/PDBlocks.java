@@ -127,7 +127,7 @@ public class PDBlocks {
         BlockAPI.putConfig("dyedream_bud_0", BlockConfig.of().mineable("pickaxe"));
         BlockAPI.putConfig("dyedream_bud_1", BlockConfig.of().mineable("pickaxe"));
         BlockAPI.putConfig("dyedream_bud_2", BlockConfig.of().mineable("pickaxe"));
-        BlockAPI.putConfig("ice_bud_0", BlockConfig.of().mineable("pickaxe"));
+        BlockAPI.putConfig("ice_bud", BlockConfig.of().mineable("pickaxe"));
         BlockAPI.putConfig("shadow_light_0", BlockConfig.of().mineable("pickaxe"));
 
         // ========== 玻璃面板 ==========
@@ -171,8 +171,8 @@ public class PDBlocks {
         BlockAPI.putConfig("aaroncoshandspawnblock", BlockConfig.of().mineable("pickaxe"));
 
         // ========== 玩偶/雕像方块 ==========
-        BlockAPI.putConfig("qin_doll_0", BlockConfig.of());
-        BlockAPI.putConfig("little_purple_doll_0", BlockConfig.of());
+        BlockAPI.putConfig("qin_doll", BlockConfig.of());
+        BlockAPI.putConfig("little_purple_doll", BlockConfig.of());
         BlockAPI.putConfig("golden_fox_sculpture", BlockConfig.of());
 
         // ========== [分区R] 研究台组 ==========
@@ -198,8 +198,8 @@ public class PDBlocks {
     public static final DeferredBlock<?> LIFE_CRYSTAL = PDBlocksCustom.LIFE_CRYSTAL;
 
     // --- PDBlocksDolls ---
-    public static final DeferredBlock<?> QIN_DOLL_0 = PDBlocksDolls.QIN_DOLL_0;
-    public static final DeferredBlock<?> LITTLE_PURPLE_DOLL_0 = PDBlocksDolls.LITTLE_PURPLE_DOLL_0;
+    public static final DeferredBlock<?> QIN_DOLL = PDBlocksDolls.QIN_DOLL;
+    public static final DeferredBlock<?> LITTLE_PURPLE_DOLL = PDBlocksDolls.LITTLE_PURPLE_DOLL;
     public static final DeferredBlock<?> GOLDEN_FOX_SCULPTURE = PDBlocksDolls.GOLDEN_FOX_SCULPTURE;
     public static final DeferredBlock<?> LOVE_U_DOLL = PDBlocksDolls.LOVE_U_DOLL;
     public static final DeferredBlock<?> EOUL_DOLL = PDBlocksDolls.EOUL_DOLL;
@@ -279,7 +279,7 @@ public class PDBlocks {
     public static final DeferredBlock<?> DYEDREAM_BUD_0 = PDBlocksVegetation.DYEDREAM_BUD_0;
     public static final DeferredBlock<?> DYEDREAM_BUD_1 = PDBlocksVegetation.DYEDREAM_BUD_1;
     public static final DeferredBlock<?> DYEDREAM_BUD_2 = PDBlocksVegetation.DYEDREAM_BUD_2;
-    public static final DeferredBlock<?> ICE_BUD_0 = PDBlocksVegetation.ICE_BUD_0;
+    public static final DeferredBlock<?> ICE_BUD = PDBlocksVegetation.ICE_BUD;
     public static final DeferredBlock<?> DYEDREAM_LILY_PAD = PDBlocksVegetation.DYEDREAM_LILY_PAD;
     public static final DeferredBlock<?> DYEDREAM_LOTUS = PDBlocksVegetation.DYEDREAM_LOTUS;
     public static final DeferredBlock<?> DYEDREAM_SEAGRASS = PDBlocksVegetation.DYEDREAM_SEAGRASS;

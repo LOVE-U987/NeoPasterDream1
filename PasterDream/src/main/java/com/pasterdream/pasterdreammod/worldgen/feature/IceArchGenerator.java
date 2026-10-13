@@ -288,7 +288,7 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
     /**
      * 在拱门底部地面附近随机添加发光冰晶方块作为装饰点缀
      * <p>
-     * 在拱门底部范围内随机选取 1~2 个位置，检测地面高度后放置 ICE_BUD_0 发光方块。
+     * 在拱门底部范围内随机选取 1~2 个位置，检测地面高度后放置 ICE_BUD 发光方块。
      * 仅放置在与拱门底部高度差不超过 5 格且可替换的位置上。
      */
     private void addGlowDecorations(WorldGenLevel level, RandomSource random, DecorationConfig config,
@@ -308,7 +308,7 @@ public class IceArchGenerator implements ICustomDecorationGenerator {
             BlockPos gPos = new BlockPos(gx, gy + 1, gz);
             if (!WorldGenUtils.isReplaceable(level, config.replaceable(), gPos)) continue;
             if (!WorldGenUtils.isWithinExpandedGenerationBounds(origin, gPos, SAFE_CHUNK_RADIUS)) continue;
-            level.setBlock(gPos, PDBlocks.ICE_BUD_0.get().defaultBlockState(), 3);
+            level.setBlock(gPos, PDBlocks.ICE_BUD.get().defaultBlockState(), 3);
         }
     }
 

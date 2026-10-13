@@ -37,7 +37,7 @@ public class IceDecorations {
 
         SimpleWeightedRandomList<BlockState> oreList = SimpleWeightedRandomList.<BlockState>builder()
                 .add(PDBlocks.DYEDREAMQUARTZ_ORE.get().defaultBlockState(), 1)
-                .add(PDBlocks.ICE_BUD_0.get().defaultBlockState(), 1)
+                .add(PDBlocks.ICE_BUD.get().defaultBlockState(), 1)
                 .build();
 
         DecorationBuilder.create()
@@ -188,7 +188,7 @@ public class IceDecorations {
         DecorationBuilder.create()
                 .type(DecorationType.SPIKE)
                 .body(new WeightedStateProvider(bodyList))
-                .crystal(0.1f, BlockStateProvider.simple(PDBlocks.ICE_BUD_0.get()))
+                .crystal(0.1f, BlockStateProvider.simple(PDBlocks.ICE_BUD.get()))
                 .height(3, 6)
                 .radius(2, 0)
                 .regionCheck(true, 0.3f)
@@ -219,7 +219,7 @@ public class IceDecorations {
         DecorationBuilder.create()
                 .type(DecorationType.PILLAR)
                 .body(new WeightedStateProvider(bodyList))
-                .crystal(0.15f, BlockStateProvider.simple(PDBlocks.ICE_BUD_0.get()))
+                .crystal(0.15f, BlockStateProvider.simple(PDBlocks.ICE_BUD.get()))
                 .debris(Blocks.PACKED_ICE, 4, 3)
                 .height(8, 15)
                 .width(3, 2)

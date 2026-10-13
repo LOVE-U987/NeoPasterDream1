@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "pasterdream:qin_doll_0"
+      "item": "pasterdream:qin_doll"
     },
     {
       "item": "pasterdream:dream_aurorian_steel"
@@ -11,6 +11,6 @@
   ],
   "result": {
     "count": 1,
-    "id": "pasterdream:little_purple_doll_0"
+    "id": "pasterdream:little_purple_doll"
   }
 }

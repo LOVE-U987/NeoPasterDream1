@@ -97,7 +97,7 @@ public class PDCreativeTabsDyedream {
                         output.accept(PDBlocks.DYEDREAM_BUD_0.get());
                         output.accept(PDBlocks.DYEDREAM_BUD_1.get());
                         output.accept(PDBlocks.DYEDREAM_BUD_2.get());
-                        output.accept(PDBlocks.ICE_BUD_0.get());
+                        output.accept(PDBlocks.ICE_BUD.get());
 
                         // 粉丁菇
                         output.accept(PDBlocks.PINKAGARIC_0.get());
@@ -177,7 +177,7 @@ public class PDCreativeTabsDyedream {
                         output.accept(PDItems.DREAM_AURORIAN_STEEL.get());
                         output.accept(PDItems.DREAM_FERTILIZER.get());
                         output.accept(PDItems.DREAM_COTTON_CANDY.get());
-                        output.accept(PDItems.MELTDREAM_CRYSTAL_0.get());
+                        output.accept(PDItems.MELTDREAM_CRYSTAL.get());
                         output.accept(PDItems.MELTDREAM_ELIXIR_BOTTLE.get());
                         output.accept(PDItems.DYEDREAM_FRUIT.get());
                         output.accept(PDItems.DYEDREAM_JUICE.get());

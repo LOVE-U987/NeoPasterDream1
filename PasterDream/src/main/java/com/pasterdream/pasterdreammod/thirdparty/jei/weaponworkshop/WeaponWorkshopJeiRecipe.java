@@ -64,7 +64,7 @@ public class WeaponWorkshopJeiRecipe {
 
         // 2 梦境法杖
         list.add(create(
-                PDItems.MELTDREAM_CRYSTAL_0.get(),
+                PDItems.MELTDREAM_CRYSTAL.get(),
                 PDItems.TITANIUM_INGOT.get(),
                 PDItems.BLACKSTICK.get(),
                 PDItems.DYEDREAM_DUST.get(),
@@ -126,7 +126,7 @@ public class WeaponWorkshopJeiRecipe {
                 stack(PDItems.SHADOW_LIGHT_0.get(), 9),
                 stack(PDItems.WHITE_CRYSTAL.get(), 1),
                 stack(Items.NETHER_STAR, 1),
-                stack(PDItems.MELTDREAM_CRYSTAL_0.get(), 1),
+                stack(PDItems.MELTDREAM_CRYSTAL.get(), 1),
                 enhance,
                 stack(PDItems.WHITE_SWORD_EMBRYO.get()),
                 stack(PDItems.WHITE_SWORD.get())));
@@ -147,7 +147,7 @@ public class WeaponWorkshopJeiRecipe {
                 stack(Items.FISHING_ROD, 1),
                 stack(Items.POWDER_SNOW_BUCKET, 1),
                 stack(Items.DIAMOND, 1),
-                stack(PDItems.MELTDREAM_CRYSTAL_0.get(), 1),
+                stack(PDItems.MELTDREAM_CRYSTAL.get(), 1),
                 stack(PDItems.SNOW_VOW_HEAD.get(), 1),
                 enhance,
                 stack(PDItems.STAR_WISH_ROD_EMBRYO.get()),

@@ -62,12 +62,12 @@ public final class RendererRegistry {
         PDDebugLogger.mainDebug("[RendererRegistry] 注册方块实体渲染器: life_crystal");
         count++;
 
-        event.registerBlockEntityRenderer(PDBlockEntities.QIN_DOLL_0.get(), QymDoll0BlockRenderer::new);
-        PDDebugLogger.mainDebug("[RendererRegistry] 注册方块实体渲染器: qin_doll_0");
+        event.registerBlockEntityRenderer(PDBlockEntities.QIN_DOLL.get(), QymDoll0BlockRenderer::new);
+        PDDebugLogger.mainDebug("[RendererRegistry] 注册方块实体渲染器: qin_doll");
         count++;
 
-        event.registerBlockEntityRenderer(PDBlockEntities.LITTLE_PURPLE_DOLL_0.get(), UuzDoll0BlockRenderer::new);
-        PDDebugLogger.mainDebug("[RendererRegistry] 注册方块实体渲染器: little_purple_doll_0");
+        event.registerBlockEntityRenderer(PDBlockEntities.LITTLE_PURPLE_DOLL.get(), UuzDoll0BlockRenderer::new);
+        PDDebugLogger.mainDebug("[RendererRegistry] 注册方块实体渲染器: little_purple_doll");
         count++;
 
         event.registerBlockEntityRenderer(PDBlockEntities.GOLDEN_FOX_SCULPTURE.get(), GoldenFoxSculptureBlockRenderer::new);

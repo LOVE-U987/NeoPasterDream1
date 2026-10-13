@@ -76,7 +76,7 @@ public class PDCreativeTabsFood {
                         output.accept(PDItems.JELLYFISH_JELLO.get());
                         output.accept(PDItems.LIGHT_ORGAN.get());
                         output.accept(PDItems.QUEER_SOUP.get());
-                        output.accept(PDItems.RAGE_ELIXIR_0.get());
+                        output.accept(PDItems.RAGE_ELIXIR.get());
                         output.accept(PDItems.ELIXIR_BOTTLE.get());
                         output.accept(PDItems.DYEDREAM_PERFUME.get());
                         output.accept(PDItems.WATER_GLASSJAR.get());

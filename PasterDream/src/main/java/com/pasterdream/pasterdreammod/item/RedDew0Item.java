@@ -8,7 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
 /**
- * red_dew_0 物品类
+ * red_dew 物品类
  * 原版稀有度: COMMON
  */
 public class RedDew0Item extends Item {
@@ -25,8 +25,8 @@ public class RedDew0Item extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("tooltip.pasterdream.red_dew_0.on_drink"));
-        tooltipComponents.add(Component.translatable("tooltip.pasterdream.red_dew_0.instant_heal"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.red_dew.on_drink"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.red_dew.instant_heal"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }

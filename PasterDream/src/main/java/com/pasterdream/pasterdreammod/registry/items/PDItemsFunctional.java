@@ -143,7 +143,7 @@ public class PDItemsFunctional {
             () -> new HeartChocolate2Item(new Item.Properties()));
     public static final DeferredItem<Item> LIGHT_MOSS_PHANTOM_MEMBRANE = PDItems.ITEMS.register("light_moss_phantom_membrane",
             () -> new LightMossPhantomMembraneItem(new Item.Properties()));
-    public static final DeferredItem<Item> MELTDREAM_CRYSTAL_0 = PDItems.ITEMS.register("meltdream_crystal_0",
+    public static final DeferredItem<Item> MELTDREAM_CRYSTAL = PDItems.ITEMS.register("meltdream_crystal",
             () -> new MeltdreamCrystal0Item(new Item.Properties()));
     public static final DeferredItem<Item> MEMENTO_ITEM_01 = PDItems.ITEMS.register("memento_item_01",
             () -> new MementoItem01Item(new Item.Properties()));
@@ -158,13 +158,13 @@ public class PDItemsFunctional {
             () -> new SkyLinkItem(new Item.Properties()));
     public static final DeferredItem<Item> MEMENTO_ITEM_09 = PDItems.ITEMS.registerSimpleItem("memento_item_09");
     public static final DeferredItem<Item> MEMENTO_ITEM_10 = PDItems.ITEMS.registerSimpleItem("memento_item_10");
-    public static final DeferredItem<Item> MEMORY_GEM_0 = PDItems.ITEMS.register("memory_gem_0",
+    public static final DeferredItem<Item> MEMORY_GEM = PDItems.ITEMS.register("memory_gem",
             () -> new MemoryGem0Item(new Item.Properties()));
     public static final DeferredItem<Item> MOSS_PHANTOM_MEMBRANE = PDItems.ITEMS.register("moss_phantom_membrane",
             () -> new MossPhantomMembraneItem(new Item.Properties()));
     public static final DeferredItem<Item> POPPING_CANDY = PDItems.ITEMS.register("popping_candy",
             () -> new PoppingCandyItem(new Item.Properties()));
-    public static final DeferredItem<Item> RED_DEW_0 = PDItems.ITEMS.register("red_dew_0",
+    public static final DeferredItem<Item> RED_DEW = PDItems.ITEMS.register("red_dew",
             () -> new RedDew0Item(new Item.Properties()));
     public static final DeferredItem<Item> SHADOW_BREATH = PDItems.ITEMS.register("shadow_breath",
             () -> new ShadowBreathItem(new Item.Properties()));
@@ -453,8 +453,8 @@ public class PDItemsFunctional {
      * 调试法杖 - 沙漠堡垒
      * 右键瞄准方块放置 desert_fortress 结构（注意 NBT 文件名为 desert_fortress，无 _0 后缀）
      */
-    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DESERT_FORTRESS_0 =
-            PDItems.ITEMS.register("debug_wand_desert_fortress_0",
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DESERT_FORTRESS =
+            PDItems.ITEMS.register("debug_wand_desert_fortress",
                     () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "desert_fortress"));
 
 
@@ -468,8 +468,8 @@ public class PDItemsFunctional {
             PDItems.ITEMS.register("debug_wand_dyedream_tower_1",
                     () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_tower_1"));
 
-    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_LABORATORY_0 =
-            PDItems.ITEMS.register("debug_wand_dyedream_laboratory_0",
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_LABORATORY =
+            PDItems.ITEMS.register("debug_wand_dyedream_laboratory",
                     () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_laboratory_0"));
 
     public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_TAVERN =
@@ -488,8 +488,8 @@ public class PDItemsFunctional {
             PDItems.ITEMS.register("debug_wand_dyedream_pavilion_2",
                     () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_pavilion_2"));
 
-    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_CAMPSITE_0 =
-            PDItems.ITEMS.register("debug_wand_dyedream_campsite_0",
+    public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DYEDREAM_CAMPSITE =
+            PDItems.ITEMS.register("debug_wand_dyedream_campsite",
                     () -> new DebugStructureWandItem(new Item.Properties().stacksTo(1), "dyedream_campsite_0"));
 
     public static final DeferredItem<DebugStructureWandItem> DEBUG_WAND_DREAM_WISHINGTREE_0 =

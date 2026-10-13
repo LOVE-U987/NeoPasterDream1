@@ -107,16 +107,16 @@ public class PDCreativeTabsDebug {
                         output.accept(PDItems.DEBUG_WAND_DREAM_CHURCH_8.get());
                         output.accept(PDItems.DEBUG_WAND_DREAM_CHURCH_9.get());
                         output.accept(PDItems.DEBUG_WAND_DREAM_CHURCH_10.get());
-                        output.accept(PDItems.DEBUG_WAND_DESERT_FORTRESS_0.get());
+                        output.accept(PDItems.DEBUG_WAND_DESERT_FORTRESS.get());
                         // P1 移植遗迹调试水晶
                         output.accept(PDItems.DEBUG_WAND_DYEDREAM_TOWER_0.get());
                         output.accept(PDItems.DEBUG_WAND_DYEDREAM_TOWER_1.get());
-                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_LABORATORY_0.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_LABORATORY.get());
                         output.accept(PDItems.DEBUG_WAND_DYEDREAM_TAVERN.get());
                         output.accept(PDItems.DEBUG_WAND_DYEDREAM_PAVILION_0.get());
                         output.accept(PDItems.DEBUG_WAND_DYEDREAM_PAVILION_1.get());
                         output.accept(PDItems.DEBUG_WAND_DYEDREAM_PAVILION_2.get());
-                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_CAMPSITE_0.get());
+                        output.accept(PDItems.DEBUG_WAND_DYEDREAM_CAMPSITE.get());
                         output.accept(PDItems.DEBUG_WAND_DREAM_WISHINGTREE_0.get());
                         output.accept(PDItems.DEBUG_WAND_DREAM_WISHINGTREE_1.get());
                         output.accept(PDItems.DEBUG_WAND_TRAVELER_HOUSE_0.get());

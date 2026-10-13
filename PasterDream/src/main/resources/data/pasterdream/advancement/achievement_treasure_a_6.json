@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "id": "pasterdream:qin_doll_0"
+      "id": "pasterdream:qin_doll"
     },
     "title": {
       "translate": "advancements.achievement_treasure_a_6.title"
@@ -21,7 +21,7 @@
         "items": [
           {
             "items": [
-              "pasterdream:qin_doll_0"
+              "pasterdream:qin_doll"
             ],
             "count": {
               "min": 1,

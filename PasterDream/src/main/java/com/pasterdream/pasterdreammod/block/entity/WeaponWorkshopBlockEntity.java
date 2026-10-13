@@ -94,7 +94,7 @@ public class WeaponWorkshopBlockEntity extends BlockEntity implements GeoBlockEn
     /** 全部 13 项原版锻造配方 */
     private static final List<ForgeRecipe> RECIPES = List.of(
             // 融梦水晶 + 钛锭 + 黑金属棒 + 染梦尘 + 染梦石英 → 聚梦法杖原胚
-            new ForgeRecipe(() -> PDItems.MELTDREAM_CRYSTAL_0.get().asItem(), () -> PDItems.TITANIUM_INGOT.get().asItem(),
+            new ForgeRecipe(() -> PDItems.MELTDREAM_CRYSTAL.get().asItem(), () -> PDItems.TITANIUM_INGOT.get().asItem(),
                     () -> PDItems.BLACKSTICK.get().asItem(), () -> PDItems.DYEDREAM_DUST.get().asItem(),
                     () -> PDItems.DYEDREAMQUARTZ.get().asItem(), () -> PDItems.DREAM_WAND_EMBRYO.get().asItem()),
             // 铁剑 + 黑金属锭 + 梦魇燃料 + 哭泣的黑曜石 + 黑金属棒 → 蚀影剑原胚
@@ -124,14 +124,14 @@ public class WeaponWorkshopBlockEntity extends BlockEntity implements GeoBlockEn
             // 钛剑 + 影灯 + 白水晶 + 下界之星 + 融梦水晶 → 白刃原胚
             new ForgeRecipe(() -> PDItems.TITANIUM_SWORD.get().asItem(), () -> PDBlocks.SHADOW_LIGHT_0.get().asItem(),
                     () -> PDItems.WHITE_CRYSTAL.get().asItem(), () -> Items.NETHER_STAR,
-                    () -> PDItems.MELTDREAM_CRYSTAL_0.get().asItem(), () -> PDItems.WHITE_SWORD_EMBRYO.get().asItem()),
+                    () -> PDItems.MELTDREAM_CRYSTAL.get().asItem(), () -> PDItems.WHITE_SWORD_EMBRYO.get().asItem()),
             // 蚀影剑 + 梦魇燃料 + 暗影剑柄 + 黑金属锭 + 羊皮纸 → 暗影剑原胚
             new ForgeRecipe(() -> PDItems.SHADOW_EROSION_SWORD.get().asItem(), () -> PDItems.NIGHTMARE_FUEL.get().asItem(),
                     () -> PDItems.SHADOW_HILT.get().asItem(), () -> PDItems.BLACKMETAL_INGOT.get().asItem(),
                     () -> PDItems.PERGAMYN.get().asItem(), () -> PDItems.SHADOW_SWORD_EMBRYO.get().asItem()),
             // 钓鱼竿 + 细雪桶 + 钻石 + 融梦水晶 + 雪誓头冠 → 占星者的祈愿原胚
             new ForgeRecipe(() -> Items.FISHING_ROD, () -> Items.POWDER_SNOW_BUCKET,
-                    () -> Items.DIAMOND, () -> PDItems.MELTDREAM_CRYSTAL_0.get().asItem(),
+                    () -> Items.DIAMOND, () -> PDItems.MELTDREAM_CRYSTAL.get().asItem(),
                     () -> PDItems.SNOW_VOW_HEAD.get().asItem(), () -> PDItems.STAR_WISH_ROD_EMBRYO.get().asItem()),
             // 书 + 梦魇燃料 + 黑金属锭 + 纯粹恐惧 + 笔与墨 → 暗影旋涡（直接成品）
             new ForgeRecipe(() -> Items.BOOK, () -> PDItems.NIGHTMARE_FUEL.get().asItem(),

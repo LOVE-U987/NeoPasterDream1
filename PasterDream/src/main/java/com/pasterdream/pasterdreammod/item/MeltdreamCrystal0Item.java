@@ -11,7 +11,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
 /**
- * meltdream_crystal_0 物品类
+ * meltdream_crystal 物品类
  * 原版稀有度: COMMON
  */
 public class MeltdreamCrystal0Item extends Item {
@@ -27,10 +27,10 @@ public class MeltdreamCrystal0Item extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("tooltip.pasterdream.meltdream_crystal_0.line_1"));
-        tooltipComponents.add(Component.translatable("tooltip.pasterdream.meltdream_crystal_0.line_2"));
-        tooltipComponents.add(Component.translatable("tooltip.pasterdream.meltdream_crystal_0.line_3"));
-        tooltipComponents.add(Component.translatable("tooltip.pasterdream.meltdream_crystal_0.line_4"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.meltdream_crystal.line_1"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.meltdream_crystal.line_2"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.meltdream_crystal.line_3"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.meltdream_crystal.line_4"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }

@@ -1,7 +1,7 @@
 {
   "sortnum": 0,
   "name": "pasterdream.entry.dyedream_world",
-  "icon": "pasterdream:meltdream_crystal_0",
+  "icon": "pasterdream:meltdream_crystal",
   "category": "pasterdream:overview",
   "pages": [
     {
@@ -14,7 +14,7 @@
     },
     {
       "type": "patchouli:spotlight",
-      "item": "pasterdream:meltdream_crystal_0",
+      "item": "pasterdream:meltdream_crystal",
       "text": "pasterdream.entry.dyedream_world.page2"
     }
   ]

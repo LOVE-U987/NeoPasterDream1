@@ -26,7 +26,7 @@ public class MeltdreamHoeItem extends HoeItem {
     /** 与既有 ItemAPI 注册等值的 tier（修复材料为融梦水晶碎片） */
     private static final SimpleTier TIER = new SimpleTier(
             BlockTags.INCORRECT_FOR_IRON_TOOL, 250, 6.0f, 0.0f, 5,
-            () -> Ingredient.of(PDItems.MELTDREAM_CRYSTAL_0.get()));
+            () -> Ingredient.of(PDItems.MELTDREAM_CRYSTAL.get()));
 
     /**
      * 构造融梦水晶锄。

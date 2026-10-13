@@ -95,6 +95,26 @@ public final class PDIdAliases {
         table.add(Registries.MENU, id("blueprint_gui_0"), id("blueprint_gui"));
         table.add(Registries.MENU, id("dreamnotes_gui_0"), id("dreamnotes_gui"));
 
+        // 0.11.x P0 物品批次：裸 _0 去后缀（ID 迁移第四批）。
+        // 排除：debug_wand_worldtree_0（基底 debug_wand_worldtree 已注册，撞车）；
+        // meltdream_crystal_0 物品与实体基底分属不同注册表不冲突，另需结构 NBT 修补（已做）。
+        // 玩偶为方块+物品+方块实体三注册表联动。
+        table.add(Registries.ITEM, id("brokennotes_0"), id("brokennotes"));
+        table.add(Registries.ITEM, id("memory_gem_0"), id("memory_gem"));
+        table.add(Registries.ITEM, id("rage_elixir_0"), id("rage_elixir"));
+        table.add(Registries.ITEM, id("red_dew_0"), id("red_dew"));
+        table.add(Registries.ITEM, id("sword_embryo_0"), id("sword_embryo"));
+        table.add(Registries.ITEM, id("unknownnotes_0"), id("unknownnotes"));
+        table.add(Registries.ITEM, id("meltdream_crystal_0"), id("meltdream_crystal"));
+        table.add(Registries.ITEM, id("debug_wand_desert_fortress_0"), id("debug_wand_desert_fortress"));
+        table.add(Registries.ITEM, id("debug_wand_dyedream_laboratory_0"), id("debug_wand_dyedream_laboratory"));
+        table.add(Registries.ITEM, id("debug_wand_dyedream_campsite_0"), id("debug_wand_dyedream_campsite"));
+        table.addBlockAndItem("ice_bud_0", "ice_bud");
+        table.addBlockAndItem("little_purple_doll_0", "little_purple_doll");
+        table.addBlockAndItem("qin_doll_0", "qin_doll");
+        table.add(Registries.BLOCK_ENTITY_TYPE, id("little_purple_doll_0"), id("little_purple_doll"));
+        table.add(Registries.BLOCK_ENTITY_TYPE, id("qin_doll_0"), id("qin_doll"));
+
         return table;
     }
 

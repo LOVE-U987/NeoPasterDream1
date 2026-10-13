@@ -397,7 +397,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "pasterdream:brokennotes_0",
+          "name": "pasterdream:brokennotes",
           "weight": 3,
           "functions": [
             {

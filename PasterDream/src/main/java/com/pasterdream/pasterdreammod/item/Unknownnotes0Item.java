@@ -9,10 +9,10 @@ import net.minecraft.world.item.TooltipFlag;
 import java.util.List;
 
 /**
- * 未解析的笔记 (unknownnotes_0)
+ * 未解析的笔记 (unknownnotes)
  * <p>
  * 原版仅 tooltip；研究台槽位过滤已按注册名/物品引用。
- * 若 {@code PDItemsMaterials.UNKNOWNNOTES_0} 仍为 simpleItem，可按
+ * 若 {@code PDItemsMaterials.UNKNOWNNOTES} 仍为 simpleItem，可按
  * {@code dreamnotes_registry_staging.md} 替换为本类。
  */
 public class Unknownnotes0Item extends Item {
@@ -27,8 +27,8 @@ public class Unknownnotes0Item extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("tooltip.pasterdream.unknownnotes_0.content"));
-        tooltipComponents.add(Component.translatable("tooltip.pasterdream.unknownnotes_0.describe"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.unknownnotes.content"));
+        tooltipComponents.add(Component.translatable("tooltip.pasterdream.unknownnotes.describe"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 }

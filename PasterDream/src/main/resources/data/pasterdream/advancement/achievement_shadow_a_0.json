@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "id": "pasterdream:brokennotes_0"
+      "id": "pasterdream:brokennotes"
     },
     "title": {
       "translate": "advancements.achievement_shadow_a_0.title"
@@ -21,7 +21,7 @@
         "items": [
           {
             "items": [
-              "pasterdream:brokennotes_0"
+              "pasterdream:brokennotes"
             ],
             "count": {
               "min": 1,

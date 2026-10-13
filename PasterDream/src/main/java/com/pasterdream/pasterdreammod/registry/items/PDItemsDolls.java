@@ -40,17 +40,17 @@ public class PDItemsDolls {
     // ==================== 玩偶/雕像物品 ====================
 
     /**
-     * 娇小琴雨梦玩偶物品 (qin_doll_0)
+     * 娇小琴雨梦玩偶物品 (qin_doll)
      * 使用 QymDoll0DisplayItem 实现手持 3D 渲染
      */
-    public static final DeferredItem<QymDoll0DisplayItem> QIN_DOLL_0 = PDItems.ITEMS.register("qin_doll_0",
+    public static final DeferredItem<QymDoll0DisplayItem> QIN_DOLL = PDItems.ITEMS.register("qin_doll",
             () -> new QymDoll0DisplayItem(new Item.Properties()));
 
     /**
-     * 娇小幼幼紫玩偶物品 (little_purple_doll_0)
+     * 娇小幼幼紫玩偶物品 (little_purple_doll)
      * 使用 UuzDoll0DisplayItem 实现手持 3D 渲染
      */
-    public static final DeferredItem<UuzDoll0DisplayItem> LITTLE_PURPLE_DOLL_0 = PDItems.ITEMS.register("little_purple_doll_0",
+    public static final DeferredItem<UuzDoll0DisplayItem> LITTLE_PURPLE_DOLL = PDItems.ITEMS.register("little_purple_doll",
             () -> new UuzDoll0DisplayItem(new Item.Properties()));
 
     /**

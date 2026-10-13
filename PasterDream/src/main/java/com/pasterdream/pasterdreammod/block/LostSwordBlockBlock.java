@@ -39,7 +39,7 @@ import java.util.List;
  * <ul>
  *   <li>20 tick 循环释放尘埃粒子；</li>
  *   <li>右键：需要力量 II 及以上效果才能撬动；累计 5 次（BE 数据 number）后
- *       破坏方块、掉出剑胚（sword_embryo_0）并播放 skill0 音效，
+ *       破坏方块、掉出剑胚（sword_embryo）并播放 skill0 音效，
  *       每次撬动伴随尘埃粒子与深板岩破裂声。</li>
  * </ul>
  * 不可破坏、noOcclusion，形状为底座 + 剑身两段。
@@ -95,7 +95,7 @@ public class LostSwordBlockBlock extends Block implements EntityBlock {
                 if (level instanceof ServerLevel serverLevel) {
                     ItemEntity drop = new ItemEntity(serverLevel,
                             pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                            new ItemStack(PDItemsMaterials.SWORD_EMBRYO_0.get()));
+                            new ItemStack(PDItemsMaterials.SWORD_EMBRYO.get()));
                     drop.setPickUpDelay(5);
                     serverLevel.addFreshEntity(drop);
                 }

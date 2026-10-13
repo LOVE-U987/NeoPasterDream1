@@ -3,7 +3,15 @@
 ---
 ## v0.11.0（开发中）— 2026-10-11
 
-> 2026-10-13：以下六项改动在 ID 重构分支按原提交记录恢复。条目中的验证结果为原提交的历史记录；本次恢复验证及环境限制见 `docs/开发指南/ID分支历史恢复记录.md`。物品批次 `6997a1ef` 未纳入本次恢复。
+### 迁移：P0 物品批次——13 个 ID 去 _0 后缀（ID 迁移第四批）
+
+*   **改名**（13 个）：`brokennotes_0→brokennotes`、`memory_gem_0→memory_gem`、`rage_elixir_0→rage_elixir`、`red_dew_0→red_dew`（词边界保护 `red_dew_0_ring` 环族）、`sword_embryo_0→sword_embryo`、`unknownnotes_0→unknownnotes`、`meltdream_crystal_0→meltdream_crystal`、`ice_bud_0→ice_bud`（方块+BlockItem）、玩偶 `little_purple_doll_0/qin_doll_0→去 _0`（方块+物品+方块实体三注册表联动）、调试杖 `debug_wand_desert_fortress_0/dyedream_laboratory_0/dyedream_campsite_0→去 _0`；引用同步 ~117 文件（桥接常量/创造物品栏/冰系与海洋装饰/世界生成器/武器工坊/研究台/金狐/渲染器/smoketest）
+*   **资源**：blockstates ×3、模型（block/item/custom/displaysettings）×17、纹理 ×9、GeckoLib geo/动画 ×4、方块战利品表 ×3、语言键（双语 ×~25）、群系地物 JSON ×9（冰芽世界生成引用）、配方 ×14、宝箱/遗迹战利品表 ×7、成就 ×4、标签 ×2、Patchouli 图鉴 ×1、manifest ×11
+*   **NBT 修补**：3 个结构箱内 `meltdream_crystal_0` 物品 ID（`tools/rewrite_structure_ids.py`）
+*   **兼容**（`PDIdAliases`）：+18 别名（ITEM ×13、BlockItem 对 ×3、BLOCK_ENTITY_TYPE ×2，aliases=60）；`PDSaveSchema` 版本维持 2（本批与前两批同属 schema 2 窗口）
+*   **排除**（撞车项）：`debug_wand_worldtree_0` 基底 `debug_wand_worldtree` 已注册；`breakwind_curtain_0` 为调试杖结构参数（非注册名）
+*   **审计增强**（`tools/verify_id_aliases.py`）：补 `BlockEntityAPI.createBlockEntity` 门面形状；BE 桶标签对齐 `block_entity_type`
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；审计 aliases=60 broken=0 shadowed=0 missing_coverage=0；`check_lang` 双语全过；资源闭包 failure_count=3（libs 既有遗留）
 
 ### 迁移：P0 菜单批次——2 个菜单 ID 去 _0 后缀（ID 迁移第三批）
 

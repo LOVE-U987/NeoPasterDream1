@@ -98,7 +98,7 @@ public class PDCreativeTabsWeapon {
                         output.accept(PDItems.BASALT_SNAIL_SHELL.get());
 
                         // 武器原胚
-                        output.accept(PDItems.SWORD_EMBRYO_0.get());
+                        output.accept(PDItems.SWORD_EMBRYO.get());
                         output.accept(PDItems.SHADOW_SWORD_EMBRYO.get());
                         output.accept(PDItems.SHADOW_EROSION_SWORD_EMBRYO.get());
                         output.accept(PDItems.SHADOW_EROSION_AXE_EMBRYO.get());

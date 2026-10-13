@@ -21,7 +21,7 @@ public class UuzDoll0DisplayItem extends AbstractGeoDisplayItem {
      * @param properties 物品属性
      */
     public UuzDoll0DisplayItem(Item.Properties properties) {
-        super(PDBlocks.LITTLE_PURPLE_DOLL_0.get(), properties);
+        super(PDBlocks.LITTLE_PURPLE_DOLL.get(), properties);
     }
 
     /**

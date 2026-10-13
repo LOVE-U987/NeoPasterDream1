@@ -146,7 +146,7 @@ public class MeltdreamCrystalEntity extends ConfigurableImmunityEntity {
 
         ServerScheduler.schedule(3, () -> {
                     Item meltdreamCrystal = BuiltInRegistries.ITEM.get(
-                            ResourceLocation.parse("pasterdream:meltdream_crystal_0"));
+                            ResourceLocation.parse("pasterdream:meltdream_crystal"));
                     if (meltdreamCrystal != Items.AIR) {
                         ItemStack drop = new ItemStack(meltdreamCrystal);
                         ItemEntity item = new ItemEntity(serverLevel, pos.x, pos.y, pos.z, drop);
@@ -179,7 +179,7 @@ public class MeltdreamCrystalEntity extends ConfigurableImmunityEntity {
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
         Item meltdreamCrystal = BuiltInRegistries.ITEM.get(
-                ResourceLocation.parse("pasterdream:meltdream_crystal_0"));
+                ResourceLocation.parse("pasterdream:meltdream_crystal"));
         if (meltdreamCrystal != Items.AIR) {
             this.spawnAtLocation(new ItemStack(meltdreamCrystal));
         }

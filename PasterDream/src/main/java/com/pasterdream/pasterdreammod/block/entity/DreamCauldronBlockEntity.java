@@ -128,7 +128,7 @@ public class DreamCauldronBlockEntity extends BlockEntity implements GeoBlockEnt
                         () -> Items.AMETHYST_SHARD, lookupSpellItem("fury_spell")),
                 // 兰花 + 雪球 + 冰芽 → 冰冻法术
                 new CauldronRecipe(() -> Items.BLUE_ORCHID, () -> Items.SNOWBALL,
-                        () -> PDItems.ICE_BUD_0.get(), lookupSpellItem("ice_spell"))
+                        () -> PDItems.ICE_BUD.get(), lookupSpellItem("ice_spell"))
         );
     }
 

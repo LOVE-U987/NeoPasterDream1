@@ -2,7 +2,7 @@
   "display": {
     "background": "pasterdream:textures/screens/guiblock.png",
     "icon": {
-      "id": "pasterdream:meltdream_crystal_0"
+      "id": "pasterdream:meltdream_crystal"
     },
     "title": {
       "translate": "advancements.achievement_start.title"

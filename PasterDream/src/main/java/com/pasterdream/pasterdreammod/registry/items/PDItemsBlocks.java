@@ -146,7 +146,7 @@ public class PDItemsBlocks {
     public static final DeferredItem<BlockItem> DYEDREAM_BUD_0 = PDItems.ITEMS.registerSimpleBlockItem("dyedream_bud_0", PDBlocks.DYEDREAM_BUD_0);
     public static final DeferredItem<BlockItem> DYEDREAM_BUD_1 = PDItems.ITEMS.registerSimpleBlockItem("dyedream_bud_1", PDBlocks.DYEDREAM_BUD_1);
     public static final DeferredItem<BlockItem> DYEDREAM_BUD_2 = PDItems.ITEMS.registerSimpleBlockItem("dyedream_bud_2", PDBlocks.DYEDREAM_BUD_2);
-    public static final DeferredItem<BlockItem> ICE_BUD_0 = PDItems.ITEMS.registerSimpleBlockItem("ice_bud_0", PDBlocks.ICE_BUD_0);
+    public static final DeferredItem<BlockItem> ICE_BUD = PDItems.ITEMS.registerSimpleBlockItem("ice_bud", PDBlocks.ICE_BUD);
     public static final DeferredItem<BlockItem> DYEDREAM_LILY_PAD = PDItems.ITEMS.registerItem("dyedream_lily_pad",
             p -> new PlaceOnWaterBlockItem(PDBlocks.DYEDREAM_LILY_PAD.get(), p));
     public static final DeferredItem<BlockItem> DYEDREAM_LOTUS = PDItems.ITEMS.registerItem("dyedream_lotus",

@@ -13,7 +13,7 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
  */
 public class UuzDoll0DisplayItemRenderer extends GeoItemRenderer<UuzDoll0DisplayItem> {
 
-    private static final String NAME = "little_purple_doll_0";
+    private static final String NAME = "little_purple_doll";
 
     /**
      * 构造娇小幼幼紫玩偶显示物品渲染器

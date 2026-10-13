@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "pasterdream:meltdream_crystal_0",
+          "name": "pasterdream:meltdream_crystal",
           "weight": 1,
           "functions": [
             {
