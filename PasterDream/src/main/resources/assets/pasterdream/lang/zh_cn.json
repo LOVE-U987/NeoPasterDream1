@@ -2634,7 +2634,12 @@
   "item.pasterdream.shadowshelf": "暗影书架",
   "item.pasterdream.shadowshelf_with_key": "有钥匙的暗影书架",
   "item.pasterdream.dreamseeker_notes": "寻梦者笔记·空白卷",
-  "gui.pasterdream.dreamseeker_notes.name": "笔记标题",
   "gui.pasterdream.dreamseeker_notes.body": "笔记正文",
-  "gui.pasterdream.dreamseeker_notes.too_long": "笔记内容过长，无法保存，请精简后重试"
+  "gui.pasterdream.dreamseeker_notes.too_long": "笔记内容过长，无法保存，请精简后重试",
+  "gui.pasterdream.dreamseeker_notes.sign": "署名",
+  "gui.pasterdream.dreamseeker_notes.done": "完成",
+  "gui.pasterdream.dreamseeker_notes.sign_title": "书名",
+  "gui.pasterdream.dreamseeker_notes.sign_author": "作者",
+  "gui.pasterdream.dreamseeker_notes.by_author": "作者：%1$s",
+  "gui.pasterdream.dreamseeker_notes.sign_empty_title": "书名不能为空"
 }

@@ -50,13 +50,22 @@ public abstract class AbstractPaperScreen extends Screen {
     protected abstract void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick);
 
     /**
+     * 渲染前钩子：在缩放坐标系就绪、且早于 {@code renderables} 渲染时调用。
+     * <p>
+     * 供子类在每帧绘制前完成视图同步（如分页视图对齐），默认空实现。
+     */
+    protected void beforeRender() {
+    }
+
+    /**
      * 绘制共用底图（基类统一实现，子类无需覆写）。
      *
      * @param guiGraphics 绘制上下文
      */
     protected void drawPaper(GuiGraphics guiGraphics) {
-        guiGraphics.blit(PAPER, 0, 0, frame.designW(), frame.designH(), 0.0f, 0.0f,
-                NoteGuiLayout.TEX_W, NoteGuiLayout.TEX_H, NoteGuiLayout.TEX_W, NoteGuiLayout.TEX_H);
+        // 底图与内容锚点一起上移 CONTENT_SHIFT，按钮不参与，使按钮区脱离正文框命中矩形。
+        guiGraphics.blit(PAPER, 0, -NoteGuiLayout.CONTENT_SHIFT, frame.designW(), frame.designH(),
+                0.0f, 0.0f, NoteGuiLayout.TEX_W, NoteGuiLayout.TEX_H, NoteGuiLayout.TEX_W, NoteGuiLayout.TEX_H);
     }
 
     @Override
@@ -65,6 +74,7 @@ public abstract class AbstractPaperScreen extends Screen {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(frame.originX(), frame.originY(), 0);
         guiGraphics.pose().scale(frame.scale(), frame.scale(), 1.0f);
+        beforeRender();
         drawPaper(guiGraphics);
         int logicalMouseX = frame.toLogicalX(mouseX);
         int logicalMouseY = frame.toLogicalY(mouseY);

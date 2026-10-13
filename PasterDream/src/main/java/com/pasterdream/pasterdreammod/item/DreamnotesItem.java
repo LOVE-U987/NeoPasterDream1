@@ -1,6 +1,9 @@
 package com.pasterdream.pasterdreammod.item;
 
 import com.pasterdream.pasterdreammod.dreamnotes.DreamnotesLogic;
+import com.pasterdream.pasterdreammod.dreamnotes.NoteDefinition;
+import com.pasterdream.pasterdreammod.dreamnotes.NoteLangBridge;
+import com.pasterdream.pasterdreammod.dreamnotes.PDNoteRegistry;
 import com.pasterdream.pasterdreammod.network.OpenNotePayload;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,7 +24,8 @@ import java.util.List;
  * 寻梦者笔记 (dreamnotes_0..14)
  * <p>
  * 统一数据驱动实现：stacksTo(1)、防火、合成保留自身、右键向客户端下发
- * {@link OpenNotePayload}（客户端从同步注册表解析正文并按 18 行/120px 分页渲染），
+ * {@link OpenNotePayload}（客户端从同步注册表解析正文并按 16 行/120px 分页渲染；
+ * 0.8f 底图布局为底部控件留白，18 行放不下），
  * 并按 noteId 触发原版 Pr0 成就/坐标逻辑；notes_8/9 选中时显示背面坐标。
  */
 public class DreamnotesItem extends Item {
@@ -58,6 +62,20 @@ public class DreamnotesItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         for (String key : tooltipKeys) {
             tooltipComponents.add(Component.translatable(key));
+        }
+        // 数据包笔记的标题/可选作者移到 tooltip（阅读屏不再显示标题）。
+        NoteDefinition definition = PDNoteRegistry.get(context.registries(), PDNoteRegistry.definitionId(noteId));
+        if (definition != null) {
+            String language = NoteLangBridge.current();
+            String title = definition.titleOr(language);
+            if (!title.isEmpty()) {
+                tooltipComponents.add(Component.literal(title));
+            }
+            String author = definition.authorOr(language);
+            if (!author.isEmpty()) {
+                tooltipComponents.add(Component.translatable(
+                        "gui.pasterdream.dreamseeker_notes.by_author", author));
+            }
         }
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }

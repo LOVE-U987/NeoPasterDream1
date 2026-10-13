@@ -17,6 +17,7 @@ import java.util.Optional;
  *
  * @param title            语言 -&gt; 标题
  * @param body             语言 -&gt; Markdown 正文
+ * @param author           语言 -&gt; 作者（可选，用于阅读屏落款；缺失为空）
  * @param unlock           解锁成就
  * @param required         前置成就
  * @param locateShadowBase 阅读时是否写入最近暮影据点坐标（笔记 8/9）
@@ -26,6 +27,7 @@ import java.util.Optional;
 public record NoteDefinition(
         Map<String, String> title,
         Map<String, String> body,
+        Map<String, String> author,
         Optional<ResourceLocation> unlock,
         Optional<ResourceLocation> required,
         boolean locateShadowBase,
@@ -37,6 +39,8 @@ public record NoteDefinition(
     public static final Codec<NoteDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.unboundedMap(Codec.STRING, Codec.STRING).fieldOf("title").forGetter(NoteDefinition::title),
             Codec.unboundedMap(Codec.STRING, Codec.STRING).fieldOf("body").forGetter(NoteDefinition::body),
+            Codec.unboundedMap(Codec.STRING, Codec.STRING).optionalFieldOf("author", Map.of())
+                    .forGetter(NoteDefinition::author),
             ResourceLocation.CODEC.optionalFieldOf("unlock").forGetter(NoteDefinition::unlock),
             ResourceLocation.CODEC.optionalFieldOf("required").forGetter(NoteDefinition::required),
             Codec.BOOL.optionalFieldOf("locate_shadow_base", false).forGetter(NoteDefinition::locateShadowBase),
@@ -62,6 +66,16 @@ public record NoteDefinition(
      */
     public String bodyOr(String language) {
         return pick(body, language);
+    }
+
+    /**
+     * 按语言取作者（可选）。
+     *
+     * @param language 语言代码（如 {@code zh_cn}）
+     * @return 作者；缺失回退 {@code en_us} -&gt; 首个非空 -&gt; 空串
+     */
+    public String authorOr(String language) {
+        return pick(author, language);
     }
 
     private static String pick(Map<String, String> map, String language) {

@@ -20,20 +20,20 @@ public final class NoteGuiLayout {
     public static final int TEX_H = 1024;
     /** 基准宽（固定参考基准，不随需求调整）。 */
     public static final int BASE_W = 200;
-    /** 基础缩放比例（唯一可调旋钮）：调整后底图与全部元素等比缩放。 */
+    /** 基础缩放比例（唯一可调旋钮）：0.8f 为有意取值，调整后底图与全部元素等比缩放。 */
     public static final float BASE_SCALE = 0.8f;
     /** 底图与屏幕边缘的最小留白（屏幕像素）。 */
     public static final int MARGIN = 8;
 
-    /** 标题基线纹理锚点 Y。 */
+    /** 页码行基线纹理锚点 Y。 */
     private static final int ANCHOR_TITLE_Y = 155;
     /** 阅读正文顶部纹理锚点 Y。 */
     private static final int ANCHOR_BODY_Y = 217;
-    /** 名称框顶部纹理锚点 Y。 */
+    /** 名称框（署名屏标题框）顶部纹理锚点 Y。 */
     private static final int ANCHOR_NAME_Y = 147;
     /** 正文编辑框顶部纹理锚点 Y。 */
     private static final int ANCHOR_BODYBOX_Y = 202;
-    /** 页码顶部纹理锚点 Y。 */
+    /** 落款行顶部纹理锚点 Y。 */
     private static final int ANCHOR_FOOTER_Y = 946;
     /** 翻页按钮顶部纹理锚点 Y。 */
     private static final int ANCHOR_BUTTON_Y = 892;
@@ -51,6 +51,19 @@ public final class NoteGuiLayout {
     /** 翻页按钮尺寸（逻辑像素）。 */
     private static final int BUTTON_W = 20;
     private static final int BUTTON_H = 18;
+    /** 中排按钮（完成/署名）与左右翻页按钮之间的留白（逻辑像素）。 */
+    private static final int MID_MARGIN = 3;
+    /** 中排两按钮之间的间距（逻辑像素）。 */
+    private static final int MID_GAP = 2;
+    /** 中排按钮的期望宽（逻辑像素；按可用间隙收窄）。 */
+    private static final int MID_PREFERRED_W = 44;
+    /**
+     * 内容（页码/正文/落款/名称框）与底图整体上移量。
+     * <p>
+     * 按钮锚点**不参与**上移，因此相对正文框下移，使按钮区与正文框矩形脱开——
+     * 否则按钮会被先注册的正文框（{@code MultiLineEditBox} 在整个控件矩形内吞点击）抢先消费而无法点击。
+     */
+    public static final int CONTENT_SHIFT = 12;
 
     private NoteGuiLayout() {
     }
@@ -65,7 +78,7 @@ public final class NoteGuiLayout {
      * @param originY      缩放坐标系原点 Y（屏幕像素）
      * @param designW      底图逻辑宽
      * @param designH      底图逻辑高
-     * @param titleY       标题顶部 Y
+     * @param titleY       页码行顶部 Y（原顶部标题行位置）
      * @param bodyX        正文左缘 X
      * @param bodyY        正文顶部 Y
      * @param bodyW        正文折行宽
@@ -77,12 +90,15 @@ public final class NoteGuiLayout {
      * @param bodyBoxY     正文编辑框顶部 Y
      * @param bodyBoxW     正文编辑框宽
      * @param bodyBoxH     正文编辑框高
-     * @param footerY      页码顶部 Y
+     * @param footerY      落款行顶部 Y
      * @param prevButtonX  前一页按钮左缘 X
      * @param nextButtonX  后一页按钮左缘 X
-     * @param buttonY      翻页按钮顶部 Y
+     * @param buttonY      翻页/中排按钮顶部 Y
      * @param buttonW      翻页按钮宽
      * @param buttonH      翻页按钮高
+     * @param doneButtonX  中排「完成」按钮左缘 X
+     * @param signButtonX  中排「署名」按钮左缘 X
+     * @param midButtonW   中排按钮宽（按间隙收窄）
      */
     public record Frame(float scale, int originX, int originY,
                         int designW, int designH,
@@ -91,7 +107,8 @@ public final class NoteGuiLayout {
                         int nameX, int nameY, int nameW, int nameH,
                         int bodyBoxX, int bodyBoxY, int bodyBoxW, int bodyBoxH,
                         int footerY,
-                        int prevButtonX, int nextButtonX, int buttonY, int buttonW, int buttonH) {
+                        int prevButtonX, int nextButtonX, int buttonY, int buttonW, int buttonH,
+                        int doneButtonX, int signButtonX, int midButtonW) {
 
         /** 屏幕 X -> 逻辑 X。 */
         public int toLogicalX(double screenX) {
@@ -143,16 +160,28 @@ public final class NoteGuiLayout {
 
         int bodyX = (designW - NoteLimits.WIDTH) / 2;
         int bodyBoxX = bodyX - BODYBOX_LEFT_INSET;
+        int shift = CONTENT_SHIFT;
+
+        int prevX = Math.round(ANCHOR_PREV_X * ratioX);
+        int nextX = Math.round(ANCHOR_NEXT_X * ratioX);
+        int gap = nextX - (prevX + BUTTON_W);
+        int usable = Math.max(0, gap - 2 * MID_MARGIN - MID_GAP);
+        int midW = Math.min(MID_PREFERRED_W, usable / 2);
+        int midTotal = midW * 2 + MID_GAP;
+        int midCenter = (prevX + BUTTON_W + nextX) / 2;
+        int doneX = midCenter - midTotal / 2;
+        int signX = doneX + midW + MID_GAP;
 
         return new Frame(
                 scale, originX, originY, designW, designH,
-                Math.round(ANCHOR_TITLE_Y * ratioY),
-                bodyX, Math.round(ANCHOR_BODY_Y * ratioY), NoteLimits.WIDTH,
-                bodyX, Math.round(ANCHOR_NAME_Y * ratioY), NoteLimits.WIDTH, NAME_H,
-                bodyBoxX, Math.round(ANCHOR_BODYBOX_Y * ratioY),
+                Math.round(ANCHOR_TITLE_Y * ratioY) - shift,
+                bodyX, Math.round(ANCHOR_BODY_Y * ratioY) - shift, NoteLimits.WIDTH,
+                bodyX, Math.round(ANCHOR_NAME_Y * ratioY) - shift, NoteLimits.WIDTH, NAME_H,
+                bodyBoxX, Math.round(ANCHOR_BODYBOX_Y * ratioY) - shift,
                 NoteLimits.WIDTH + BODYBOX_PADDING, NoteLimits.LINES * 9 + BODYBOX_PADDING,
-                Math.round(ANCHOR_FOOTER_Y * ratioY),
-                Math.round(ANCHOR_PREV_X * ratioX), Math.round(ANCHOR_NEXT_X * ratioX),
-                Math.round(ANCHOR_BUTTON_Y * ratioY), BUTTON_W, BUTTON_H);
+                Math.round(ANCHOR_FOOTER_Y * ratioY) - shift,
+                prevX, nextX,
+                Math.round(ANCHOR_BUTTON_Y * ratioY), BUTTON_W, BUTTON_H,
+                doneX, signX, midW);
     }
 }
