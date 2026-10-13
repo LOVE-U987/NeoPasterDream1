@@ -4,11 +4,11 @@
   "downfall": 0,
   "effects": {
     "additions_sound": {
-      "sound": "pasterdream:shadow_biome_0",
+      "sound": "pasterdream:shadow_biome",
       "tick_chance": 0.0111
     },
     "music": {
-      "sound": "pasterdream:shadow_biome_0",
+      "sound": "pasterdream:shadow_biome",
       "min_delay": 12000,
       "max_delay": 24000,
       "replace_current_music": true

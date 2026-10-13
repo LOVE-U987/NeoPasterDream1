@@ -80,7 +80,7 @@ public class BlueprintGui0Menu extends AbstractContainerMenu {
      * @param hand        持有蓝图的手
      */
     public BlueprintGui0Menu(int id, Inventory inv, ResourceLocation blueprintId, BlockPos pos, InteractionHand hand) {
-        super(PDMenusBlueprint.BLUEPRINT_GUI_0.get(), id);
+        super(PDMenusBlueprint.BLUEPRINT_GUI.get(), id);
         this.entity = inv.player;
         this.world = inv.player.level();
         this.blueprintId = blueprintId;

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.client.sky.SkyboxAPI;
 import com.pasterdream.pasterdreammod.client.sky.data.SkyboxDataReloadListener;
+import com.pasterdream.pasterdreammod.client.sky.skystatic.StaticSkyRenderer;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -46,6 +47,10 @@ public class SkyboxClientEvents {
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
         if (!SkyboxAPI.isAfterSky(event)) {
+            return;
+        }
+        // Static 模式接管时跳过 AFTER_SKY（内容由 renderSky @Inject 绘制）
+        if (StaticSkyRenderer.shouldSkipAfterSky()) {
             return;
         }
         Minecraft mc = Minecraft.getInstance();

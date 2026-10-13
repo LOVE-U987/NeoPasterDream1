@@ -34,10 +34,10 @@ public class DyedreamLotusBlock extends BushBlock {
     public DyedreamLotusBlock() {
         super(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.PLANT)
-                .strength(0.5f)
+                // 瞬时破坏（对齐原模组 instabreak 与原版 lily_pad strength 0）
+                .instabreak()
                 .noOcclusion()
-                .offsetType(BlockBehaviour.OffsetType.XZ)
-                .dynamicShape()
+                // 不使用 XZ 随机偏移，方块居中放置（有意差异，见 changelog）
                 .sound(SoundType.LILY_PAD)
                 .pushReaction(PushReaction.DESTROY));
     }

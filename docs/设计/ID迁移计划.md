@@ -14,12 +14,13 @@
 | 数据包侧范围 | `src/main/resources/data/**` 下的注册目录文件名 |
 | 已排除 | `libs/`、`build/`、`docs/deprecated/`、`packs/`（原版 UI 覆盖包） |
 | 引用排除 | `DebugStructureWandItem` / `DebugDecorWandItem` / `LootstableCreateItem` 的结构 ID 参数不算注册名 |
+| 修饰符排除 | `modifierId(...)` 行的属性修饰符 ID 不是注册名（持久化于实体 NBT，勿改名） |
 
 ---
 
 ## 一、代码侧注册
 
-### 方块（85 个）
+### 方块（78 个）
 
 `PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDBlocks.java`（8）:
 
@@ -37,7 +38,7 @@
 - `little_purple_doll_0`
 - `qin_doll_0`
 
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/blocks/PDBlocksDungeon.java`（24）:
+`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/blocks/PDBlocksDungeon.java`（20）:
 
 - `shadow_arena_block_0`
 - `shadow_dungeon_block_0`
@@ -59,10 +60,6 @@
 - `shadow_fissure_5`
 - `shadowdungeondoor_2`
 - `shadowdungeondoor_3`
-- `shadowshelf_0`
-- `shadowshelf_1`
-- `shadowshelf_2`
-- `shadowshelf_3`
 
 `PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/blocks/PDBlocksFurniture.java`（2）:
 
@@ -127,16 +124,13 @@
 - `shadow_light_0`
 - `vine_0`
 
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/blocks/PDBlocksWindJourney.java`（8）:
+`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/blocks/PDBlocksWindJourney.java`（5）:
 
 - `armor_wreck_block_0`
 - `armor_wreck_block_1`
 - `armor_wreck_block_2`
 - `armor_wreck_block_3`
 - `armor_wreck_block_4`
-- `windmoor_leaves_0`
-- `windmoor_leaves_1`
-- `windmoor_leaves_2`
 
 ### 方块实体（7 个）
 
@@ -153,9 +147,9 @@
 - `claypan_1`
 - `shadow_trap_0`
 
-### 物品（186 个）
+### 物品（208 个）
 
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/items/PDItemsBlocks.java`（81）:
+`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/items/PDItemsBlocks.java`（74）:
 
 - `armor_wreck_block_0`
 - `armor_wreck_block_1`
@@ -230,14 +224,7 @@
 - `shadow_light_0`
 - `shadowdungeondoor_2`
 - `shadowdungeondoor_3`
-- `shadowshelf_0`
-- `shadowshelf_1`
-- `shadowshelf_2`
-- `shadowshelf_3`
 - `vine_0`
-- `windmoor_leaves_0`
-- `windmoor_leaves_1`
-- `windmoor_leaves_2`
 
 `PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/items/PDItemsCurios.java`（10）:
 
@@ -261,10 +248,19 @@
 
 - `rage_elixir_0`
 
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/items/PDItemsFunctional.java`（77）:
+`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/items/PDItemsFunctional.java`（109）:
 
+- `big_bubbles_0`
+- `big_bubbles_1`
+- `big_bubbles_2`
+- `big_bubbles_3`
+- `big_bubbles_4`
+- `big_bubbles_5`
 - `blueprint_0`
 - `blueprint_1`
+- `bocchi_0`
+- `bocchi_1`
+- `breakwind_curtain_0`
 - `calle_card_0`
 - `calle_card_1`
 - `calle_card_2`
@@ -316,6 +312,14 @@
 - `heart_chocolate_0`
 - `heart_chocolate_1`
 - `heart_chocolate_2`
+- `hot_air_balloon_0`
+- `hot_air_balloon_1`
+- `hot_air_balloon_2`
+- `hot_air_balloon_3`
+- `hot_air_balloon_4`
+- `hot_air_balloon_5`
+- `hot_air_balloon_6`
+- `hot_air_balloon_7`
 - `lootstable_create_0`
 - `lootstable_create_1`
 - `lootstable_create_2`
@@ -339,7 +343,22 @@
 - `memento_item_10`
 - `memory_gem_0`
 - `red_dew_0`
+- `small_balloon_0`
+- `small_balloon_1`
+- `small_balloon_2`
+- `small_balloon_3`
+- `small_balloon_4`
+- `small_balloon_5`
+- `small_balloon_6`
+- `small_balloon_7`
+- `small_balloon_8`
+- `small_balloon_9`
+- `small_balloon_10`
 - `storage_bag_0`
+- `wind_infested_stone_0`
+- `wind_infested_stone_1`
+- `wind_island_0`
+- `wind_pond_0`
 
 `PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/items/PDItemsFurniture.java`（2）:
 
@@ -360,81 +379,26 @@
 
 - `wind_journey_1_disc`
 
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/items/PDItemsSpawnEggs.java`（4）:
+`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/items/PDItemsSpawnEggs.java`（1）:
 
-- `aaroncos_lefthand_0`
-- `aaroncos_righthand_0`
-- `shadow_npc_0`
 - `shadow_squeal_ghost_0`
 
 `PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/items/PDItemsTools.java`（1）:
 
 - `dyedream_sword_0`
 
-### 实体（4 个）
+### 实体（1 个）
 
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDEntities.java`（4）:
+`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDEntities.java`（1）:
 
-- `aaroncos_lefthand_0`
-- `aaroncos_righthand_0`
-- `shadow_npc_0`
 - `shadow_squeal_ghost_0`
 
-### 状态效果（33 个）
+### 音效（3 个）
 
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDEffects.java`（15）:
+`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDSounds.java`（2）:
 
-- `cook_buff_0`
-- `counterattack_buff_0`
-- `counterattack_buff_1`
-- `deadwind_buff_0`
-- `deadwind_buff_1`
-- `deadwind_buff_2`
-- `dreamharp_of_wanderer_buff_0`
-- `dreamharp_of_wanderer_buff_1`
-- `dreamharp_of_wanderer_buff_2`
-- `oppression_buff_0`
-- `rest_buff_0`
-- `rest_buff_in_dark_0`
-- `tailwind_buff_0`
-- `tailwind_buff_1`
-- `tailwind_buff_2`
-
-`PasterDreamSanity/src/main/java/com/pasterdream/pasterdreammod/pasterdreamsanity/registry/PDSanityEffects.java`（11）:
-
-- `cheerup_buff_0`
-- `cheerup_buff_1`
-- `cheerup_buff_2`
-- `cheerup_buff_3`
-- `insand_buff_0`
-- `insand_buff_1`
-- `insand_buff_2`
-- `insand_buff_3`
-- `insand_buff_4`
-- `insand_buff_5`
-- `insand_buff_6`
-
-`PasterDreamSpells/src/main/java/com/pasterdream/pasterdreammod/pasterdreamspells/registry/PDSpellsEffects.java`（7）:
-
-- `fury_spell_buff_0`
-- `fury_spell_buff_1`
-- `fury_spell_buff_2`
-- `fury_spell_buff_3`
-- `fury_spell_buff_4`
-- `ice_spell_buff_0`
-- `ice_spell_buff_1`
-
-### 音效（8 个）
-
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDSounds.java`（7）:
-
-- `ding_0`
 - `meltdream_chest_0`
-- `shadow_biome_0`
-- `shadow_music_0`
-- `shadow_trap_0`
 - `stone_break_0`
-- `wind_knight_skill_0`
 
 `PasterDreamSpells/src/main/java/com/pasterdream/pasterdreammod/pasterdreamspells/registry/PDSpellsSounds.java`（1）:
 
@@ -458,19 +422,11 @@
 - `snowflake_1_particle`
 - `spell_snowflake_0_particle`
 
-### 菜单（3 个）
+### 菜单（1 个）
 
 `PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDMenus.java`（1）:
 
 - `storage_bag_0`
-
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDMenusBlueprint.java`（1）:
-
-- `blueprint_gui_0`
-
-`PasterDream/src/main/java/com/pasterdream/pasterdreammod/registry/PDMenusDreamnotes.java`（1）:
-
-- `dreamnotes_gui_0`
 
 ### 进度（45 个）
 
@@ -573,7 +529,7 @@
 - `traveler_house_2_set`
 - `windmoor_tree_0`
 
-> 代码侧命中总计: **427** 个（跨文件去重前按分类分别统计）
+> 代码侧命中总计: **399** 个（跨文件去重前按分类分别统计）
 
 ---
 
@@ -1044,11 +1000,9 @@ ground_overworld_0
 vine_0
 ```
 
-### 战利品表（105 个）
+### 战利品表（99 个）
 
 ```
-aaroncos_lefthand_0
-aaroncos_righthand_0
 achievement_hide_1
 achievement_hide_2
 achievement_hide_4
@@ -1104,6 +1058,8 @@ loots_deep_treasure_0
 loots_deep_treasure_0_super
 loots_deep_treasure_1
 loots_deep_treasure_1_super
+loots_meltdream_chest_0
+loots_meltdream_chest_1
 loots_relic_0
 loots_relic_1
 loots_relic_2
@@ -1122,9 +1078,6 @@ pinkagaric_3
 qin_doll_0
 shadow_light_0
 shadow_trap_0
-shadowshelf_0
-shadowshelf_1
-shadowshelf_2
 structure_block_0
 structure_block_1
 structure_block_2
@@ -1149,9 +1102,6 @@ structure_block_20
 structure_block_21
 structure_block_22
 structure_block_23
-windmoor_leaves_0
-windmoor_leaves_1
-windmoor_leaves_2
 ```
 
 ### 配方（201 个）
@@ -1364,7 +1314,7 @@ wind_iron_ingot_2
 
 - `pasterdream_draw_0`
 
-> 数据包侧命中总计: **741** 个
+> 数据包侧命中总计: **735** 个
 
 ---
 
@@ -1382,12 +1332,11 @@ wind_iron_ingot_2
 - `achievement_shadow_a`: `achievement_shadow_a_0`, `achievement_shadow_a_1`
 - `achievement_shadow_npc`: `achievement_shadow_npc_0`, `achievement_shadow_npc_1`, `achievement_shadow_npc_2`, `achievement_shadow_npc_3`, `achievement_shadow_npc_4`, `achievement_shadow_npc_5`
 - `armor_wreck_block`: `armor_wreck_block_0`, `armor_wreck_block_1`, `armor_wreck_block_2`, `armor_wreck_block_3`, `armor_wreck_block_4`
+- `big_bubbles`: `big_bubbles_0`, `big_bubbles_1`, `big_bubbles_2`, `big_bubbles_3`, `big_bubbles_4`, `big_bubbles_5`
 - `blueprint`: `blueprint_0`, `blueprint_1`
+- `bocchi`: `bocchi_0`, `bocchi_1`
 - `calle_card`: `calle_card_0`, `calle_card_1`, `calle_card_2`, `calle_card_3`, `calle_card_4`, `calle_card_5`, `calle_card_6`, `calle_card_7`, `calle_card_8`, `calle_card_9`
-- `cheerup_buff`: `cheerup_buff_0`, `cheerup_buff_1`, `cheerup_buff_2`, `cheerup_buff_3`
 - `claypan`: `claypan_0`, `claypan_1`, `claypan_2`
-- `counterattack_buff`: `counterattack_buff_0`, `counterattack_buff_1`
-- `deadwind_buff`: `deadwind_buff_0`, `deadwind_buff_1`, `deadwind_buff_2`
 - `debug_wand_dream_church`: `debug_wand_dream_church_0`, `debug_wand_dream_church_1`, `debug_wand_dream_church_2`, `debug_wand_dream_church_3`, `debug_wand_dream_church_4`, `debug_wand_dream_church_5`, `debug_wand_dream_church_6`, `debug_wand_dream_church_7`, `debug_wand_dream_church_8`, `debug_wand_dream_church_9`, `debug_wand_dream_church_10`
 - `debug_wand_dream_wishingtree`: `debug_wand_dream_wishingtree_0`, `debug_wand_dream_wishingtree_1`
 - `debug_wand_dyedream_pavilion`: `debug_wand_dyedream_pavilion_0`, `debug_wand_dyedream_pavilion_1`, `debug_wand_dyedream_pavilion_2`
@@ -1400,19 +1349,16 @@ wind_iron_ingot_2
 - `dream_coin`: `dream_coin_0`, `dream_coin_1`
 - `dream_spawner`: `dream_spawner_0`, `dream_spawner_1`
 - `dream_wishingtree`: `dream_wishingtree_0`, `dream_wishingtree_1`
-- `dreamharp_of_wanderer_buff`: `dreamharp_of_wanderer_buff_0`, `dreamharp_of_wanderer_buff_1`, `dreamharp_of_wanderer_buff_2`
 - `dyedream_bud`: `dyedream_bud_0`, `dyedream_bud_1`, `dyedream_bud_2`
 - `dyedream_pavilion`: `dyedream_pavilion_0`, `dyedream_pavilion_1`, `dyedream_pavilion_2`
 - `dyedream_tower`: `dyedream_tower_0`, `dyedream_tower_1`
 - `dyedream_worldtree`: `dyedream_worldtree_0`, `dyedream_worldtree_1`
 - `enhance_stone`: `enhance_stone_0`, `enhance_stone_1`
 - `flower`: `flower_1`, `flower_2`, `flower_3`, `flower_5`, `flower_6`, `flower_7`, `flower_8`, `flower_9`, `flower_10`, `flower_11`, `flower_12`, `flower_13`, `flower_14`, `flower_15`, `flower_16`, `flower_17`, `flower_18`
-- `fury_spell_buff`: `fury_spell_buff_0`, `fury_spell_buff_1`, `fury_spell_buff_2`, `fury_spell_buff_3`, `fury_spell_buff_4`
 - `garden_decryption`: `garden_decryption_0`, `garden_decryption_1`, `garden_decryption_2`
 - `grass`: `grass_1`, `grass_2`, `grass_3`, `grass_4`, `grass_5`, `grass_6`, `grass_7`, `grass_8`, `grass_9`, `grass_10`, `grass_11`, `grass_12`, `grass_13`, `grass_14`, `grass_15`
 - `heart_chocolate`: `heart_chocolate_0`, `heart_chocolate_1`, `heart_chocolate_2`
-- `ice_spell_buff`: `ice_spell_buff_0`, `ice_spell_buff_1`
-- `insand_buff`: `insand_buff_0`, `insand_buff_1`, `insand_buff_2`, `insand_buff_3`, `insand_buff_4`, `insand_buff_5`, `insand_buff_6`
+- `hot_air_balloon`: `hot_air_balloon_0`, `hot_air_balloon_1`, `hot_air_balloon_2`, `hot_air_balloon_3`, `hot_air_balloon_4`, `hot_air_balloon_5`, `hot_air_balloon_6`, `hot_air_balloon_7`
 - `lootstable_create`: `lootstable_create_0`, `lootstable_create_1`, `lootstable_create_2`, `lootstable_create_3`, `lootstable_create_4`, `lootstable_create_5`, `lootstable_create_6`, `lootstable_create_7`, `lootstable_create_8`, `lootstable_create_9`
 - `meltdream_liquid_well`: `meltdream_liquid_well_0`, `meltdream_liquid_well_1`
 - `memento_item`: `memento_item_01`, `memento_item_02`, `memento_item_03`, `memento_item_04`, `memento_item_05`, `memento_item_06`, `memento_item_07`, `memento_item_08`, `memento_item_09`, `memento_item_10`, `memento_item_11`
@@ -1422,17 +1368,14 @@ wind_iron_ingot_2
 - `shadow_dungeon_key`: `shadow_dungeon_key_0`, `shadow_dungeon_key_1`
 - `shadow_fissure`: `shadow_fissure_0`, `shadow_fissure_1`, `shadow_fissure_2`, `shadow_fissure_3`, `shadow_fissure_4`, `shadow_fissure_5`
 - `shadowdungeondoor`: `shadowdungeondoor_2`, `shadowdungeondoor_3`
-- `shadowshelf`: `shadowshelf_0`, `shadowshelf_1`, `shadowshelf_2`, `shadowshelf_3`
+- `small_balloon`: `small_balloon_0`, `small_balloon_1`, `small_balloon_2`, `small_balloon_3`, `small_balloon_4`, `small_balloon_5`, `small_balloon_6`, `small_balloon_7`, `small_balloon_8`, `small_balloon_9`, `small_balloon_10`
 - `struct_dyedream_crack`: `struct_dyedream_crack_0`, `struct_dyedream_crack_1`
 - `tabitem`: `tabitem_1`, `tabitem_2`
-- `tailwind_buff`: `tailwind_buff_0`, `tailwind_buff_1`, `tailwind_buff_2`
 - `traveler_house`: `traveler_house_0`, `traveler_house_1`, `traveler_house_2`
-- `windmoor_leaves`: `windmoor_leaves_0`, `windmoor_leaves_1`, `windmoor_leaves_2`
+- `wind_infested_stone`: `wind_infested_stone_0`, `wind_infested_stone_1`
 
 ### 3.2 裸 `_0`（无同族，数字无意义，优先改名）
 
-- `aaroncos_lefthand_0`
-- `aaroncos_righthand_0`
 - `achievement_adventure_0`
 - `achievement_d_0`
 - `achievement_end_0`
@@ -1442,18 +1385,15 @@ wind_iron_ingot_2
 - `achievement_shadow_d_0`
 - `achievement_shadow_e_0`
 - `achievement_special_0`
-- `blueprint_gui_0`
+- `breakwind_curtain_0`
 - `brokennotes_0`
 - `clay_pot_0`
-- `cook_buff_0`
 - `debug_wand_desert_fortress_0`
 - `debug_wand_dyedream_campsite_0`
 - `debug_wand_dyedream_laboratory_0`
 - `debug_wand_worldtree_0`
 - `desert_cottage_0`
 - `desert_fortress_0`
-- `ding_0`
-- `dreamnotes_gui_0`
 - `dyedream_campsite_0`
 - `dyedream_laboratory_0`
 - `dyedream_sword_0`
@@ -1463,18 +1403,12 @@ wind_iron_ingot_2
 - `meltdream_chest_0`
 - `meltdream_crystal_0`
 - `memory_gem_0`
-- `oppression_buff_0`
 - `pebble_0`
 - `qin_doll_0`
 - `rage_elixir_0`
 - `red_dew_0`
-- `rest_buff_0`
-- `rest_buff_in_dark_0`
 - `shadow_arena_block_0`
-- `shadow_biome_0`
 - `shadow_light_0`
-- `shadow_music_0`
-- `shadow_npc_0`
 - `shadow_squeal_ghost_0`
 - `shadow_trap_0`
 - `stone_break_0`
@@ -1482,7 +1416,8 @@ wind_iron_ingot_2
 - `sword_embryo_0`
 - `unknownnotes_0`
 - `vine_0`
-- `wind_knight_skill_0`
+- `wind_island_0`
+- `wind_pond_0`
 - `windmoor_tree_0`
 
 ### 3.3 单编号（数字在中间段，如粒子 `*_0_particle`）
@@ -1549,6 +1484,10 @@ wind_iron_ingot_2
 3. 语言文件 key（`assets/*/lang/*.json`）
 4. 引用: 配方、战利品表、标签、进度、结构引用、DataGen
 5. 快照: `PasterDream/src/main/resources/pd_porting_manifest.json`（PDPortingVerifyTest 校验基线）
+6. 别名: 静态注册表在 `PDIdAliases` 用 `IdAliasTable` 便捷方法登记
+   （`addBlockAndItem` / `addBlockAndItemFamily` / `addFamily`，0.11.x 起），
+   并递增 `PDSaveSchema.CURRENT_ID_SCHEMA_VERSION`
 
-**模板**: 群系已采用「新描述名 + 旧数字别名」双轨（见 `PDBiomes.java`），可作为其他类别的迁移范式。
+**模板**: 群系已采用「新描述名 + 旧数字别名」双轨（见 `PDBiomes.java`），可作为其他类别的迁移范式；
+改名标准范式详见 [存档兼容层 §5.1](存档兼容层.md)。
 

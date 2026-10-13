@@ -94,7 +94,7 @@ public class PDBlocksVegetation {
                     .isRedstoneConductor((bs, br, bp) -> false));
 
     /**
-     * 染梦荷叶 (dyedream_lily_pad)
+     * 染梦睡莲 (dyedream_lily_pad)
      * 水面植物，继承 FlowerBlock，只能放在水上
      */
     public static final DeferredBlock<DyedreamLilyPadBlock> DYEDREAM_LILY_PAD = PDBlocks.BLOCKS.registerBlock("dyedream_lily_pad",

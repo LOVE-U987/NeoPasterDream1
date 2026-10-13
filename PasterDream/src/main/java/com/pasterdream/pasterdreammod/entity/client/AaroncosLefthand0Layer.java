@@ -17,12 +17,12 @@ import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
  * 亚伦柯斯左手发光层 (Aaroncos Lefthand 0 Glow Layer)
  * <p>
  * 使用 {@link RenderType#eyes} 渲染发光纹理层，
- * 在实体模型之上叠加发光效果，纹理为 aaroncos_lefthand_0_light.png。
+ * 在实体模型之上叠加发光效果，纹理为 aaroncos_lefthand_light.png。
  */
 public class AaroncosLefthand0Layer extends GeoRenderLayer<AaroncosLefthand0Entity> {
 
     private static final ResourceLocation LAYER = ResourceLocation.fromNamespaceAndPath(
-            PasterDreamMod.MOD_ID, "textures/entity/aaroncos_lefthand_0_light.png");
+            PasterDreamMod.MOD_ID, "textures/entity/aaroncos_lefthand_light.png");
 
     /**
      * 构造亚伦柯斯左手发光层

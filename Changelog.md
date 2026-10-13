@@ -3,6 +3,28 @@
 ---
 ## v0.11.0（开发中）— 2026-10-11
 
+> 2026-10-13：以下六项改动在 ID 重构分支按原提交记录恢复。条目中的验证结果为原提交的历史记录；本次恢复验证及环境限制见 `docs/开发指南/ID分支历史恢复记录.md`。物品批次 `6997a1ef` 未纳入本次恢复。
+
+### 迁移：P0 菜单批次——2 个菜单 ID 去 _0 后缀（ID 迁移第三批）
+
+*   **改名**（`PDMenusBlueprint`/`PDMenusDreamnotes`）：`blueprint_gui_0→blueprint_gui`、`dreamnotes_gui_0→dreamnotes_gui`（注册名+常量+javadoc+调试文案）；引用同步 `BluePrintLoader`/屏幕注册/菜单构造/smoketest ×2 套件
+*   **资源**：蓝图屏幕背景纹理 `textures/screens/blueprint_gui_0.png→blueprint_gui.png`、语言键族 `gui.pasterdream.blueprint_gui_0.button_*`（×5 双语）、`container.pasterdream.dreamnotes_gui_0`（双语）、manifest ×2
+*   **排除**（撞车项）：`storage_bag_0` 基底 `storage_bag`（9 格版）已注册，去后缀撞车，另行语义化
+*   **兼容**（`PDIdAliases`）：+2 条 `MENU` 别名（aliases=42）；`PDBlueprintVerifyHooks` 断言文案同步
+*   **审计增强**（`tools/verify_id_aliases.py`）：注册名收集新增 `MenuAPI.createMenu` 门面形状（吸取 createEntity 教训，提前补齐）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；审计 aliases=42 broken=0 shadowed=0 missing_coverage=0；`check_lang` 双语全过
+
+### 迁移：P0 实体批次——3 个实体 ID 去 _0 后缀（ID 迁移第二批）
+
+*   **改名**（`PDEntities`）：`aaroncos_lefthand_0→aaroncos_lefthand`、`aaroncos_righthand_0→aaroncos_righthand`、`shadow_npc_0→shadow_npc`（注册名+常量+javadoc）；刷怪蛋物品随实体名派生改名（`*_0_spawn_egg→*_spawn_egg` ×3）；常量桥接 `PDItems`/创造模式物品栏同步
+*   **引用**（18 个 Java 文件）：渲染器注册、实体标签、免疫配置、竞技场事件、实体事件、死亡事件、注册表 sanity 锚点、`getDefaultTexture` 返回值、smoketest 三套件断言与提示文案
+*   **资源**：GeckoLib geo/animation ×6、纹理 ×5（含 aaroncos `_light` 发光变体 ×2）、刷怪蛋物品模型 ×3、实体战利品表 ×2、`entity.*`/`item.*_spawn_egg` 语言键 ×6（双语）、实体类型标签 `shadow_mob.json` ×2、manifest 实体区+物品区 ×6
+*   **NBT 修补**：`shadow_dungeon_npc_0/1.nbt` 箱内刷怪蛋物品 ID ×2（新增通用工具 `tools/rewrite_structure_ids.py`，泛化自 spawnblock 先例：gzip 解包 + TAG_String 长度前缀修正 + 重压缩，支持 dry-run 与多对替换）；实体本体未嵌入任何结构 NBT（解压后全量扫描确认）
+*   **兼容**（`PDIdAliases`）：+3 条 `ENTITY_TYPE` 别名 + 3 条刷怪蛋 `ITEM` 别名（aliases=40）；`shadow_squeal_ghost_0` 存在无数字基底名（`shadow_squeal_ghost` 强化变体），撞车排除另行语义化
+*   **审计增强**（`tools/verify_id_aliases.py`）：注册名收集新增 `EntityAPI.createEntity`/`createSpawnEggItem` 门面形状（刷怪蛋按 `<name>_spawn_egg` 派生展开）；实体桶标签对齐 `entity_type`
+*   **排除说明**：实体 Java 类名（`AaroncosLefthand0Entity` 等）与成就 ID（`achievement_shadow_npc_0` 系列，属后续进度批次）不变；`PDMainFlowVerifyHooks` 内成就串经定向替换零误伤
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL（首次失败暴露 `PDItems`/创造物品栏桥接常量遗漏，已补齐）；审计 aliases=40 broken=0 shadowed=0 missing_coverage=0；`check_lang` 双语全过；资源闭包 failure_count=3（libs 既有遗留）
+
 ### 迁移：P0 音效批次——5 个音效 ID 去 _0 后缀（ID 迁移第一批）
 
 *   **改名**（`PDSounds`）：`ding_0→ding`、`shadow_biome_0→shadow_biome`、`shadow_music_0→shadow_music`、`shadow_trap_0→shadow_trap`、`wind_knight_skill_0→wind_knight_skill`（注册名+常量同步，javadoc 标注旧名）；7 处代码调用点同步（暮影灯笼/暗影火盆/暗影陷阱方块/风之骑士/金狐雕像/方块重置工具/风向标）
@@ -22,7 +44,7 @@
 *   **换行**：本次修改的代码/脚本/文档文件由 CRLF 归一为 LF（`.gitattributes eol=lf` 口径），产生整文件 diff
 *   **验证**：`gradlew compileJava` 全量 BUILD SUCCESSFUL；`python tools/verify_id_aliases.py` 输出 `aliases=29 broken=0 shadowed=0 missing_coverage=0`
 
-## v0.10.0 — 2026-09-25
+## 未发布
 
 ### 修复：染梦维度不生成岩浆（还原原模组岩浆生成链路）
 
@@ -54,7 +76,22 @@
 *   **验证**：JSON 解析通过；`python tools/verify_resource_closure.py` 全库 JSON 可解析/无 BOM（仅报告 `libs/` 原模组 3 个 shadowshelf 历史缺失，与本改动无关）。
 *   **同步**：设计文档 `docs/设计/丛林孢子掉落时运.md`。
 
+---
+## v0.10.1 — 2026-09-26
 
+### 修复：染梦荷叶/染梦莲花瞬时破坏、水下透视透明与放置随机偏移
+
+*   **根因 1（破坏速度）**：两个水面方块（`dyedream_lily_pad`/`dyedream_lotus`）移植时硬编码 `strength(0.5f)`，而原模组与原版 lily_pad 均为 `instabreak()`（硬度 0），手挖需约 0.75 秒。
+*   **修复 1**（`block/DyedreamLilyPadBlock`/`DyedreamLotusBlock`）：`strength(0.5f)` → `instabreak()`，对齐原模组与原版，可瞬间破坏。
+*   **根因 2（水下透视透明）**：两个 custom 模型为 Blockbench 零厚度平面（from/to y=0），与原版 1.21.1 `lily_pad` 模型不一致——原版平面悬浮于 y=0.25 且带 `ambientocclusion: false`；移植版平面正好贴在方块边界且未关闭 AO，水下从下方观察时平面渲染异常（透视透明）。
+*   **修复 2**（`models/custom/dyedream_lily_pad.json`/`dyedream_lotus.json`）：添加 `ambientocclusion: false`，零厚度平面 y=0 → y=0.25，对齐原版模型结构。
+*   **根因 3（放置随机偏移）**：两个方块均带 `offsetType(OffsetType.XZ)` 视觉随机偏移（原模组/原版特性，本项目判定为缺陷）。
+*   **修复 3**（`block/DyedreamLilyPadBlock`/`DyedreamLotusBlock`）：移除 `offsetType(XZ)` 与随之失去意义的 `dynamicShape()`，方块居中放置。**有意差异**：不再复刻原版/原模组的睡莲随机偏移。
+*   **恢复命名**（`lang/zh_cn.json`）：`block.pasterdream.dyedream_lily_pad` 染梦荷叶 → **染梦睡莲**（对齐原模组）；调试杖 `item.pasterdream.debug_wand_lily_pad` 同步为 调试水晶-睡莲；`PDBlocksVegetation`/`DyedreamLilyPadBlock`/`PDItemsFunctional` 相关注释同步。英文名与原模组一致，无需改动。
+*   **清理**（`lang/zh_cn.json`/`lang/en_us.json`）：删除 `item.pasterdream.dyedream_lily_pad`/`dyedream_lotus` 共 4 个死条目（BlockItem 显示名委托给 block 键，原版 lang 亦无 `item.minecraft.lily_pad` 可证）；`tools/check_lang.py` 校验通过，442 物品 + 287 方块翻译键齐全。
+*   **根因 4（实跑复核后定位，水下透视透明的真正根因）**：游戏内实测只有一方底盘水下不可见——反编译 1.21.1 确认面剔除链（`ModelBlockRenderer` → `Block.shouldRenderFace`，down 面无 cullface 进 unculled 列表始终渲染），真正根因是**贴图 UV 采样区**：`dyedream_lotus` 贴图为 32x32 双区域设计（上半区 = 底座形状 + 花瓣形状，下半区全透明），其 custom 模型底座 down 面 UV `[8,8,0,16]`（texture_size 32 → 采样 y 16-32 空白区）→ 底面从下方必然不可见；`dyedream_lily_pad` 贴图 16x16 且 down 面采样全图（有形状），底面正常。
+*   **修复 4**（`models/custom/dyedream_lotus.json`）：底座 down 面 UV `[8,8,0,16]` → `[8,8,0,0]`，与顶面同区域采样底座形状，底面从下方可见（镜像显示，同原版惯例）。修复 2 的 AO/高度对齐保留（原版 parity）。
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；游戏内实跑确认水下底盘渲染正常；同步修改的文件行尾统一为 LF。
 
 ### 修复：染梦/风旅维度 BGM 与群系错位、蘑菇平原实际不生成
 
@@ -67,6 +104,32 @@
 *   **同步**（`data/pasterdream/worldgen/biome/`，6 个染梦群系 JSON）：`music.sound` 字段与新映射对齐（该字段在自定义维度内仅作 mixin 失效时的兜底，不代表实际播放结果），并统一行尾为 LF。
 *   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；蘑菇平原覆盖率由独立 FastNoise 采样程序实测（0.70→1.387%、0.75→0.506%、0.80→0.115%、0.86→0.0049%）。
 
+### 新增：Static Sky 渲染模式（Iris 光影兼容）
+
+*   **背景**：NPD 的 8 类自定义天体（星野/行星/星座/极光/光带/流星/彩虹/天空染色）此前全部通过 `RenderLevelStageEvent.AFTER_SKY` 事件绘制。无光影时完美工作，但在部分 Iris 光影包（Complementary/BSL）的 composite 阶段中 AFTER_SKY 内容被覆盖。
+*   **根因**：问题不在于"怎么画"（内容类仅使用 vanilla core shaders，Iris 自身兼容），而在于**画太晚了**——AFTER_SKY 触发时 Iris 的 sky 管线已关闭，内容写入主 framebuffer 后被 composite 覆盖。
+*   **架构**（`mixin/LevelRendererMixin`）：在 `LevelRenderer.renderSky()` 的 starBuffer 绘制后、`disableBlend()` 前新增 `@Inject` 注入点。此时 Iris 仍在 sky pass 阶段，所有 vanilla core shader 的绘制被拦截写入 colortex 供 composite 使用。
+*   **新增**（`client/sky/skystatic/`）：`StaticSkyRenderer.java`（编排器）+ `IrisDetector.java`（运行时检测 Iris/Oculus，无需编译期依赖）。
+*   **重构**（`SkyboxRenderer`）：提取 `renderCore()` 核心循环，新增 `renderStatic()` 入口供静态模式使用（不做 rotation 和 cleanup，由 caller 管理状态）。
+*   **配置**（`config/PDCommonConfig`）：新增 `SkyRenderMode` 枚举（DYNAMIC / STATIC / AUTO）。AUTO 为默认模式：检测到 Iris/Oculus 时自动启用 STATIC，否则回退 DYNAMIC，无需用户手动干预。
+*   **完善**（`SkyboxRenderer`）：新增 `renderPlayerSkyLinksStatic()`——静态模式下 AFTER_SKY 被跳过后，星空枕连线星体改由 renderSky 注入路径补渲染（否则会消失）；静态路径显式启用标准混合以正确表现 alpha。
+*   **完善**（`StaticSkyRenderer`）：NPD 内容渲染后恢复星盘段的 additive blend（防御性措施，确保 Iris 对 sky pass 状态的预期不被破坏）。
+*   **验证**：`.\gradlew compileJava` BUILD SUCCESSFUL。全部 8 内容类、数据驱动层（JSON/预设/重载监听器）、API 模块均无改动。
+*   **实测**（2026-10-11）：AUTO 模式 + Complementary / BSL 光影包游戏内验证通过——天体全部正常显示，Complementary 自带星云天空未覆盖 NPD 内容。
+
+### 新增：风之旅途调试水晶体系（变体水晶 + 潜行滚轮切换）与风之树 18 变体地物
+
+*   **变体水晶**（`item/DebugVariantWandItem`，新）：一个水晶承载多变体，支持「潜行 + 滚轮」切换；选中项存物品 `CUSTOM_DATA`，tooltip 显示当前目标与变体序号；支持结构模式（NBT 路径）与装饰模式（ConfiguredFeature 名）双模。
+*   **滚轮同步**（`client/DebugWandClientEvents`，新 + `network/DebugWandVariantPayload`，新 + `network/PDNetwork` 接线）：客户端滚轮切换后发 C2S 包，服务端按变体数取模校验写回槽位并广播；切换时抬头显示栏即时显示「当前变体 (x/N)」。
+*   **风之树 18 变体**（`worldgen/feature/WindMoorTreeGenerator`，新 + `registry/WindMoorTrees`，新）：按染梦基准程序化实现——贴合地表落脚、主干、分层上扬枝节（枝端叶簇）、多层椭球树冠（角度不规则打破球面切面）、枝端按概率挂风泊悬挂藤；大中小 × 低中高 × 多/少枝节 = 18 种参数组合，装饰模式共用 1 个调试水晶；装饰数据（configured/placed/biome_modifier，`tools/gen_windmoor_tree_jsons.py` 生成）对齐既有 `generic_decor` 范式，新增群系标签 `tags/worldgen/biome/is_wind_journey.json`。
+*   **现有风旅结构补水晶**（`PDItemsFunctional`/`PDItems`/`PDCreativeTabsDebug`）：热气球升级为 8 变体水晶；新增小热气球（11 变体）、云泡泡（6 变体）、风之岛、风车小屋、风池、风蚀石（2 变体）、破风幕、失落风骑士遗迹、四叶草、bocchi（2 变体）、博丽灵梦。
+*   **共享资源**：`textures/item/wind_journey_debug_crystal.png` + `models/item/debug_wand_wind_journey.json`（16×16 菱形青蓝晶体，风格对齐现有调试水晶；生成脚本 `tools/gen_wind_journey_debug_crystal.py`）；13 个水晶模型统一一行 parent 复用。
+*   **小热气球 NBT 补齐**（`data/pasterdream/structure/small_balloon_0..10.nbt`，11 个，新）：从原模组 `structures/`（1.20 复数路径）搬入 1.21.1 单数 `structure/`；模板池 `location` 为双 o `small_balloon_N` 与原文件名一致，无需改名。此前该维度 11 个小热气球结构定义在、NBT 缺席。
+*   **工具修复**（`tools/inspect_structure_nbt.py`）：路径改为必填（原先写死 `NBT_PATH` 指向 shadow_world_door.nbt，传参无效导致误读其它结构）；输出通用化（palette 截断、关注方块可配置）并加固空列表解析。
+*   **修复（树切面）**：`WindMoorTreeGenerator` 枝条原木按水平方向设置 `RotatedPillarBlock.AXIS`（原先一律默认 `axis=y`，水平枝条年轮/树皮面错位出现切面）；生成边界 `isWithinGenerationBounds`（仅同区块）→ `isWithinExpandedGenerationBounds(±1 区块)`（原点近区块边缘时越界半棵树被静默裁成平面）；叶簇加角度不规则度并调整留孔/缺失率。
+*   **验证**：`gradlew compileJava` 全模块 BUILD SUCCESSFUL；`runData` 通过且日志无数据包解析错误；`check_lang` 门禁绿（所有注册项中英齐全）；36 个结构变体目标 NBT 与 18 个风之树变体（Java↔configured↔placed↔biome_modifier）交叉一致性校验通过；物品 ID 无重复。潜行滚轮手感与树形待游戏内实跑确认。
+
+## v0.10.0 — 2026-09-25
 
 > 依据 `docs/版本开发总结-v.0.10.0/重构融梦宝箱战利品+新增风泊悬挂藤与叶块合并.md` 整理，战利品部分整合 `diff/momonyako/main`。
 
@@ -147,28 +210,6 @@
 *   **修复**（`PasterDream` `block/WindmoorHangingVineBlock.java`）：删除从未被写入的 `SUPPRESSED` 状态属性（含字段、默认状态、`createBlockStateDefinition`、`randomTick` 判断与 `BooleanProperty` 导入）——该属性只被读取、不被写入，恒为 `false`，属死状态，删除后同时消除了每个方块状态多出的无效变体
 *   **修复**（`assets/pasterdream/blockstates/windmoor_hanging_vine.json`）：变体键由 `""` 改为按 `age=0` / `age=1` / `age=2` 显式枚举——方块具备 `AGE` 属性时必须枚举，写法与同目录 `windmoor_log.json` 一致
 *   **确认（无代码变更）**：原模组 `windmoor_leaves_2` 为 `noCollission()` 且 `getVisualShape` 为空的隐形可穿行方块，合并后该可穿行行为不再存在。经检索，仓库内 5 个 `.nbt` 结构（含 HEAD 版本，`git grep -a` 二进制无命中）与全部数据/世界生成文件均未引用 `windmoor_leaves_0/1/2`，该变体在现有数据中零使用，故按「有碰撞」合并保留
-
-### 修复：竞技场遗迹感染系统恶性 BUG（结构查询触发不可逆感染 + 永久锁死结构生成）
-
-> 依据《帕斯特之梦_竞技场感染bug报告.md》与用户验收标准重写感染生命周期。
-
-*   **根因 1**（`worldgen/structure/AaroncosArenaPortalStructure.java`）：`findGenerationPoint` 是 MC 的结构查询/预测方法（只读语义），却被写入不可逆持久化副作用（`markPlaced` + 延迟 1 tick 启动感染 + 刷写 15625 格群系）——任何调用 `Structure.findGenerationPoint` / `Structure.generate` 的代码都会触发，实测探险家指南针（Explorer's Compass Enhance）一次搜索即让未接触模组的玩家被永久感染
-*   **根因 2**：`markPlaced` 早于实际组装且组装失败不回滚 → `isPlaced` 持久锁死 → 结构从此永不生成，玩家"只被感染、永远看不到竞技场"
-*   **根因 3**：`tryRegisterCenter`（200 格出生点校验）与结构路径（无校验）双轨不一致；`center` 单值多竞技场互相覆盖；`onServerStarting` 无条件恢复感染且无任何配置开关（310 项配置无一相关）
-*   **重构**（结构类 → 纯查询）：`findGenerationPoint` 仅做只读关门判定（读 `placed` 抑制后续候选），移除全部写入/调度/回滚；第三方结构查询/预览零副作用
-*   **新增**（`world/PDAaroncosArenaSpawnData.java`）：持久化字段 `biomePainted`（群系已刷写，防重复刷写）与 `defeated`（BOSS 已击败，感染永久退化）；删除不再使用的 `rollback()`
-*   **新增**（真实放置确认链，`worldgen/PDAaroncosArenaWorldgen.java`）：传送门方块在世界生成阶段真实落入主世界（`onPlace` 的 WorldGenRegion 上下文）→ 经线程安全 `ConcurrentLinkedQueue` 入队 → 主线程确认器（每 20 tick 排水）`confirmArenaPlacement` 落库 placed/center 并按配置启动群系刷写与感染——"结构已放置"由方块真实落地证明，结构查询永远无法伪造；同时解决 `ServerScheduler` 非线程安全问题（工作线程不再调用调度器）
-*   **重构**（`block/AaroncosArenaPortalsBlock.java`）：`onPlace` 按上下文分流——世界生成 → 入队确认；已加载世界（玩家/机器放置）→ 仅调度小范围感染 tick；删除 `tryRegisterCenter` 双轨路径
-*   **新增**（感染统一门控，`world/ArenaInfectionUtils.java`）：所有感染路径统一把关——① 配置开关开启（默认关闭）；② 仅主世界；③ BOSS 未击败；④ 目标列群系属于 `pasterdream:is_aaroncos_arena` 标签（含新旧群系键，兼容旧存档）——感染严格限制在竞技场群系范围内，有机形状越界抖动不再转化群系外方块
-*   **重构**（`world/ArenaRuinInfection.java`）：`start` 增加配置/击败守卫；自循环每批检查运行条件，配置中途关闭或 BOSS 胜利后自行终止；删除 `tryRegisterCenter`
-*   **新增**（配置，`config/PDCommonConfig.java`）：`arena ruin infection enabled`（默认 false）——关闭时不刷群系、不启动感染；已有感染的存档在服务器启动时被强制停止并自动清理（回滚被感染方块 + 还原竞技场群系 + 标记击败）；竞技场结构本身不受开关影响仍正常生成一次
-*   **新增**（治愈流程，`worldgen/PDAaroncosArenaWorldgen#cureInfection`）：BOSS 胜利（`registry/PDArenaBossManager`）或配置关闭强制清理时统一调用——停止感染 → 标记击败 → `PortalRestorationHandler` 分帧回滚全部被感染方块 → 分帧还原竞技场群系
-*   **新增**（群系还原，按噪声源重推导）：与 `FillBiomeCommand.fill` 完全对称的逆操作——区域内每个四分位单元经 `BiomeSource.getNoiseBiome`（世界生成群系本源，按种子确定）还原为原始群系，区域外保持现状；无需记录原始群系数据，对旧版存档刷写的群系同样有效；还原后 `resendBiomesForChunks` 同步客户端
-*   **服务器启动**（`onServerStarting`）：启动放置确认排水器（无论开关，保证"只生成一次"）；配置关闭 → 有感染的旧存档强制清理；配置开启且未击败 → 恢复感染（群系刷写中断自动补完）；已击败 → 保持退化不再恢复
-*   **事件注册**（`PasterDreamMod.java`）：新增 `PDAaroncosArenaWorldgen::onServerStopped` 清空放置确认队列
-*   **⚠️ 旧存档脏数据说明**：若旧存档的 `placed` 曾被第三方结构查询误置位（结构从未真实生成），升级后感染会被清理，但竞技场结构仍不会生成（`placed` 已锁死）；删除 `saves/<世界>/data/pasterdream_aaroncos_arena_spawn.dat` 可让结构按新逻辑重新生成一次
-*   **新增**（VERIFY 自动化套件，`smoketest/PDArenaInfectionVerifyHooks.java`，新）：专项 `arena-infection`（不进默认 `all`，需 `PASTERDREAM_VERIFY_SUITES=arena-infection`，要求非超平坦+开结构测试世界）——五阶段断言：① 模拟探险家指南针对结构 `Structure.generate` 连续查询 48 次零副作用（`placed` 不置位、感染不启动，直接回归原恶性 BUG 触发路径）② 配置关闭时群系内感染零转化 ③ 配置开启后竞技场群系内感染生效并记录回滚数据、群系外零转化 ④ 放置确认链落库 `placed`/`center` 且二次入队不覆盖中心 ⑤ 治愈流程（停止感染/标记击败/方块回滚/群系按噪声还原为原始群系）与击败后再感染零转化；`PDPortingVerifyTest` 注册 `ARENA_INFECTION` 套件，`needsNormalWorldWithStructures` 纳入该套件
-*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`PASTERDREAM_VERIFY_SUITES=arena-infection` 自动化测试 **13/13 全部 PASS**（`pd_verify_report.json`：含结构查询零副作用、群系门控、放置确认、治愈退化全链路）；全部修改文件 LF 行尾合规
 
 ### 遗留项（未处理）
 

@@ -6,6 +6,13 @@
     2. 别名来源 (from) 不应仍被注册（否则别名被遮蔽、实际 no-op），仅告警。
     3. 已确认的「移植版内部改名」manifest 项必须被别名表覆盖。
 
+识别的调用形状:
+    - aliasBlockAndItem(table, "from", "to")            旧形状（历史兼容）
+    - table.add(Registries.X, id("from"), id("to"))     旧形状（历史兼容）
+    - table.addBlockAndItem("from", "to")               便捷方法（BlockItem 双注册表）
+    - table.addBlockAndItemFamily("to", "from0", ...)   便捷方法（同族合并 + 双注册表）
+    - table.addFamily(Registries.X, "to", "from0", ...) 便捷方法（同族合并）
+
 产物:
     build/reports/pd_id_aliases.md
 
@@ -35,11 +42,25 @@ PAIR_RE = re.compile(
     r'aliasBlockAndItem\(\s*table\s*,\s*"([a-z0-9_]+)"\s*,\s*"([a-z0-9_]+)"\s*\)')
 ADD_RE = re.compile(
     r'table\.add\(Registries\.(\w+)\s*,\s*id\("([a-z0-9_]+)"\)\s*,\s*id\("([a-z0-9_]+)"\)\s*\)')
+# IdAliasTable 便捷方法调用形状（0.11.x 起支持）：
+#   table.addBlockAndItem("from", "to")
+#   table.addBlockAndItemFamily("to", "from0", "from1", ...)
+#   table.addFamily(Registries.X, "to", "from0", "from1", ...)
+# 支持跨行与行内注释；字符串字面量按出现顺序解析。
+CALL_RE = re.compile(
+    r'table\s*\.\s*(addBlockAndItemFamily|addBlockAndItem|addFamily)\b\s*\(([^)]*)\)')
+REG_IN_CALL_RE = re.compile(r'Registries\.(\w+)')
+QUOTED_RE = re.compile(r'"([a-z0-9_]+)"')
 
 REG_NAME_RE = re.compile(
     r'register[A-Za-z]*\(\s*"([a-z0-9_]+)"')
 REG_SIMPLE_RE = re.compile(
     r'registerSimple[A-Za-z]*\(\s*"([a-z0-9_]+)"')
+# EntityAPI 门面注册形状（PDEntities 经 createEntity 注册、刷怪蛋经 createSpawnEggItem）
+CREATE_ENTITY_RE = re.compile(r'createEntity\(\s*"([a-z0-9_]+)"')
+CREATE_SPAWN_EGG_RE = re.compile(r'createSpawnEggItem\([^,]*,\s*"([a-z0-9_]+)"')
+# MenuAPI 门面注册形状（菜单经 createMenu 注册）
+CREATE_MENU_RE = re.compile(r'createMenu\(\s*"([a-z0-9_]+)"')
 
 REGISTRY_LABEL = {"BLOCK": "block", "ITEM": "item"}
 
@@ -47,16 +68,66 @@ REGISTRY_LABEL = {"BLOCK": "block", "ITEM": "item"}
 def collect_aliases():
     text = ALIASES_JAVA.read_text(encoding="utf-8")
     aliases = []
+    # 旧形状：aliasBlockAndItem(table, "from", "to")（历史调用，保持兼容）
     for frm, to in PAIR_RE.findall(text):
         aliases.append(("block", frm, to))
         aliases.append(("item", frm, to))
+    # 新形状：IdAliasTable 便捷方法（addBlockAndItem / addBlockAndItemFamily / addFamily）
+    for match in CALL_RE.finditer(text):
+        call, args_text = match.group(1), match.group(2)
+        # 剥离行内注释，避免注释中的引号字符串污染参数解析
+        args_code = re.sub(r"//[^\n]*", "", args_text)
+        names = QUOTED_RE.findall(args_code)
+        if call == "addBlockAndItem" and len(names) == 2:
+            frm, to = names
+            aliases.append(("block", frm, to))
+            aliases.append(("item", frm, to))
+        elif call == "addFamily":
+            reg = REG_IN_CALL_RE.search(args_code)
+            if reg is None or len(names) < 2:
+                continue
+            registry = REGISTRY_LABEL.get(reg.group(1), reg.group(1).lower())
+            to, froms = names[0], names[1:]
+            for frm in froms:
+                aliases.append((registry, frm, to))
+        elif call == "addBlockAndItemFamily" and len(names) >= 2:
+            to, froms = names[0], names[1:]
+            for frm in froms:
+                aliases.append(("block", frm, to))
+                aliases.append(("item", frm, to))
     for reg, frm, to in ADD_RE.findall(text):
         aliases.append((REGISTRY_LABEL.get(reg, reg.lower()), frm, to))
     return aliases
 
 
+# 按源文件名归属注册表（用于按注册表精确做 broken/shadowed 校验；
+# 同名字符串跨注册表不算遮蔽，如音效 shadow_trap_0 与方块 shadow_trap_0 并存）。
+# 无法归类的文件进入 unknown 桶，保守地对所有注册表生效。
+FILE_REGISTRY_RULES = [
+    ("sound_event", lambda n: n in ("PDSounds.java", "PDSpellsSounds.java")),
+    ("mob_effect", lambda n: n in ("PDEffects.java", "PDSpellsEffects.java",
+                                   "PDSanityEffects.java", "PDMeltDreamEffects.java")),
+    ("particle", lambda n: "Particle" in n),
+    ("menu", lambda n: n.startswith("PDMenus")),
+    ("block_entity", lambda n: n.startswith("PDBlockEntities")),
+    ("entity_type", lambda n: n == "PDEntities.java"),
+    ("item", lambda n: "Items" in n),
+    ("block", lambda n: "Blocks" in n),
+    ("advancement", lambda n: n.startswith("PDAdvancements")),
+]
+
+
+def registry_of_file(filename):
+    """按文件名推断其注册名所属的注册表标签。"""
+    for registry, rule in FILE_REGISTRY_RULES:
+        if rule(filename):
+            return registry
+    return "unknown"
+
+
 def collect_registered_names():
-    names = set()
+    """按注册表收集注册名：{registry 标签: {name, ...}}，未归类文件进 unknown 桶。"""
+    by_registry = {}
     for base in REG_DIRS:
         if not base.is_dir():
             continue
@@ -65,22 +136,31 @@ def collect_registered_names():
                 text = path.read_text(encoding="utf-8", errors="replace")
             except OSError:
                 continue
-            names.update(REG_NAME_RE.findall(text))
-            names.update(REG_SIMPLE_RE.findall(text))
-    return names
+            bucket = by_registry.setdefault(registry_of_file(path.name), set())
+            bucket.update(REG_NAME_RE.findall(text))
+            bucket.update(REG_SIMPLE_RE.findall(text))
+            bucket.update(CREATE_ENTITY_RE.findall(text))
+            # 刷怪蛋物品 ID 由 EntityAPI 派生为 <name>_spawn_egg
+            bucket.update(n + "_spawn_egg" for n in CREATE_SPAWN_EGG_RE.findall(text))
+            bucket.update(CREATE_MENU_RE.findall(text))
+    return by_registry
 
 
 def main():
     aliases = collect_aliases()
-    registered = collect_registered_names()
+    registered_by_reg = collect_registered_names()
     manifest_renames = json.loads(MANIFEST.read_text(encoding="utf-8")).get("renames", {})
+
+    def known(registry):
+        """别名所属注册表的已注册名集合（含未归类文件的保守并集）。"""
+        return registered_by_reg.get(registry, set()) | registered_by_reg.get("unknown", set())
 
     broken = []
     shadowed = []
     for registry, frm, to in aliases:
-        if to not in registered:
+        if to not in known(registry):
             broken.append((registry, frm, to))
-        if frm in registered:
+        if frm in known(registry):
             shadowed.append((registry, frm, to))
 
     covered_from = {frm for _, frm, _ in aliases}

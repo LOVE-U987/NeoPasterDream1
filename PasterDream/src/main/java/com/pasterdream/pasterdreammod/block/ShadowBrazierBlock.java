@@ -221,7 +221,7 @@ public class ShadowBrazierBlock extends BaseEntityBlock {
             });
             ServerScheduler.schedule(20, () -> {
                 if (!level.isClientSide()) {
-                    level.playSound(null, pos, PDSounds.SHADOW_MUSIC_0.get(), SoundSource.NEUTRAL, 1, 1);
+                    level.playSound(null, pos, PDSounds.SHADOW_MUSIC.get(), SoundSource.NEUTRAL, 1, 1);
                 }
             });
         } else if (!player.level().isClientSide()) {

@@ -332,10 +332,10 @@
       "pasterdream:terrorbeak_roar"
     ]
   },
-  "wind_knight_skill_0": {
-    "subtitle": "subtitle.pasterdream.wind_knight_skill_0",
+  "wind_knight_skill": {
+    "subtitle": "subtitle.pasterdream.wind_knight_skill",
     "sounds": [
-      "pasterdream:wind_knight_skill_0"
+      "pasterdream:wind_knight_skill"
     ]
   },
   "fox_fire": {
@@ -415,18 +415,18 @@
       "pasterdream:shadow_hand_lantern"
     ]
   },
-  "shadow_music_0": {
-    "subtitle": "subtitle.pasterdream.shadow_music_0",
+  "shadow_music": {
+    "subtitle": "subtitle.pasterdream.shadow_music",
     "category": "music",
     "sounds": [
-      "pasterdream:shadow_music_0"
+      "pasterdream:shadow_music"
     ]
   },
-  "shadow_trap_0": {
-    "subtitle": "subtitle.pasterdream.shadow_trap_0",
+  "shadow_trap": {
+    "subtitle": "subtitle.pasterdream.shadow_trap",
     "category": "hostile",
     "sounds": [
-      "pasterdream:shadow_trap_0"
+      "pasterdream:shadow_trap"
     ]
   },
   "sword_wave": {
@@ -531,12 +531,12 @@
       }
     ]
   },
-  "ding_0": {
-    "subtitle": "subtitle.pasterdream.ding_0",
+  "ding": {
+    "subtitle": "subtitle.pasterdream.ding",
     "category": "player",
     "sounds": [
       {
-        "name": "pasterdream:ding_0",
+        "name": "pasterdream:ding",
         "stream": false
       }
     ]
@@ -690,12 +690,12 @@
       }
     ]
   },
-  "shadow_biome_0": {
-    "subtitle": "subtitle.pasterdream.shadow_biome_0",
+  "shadow_biome": {
+    "subtitle": "subtitle.pasterdream.shadow_biome",
     "category": "ambient",
     "sounds": [
       {
-        "name": "pasterdream:shadow_biome_0",
+        "name": "pasterdream:shadow_biome",
         "stream": false
       }
     ]

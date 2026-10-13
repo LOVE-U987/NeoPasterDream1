@@ -125,10 +125,10 @@ public final class PDEntityDeathEvents {
                     "death.pasterdream.spore_entity.0",
                     "death.pasterdream.spore_entity.1")),
             // ====== BOSS ======
-            Map.entry(EntityType.byString("pasterdream:aaroncos_lefthand_0").orElse(null), List.of(
+            Map.entry(EntityType.byString("pasterdream:aaroncos_lefthand").orElse(null), List.of(
                     "death.pasterdream.aaroncos.0",
                     "death.pasterdream.aaroncos.1")),
-            Map.entry(EntityType.byString("pasterdream:aaroncos_righthand_0").orElse(null), List.of(
+            Map.entry(EntityType.byString("pasterdream:aaroncos_righthand").orElse(null), List.of(
                     "death.pasterdream.aaroncos.0",
                     "death.pasterdream.aaroncos.1"))
     );

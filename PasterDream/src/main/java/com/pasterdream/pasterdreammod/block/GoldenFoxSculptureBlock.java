@@ -210,7 +210,7 @@ public class GoldenFoxSculptureBlock extends BaseEntityBlock implements SimpleWa
             sendOptionalParticles(serverLevel, "yellow_smoke_particle", cx, cy, cz, 12);
         }
         level.playSound(null, pos, SoundEvents.FOX_AMBIENT, SoundSource.MASTER, 1.2F, 1.0F);
-        level.playSound(null, pos, PDSounds.DING_0.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        level.playSound(null, pos, PDSounds.DING.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
         return true;
     }
 
