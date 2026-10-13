@@ -10,8 +10,8 @@ public final class NoteLimits {
 
     /** 折行宽度（像素，与编辑框文本宽一致）。 */
     public static final int WIDTH = 120;
-    /** 每页可视行数（PD2 为 19，此处有意少 1 行）。 */
-    public static final int LINES = 18;
+    /** 每页可视行数（PD2 为 19，此处有意少 3 行；0.8f 底图布局需为底部按钮/落款留出空间）。 */
+    public static final int LINES = 16;
     /** 保存时的最大页数。 */
     public static final int MAX_PAGES = 128;
     /** 正文最大字节数（JSON 字符串含引号与转义）。 */

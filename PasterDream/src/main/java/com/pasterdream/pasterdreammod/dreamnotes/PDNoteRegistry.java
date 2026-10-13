@@ -1,6 +1,8 @@
 package com.pasterdream.pasterdreammod.dreamnotes;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
@@ -91,6 +93,27 @@ public final class PDNoteRegistry {
             return null;
         }
         return access.registry(NOTE_REGISTRY).map(registry -> registry.get(id)).orElse(null);
+    }
+
+    /**
+     * 从注册表提供器（如 {@code Item.TooltipContext#registries()}）按 ID 查询定义。
+     * <p>
+     * 该重载不依赖完整 {@link RegistryAccess}，仅经 {@link HolderLookup.Provider} 查询；
+     * 注册表项以 {@link ResourceKey} 定位（{@link HolderLookup.RegistryLookup} 无按 {@link ResourceLocation} 的查询）。
+     *
+     * @param registries 注册表提供器
+     * @param id         定义 ID
+     * @return 定义；提供器为空、注册表缺失或条目不存在返回 null
+     */
+    @Nullable
+    public static NoteDefinition get(HolderLookup.Provider registries, ResourceLocation id) {
+        if (registries == null || id == null) {
+            return null;
+        }
+        return registries.lookup(NOTE_REGISTRY)
+                .flatMap(lookup -> lookup.get(ResourceKey.create(NOTE_REGISTRY, id)))
+                .map(Holder.Reference::value)
+                .orElse(null);
     }
 
     /**

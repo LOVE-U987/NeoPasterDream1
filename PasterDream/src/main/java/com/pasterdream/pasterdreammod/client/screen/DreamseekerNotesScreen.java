@@ -2,12 +2,11 @@ package com.pasterdream.pasterdreammod.client.screen;
 
 import com.pasterdream.pasterdreammod.api.client.text.NotePagination;
 import com.pasterdream.pasterdreammod.api.text.NoteLimits;
-import com.pasterdream.pasterdreammod.client.gui.widget.PaperEditBox;
+import com.pasterdream.pasterdreammod.client.PDClientNoteScreens;
 import com.pasterdream.pasterdreammod.client.gui.widget.PaperMultiLineEditBox;
 import com.pasterdream.pasterdreammod.client.gui.widget.PaperStyle;
 import com.pasterdream.pasterdreammod.network.OpenNotePayload;
 import com.pasterdream.pasterdreammod.network.SaveNotePayload;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -17,15 +16,15 @@ import org.lwjgl.glfw.GLFW;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Locale;
 
 /**
- * 可编辑寻梦者笔记编辑屏幕（无工具栏）。
+ * 玩家笔记编辑屏幕（无工具栏、无顶部标题）。
  * <p>
- * 共用羊皮卷底图；正文按 18 行/120px 与阅读态共用 {@link NotePagination} 分页，但**正文仍为单个字符串**：
+ * 共用羊皮卷底图；正文按每页 16 行（0.8f 底图布局需为底部按钮/落款留白，18 行放不下）与阅读态
+ * 共用 {@link NotePagination} 分页，正文仍为单个字符串：
  * {@link PaperMultiLineEditBox} 持有完整正文，视图窗口按页对齐到光标所在页（模型 A 单正文自动重排）。
- * 输入使光标越过当前页末行时，重排产生下一页并自动跳转；翻页只调视图、不改写插入点。
- * 标题可编辑；关闭时按当前客户端语言回写 {@link SaveNotePayload}。
+ * 底部为 {@code < 完成 署名 >}：完成保存后关闭，署名打开独立署名子界面。
+ * 页码绘制于原顶部标题行位置。
  */
 public class DreamseekerNotesScreen extends AbstractPaperScreen {
 
@@ -36,44 +35,33 @@ public class DreamseekerNotesScreen extends AbstractPaperScreen {
     private String language;
     private String notice = "";
     private String body = "";
+    private boolean loaded;
     private NotePagination.Layout layout;
     private int page;
     private boolean layoutDirty;
     private int lastCursor;
     private PaperMultiLineEditBox bodyBox;
-    private PaperEditBox nameBox;
     private Button prevButton;
     private Button nextButton;
 
     /**
      * 构造编辑屏幕。
      *
-     * @param payload 打开包（可编辑）
+     * @param payload 打开包（玩家笔记）
      */
     public DreamseekerNotesScreen(OpenNotePayload payload) {
         super(Component.empty());
         this.payload = payload;
     }
 
-    /** 当前客户端语言对应的数据语言键。 */
-    private static String currentLanguage() {
-        String code = Minecraft.getInstance().getLanguageManager().getSelected();
-        return code != null && code.toLowerCase(Locale.ROOT).startsWith("zh") ? "zh_cn" : "en_us";
-    }
-
     @Override
     protected void initWidgets() {
-        this.language = currentLanguage();
-        boolean zh = "zh_cn".equals(this.language);
-        this.body = zh ? this.payload.textZh() : this.payload.textEn();
-        String name = zh ? this.payload.nameZh() : this.payload.nameEn();
-
-        this.nameBox = new PaperEditBox(this.font, this.frame.nameX(), this.frame.nameY(),
-                this.frame.nameW(), this.frame.nameH(),
-                Component.translatable("gui.pasterdream.dreamseeker_notes.name"));
-        this.nameBox.setMaxLength(128);
-        this.nameBox.setValue(name);
-        addRenderableWidget(this.nameBox);
+        this.language = PDClientNoteScreens.currentLanguage();
+        if (!this.loaded) {
+            boolean zh = "zh_cn".equals(this.language);
+            this.body = zh ? this.payload.textZh() : this.payload.textEn();
+            this.loaded = true;
+        }
 
         this.bodyBox = new PaperMultiLineEditBox(this.font, this.frame.bodyBoxX(), this.frame.bodyBoxY(),
                 this.frame.bodyBoxW(), this.frame.bodyBoxH(),
@@ -90,7 +78,17 @@ public class DreamseekerNotesScreen extends AbstractPaperScreen {
         this.nextButton = Button.builder(Component.literal(">"), button -> turn(1))
                 .bounds(this.frame.nextButtonX(), this.frame.buttonY(), this.frame.buttonW(), this.frame.buttonH())
                 .build();
+        Button doneButton = Button.builder(Component.translatable("gui.pasterdream.dreamseeker_notes.done"),
+                        button -> onClose())
+                .bounds(this.frame.doneButtonX(), this.frame.buttonY(), this.frame.midButtonW(), this.frame.buttonH())
+                .build();
+        Button signButton = Button.builder(Component.translatable("gui.pasterdream.dreamseeker_notes.sign"),
+                        button -> openSign())
+                .bounds(this.frame.signButtonX(), this.frame.buttonY(), this.frame.midButtonW(), this.frame.buttonH())
+                .build();
         addRenderableWidget(this.prevButton);
+        addRenderableWidget(doneButton);
+        addRenderableWidget(signButton);
         addRenderableWidget(this.nextButton);
 
         // setValue 将光标置于文末：初始页与光标所在页一致，避免首次按键跳页。
@@ -104,6 +102,14 @@ public class DreamseekerNotesScreen extends AbstractPaperScreen {
     private void onBodyChanged(String value) {
         this.body = value;
         this.layoutDirty = true;
+    }
+
+    /** 打开独立署名子界面（携带当前正文；取消时返回本编辑器）。 */
+    private void openSign() {
+        if (this.minecraft == null || this.bodyBox == null) {
+            return;
+        }
+        this.minecraft.setScreen(new DreamseekerNoteSignScreen(this, this.bodyBox.getValue(), this.language));
     }
 
     @Override
@@ -171,7 +177,7 @@ public class DreamseekerNotesScreen extends AbstractPaperScreen {
 
     @Override
     public void onClose() {
-        if (this.bodyBox == null || this.nameBox == null) {
+        if (this.bodyBox == null) {
             super.onClose();
             return;
         }
@@ -181,25 +187,25 @@ public class DreamseekerNotesScreen extends AbstractPaperScreen {
             this.notice = Component.translatable("gui.pasterdream.dreamseeker_notes.too_long").getString();
             return;
         }
-        PacketDistributor.sendToServer(new SaveNotePayload(body, this.nameBox.getValue(), this.language));
+        PacketDistributor.sendToServer(new SaveNotePayload(body, "", "", this.language, false));
         super.onClose();
     }
 
     @Override
     protected void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        // 保存失败提示占用页码位（居中，与左右按钮横向不交叠）；无提示时才画页码。
-        if (!this.notice.isEmpty()) {
-            guiGraphics.drawString(this.font, this.notice,
-                    (this.frame.designW() - this.font.width(this.notice)) / 2, this.frame.footerY(),
-                    NOTICE_COLOR, false);
+        // 保存失败提示与页码共用顶部标题行位置（提示优先）。
+        String text = !this.notice.isEmpty() ? this.notice : pageText();
+        if (text.isEmpty()) {
             return;
         }
+        int color = !this.notice.isEmpty() ? NOTICE_COLOR : PaperStyle.TEXT_COLOR;
+        guiGraphics.drawString(this.font, text,
+                (this.frame.designW() - this.font.width(text)) / 2, this.frame.titleY(), color, false);
+    }
+
+    /** 当前页码文本（无页时为空）。 */
+    private String pageText() {
         List<NotePagination.Page> pages = this.layout.pages();
-        if (pages.isEmpty()) {
-            return;
-        }
-        String pageText = (this.page + 1) + "/" + pages.size();
-        guiGraphics.drawString(this.font, pageText,
-                (this.frame.designW() - this.font.width(pageText)) / 2, this.frame.footerY(), PaperStyle.TEXT_COLOR, false);
+        return pages.isEmpty() ? "" : (this.page + 1) + "/" + pages.size();
     }
 }

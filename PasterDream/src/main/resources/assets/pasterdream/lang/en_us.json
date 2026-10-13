@@ -2636,7 +2636,12 @@
   "item.pasterdream.shadowshelf": "Shadow Bookshelf",
   "item.pasterdream.shadowshelf_with_key": "Shadow Bookshelf with Key",
   "item.pasterdream.dreamseeker_notes": "Blank Dream Seeker's Note",
-  "gui.pasterdream.dreamseeker_notes.name": "Note Title",
   "gui.pasterdream.dreamseeker_notes.body": "Note Body",
-  "gui.pasterdream.dreamseeker_notes.too_long": "Note is too long to save; please shorten it."
+  "gui.pasterdream.dreamseeker_notes.too_long": "Note is too long to save; please shorten it.",
+  "gui.pasterdream.dreamseeker_notes.sign": "Sign",
+  "gui.pasterdream.dreamseeker_notes.done": "Done",
+  "gui.pasterdream.dreamseeker_notes.sign_title": "Book Title",
+  "gui.pasterdream.dreamseeker_notes.sign_author": "Author",
+  "gui.pasterdream.dreamseeker_notes.by_author": "by %1$s",
+  "gui.pasterdream.dreamseeker_notes.sign_empty_title": "Title cannot be empty"
 }
