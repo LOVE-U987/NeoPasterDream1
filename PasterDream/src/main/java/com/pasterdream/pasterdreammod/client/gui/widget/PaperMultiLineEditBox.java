@@ -96,6 +96,18 @@ public class PaperMultiLineEditBox extends MultiLineEditBox {
     }
 
     /**
+     * 判断某行是否完整落在正文可视区内（分页视图只画当前页整行，避免上一页末行残余像素）。
+     *
+     * @param lineTop 行顶部（逻辑坐标，未减滚动量）
+     * @return true 表示该行完整可见
+     */
+    private boolean lineVisible(int lineTop) {
+        double screenTop = (double) lineTop - this.scrollAmount();
+        return screenTop >= (double) (this.getY() + this.innerPadding())
+                && screenTop + LINE_HEIGHT <= (double) (this.getY() + this.height);
+    }
+
+    /**
      * 逐行绘制正文，并在光标处绘制竖线（行尾用占位字符）。
      *
      * @param guiGraphics 绘制上下文
@@ -114,7 +126,7 @@ public class PaperMultiLineEditBox extends MultiLineEditBox {
         for (int i = 0; i < text.pdLineCount(); i++) {
             int begin = text.pdLineBegin(i);
             int end = text.pdLineEnd(i);
-            if (this.withinContentAreaTopBottom(lineTop, lineTop + LINE_HEIGHT)) {
+            if (this.lineVisible(lineTop)) {
                 if (blinkOn && cursorInLine && cursor >= begin && cursor <= end) {
                     cursorLeft = guiGraphics.drawString(this.pdFont, value.substring(begin, cursor),
                             textLeft, lineTop, PaperStyle.TEXT_COLOR, false) - 1;
@@ -131,8 +143,7 @@ public class PaperMultiLineEditBox extends MultiLineEditBox {
             }
             lineTop += LINE_HEIGHT;
         }
-        if (blinkOn && !cursorInLine
-                && this.withinContentAreaTopBottom(lastLineTop, lastLineTop + LINE_HEIGHT)) {
+        if (blinkOn && !cursorInLine && this.lineVisible(lastLineTop)) {
             guiGraphics.drawString(this.pdFont, CURSOR_APPEND_CHARACTER, cursorLeft, lastLineTop,
                     PaperStyle.CURSOR_COLOR, false);
         }
@@ -163,7 +174,7 @@ public class PaperMultiLineEditBox extends MultiLineEditBox {
             if (begin > selectEnd) {
                 break;
             }
-            if (this.withinContentAreaTopBottom(lineTop, lineTop + LINE_HEIGHT)) {
+            if (this.lineVisible(lineTop)) {
                 int from = this.pdFont.width(value.substring(begin, Math.max(selectBegin, begin)));
                 int to = selectEnd > end
                         ? this.width - this.innerPadding()
@@ -190,5 +201,45 @@ public class PaperMultiLineEditBox extends MultiLineEditBox {
     /** 取得原版内部文本状态视图。 */
     private PDMultilineTextView pdText() {
         return (PDMultilineTextView) (Object) ((MultiLineEditBoxAccessor) (Object) this).pasterdream$getTextField();
+    }
+
+    /**
+     * 暴露原版文本状态视图，供外部读取光标与行索引（分页视图对齐）。
+     *
+     * @return 文本状态视图
+     */
+    public PDMultilineTextView textView() {
+        return pdText();
+    }
+
+    /**
+     * 将视图顶部对齐到包含指定字符的显示行（分页翻页用）。
+     *
+     * @param charIndex 目标字符下标
+     */
+    public void setViewToChar(int charIndex) {
+        PDMultilineTextView text = pdText();
+        int count = text.pdLineCount();
+        int line = Math.max(0, count - 1);
+        for (int i = 0; i < count; i++) {
+            if (charIndex < text.pdLineEnd(i)) {
+                line = i;
+                break;
+            }
+        }
+        setScrollAmount((double) line * LINE_HEIGHT);
+    }
+
+    @Override
+    protected int getMaxScrollAmount() {
+        // 原版夹在「内容高 - 视口高」，末页不满时无法把页首滚到视口顶部；
+        // 这里放宽到「最后一行可对齐顶部」，使任意页页首都能对齐（滚动条已隐藏、滚轮由分页接管）。
+        return Math.max(0, this.getInnerHeight() - LINE_HEIGHT);
+    }
+
+    @Override
+    protected boolean scrollbarVisible() {
+        // 滚动由外部按页驱动，不显示原版滚动条。
+        return false;
     }
 }

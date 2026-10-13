@@ -51,6 +51,13 @@ public final class NoteGuiLayout {
     /** 翻页按钮尺寸（逻辑像素）。 */
     private static final int BUTTON_W = 20;
     private static final int BUTTON_H = 18;
+    /**
+     * 内容（标题/正文/页码）与底图整体上移量。
+     * <p>
+     * 翻页按钮锚点**不参与**上移，因此相对正文框下移，使按钮区与正文框矩形脱开——
+     * 否则按钮会被先注册的正文框（`MultiLineEditBox` 在整个控件矩形内吞点击）抢先消费而无法点击。
+     */
+    public static final int CONTENT_SHIFT = 12;
 
     private NoteGuiLayout() {
     }
@@ -143,15 +150,16 @@ public final class NoteGuiLayout {
 
         int bodyX = (designW - NoteLimits.WIDTH) / 2;
         int bodyBoxX = bodyX - BODYBOX_LEFT_INSET;
+        int shift = CONTENT_SHIFT;
 
         return new Frame(
                 scale, originX, originY, designW, designH,
-                Math.round(ANCHOR_TITLE_Y * ratioY),
-                bodyX, Math.round(ANCHOR_BODY_Y * ratioY), NoteLimits.WIDTH,
-                bodyX, Math.round(ANCHOR_NAME_Y * ratioY), NoteLimits.WIDTH, NAME_H,
-                bodyBoxX, Math.round(ANCHOR_BODYBOX_Y * ratioY),
+                Math.round(ANCHOR_TITLE_Y * ratioY) - shift,
+                bodyX, Math.round(ANCHOR_BODY_Y * ratioY) - shift, NoteLimits.WIDTH,
+                bodyX, Math.round(ANCHOR_NAME_Y * ratioY) - shift, NoteLimits.WIDTH, NAME_H,
+                bodyBoxX, Math.round(ANCHOR_BODYBOX_Y * ratioY) - shift,
                 NoteLimits.WIDTH + BODYBOX_PADDING, NoteLimits.LINES * 9 + BODYBOX_PADDING,
-                Math.round(ANCHOR_FOOTER_Y * ratioY),
+                Math.round(ANCHOR_FOOTER_Y * ratioY) - shift,
                 Math.round(ANCHOR_PREV_X * ratioX), Math.round(ANCHOR_NEXT_X * ratioX),
                 Math.round(ANCHOR_BUTTON_Y * ratioY), BUTTON_W, BUTTON_H);
     }
