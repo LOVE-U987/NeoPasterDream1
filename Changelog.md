@@ -1,7 +1,28 @@
 # PasterDream Changelog
 
 ---
-## 未发布
+## v0.11.0（开发中）— 2026-10-11
+
+### 迁移：P0 音效批次——5 个音效 ID 去 _0 后缀（ID 迁移第一批）
+
+*   **改名**（`PDSounds`）：`ding_0→ding`、`shadow_biome_0→shadow_biome`、`shadow_music_0→shadow_music`、`shadow_trap_0→shadow_trap`、`wind_knight_skill_0→wind_knight_skill`（注册名+常量同步，javadoc 标注旧名）；7 处代码调用点同步（暮影灯笼/暗影火盆/暗影陷阱方块/风之骑士/金狐雕像/方块重置工具/风向标）
+*   **资源**：sounds.json 5 条目（键/subtitle/sounds 引用）、`subtitle.*` 语言键 ×2 文件、群系 JSON `ambient/mood` 引用 ×6 文件 12 处、`sounds/*.ogg` ×5 重命名、`pd_porting_manifest.json` 音效区 5 处（方块/物品区的同名 `shadow_trap_0` 保留不动）
+*   **兼容**（`PDIdAliases`）：+5 条 `SOUND_EVENT` 别名；`PDSaveSchema.CURRENT_ID_SCHEMA_VERSION` 1→2
+*   **排除**（撞车项，另行语义化）：`meltdream_chest_0`/`stone_break_0`/`fury_spell_0` 存在无数字基底名（`meltdream_chest`/`stone_break`/`fury_spell`），去后缀会撞车
+*   **基线修正**（`tools/scan_numeric_registrations.py`）：过滤 `modifierId(...)` 行——原扫描将状态效果类 33 个属性修饰符 ID 误报为注册名（效果本体注册名本就干净；修饰符 ID 持久化于实体 NBT，改名会孤儿化旧修饰符）；基线文档重新生成
+*   **审计增强**（`tools/verify_id_aliases.py`）：broken/shadowed 校验改为按注册表精确匹配（按源文件名归属注册表，未归类文件保守并入），跨注册表同名（音效 `shadow_trap_0` vs 方块）不再误报遮蔽
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`verify_id_aliases.py` aliases=34 broken=0 shadowed=0 missing_coverage=0；`check_lang.py` 中英双语全过；`verify_resource_closure.py` failure_count 8→3（剩余 3 为 libs 原模组 shadowshelf 战利品表既有遗留，与本批次无关）
+
+### 新增：api/compat 别名表便捷方法（ID 迁移里程碑 · API 先行批次）
+
+*   **新增**（`PasterDreamAPI` `api/compat/IdAliasTable`）：三个零具体 ID 的便捷登记方法——`addBlockAndItem(from, to)`（BlockItem 双注册表单条别名）、`addFamily(registryKey, to, froms...)`（同族多旧名合并到单新名）、`addBlockAndItemFamily(to, froms...)`（同族合并 + 双注册表）；注册路径统一用 `PasterDreamAPI.DATA_NAMESPACE` 构造，冲突校验复用既有 `add` 单点
+*   **同步**（`tools/verify_id_aliases.py`）：审计解析器新增识别三种新调用形状（支持跨行参数与行内注释剥离），旧形状（`aliasBlockAndItem` / `table.add(Registries.X, id, id)`）保持兼容；docstring 登记识别范围
+*   **迁移**（`PasterDream` `compat/PDIdAliases`）：现有 29 条别名全部迁移到便捷方法（三处同族合并改用 `addBlockAndItemFamily`，单条改用 `addBlockAndItem`，移除私有 `aliasBlockAndItem` helper），别名集合与迁移前完全一致
+*   **文档**：`docs/设计/存档兼容层.md` §5 新增「5.1 改名标准范式（0.11.x 起）」——静态注册表走别名 API 四步、数据包双注册表走 `PDBiomes` 双轨；`docs/设计/ID迁移计划.md` 迁移同步清单新增第 6 项（别名登记与 schema 递增）
+*   **换行**：本次修改的代码/脚本/文档文件由 CRLF 归一为 LF（`.gitattributes eol=lf` 口径），产生整文件 diff
+*   **验证**：`gradlew compileJava` 全量 BUILD SUCCESSFUL；`python tools/verify_id_aliases.py` 输出 `aliases=29 broken=0 shadowed=0 missing_coverage=0`
+
+## v0.10.0 — 2026-09-25
 
 ### 修复：染梦维度不生成岩浆（还原原模组岩浆生成链路）
 
@@ -33,8 +54,7 @@
 *   **验证**：JSON 解析通过；`python tools/verify_resource_closure.py` 全库 JSON 可解析/无 BOM（仅报告 `libs/` 原模组 3 个 shadowshelf 历史缺失，与本改动无关）。
 *   **同步**：设计文档 `docs/设计/丛林孢子掉落时运.md`。
 
----
-## v0.10.1 — 2026-09-26
+
 
 ### 修复：染梦/风旅维度 BGM 与群系错位、蘑菇平原实际不生成
 
@@ -47,7 +67,6 @@
 *   **同步**（`data/pasterdream/worldgen/biome/`，6 个染梦群系 JSON）：`music.sound` 字段与新映射对齐（该字段在自定义维度内仅作 mixin 失效时的兜底，不代表实际播放结果），并统一行尾为 LF。
 *   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；蘑菇平原覆盖率由独立 FastNoise 采样程序实测（0.70→1.387%、0.75→0.506%、0.80→0.115%、0.86→0.0049%）。
 
-## v0.10.0 — 2026-09-25
 
 > 依据 `docs/版本开发总结-v.0.10.0/重构融梦宝箱战利品+新增风泊悬挂藤与叶块合并.md` 整理，战利品部分整合 `diff/momonyako/main`。
 
@@ -128,6 +147,28 @@
 *   **修复**（`PasterDream` `block/WindmoorHangingVineBlock.java`）：删除从未被写入的 `SUPPRESSED` 状态属性（含字段、默认状态、`createBlockStateDefinition`、`randomTick` 判断与 `BooleanProperty` 导入）——该属性只被读取、不被写入，恒为 `false`，属死状态，删除后同时消除了每个方块状态多出的无效变体
 *   **修复**（`assets/pasterdream/blockstates/windmoor_hanging_vine.json`）：变体键由 `""` 改为按 `age=0` / `age=1` / `age=2` 显式枚举——方块具备 `AGE` 属性时必须枚举，写法与同目录 `windmoor_log.json` 一致
 *   **确认（无代码变更）**：原模组 `windmoor_leaves_2` 为 `noCollission()` 且 `getVisualShape` 为空的隐形可穿行方块，合并后该可穿行行为不再存在。经检索，仓库内 5 个 `.nbt` 结构（含 HEAD 版本，`git grep -a` 二进制无命中）与全部数据/世界生成文件均未引用 `windmoor_leaves_0/1/2`，该变体在现有数据中零使用，故按「有碰撞」合并保留
+
+### 修复：竞技场遗迹感染系统恶性 BUG（结构查询触发不可逆感染 + 永久锁死结构生成）
+
+> 依据《帕斯特之梦_竞技场感染bug报告.md》与用户验收标准重写感染生命周期。
+
+*   **根因 1**（`worldgen/structure/AaroncosArenaPortalStructure.java`）：`findGenerationPoint` 是 MC 的结构查询/预测方法（只读语义），却被写入不可逆持久化副作用（`markPlaced` + 延迟 1 tick 启动感染 + 刷写 15625 格群系）——任何调用 `Structure.findGenerationPoint` / `Structure.generate` 的代码都会触发，实测探险家指南针（Explorer's Compass Enhance）一次搜索即让未接触模组的玩家被永久感染
+*   **根因 2**：`markPlaced` 早于实际组装且组装失败不回滚 → `isPlaced` 持久锁死 → 结构从此永不生成，玩家"只被感染、永远看不到竞技场"
+*   **根因 3**：`tryRegisterCenter`（200 格出生点校验）与结构路径（无校验）双轨不一致；`center` 单值多竞技场互相覆盖；`onServerStarting` 无条件恢复感染且无任何配置开关（310 项配置无一相关）
+*   **重构**（结构类 → 纯查询）：`findGenerationPoint` 仅做只读关门判定（读 `placed` 抑制后续候选），移除全部写入/调度/回滚；第三方结构查询/预览零副作用
+*   **新增**（`world/PDAaroncosArenaSpawnData.java`）：持久化字段 `biomePainted`（群系已刷写，防重复刷写）与 `defeated`（BOSS 已击败，感染永久退化）；删除不再使用的 `rollback()`
+*   **新增**（真实放置确认链，`worldgen/PDAaroncosArenaWorldgen.java`）：传送门方块在世界生成阶段真实落入主世界（`onPlace` 的 WorldGenRegion 上下文）→ 经线程安全 `ConcurrentLinkedQueue` 入队 → 主线程确认器（每 20 tick 排水）`confirmArenaPlacement` 落库 placed/center 并按配置启动群系刷写与感染——"结构已放置"由方块真实落地证明，结构查询永远无法伪造；同时解决 `ServerScheduler` 非线程安全问题（工作线程不再调用调度器）
+*   **重构**（`block/AaroncosArenaPortalsBlock.java`）：`onPlace` 按上下文分流——世界生成 → 入队确认；已加载世界（玩家/机器放置）→ 仅调度小范围感染 tick；删除 `tryRegisterCenter` 双轨路径
+*   **新增**（感染统一门控，`world/ArenaInfectionUtils.java`）：所有感染路径统一把关——① 配置开关开启（默认关闭）；② 仅主世界；③ BOSS 未击败；④ 目标列群系属于 `pasterdream:is_aaroncos_arena` 标签（含新旧群系键，兼容旧存档）——感染严格限制在竞技场群系范围内，有机形状越界抖动不再转化群系外方块
+*   **重构**（`world/ArenaRuinInfection.java`）：`start` 增加配置/击败守卫；自循环每批检查运行条件，配置中途关闭或 BOSS 胜利后自行终止；删除 `tryRegisterCenter`
+*   **新增**（配置，`config/PDCommonConfig.java`）：`arena ruin infection enabled`（默认 false）——关闭时不刷群系、不启动感染；已有感染的存档在服务器启动时被强制停止并自动清理（回滚被感染方块 + 还原竞技场群系 + 标记击败）；竞技场结构本身不受开关影响仍正常生成一次
+*   **新增**（治愈流程，`worldgen/PDAaroncosArenaWorldgen#cureInfection`）：BOSS 胜利（`registry/PDArenaBossManager`）或配置关闭强制清理时统一调用——停止感染 → 标记击败 → `PortalRestorationHandler` 分帧回滚全部被感染方块 → 分帧还原竞技场群系
+*   **新增**（群系还原，按噪声源重推导）：与 `FillBiomeCommand.fill` 完全对称的逆操作——区域内每个四分位单元经 `BiomeSource.getNoiseBiome`（世界生成群系本源，按种子确定）还原为原始群系，区域外保持现状；无需记录原始群系数据，对旧版存档刷写的群系同样有效；还原后 `resendBiomesForChunks` 同步客户端
+*   **服务器启动**（`onServerStarting`）：启动放置确认排水器（无论开关，保证"只生成一次"）；配置关闭 → 有感染的旧存档强制清理；配置开启且未击败 → 恢复感染（群系刷写中断自动补完）；已击败 → 保持退化不再恢复
+*   **事件注册**（`PasterDreamMod.java`）：新增 `PDAaroncosArenaWorldgen::onServerStopped` 清空放置确认队列
+*   **⚠️ 旧存档脏数据说明**：若旧存档的 `placed` 曾被第三方结构查询误置位（结构从未真实生成），升级后感染会被清理，但竞技场结构仍不会生成（`placed` 已锁死）；删除 `saves/<世界>/data/pasterdream_aaroncos_arena_spawn.dat` 可让结构按新逻辑重新生成一次
+*   **新增**（VERIFY 自动化套件，`smoketest/PDArenaInfectionVerifyHooks.java`，新）：专项 `arena-infection`（不进默认 `all`，需 `PASTERDREAM_VERIFY_SUITES=arena-infection`，要求非超平坦+开结构测试世界）——五阶段断言：① 模拟探险家指南针对结构 `Structure.generate` 连续查询 48 次零副作用（`placed` 不置位、感染不启动，直接回归原恶性 BUG 触发路径）② 配置关闭时群系内感染零转化 ③ 配置开启后竞技场群系内感染生效并记录回滚数据、群系外零转化 ④ 放置确认链落库 `placed`/`center` 且二次入队不覆盖中心 ⑤ 治愈流程（停止感染/标记击败/方块回滚/群系按噪声还原为原始群系）与击败后再感染零转化；`PDPortingVerifyTest` 注册 `ARENA_INFECTION` 套件，`needsNormalWorldWithStructures` 纳入该套件
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`PASTERDREAM_VERIFY_SUITES=arena-infection` 自动化测试 **13/13 全部 PASS**（`pd_verify_report.json`：含结构查询零副作用、群系门控、放置确认、治愈退化全链路）；全部修改文件 LF 行尾合规
 
 ### 遗留项（未处理）
 
