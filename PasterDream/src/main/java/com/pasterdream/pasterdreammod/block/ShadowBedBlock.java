@@ -165,6 +165,9 @@ public class ShadowBedBlock extends Block implements SimpleWaterloggedBlock, Ent
 
     /**
      * 传送到灯影世界（原 WorldSpawnPr1Procedure）
+     * <p>
+     * 跨维度传送成功后补授 achievement_shadow_start（灯影之下），
+     * 保证暮影长床（shadow_bed）再入前置必然满足。
      *
      * @param level  当前世界
      * @param entity 目标实体
@@ -177,6 +180,11 @@ public class ShadowBedBlock extends Block implements SimpleWaterloggedBlock, Ent
                     player.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.WIN_GAME, 0));
                     player.teleportTo(target, player.getX(), player.getY(), player.getZ(),
                             player.getYRot(), player.getXRot());
+                    // 补授「灯影之下」进度（achievement_shadow_start）：原版语义为「进入灯影世界即达成」，
+                    // 该进度在数据包中仅有 changed_dimension 触发器一条授予路径，实机未稳定生效
+                    // （0.9.4 真床死锁、暮影长床再入被拒均由此引起），故在跨维度传送成功后由代码补授；
+                    // PDAdvancements.award 幂等，已完成时无副作用，与数据包触发器双路径兼容。
+                    PDAdvancements.award(player, PDAdvancements.SHADOW_START);
                     player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
                     for (MobEffectInstance effect : player.getActiveEffects()) {
                         player.connection.send(new ClientboundUpdateMobEffectPacket(player.getId(), effect, false));

@@ -602,3 +602,10 @@
 *   **根因**：自然竖井（jigsaw，25×91×25）内嵌传送门位于模板 y=14（世界 y ≈ 地表−63，标准地形下 y≈1），而 `generateDungeon` 以传送门为基准写死下铺偏移（五层 y−28~−64、层间门 y−29~−67）——基准太低导致最深层（y−67≈−66）低于维度安全线；原模组 1.20.1 同参数同维度（min_y=−64），属原模组遗留缺陷
 *   **修复**（`BrokenShadowDungeonProtalBlock`）：新增 `calcDungeonShift` 计算钳制上移量（保证最低门位于 min_y+6 之上，避开基岩层）；五层模板、6 扇层间门、清场区域中心与进入传送目标（y−19）统一 +shift；出口传送（y+66）向上恒安全，维持不动
 *   **验证**：`gradlew :PasterDream:compileJava` BUILD SUCCESSFUL；标准地形（传送门 y≈1）shift=8，五层落于 y−58~−12，玩法与层间距不变
+
+### 修复：暮影长床再入死锁——进入灯影世界时代码补授「灯影之下」进度
+
+*   **现象**：首次经真·影之床（暮影之笼据点守卫完成后）进入灯影世界并返回主世界后，右键自制的暮影长床（shadow_bed）提示「缺少灯影之下的进度」，无法再次进入
+*   **根因**：`achievement_shadow_start`（灯影之下）在数据包中仅有 `changed_dimension`（to=lamp_shadow_world）触发器一条授予路径，实机未稳定生效（0.9.4 真·影之床误用该进度导致首入死锁已是同一根因的先例）；暮影长床再入唯一前置即该进度 → 首入后永远拿不到 → 再入死锁。VERIFY 套件只覆盖真床首入（hide_9 门控），未覆盖暮影长床再入，缺口未被发现
+*   **修复**（`ShadowBedBlock#teleportToLampShadowWorld`）：跨维度传送成功后由代码补授 `PDAdvancements.award(SHADOW_START)`，语义与原版一致（en_us 描述即 "Enter the dream 'Beneath Lamp & Shadow'"）；`award` 幂等（已完成/holder 缺失无副作用），与数据包触发器双路径兼容；真床、暮影长床、入睡事件（`PDSleepEvents`）三条首入路径共用该方法，全部覆盖；研究台（`ResearchTableBlockEntity` 对同进度的检查）一并受益
+*   **验证**：`gradlew :PasterDream:compileJava` BUILD SUCCESSFUL；实机验证通过（2026-10-18 用户确认）：首入灯影 → 返回 → 夜晚右键自制暮影长床可再次进入
