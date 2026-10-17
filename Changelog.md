@@ -7,6 +7,15 @@
 
 ## v0.10.0
 
+### 调整：染梦解密仪式保留书桌并修复上半格触发与采集
+
+*   **背景**：玩家反馈花园解密只有在点击 `flower_11` 下半格时才能触发；剪刀/园艺钳破坏 `flower_11`、`flower_12` 上半格无掉落；同时两处解密仪式成功后都会销毁没有合成配方的染梦书桌。经确认，第二项与上半格判定同源，书桌销毁为原版行为，但本项目决定改为保留。
+*   **调整**（`PasterDream` `block/DyedreamGardenDecryptFlowerBlock.java`）：`tryDecrypt` 在维度校验前把 `HALF == UPPER` 的点击坐标归一化到下半格，书桌/花阵校验与后续替换均使用归一化坐标；删除 2 tick 回调中的 `destroyBlock(pos.below(3), false)`，仪式后书桌保留。
+*   **调整**（`PasterDream` `block/DyedreamFlower16Block.java`）：删除雪傀儡解密成功后销毁书桌的调用，书桌保留。
+*   **修复**（`PasterDream` `block/DyedreamDoublePlantBlock.java`）：新增 `playerWillDestroy` 覆写——生存模式下破坏上半格时按下半格状态与玩家主手工具补一次掉落，解决剪刀/园艺钳从上半格采集不掉落的问题；下半格原路径不变，不会双倍掉落，创造模式仍不掉落。该基类修复同时覆盖全部染梦双层植物。
+*   **验证**：`PDDyedreamVerifyHooks` 将 `dyedream.garden.success` / `dyedream.snowpuzzle.success` 的书桌断言改为保留，新增 `dyedream.garden.success_from_upper`、`dyedream.flower11.drops`、`dyedream.flower11.no_drop_empty`、`dyedream.flower12.drops`、`dyedream.flower12.no_drop_empty`；原使用空手却期望掉落的过期断言 `dyedream.flower12.drops` 已重写。
+*   **说明**：书桌保留与上半格采集均为相对原版的有意差异，详见 [docs/设计/染梦解密仪式调整.md](docs/设计/染梦解密仪式调整.md)。
+
 ### 修复：染梦维度不生成岩浆（还原原模组岩浆生成链路）
 
 *   **根因**：原模组的岩浆由四层机制叠加产生，本项目四层全被切断——① 群系 `features[1]`（LAKES 步）为空且 `minecraft:lake_lava_underground` 未迁移为 biome modifier（`6fda3db8` 迁移遗漏）；② `noise_settings/dyedream_world.json` 的 `noise_router.lava` 被改为常量 `0.0`；③ `NoiseBasedChunkGeneratorMixin` 拦截 `createFluidPicker`，抹除 Y-64 ~ Y-55 底部岩浆层；④ 三个 `configured_carver/dyedream_*.json` 的 `lava_level` 被改为 `{"absolute": -2032}`。后三项来自同一提交 `6136a762`（意图「地下岩浆改为地下河」），本次经确认推翻。
