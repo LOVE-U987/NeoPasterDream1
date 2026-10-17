@@ -93,6 +93,30 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
             new Layer(2, -64, new String[]{"shadow_dungeon_npc_0", "shadow_dungeon_npc_1"}),
     };
 
+    /** 地牢底部安全余量：最低结构必须位于 min_y+6 之上（本维度基岩在 min_y 起 5 格内） */
+    private static final int DUNGEON_BASE_SAFETY = 6;
+
+    /** 五层地牢的最低占用偏移：末层出口门相对传送门 y 的偏移 */
+    private static final int DUNGEON_LOWEST_OFFSET = -67;
+
+    /**
+     * 计算五层地牢的整体上移量（维度底部钳制）。
+     * <p>
+     * 竖井底部的已修复传送门（自然生成于模板 y=14，世界 y 约为地表-63）以写死偏移
+     * 向下铺设五层（最低门 y-67）；在低洼地形下会落入基岩层甚至维度边界之下，
+     * 导致下半部分层级"消失"并在地牢底部留下虚空。此处计算统一上移量 shift，
+     * 保证最低结构位于 min_y+安全余量 之上，层间距与玩法保持不变。
+     *
+     * @param level 服务端世界
+     * @param pos   传送门方块位置
+     * @return 整体上移量（格数，0 表示无需上移）
+     */
+    private static int calcDungeonShift(Level level, BlockPos pos) {
+        int minSafeY = level.getMinBuildHeight() + DUNGEON_BASE_SAFETY;
+        int deepestY = pos.getY() + DUNGEON_LOWEST_OFFSET;
+        return Math.max(0, minSafeY - deepestY);
+    }
+
     /**
      * 构造暗影地牢传送门方块
      *
@@ -314,14 +338,17 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
                         && level.getBlockState(pos.offset(1, -2, 0)).getBlock() == PDBlocksDungeon.SHADOW_DUNGEON_BLOCK_1.get();
         if (structureIntact) {
             if (!W4DataBlockEntity.getBooleanAt(level, pos, "cd")) {
-                generateDungeon(level, pos);
+                // 维度底钳制：五层结构、层间门与进入传送目标统一上移，
+                // 保证低洼地形下最深层不落入基岩层/维度边界之下
+                int shift = calcDungeonShift(level, pos);
+                generateDungeon(level, pos, shift);
                 if (!level.isClientSide()) {
                     level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 2, 1);
                 }
                 setAnimation(level, pos, 0);
                 setAnimation(level, pos, 1);
                 W4DataBlockEntity.putBooleanAt(level, pos, "cd", true);
-                countdownTeleport(level, pos, x - 3.5, y - 19, z + 0.5, true);
+                countdownTeleport(level, pos, x - 3.5, y - 19 + shift, z + 0.5, true);
                 ServerScheduler.schedule(60, () -> {
                     setAnimation(level, pos, 0);
                     if (!level.isClientSide()) {
@@ -367,8 +394,17 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
         }
     }
 
-    /** 生成五层随机地牢（原 ShadowDungeonPortalBlock.generateDungeon） */
-    private static void generateDungeon(Level level, BlockPos pos) {
+    /**
+     * 生成五层随机地牢（原 ShadowDungeonPortalBlock.generateDungeon）。
+     * <p>
+     * 所有层模板、层间门与清场区域在原模组写死偏移的基础上统一上移 {@code shift}，
+     * 由 {@link #calcDungeonShift(Level, BlockPos)} 保证低洼地形下不落入基岩层/维度边界之下。
+     *
+     * @param level 服务端世界
+     * @param pos   传送门方块位置（层偏移基准）
+     * @param shift 维度底钳制的整体上移量（格数，0 表示无需上移）
+     */
+    private static void generateDungeon(Level level, BlockPos pos, int shift) {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -381,14 +417,14 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
             W4DataBlockEntity.putDoubleAt(level, pos, "layer" + (i + 1), rolls[i]);
         }
         // 逐层门
-        level.setBlock(BlockPos.containing(x, y - 29, z), PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0.get().defaultBlockState(), 3);
-        level.setBlock(BlockPos.containing(x, y - 38, z), PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0.get().defaultBlockState(), 3);
-        level.setBlock(BlockPos.containing(x, y - 47, z), PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0.get().defaultBlockState(), 3);
-        level.setBlock(BlockPos.containing(x, y - 56, z), PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0.get().defaultBlockState(), 3);
-        level.setBlock(BlockPos.containing(x, y - 65, z), PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0.get().defaultBlockState(), 3);
-        level.setBlock(BlockPos.containing(x, y - 67, z + 3), PDBlocksDungeon.SHADOWDUNGEONDOOR_2.get().defaultBlockState(), 3);
-        // 清场（排除玩家，避免多人模式下被踢出世界）
-        Vec3 center = new Vec3(x, y - 42, z);
+        level.setBlock(BlockPos.containing(x, y - 29 + shift, z), PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0.get().defaultBlockState(), 3);
+        level.setBlock(BlockPos.containing(x, y - 38 + shift, z), PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0.get().defaultBlockState(), 3);
+        level.setBlock(BlockPos.containing(x, y - 47 + shift, z), PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0.get().defaultBlockState(), 3);
+        level.setBlock(BlockPos.containing(x, y - 56 + shift, z), PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0.get().defaultBlockState(), 3);
+        level.setBlock(BlockPos.containing(x, y - 65 + shift, z), PDBlocksDungeon.SHADOW_DUNGEON_DOOR_0.get().defaultBlockState(), 3);
+        level.setBlock(BlockPos.containing(x, y - 67 + shift, z + 3), PDBlocksDungeon.SHADOWDUNGEONDOOR_2.get().defaultBlockState(), 3);
+        // 清场（排除玩家，避免多人模式下被踢出世界）；中心随整体上移保持覆盖五层
+        Vec3 center = new Vec3(x, y - 42 + shift, z);
         for (Entity entity : level.getEntitiesOfClass(Entity.class,
                 new AABB(center, center).inflate(44 / 2d), e -> !(e instanceof Player))) {
             if (!entity.level().isClientSide()) {
@@ -400,7 +436,7 @@ public class BrokenShadowDungeonProtalBlock extends BaseEntityBlock implements S
             Layer layer = LAYERS[i];
             String template = layer.templates()[rolls[i] - 1];
             ServerScheduler.schedule(i + 1, () -> placeTemplate(serverLevel,
-                    BlockPos.containing(x - 11, y + layer.yOffset(), z - 11), template));
+                    BlockPos.containing(x - 11, y + layer.yOffset() + shift, z - 11), template));
         }
     }
 
