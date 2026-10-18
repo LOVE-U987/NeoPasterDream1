@@ -658,3 +658,45 @@
 *   **根因**：`achievement_shadow_start`（灯影之下）在数据包中仅有 `changed_dimension`（to=lamp_shadow_world）触发器一条授予路径，实机未稳定生效（0.9.4 真·影之床误用该进度导致首入死锁已是同一根因的先例）；暮影长床再入唯一前置即该进度 → 首入后永远拿不到 → 再入死锁。VERIFY 套件只覆盖真床首入（hide_9 门控），未覆盖暮影长床再入，缺口未被发现
 *   **修复**（`ShadowBedBlock#teleportToLampShadowWorld`）：跨维度传送成功后由代码补授 `PDAdvancements.award(SHADOW_START)`，语义与原版一致（en_us 描述即 "Enter the dream 'Beneath Lamp & Shadow'"）；`award` 幂等（已完成/holder 缺失无副作用），与数据包触发器双路径兼容；真床、暮影长床、入睡事件（`PDSleepEvents`）三条首入路径共用该方法，全部覆盖；研究台（`ResearchTableBlockEntity` 对同进度的检查）一并受益
 *   **验证**：`gradlew :PasterDream:compileJava` BUILD SUCCESSFUL；实机验证通过（2026-10-18 用户确认）：首入灯影 → 返回 → 夜晚右键自制暮影长床可再次进入
+
+### 新增：梦境炼药锅 KubeJS RecipeSchema 联动（三系统联动集齐）
+
+*   **背景**：炼药锅已完成 `dream_brewing` 数据驱动化（见下条改造），本次补齐其 KubeJS RecipeSchema 联动，与暗影高炉/精铸工坊统一为 `event.recipes.pasterdream.<type>` 写法
+*   **新增**（`PDRecipeSchemas`）：`DREAM_BREWING` schema——位置参数（产物, 3 材料数组，`IntBounds(3,3)` 防呆），可选链式参数 `guidingDrug(...)` / `craftTick(...)`；`PasterDreamKubeJSPlugin` 注册到 `pasterdream:dream_brewing`
+*   **细节**：`guiding_drug` 的 KubeJS key 用 `defaultOptional()`（非 `optional(Ingredient)`）——schema 类在 KubeJS 注册期初始化，不可触碰 `PDItems.GUIDING_DRUG` DeferredHolder；脚本未设置时不写该字段，由 MapCodec 的 `optionalFieldOf` 默认值（药引瓶）兜底，两侧解耦
+*   **测试产物**：`pd_recipe_kubejs_test.js` 追加 2 条炼药锅测试配方（苹果/金锭/荧石粉→金苹果，缺省引导药剂；面包/小麦/糖→蛋糕，指定 `guidingDrug('minecraft:milk_bucket')`）；VERIFY 套件 `kubejs-recipes` 扩展：`dream_brewing` 数据包配方 ≥5、KubeJS 注入 ≥2、`DreamBrewingInput`（药引瓶+测试材料）`getRecipeFor` 实际匹配命中金苹果
+*   **验证**：`gradlew compileJava` 全模块 BUILD SUCCESSFUL（修复 `ItemStack` 双重包装一处）；改动 4 文件行尾 LF 全过；实机待验：`kubejs-recipes` 套件全绿、JEI 炼药锅分类显示脚本配方
+
+### 新增：暗影高炉 + 精铸工坊 KubeJS 配方联动；工坊配方 JSON 数据驱动化（经用户确认）
+
+*   **背景**：暗影高炉（`shadow_blasting`）与精铸工坊（`weapon_forge`）配方无法被 KubeJS 增删改；工坊 13 条锻造配方还硬编码在 BlockEntity 内（与 JEI 展示层构成双份硬编码副本）。经确认：两系统均走 KubeJS RecipeSchema 模式，工坊先行数据驱动重构，梦境炼药锅本次不动
+*   **工坊配方数据驱动化**（参照暗影高炉模式）：新增 `WeaponWorkshopRecipe implements Recipe<WeaponWorkshopRecipeInput>`（字段：`ingredients`×5 / `result` / `inlay`（JEI 镶嵌槽展示标记）/ `final_result`（JEI 成品预览））+ `WeaponWorkshopRecipeInput`（材料槽 0-4 只读视图）+ `pasterdream:weapon_forge` RecipeType/Serializer（MapCodec + StreamCodec，ingredients 固定 5 格校验，长度不符报错而非静默失效）；13 条原配方迁移为 JSON（`data/pasterdream/recipe/weapon_forge/`，物品与产物逐一保真）；`WeaponWorkshopBlockEntity` 删除硬编码配方表改走 `RecipeManager.getRecipeFor`，附魔合并（同名取最高）与镶嵌结算保留为锻造通用行为
+*   **KubeJS RecipeSchema 联动**：`PasterDreamKubeJSPlugin#registerRecipeSchemas` 注册两套 schema（`PDRecipeSchemas`，仅被插件类引用，KubeJS 缺席不加载）；玩家脚本写法——`event.recipes.pasterdream.shadow_blasting('产物', '原料').byResult(...).blastingTick(50).spendFluidFuel(100).spendFuel(0)`、`event.recipes.pasterdream.weapon_forge('产物', [5 材料]).inlay(true).finalResult(...)`；schema 生成的 JSON 与 MapCodec 字段一一对应，经合成数据包进 vanilla RecipeManager 加载链（数据包覆盖/JEI/配方查询自然生效）
+*   **JEI 展示层同步**：`WeaponWorkshopJeiRecipe` 删除 13 条硬编码展示数据，改从运行时 RecipeManager 动态读取（同暗影高炉模式：客户端世界未就绪注册空列表、配方重载自动补全），数据包增删改配方后 JEI 自动跟随；行为差异（有意）：原展示层材料数量角标（×2/×3 等）与实际「每槽各扣 1」不符，现按实际消耗展示
+*   **测试产物**：`run/kubejs/server_scripts/pd_recipe_kubejs_test.js`（高炉 ×2 + 工坊 ×2 测试配方，VERIFY 全绿后可删）；新增 VERIFY 专项套件 `kubejs-recipes`（`PDRecipeKubeJsVerifyHooks`：RecipeType 注册 / 数据包配方装载 ≥13+≥5 / kubejs 命名空间注入 ≥2+≥2 / 脚本配方 getRecipeFor 实际匹配；不在 all 默认集合，`PASTERDREAM_VERIFY_SUITES=kubejs-recipes` 显式开启）
+*   **验证**：`gradlew compileJava` 全模块 BUILD SUCCESSFUL（修复 3 处：`SingleRecipeInput` 泛型绑定、`ModList.get().isLoaded` 静态调用、`getAllRecipesFor` 泛型方法签名）；本次 25 个改动/新建文件行尾 LF 全过；smoketest 工坊锻造 E2E（配方匹配/附魔合并断言）走新 RecipeManager 链路预期原样通过；实机待验：KubeJS 脚本注册配方生效、JEI 工坊分类动态显示、`kubejs-recipes` 套件全绿
+
+### 改造：梦境炼药锅 → 类酿造台自动酿造——双通道配方 + 梦之强化 + 配方数据包化（经用户确认）
+
+*   **背景**：原坩埚为「引导药剂+3材料→法术卷轴」按钮触发炼制，5 个法术配方硬编码于方块实体，无法数据包覆盖、KubeJS 无法增删改，且不产出药水
+*   **槽位重排（酿造台式）**：槽 0 引导药剂槽 → 通用材料槽（药水酿造材料/法术引导药剂双用）；槽 1-3 材料槽 → 药水瓶槽（水瓶/任意药水，兼作法术配方材料位）；槽 4-6（融梦桶/空桶回收/成品）不变；GUI 坐标与纹理不动
+*   **双通道自动酿造**（移除原「炼制」按钮，材料放入即由服务端 tick 自动启动）：法术配方精确匹配优先（时长由配方 `craft_tick` 决定，默认 60 tick，时序与原版 procedure 语义一致：末前 2 tick 消耗/末前 1 tick 产物入槽 6）；否则走通用药水酿造（400 tick 与原版一致，`Level#potionBrewing()` 判定与执行——NeoForge patched 实例自动涵盖原版全部配方与所有模组注册的 `IBrewingRecipe`，无需逐一适配）；酿造中材料被拿走/替换即中断（原版酿造台行为）；GUI 新增酿造进度条（DataSlot 同步，原按钮位置）
+*   **梦之强化**（仅药水酿造产物）：新增 `PDDataComponents.DREAM_ENHANCED` 标记组件 + `DreamPotionEnhancer`——持续型效果时长 ×1.5、即时型效果等级 +1（无限时长保持原样）；实现为清空 potion 字段后强化效果全量写入 customEffects（避免原版效果+强化效果双重叠加），药水原名经 `ITEM_NAME` 组件以翻译键保留（无斜体）；tooltip 追加「梦之强化」提示行（双语，LIGHT_PURPLE）
+*   **配方数据包化（技术债清理，经用户确认）**：新增 `pasterdream:dream_brewing` RecipeType + MapCodec/StreamCodec 序列化器（同 shadow_blasting 模式，字段：`guiding_drug`/`materials`×3/`result`/`craft_tick`）+ 5 个配方 JSON（`data/pasterdream/recipe/dream_brewing/`，内容与原硬编码一致）；BlockEntity 改走 `RecipeManager.getAllRecipesFor` 查询（旧存档酿造中恢复可自愈重匹配，配方按 ID 比对）；JEI 改从运行时 RecipeManager 读配方（数据包增删改自动跟随，同暗影高炉模式）；KubeJS 可按配方 ID 增删改（如 `server.recipes.remove({ id: 'pasterdream:dream_brewing/lightning_spell' })`）
+*   **行为差异（有意）**：法术产物不再弹出地面改为写入成品槽 6 由玩家取走（自动酿造下 GUI 保持打开，成品槽占用时法术酿造不启动）；PasterDreamSpells 未安装时引用其物品的配方 JSON 解析失败跳过（伴随 error 日志，属数据包生态预期行为，功能正确）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL（修复 `DreamBrewingRecipe` 的 `getResultItem` 方法引用歧义一处）；`check_lang.py` 双语全过；18 个改动/新建文件行尾 LF 全过；`BUTTON_CRAFT`/`tryStartCraft`/`activeRecipeIndex` 残留清零；smoketest 坩埚链路同步适配（自动酿造断言 + 产物写入槽 6 断言，移除按钮点击与掉落物断言）；实机待验：法术/药水双通道酿造、模组配方兼容（Iron's Spells 等注册配方）、梦之强化数值、进度条渲染
+
+### 修复：玄岩药水酿造配方移植缺失——JEI 无酿造步骤、药水无法产出（用户实机反馈）
+
+*   **现象**：JEI 中点玄岩药水看不到酿造步骤；原版酿造台与梦境炼药锅均无法产出该药水（用户实机反馈「药水配方 JEI 看不到」，经现象定位 + 配方清单比对确认）
+*   **根因**：原模组酿造配方 `Brewing0BrewingRecipe`（粗制药水 + 玄武岩蜗牛壳 → 玄岩药水，Forge 1.20.1 `BrewingRecipeRegistry` 注册）在 1.20.1 → 1.21.1 移植时整体缺失——移植版从未向 NeoForge 注册过任何药水酿造配方；蜗牛壳物品与玄岩药水本身均已移植，唯独配方断链
+*   **新增**（`recipe/BasaltBrewingRecipe` + `registry/PDBrewingRecipes`）：还原原配方语义（`isInput`=任意药水容器且内容为粗制，`isIngredient`=玄武岩蜗牛壳，`getOutput`=保持容器类型替换药水内容为玄岩）；注册方式为 NeoForge 1.21.1 事件 `RegisterBrewingRecipesEvent`（**注意：本版本已移除 BREWING_RECIPES 注册表**，改为 `PotionBrewing#bootstrap` 时游戏总线广播事件、模组经 `event.getBuilder().addRecipe(IBrewingRecipe)` 收集式注册；`@EventBusSubscriber` 注解的 `bus` 参数已过时，事件按类型自动路由）
+*   **生效范围**：原版酿造台可酿造 + JEI 酿造分类自动展示步骤（`BrewingRecipeMaker` 数据源含 `IBrewingRecipe` 集合）+ 梦境炼药锅通用酿造通道自动兼容（`potionBrewing()` 三件套委托链路）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL（零警告）；行尾 LF 复查通过；实机待验：粗制药水+蜗牛壳在酿造台/坩埚中产出玄岩药水、JEI 显示酿造步骤（普通/喷溅/滞留三容器变体）
+
+### 改进：坩埚 JEI 分类展示兼容的药水酿造配方——R 页自动关联坩埚（用户实机反馈）
+
+*   **现象**：JEI「梦境炼药锅」分类里看不到兼容的原版药水配方，对原版药水按 R 也只显示原版酿造台分类（功能上坩埚通用酿造已兼容，但展示层缺位）
+*   **根因**：`DreamCauldronJeiRecipe` 仅展示 5 个法术配方，未把通用酿造通道兼容的配方（原版 mixes + 模组 IBrewingRecipe）转换为坩埚展示配方；JEI 配方页按「配方的 output」自动关联分类，药水未被注册为坩埚分类配方的产物，自然只关联酿造台
+*   **改进**（`DreamCauldronJeiRecipe` + `DreamCauldronJeiCategory`）：`build()` 扩展双数据源——法术配方（dream_brewing 数据包，原有）之外，从 `level.potionBrewing()` 枚举：① 原版药水混合（材料候选经 `isIngredient`/`isContainerIngredient` 过滤后 × potion registry 全量药水实例笛卡尔积，`hasMix`/`mix` 试探出全部 (材料, 药水→成品) 组合）；② NeoForge `IBrewingRecipe`（`BrewingRecipe` 具体类走 `getInput/getIngredient/getOutput` 精确展示，其余实现药水域试探、每配方取首条匹配防重复爆炸）；转换展示为坩埚配方（材料入槽 0 位、药水容器入瓶槽位、融梦桶催化剂），药水酿造条目标注 `dreamEnhanced` 并在成品槽 tooltip 提示「坩埚酿造将获得梦之强化」（双语）；空栈槽位（药水酿造无空桶返还/仅 1 瓶）不再渲染
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`check_lang.py` 双语全过；行尾 LF 复查通过；实机待验：坩埚分类出现原版/模组药水酿造条目（约 80+ 条）、药水 R 页同时显示酿造台与坩埚两个分类、强化 tooltip 生效

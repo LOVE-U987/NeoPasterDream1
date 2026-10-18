@@ -1,0 +1,27 @@
+{
+  "type": "pasterdream:weapon_forge",
+  "ingredients": [
+    {
+      "item": "pasterdream:titanium_sword"
+    },
+    {
+      "item": "pasterdream:shadow_light_0"
+    },
+    {
+      "item": "pasterdream:white_crystal"
+    },
+    {
+      "item": "minecraft:nether_star"
+    },
+    {
+      "item": "pasterdream:meltdream_crystal_0"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:white_sword_embryo"
+  },
+  "inlay": true,
+  "final_result": {
+    "id": "pasterdream:white_sword"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "pasterdream:weapon_forge",
+  "ingredients": [
+    {
+      "item": "minecraft:fishing_rod"
+    },
+    {
+      "item": "minecraft:powder_snow_bucket"
+    },
+    {
+      "item": "minecraft:diamond"
+    },
+    {
+      "item": "pasterdream:meltdream_crystal_0"
+    },
+    {
+      "item": "pasterdream:snow_vow_head"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:star_wish_rod_embryo"
+  },
+  "inlay": true,
+  "final_result": {
+    "id": "pasterdream:star_wish_rod"
+  }
+}

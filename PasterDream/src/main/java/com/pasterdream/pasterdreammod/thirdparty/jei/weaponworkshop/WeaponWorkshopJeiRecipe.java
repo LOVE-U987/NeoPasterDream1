@@ -1,6 +1,11 @@
 package com.pasterdream.pasterdreammod.thirdparty.jei.weaponworkshop;
 
-import com.pasterdream.pasterdreammod.registry.PDItems;
+import com.pasterdream.pasterdreammod.PasterDreamMod;
+import com.pasterdream.pasterdreammod.recipe.WeaponWorkshopRecipe;
+import com.pasterdream.pasterdreammod.registry.PDRecipeTypes;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -8,15 +13,19 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * 精铸工坊 JEI 展示配方数据。
  * <p>
- * 移植自原版 {@code WeaponworkshopDataRecipe}，13 组硬编码配方：
- * 5 输入 + 1 镶嵌物 + 胚体/成品双产出。
+ * 配方数据不再硬编码：从客户端 RecipeManager 的
+ * {@code pasterdream:weapon_forge}（{@link WeaponWorkshopRecipe}）动态读取，
+ * 与数据包 / KubeJS 注册的配方实时保持一致（与暗影高炉 JEI 同模式）。
+ * 展示结构：5 输入 + 镶嵌物 + 胚体/成品双产出。
  */
 public class WeaponWorkshopJeiRecipe {
 
@@ -43,178 +52,46 @@ public class WeaponWorkshopJeiRecipe {
     }
 
     private static final TagKey<Item> ENHANCE_STONE = TagKey.create(Registries.ITEM,
-            ResourceLocation.fromNamespaceAndPath("pasterdream", "enhance_stone"));
+            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "enhance_stone"));
 
-    /** 构建原版全部 13 组精铸工坊配方 */
-    public static List<WeaponWorkshopJeiRecipe> build() {
-        Ingredient enhance = Ingredient.of(ENHANCE_STONE);
-        Ingredient air = Ingredient.of(Items.AIR);
-        List<WeaponWorkshopJeiRecipe> list = new ArrayList<>(13);
-
-        // 1 泰拉之剑
-        list.add(create(
-                PDItems.TRUEST_MOLTENGOLD_SWORD.get(),
-                PDItems.TRUE_GRASS_SWORD.get(),
-                PDItems.TRUE_TIDE_SWORD.get(),
-                PDItems.TRUE_DESERT_SWORD.get(),
-                PDItems.BROKEN_HERO_SWORD.get(),
-                air,
-                stack(PDItems.TERRASWORD_EMBRYO.get()),
-                stack(PDItems.TERRA_SWORD.get())));
-
-        // 2 梦境法杖
-        list.add(create(
-                PDItems.MELTDREAM_CRYSTAL_0.get(),
-                PDItems.TITANIUM_INGOT.get(),
-                PDItems.BLACKSTICK.get(),
-                PDItems.DYEDREAM_DUST.get(),
-                PDItems.DYEDREAMQUARTZ.get(),
-                air,
-                stack(PDItems.DREAM_WAND_EMBRYO.get()),
-                stack(PDItems.DREAM_WAND.get())));
-
-        // 3-7 暗影侵蚀工具族
-        list.add(create(
-                stack(Items.IRON_SWORD, 1),
-                stack(PDItems.BLACKMETAL_INGOT.get(), 2),
-                stack(PDItems.NIGHTMARE_FUEL.get(), 1),
-                stack(Items.CRYING_OBSIDIAN, 3),
-                stack(PDItems.BLACKSTICK.get(), 1),
-                enhance,
-                stack(PDItems.SHADOW_EROSION_SWORD_EMBRYO.get()),
-                stack(PDItems.SHADOW_EROSION_SWORD.get())));
-        list.add(create(
-                stack(Items.IRON_PICKAXE, 1),
-                stack(PDItems.BLACKMETAL_INGOT.get(), 2),
-                stack(PDItems.NIGHTMARE_FUEL.get(), 1),
-                stack(Items.CRYING_OBSIDIAN, 3),
-                stack(PDItems.BLACKSTICK.get(), 1),
-                enhance,
-                stack(PDItems.SHADOW_EROSION_PICKAXE_EMBRYO.get()),
-                stack(PDItems.SHADOW_EROSION_PICKAXE.get())));
-        list.add(create(
-                stack(Items.IRON_AXE, 1),
-                stack(PDItems.BLACKMETAL_INGOT.get(), 2),
-                stack(PDItems.NIGHTMARE_FUEL.get(), 1),
-                stack(Items.CRYING_OBSIDIAN, 3),
-                stack(PDItems.BLACKSTICK.get(), 1),
-                enhance,
-                stack(PDItems.SHADOW_EROSION_AXE_EMBRYO.get()),
-                stack(PDItems.SHADOW_EROSION_AXE.get())));
-        list.add(create(
-                stack(Items.IRON_SHOVEL, 1),
-                stack(PDItems.BLACKMETAL_INGOT.get(), 2),
-                stack(PDItems.NIGHTMARE_FUEL.get(), 1),
-                stack(Items.CRYING_OBSIDIAN, 3),
-                stack(PDItems.BLACKSTICK.get(), 1),
-                enhance,
-                stack(PDItems.SHADOW_EROSION_SHOVEL_EMBRYO.get()),
-                stack(PDItems.SHADOW_EROSION_SHOVEL.get())));
-        list.add(create(
-                stack(Items.IRON_HOE, 1),
-                stack(PDItems.BLACKMETAL_INGOT.get(), 2),
-                stack(PDItems.NIGHTMARE_FUEL.get(), 1),
-                stack(Items.CRYING_OBSIDIAN, 3),
-                stack(PDItems.BLACKSTICK.get(), 1),
-                enhance,
-                stack(PDItems.SHADOW_EROSION_HOE_EMBRYO.get()),
-                stack(PDItems.SHADOW_EROSION_HOE.get())));
-
-        // 8 白剑
-        list.add(create(
-                stack(PDItems.TITANIUM_SWORD.get(), 1),
-                stack(PDItems.SHADOW_LIGHT_0.get(), 9),
-                stack(PDItems.WHITE_CRYSTAL.get(), 1),
-                stack(Items.NETHER_STAR, 1),
-                stack(PDItems.MELTDREAM_CRYSTAL_0.get(), 1),
-                enhance,
-                stack(PDItems.WHITE_SWORD_EMBRYO.get()),
-                stack(PDItems.WHITE_SWORD.get())));
-
-        // 9 暗影之剑
-        list.add(create(
-                stack(PDItems.SHADOW_EROSION_SWORD.get(), 1),
-                stack(PDItems.NIGHTMARE_FUEL.get(), 17),
-                stack(PDItems.SHADOW_HILT.get(), 1),
-                stack(PDItems.BLACKMETAL_INGOT.get(), 1),
-                stack(PDItems.PERGAMYN.get(), 3),
-                enhance,
-                stack(PDItems.SHADOW_SWORD_EMBRYO.get()),
-                stack(PDItems.SHADOW_SWORD.get())));
-
-        // 10 星愿钓竿
-        list.add(create(
-                stack(Items.FISHING_ROD, 1),
-                stack(Items.POWDER_SNOW_BUCKET, 1),
-                stack(Items.DIAMOND, 1),
-                stack(PDItems.MELTDREAM_CRYSTAL_0.get(), 1),
-                stack(PDItems.SNOW_VOW_HEAD.get(), 1),
-                enhance,
-                stack(PDItems.STAR_WISH_ROD_EMBRYO.get()),
-                stack(PDItems.STAR_WISH_ROD.get())));
-
-        // 11 暗影漩涡之书（无第二产出）
-        list.add(create(
-                stack(Items.BOOK, 1),
-                stack(PDItems.NIGHTMARE_FUEL.get(), 7),
-                stack(PDItems.BLACKMETAL_INGOT.get(), 1),
-                stack(PDItems.PURE_HORROR.get(), 1),
-                stack(PDItems.PEN_AND_INK.get(), 1),
-                air,
-                stack(PDItems.SHADOW_VORTEX_BOOK.get()),
-                ItemStack.EMPTY));
-
-        // 12 冰影锤
-        list.add(create(
-                stack(Items.DIAMOND, 8),
-                stack(Items.BLUE_ICE, 1),
-                stack(PDItems.BLACKMETAL_INGOT.get(), 2),
-                stack(PDItems.BLACKSTICK.get(), 1),
-                stack(PDItems.PURE_HORROR.get(), 1),
-                enhance,
-                stack(PDItems.ICESHADOW_HAMMER_EMBRYO.get()),
-                stack(PDItems.ICESHADOW_HAMMER.get())));
-
-        // 13 草莓之心
-        list.add(create(
-                stack(PDItems.SILVER_BELL.get(), 1),
-                stack(PDItems.DYEDREAM_INGOT.get(), 1),
-                stack(Items.STRING, 5),
-                stack(PDItems.DYEDREAM_PLANKS.get(), 5),
-                stack(PDItems.WHITE_CRYSTAL.get(), 1),
-                enhance,
-                stack(PDItems.STRAWBERRY_HEART.get()),
-                ItemStack.EMPTY));
-
+    /**
+     * 从客户端 RecipeManager 读取全部 weapon_forge 配方构建 JEI 展示列表
+     * <p>客户端世界未就绪时返回空列表，由 JEI 配方重载自动补全（与暗影高炉同模式）。</p>
+     *
+     * @return JEI 展示配方列表
+     */
+    public static List<WeaponWorkshopJeiRecipe> fromRecipeManager() {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) {
+            PasterDreamMod.LOGGER.debug("[JEI] 客户端世界未就绪，精铸工坊配方待配方重载后自动补全");
+            return Collections.emptyList();
+        }
+        List<WeaponWorkshopJeiRecipe> list = new ArrayList<>();
+        for (RecipeHolder<WeaponWorkshopRecipe> holder
+                : level.getRecipeManager().getAllRecipesFor(PDRecipeTypes.WEAPON_FORGE.get())) {
+            list.add(fromRecipe(holder.value(), level.registryAccess()));
+        }
         return list;
     }
 
-    private static ItemStack stack(Item item) {
-        return item.getDefaultInstance();
-    }
-
-    private static ItemStack stack(Item item, int count) {
-        return new ItemStack(item, count);
-    }
-
-    private static WeaponWorkshopJeiRecipe create(Object a, Object b, Object c, Object d, Object e,
-                                                   Object inlay, ItemStack out1, ItemStack out2) {
-        return new WeaponWorkshopJeiRecipe(
-                toIngredient(a), toIngredient(b), toIngredient(c),
-                toIngredient(d), toIngredient(e), toIngredient(inlay),
-                out1, out2);
-    }
-
-    private static Ingredient toIngredient(Object o) {
-        if (o instanceof Ingredient ingredient) {
-            return ingredient;
-        }
-        if (o instanceof Item item) {
-            return Ingredient.of(item);
-        }
-        if (o instanceof ItemStack stack) {
-            return Ingredient.of(stack);
-        }
-        return Ingredient.EMPTY;
+    /**
+     * 把数据驱动锻造配方转换为 JEI 展示配方
+     *
+     * @param recipe     锻造配方
+     * @param registries 注册表访问（解析产物物品栈）
+     * @return JEI 展示配方
+     */
+    private static WeaponWorkshopJeiRecipe fromRecipe(WeaponWorkshopRecipe recipe, HolderLookup.Provider registries) {
+        List<Ingredient> inputs = recipe.getIngredients();
+        Ingredient air = Ingredient.of(Items.AIR);
+        // 材料不足 5 格时以 AIR 补齐（防御：坏配方仍可展示不崩溃）
+        Ingredient p0 = inputs.size() > 0 ? inputs.get(0) : air;
+        Ingredient p1 = inputs.size() > 1 ? inputs.get(1) : air;
+        Ingredient p2 = inputs.size() > 2 ? inputs.get(2) : air;
+        Ingredient p3 = inputs.size() > 3 ? inputs.get(3) : air;
+        Ingredient p4 = inputs.size() > 4 ? inputs.get(4) : air;
+        Ingredient inlay = recipe.isInlay() ? Ingredient.of(ENHANCE_STONE) : air;
+        return new WeaponWorkshopJeiRecipe(p0, p1, p2, p3, p4, inlay,
+                recipe.getResultItem(registries), recipe.getFinalResult());
     }
 }
