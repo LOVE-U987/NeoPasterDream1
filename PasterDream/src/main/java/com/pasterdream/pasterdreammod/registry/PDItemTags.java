@@ -49,4 +49,17 @@ public final class PDItemTags {
             Registries.ITEM,
             ResourceLocation.fromNamespaceAndPath("pasterdream", "meltdream_chest_crystal")
     );
+
+    /**
+     * 宝藏类物品标签 —— 无法通过合成获取、仅由战利品表提供的传说宝藏。
+     * <p>
+     * 定义在 {@code data/pasterdream/tags/item/paster_treasure.json}（10 件，
+     * 还原自原版废弃逻辑 MeltdreamChestLootsPr1Procedure 的宝藏池）；
+     * 融梦水晶箱传说档附加池按"10 选 1 必出"提供，客户端
+     * {@code PDClientEvents#onItemTooltip} 据此显示"宝藏类物品"提示。
+     */
+    public static final TagKey<Item> PASTER_TREASURE = TagKey.create(
+            Registries.ITEM,
+            ResourceLocation.fromNamespaceAndPath("pasterdream", "paster_treasure")
+    );
 }

@@ -5,14 +5,17 @@ import com.pasterdream.pasterdreammod.client.audio.BiomeMusicRegistry;
 import com.pasterdream.pasterdreammod.client.audio.ModMusicManager;
 import com.pasterdream.pasterdreammod.client.audio.MusicSystemFactory;
 import com.pasterdream.pasterdreammod.registry.PDBiomes;
+import com.pasterdream.pasterdreammod.registry.PDItemTags;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,6 +24,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+
+import java.util.List;
 
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
@@ -632,6 +638,30 @@ public class PDClientEvents {
                     0.006 + random.nextDouble() * 0.01,
                     (random.nextDouble() - 0.5) * 0.002
             );
+        }
+    }
+
+    /**
+     * 物品悬浮提示处理：宝藏类物品（paster_treasure 标签）显示专属说明。
+     * <p>
+     * 还原自原版 {@code ItemTooltips0Procedure} 的 paster_treasure 分支：
+     * 按住 Shift 显示"宝藏类物品 无法通过合成获取"，否则提示按 Shift 查看。
+     * 标签定义见 {@code data/pasterdream/tags/item/paster_treasure.json}（11 件宝藏）。
+     *
+     * @param event 物品悬浮提示事件
+     */
+    @SubscribeEvent
+    public static void onItemTooltip(ItemTooltipEvent event) {
+        ItemStack stack = event.getItemStack();
+        if (!stack.is(PDItemTags.PASTER_TREASURE)) {
+            return;
+        }
+        List<Component> tooltip = event.getToolTip();
+        if (Screen.hasShiftDown()) {
+            tooltip.add(Component.translatable("tooltip.pasterdream.paster_treasure.header"));
+            tooltip.add(Component.translatable("tooltip.pasterdream.paster_treasure.descr"));
+        } else {
+            tooltip.add(Component.translatable("tooltip.pasterdream.paster_treasure.hint"));
         }
     }
 }
