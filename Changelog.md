@@ -700,3 +700,11 @@
 *   **根因**：`DreamCauldronJeiRecipe` 仅展示 5 个法术配方，未把通用酿造通道兼容的配方（原版 mixes + 模组 IBrewingRecipe）转换为坩埚展示配方；JEI 配方页按「配方的 output」自动关联分类，药水未被注册为坩埚分类配方的产物，自然只关联酿造台
 *   **改进**（`DreamCauldronJeiRecipe` + `DreamCauldronJeiCategory`）：`build()` 扩展双数据源——法术配方（dream_brewing 数据包，原有）之外，从 `level.potionBrewing()` 枚举：① 原版药水混合（材料候选经 `isIngredient`/`isContainerIngredient` 过滤后 × potion registry 全量药水实例笛卡尔积，`hasMix`/`mix` 试探出全部 (材料, 药水→成品) 组合）；② NeoForge `IBrewingRecipe`（`BrewingRecipe` 具体类走 `getInput/getIngredient/getOutput` 精确展示，其余实现药水域试探、每配方取首条匹配防重复爆炸）；转换展示为坩埚配方（材料入槽 0 位、药水容器入瓶槽位、融梦桶催化剂），药水酿造条目标注 `dreamEnhanced` 并在成品槽 tooltip 提示「坩埚酿造将获得梦之强化」（双语）；空栈槽位（药水酿造无空桶返还/仅 1 瓶）不再渲染
 *   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`check_lang.py` 双语全过；行尾 LF 复查通过；实机待验：坩埚分类出现原版/模组药水酿造条目（约 80+ 条）、药水 R 页同时显示酿造台与坩埚两个分类、强化 tooltip 生效
+
+### 修复：染梦粉尘与小撮染梦粉尘配方未对齐——比例定为 1:4（有意差异，经用户确认）
+
+*   **现象**：1 染梦粉尘可分解为 9 小撮染梦粉尘，但 4 小撮（2×2）即可合成 1 染梦粉尘——4→1→9 循环每轮白赚 5 个小撮，配方永动机
+*   **根因**：原模组仅 1:9 一对配方（crafting_113 分解 1→9 / crafting_94 合成 9→1）；移植时多写出「4小撮→1粉尘」（`dyedream_dust_1.json`），与原模组同款「9小撮→1粉尘」（`dyedream_dust_2.json`）并存，与分解 1→9 三者互不咬合
+*   **修复**（经用户确认定为 1:4，有意差异：原模组为 1:9，粉尘获取提速 2.25 倍）：分解 `dyedream_dust_piece_1.json` 改为 1 粉尘→4 小撮（category `food`→`misc` 贴原模组口径）；删除多余的 `dyedream_dust_2.json`（9小撮→1粉尘），保留 `dyedream_dust_1.json`（4小撮→1粉尘）为唯一合成路径；`tag_audit.json` 同步移除该条目
+*   **波折**：首测仍见 1→9——`bin/main`（Eclipse JDT/VSCode 输出目录）资源未随 src 刷新，手动同步解决；二测仍见 9→1——`dyedream_dust_1.json` 中途被并行协作者改回 shapeless 9→1（等效复活已删的 `dust_2`），改回 shaped 2×2（4小撮）并同步 src/build/bin 三份副本
+*   **验证**：改动 JSON 可解析、行尾 LF 复查通过；src/bin/build 三份副本逐项一致（dust_1=2×2 四小撮、piece_1=1→4、dust_2 不存在）；全库无 `dyedream_dust_2` 引用残留；实机待验：配方书 1↔4 互转正常、9 小撮不再可合成粉尘
