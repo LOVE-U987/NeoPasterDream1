@@ -3,6 +3,7 @@ package com.pasterdream.pasterdreammod.thirdparty.jei.dreamcauldron;
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -87,14 +88,27 @@ public final class DreamCauldronJeiCategory implements IRecipeCategory<DreamCaul
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, DreamCauldronJeiRecipe recipe, IFocusGroup focuses) {
         // 槽位坐标与原版 JEI 完全一致：
-        // 上排 3 材料（对应坩埚槽 1-3），左下引导药剂（槽 0），右上融梦液桶（催化剂），
-        // 中下法术成品（槽 6），右下空桶返还（槽 5）
+        // 上排 3 瓶槽（对应坩埚槽 1-3，药水酿造仅展示第一瓶），左下材料（槽 0），
+        // 右上融梦液桶（催化剂），中下成品（槽 6），右下空桶返还（槽 5，仅法术配方场景）
         builder.addSlot(RecipeIngredientRole.INPUT, 61, 19).addItemStack(recipe.input2);
-        builder.addSlot(RecipeIngredientRole.INPUT, 89, 19).addItemStack(recipe.input3);
-        builder.addSlot(RecipeIngredientRole.INPUT, 117, 19).addItemStack(recipe.input4);
+        if (!recipe.input3.isEmpty()) {
+            builder.addSlot(RecipeIngredientRole.INPUT, 89, 19).addItemStack(recipe.input3);
+        }
+        if (!recipe.input4.isEmpty()) {
+            builder.addSlot(RecipeIngredientRole.INPUT, 117, 19).addItemStack(recipe.input4);
+        }
         builder.addSlot(RecipeIngredientRole.INPUT, 17, 50).addItemStack(recipe.input1);
         builder.addSlot(RecipeIngredientRole.CATALYST, 170, 23).addItemStack(recipe.input5);
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 89, 50).addItemStack(recipe.output2);
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 170, 77).addItemStack(recipe.output1);
+
+        IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 89, 50)
+                .addItemStack(recipe.output2);
+        if (recipe.dreamEnhanced) {
+            // 药水酿造配方：提示坩埚产出附加梦之强化
+            outputSlot.addRichTooltipCallback((view, tooltip) ->
+                    tooltip.add(Component.translatable("jei.pasterdream.dream_cauldron.dream_enhanced_note")));
+        }
+        if (!recipe.output1.isEmpty()) {
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 170, 77).addItemStack(recipe.output1);
+        }
     }
 }

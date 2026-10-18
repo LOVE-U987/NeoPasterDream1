@@ -1,0 +1,27 @@
+{
+  "type": "pasterdream:weapon_forge",
+  "ingredients": [
+    {
+      "item": "pasterdream:meltdream_crystal"
+    },
+    {
+      "item": "pasterdream:titanium_ingot"
+    },
+    {
+      "item": "pasterdream:blackstick"
+    },
+    {
+      "item": "pasterdream:dyedream_dust"
+    },
+    {
+      "item": "pasterdream:dyedreamquartz"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:dream_wand_embryo"
+  },
+  "inlay": false,
+  "final_result": {
+    "id": "pasterdream:dream_wand"
+  }
+}

@@ -5,15 +5,19 @@ import com.pasterdream.pasterdreammod.client.audio.BiomeMusicRegistry;
 import com.pasterdream.pasterdreammod.client.audio.ModMusicManager;
 import com.pasterdream.pasterdreammod.client.audio.MusicSystemFactory;
 import com.pasterdream.pasterdreammod.registry.PDBiomes;
+import com.pasterdream.pasterdreammod.registry.PDDataComponents;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
+import com.pasterdream.pasterdreammod.registry.PDItemTags;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -21,6 +25,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.minecraft.ChatFormatting;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+
+import java.util.List;
 
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
@@ -632,6 +640,40 @@ public class PDClientEvents {
                     0.006 + random.nextDouble() * 0.01,
                     (random.nextDouble() - 0.5) * 0.002
             );
+        }
+    }
+
+    /**
+     * 物品悬浮提示处理：
+     * <ul>
+     *   <li>宝藏类物品（paster_treasure 标签）显示专属说明——还原自原版
+     *       {@code ItemTooltips0Procedure}：按住 Shift 显示"宝藏类物品 无法通过合成获取"，
+     *       否则提示按 Shift 查看；</li>
+     *   <li>梦之强化药水（携带 dream_enhanced 组件）追加一行梦之强化提示，
+     *       标识其出自梦境炼药锅酿造（效果已被强化）。</li>
+     * </ul>
+     * 标签定义见 {@code data/pasterdream/tags/item/paster_treasure.json}（11 件宝藏）。
+     *
+     * @param event 物品悬浮提示事件
+     */
+    @SubscribeEvent
+    public static void onItemTooltip(ItemTooltipEvent event) {
+        ItemStack stack = event.getItemStack();
+        if (stack.get(PDDataComponents.DREAM_ENHANCED.get()) != null) {
+            // 梦之强化药水：在效果列表下方追加来源标识
+            event.getToolTip().add(Component.translatable("tooltip.pasterdream.dream_enhanced")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            return;
+        }
+        if (!stack.is(PDItemTags.PASTER_TREASURE)) {
+            return;
+        }
+        List<Component> tooltip = event.getToolTip();
+        if (Screen.hasShiftDown()) {
+            tooltip.add(Component.translatable("tooltip.pasterdream.paster_treasure.header"));
+            tooltip.add(Component.translatable("tooltip.pasterdream.paster_treasure.descr"));
+        } else {
+            tooltip.add(Component.translatable("tooltip.pasterdream.paster_treasure.hint"));
         }
     }
 }

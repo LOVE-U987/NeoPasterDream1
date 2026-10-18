@@ -10,6 +10,8 @@ import com.pasterdream.pasterdreammod.thirdparty.jei.debugcrystal.DebugCrystalJe
 import com.pasterdream.pasterdreammod.thirdparty.jei.debugcrystal.DebugCrystalJeiRenderer;
 import com.pasterdream.pasterdreammod.thirdparty.jei.dreamcauldron.DreamCauldronJeiCategory;
 import com.pasterdream.pasterdreammod.thirdparty.jei.dreamcauldron.DreamCauldronJeiRecipe;
+import com.pasterdream.pasterdreammod.thirdparty.jei.meltdreamchest.MeltdreamChestJeiCategory;
+import com.pasterdream.pasterdreammod.thirdparty.jei.meltdreamchest.MeltdreamChestJeiRecipe;
 import com.pasterdream.pasterdreammod.thirdparty.jei.shadowblastfurnace.ShadowBlastFurnaceJeiCategory;
 import com.pasterdream.pasterdreammod.thirdparty.jei.weaponworkshop.WeaponWorkshopJeiCategory;
 import com.pasterdream.pasterdreammod.thirdparty.jei.weaponworkshop.WeaponWorkshopJeiRecipe;
@@ -35,7 +37,9 @@ import java.util.List;
 /**
  * PasterDream 的 JEI 集成插件。
  * <p>
- * 分类：梦之坩埚 / 陶盆 / 暗影高炉 / 精铸工坊（13 组硬编码配方）。
+ * 分类：梦之坩埚 / 陶盆 / 暗影高炉（RecipeManager 动态）/
+ * 精铸工坊（weapon_forge RecipeManager 动态）/
+ * 融梦水晶箱战利品（实时解析战利品表 JSON，每池一页）。
  * <p>
  * 运行时收拢：调试水晶（{@code debug_wand_*}，130+ 个）在 JEI 物品列表中收拢为
  * 虚拟条目「调试水晶」（自定义原料类型，渲染沿用染梦列车贴图），避免挤占玩家 JEI 界面；
@@ -59,6 +63,7 @@ public class PDJeiPlugin implements IModPlugin {
         registration.addRecipeCategories(new ClaypotJeiCategory(helper));
         registration.addRecipeCategories(new ShadowBlastFurnaceJeiCategory(helper));
         registration.addRecipeCategories(new WeaponWorkshopJeiCategory(helper));
+        registration.addRecipeCategories(new MeltdreamChestJeiCategory(helper));
     }
 
     @Override
@@ -69,8 +74,14 @@ public class PDJeiPlugin implements IModPlugin {
         // 调用本方法，因此客户端世界未就绪时仅注册空列表，待下次重载自动补全，不会长期为空。
         registration.addRecipes(ShadowBlastFurnaceJeiCategory.SHADOW_BLAST_FURNACE_JEI_RECIPE_TYPE,
                 supplierShadowBlastRecipes());
+        // 精铸工坊配方来自运行时 RecipeManager（weapon_forge 数据驱动，与暗影高炉同模式）：
+        // 客户端世界未就绪时仅注册空列表，待下次重载自动补全
         registration.addRecipes(WeaponWorkshopJeiCategory.WEAPON_WORKSHOP_JEI_RECIPE_TYPE,
-                WeaponWorkshopJeiRecipe.build());
+                WeaponWorkshopJeiRecipe.fromRecipeManager());
+        // 融梦水晶箱战利品来自客户端资源包的战利品表 JSON：与暗影高炉同模式，
+        // 客户端世界未就绪时注册空列表，待 JEI 配方重载自动补全
+        registration.addRecipes(MeltdreamChestJeiCategory.MELTDREAM_CHEST_JEI_RECIPE_TYPE,
+                MeltdreamChestJeiRecipe.build());
     }
 
     /**
@@ -93,6 +104,7 @@ public class PDJeiPlugin implements IModPlugin {
         registration.addRecipeCatalysts(ClaypotJeiCategory.CLAYPOT_JEI_RECIPE_TYPE, PDItems.CLAYPAN_0.get());
         registration.addRecipeCatalysts(ShadowBlastFurnaceJeiCategory.SHADOW_BLAST_FURNACE_JEI_RECIPE_TYPE, PDItems.SHADOW_BLAST_FURNACE.get());
         registration.addRecipeCatalysts(WeaponWorkshopJeiCategory.WEAPON_WORKSHOP_JEI_RECIPE_TYPE, PDItems.WEAPON_WORKSHOP.get());
+        registration.addRecipeCatalysts(MeltdreamChestJeiCategory.MELTDREAM_CHEST_JEI_RECIPE_TYPE, PDItems.MELTDREAM_CHEST.get());
     }
 
     /**

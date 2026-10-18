@@ -122,6 +122,8 @@ public final class PDPortingVerifyTest {
      *   <li>{@code content}/{@code machines} — 暗影高炉/法杖扫射/angel_block_item</li>
      *   <li>{@code structures}/{@code structure} — 结构生成子系统</li>
      *   <li>{@code workshop} — 武器工坊群 E2E</li>
+     *   <li>{@code kubejs-recipes}/{@code kubejs_recipes}/{@code kubejs} — KubeJS 配方联动
+     *       （shadow_blasting/weapon_forge schema 注入与匹配；不在 all，须 dev 环境含 KubeJS 与测试脚本）</li>
      *   <li>{@code struct-dim}/{@code struct_dim} — 结构→维度映射</li>
      *   <li>{@code gallery}/{@code block-gallery} — 方块总览展台</li>
      *   <li>{@code entity-gallery}/{@code entity_gallery} — 实体展台</li>
@@ -186,7 +188,12 @@ public final class PDPortingVerifyTest {
         /** San 逐 tick 变化：SAN_VARIABILITY 属性被消费、San 随时间变动；不在 all */
         SAN_TICK("san-tick", "santick", "san"),
         /** 荒漠英雄之墓阶段 3：升级为『沉荆门』朔漠后附魔不得丢失 */
-        DESERT_TOMB("desert-tomb", "desert", "tomb");
+        DESERT_TOMB("desert-tomb", "desert", "tomb"),
+        /**
+         * KubeJS 配方联动专项（暗影高炉 + 精铸工坊 schema 注入与匹配）；
+         * 不在 all（依赖 dev 环境 localRuntime KubeJS 与 run/kubejs 测试脚本）。
+         */
+        KUBEJS_RECIPES("kubejs-recipes", "kubejs_recipes", "kubejs");
 
         private final String[] aliases;
 
@@ -282,7 +289,8 @@ public final class PDPortingVerifyTest {
                         LogUtils.getLogger().warn("[PDVerify] 未知套件名 '{}'，已忽略（合法: registry,core,dimensions,"
                                 + "spells,content,structures,workshop,struct-dim,gallery,entity-gallery,"
                                 + "twilight-lantern,wind-journey,wind-lake,second-dream,shadow-intrude,main-flow,"
-                                + "dyedream,arena-exit,arena-infection,san-tick,desert-tomb 及快捷 all/quick/behavior/worldgen/galleries）", token);
+                                + "dyedream,arena-exit,arena-infection,san-tick,desert-tomb,kubejs-recipes"
+                                + " 及快捷 all/quick/behavior/worldgen/galleries）", token);
                     }
                 }
             }
@@ -307,6 +315,7 @@ public final class PDPortingVerifyTest {
         all.remove(Suite.ARENA_EXIT);
         all.remove(Suite.ARENA_INFECTION);
         all.remove(Suite.SAN_TICK);
+        all.remove(Suite.KUBEJS_RECIPES);
         return all;
     }
 
@@ -621,6 +630,12 @@ public final class PDPortingVerifyTest {
             int w = cursor;
             at(w, PDPortingVerifyTest::workshopSuite);
             cursor = w + 5;
+        }
+
+        if (suite(Suite.KUBEJS_RECIPES)) {
+            int k = cursor;
+            at(k, PDPortingVerifyTest::kubejsRecipesSuite);
+            cursor = k + 5;
         }
 
         if (suite(Suite.DESERT_TOMB)) {
@@ -1528,6 +1543,13 @@ public final class PDPortingVerifyTest {
     private static void workshopSuite() {
         PDWorkshopVerifyHooks.verify(player(), r ->
                 checkDetail("workshop", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== KubeJS 配方联动专项（kubejs-recipes） ====================
+
+    private static void kubejsRecipesSuite() {
+        PDRecipeKubeJsVerifyHooks.verify(player(), r ->
+                checkDetail("kubejs-recipes", r.pass(), r.name(), r.detail()));
     }
 
     // ==================== S21 荒漠英雄之墓升级 ====================

@@ -2,9 +2,11 @@ package com.pasterdream.pasterdreammod.block.entity;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.menu.WeaponWorkshopMenu;
+import com.pasterdream.pasterdreammod.recipe.WeaponWorkshopRecipe;
+import com.pasterdream.pasterdreammod.recipe.WeaponWorkshopRecipeInput;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
-import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDItems;
+import com.pasterdream.pasterdreammod.registry.PDRecipeTypes;
 import com.pasterdream.pasterdreammod.util.PasterItemData;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import com.pasterdream.pasterdreammod.util.WeaponWorkshopVariables;
@@ -30,7 +32,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -48,9 +49,6 @@ import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.List;
-import java.util.function.Supplier;
-
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
  * 精铸工坊方块实体 (Weapon Workshop Block Entity)
@@ -58,8 +56,9 @@ import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
  * 武器工坊群的核心工作台：7 格库存（材料槽 0-4 + 强化石槽 5 + 产物槽 6），
  * 还原原版锻造流程（WeaponWorkshopGuiPr0 / Recipe0 / Inlay0 procedure）：
  * <ol>
- *   <li>点击"锻造"按钮（菜单按钮 0）→ 授予冒险成就 → 若产物槽为空则匹配 13 项锻造配方；</li>
- *   <li>配方命中：材料槽 0-4 各扣 1，原胚写入产物槽 6，置位 inlay 标记；</li>
+ *   <li>点击"锻造"按钮（菜单按钮 0）→ 授予冒险成就 → 若产物槽为空则从 RecipeManager
+ *       匹配 {@code pasterdream:weapon_forge} 数据驱动配方；</li>
+ *   <li>配方命中：材料槽 0-4 各扣 1，产物写入产物槽 6，置位 inlay 标记；</li>
  *   <li>1 tick 后执行镶嵌结算（Inlay0）：若槽 5 为强化石Ⅰ → 攻击伤害 +1..5；
  *       强化石Ⅱ → 幸运 +1..2 且工序归零；均消耗强化石并把强化后的原胚写回槽 6；
  *       随后播放铁砧音效并清除 inlay 标记。</li>
@@ -84,81 +83,10 @@ public class WeaponWorkshopBlockEntity extends BlockEntity implements GeoBlockEn
             ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "achievement_adventure_0");
 
     /**
-     * 锻造配方（与原版 WeaponWorkshopRecipe0Procedure 完全一致）：
-     * 槽 0-4 按序匹配 5 种材料，产出 1 个原胚/成品到槽 6。
+     * 锻造配方已迁移至数据包 {@code data/pasterdream/recipe/weapon_forge/}
+     * （{@link WeaponWorkshopRecipe}，{@code pasterdream:weapon_forge} 类型），
+     * 支持数据包覆盖与 KubeJS 增删改；本类仅保留锻造通用行为（附魔合并 / 镶嵌结算）。
      */
-    private record ForgeRecipe(Supplier<Item> in0, Supplier<Item> in1, Supplier<Item> in2,
-                               Supplier<Item> in3, Supplier<Item> in4, Supplier<Item> result) {
-    }
-
-    /** 全部 13 项原版锻造配方 */
-    private static final List<ForgeRecipe> RECIPES = List.of(
-            // 融梦水晶 + 钛锭 + 黑金属棒 + 染梦尘 + 染梦石英 → 聚梦法杖原胚
-            new ForgeRecipe(() -> PDItems.MELTDREAM_CRYSTAL.get().asItem(), () -> PDItems.TITANIUM_INGOT.get().asItem(),
-                    () -> PDItems.BLACKSTICK.get().asItem(), () -> PDItems.DYEDREAM_DUST.get().asItem(),
-                    () -> PDItems.DYEDREAMQUARTZ.get().asItem(), () -> PDItems.DREAM_WAND_EMBRYO.get().asItem()),
-            // 铁剑 + 黑金属锭 + 梦魇燃料 + 哭泣的黑曜石 + 黑金属棒 → 蚀影剑原胚
-            new ForgeRecipe(() -> Items.IRON_SWORD, () -> PDItems.BLACKMETAL_INGOT.get().asItem(),
-                    () -> PDItems.NIGHTMARE_FUEL.get().asItem(), () -> Items.CRYING_OBSIDIAN,
-                    () -> PDItems.BLACKSTICK.get().asItem(), () -> PDItems.SHADOW_EROSION_SWORD_EMBRYO.get().asItem()),
-            // 铁镐系列同理 → 蚀影镐原胚
-            new ForgeRecipe(() -> Items.IRON_PICKAXE, () -> PDItems.BLACKMETAL_INGOT.get().asItem(),
-                    () -> PDItems.NIGHTMARE_FUEL.get().asItem(), () -> Items.CRYING_OBSIDIAN,
-                    () -> PDItems.BLACKSTICK.get().asItem(), () -> PDItems.SHADOW_EROSION_PICKAXE_EMBRYO.get().asItem()),
-            // 铁斧 → 蚀影斧原胚
-            new ForgeRecipe(() -> Items.IRON_AXE, () -> PDItems.BLACKMETAL_INGOT.get().asItem(),
-                    () -> PDItems.NIGHTMARE_FUEL.get().asItem(), () -> Items.CRYING_OBSIDIAN,
-                    () -> PDItems.BLACKSTICK.get().asItem(), () -> PDItems.SHADOW_EROSION_AXE_EMBRYO.get().asItem()),
-            // 铁锹 → 蚀影锹原胚
-            new ForgeRecipe(() -> Items.IRON_SHOVEL, () -> PDItems.BLACKMETAL_INGOT.get().asItem(),
-                    () -> PDItems.NIGHTMARE_FUEL.get().asItem(), () -> Items.CRYING_OBSIDIAN,
-                    () -> PDItems.BLACKSTICK.get().asItem(), () -> PDItems.SHADOW_EROSION_SHOVEL_EMBRYO.get().asItem()),
-            // 铁锄 → 蚀影锄原胚
-            new ForgeRecipe(() -> Items.IRON_HOE, () -> PDItems.BLACKMETAL_INGOT.get().asItem(),
-                    () -> PDItems.NIGHTMARE_FUEL.get().asItem(), () -> Items.CRYING_OBSIDIAN,
-                    () -> PDItems.BLACKSTICK.get().asItem(), () -> PDItems.SHADOW_EROSION_HOE_EMBRYO.get().asItem()),
-            // 五真剑合一 → 泰拉之刃原胚
-            new ForgeRecipe(() -> PDItems.TRUEST_MOLTENGOLD_SWORD.get().asItem(), () -> PDItems.TRUE_GRASS_SWORD.get().asItem(),
-                    () -> PDItems.TRUE_TIDE_SWORD.get().asItem(), () -> PDItems.TRUE_DESERT_SWORD.get().asItem(),
-                    () -> PDItems.BROKEN_HERO_SWORD.get().asItem(), () -> PDItems.TERRASWORD_EMBRYO.get().asItem()),
-            // 钛剑 + 影灯 + 白水晶 + 下界之星 + 融梦水晶 → 白刃原胚
-            new ForgeRecipe(() -> PDItems.TITANIUM_SWORD.get().asItem(), () -> PDBlocks.SHADOW_LIGHT_0.get().asItem(),
-                    () -> PDItems.WHITE_CRYSTAL.get().asItem(), () -> Items.NETHER_STAR,
-                    () -> PDItems.MELTDREAM_CRYSTAL.get().asItem(), () -> PDItems.WHITE_SWORD_EMBRYO.get().asItem()),
-            // 蚀影剑 + 梦魇燃料 + 暗影剑柄 + 黑金属锭 + 羊皮纸 → 暗影剑原胚
-            new ForgeRecipe(() -> PDItems.SHADOW_EROSION_SWORD.get().asItem(), () -> PDItems.NIGHTMARE_FUEL.get().asItem(),
-                    () -> PDItems.SHADOW_HILT.get().asItem(), () -> PDItems.BLACKMETAL_INGOT.get().asItem(),
-                    () -> PDItems.PERGAMYN.get().asItem(), () -> PDItems.SHADOW_SWORD_EMBRYO.get().asItem()),
-            // 钓鱼竿 + 细雪桶 + 钻石 + 融梦水晶 + 雪誓头冠 → 占星者的祈愿原胚
-            new ForgeRecipe(() -> Items.FISHING_ROD, () -> Items.POWDER_SNOW_BUCKET,
-                    () -> Items.DIAMOND, () -> PDItems.MELTDREAM_CRYSTAL.get().asItem(),
-                    () -> PDItems.SNOW_VOW_HEAD.get().asItem(), () -> PDItems.STAR_WISH_ROD_EMBRYO.get().asItem()),
-            // 书 + 梦魇燃料 + 黑金属锭 + 纯粹恐惧 + 笔与墨 → 暗影旋涡（直接成品）
-            new ForgeRecipe(() -> Items.BOOK, () -> PDItems.NIGHTMARE_FUEL.get().asItem(),
-                    () -> PDItems.BLACKMETAL_INGOT.get().asItem(), () -> PDItems.PURE_HORROR.get().asItem(),
-                    () -> PDItems.PEN_AND_INK.get().asItem(), () -> lookupItem("shadow_vortex_book")),
-            // 钻石 + 蓝冰 + 黑金属锭 + 黑金属棒 + 纯粹恐惧 → 冰影锤原胚
-            new ForgeRecipe(() -> Items.DIAMOND, () -> Items.BLUE_ICE,
-                    () -> PDItems.BLACKMETAL_INGOT.get().asItem(), () -> PDItems.BLACKSTICK.get().asItem(),
-                    () -> PDItems.PURE_HORROR.get().asItem(), () -> PDItems.ICESHADOW_HAMMER_EMBRYO.get().asItem()),
-            // 银铃 + 染梦锭 + 线 + 染梦木板 + 白水晶 → 草莓之心（直接成品）
-            new ForgeRecipe(() -> PDItems.SILVER_BELL.get().asItem(), () -> PDItems.DYEDREAM_INGOT.get().asItem(),
-                    () -> Items.STRING, () -> PDBlocks.DYEDREAM_PLANKS.get().asItem(),
-                    () -> PDItems.WHITE_CRYSTAL.get().asItem(), () -> PDItems.STRAWBERRY_HEART.get().asItem())
-    );
-
-    /**
-     * 按注册名查找本模组物品（跨模块松耦合；未注册时返回 AIR，
-     * 配方匹配阶段会跳过 AIR 产物的配方）
-     *
-     * @param path 注册路径
-     * @return 物品（未注册返回 {@link Items#AIR}）
-     */
-    private static net.minecraft.world.item.Item lookupItem(String path) {
-        return net.minecraft.core.registries.BuiltInRegistries.ITEM
-                .getOptional(ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, path))
-                .orElse(Items.AIR);
-    }
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -212,48 +140,62 @@ public class WeaponWorkshopBlockEntity extends BlockEntity implements GeoBlockEn
     }
 
     /**
-     * 配方匹配与产出（原版 WeaponWorkshopRecipe0Procedure）：
-     * 槽 0-4 按序匹配，命中后各扣 1 个材料并把产物写入槽 6、置位 inlay
+     * 配方匹配与产出（原版 WeaponWorkshopRecipe0Procedure 的数据驱动重构）：
+     * 以材料槽 0-4 构建输入视图，从 RecipeManager 查询 {@code pasterdream:weapon_forge}
+     * 配方；命中后各扣 1 个材料并把产物写入槽 6、置位 inlay
      */
     private void matchAndCraft() {
-        for (ForgeRecipe recipe : RECIPES) {
-            if (recipe.result().get() == Items.AIR) {
-                // 防御性：产物 Supplier 解析为 AIR 时跳过该配方
-                continue;
-            }
-            if (itemHandler.getStackInSlot(0).is(recipe.in0().get())
-                    && itemHandler.getStackInSlot(1).is(recipe.in1().get())
-                    && itemHandler.getStackInSlot(2).is(recipe.in2().get())
-                    && itemHandler.getStackInSlot(3).is(recipe.in3().get())
-                    && itemHandler.getStackInSlot(4).is(recipe.in4().get())) {
-                // 先于扣减读取输入附魔，合并到产物（同名取最高等级）
-                ItemStack result = new ItemStack(recipe.result().get());
-                ItemEnchantments.Mutable merged = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
-                for (int slot = 0; slot <= 4; slot++) {
-                    ItemEnchantments ench =
-                            EnchantmentHelper.getEnchantmentsForCrafting(itemHandler.getStackInSlot(slot));
-                    for (var entry : ench.entrySet()) {
-                        Holder<Enchantment> holder = entry.getKey();
-                        merged.set(holder, Math.max(merged.getLevel(holder), entry.getIntValue()));
-                    }
-                }
-                ItemEnchantments mergedEnchantments = merged.toImmutable();
-                if (!mergedEnchantments.isEmpty()) {
-                    EnchantmentHelper.setEnchantments(result, mergedEnchantments);
-                }
-                for (int slot = 0; slot <= 4; slot++) {
-                    ItemStack stack = itemHandler.getStackInSlot(slot);
-                    stack.shrink(1);
-                    itemHandler.setStackInSlot(slot, stack);
-                }
-                itemHandler.setStackInSlot(SLOT_RESULT, result);
-                this.inlay = true;
-                setChanged();
-                syncToClient();
-                // 原版逐配方独立 if 判定，材料被扣除后后续配方不再可能命中，等价 break
-                return;
+        if (this.level == null) {
+            return;
+        }
+        WeaponWorkshopRecipeInput input = WeaponWorkshopRecipeInput.of(itemHandler);
+        this.level.getRecipeManager()
+                .getRecipeFor(PDRecipeTypes.WEAPON_FORGE.get(), input, this.level)
+                .ifPresent(holder -> craft(holder.value()));
+    }
+
+    /**
+     * 执行锻造产出（配方命中后的通用行为）：
+     * 先于扣减合并输入附魔（同名取最高等级）到产物，再扣料、写产物槽 6、置位 inlay
+     *
+     * @param recipe 命中的锻造配方
+     */
+    private void craft(WeaponWorkshopRecipe recipe) {
+        // 调用链保证 level 非空（matchAndCraft 已检查）
+        ItemStack result = recipe.assemble(
+                WeaponWorkshopRecipeInput.of(itemHandler),
+                this.level.registryAccess());
+        if (result.isEmpty()) {
+            // 防御性：产物为空的配方不产出（与原版跳过 AIR 产物配方等价）
+            return;
+        }
+        // 继承主材料槽（槽 0）全部物品组件——耐久损耗/自定义数据/其他模组词条等，
+        // 升级语义下数据不丢失（1.21.1 模组词条普遍走 DataComponents，组件继承即通用兼容）；
+        // 附魔随后由下方合并循环按全槽最高等级覆盖，不依赖此处
+        result.applyComponents(itemHandler.getStackInSlot(0).getComponentsPatch());
+        // 合并输入附魔到产物（同名取最高等级）
+        ItemEnchantments.Mutable merged = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        for (int slot = 0; slot <= 4; slot++) {
+            ItemEnchantments ench =
+                    EnchantmentHelper.getEnchantmentsForCrafting(itemHandler.getStackInSlot(slot));
+            for (var entry : ench.entrySet()) {
+                Holder<Enchantment> holder = entry.getKey();
+                merged.set(holder, Math.max(merged.getLevel(holder), entry.getIntValue()));
             }
         }
+        ItemEnchantments mergedEnchantments = merged.toImmutable();
+        if (!mergedEnchantments.isEmpty()) {
+            EnchantmentHelper.setEnchantments(result, mergedEnchantments);
+        }
+        for (int slot = 0; slot <= 4; slot++) {
+            ItemStack stack = itemHandler.getStackInSlot(slot);
+            stack.shrink(1);
+            itemHandler.setStackInSlot(slot, stack);
+        }
+        itemHandler.setStackInSlot(SLOT_RESULT, result);
+        this.inlay = true;
+        setChanged();
+        syncToClient();
     }
 
     /**

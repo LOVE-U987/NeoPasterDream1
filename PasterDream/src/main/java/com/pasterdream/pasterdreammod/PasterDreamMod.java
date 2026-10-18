@@ -16,6 +16,7 @@ import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDArenaEvents;
 import com.pasterdream.pasterdreammod.registry.LampShadowEvents;
 import com.pasterdream.pasterdreammod.registry.PDCreativeTabs;
+import com.pasterdream.pasterdreammod.registry.PDDataComponents;
 import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDRecipeTypes;
@@ -165,6 +166,9 @@ public class PasterDreamMod {
 
         // 注册药水（可酿造）
         PDPotions.POTIONS.register(modEventBus);
+
+        // 注册数据组件（梦之强化标记，供梦境炼药锅酿造药水标识）
+        PDDataComponents.DATA_COMPONENTS.register(modEventBus);
 
         // 注册自定义声音事件（包括维度背景音乐）
         PDSounds.SOUND_EVENTS.register(modEventBus);
