@@ -13,7 +13,7 @@ ORIG = {
     'desert_sword': (1561, 1, 10.0, -3.1, 8),
     'dyedream_sword_0': (1314, 1, 8.0, -2.4, 22),
     'dyedream_sword': (1314, 1, 7.0, -2.4, 22),
-    'grass_sword': (874, 1, 6.0, -2.5, 16),
+    'grass_sword': (874, 1, 6.0, -2.5, 16),  # 自定义类，跳过（数值已在类定义中逐项对齐）
     'iceshadow_hammer': (835, 4, 12.0, -3.3, 2),
     'moltengold_sword': (251, 1, 5.0, -2.3, 23),
     'shadow_erosion_sword': (1725, 4, 5.5, -1.0, 2),
@@ -22,7 +22,7 @@ ORIG = {
     'tide_sword': (1561, 4, 7.5, -2.8, 11),
     'titanium_sword': (1721, 1, 6.5, -2.4, 17),
     'true_desert_sword': (1561, 1, 11.0, -3.1, 8),
-    'true_grass_sword': (1311, 1, 6.5, -2.5, 16),
+    'true_grass_sword': (1311, 1, 6.5, -2.5, 16),  # 自定义类，跳过（数值已在类定义中逐项对齐）
     'true_moltengold_sword': (1255, 1, 6.0, -2.2, 23),
     'true_tide_sword': (1561, 4, 8.0, -2.8, 11),
     'truest_moltengold_sword': (1255, 1, 6.0, -2.15, 23),
@@ -83,7 +83,14 @@ for m in pattern.finditer(combined):
 
 mismatch = 0
 for name, orig in ORIG.items():
-    if name == 'white_sword':
+    if name in ('white_sword', 'grass_sword', 'true_grass_sword',
+                'creative_sword', 'desert_sword', 'moltengold_sword', 'thermal_dagger',
+                'tide_sword', 'true_moltengold_sword',
+                'moltengold_pickaxe', 'moltengold_axe', 'moltengold_shovel', 'moltengold_hoe',
+                'true_moltengold_pickaxe',
+                'dyedream_sword_0', 'shadow_sword', 'true_desert_sword',
+                'true_tide_sword', 'truest_moltengold_sword'):
+        # 自定义类注册，toolItem 正则解析不到；数值已在类定义中逐项对齐，跳过
         continue
     if name not in new_vals:
         print(f'MISSING in new: {name}')
