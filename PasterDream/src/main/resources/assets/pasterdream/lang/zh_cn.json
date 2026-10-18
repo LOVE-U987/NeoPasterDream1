@@ -831,6 +831,8 @@
   "item.pasterdream.debug_wand_dream_church_8": "§e调试水晶-梦想教堂8",
   "item.pasterdream.debug_wand_dream_church_9": "§e调试水晶-梦想教堂9",
   "item.pasterdream.debug_wand_dream_train": "§e调试水晶-染梦列车",
+  "jei.pasterdream.debug_crystal.name": "调试水晶",
+  "jei.pasterdream.debug_crystal.desc": "仅开发调试用，可从创造模式「调试」栏获取",
   "item.pasterdream.debug_wand_dream_wishingtree_0": "§e调试水晶-梦想许愿树0",
   "item.pasterdream.debug_wand_dream_wishingtree_1": "§e调试水晶-梦想许愿树1",
   "item.pasterdream.debug_wand_dyedream_campsite_0": "§e调试水晶-染梦营地",

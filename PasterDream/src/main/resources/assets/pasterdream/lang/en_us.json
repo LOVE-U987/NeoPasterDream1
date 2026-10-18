@@ -1134,6 +1134,8 @@
   "item.pasterdream.debug_wand_dream_church_8": "§eDebug Crystal - Dream Church 8",
   "item.pasterdream.debug_wand_dream_church_9": "§eDebug Crystal - Dream Church 9",
   "item.pasterdream.debug_wand_dream_train": "§eDebug Crystal - Dream Train",
+  "jei.pasterdream.debug_crystal.name": "Debug Crystal",
+  "jei.pasterdream.debug_crystal.desc": "Dev debugging only. Obtain from the Debug creative tab.",
   "item.pasterdream.debug_wand_dream_wishingtree_0": "§eDebug Crystal - Dream Wishing Tree 0",
   "item.pasterdream.debug_wand_dream_wishingtree_1": "§eDebug Crystal - Dream Wishing Tree 1",
   "item.pasterdream.debug_wand_dyedream_campsite_0": "§eDebug Wand - Dyedream Campsite",

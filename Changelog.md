@@ -708,3 +708,13 @@
 *   **修复**（经用户确认定为 1:4，有意差异：原模组为 1:9，粉尘获取提速 2.25 倍）：分解 `dyedream_dust_piece_1.json` 改为 1 粉尘→4 小撮（category `food`→`misc` 贴原模组口径）；删除多余的 `dyedream_dust_2.json`（9小撮→1粉尘），保留 `dyedream_dust_1.json`（4小撮→1粉尘）为唯一合成路径；`tag_audit.json` 同步移除该条目
 *   **波折**：首测仍见 1→9——`bin/main`（Eclipse JDT/VSCode 输出目录）资源未随 src 刷新，手动同步解决；二测仍见 9→1——`dyedream_dust_1.json` 中途被并行协作者改回 shapeless 9→1（等效复活已删的 `dust_2`），改回 shaped 2×2（4小撮）并同步 src/build/bin 三份副本
 *   **验证**：改动 JSON 可解析、行尾 LF 复查通过；src/bin/build 三份副本逐项一致（dust_1=2×2 四小撮、piece_1=1→4、dust_2 不存在）；全库无 `dyedream_dust_2` 引用残留；实机待验：配方书 1↔4 互转正常、9 小撮不再可合成粉尘
+
+### 新增：调试水晶 JEI 收拢——130+ 个 debug_wand_* 收拢为虚拟条目「调试水晶」（经用户确认）
+
+*   **现象**：130+ 个调试水晶（`debug_wand_*`）逐个挤占玩家 JEI 物品列表；且若借用任一真实水晶作代表，名称只能是该水晶本名（如「染梦列车」），无法就叫「调试水晶」
+*   **根因**：JEI 19.39 物品列表完全来自创造模式标签页（`ItemStackListFactory` 遍历 `CreativeModeTabs.allTabs()`），调试创造栏收录了全部调试水晶；新版 JEI 已移除注册期隐藏 API（`IIngredientVisibility#hideIngredient` 不复存在），且不支持为单个 ItemStack 覆盖显示名
+*   **新增**（`thirdparty/jei/debugcrystal/`）：自定义 JEI 原料类型 `DebugCrystalJeiIngredient`（虚拟条目，渲染沿用代表物品染梦列车贴图，codec 走注册名编码支持书签）+ `DebugCrystalJeiHelper`（搜索名「调试水晶」+ 固定 uid `pasterdream:debug_crystal`）+ `DebugCrystalJeiRenderer`（tooltip：名称 + 灰色获取提示行）；`PDJeiPlugin#registerIngredients` 以 5 参重载注册该类型
+*   **新增**（`PDJeiPlugin#onRuntimeAvailable`）：按注册名前缀 `debug_wand_` 扫描物品注册表，家族全部成员经 `removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, ...)` 移出 JEI 列表；JEI 每次启动/资源重载重建运行时后重新回调，收拢自动持续；前缀扫描自动覆盖后续新增的水晶，无需硬编码清单
+*   **语言**：`jei.pasterdream.debug_crystal.name/desc` 双语（名称「调试水晶」+ 获取提示）
+*   **边界**：仅影响 JEI 展示，创造模式标签页完全不受影响（开发团队照常取用）；调试栏其他开发用物品（机关/BOSS 调试物品等）不在收拢范围（经用户确认）；虚拟条目非真实物品，创造模式（cheat）下 JEI 不提供发放，tooltip 注明获取途径；玩家 JEI 开「显示隐藏物品」亦无法绕过（移除作用于运行时物品注册层面）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；行尾 LF 复查通过；实机待验：JEI 搜索「调试水晶」仅见一条目且名称正确、创造栏调试页 130+ 个水晶齐全
