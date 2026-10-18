@@ -10,18 +10,16 @@ import net.minecraft.world.entity.player.Inventory;
 
 /**
  * 梦境炼药锅 GUI 屏幕 (Dream Cauldron Screen)
- * 布局完全还原原版 PasterDream：196×196 背景纹理 + 合成按钮 + 液体量文本
+ * 类原版酿造台的自动酿造界面：196×196 背景纹理 + 酿造进度条 + 液体量文本。
  *
  * 纹理资源：
  * - dream_cauldron_gui.png：背景纹理（196×196，原版素材）
- * - atlas/imagebutton_dream_cauldron_gui_button0.png：合成按钮图集（38×30，上半默认/下半悬停）
  *
- * 界面元素（相对于 GUI 纹理左上角，与原版一致）：
- * - 合成按钮：位置 (78, 71)，尺寸 (38, 15)
+ * 界面元素（相对于 GUI 纹理左上角）：
+ * - 酿造进度条：位置 (78, 71)，尺寸 (38, 15)——原合成按钮区域，酿造中显示
  * - 液体量文本：位置 (170, 43)，显示储罐中融梦液体毫桶数
  *
- * 点击合成按钮通过 vanilla 的 {@code handleInventoryButtonClick} 通道发送到服务端，
- * 由 {@link DreamCauldronMenu#clickMenuButton} 校验配方并启动炼制。
+ * 酿造为自动触发：材料放入即由服务端判定启动，GUI 保持打开并实时显示进度。
  */
 public class DreamCauldronScreen extends AbstractContainerScreen<DreamCauldronMenu> {
 
@@ -30,16 +28,17 @@ public class DreamCauldronScreen extends AbstractContainerScreen<DreamCauldronMe
             ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID,
                     "textures/screens/dream_cauldron_gui.png");
 
-    /** 合成按钮图集纹理（38×30：v=0 默认帧，v=15 悬停帧） */
-    private static final ResourceLocation CRAFT_BUTTON_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID,
-                    "textures/screens/atlas/imagebutton_dream_cauldron_gui_button0.png");
+    /** 酿造进度条区域（相对于 GUI 纹理，原合成按钮位置） */
+    private static final int PROGRESS_BAR_X = 78;
+    private static final int PROGRESS_BAR_Y = 71;
+    private static final int PROGRESS_BAR_WIDTH = 38;
+    private static final int PROGRESS_BAR_HEIGHT = 15;
 
-    /** 合成按钮区域（相对于 GUI 纹理，原版坐标） */
-    private static final int CRAFT_BUTTON_X = 78;
-    private static final int CRAFT_BUTTON_Y = 71;
-    private static final int CRAFT_BUTTON_WIDTH = 38;
-    private static final int CRAFT_BUTTON_HEIGHT = 15;
+    /** 进度条底色（半透明深色，标识进度条区域） */
+    private static final int PROGRESS_BAR_BG_COLOR = 0x66000000;
+
+    /** 进度条填充色（梦之紫） */
+    private static final int PROGRESS_BAR_FILL_COLOR = 0xFF9370DB;
 
     /** 液体量文本位置与颜色（原版值） */
     private static final int FLUID_TEXT_X = 170;
@@ -68,14 +67,31 @@ public class DreamCauldronScreen extends AbstractContainerScreen<DreamCauldronMe
                 this.imageWidth, this.imageHeight,
                 this.imageWidth, this.imageHeight);
 
-        // 绘制合成按钮：悬停时使用图集下半帧（v=15）
-        boolean hover = isHovering(CRAFT_BUTTON_X, CRAFT_BUTTON_Y,
-                CRAFT_BUTTON_WIDTH, CRAFT_BUTTON_HEIGHT, mouseX, mouseY);
-        guiGraphics.blit(CRAFT_BUTTON_TEXTURE,
-                this.leftPos + CRAFT_BUTTON_X, this.topPos + CRAFT_BUTTON_Y,
-                0, hover ? CRAFT_BUTTON_HEIGHT : 0,
-                CRAFT_BUTTON_WIDTH, CRAFT_BUTTON_HEIGHT,
-                CRAFT_BUTTON_WIDTH, CRAFT_BUTTON_HEIGHT * 2);
+        // 绘制酿造进度条（酿造中才显示）
+        renderBrewProgressBar(guiGraphics);
+    }
+
+    /**
+     * 绘制酿造进度条：底色为整块半透明深色，
+     * 前景按「已酿造时长 / 总时长」比例从左向右填充梦之紫
+     *
+     * @param guiGraphics 绘制上下文
+     */
+    private void renderBrewProgressBar(GuiGraphics guiGraphics) {
+        int duration = this.menu.getBrewDuration();
+        if (duration <= 0) {
+            return;
+        }
+        int elapsed = Math.min(this.menu.getBrewTimeElapsed(), duration);
+        int x = this.leftPos + PROGRESS_BAR_X;
+        int y = this.topPos + PROGRESS_BAR_Y;
+        int fillWidth = (int) ((long) elapsed * PROGRESS_BAR_WIDTH / duration);
+        guiGraphics.fill(x, y, x + PROGRESS_BAR_WIDTH, y + PROGRESS_BAR_HEIGHT,
+                PROGRESS_BAR_BG_COLOR);
+        if (fillWidth > 0) {
+            guiGraphics.fill(x, y, x + fillWidth, y + PROGRESS_BAR_HEIGHT,
+                    PROGRESS_BAR_FILL_COLOR);
+        }
     }
 
     @Override
@@ -90,36 +106,5 @@ public class DreamCauldronScreen extends AbstractContainerScreen<DreamCauldronMe
         guiGraphics.drawString(this.font,
                 this.menu.getFluidAmount() + "mb",
                 FLUID_TEXT_X, FLUID_TEXT_Y, FLUID_TEXT_COLOR, false);
-    }
-
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && isHovering(CRAFT_BUTTON_X, CRAFT_BUTTON_Y,
-                CRAFT_BUTTON_WIDTH, CRAFT_BUTTON_HEIGHT, (int) mouseX, (int) mouseY)) {
-            // 通过 vanilla 按钮包通知服务端启动炼制（服务端二次校验配方与液体量）
-            if (this.minecraft != null && this.minecraft.gameMode != null) {
-                this.minecraft.gameMode.handleInventoryButtonClick(
-                        this.menu.containerId, DreamCauldronMenu.BUTTON_CRAFT);
-            }
-            return true;
-        }
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    /**
-     * 判断鼠标是否悬浮在指定区域内
-     *
-     * @param x      区域左上角 x（相对于 GUI 纹理）
-     * @param y      区域左上角 y（相对于 GUI 纹理）
-     * @param w      区域宽度
-     * @param h      区域高度
-     * @param mouseX 鼠标屏幕 x
-     * @param mouseY 鼠标屏幕 y
-     * @return 是否悬浮在区域内
-     */
-    private boolean isHovering(int x, int y, int w, int h, int mouseX, int mouseY) {
-        int guiX = mouseX - this.leftPos;
-        int guiY = mouseY - this.topPos;
-        return guiX >= x && guiX < x + w && guiY >= y && guiY < y + h;
     }
 }

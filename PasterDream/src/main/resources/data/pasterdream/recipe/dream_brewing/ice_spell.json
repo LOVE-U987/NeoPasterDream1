@@ -1,0 +1,20 @@
+{
+  "type": "pasterdream:dream_brewing",
+  "guiding_drug": {
+    "item": "pasterdream:guiding_drug"
+  },
+  "materials": [
+    {
+      "item": "minecraft:blue_orchid"
+    },
+    {
+      "item": "minecraft:snowball"
+    },
+    {
+      "item": "pasterdream:ice_bud_0"
+    }
+  ],
+  "result": {
+    "id": "pasterdreamspells:ice_spell"
+  }
+}

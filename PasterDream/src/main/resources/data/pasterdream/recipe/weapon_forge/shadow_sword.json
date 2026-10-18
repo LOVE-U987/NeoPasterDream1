@@ -1,0 +1,27 @@
+{
+  "type": "pasterdream:weapon_forge",
+  "ingredients": [
+    {
+      "item": "pasterdream:shadow_erosion_sword"
+    },
+    {
+      "item": "pasterdream:nightmare_fuel"
+    },
+    {
+      "item": "pasterdream:shadow_hilt"
+    },
+    {
+      "item": "pasterdream:blackmetal_ingot"
+    },
+    {
+      "item": "pasterdream:pergamyn"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:shadow_sword_embryo"
+  },
+  "inlay": true,
+  "final_result": {
+    "id": "pasterdream:shadow_sword"
+  }
+}

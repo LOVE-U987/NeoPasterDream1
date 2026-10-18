@@ -24,7 +24,8 @@ import java.util.List;
 /**
  * PasterDream 的 JEI 集成插件。
  * <p>
- * 分类：梦之坩埚 / 陶盆 / 暗影高炉 / 精铸工坊（13 组硬编码配方）。
+ * 分类：梦之坩埚 / 陶盆 / 暗影高炉（RecipeManager 动态）/
+ * 精铸工坊（weapon_forge RecipeManager 动态）。
  */
 @JeiPlugin
 public class PDJeiPlugin implements IModPlugin {
@@ -55,7 +56,9 @@ public class PDJeiPlugin implements IModPlugin {
         registration.addRecipes(ShadowBlastFurnaceJeiCategory.SHADOW_BLAST_FURNACE_JEI_RECIPE_TYPE,
                 supplierShadowBlastRecipes());
         registration.addRecipes(WeaponWorkshopJeiCategory.WEAPON_WORKSHOP_JEI_RECIPE_TYPE,
-                WeaponWorkshopJeiRecipe.build());
+        // 精铸工坊配方来自运行时 RecipeManager（weapon_forge 数据驱动，与暗影高炉同模式）：
+        // 客户端世界未就绪仅注册空列表，待下次重载自动补全
+                WeaponWorkshopJeiRecipe.fromRecipeManager());
     }
 
     /**
