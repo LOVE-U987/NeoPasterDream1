@@ -7,6 +7,8 @@ import com.pasterdream.pasterdreammod.thirdparty.jei.claypot.ClaypotJeiCategory;
 import com.pasterdream.pasterdreammod.thirdparty.jei.claypot.ClaypotJeiRecipe;
 import com.pasterdream.pasterdreammod.thirdparty.jei.dreamcauldron.DreamCauldronJeiCategory;
 import com.pasterdream.pasterdreammod.thirdparty.jei.dreamcauldron.DreamCauldronJeiRecipe;
+import com.pasterdream.pasterdreammod.thirdparty.jei.meltdreamchest.MeltdreamChestJeiCategory;
+import com.pasterdream.pasterdreammod.thirdparty.jei.meltdreamchest.MeltdreamChestJeiRecipe;
 import com.pasterdream.pasterdreammod.thirdparty.jei.shadowblastfurnace.ShadowBlastFurnaceJeiCategory;
 import com.pasterdream.pasterdreammod.thirdparty.jei.weaponworkshop.WeaponWorkshopJeiCategory;
 import com.pasterdream.pasterdreammod.thirdparty.jei.weaponworkshop.WeaponWorkshopJeiRecipe;
@@ -24,7 +26,8 @@ import java.util.List;
 /**
  * PasterDream 的 JEI 集成插件。
  * <p>
- * 分类：梦之坩埚 / 陶盆 / 暗影高炉 / 精铸工坊（13 组硬编码配方）。
+ * 分类：梦之坩埚 / 陶盆 / 暗影高炉 / 精铸工坊 /
+ * 融梦水晶箱战利品（实时解析战利品表 JSON，每池一页）。
  */
 @JeiPlugin
 public class PDJeiPlugin implements IModPlugin {
@@ -44,6 +47,7 @@ public class PDJeiPlugin implements IModPlugin {
         registration.addRecipeCategories(new ClaypotJeiCategory(helper));
         registration.addRecipeCategories(new ShadowBlastFurnaceJeiCategory(helper));
         registration.addRecipeCategories(new WeaponWorkshopJeiCategory(helper));
+        registration.addRecipeCategories(new MeltdreamChestJeiCategory(helper));
     }
 
     @Override
@@ -56,6 +60,10 @@ public class PDJeiPlugin implements IModPlugin {
                 supplierShadowBlastRecipes());
         registration.addRecipes(WeaponWorkshopJeiCategory.WEAPON_WORKSHOP_JEI_RECIPE_TYPE,
                 WeaponWorkshopJeiRecipe.build());
+        // 融梦水晶箱战利品来自客户端资源包的战利品表 JSON：与暗影高炉同模式，
+        // 客户端世界未就绪时注册空列表，待 JEI 配方重载自动补全
+        registration.addRecipes(MeltdreamChestJeiCategory.MELTDREAM_CHEST_JEI_RECIPE_TYPE,
+                MeltdreamChestJeiRecipe.build());
     }
 
     /**
@@ -78,5 +86,6 @@ public class PDJeiPlugin implements IModPlugin {
         registration.addRecipeCatalysts(ClaypotJeiCategory.CLAYPOT_JEI_RECIPE_TYPE, PDItems.CLAYPAN_0.get());
         registration.addRecipeCatalysts(ShadowBlastFurnaceJeiCategory.SHADOW_BLAST_FURNACE_JEI_RECIPE_TYPE, PDItems.SHADOW_BLAST_FURNACE.get());
         registration.addRecipeCatalysts(WeaponWorkshopJeiCategory.WEAPON_WORKSHOP_JEI_RECIPE_TYPE, PDItems.WEAPON_WORKSHOP.get());
+        registration.addRecipeCatalysts(MeltdreamChestJeiCategory.MELTDREAM_CHEST_JEI_RECIPE_TYPE, PDItems.MELTDREAM_CHEST.get());
     }
 }
