@@ -10,6 +10,7 @@ import com.pasterdream.pasterdreammod.registry.PDArenaBossManager;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
+import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -229,6 +230,10 @@ public class AaroncosRighthand0Entity extends AaroncosHandEntity {
         int skill = data.getInt("AaroncosSkill");
 
         if (!sw || skill == 1) return;
+
+        // 原版 AaroncosRighthandSkill / SkillTunetotem：技能触发前检查暗影沉默（被沉默时本 tick 跳过，
+        // 不写标记不消耗冷却；魔法弹/涡流/调音图腾三段一并拦截，等价原版两个独立检查）
+        if (this.hasEffect(PDEffects.SHADOW_SILENCE_BUFF.holder())) return;
 
         // 终结技优先判定：调音图腾是低血量范围演出（50 格爆炸 + 全屏特效），
         // 不依赖仇恨目标或攻击距离——贴脸肉搏 / 玩家风筝脱战短暂失去目标时，

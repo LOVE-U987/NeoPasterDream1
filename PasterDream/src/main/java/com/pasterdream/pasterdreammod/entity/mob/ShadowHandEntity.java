@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMonsterEntity;
+import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -215,7 +216,10 @@ public class ShadowHandEntity extends GeckoLibMonsterEntity {
 
         if (chargeCooldown > 0 || this.getTarget() == null) return;
 
-        if (!this.hasEffect(MobEffects.CONFUSION) && this.getTarget().isAlive()) {
+        // 原版 ShadowHandPr0Procedure：突进前检查暗影沉默（移植时以 CONFUSION 顶替，此处并列补上真正的沉默检查，
+        // 被沉默时跳过突进且不消耗冷却）
+        if (!this.hasEffect(MobEffects.CONFUSION) && !this.hasEffect(PDEffects.SHADOW_SILENCE_BUFF.holder())
+                && this.getTarget().isAlive()) {
             double dist = this.distanceToSqr(this.getTarget());
             if (dist < 64.0) {
                 this.level().playSound(null, this.blockPosition(),
