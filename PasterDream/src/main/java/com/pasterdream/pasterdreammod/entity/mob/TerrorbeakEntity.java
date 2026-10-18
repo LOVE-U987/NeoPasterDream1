@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMonsterEntity;
+import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -106,8 +107,9 @@ public class TerrorbeakEntity extends GeckoLibMonsterEntity {
 
         // 咆哮技能：受伤时触发
         if (!this.level().isClientSide() && this.isAlive()) {
-            // 不处于沉默状态且冷却已过
-            if (!this.hasEffect(MobEffects.CONFUSION) && roarCooldown <= 0) {
+            // 原版 TerrorbeakPr2：咆哮前检查暗影沉默（移植时以 CONFUSION 顶替，此处并列补上真正的沉默检查）
+            if (!this.hasEffect(MobEffects.CONFUSION) && !this.hasEffect(PDEffects.SHADOW_SILENCE_BUFF.holder())
+                    && roarCooldown <= 0) {
                 // 播放咆哮音效
                 this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
                         PDSounds.TERRORBEAK_ROAR.get(), this.getSoundSource(), 1.0F, 1.0F);

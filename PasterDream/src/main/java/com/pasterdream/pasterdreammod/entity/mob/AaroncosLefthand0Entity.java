@@ -4,6 +4,7 @@ import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.effect.ghost.GhostEffectAPI;
 import com.pasterdream.pasterdreammod.registry.PDArenaBossManager;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
+import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -67,7 +68,7 @@ public class AaroncosLefthand0Entity extends AaroncosHandEntity {
      */
     @Override
     protected String getDefaultTexture() {
-        return "aaroncos_lefthand_0";
+        return "aaroncos_lefthand";
     }
 
     // ======================== 子类差异实现 ========================
@@ -212,6 +213,10 @@ public class AaroncosLefthand0Entity extends AaroncosHandEntity {
         // 只对仇恨目标释放技能：无目标不放（脱战/和平模式站桩）
         LivingEntity target = getCombatTarget();
         if (target == null) return;
+
+        // 原版 AaroncosLefthandSkill：技能触发前检查暗影沉默（被沉默时本 tick 跳过，
+        // 不写 AaroncosSkill/Sprint/Hit 标记、不消耗冷却，沉默到期后可正常释放）
+        if (this.hasEffect(PDEffects.SHADOW_SILENCE_BUFF.holder())) return;
 
         int sprint = data.getInt("AaroncosSprint");
         int hit = data.getInt("AaroncosHit");
@@ -390,7 +395,10 @@ public class AaroncosLefthand0Entity extends AaroncosHandEntity {
         boolean sw = data.getBoolean("AaroncosSwitch");
         int sword = data.getInt("AaroncosSword");
 
-        if (skill == 0 && sw && sword != 1 && this.getHealth() > 1) {
+        // 原版 AaroncosLefthandSkillSword：剑雨技能触发前检查暗影沉默
+        // （被沉默时不写 AaroncosSkill/Sword 标记、不消耗 420t 冷却）
+        if (skill == 0 && sw && sword != 1 && this.getHealth() > 1
+                && !this.hasEffect(PDEffects.SHADOW_SILENCE_BUFF.holder())) {
             data.putInt("AaroncosSkill", 1);
             data.putInt("AaroncosSword", 1);
 
