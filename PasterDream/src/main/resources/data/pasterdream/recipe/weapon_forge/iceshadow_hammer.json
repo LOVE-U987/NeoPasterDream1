@@ -1,0 +1,27 @@
+{
+  "type": "pasterdream:weapon_forge",
+  "ingredients": [
+    {
+      "item": "minecraft:diamond"
+    },
+    {
+      "item": "minecraft:blue_ice"
+    },
+    {
+      "item": "pasterdream:blackmetal_ingot"
+    },
+    {
+      "item": "pasterdream:blackstick"
+    },
+    {
+      "item": "pasterdream:pure_horror"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:iceshadow_hammer_embryo"
+  },
+  "inlay": true,
+  "final_result": {
+    "id": "pasterdream:iceshadow_hammer"
+  }
+}

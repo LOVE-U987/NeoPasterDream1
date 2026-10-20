@@ -9,6 +9,7 @@ import com.pasterdream.pasterdreammod.data.PDBlockTagProvider;
 import com.pasterdream.pasterdreammod.data.PDWorldgenProvider;
 import com.pasterdream.pasterdreammod.network.PDNetwork;
 import com.pasterdream.pasterdreammod.registry.PDAttributes;
+import com.pasterdream.pasterdreammod.registry.PDDataComponents;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntitiesFurniture;
 import com.pasterdream.pasterdreammod.registry.PDGameRules;
@@ -168,6 +169,9 @@ public class PasterDreamMod {
 
         // 注册自定义声音事件（包括维度背景音乐）
         PDSounds.SOUND_EVENTS.register(modEventBus);
+
+        // 注册数据组件（梦之强化标记，供梦境炼药锅酿造药水标识）
+        PDDataComponents.DATA_COMPONENTS.register(modEventBus);
 
         // 染梦维度的注册由 data/pasterdream/dimension/dyedream_world.json 数据驱动
 

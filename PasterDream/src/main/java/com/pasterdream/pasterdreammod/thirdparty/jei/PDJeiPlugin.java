@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * PasterDream 的 JEI 集成插件。
  * <p>
- * 分类：梦之坩埚 / 陶盆 / 暗影高炉 / 精铸工坊 /
+ * 分类：梦之坩埚 / 陶盆 / 暗影高炉 / 精铸工坊（RecipeManager 动态配方）/
  * 融梦水晶箱战利品（实时解析战利品表 JSON，每池一页）。
  * <p>
  * 运行时收拢：调试水晶（{@code debug_wand_*}，130+ 个）在 JEI 物品列表中收拢为
@@ -73,8 +73,9 @@ public class PDJeiPlugin implements IModPlugin {
         // 调用本方法，因此客户端世界未就绪时仅注册空列表，待下次重载自动补全，不会长期为空。
         registration.addRecipes(ShadowBlastFurnaceJeiCategory.SHADOW_BLAST_FURNACE_JEI_RECIPE_TYPE,
                 supplierShadowBlastRecipes());
+        // 精铸工坊配方来自运行时 RecipeManager，随数据包配方更新。
         registration.addRecipes(WeaponWorkshopJeiCategory.WEAPON_WORKSHOP_JEI_RECIPE_TYPE,
-                WeaponWorkshopJeiRecipe.build());
+                WeaponWorkshopJeiRecipe.fromRecipeManager());
         // 融梦水晶箱战利品来自客户端资源包的战利品表 JSON：与暗影高炉同模式，
         // 客户端世界未就绪时注册空列表，待 JEI 配方重载自动补全
         registration.addRecipes(MeltdreamChestJeiCategory.MELTDREAM_CHEST_JEI_RECIPE_TYPE,
