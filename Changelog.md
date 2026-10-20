@@ -2,6 +2,125 @@
 
 ---
 ## v0.11.0（开发中）— 2026-10-11
+### 修复：染梦粉尘与小撮染梦粉尘配方未对齐——比例定为 1:4（有意差异，经用户确认）
+
+*   **现象**：1 染梦粉尘可分解为 9 小撮染梦粉尘，但 4 小撮（2×2）即可合成 1 染梦粉尘——4→1→9 循环每轮白赚 5 个小撮，配方永动机
+*   **根因**：原模组仅 1:9 一对配方（crafting_113 分解 1→9 / crafting_94 合成 9→1）；移植时多写出「4小撮→1粉尘」（`dyedream_dust_1.json`），与原模组同款「9小撮→1粉尘」（`dyedream_dust_2.json`）并存，与分解 1→9 三者互不咬合
+*   **修复**（经用户确认定为 1:4，有意差异：原模组为 1:9，粉尘获取提速 2.25 倍）：分解 `dyedream_dust_piece_1.json` 改为 1 粉尘→4 小撮（category `food`→`misc` 贴原模组口径）；删除多余的 `dyedream_dust_2.json`（9小撮→1粉尘），保留 `dyedream_dust_1.json`（4小撮→1粉尘）为唯一合成路径；`tag_audit.json` 同步移除该条目
+*   **波折**：首测仍见 1→9——`bin/main`（Eclipse JDT/VSCode 输出目录）资源未随 src 刷新，手动同步解决；二测仍见 9→1——`dyedream_dust_1.json` 中途被并行协作者改回 shapeless 9→1（等效复活已删的 `dust_2`），改回 shaped 2×2（4小撮）并同步 src/build/bin 三份副本
+*   **验证**：改动 JSON 可解析、行尾 LF 复查通过；src/bin/build 三份副本逐项一致（dust_1=2×2 四小撮、piece_1=1→4、dust_2 不存在）；全库无 `dyedream_dust_2` 引用残留；实机待验：配方书 1↔4 互转正常、9 小撮不再可合成粉尘
+
+
+### 新增：调试水晶 JEI 收拢——130+ 个 debug_wand_* 收拢为虚拟条目「调试水晶」（经用户确认）
+
+*   **现象**：130+ 个调试水晶（`debug_wand_*`）逐个挤占玩家 JEI 物品列表；且若借用任一真实水晶作代表，名称只能是该水晶本名（如「染梦列车」），无法就叫「调试水晶」
+*   **根因**：JEI 19.39 物品列表完全来自创造模式标签页（`ItemStackListFactory` 遍历 `CreativeModeTabs.allTabs()`），调试创造栏收录了全部调试水晶；新版 JEI 已移除注册期隐藏 API（`IIngredientVisibility#hideIngredient` 不复存在），且不支持为单个 ItemStack 覆盖显示名
+*   **新增**（`thirdparty/jei/debugcrystal/`）：自定义 JEI 原料类型 `DebugCrystalJeiIngredient`（虚拟条目，渲染沿用代表物品染梦列车贴图，codec 走注册名编码支持书签）+ `DebugCrystalJeiHelper`（搜索名「调试水晶」+ 固定 uid `pasterdream:debug_crystal`）+ `DebugCrystalJeiRenderer`（tooltip：名称 + 灰色获取提示行）；`PDJeiPlugin#registerIngredients` 以 5 参重载注册该类型
+*   **新增**（`PDJeiPlugin#onRuntimeAvailable`）：按注册名前缀 `debug_wand_` 扫描物品注册表，家族全部成员经 `removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, ...)` 移出 JEI 列表；JEI 每次启动/资源重载重建运行时后重新回调，收拢自动持续；前缀扫描自动覆盖后续新增的水晶，无需硬编码清单
+*   **语言**：`jei.pasterdream.debug_crystal.name/desc` 双语（名称「调试水晶」+ 获取提示）
+*   **边界**：仅影响 JEI 展示，创造模式标签页完全不受影响（开发团队照常取用）；调试栏其他开发用物品（机关/BOSS 调试物品等）不在收拢范围（经用户确认）；虚拟条目非真实物品，创造模式（cheat）下 JEI 不提供发放，tooltip 注明获取途径；玩家 JEI 开「显示隐藏物品」亦无法绕过（移除作用于运行时物品注册层面）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；行尾 LF 复查通过；实机待验：JEI 搜索「调试水晶」仅见一条目且名称正确、创造栏调试页 130+ 个水晶齐全
+
+
+### 修复：暮影长床再入死锁——进入灯影世界时代码补授「灯影之下」进度
+
+*   **现象**：首次经真·影之床（暮影之笼据点守卫完成后）进入灯影世界并返回主世界后，右键自制的暮影长床（shadow_bed）提示「缺少灯影之下的进度」，无法再次进入
+*   **根因**：`achievement_shadow_start`（灯影之下）在数据包中仅有 `changed_dimension`（to=lamp_shadow_world）触发器一条授予路径，实机未稳定生效（0.9.4 真·影之床误用该进度导致首入死锁已是同一根因的先例）；暮影长床再入唯一前置即该进度 → 首入后永远拿不到 → 再入死锁。VERIFY 套件只覆盖真床首入（hide_9 门控），未覆盖暮影长床再入，缺口未被发现
+*   **修复**（`ShadowBedBlock#teleportToLampShadowWorld`）：跨维度传送成功后由代码补授 `PDAdvancements.award(SHADOW_START)`，语义与原版一致（en_us 描述即 "Enter the dream 'Beneath Lamp & Shadow'"）；`award` 幂等（已完成/holder 缺失无副作用），与数据包触发器双路径兼容；真床、暮影长床、入睡事件（`PDSleepEvents`）三条首入路径共用该方法，全部覆盖；研究台（`ResearchTableBlockEntity` 对同进度的检查）一并受益
+*   **验证**：`gradlew :PasterDream:compileJava` BUILD SUCCESSFUL；实机验证通过（2026-10-18 用户确认）：首入灯影 → 返回 → 夜晚右键自制暮影长床可再次进入
+
+### 新增：融梦水晶箱 JEI 战利品展示——每池一页、概率/品质实时解析
+
+*   **新增**（`thirdparty/jei/meltdreamchest/`）：`MeltdreamChestJeiRecipe`（客户端资源包实时解析战利品表 JSON：染梦主表 4 池 + 风旅/灯影主表 + 传说附加 3 池，每池一条，零硬编码物品）+ `MeltdreamChestJeiCategory`（程序化绘制无需 png 资产，物品槽下方标注概率，悬停提示概率/数量范围/品质）；`PDJeiPlugin` 注册分类与配方，catalyst = 融梦水晶箱
+*   **概率口径**：条目权重 / 池内全部条目权重之和——空占位 `tabitem_1`（如装备池 w150）计入分母但不展示，还原"该池大概率不出实物"的真实概率（若剔除会虚高约 170 倍）
+*   **品质**：抓取 lang 现成 `tooltip.pasterdream.<id>.quality` 键（宝藏 11 件中 7 件有定义，缺失的物品不显示品质行，优雅降级）
+*   **语言**：分类名 + 8 个池名 + 概率/数量提示行（双语 ×11 键）
+*   **UI 瘦身**（实机截图反馈）：概率从槽位下方整行文字（槽间距 18px 装不下 30px 文字导致"9.1%9.1%…"重叠成乱码）改为**槽内右上角 0.6 倍小字整数百分比角标**（精确到 1 位小数的概率保留在悬停提示）；悬停提示**移除重复品质行**（物品本体 tooltip 已含，缺失的物品不再代劳）；**移除池标题的条目数后缀**（JEI 原生计数角标已有）；画布高 84→72
+*   **兼容**：战利品表读取经三轮实机排查后定稿为**双数据源**——第一优先逻辑服务端资源管理器（支持存档数据包覆盖），失败（`out` 为空）时回退 `Class.getResource` classpath 直读（`/data/pasterdream/…`，dev classpath 与 prod 模组 jar 通用，绕开资源管理器 pack 机制）；每步 INFO/WARN 日志自证；主菜单 / 联机客户端返回空列表；前两版（客户端 rm 直读、`AddReloadListenerEvent` 缓存）均因资源管理器上下文问题被实机日志证伪回退，详见知识库 2026-10-18 笔记
+*   **验证**：`gradlew :PasterDream:compileJava` BUILD SUCCESSFUL；`check_lang.py` 双语对齐通过；行尾 LF 复查通过；实机待验：JEI 中点融梦水晶箱图标查看各池掉落、概率与品质显示
+
+### 新增：草薙武器行为移植——中毒/击杀成长/天丛云战技
+
+*   **现象**：草薙（grass_sword）攻击无中毒效果、也无法成长为『天丛云』草薙（true_grass_sword）——两把剑此前仅以 ItemAPI 裸剑注册，原模组的武器行为逻辑完全未移植
+*   **根因**：原模组成长机制不走武器工作台——`GrassSwordItem#hurtEnemy` 附加中毒（3 秒）并累计击杀数（NBT `killed`），手持时 `killed>=200` 自动消耗并发放『天丛云』草薙（提示+skill0 音效+融梦水晶粒子）；工作台配方中 TRUE_GRASS_SWORD 仅为合成天丛云剑的材料（该配方此前已移植）
+*   **新增**（`GrassSwordItem`）：还原命中中毒 3 秒 + 1 tick 后死亡判定计 `killed+1`（`ServerScheduler` 替代原 queueServerWork）+ 手持 `killed>=200` 成长链路（消耗/发放/快捷栏提示/音效/粒子）；剑属性与原 ItemAPI 注册逐项一致（耐久 874/伤害加成 6/攻速 -2.5/附魔 16），并补还原原版修复材料丛林孢子（ItemAPI 注册此前缺失）；成长时经 `applyComponents(getComponentsPatch())` 继承旧剑全部物品组件——附魔/耐久损耗/自定义数据（原模组成长即换新剑丢附魔，属有意体验改进，组件继承需在 shrink 前完成）
+*   **新增**（`TrueGrassSwordItem`）：还原被动中毒 5 秒（比草薙更长）+ 战技"极致锋利"——右键写入 `paster_atk`（原版公式 7.5×锋利×0.5+攻击力属性）与 `skill_multiplier`，播放 sword1 音效/强化粒子/挥剑，并给 `pasterdream:skill` 标签物品施加 80×SKILLCD 冷却（沿用 TerraSwordItem 移植口径取 baseValue）；命中时海豚音效+skill1 音效+尘雾/孢子粒子，对首次命中的目标造成 `paster_atk×skill_multiplier` 额外伤害（persistentData 标记，每个目标仅一次）
+*   **注册**（`PDItemsTools`）：GRASS_SWORD/TRUE_GRASS_SWORD 从 `ItemAPI.toolItem` 换为自定义类注册（属性逐项对齐，参照 terra_sword 先例）
+*   **语言**：tooltip ×9 键 + 成长提示 ×1 键（双语），原硬编码文本全部入语言键
+*   **工具**（`tools/verify_tool_stats.py`）：grass_sword/true_grass_sword 加入自定义类跳过名单（同 white_sword 模式，数值已在类定义逐项对齐）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`verify_tool_stats.py` 42 项 0 差异；行尾 LF 复查通过；实机待验：中毒显示/200 杀成长触发/战技额外伤害与冷却
+### 新增：简单类武器行为批量移植（10 件，武器行为补全第一批）
+
+*   **背景**：全量盘点发现 16 件武器仅有 ItemAPI 裸注册（原模组行为逻辑未移植：剑类 9 + 熔金工具系 5 + 战技类 4 + SAN 联动 1）；本批先补简单类 10 件，战技类（truest_moltengold_sword/true_desert_sword/true_tide_sword/dyedream_sword_0）与 shadow_sword 留待后续批次
+*   **剑类 ×6**：`MoltengoldSwordItem`（攻击引燃 3 秒）、`TrueMoltengoldSwordItem`（可叠加引燃：已燃目标 +剩余×0.05+2 秒，未燃点燃 4 秒）、`TideSwordItem`（手持水下呼吸，无粒子短刷新）、`DesertSwordItem`（手持缓速-15%+抗性+20% 代价型被动，无粒子短刷新）、`ThermalDaggerItem`（命中 thermal_dagger 音效+气泡粒子×64，音效此前已注册未接入）、`CreativeSwordItem`（命中 1 亿虚空伤害+1 tick 后清实体，攻速为正 6.0 的调试剑）
+*   **工具类 ×5**：`MoltengoldPickaxe/Axe/Shovel/HoeItem` 四件套共用 `MoltengoldToolHelper`（右键消耗 4 点饱食度换 20 秒急迫，冷却 10 秒）+ `TrueMoltengoldPickaxeItem`（30 秒急迫、冷却仅 8 秒）
+*   **属性对齐**：全部与原 ItemAPI 注册逐项一致；按原版补 fireResistant（熔金全家/温热匕首/创造剑，ItemAPI 注册此前缺失）；修复材料还原（熔金锭/海晶晶粒/钛粒/空），获取等级对齐（剑类 wooden、工具 stone 级）
+*   **语言**：tooltip ×18 键（双语），四件套共用 moltengold_tool 键组；原硬编码文本（含温热匕首"§7§o-- 深海迷航"梗文案）全部入语言键
+*   **工具**（`tools/verify_tool_stats.py`）：+11 ID 进自定义类跳过名单（累计 14）
+*   **验证**：本批文件编译 0 错误（全量编译当前失败于 `DreamBrewingRecipe.java:214`，属并行开发中的他人负责区域，未越界处理）；`verify_tool_stats.py` 42 项 0 差异；`check_lang.py` 双语全过；行尾 LF 全过；实机待验：引燃叠加/被动刷新/饱食急迫/调试剑清实体
+### 新增：战技类武器行为批量移植（5 件，武器行为补全第二批 · 收官）
+
+*   **背景**：武器行为补全第二批，5 件战技类全部完成（含最复杂的 SAN 联动 shadow_sword），至此盘点发现的 16 件裸注册武器行为全部补齐
+*   **新增**（`TruestMoltengoldSwordItem`）：战技"融骸斩击"——右键开启（200×SKILLCD 冷却），命中时 skill2+龙息爆炸音效、熔岩粒子×64，造成 (2+paster_atk+剩余引燃×0.03)×倍率 的熔岩类型伤害，剩余引燃≥10 tick 追加缓慢 II 后清火复位；被动叠火 +3 秒（比真熔金剑 +2 更高）；按原版补 fireResistant
+*   **新增**（`TrueDesertSwordItem`）：战技"绝地反击"——开启时记录已损失生命比例+3 秒吸收（80×SKILLCD 冷却），命中造成 (5+(损失比例×2+1)×paster_atk)×倍率（越残血越痛）；被动与沙漠剑共用（缓速-15%/抗性+20%，抽取 `DesertSwordItem.applyDesertPassive` 包内复用）
+*   **新增**（`TrueTideSwordItem`）：战技"涌流剑技"——水中向视线冲刺（×2 初速）+18 tick 抗性 IV（免疫 80%）+挥剑（50×SKILLCD，独立于战技状态，忠实原版结构），命中时目标在水中 (3+1.2×paster_atk)×倍率 否则 paster_atk；被动与潮汐剑共用（水下呼吸，抽取 `TideSwordItem.applyTidePassive`）
+*   **新增**（`DyedreamSword0Item`）：战技"凌空斩"——命中额外 (2+paster_atk×1.2)×倍率 伤害+上击飞（0.8），拥有染梦守护效果时冷却 60×SKILLCD（3 秒）否则 100×（5 秒，原版分支）
+*   **新增**（`ShadowSwordItem`）：精神值联动——手持且理智系统开启时 SAN_VARIABILITY -3.6、按精神值加成攻速/攻击（0.5/0.75×(1-san/100)，精神越低越强）；挥砍"暗影之才"成就门控（`PDAdvancements.has`），未达成聊天栏提示+虚空伤害至剩 1 血+黑暗 3 秒；理智耗尽挥砍魔法反噬至剩 1 血。**1.21.1 迁移决策**：原版 getAttributeModifiers 覆写在属性组件化后调用语义不可靠，改用瞬时属性修饰符 + tick 维护（与 `PDSanityHelper` 环境修饰符同模式），收剑/关闭系统时移除，行为等价；tooltip 保留原模组 `item.pasterdream.shadow_sword.hovertext.*` 键名
+*   **共享**（`WeaponSkillHelper`）：4 件战技的 AtkPr0 等价（paster_atk=攻击力+锋利×0.5 / skill_multiplier=倍率基础值）、BUFF_0+sword1 开启演出、战技标签冷却统一抽取（terra_sword/true_grass_sword 先期移植保持不动）
+*   **语言**：tooltip ×37 键（双语，含 shadow_sword 原模组已有的 is_san/describe 键补全 en_us）+ 反噬提示 ×1；硬编码"未选则<暗影> 无法使用此剑"入语言键
+*   **工具**（`tools/verify_tool_stats.py`）：+5 ID 进自定义类跳过名单（累计 19，16 件盘点武器全部覆盖）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL（一次通过）；`verify_tool_stats.py` 42 项 0 差异；`check_lang.py` 双语全过；行尾 LF 全过；实机待验：各战技伤害/冷却/演出、SAN 联动属性随精神变化、成就门控反噬
+### 修复：北海若冲刺无效 + 暗影沉默体系怪物侧缺失（实机反馈两项）
+
+*   **现象 1**：『北海若』引潮（true_tide_sword）右键在水中无冲刺位移（抗性/音效正常）；**现象 2**：白厄剑雨命中的"暗影沉默"对怪物无实际作用
+*   **根因 1**（`TrueTideSwordItem`）：服务端对玩家 `setDeltaMovement` 不广播运动包，客户端物理下一 tick 即覆盖速度——原版 MCreator 代码未置 `hurtMarked`，玩家侧冲刺在原版同样无效；修复：置位 `hurtMarked = true` 走 vanilla 击退同款广播路径（属对原版的有意修复，注释说明）
+*   **根因 2**（沉默体系）："暗影沉默"是标记型效果——怪物释放特定技能前检查 `hasEffect(SHADOW_SILENCE)` 跳过技能；剑雨侧挂效果代码已移植（亚伦柯斯之触 6%/暗影生物 12%，200t），但**怪物侧检查为 0 处**。且排查发现移植时的共性偏差：4 处怪物的沉默检查被 `hasEffect(MobEffects.CONFUSION)`（恶心）顶替，源码注释仍自称"沉默"
+*   **修复**（7 处检查 + 1 处自清，均保留既有 CONFUSION 守卫并列追加真正的沉默检查）：`ShadowHandEntity#serverChargeTick` 突进、`Terrorbeak/WeakenessTerrorbeak/CrazyTerrorbeakEntity#hurt` 咆哮、`AaroncosLefthand0Entity#tickSkillCycle`（冲刺/重击两段）与 `#triggerSwordSkill` 剑雨技、`AaroncosRighthand0Entity#tickSkillCycle`（魔法弹/涡流/调音图腾三段一并拦截，等价原版两独立检查）；另补原版有而移植版缺的 `AaroncosHandEntity#tryBloodLock` 触发时自清沉默（鲜血锁链不可被沉默的反向逻辑）
+*   **语义对齐**：被沉默时不写怪物技能标记/计分板（不消耗冷却），沉默到期后技能正常释放（与原版一致）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`check_lang` 不涉及；行尾 LF 复查通过；实机待验：北海若水中右键位移、白厄剑雨沉默期间上述怪物技能被跳过
+
+### 新增：梦境炼药锅 KubeJS RecipeSchema 联动（三系统联动集齐）
+
+*   **背景**：炼药锅已完成 `dream_brewing` 数据驱动化（见下条改造），本次补齐其 KubeJS RecipeSchema 联动，与暗影高炉/精铸工坊统一为 `event.recipes.pasterdream.<type>` 写法
+*   **新增**（`PDRecipeSchemas`）：`DREAM_BREWING` schema——位置参数（产物, 3 材料数组，`IntBounds(3,3)` 防呆），可选链式参数 `guidingDrug(...)` / `craftTick(...)`；`PasterDreamKubeJSPlugin` 注册到 `pasterdream:dream_brewing`
+*   **细节**：`guiding_drug` 的 KubeJS key 用 `defaultOptional()`（非 `optional(Ingredient)`）——schema 类在 KubeJS 注册期初始化，不可触碰 `PDItems.GUIDING_DRUG` DeferredHolder；脚本未设置时不写该字段，由 MapCodec 的 `optionalFieldOf` 默认值（药引瓶）兜底，两侧解耦
+*   **测试产物**：`pd_recipe_kubejs_test.js` 追加 2 条炼药锅测试配方（苹果/金锭/荧石粉→金苹果，缺省引导药剂；面包/小麦/糖→蛋糕，指定 `guidingDrug('minecraft:milk_bucket')`）；VERIFY 套件 `kubejs-recipes` 扩展：`dream_brewing` 数据包配方 ≥5、KubeJS 注入 ≥2、`DreamBrewingInput`（药引瓶+测试材料）`getRecipeFor` 实际匹配命中金苹果
+*   **验证**：`gradlew compileJava` 全模块 BUILD SUCCESSFUL（修复 `ItemStack` 双重包装一处）；改动 4 文件行尾 LF 全过；实机待验：`kubejs-recipes` 套件全绿、JEI 炼药锅分类显示脚本配方
+
+### 新增：暗影高炉 + 精铸工坊 KubeJS 配方联动；工坊配方 JSON 数据驱动化（经用户确认）
+
+*   **背景**：暗影高炉（`shadow_blasting`）与精铸工坊（`weapon_forge`）配方无法被 KubeJS 增删改；工坊 13 条锻造配方还硬编码在 BlockEntity 内（与 JEI 展示层构成双份硬编码副本）。经确认：两系统均走 KubeJS RecipeSchema 模式，工坊先行数据驱动重构，梦境炼药锅本次不动
+*   **工坊配方数据驱动化**（参照暗影高炉模式）：新增 `WeaponWorkshopRecipe implements Recipe<WeaponWorkshopRecipeInput>`（字段：`ingredients`×5 / `result` / `inlay`（JEI 镶嵌槽展示标记）/ `final_result`（JEI 成品预览））+ `WeaponWorkshopRecipeInput`（材料槽 0-4 只读视图）+ `pasterdream:weapon_forge` RecipeType/Serializer（MapCodec + StreamCodec，ingredients 固定 5 格校验，长度不符报错而非静默失效）；13 条原配方迁移为 JSON（`data/pasterdream/recipe/weapon_forge/`，物品与产物逐一保真）；`WeaponWorkshopBlockEntity` 删除硬编码配方表改走 `RecipeManager.getRecipeFor`，附魔合并（同名取最高）与镶嵌结算保留为锻造通用行为
+*   **KubeJS RecipeSchema 联动**：`PasterDreamKubeJSPlugin#registerRecipeSchemas` 注册两套 schema（`PDRecipeSchemas`，仅被插件类引用，KubeJS 缺席不加载）；玩家脚本写法——`event.recipes.pasterdream.shadow_blasting('产物', '原料').byResult(...).blastingTick(50).spendFluidFuel(100).spendFuel(0)`、`event.recipes.pasterdream.weapon_forge('产物', [5 材料]).inlay(true).finalResult(...)`；schema 生成的 JSON 与 MapCodec 字段一一对应，经合成数据包进 vanilla RecipeManager 加载链（数据包覆盖/JEI/配方查询自然生效）
+*   **JEI 展示层同步**：`WeaponWorkshopJeiRecipe` 删除 13 条硬编码展示数据，改从运行时 RecipeManager 动态读取（同暗影高炉模式：客户端世界未就绪注册空列表、配方重载自动补全），数据包增删改配方后 JEI 自动跟随；行为差异（有意）：原展示层材料数量角标（×2/×3 等）与实际「每槽各扣 1」不符，现按实际消耗展示
+*   **测试产物**：`run/kubejs/server_scripts/pd_recipe_kubejs_test.js`（高炉 ×2 + 工坊 ×2 测试配方，VERIFY 全绿后可删）；新增 VERIFY 专项套件 `kubejs-recipes`（`PDRecipeKubeJsVerifyHooks`：RecipeType 注册 / 数据包配方装载 ≥13+≥5 / kubejs 命名空间注入 ≥2+≥2 / 脚本配方 getRecipeFor 实际匹配；不在 all 默认集合，`PASTERDREAM_VERIFY_SUITES=kubejs-recipes` 显式开启）
+*   **验证**：`gradlew compileJava` 全模块 BUILD SUCCESSFUL（修复 3 处：`SingleRecipeInput` 泛型绑定、`ModList.get().isLoaded` 静态调用、`getAllRecipesFor` 泛型方法签名）；本次 25 个改动/新建文件行尾 LF 全过；smoketest 工坊锻造 E2E（配方匹配/附魔合并断言）走新 RecipeManager 链路预期原样通过；实机待验：KubeJS 脚本注册配方生效、JEI 工坊分类动态显示、`kubejs-recipes` 套件全绿
+
+### 改造：梦境炼药锅 → 类酿造台自动酿造——双通道配方 + 梦之强化 + 配方数据包化（经用户确认）
+
+*   **背景**：原坩埚为「引导药剂+3材料→法术卷轴」按钮触发炼制，5 个法术配方硬编码于方块实体，无法数据包覆盖、KubeJS 无法增删改，且不产出药水
+*   **槽位重排（酿造台式）**：槽 0 引导药剂槽 → 通用材料槽（药水酿造材料/法术引导药剂双用）；槽 1-3 材料槽 → 药水瓶槽（水瓶/任意药水，兼作法术配方材料位）；槽 4-6（融梦桶/空桶回收/成品）不变；GUI 坐标与纹理不动
+*   **双通道自动酿造**（移除原「炼制」按钮，材料放入即由服务端 tick 自动启动）：法术配方精确匹配优先（时长由配方 `craft_tick` 决定，默认 60 tick，时序与原版 procedure 语义一致：末前 2 tick 消耗/末前 1 tick 产物入槽 6）；否则走通用药水酿造（400 tick 与原版一致，`Level#potionBrewing()` 判定与执行——NeoForge patched 实例自动涵盖原版全部配方与所有模组注册的 `IBrewingRecipe`，无需逐一适配）；酿造中材料被拿走/替换即中断（原版酿造台行为）；GUI 新增酿造进度条（DataSlot 同步，原按钮位置）
+*   **梦之强化**（仅药水酿造产物）：新增 `PDDataComponents.DREAM_ENHANCED` 标记组件 + `DreamPotionEnhancer`——持续型效果时长 ×1.5、即时型效果等级 +1（无限时长保持原样）；实现为清空 potion 字段后强化效果全量写入 customEffects（避免原版效果+强化效果双重叠加），药水原名经 `ITEM_NAME` 组件以翻译键保留（无斜体）；tooltip 追加「梦之强化」提示行（双语，LIGHT_PURPLE）
+*   **配方数据包化（技术债清理，经用户确认）**：新增 `pasterdream:dream_brewing` RecipeType + MapCodec/StreamCodec 序列化器（同 shadow_blasting 模式，字段：`guiding_drug`/`materials`×3/`result`/`craft_tick`）+ 5 个配方 JSON（`data/pasterdream/recipe/dream_brewing/`，内容与原硬编码一致）；BlockEntity 改走 `RecipeManager.getAllRecipesFor` 查询（旧存档酿造中恢复可自愈重匹配，配方按 ID 比对）；JEI 改从运行时 RecipeManager 读配方（数据包增删改自动跟随，同暗影高炉模式）；KubeJS 可按配方 ID 增删改（如 `server.recipes.remove({ id: 'pasterdream:dream_brewing/lightning_spell' })`）
+*   **行为差异（有意）**：法术产物不再弹出地面改为写入成品槽 6 由玩家取走（自动酿造下 GUI 保持打开，成品槽占用时法术酿造不启动）；PasterDreamSpells 未安装时引用其物品的配方 JSON 解析失败跳过（伴随 error 日志，属数据包生态预期行为，功能正确）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL（修复 `DreamBrewingRecipe` 的 `getResultItem` 方法引用歧义一处）；`check_lang.py` 双语全过；18 个改动/新建文件行尾 LF 全过；`BUTTON_CRAFT`/`tryStartCraft`/`activeRecipeIndex` 残留清零；smoketest 坩埚链路同步适配（自动酿造断言 + 产物写入槽 6 断言，移除按钮点击与掉落物断言）；实机待验：法术/药水双通道酿造、模组配方兼容（Iron's Spells 等注册配方）、梦之强化数值、进度条渲染
+
+### 修复：玄岩药水酿造配方移植缺失——JEI 无酿造步骤、药水无法产出（用户实机反馈）
+
+*   **现象**：JEI 中点玄岩药水看不到酿造步骤；原版酿造台与梦境炼药锅均无法产出该药水（用户实机反馈「药水配方 JEI 看不到」，经现象定位 + 配方清单比对确认）
+*   **根因**：原模组酿造配方 `Brewing0BrewingRecipe`（粗制药水 + 玄武岩蜗牛壳 → 玄岩药水，Forge 1.20.1 `BrewingRecipeRegistry` 注册）在 1.20.1 → 1.21.1 移植时整体缺失——移植版从未向 NeoForge 注册过任何药水酿造配方；蜗牛壳物品与玄岩药水本身均已移植，唯独配方断链
+*   **新增**（`recipe/BasaltBrewingRecipe` + `registry/PDBrewingRecipes`）：还原原配方语义（`isInput`=任意药水容器且内容为粗制，`isIngredient`=玄武岩蜗牛壳，`getOutput`=保持容器类型替换药水内容为玄岩）；注册方式为 NeoForge 1.21.1 事件 `RegisterBrewingRecipesEvent`（**注意：本版本已移除 BREWING_RECIPES 注册表**，改为 `PotionBrewing#bootstrap` 时游戏总线广播事件、模组经 `event.getBuilder().addRecipe(IBrewingRecipe)` 收集式注册；`@EventBusSubscriber` 注解的 `bus` 参数已过时，事件按类型自动路由）
+*   **生效范围**：原版酿造台可酿造 + JEI 酿造分类自动展示步骤（`BrewingRecipeMaker` 数据源含 `IBrewingRecipe` 集合）+ 梦境炼药锅通用酿造通道自动兼容（`potionBrewing()` 三件套委托链路）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL（零警告）；行尾 LF 复查通过；实机待验：粗制药水+蜗牛壳在酿造台/坩埚中产出玄岩药水、JEI 显示酿造步骤（普通/喷溅/滞留三容器变体）
+
+### 改进：坩埚 JEI 分类展示兼容的药水酿造配方——R 页自动关联坩埚（用户实机反馈）
+
+*   **现象**：JEI「梦境炼药锅」分类里看不到兼容的原版药水配方，对原版药水按 R 也只显示原版酿造台分类（功能上坩埚通用酿造已兼容，但展示层缺位）
+*   **根因**：`DreamCauldronJeiRecipe` 仅展示 5 个法术配方，未把通用酿造通道兼容的配方（原版 mixes + 模组 IBrewingRecipe）转换为坩埚展示配方；JEI 配方页按「配方的 output」自动关联分类，药水未被注册为坩埚分类配方的产物，自然只关联酿造台
+*   **改进**（`DreamCauldronJeiRecipe` + `DreamCauldronJeiCategory`）：`build()` 扩展双数据源——法术配方（dream_brewing 数据包，原有）之外，从 `level.potionBrewing()` 枚举：① 原版药水混合（材料候选经 `isIngredient`/`isContainerIngredient` 过滤后 × potion registry 全量药水实例笛卡尔积，`hasMix`/`mix` 试探出全部 (材料, 药水→成品) 组合）；② NeoForge `IBrewingRecipe`（`BrewingRecipe` 具体类走 `getInput/getIngredient/getOutput` 精确展示，其余实现药水域试探、每配方取首条匹配防重复爆炸）；转换展示为坩埚配方（材料入槽 0 位、药水容器入瓶槽位、融梦桶催化剂），药水酿造条目标注 `dreamEnhanced` 并在成品槽 tooltip 提示「坩埚酿造将获得梦之强化」（双语）；空栈槽位（药水酿造无空桶返还/仅 1 瓶）不再渲染
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`check_lang.py` 双语全过；行尾 LF 复查通过；实机待验：坩埚分类出现原版/模组药水酿造条目（约 80+ 条）、药水 R 页同时显示酿造台与坩埚两个分类、强化 tooltip 生效
+## v0.11.0（开发中）— 2026-10-11
 
 ### 修复：北海若冲刺无效 + 暗影沉默体系怪物侧缺失（实机反馈两项）
 

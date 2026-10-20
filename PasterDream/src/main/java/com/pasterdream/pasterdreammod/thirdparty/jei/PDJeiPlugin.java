@@ -74,8 +74,8 @@ public class PDJeiPlugin implements IModPlugin {
         // 调用本方法，因此客户端世界未就绪时仅注册空列表，待下次重载自动补全，不会长期为空。
         registration.addRecipes(ShadowBlastFurnaceJeiCategory.SHADOW_BLAST_FURNACE_JEI_RECIPE_TYPE,
                 supplierShadowBlastRecipes());
-        // 精铸工坊配方来自运行时 RecipeManager（weapon_forge 数据驱动，与暗影高炉同模式）：
-        // 客户端世界未就绪时仅注册空列表，待下次重载自动补全
+        // 精铸工坊配方从客户端 RecipeManager 的 weapon_forge 类型读取。
+        // 客户端世界未就绪时返回空列表。
         registration.addRecipes(WeaponWorkshopJeiCategory.WEAPON_WORKSHOP_JEI_RECIPE_TYPE,
                 WeaponWorkshopJeiRecipe.fromRecipeManager());
         // 融梦水晶箱战利品来自客户端资源包的战利品表 JSON：与暗影高炉同模式，
