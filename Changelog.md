@@ -12,6 +12,15 @@
 
 ## 未发布
 
+### 新增：融梦水晶箱 JEI 战利品展示——每池一页、概率/品质实时解析
+
+*   **新增**（`thirdparty/jei/meltdreamchest/`）：`MeltdreamChestJeiRecipe`（客户端资源包实时解析战利品表 JSON：染梦主表 4 池 + 风旅/灯影主表 + 传说附加 3 池，每池一条，零硬编码物品）+ `MeltdreamChestJeiCategory`（程序化绘制无需 png 资产，物品槽下方标注概率，悬停提示概率/数量范围/品质）；`PDJeiPlugin` 注册分类与配方，catalyst = 融梦水晶箱
+*   **概率口径**：条目权重 / 池内全部条目权重之和——空占位 `tabitem_1`（如装备池 w150）计入分母但不展示，还原"该池大概率不出实物"的真实概率（若剔除会虚高约 170 倍）
+*   **品质**：抓取 lang 现成 `tooltip.pasterdream.<id>.quality` 键（宝藏 11 件中 7 件有定义，缺失的物品不显示品质行，优雅降级）
+*   **语言**：分类名 + 8 个池名 + 概率/数量提示行（双语 ×11 键）
+*   **UI 瘦身**（实机截图反馈）：概率从槽位下方整行文字（槽间距 18px 装不下 30px 文字导致"9.1%9.1%…"重叠成乱码）改为**槽内右上角 0.6 倍小字整数百分比角标**（精确到 1 位小数的概率保留在悬停提示）；悬停提示**移除重复品质行**（物品本体 tooltip 已含，缺失的物品不再代劳）；**移除池标题的条目数后缀**（JEI 原生计数角标已有）；画布高 84→72
+*   **兼容**：战利品表读取经三轮实机排查后定稿为**双数据源**——第一优先逻辑服务端资源管理器（支持存档数据包覆盖），失败（`out` 为空）时回退 `Class.getResource` classpath 直读（`/data/pasterdream/…`，dev classpath 与 prod 模组 jar 通用，绕开资源管理器 pack 机制）；每步 INFO/WARN 日志自证；主菜单 / 联机客户端返回空列表；前两版（客户端 rm 直读、`AddReloadListenerEvent` 缓存）均因资源管理器上下文问题被实机日志证伪回退，详见知识库 2026-10-18 笔记
+*   **验证**：`gradlew :PasterDream:compileJava` BUILD SUCCESSFUL；`check_lang.py` 双语对齐通过；行尾 LF 复查通过；实机待验：JEI 中点融梦水晶箱图标查看各池掉落、概率与品质显示
 ### 修复：染梦维度不生成岩浆（还原原模组岩浆生成链路）
 
 *   **根因**：原模组的岩浆由四层机制叠加产生，本项目四层全被切断——① 群系 `features[1]`（LAKES 步）为空且 `minecraft:lake_lava_underground` 未迁移为 biome modifier（`6fda3db8` 迁移遗漏）；② `noise_settings/dyedream_world.json` 的 `noise_router.lava` 被改为常量 `0.0`；③ `NoiseBasedChunkGeneratorMixin` 拦截 `createFluidPicker`，抹除 Y-64 ~ Y-55 底部岩浆层；④ 三个 `configured_carver/dyedream_*.json` 的 `lava_level` 被改为 `{"absolute": -2032}`。后三项来自同一提交 `6136a762`（意图「地下岩浆改为地下河」），本次经确认推翻。
