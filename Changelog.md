@@ -1,6 +1,15 @@
 # PasterDream Changelog
 
 ---
+## v0.11.0（开发中）— 2026-10-11
+
+### 修复：暮影长床再入死锁——进入灯影世界时代码补授「灯影之下」进度
+
+*   **现象**：首次经真·影之床（暮影之笼据点守卫完成后）进入灯影世界并返回主世界后，右键自制的暮影长床（shadow_bed）提示「缺少灯影之下的进度」，无法再次进入
+*   **根因**：`achievement_shadow_start`（灯影之下）在数据包中仅有 `changed_dimension`（to=lamp_shadow_world）触发器一条授予路径，实机未稳定生效（0.9.4 真·影之床误用该进度导致首入死锁已是同一根因的先例）；暮影长床再入唯一前置即该进度 → 首入后永远拿不到 → 再入死锁。VERIFY 套件只覆盖真床首入（hide_9 门控），未覆盖暮影长床再入，缺口未被发现
+*   **修复**（`ShadowBedBlock#teleportToLampShadowWorld`）：跨维度传送成功后由代码补授 `PDAdvancements.award(SHADOW_START)`，语义与原版一致（en_us 描述即 "Enter the dream 'Beneath Lamp & Shadow'"）；`award` 幂等（已完成/holder 缺失无副作用），与数据包触发器双路径兼容；真床、暮影长床、入睡事件（`PDSleepEvents`）三条首入路径共用该方法，全部覆盖；研究台（`ResearchTableBlockEntity` 对同进度的检查）一并受益
+*   **验证**：`gradlew :PasterDream:compileJava` BUILD SUCCESSFUL；实机验证通过（2026-10-18 用户确认）：首入灯影 → 返回 → 夜晚右键自制暮影长床可再次进入
+
 ## 未发布
 
 ### 修复：染梦维度不生成岩浆（还原原模组岩浆生成链路）
@@ -46,6 +55,31 @@
 *   **修复**（`smoketest/PDWindLakeVerifyHooks`）：`wind_journey_biome_0 → wind_journey_islands`（常量、断言名、提示文案同步），该 VERIFY 套件此前因群系不存在恒失败。
 *   **同步**（`data/pasterdream/worldgen/biome/`，6 个染梦群系 JSON）：`music.sound` 字段与新映射对齐（该字段在自定义维度内仅作 mixin 失效时的兜底，不代表实际播放结果），并统一行尾为 LF。
 *   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；蘑菇平原覆盖率由独立 FastNoise 采样程序实测（0.70→1.387%、0.75→0.506%、0.80→0.115%、0.86→0.0049%）。
+
+### 新增：Static Sky 渲染模式（Iris 光影兼容）
+
+*   **背景**：NPD 的 8 类自定义天体（星野/行星/星座/极光/光带/流星/彩虹/天空染色）此前全部通过 `RenderLevelStageEvent.AFTER_SKY` 事件绘制。无光影时完美工作，但在部分 Iris 光影包（Complementary/BSL）的 composite 阶段中 AFTER_SKY 内容被覆盖。
+*   **根因**：问题不在于"怎么画"（内容类仅使用 vanilla core shaders，Iris 自身兼容），而在于**画太晚了**——AFTER_SKY 触发时 Iris 的 sky 管线已关闭，内容写入主 framebuffer 后被 composite 覆盖。
+*   **架构**（`mixin/LevelRendererMixin`）：在 `LevelRenderer.renderSky()` 的 starBuffer 绘制后、`disableBlend()` 前新增 `@Inject` 注入点。此时 Iris 仍在 sky pass 阶段，所有 vanilla core shader 的绘制被拦截写入 colortex 供 composite 使用。
+*   **新增**（`client/sky/skystatic/`）：`StaticSkyRenderer.java`（编排器）+ `IrisDetector.java`（运行时检测 Iris/Oculus，无需编译期依赖）。
+*   **重构**（`SkyboxRenderer`）：提取 `renderCore()` 核心循环，新增 `renderStatic()` 入口供静态模式使用（不做 rotation 和 cleanup，由 caller 管理状态）。
+*   **配置**（`config/PDCommonConfig`）：新增 `SkyRenderMode` 枚举（DYNAMIC / STATIC / AUTO）。AUTO 为默认模式：检测到 Iris/Oculus 时自动启用 STATIC，否则回退 DYNAMIC，无需用户手动干预。
+*   **完善**（`SkyboxRenderer`）：新增 `renderPlayerSkyLinksStatic()`——静态模式下 AFTER_SKY 被跳过后，星空枕连线星体改由 renderSky 注入路径补渲染（否则会消失）；静态路径显式启用标准混合以正确表现 alpha。
+*   **完善**（`StaticSkyRenderer`）：NPD 内容渲染后恢复星盘段的 additive blend（防御性措施，确保 Iris 对 sky pass 状态的预期不被破坏）。
+*   **验证**：`.\gradlew compileJava` BUILD SUCCESSFUL。全部 8 内容类、数据驱动层（JSON/预设/重载监听器）、API 模块均无改动。
+*   **实测**（2026-10-11）：AUTO 模式 + Complementary / BSL 光影包游戏内验证通过——天体全部正常显示，Complementary 自带星云天空未覆盖 NPD 内容。
+
+### 新增：风之旅途调试水晶体系（变体水晶 + 潜行滚轮切换）与风之树 18 变体地物
+
+*   **变体水晶**（`item/DebugVariantWandItem`，新）：一个水晶承载多变体，支持「潜行 + 滚轮」切换；选中项存物品 `CUSTOM_DATA`，tooltip 显示当前目标与变体序号；支持结构模式（NBT 路径）与装饰模式（ConfiguredFeature 名）双模。
+*   **滚轮同步**（`client/DebugWandClientEvents`，新 + `network/DebugWandVariantPayload`，新 + `network/PDNetwork` 接线）：客户端滚轮切换后发 C2S 包，服务端按变体数取模校验写回槽位并广播；切换时抬头显示栏即时显示「当前变体 (x/N)」。
+*   **风之树 18 变体**（`worldgen/feature/WindMoorTreeGenerator`，新 + `registry/WindMoorTrees`，新）：按染梦基准程序化实现——贴合地表落脚、主干、分层上扬枝节（枝端叶簇）、多层椭球树冠（角度不规则打破球面切面）、枝端按概率挂风泊悬挂藤；大中小 × 低中高 × 多/少枝节 = 18 种参数组合，装饰模式共用 1 个调试水晶；装饰数据（configured/placed/biome_modifier，`tools/gen_windmoor_tree_jsons.py` 生成）对齐既有 `generic_decor` 范式，新增群系标签 `tags/worldgen/biome/is_wind_journey.json`。
+*   **现有风旅结构补水晶**（`PDItemsFunctional`/`PDItems`/`PDCreativeTabsDebug`）：热气球升级为 8 变体水晶；新增小热气球（11 变体）、云泡泡（6 变体）、风之岛、风车小屋、风池、风蚀石（2 变体）、破风幕、失落风骑士遗迹、四叶草、bocchi（2 变体）、博丽灵梦。
+*   **共享资源**：`textures/item/wind_journey_debug_crystal.png` + `models/item/debug_wand_wind_journey.json`（16×16 菱形青蓝晶体，风格对齐现有调试水晶；生成脚本 `tools/gen_wind_journey_debug_crystal.py`）；13 个水晶模型统一一行 parent 复用。
+*   **小热气球 NBT 补齐**（`data/pasterdream/structure/small_balloon_0..10.nbt`，11 个，新）：从原模组 `structures/`（1.20 复数路径）搬入 1.21.1 单数 `structure/`；模板池 `location` 为双 o `small_balloon_N` 与原文件名一致，无需改名。此前该维度 11 个小热气球结构定义在、NBT 缺席。
+*   **工具修复**（`tools/inspect_structure_nbt.py`）：路径改为必填（原先写死 `NBT_PATH` 指向 shadow_world_door.nbt，传参无效导致误读其它结构）；输出通用化（palette 截断、关注方块可配置）并加固空列表解析。
+*   **修复（树切面）**：`WindMoorTreeGenerator` 枝条原木按水平方向设置 `RotatedPillarBlock.AXIS`（原先一律默认 `axis=y`，水平枝条年轮/树皮面错位出现切面）；生成边界 `isWithinGenerationBounds`（仅同区块）→ `isWithinExpandedGenerationBounds(±1 区块)`（原点近区块边缘时越界半棵树被静默裁成平面）；叶簇加角度不规则度并调整留孔/缺失率。
+*   **验证**：`gradlew compileJava` 全模块 BUILD SUCCESSFUL；`runData` 通过且日志无数据包解析错误；`check_lang` 门禁绿（所有注册项中英齐全）；36 个结构变体目标 NBT 与 18 个风之树变体（Java↔configured↔placed↔biome_modifier）交叉一致性校验通过；物品 ID 无重复。潜行滚轮手感与树形待游戏内实跑确认。
 
 ## v0.10.0 — 2026-09-25
 
