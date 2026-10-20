@@ -6,6 +6,7 @@ import com.pasterdream.pasterdreammod.api.effect.particle.ParticleEmitterData;
 import com.pasterdream.pasterdreammod.api.effect.particle.processors.CircleSpawnProcessor;
 import com.pasterdream.pasterdreammod.api.entity.damage.ConfigurableImmunityEntity;
 import com.pasterdream.pasterdreammod.registry.PDEntities;
+import com.pasterdream.pasterdreammod.registry.PDEffects;
 import com.pasterdream.pasterdreammod.registry.PDSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -497,6 +498,10 @@ public abstract class AaroncosHandEntity extends ConfigurableImmunityEntity {
         if (data.getBoolean("AaroncosBloodLock") || this.getHealth() > this.getMaxHealth() / 3f) return;
 
         data.putBoolean("AaroncosBloodLock", true);
+
+        // 原版 AaroncosHandBloodlock：鲜血锁链触发时自清暗影沉默（狂暴不可被沉默的原版反向逻辑，
+        // 移植版此前未实现）
+        this.removeEffect(PDEffects.SHADOW_SILENCE_BUFF.holder());
 
         // 抗性提升 IV（60秒）
         this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1200, 3, false, false));

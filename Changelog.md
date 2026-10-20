@@ -29,8 +29,6 @@
 *   **修复**（`ShadowBedBlock#teleportToLampShadowWorld`）：跨维度传送成功后由代码补授 `PDAdvancements.award(SHADOW_START)`，语义与原版一致（en_us 描述即 "Enter the dream 'Beneath Lamp & Shadow'"）；`award` 幂等（已完成/holder 缺失无副作用），与数据包触发器双路径兼容；真床、暮影长床、入睡事件（`PDSleepEvents`）三条首入路径共用该方法，全部覆盖；研究台（`ResearchTableBlockEntity` 对同进度的检查）一并受益
 *   **验证**：`gradlew :PasterDream:compileJava` BUILD SUCCESSFUL；实机验证通过（2026-10-18 用户确认）：首入灯影 → 返回 → 夜晚右键自制暮影长床可再次进入
 
-## 未发布
-
 ### 新增：融梦水晶箱 JEI 战利品展示——每池一页、概率/品质实时解析
 
 *   **新增**（`thirdparty/jei/meltdreamchest/`）：`MeltdreamChestJeiRecipe`（客户端资源包实时解析战利品表 JSON：染梦主表 4 池 + 风旅/灯影主表 + 传说附加 3 池，每池一条，零硬编码物品）+ `MeltdreamChestJeiCategory`（程序化绘制无需 png 资产，物品槽下方标注概率，悬停提示概率/数量范围/品质）；`PDJeiPlugin` 注册分类与配方，catalyst = 融梦水晶箱
@@ -40,6 +38,47 @@
 *   **UI 瘦身**（实机截图反馈）：概率从槽位下方整行文字（槽间距 18px 装不下 30px 文字导致"9.1%9.1%…"重叠成乱码）改为**槽内右上角 0.6 倍小字整数百分比角标**（精确到 1 位小数的概率保留在悬停提示）；悬停提示**移除重复品质行**（物品本体 tooltip 已含，缺失的物品不再代劳）；**移除池标题的条目数后缀**（JEI 原生计数角标已有）；画布高 84→72
 *   **兼容**：战利品表读取经三轮实机排查后定稿为**双数据源**——第一优先逻辑服务端资源管理器（支持存档数据包覆盖），失败（`out` 为空）时回退 `Class.getResource` classpath 直读（`/data/pasterdream/…`，dev classpath 与 prod 模组 jar 通用，绕开资源管理器 pack 机制）；每步 INFO/WARN 日志自证；主菜单 / 联机客户端返回空列表；前两版（客户端 rm 直读、`AddReloadListenerEvent` 缓存）均因资源管理器上下文问题被实机日志证伪回退，详见知识库 2026-10-18 笔记
 *   **验证**：`gradlew :PasterDream:compileJava` BUILD SUCCESSFUL；`check_lang.py` 双语对齐通过；行尾 LF 复查通过；实机待验：JEI 中点融梦水晶箱图标查看各池掉落、概率与品质显示
+
+### 新增：草薙武器行为移植——中毒/击杀成长/天丛云战技
+
+*   **现象**：草薙（grass_sword）攻击无中毒效果、也无法成长为『天丛云』草薙（true_grass_sword）——两把剑此前仅以 ItemAPI 裸剑注册，原模组的武器行为逻辑完全未移植
+*   **根因**：原模组成长机制不走武器工作台——`GrassSwordItem#hurtEnemy` 附加中毒（3 秒）并累计击杀数（NBT `killed`），手持时 `killed>=200` 自动消耗并发放『天丛云』草薙（提示+skill0 音效+融梦水晶粒子）；工作台配方中 TRUE_GRASS_SWORD 仅为合成天丛云剑的材料（该配方此前已移植）
+*   **新增**（`GrassSwordItem`）：还原命中中毒 3 秒 + 1 tick 后死亡判定计 `killed+1`（`ServerScheduler` 替代原 queueServerWork）+ 手持 `killed>=200` 成长链路（消耗/发放/快捷栏提示/音效/粒子）；剑属性与原 ItemAPI 注册逐项一致（耐久 874/伤害加成 6/攻速 -2.5/附魔 16），并补还原原版修复材料丛林孢子（ItemAPI 注册此前缺失）；成长时经 `applyComponents(getComponentsPatch())` 继承旧剑全部物品组件——附魔/耐久损耗/自定义数据（原模组成长即换新剑丢附魔，属有意体验改进，组件继承需在 shrink 前完成）
+*   **新增**（`TrueGrassSwordItem`）：还原被动中毒 5 秒（比草薙更长）+ 战技"极致锋利"——右键写入 `paster_atk`（原版公式 7.5×锋利×0.5+攻击力属性）与 `skill_multiplier`，播放 sword1 音效/强化粒子/挥剑，并给 `pasterdream:skill` 标签物品施加 80×SKILLCD 冷却（沿用 TerraSwordItem 移植口径取 baseValue）；命中时海豚音效+skill1 音效+尘雾/孢子粒子，对首次命中的目标造成 `paster_atk×skill_multiplier` 额外伤害（persistentData 标记，每个目标仅一次）
+*   **注册**（`PDItemsTools`）：GRASS_SWORD/TRUE_GRASS_SWORD 从 `ItemAPI.toolItem` 换为自定义类注册（属性逐项对齐，参照 terra_sword 先例）
+*   **语言**：tooltip ×9 键 + 成长提示 ×1 键（双语），原硬编码文本全部入语言键
+*   **工具**（`tools/verify_tool_stats.py`）：grass_sword/true_grass_sword 加入自定义类跳过名单（同 white_sword 模式，数值已在类定义逐项对齐）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`verify_tool_stats.py` 42 项 0 差异；行尾 LF 复查通过；实机待验：中毒显示/200 杀成长触发/战技额外伤害与冷却
+### 新增：简单类武器行为批量移植（10 件，武器行为补全第一批）
+
+*   **背景**：全量盘点发现 16 件武器仅有 ItemAPI 裸注册（原模组行为逻辑未移植：剑类 9 + 熔金工具系 5 + 战技类 4 + SAN 联动 1）；本批先补简单类 10 件，战技类（truest_moltengold_sword/true_desert_sword/true_tide_sword/dyedream_sword_0）与 shadow_sword 留待后续批次
+*   **剑类 ×6**：`MoltengoldSwordItem`（攻击引燃 3 秒）、`TrueMoltengoldSwordItem`（可叠加引燃：已燃目标 +剩余×0.05+2 秒，未燃点燃 4 秒）、`TideSwordItem`（手持水下呼吸，无粒子短刷新）、`DesertSwordItem`（手持缓速-15%+抗性+20% 代价型被动，无粒子短刷新）、`ThermalDaggerItem`（命中 thermal_dagger 音效+气泡粒子×64，音效此前已注册未接入）、`CreativeSwordItem`（命中 1 亿虚空伤害+1 tick 后清实体，攻速为正 6.0 的调试剑）
+*   **工具类 ×5**：`MoltengoldPickaxe/Axe/Shovel/HoeItem` 四件套共用 `MoltengoldToolHelper`（右键消耗 4 点饱食度换 20 秒急迫，冷却 10 秒）+ `TrueMoltengoldPickaxeItem`（30 秒急迫、冷却仅 8 秒）
+*   **属性对齐**：全部与原 ItemAPI 注册逐项一致；按原版补 fireResistant（熔金全家/温热匕首/创造剑，ItemAPI 注册此前缺失）；修复材料还原（熔金锭/海晶晶粒/钛粒/空），获取等级对齐（剑类 wooden、工具 stone 级）
+*   **语言**：tooltip ×18 键（双语），四件套共用 moltengold_tool 键组；原硬编码文本（含温热匕首"§7§o-- 深海迷航"梗文案）全部入语言键
+*   **工具**（`tools/verify_tool_stats.py`）：+11 ID 进自定义类跳过名单（累计 14）
+*   **验证**：本批文件编译 0 错误（全量编译当前失败于 `DreamBrewingRecipe.java:214`，属并行开发中的他人负责区域，未越界处理）；`verify_tool_stats.py` 42 项 0 差异；`check_lang.py` 双语全过；行尾 LF 全过；实机待验：引燃叠加/被动刷新/饱食急迫/调试剑清实体
+### 新增：战技类武器行为批量移植（5 件，武器行为补全第二批 · 收官）
+
+*   **背景**：武器行为补全第二批，5 件战技类全部完成（含最复杂的 SAN 联动 shadow_sword），至此盘点发现的 16 件裸注册武器行为全部补齐
+*   **新增**（`TruestMoltengoldSwordItem`）：战技"融骸斩击"——右键开启（200×SKILLCD 冷却），命中时 skill2+龙息爆炸音效、熔岩粒子×64，造成 (2+paster_atk+剩余引燃×0.03)×倍率 的熔岩类型伤害，剩余引燃≥10 tick 追加缓慢 II 后清火复位；被动叠火 +3 秒（比真熔金剑 +2 更高）；按原版补 fireResistant
+*   **新增**（`TrueDesertSwordItem`）：战技"绝地反击"——开启时记录已损失生命比例+3 秒吸收（80×SKILLCD 冷却），命中造成 (5+(损失比例×2+1)×paster_atk)×倍率（越残血越痛）；被动与沙漠剑共用（缓速-15%/抗性+20%，抽取 `DesertSwordItem.applyDesertPassive` 包内复用）
+*   **新增**（`TrueTideSwordItem`）：战技"涌流剑技"——水中向视线冲刺（×2 初速）+18 tick 抗性 IV（免疫 80%）+挥剑（50×SKILLCD，独立于战技状态，忠实原版结构），命中时目标在水中 (3+1.2×paster_atk)×倍率 否则 paster_atk；被动与潮汐剑共用（水下呼吸，抽取 `TideSwordItem.applyTidePassive`）
+*   **新增**（`DyedreamSword0Item`）：战技"凌空斩"——命中额外 (2+paster_atk×1.2)×倍率 伤害+上击飞（0.8），拥有染梦守护效果时冷却 60×SKILLCD（3 秒）否则 100×（5 秒，原版分支）
+*   **新增**（`ShadowSwordItem`）：精神值联动——手持且理智系统开启时 SAN_VARIABILITY -3.6、按精神值加成攻速/攻击（0.5/0.75×(1-san/100)，精神越低越强）；挥砍"暗影之才"成就门控（`PDAdvancements.has`），未达成聊天栏提示+虚空伤害至剩 1 血+黑暗 3 秒；理智耗尽挥砍魔法反噬至剩 1 血。**1.21.1 迁移决策**：原版 getAttributeModifiers 覆写在属性组件化后调用语义不可靠，改用瞬时属性修饰符 + tick 维护（与 `PDSanityHelper` 环境修饰符同模式），收剑/关闭系统时移除，行为等价；tooltip 保留原模组 `item.pasterdream.shadow_sword.hovertext.*` 键名
+*   **共享**（`WeaponSkillHelper`）：4 件战技的 AtkPr0 等价（paster_atk=攻击力+锋利×0.5 / skill_multiplier=倍率基础值）、BUFF_0+sword1 开启演出、战技标签冷却统一抽取（terra_sword/true_grass_sword 先期移植保持不动）
+*   **语言**：tooltip ×37 键（双语，含 shadow_sword 原模组已有的 is_san/describe 键补全 en_us）+ 反噬提示 ×1；硬编码"未选则<暗影> 无法使用此剑"入语言键
+*   **工具**（`tools/verify_tool_stats.py`）：+5 ID 进自定义类跳过名单（累计 19，16 件盘点武器全部覆盖）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL（一次通过）；`verify_tool_stats.py` 42 项 0 差异；`check_lang.py` 双语全过；行尾 LF 全过；实机待验：各战技伤害/冷却/演出、SAN 联动属性随精神变化、成就门控反噬
+### 修复：北海若冲刺无效 + 暗影沉默体系怪物侧缺失（实机反馈两项）
+
+*   **现象 1**：『北海若』引潮（true_tide_sword）右键在水中无冲刺位移（抗性/音效正常）；**现象 2**：白厄剑雨命中的"暗影沉默"对怪物无实际作用
+*   **根因 1**（`TrueTideSwordItem`）：服务端对玩家 `setDeltaMovement` 不广播运动包，客户端物理下一 tick 即覆盖速度——原版 MCreator 代码未置 `hurtMarked`，玩家侧冲刺在原版同样无效；修复：置位 `hurtMarked = true` 走 vanilla 击退同款广播路径（属对原版的有意修复，注释说明）
+*   **根因 2**（沉默体系）："暗影沉默"是标记型效果——怪物释放特定技能前检查 `hasEffect(SHADOW_SILENCE)` 跳过技能；剑雨侧挂效果代码已移植（亚伦柯斯之触 6%/暗影生物 12%，200t），但**怪物侧检查为 0 处**。且排查发现移植时的共性偏差：4 处怪物的沉默检查被 `hasEffect(MobEffects.CONFUSION)`（恶心）顶替，源码注释仍自称"沉默"
+*   **修复**（7 处检查 + 1 处自清，均保留既有 CONFUSION 守卫并列追加真正的沉默检查）：`ShadowHandEntity#serverChargeTick` 突进、`Terrorbeak/WeakenessTerrorbeak/CrazyTerrorbeakEntity#hurt` 咆哮、`AaroncosLefthand0Entity#tickSkillCycle`（冲刺/重击两段）与 `#triggerSwordSkill` 剑雨技、`AaroncosRighthand0Entity#tickSkillCycle`（魔法弹/涡流/调音图腾三段一并拦截，等价原版两独立检查）；另补原版有而移植版缺的 `AaroncosHandEntity#tryBloodLock` 触发时自清沉默（鲜血锁链不可被沉默的反向逻辑）
+*   **语义对齐**：被沉默时不写怪物技能标记/计分板（不消耗冷却），沉默到期后技能正常释放（与原版一致）
+*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`check_lang` 不涉及；行尾 LF 复查通过；实机待验：北海若水中右键位移、白厄剑雨沉默期间上述怪物技能被跳过
+
 ### 修复：染梦维度不生成岩浆（还原原模组岩浆生成链路）
 
 *   **根因**：原模组的岩浆由四层机制叠加产生，本项目四层全被切断——① 群系 `features[1]`（LAKES 步）为空且 `minecraft:lake_lava_underground` 未迁移为 biome modifier（`6fda3db8` 迁移遗漏）；② `noise_settings/dyedream_world.json` 的 `noise_router.lava` 被改为常量 `0.0`；③ `NoiseBasedChunkGeneratorMixin` 拦截 `createFluidPicker`，抹除 Y-64 ~ Y-55 底部岩浆层；④ 三个 `configured_carver/dyedream_*.json` 的 `lava_level` 被改为 `{"absolute": -2032}`。后三项来自同一提交 `6136a762`（意图「地下岩浆改为地下河」），本次经确认推翻。
@@ -83,31 +122,6 @@
 *   **修复**（`smoketest/PDWindLakeVerifyHooks`）：`wind_journey_biome_0 → wind_journey_islands`（常量、断言名、提示文案同步），该 VERIFY 套件此前因群系不存在恒失败。
 *   **同步**（`data/pasterdream/worldgen/biome/`，6 个染梦群系 JSON）：`music.sound` 字段与新映射对齐（该字段在自定义维度内仅作 mixin 失效时的兜底，不代表实际播放结果），并统一行尾为 LF。
 *   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；蘑菇平原覆盖率由独立 FastNoise 采样程序实测（0.70→1.387%、0.75→0.506%、0.80→0.115%、0.86→0.0049%）。
-
-### 新增：Static Sky 渲染模式（Iris 光影兼容）
-
-*   **背景**：NPD 的 8 类自定义天体（星野/行星/星座/极光/光带/流星/彩虹/天空染色）此前全部通过 `RenderLevelStageEvent.AFTER_SKY` 事件绘制。无光影时完美工作，但在部分 Iris 光影包（Complementary/BSL）的 composite 阶段中 AFTER_SKY 内容被覆盖。
-*   **根因**：问题不在于"怎么画"（内容类仅使用 vanilla core shaders，Iris 自身兼容），而在于**画太晚了**——AFTER_SKY 触发时 Iris 的 sky 管线已关闭，内容写入主 framebuffer 后被 composite 覆盖。
-*   **架构**（`mixin/LevelRendererMixin`）：在 `LevelRenderer.renderSky()` 的 starBuffer 绘制后、`disableBlend()` 前新增 `@Inject` 注入点。此时 Iris 仍在 sky pass 阶段，所有 vanilla core shader 的绘制被拦截写入 colortex 供 composite 使用。
-*   **新增**（`client/sky/skystatic/`）：`StaticSkyRenderer.java`（编排器）+ `IrisDetector.java`（运行时检测 Iris/Oculus，无需编译期依赖）。
-*   **重构**（`SkyboxRenderer`）：提取 `renderCore()` 核心循环，新增 `renderStatic()` 入口供静态模式使用（不做 rotation 和 cleanup，由 caller 管理状态）。
-*   **配置**（`config/PDCommonConfig`）：新增 `SkyRenderMode` 枚举（DYNAMIC / STATIC / AUTO）。AUTO 为默认模式：检测到 Iris/Oculus 时自动启用 STATIC，否则回退 DYNAMIC，无需用户手动干预。
-*   **完善**（`SkyboxRenderer`）：新增 `renderPlayerSkyLinksStatic()`——静态模式下 AFTER_SKY 被跳过后，星空枕连线星体改由 renderSky 注入路径补渲染（否则会消失）；静态路径显式启用标准混合以正确表现 alpha。
-*   **完善**（`StaticSkyRenderer`）：NPD 内容渲染后恢复星盘段的 additive blend（防御性措施，确保 Iris 对 sky pass 状态的预期不被破坏）。
-*   **验证**：`.\gradlew compileJava` BUILD SUCCESSFUL。全部 8 内容类、数据驱动层（JSON/预设/重载监听器）、API 模块均无改动。
-*   **实测**（2026-10-11）：AUTO 模式 + Complementary / BSL 光影包游戏内验证通过——天体全部正常显示，Complementary 自带星云天空未覆盖 NPD 内容。
-
-### 新增：风之旅途调试水晶体系（变体水晶 + 潜行滚轮切换）与风之树 18 变体地物
-
-*   **变体水晶**（`item/DebugVariantWandItem`，新）：一个水晶承载多变体，支持「潜行 + 滚轮」切换；选中项存物品 `CUSTOM_DATA`，tooltip 显示当前目标与变体序号；支持结构模式（NBT 路径）与装饰模式（ConfiguredFeature 名）双模。
-*   **滚轮同步**（`client/DebugWandClientEvents`，新 + `network/DebugWandVariantPayload`，新 + `network/PDNetwork` 接线）：客户端滚轮切换后发 C2S 包，服务端按变体数取模校验写回槽位并广播；切换时抬头显示栏即时显示「当前变体 (x/N)」。
-*   **风之树 18 变体**（`worldgen/feature/WindMoorTreeGenerator`，新 + `registry/WindMoorTrees`，新）：按染梦基准程序化实现——贴合地表落脚、主干、分层上扬枝节（枝端叶簇）、多层椭球树冠（角度不规则打破球面切面）、枝端按概率挂风泊悬挂藤；大中小 × 低中高 × 多/少枝节 = 18 种参数组合，装饰模式共用 1 个调试水晶；装饰数据（configured/placed/biome_modifier，`tools/gen_windmoor_tree_jsons.py` 生成）对齐既有 `generic_decor` 范式，新增群系标签 `tags/worldgen/biome/is_wind_journey.json`。
-*   **现有风旅结构补水晶**（`PDItemsFunctional`/`PDItems`/`PDCreativeTabsDebug`）：热气球升级为 8 变体水晶；新增小热气球（11 变体）、云泡泡（6 变体）、风之岛、风车小屋、风池、风蚀石（2 变体）、破风幕、失落风骑士遗迹、四叶草、bocchi（2 变体）、博丽灵梦。
-*   **共享资源**：`textures/item/wind_journey_debug_crystal.png` + `models/item/debug_wand_wind_journey.json`（16×16 菱形青蓝晶体，风格对齐现有调试水晶；生成脚本 `tools/gen_wind_journey_debug_crystal.py`）；13 个水晶模型统一一行 parent 复用。
-*   **小热气球 NBT 补齐**（`data/pasterdream/structure/small_balloon_0..10.nbt`，11 个，新）：从原模组 `structures/`（1.20 复数路径）搬入 1.21.1 单数 `structure/`；模板池 `location` 为双 o `small_balloon_N` 与原文件名一致，无需改名。此前该维度 11 个小热气球结构定义在、NBT 缺席。
-*   **工具修复**（`tools/inspect_structure_nbt.py`）：路径改为必填（原先写死 `NBT_PATH` 指向 shadow_world_door.nbt，传参无效导致误读其它结构）；输出通用化（palette 截断、关注方块可配置）并加固空列表解析。
-*   **修复（树切面）**：`WindMoorTreeGenerator` 枝条原木按水平方向设置 `RotatedPillarBlock.AXIS`（原先一律默认 `axis=y`，水平枝条年轮/树皮面错位出现切面）；生成边界 `isWithinGenerationBounds`（仅同区块）→ `isWithinExpandedGenerationBounds(±1 区块)`（原点近区块边缘时越界半棵树被静默裁成平面）；叶簇加角度不规则度并调整留孔/缺失率。
-*   **验证**：`gradlew compileJava` 全模块 BUILD SUCCESSFUL；`runData` 通过且日志无数据包解析错误；`check_lang` 门禁绿（所有注册项中英齐全）；36 个结构变体目标 NBT 与 18 个风之树变体（Java↔configured↔placed↔biome_modifier）交叉一致性校验通过；物品 ID 无重复。潜行滚轮手感与树形待游戏内实跑确认。
 
 ## v0.10.0 — 2026-09-25
 
