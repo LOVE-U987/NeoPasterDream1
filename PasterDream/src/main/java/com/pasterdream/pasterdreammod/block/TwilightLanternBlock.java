@@ -290,7 +290,7 @@ public class TwilightLanternBlock extends BaseEntityBlock {
                                 Component.translatable("message.pasterdream.twilight_lantern.shadow_materialize"), false);
                     }
                     if (level instanceof ServerLevel serverLevel) {
-                        serverLevel.playSound(null, pos, PDSounds.SHADOW_MUSIC.get(), SoundSource.MUSIC, 1, 1);
+                        serverLevel.playSound(null, pos, PDSounds.SHADOW_MUSIC_0.get(), SoundSource.MUSIC, 1, 1);
                         // 通知客户端静音原版背景音乐，避免与暮影之笼 BGM 双播（SoundEngine 不会自动停止 MUSIC 源声音）
                         // 经状态追踪：多笼并发计数、登录/换维度补发、断线重置
                         TwilightLanternMusicState.begin(serverLevel);

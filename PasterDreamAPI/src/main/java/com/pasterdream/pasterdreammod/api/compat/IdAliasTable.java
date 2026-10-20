@@ -1,8 +1,6 @@
 package com.pasterdream.pasterdreammod.api.compat;
 
-import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
@@ -63,82 +61,6 @@ public final class IdAliasTable {
     public IdAliasTable add(ResourceKey<? extends Registry<?>> registryKey, IdAlias alias) {
         Objects.requireNonNull(alias, "alias 不能为空");
         return add(registryKey, alias.from(), alias.to());
-    }
-
-    /**
-     * 同时向方块与物品注册表追加同一条别名（BlockItem 场景）。
-     * <p>
-     * 注册路径使用 API 数据命名空间 {@link PasterDreamAPI#DATA_NAMESPACE} 构造，
-     * 等价于分别对 {@code Registries.BLOCK} 与 {@code Registries.ITEM} 调用 {@link #add}。
-     *
-     * @param from 旧注册路径
-     * @param to   新注册路径
-     * @return this（链式调用）
-     */
-    public IdAliasTable addBlockAndItem(String from, String to) {
-        ResourceLocation fromId = path(from);
-        ResourceLocation toId = path(to);
-        add(Registries.BLOCK, fromId, toId);
-        add(Registries.ITEM, fromId, toId);
-        return this;
-    }
-
-    /**
-     * 向指定注册表批量追加「同族旧名 → 单一新名」别名（合并场景）。
-     * <p>
-     * 适用于早期注册多个编号变体、后合并为单一内容的情况（如 {@code foo_0、foo_1 合并为 foo}）；
-     * 一对一的语义化改名请直接使用 {@link #add}。
-     *
-     * @param registryKey 目标注册表键
-     * @param to          新注册路径
-     * @param fromPaths   旧注册路径（同族编号列表，可变参数）
-     * @return this（链式调用）
-     * @throws IllegalArgumentException 若旧名列表为空
-     */
-    public IdAliasTable addFamily(ResourceKey<? extends Registry<?>> registryKey, String to, String... fromPaths) {
-        Objects.requireNonNull(to, "to 不能为空");
-        if (fromPaths == null || fromPaths.length == 0) {
-            throw new IllegalArgumentException("addFamily 至少需要一个旧注册路径");
-        }
-        ResourceLocation toId = path(to);
-        for (String from : fromPaths) {
-            add(registryKey, path(from), toId);
-        }
-        return this;
-    }
-
-    /**
-     * 同时向方块与物品注册表批量追加「同族旧名 → 单一新名」别名（合并场景）。
-     * <p>
-     * 等价于对 {@code Registries.BLOCK} 与 {@code Registries.ITEM} 各调用一次
-     * {@link #addFamily}，适用于 BlockItem 同族编号变体合并。
-     *
-     * @param to        新注册路径
-     * @param fromPaths 旧注册路径（同族编号列表，可变参数）
-     * @return this（链式调用）
-     * @throws IllegalArgumentException 若旧名列表为空
-     */
-    public IdAliasTable addBlockAndItemFamily(String to, String... fromPaths) {
-        Objects.requireNonNull(to, "to 不能为空");
-        if (fromPaths == null || fromPaths.length == 0) {
-            throw new IllegalArgumentException("addBlockAndItemFamily 至少需要一个旧注册路径");
-        }
-        ResourceLocation toId = path(to);
-        for (String from : fromPaths) {
-            add(Registries.BLOCK, path(from), toId);
-            add(Registries.ITEM, path(from), toId);
-        }
-        return this;
-    }
-
-    /**
-     * 构造 API 数据命名空间下的注册名。
-     *
-     * @param name 注册路径
-     * @return ResourceLocation
-     */
-    private static ResourceLocation path(String name) {
-        return ResourceLocation.fromNamespaceAndPath(PasterDreamAPI.DATA_NAMESPACE, name);
     }
 
     /**

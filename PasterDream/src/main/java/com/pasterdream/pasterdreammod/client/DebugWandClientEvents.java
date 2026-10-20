@@ -4,7 +4,6 @@ import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.item.DebugVariantWandItem;
 import com.pasterdream.pasterdreammod.network.DebugWandVariantPayload;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -57,15 +56,6 @@ public class DebugWandClientEvents {
         int next = Math.floorMod(DebugVariantWandItem.getVariant(stack) + (delta > 0 ? 1 : -1), count);
         DebugVariantWandItem.setVariant(stack, next);
         PacketDistributor.sendToServer(new DebugWandVariantPayload(player.getInventory().selected, next));
-
-        // 屏幕小字提示当前选中的变体（抬头显示栏，暖黄色）
-        String target = wand.targetAt(next);
-        if (target.length() > 36) {
-            target = target.substring(0, 33) + "...";
-        }
-        minecraft.player.displayClientMessage(
-                Component.literal("§b" + target + " §7(§e" + (next + 1) + "§7/§e" + count + "§7)"),
-                true);
 
         // 取消事件，避免同时切换快捷栏选中槽
         event.setCanceled(true);

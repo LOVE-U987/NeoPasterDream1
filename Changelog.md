@@ -10,45 +10,6 @@
 *   **修复**（`ShadowBedBlock#teleportToLampShadowWorld`）：跨维度传送成功后由代码补授 `PDAdvancements.award(SHADOW_START)`，语义与原版一致（en_us 描述即 "Enter the dream 'Beneath Lamp & Shadow'"）；`award` 幂等（已完成/holder 缺失无副作用），与数据包触发器双路径兼容；真床、暮影长床、入睡事件（`PDSleepEvents`）三条首入路径共用该方法，全部覆盖；研究台（`ResearchTableBlockEntity` 对同进度的检查）一并受益
 *   **验证**：`gradlew :PasterDream:compileJava` BUILD SUCCESSFUL；实机验证通过（2026-10-18 用户确认）：首入灯影 → 返回 → 夜晚右键自制暮影长床可再次进入
 
-### 迁移：P0 菜单批次——2 个菜单 ID 去 _0 后缀（ID 迁移第三批）
-
-*   **改名**（`PDMenusBlueprint`/`PDMenusDreamnotes`）：`blueprint_gui_0→blueprint_gui`、`dreamnotes_gui_0→dreamnotes_gui`（注册名+常量+javadoc+调试文案）；引用同步 `BluePrintLoader`/屏幕注册/菜单构造/smoketest ×2 套件
-*   **资源**：蓝图屏幕背景纹理 `textures/screens/blueprint_gui_0.png→blueprint_gui.png`、语言键族 `gui.pasterdream.blueprint_gui_0.button_*`（×5 双语）、`container.pasterdream.dreamnotes_gui_0`（双语）、manifest ×2
-*   **排除**（撞车项）：`storage_bag_0` 基底 `storage_bag`（9 格版）已注册，去后缀撞车，另行语义化
-*   **兼容**（`PDIdAliases`）：+2 条 `MENU` 别名（aliases=42）；`PDBlueprintVerifyHooks` 断言文案同步
-*   **审计增强**（`tools/verify_id_aliases.py`）：注册名收集新增 `MenuAPI.createMenu` 门面形状（吸取 createEntity 教训，提前补齐）
-*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；审计 aliases=42 broken=0 shadowed=0 missing_coverage=0；`check_lang` 双语全过
-
-### 迁移：P0 实体批次——3 个实体 ID 去 _0 后缀（ID 迁移第二批）
-
-*   **改名**（`PDEntities`）：`aaroncos_lefthand_0→aaroncos_lefthand`、`aaroncos_righthand_0→aaroncos_righthand`、`shadow_npc_0→shadow_npc`（注册名+常量+javadoc）；刷怪蛋物品随实体名派生改名（`*_0_spawn_egg→*_spawn_egg` ×3）；常量桥接 `PDItems`/创造模式物品栏同步
-*   **引用**（18 个 Java 文件）：渲染器注册、实体标签、免疫配置、竞技场事件、实体事件、死亡事件、注册表 sanity 锚点、`getDefaultTexture` 返回值、smoketest 三套件断言与提示文案
-*   **资源**：GeckoLib geo/animation ×6、纹理 ×5（含 aaroncos `_light` 发光变体 ×2）、刷怪蛋物品模型 ×3、实体战利品表 ×2、`entity.*`/`item.*_spawn_egg` 语言键 ×6（双语）、实体类型标签 `shadow_mob.json` ×2、manifest 实体区+物品区 ×6
-*   **NBT 修补**：`shadow_dungeon_npc_0/1.nbt` 箱内刷怪蛋物品 ID ×2（新增通用工具 `tools/rewrite_structure_ids.py`，泛化自 spawnblock 先例：gzip 解包 + TAG_String 长度前缀修正 + 重压缩，支持 dry-run 与多对替换）；实体本体未嵌入任何结构 NBT（解压后全量扫描确认）
-*   **兼容**（`PDIdAliases`）：+3 条 `ENTITY_TYPE` 别名 + 3 条刷怪蛋 `ITEM` 别名（aliases=40）；`shadow_squeal_ghost_0` 存在无数字基底名（`shadow_squeal_ghost` 强化变体），撞车排除另行语义化
-*   **审计增强**（`tools/verify_id_aliases.py`）：注册名收集新增 `EntityAPI.createEntity`/`createSpawnEggItem` 门面形状（刷怪蛋按 `<name>_spawn_egg` 派生展开）；实体桶标签对齐 `entity_type`
-*   **排除说明**：实体 Java 类名（`AaroncosLefthand0Entity` 等）与成就 ID（`achievement_shadow_npc_0` 系列，属后续进度批次）不变；`PDMainFlowVerifyHooks` 内成就串经定向替换零误伤
-*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL（首次失败暴露 `PDItems`/创造物品栏桥接常量遗漏，已补齐）；审计 aliases=40 broken=0 shadowed=0 missing_coverage=0；`check_lang` 双语全过；资源闭包 failure_count=3（libs 既有遗留）
-
-### 迁移：P0 音效批次——5 个音效 ID 去 _0 后缀（ID 迁移第一批）
-
-*   **改名**（`PDSounds`）：`ding_0→ding`、`shadow_biome_0→shadow_biome`、`shadow_music_0→shadow_music`、`shadow_trap_0→shadow_trap`、`wind_knight_skill_0→wind_knight_skill`（注册名+常量同步，javadoc 标注旧名）；7 处代码调用点同步（暮影灯笼/暗影火盆/暗影陷阱方块/风之骑士/金狐雕像/方块重置工具/风向标）
-*   **资源**：sounds.json 5 条目（键/subtitle/sounds 引用）、`subtitle.*` 语言键 ×2 文件、群系 JSON `ambient/mood` 引用 ×6 文件 12 处、`sounds/*.ogg` ×5 重命名、`pd_porting_manifest.json` 音效区 5 处（方块/物品区的同名 `shadow_trap_0` 保留不动）
-*   **兼容**（`PDIdAliases`）：+5 条 `SOUND_EVENT` 别名；`PDSaveSchema.CURRENT_ID_SCHEMA_VERSION` 1→2
-*   **排除**（撞车项，另行语义化）：`meltdream_chest_0`/`stone_break_0`/`fury_spell_0` 存在无数字基底名（`meltdream_chest`/`stone_break`/`fury_spell`），去后缀会撞车
-*   **基线修正**（`tools/scan_numeric_registrations.py`）：过滤 `modifierId(...)` 行——原扫描将状态效果类 33 个属性修饰符 ID 误报为注册名（效果本体注册名本就干净；修饰符 ID 持久化于实体 NBT，改名会孤儿化旧修饰符）；基线文档重新生成
-*   **审计增强**（`tools/verify_id_aliases.py`）：broken/shadowed 校验改为按注册表精确匹配（按源文件名归属注册表，未归类文件保守并入），跨注册表同名（音效 `shadow_trap_0` vs 方块）不再误报遮蔽
-*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；`verify_id_aliases.py` aliases=34 broken=0 shadowed=0 missing_coverage=0；`check_lang.py` 中英双语全过；`verify_resource_closure.py` failure_count 8→3（剩余 3 为 libs 原模组 shadowshelf 战利品表既有遗留，与本批次无关）
-
-### 新增：api/compat 别名表便捷方法（ID 迁移里程碑 · API 先行批次）
-
-*   **新增**（`PasterDreamAPI` `api/compat/IdAliasTable`）：三个零具体 ID 的便捷登记方法——`addBlockAndItem(from, to)`（BlockItem 双注册表单条别名）、`addFamily(registryKey, to, froms...)`（同族多旧名合并到单新名）、`addBlockAndItemFamily(to, froms...)`（同族合并 + 双注册表）；注册路径统一用 `PasterDreamAPI.DATA_NAMESPACE` 构造，冲突校验复用既有 `add` 单点
-*   **同步**（`tools/verify_id_aliases.py`）：审计解析器新增识别三种新调用形状（支持跨行参数与行内注释剥离），旧形状（`aliasBlockAndItem` / `table.add(Registries.X, id, id)`）保持兼容；docstring 登记识别范围
-*   **迁移**（`PasterDream` `compat/PDIdAliases`）：现有 29 条别名全部迁移到便捷方法（三处同族合并改用 `addBlockAndItemFamily`，单条改用 `addBlockAndItem`，移除私有 `aliasBlockAndItem` helper），别名集合与迁移前完全一致
-*   **文档**：`docs/设计/存档兼容层.md` §5 新增「5.1 改名标准范式（0.11.x 起）」——静态注册表走别名 API 四步、数据包双注册表走 `PDBiomes` 双轨；`docs/设计/ID迁移计划.md` 迁移同步清单新增第 6 项（别名登记与 schema 递增）
-*   **换行**：本次修改的代码/脚本/文档文件由 CRLF 归一为 LF（`.gitattributes eol=lf` 口径），产生整文件 diff
-*   **验证**：`gradlew compileJava` 全量 BUILD SUCCESSFUL；`python tools/verify_id_aliases.py` 输出 `aliases=29 broken=0 shadowed=0 missing_coverage=0`
-
 ## 未发布
 
 ### 修复：染梦维度不生成岩浆（还原原模组岩浆生成链路）
@@ -83,20 +44,6 @@
 
 ---
 ## v0.10.1 — 2026-09-26
-
-### 修复：染梦荷叶/染梦莲花瞬时破坏、水下透视透明与放置随机偏移
-
-*   **根因 1（破坏速度）**：两个水面方块（`dyedream_lily_pad`/`dyedream_lotus`）移植时硬编码 `strength(0.5f)`，而原模组与原版 lily_pad 均为 `instabreak()`（硬度 0），手挖需约 0.75 秒。
-*   **修复 1**（`block/DyedreamLilyPadBlock`/`DyedreamLotusBlock`）：`strength(0.5f)` → `instabreak()`，对齐原模组与原版，可瞬间破坏。
-*   **根因 2（水下透视透明）**：两个 custom 模型为 Blockbench 零厚度平面（from/to y=0），与原版 1.21.1 `lily_pad` 模型不一致——原版平面悬浮于 y=0.25 且带 `ambientocclusion: false`；移植版平面正好贴在方块边界且未关闭 AO，水下从下方观察时平面渲染异常（透视透明）。
-*   **修复 2**（`models/custom/dyedream_lily_pad.json`/`dyedream_lotus.json`）：添加 `ambientocclusion: false`，零厚度平面 y=0 → y=0.25，对齐原版模型结构。
-*   **根因 3（放置随机偏移）**：两个方块均带 `offsetType(OffsetType.XZ)` 视觉随机偏移（原模组/原版特性，本项目判定为缺陷）。
-*   **修复 3**（`block/DyedreamLilyPadBlock`/`DyedreamLotusBlock`）：移除 `offsetType(XZ)` 与随之失去意义的 `dynamicShape()`，方块居中放置。**有意差异**：不再复刻原版/原模组的睡莲随机偏移。
-*   **恢复命名**（`lang/zh_cn.json`）：`block.pasterdream.dyedream_lily_pad` 染梦荷叶 → **染梦睡莲**（对齐原模组）；调试杖 `item.pasterdream.debug_wand_lily_pad` 同步为 调试水晶-睡莲；`PDBlocksVegetation`/`DyedreamLilyPadBlock`/`PDItemsFunctional` 相关注释同步。英文名与原模组一致，无需改动。
-*   **清理**（`lang/zh_cn.json`/`lang/en_us.json`）：删除 `item.pasterdream.dyedream_lily_pad`/`dyedream_lotus` 共 4 个死条目（BlockItem 显示名委托给 block 键，原版 lang 亦无 `item.minecraft.lily_pad` 可证）；`tools/check_lang.py` 校验通过，442 物品 + 287 方块翻译键齐全。
-*   **根因 4（实跑复核后定位，水下透视透明的真正根因）**：游戏内实测只有一方底盘水下不可见——反编译 1.21.1 确认面剔除链（`ModelBlockRenderer` → `Block.shouldRenderFace`，down 面无 cullface 进 unculled 列表始终渲染），真正根因是**贴图 UV 采样区**：`dyedream_lotus` 贴图为 32x32 双区域设计（上半区 = 底座形状 + 花瓣形状，下半区全透明），其 custom 模型底座 down 面 UV `[8,8,0,16]`（texture_size 32 → 采样 y 16-32 空白区）→ 底面从下方必然不可见；`dyedream_lily_pad` 贴图 16x16 且 down 面采样全图（有形状），底面正常。
-*   **修复 4**（`models/custom/dyedream_lotus.json`）：底座 down 面 UV `[8,8,0,16]` → `[8,8,0,0]`，与顶面同区域采样底座形状，底面从下方可见（镜像显示，同原版惯例）。修复 2 的 AO/高度对齐保留（原版 parity）。
-*   **验证**：`gradlew compileJava` BUILD SUCCESSFUL；游戏内实跑确认水下底盘渲染正常；同步修改的文件行尾统一为 LF。
 
 ### 修复：染梦/风旅维度 BGM 与群系错位、蘑菇平原实际不生成
 

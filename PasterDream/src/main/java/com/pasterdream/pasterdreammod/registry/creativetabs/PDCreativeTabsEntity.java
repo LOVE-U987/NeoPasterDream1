@@ -54,10 +54,10 @@ public class PDCreativeTabsEntity {
                         output.accept(PDItems.ASH_BONE_WING_SPAWN_EGG.get());
                         output.accept(PDItems.BASALT_SNAIL_SPAWN_EGG.get());
                         output.accept(PDItems.FOX_FIRE_SPAWN_EGG.get());
-                        output.accept(PDItems.SHADOW_NPC_SPAWN_EGG.get());
+                        output.accept(PDItems.SHADOW_NPC_0_SPAWN_EGG.get());
                         output.accept(PDItems.SPORE_ENTITY_SPAWN_EGG.get());
-                        output.accept(PDItems.AARONCOS_LEFTHAND_SPAWN_EGG.get());
-                        output.accept(PDItems.AARONCOS_RIGHTHAND_SPAWN_EGG.get());
+                        output.accept(PDItems.AARONCOS_LEFTHAND_0_SPAWN_EGG.get());
+                        output.accept(PDItems.AARONCOS_RIGHTHAND_0_SPAWN_EGG.get());
                         // 注：TERRASWORD_WAVE / HEALING_SPELL_ENTITY 为特效实体刷怪蛋，原版亦不入创造刷怪蛋栏
                     })
                     .build());

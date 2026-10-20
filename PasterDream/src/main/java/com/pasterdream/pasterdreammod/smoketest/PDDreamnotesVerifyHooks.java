@@ -101,10 +101,10 @@ public final class PDDreamnotesVerifyHooks {
         }
 
         // 2) 菜单类型
-        boolean menuOk = PDMenusDreamnotes.DREAMNOTES_GUI.isBound()
+        boolean menuOk = PDMenusDreamnotes.DREAMNOTES_GUI_0.isBound()
                 && BuiltInRegistries.MENU.containsKey(
-                ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dreamnotes_gui"));
-        collect.accept(new Result("menu_dreamnotes_gui", menuOk, "bound=" + PDMenusDreamnotes.DREAMNOTES_GUI.isBound()));
+                ResourceLocation.fromNamespaceAndPath(PasterDreamMod.MOD_ID, "dreamnotes_gui_0"));
+        collect.accept(new Result("menu_dreamnotes_gui_0", menuOk, "bound=" + PDMenusDreamnotes.DREAMNOTES_GUI_0.isBound()));
 
         // 3) tag 成员完整（0..14；blueprint_0 可选）
         var tag = BuiltInRegistries.ITEM.getTag(DREAMNOTES_TAG);

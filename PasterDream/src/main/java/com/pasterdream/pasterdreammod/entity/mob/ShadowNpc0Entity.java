@@ -49,7 +49,7 @@ import java.util.List;
 
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 /**
- * 无名（shadow_npc）—— 暗影地牢 NPC
+ * 无名（shadow_npc_0）—— 暗影地牢 NPC
  * <p>
  * 多阶段对话按玩家成就 {@code achievement_shadow_npc_0..5} 分支，
  * 完整还原原版 {@code ShadowNpc0Pr0Procedure}。
@@ -76,7 +76,7 @@ public class ShadowNpc0Entity extends GeckoLibMobEntity {
 
     @Override
     protected String getDefaultTexture() {
-        return "shadow_npc";
+        return "shadow_npc_0";
     }
 
     @Override

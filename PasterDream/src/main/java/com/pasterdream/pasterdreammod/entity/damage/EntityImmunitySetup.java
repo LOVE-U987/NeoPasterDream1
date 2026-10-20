@@ -80,13 +80,13 @@ public class EntityImmunitySetup {
 
         // ==================== 亚伦柯斯左手 BOSS（火焰免疫） ====================
         // 500HP 飞行 BOSS，免疫火焰伤害
-        config.configureImmunity(PDEntities.AARONCOS_LEFTHAND.get(), Set.of(
+        config.configureImmunity(PDEntities.AARONCOS_LEFTHAND_0.get(), Set.of(
                 DamageTypes.IN_FIRE, DamageTypes.ON_FIRE, DamageTypes.LAVA
         ));
 
         // ==================== 亚伦柯斯右手 BOSS（火焰免疫） ====================
         // 500HP 飞行 BOSS，免疫火焰伤害
-        config.configureImmunity(PDEntities.AARONCOS_RIGHTHAND.get(), Set.of(
+        config.configureImmunity(PDEntities.AARONCOS_RIGHTHAND_0.get(), Set.of(
                 DamageTypes.IN_FIRE, DamageTypes.ON_FIRE, DamageTypes.LAVA
         ));
 

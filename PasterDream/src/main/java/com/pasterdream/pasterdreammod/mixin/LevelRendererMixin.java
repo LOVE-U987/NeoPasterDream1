@@ -2,16 +2,12 @@ package com.pasterdream.pasterdreammod.mixin;
 
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.pasterdream.pasterdreammod.client.sky.SkyboxRenderer;
-import com.pasterdream.pasterdreammod.client.sky.skystatic.StaticSkyRenderer;
-import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * LevelRenderer 混合注入 —— 抑制原版星星
@@ -54,28 +50,5 @@ public class LevelRendererMixin {
         if (!SkyboxRenderer.shouldSuppressVanillaStars()) {
             instance.drawWithShader(modelViewMatrix, projectionMatrix, shader);
         }
-    }
-
-    /**
-     * Static Sky 注入点
-     * <p>
-     * 在 starBuffer drawWithShader（ordinal=1）之后、disableBlend 之前
-     * 插入 NPD 天体渲染，使 Iris 将几何体捕获到 colortex 供 composite 使用。
-     */
-    @Inject(
-            method = "renderSky",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lcom/mojang/blaze3d/systems/RenderSystem;disableBlend()V",
-                    shift = At.Shift.BEFORE
-            )
-    )
-    private void pasterdream$injectStaticSky(
-            Matrix4f modelViewMatrix, Matrix4f projectionMatrix,
-            float partialTick, Camera camera,
-            boolean isFoggy, Runnable fogSetter,
-            CallbackInfo ci
-    ) {
-        StaticSkyRenderer.renderStaticSky(modelViewMatrix, projectionMatrix, partialTick, camera);
     }
 }

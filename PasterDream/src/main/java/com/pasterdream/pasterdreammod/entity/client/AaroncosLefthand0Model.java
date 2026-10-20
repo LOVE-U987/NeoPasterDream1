@@ -16,7 +16,7 @@ public class AaroncosLefthand0Model extends GeoModel<AaroncosLefthand0Entity> {
     @Override
     public ResourceLocation getModelResource(AaroncosLefthand0Entity entity) {
         return ResourceLocation.fromNamespaceAndPath(
-                PasterDreamMod.MOD_ID, "geo/entity/aaroncos_lefthand.geo.json");
+                PasterDreamMod.MOD_ID, "geo/entity/aaroncos_lefthand_0.geo.json");
     }
 
     @Override
@@ -28,6 +28,6 @@ public class AaroncosLefthand0Model extends GeoModel<AaroncosLefthand0Entity> {
     @Override
     public ResourceLocation getAnimationResource(AaroncosLefthand0Entity entity) {
         return ResourceLocation.fromNamespaceAndPath(
-                PasterDreamMod.MOD_ID, "animations/entity/aaroncos_lefthand.animation.json");
+                PasterDreamMod.MOD_ID, "animations/entity/aaroncos_lefthand_0.animation.json");
     }
 }

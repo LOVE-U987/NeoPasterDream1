@@ -237,7 +237,7 @@ public class WindKnightEntity extends GeckoLibMobEntity {
                 sl.sendParticles(ParticleTypes.CLOUD, cx, cy + 1.5, cz, 80, 3, 0.5, 3, 0.1);
                 sl.sendParticles(ParticleTypes.CRIT, cx, cy + 1.5, cz, 80, 3, 0.5, 3, 0.1);
             }
-            level.playSound(null, this.blockPosition(), PDSounds.WIND_KNIGHT_SKILL.get(),
+            level.playSound(null, this.blockPosition(), PDSounds.WIND_KNIGHT_SKILL_0.get(),
                     SoundSource.MASTER, 1.1F, 0.9F);
             level.playSound(null, this.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(),
                     SoundSource.MASTER, 0.7F, 1.0F);
