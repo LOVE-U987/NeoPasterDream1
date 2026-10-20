@@ -31,7 +31,7 @@ import java.util.Comparator;
  * 双格花下方 3 格处放有染梦书桌，且四方位 5 格呈花阵布局
  * （{@code crop_0a} / {@code dyedream_sapling} / {@code flower_14} / {@code flower_9}），
  * 同时 9 格内存在雪傀儡与悦灵时，右键可触发解密：
- * 献祭最近的雪傀儡与悦灵 → 四方位花阵销毁 → 花 16 变花 17（冻结之花）→ 书桌消失
+ * 献祭最近的雪傀儡与悦灵 → 四方位花阵销毁 → 花 16 变花 17（冻结之花），书桌保留
  * → 雪花/雪球粒子 + 梦境音效。
  * <p>
  * 解密核心见 {@link #tryDecrypt(Level, BlockPos)}。
@@ -73,7 +73,7 @@ public class DyedreamFlower16Block extends DyedreamFlowerBlock {
      *   <li>点击格下方 3 格为染梦书桌；</li>
      *   <li>四方位 5 格为 {@code crop_0a}/{@code dyedream_sapling}/{@code flower_14}/{@code flower_9}；</li>
      *   <li>9 格内同时存在雪傀儡与悦灵；</li>
-     *   <li>献祭 15 格内最近的雪傀儡与悦灵 → 四方位花阵销毁 → 花 16 变花 17 → 书桌消失；</li>
+     *   <li>献祭 15 格内最近的雪傀儡与悦灵 → 四方位花阵销毁 → 花 16 变花 17，书桌保留；</li>
      *   <li>雪花/雪球粒子 + 梦境音效 {@code dream0}。</li>
      * </ol>
      *
@@ -126,8 +126,6 @@ public class DyedreamFlower16Block extends DyedreamFlowerBlock {
         level.destroyBlock(pos.offset(-5, 0, 0), false);
         // 花 16 → 花 17（冻结之花）
         level.setBlock(pos, PDBlocks.FLOWER_17.get().defaultBlockState(), 3);
-        // 书桌消失
-        level.destroyBlock(pos.below(3), false);
 
         // 雪花/雪球粒子
         if (level instanceof ServerLevel serverLevel) {
