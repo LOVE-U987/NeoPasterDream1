@@ -1,0 +1,20 @@
+{
+  "type": "pasterdream:dream_brewing",
+  "guiding_drug": {
+    "item": "pasterdream:guiding_drug"
+  },
+  "materials": [
+    {
+      "item": "minecraft:golden_apple"
+    },
+    {
+      "item": "minecraft:glistering_melon_slice"
+    },
+    {
+      "item": "minecraft:sunflower"
+    }
+  ],
+  "result": {
+    "id": "pasterdreamspells:healing_spell"
+  }
+}

@@ -11,12 +11,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -200,18 +198,12 @@ public final class PDSmokeTest {
                 stage = STAGE_SLOTS_FILLED;
             }
             case 300 -> {
-                if (menu(player) instanceof DreamCauldronMenu m) {
-                    boolean handled = m.clickMenuButton(player, DreamCauldronMenu.BUTTON_CRAFT);
-                    check(handled, "craft button click handled by menu");
-                } else {
-                    check(false, "cauldron menu still open before craft click");
-                }
+                // 自动酿造：材料放好后由服务端 tick 自动启动（不再有合成按钮）
+                DreamCauldronBlockEntity be = cauldron(level);
+                check(be.getFluidAmount() == 900,
+                        "fluid amount is 900mb after auto brew start (actual " + be.getFluidAmount() + ")");
+                check(menu(player) instanceof DreamCauldronMenu, "GUI stays open during auto brew");
                 stage = STAGE_CRAFT_CLICKED;
-            }
-            case 303 -> {
-                check(!(menu(player) instanceof DreamCauldronMenu), "GUI closed after craft started");
-                check(cauldron(level).getFluidAmount() == 900,
-                        "fluid amount is 900mb after craft start (actual " + cauldron(level).getFluidAmount() + ")");
             }
             case 380 -> {
                 DreamCauldronBlockEntity be = cauldron(level);
@@ -220,11 +212,8 @@ public final class PDSmokeTest {
                     consumed &= be.getItemHandler().getStackInSlot(slot).isEmpty();
                 }
                 check(consumed, "ingredient slots 0-3 consumed after craft");
-                List<ItemEntity> drops = level.getEntitiesOfClass(ItemEntity.class,
-                        new AABB(cauldronPos).inflate(4),
-                        e -> e.getItem().is(item("pasterdreamspells:lightning_spell")));
-                check(!drops.isEmpty(), "lightning_spell item entity ejected above cauldron");
-                check(be.getItemHandler().getStackInSlot(6).isEmpty(), "result slot 6 cleared after ejection");
+                check(be.getItemHandler().getStackInSlot(6).is(item("pasterdreamspells:lightning_spell")),
+                        "lightning_spell written to result slot 6 after spell craft");
             }
             case 420 -> {
                 PDDebugLogger.smoketestInfo(TAG + "==================================================");

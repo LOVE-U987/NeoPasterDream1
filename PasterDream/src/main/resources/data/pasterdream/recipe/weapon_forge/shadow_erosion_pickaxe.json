@@ -1,0 +1,27 @@
+{
+  "type": "pasterdream:weapon_forge",
+  "ingredients": [
+    {
+      "item": "minecraft:iron_pickaxe"
+    },
+    {
+      "item": "pasterdream:blackmetal_ingot"
+    },
+    {
+      "item": "pasterdream:nightmare_fuel"
+    },
+    {
+      "item": "minecraft:crying_obsidian"
+    },
+    {
+      "item": "pasterdream:blackstick"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:shadow_erosion_pickaxe_embryo"
+  },
+  "inlay": true,
+  "final_result": {
+    "id": "pasterdream:shadow_erosion_pickaxe"
+  }
+}

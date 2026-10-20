@@ -1,0 +1,24 @@
+{
+  "type": "pasterdream:weapon_forge",
+  "ingredients": [
+    {
+      "item": "minecraft:book"
+    },
+    {
+      "item": "pasterdream:nightmare_fuel"
+    },
+    {
+      "item": "pasterdream:blackmetal_ingot"
+    },
+    {
+      "item": "pasterdream:pure_horror"
+    },
+    {
+      "item": "pasterdream:pen_and_ink"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:shadow_vortex_book"
+  },
+  "inlay": false
+}

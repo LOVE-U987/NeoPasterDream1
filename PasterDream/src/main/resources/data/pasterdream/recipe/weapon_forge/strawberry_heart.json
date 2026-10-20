@@ -1,0 +1,24 @@
+{
+  "type": "pasterdream:weapon_forge",
+  "ingredients": [
+    {
+      "item": "pasterdream:silver_bell"
+    },
+    {
+      "item": "pasterdream:dyedream_ingot"
+    },
+    {
+      "item": "minecraft:string"
+    },
+    {
+      "item": "pasterdream:dyedream_planks"
+    },
+    {
+      "item": "pasterdream:white_crystal"
+    }
+  ],
+  "result": {
+    "id": "pasterdream:strawberry_heart"
+  },
+  "inlay": false
+}

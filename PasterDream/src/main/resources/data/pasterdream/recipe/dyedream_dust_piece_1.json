@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "category": "food",
+  "category": "misc",
   "ingredients": [
     {
       "item": "pasterdream:dyedream_dust"
@@ -8,6 +8,6 @@
   ],
   "result": {
     "id": "pasterdream:dyedream_dust_piece",
-    "count": 9
+    "count": 4
   }
 }

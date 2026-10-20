@@ -52,60 +52,74 @@ public class PDItemsTools {
                     .enchantment(12)
                     .repairWith(new ItemStack(Items.COPPER_INGOT))
                     .build();
+    /**
+     * 创造调试剑 (creative_sword) — 强制击杀清实体
+     * 改用自定义 {@link CreativeSwordItem}（属性与原 ItemAPI 注册逐项一致，按原版补 fireResistant），
+     * 补上命中 1 亿虚空伤害 + 1 tick 后清除目标实体的调试行为
+     */
     public static final DeferredItem<Item> CREATIVE_SWORD =
-            ItemAPI.toolItem("creative_sword")
-                    .type(ToolType.SWORD).durability(100)
-                    .attackDamage(9.0f).attackSpeed(6.0f)
-                    .enchantment(2)
-                    .build();
+            PDItems.ITEMS.register("creative_sword",
+                    () -> new CreativeSwordItem(new Item.Properties()));
+    /**
+     * 沙漠剑 (desert_sword) — 代价型被动
+     * 改用自定义 {@link DesertSwordItem}（属性与原 ItemAPI 注册逐项一致），
+     * 补上手持缓速 -15% / 抗性 +20% 的代价型被动（高攻速高伤的平衡代价）
+     */
     public static final DeferredItem<Item> DESERT_SWORD =
-            ItemAPI.toolItem("desert_sword")
-                    .type(ToolType.SWORD).durability(1561)
-                    .attackDamage(10.0f).attackSpeed(-3.1f)
-                    .enchantment(8)
-                    .build();
+            PDItems.ITEMS.register("desert_sword",
+                    () -> new DesertSwordItem(new Item.Properties()));
+    /**
+     * 极锋染梦合金剑 (dyedream_sword_0) — W2-D 战技接入
+     * 改用自定义 {@link DyedreamSword0Item}（属性与原 ItemAPI 注册逐项一致），
+     * 补上战技"凌空斩"：右键强化下次攻击，命中额外伤害并上击飞，
+     * 染梦守护效果可缩短战技冷却
+     */
     public static final DeferredItem<Item> DYEDREAM_SWORD_0 =
-            ItemAPI.toolItem("dyedream_sword_0")
-                    .type(ToolType.SWORD).durability(1314)
-                    .attackDamage(8.0f).attackSpeed(-2.4f)
-                    .enchantment(22)
-                    .build();
+            PDItems.ITEMS.register("dyedream_sword_0",
+                    () -> new DyedreamSword0Item(new Item.Properties()));
     public static final DeferredItem<Item> DYEDREAM_SWORD =
             ItemAPI.toolItem("dyedream_sword")
                     .type(ToolType.SWORD).durability(1314)
                     .attackDamage(7.0f).attackSpeed(-2.4f)
                     .enchantment(22)
                     .build();
+    /**
+     * 草薙 (grass_sword) — 中毒被动 + 击杀成长
+     * 改用自定义 {@link GrassSwordItem}（属性与原 ItemAPI 注册逐项一致），
+     * 补上攻击施加中毒（3 秒）与击杀 200 只生物自动成长为『天丛云』草薙的机制
+     */
     public static final DeferredItem<Item> GRASS_SWORD =
-            ItemAPI.toolItem("grass_sword")
-                    .type(ToolType.SWORD).durability(874)
-                    .attackDamage(6.0f).attackSpeed(-2.5f)
-                    .enchantment(16)
-                    .build();
+            PDItems.ITEMS.register("grass_sword",
+                    () -> new GrassSwordItem(new Item.Properties()));
     public static final DeferredItem<Item> ICESHADOW_HAMMER =
             ItemAPI.toolItem("iceshadow_hammer")
                     .type(ToolType.SWORD).durability(835)
                     .attackDamage(12.0f).attackSpeed(-3.3f)
                     .enchantment(2)
                     .build();
+    /**
+     * 熔金剑 (moltengold_sword) — 引燃被动
+     * 改用自定义 {@link MoltengoldSwordItem}（属性与原 ItemAPI 注册逐项一致，按原版补 fireResistant），
+     * 补上攻击引燃 3 秒的被动
+     */
     public static final DeferredItem<Item> MOLTENGOLD_SWORD =
-            ItemAPI.toolItem("moltengold_sword")
-                    .type(ToolType.SWORD).durability(251)
-                    .attackDamage(5.0f).attackSpeed(-2.3f)
-                    .enchantment(23)
-                    .build();
+            PDItems.ITEMS.register("moltengold_sword",
+                    () -> new MoltengoldSwordItem(new Item.Properties()));
     public static final DeferredItem<Item> SHADOW_EROSION_SWORD =
             ItemAPI.toolItem("shadow_erosion_sword")
                     .type(ToolType.SWORD).durability(1725)
                     .attackDamage(5.5f).attackSpeed(-1.0f)
                     .enchantment(2)
                     .build();
+    /**
+     * 暗影剑 (shadow_sword) — W2-D 战技接入：精神值联动
+     * 改用自定义 {@link ShadowSwordItem}（属性与原 ItemAPI 注册逐项一致，按原版补 fireResistant），
+     * 补上精神值联动属性（精神越低攻速/攻击越高）、SAN_VARIABILITY -3.6、
+     * 挥砍"暗影之才"成就门控（未达成反噬）与精神值耗尽魔法反噬
+     */
     public static final DeferredItem<Item> SHADOW_SWORD =
-            ItemAPI.toolItem("shadow_sword")
-                    .type(ToolType.SWORD).durability(1771)
-                    .attackDamage(11.0f).attackSpeed(-2.4f)
-                    .enchantment(10)
-                    .build();
+            PDItems.ITEMS.register("shadow_sword",
+                    () -> new ShadowSwordItem(new Item.Properties()));
     /**
      * 大地之刃 (terra_sword) — W2-D 战技接入
      * 改用自定义 {@link TerraSwordItem}（属性与原 ItemAPI 注册逐项一致），
@@ -114,54 +128,68 @@ public class PDItemsTools {
     public static final DeferredItem<Item> TERRA_SWORD =
             PDItems.ITEMS.register("terra_sword",
                     () -> new TerraSwordItem(new Item.Properties()));
+    /**
+     * 温热匕首 (thermal_dagger) — 命中音效演出
+     * 改用自定义 {@link ThermalDaggerItem}（属性与原 ItemAPI 注册逐项一致，按原版补 fireResistant），
+     * 补上命中 thermal_dagger 音效 + 气泡粒子的演出
+     */
     public static final DeferredItem<Item> THERMAL_DAGGER =
-            ItemAPI.toolItem("thermal_dagger")
-                    .type(ToolType.SWORD).durability(1721)
-                    .attackDamage(5.5f).attackSpeed(-2.3f)
-                    .enchantment(2)
-                    .build();
+            PDItems.ITEMS.register("thermal_dagger",
+                    () -> new ThermalDaggerItem(new Item.Properties()));
+    /**
+     * 潮汐剑 (tide_sword) — 水下呼吸被动
+     * 改用自定义 {@link TideSwordItem}（属性与原 ItemAPI 注册逐项一致），
+     * 补上手持水下呼吸的被动；修复材料还原为原版海晶晶粒
+     */
     public static final DeferredItem<Item> TIDE_SWORD =
-            ItemAPI.toolItem("tide_sword")
-                    .type(ToolType.SWORD).durability(1561)
-                    .attackDamage(7.5f).attackSpeed(-2.8f)
-                    .enchantment(11)
-                    .build();
+            PDItems.ITEMS.register("tide_sword",
+                    () -> new TideSwordItem(new Item.Properties()));
     public static final DeferredItem<Item> TITANIUM_SWORD =
             ItemAPI.toolItem("titanium_sword")
                     .type(ToolType.SWORD).durability(1721)
                     .attackDamage(6.5f).attackSpeed(-2.4f)
                     .enchantment(17)
                     .build();
+    /**
+     * 真沙漠剑 (true_desert_sword) — W2-D 战技接入
+     * 改用自定义 {@link TrueDesertSwordItem}（属性与原 ItemAPI 注册逐项一致），
+     * 补上战技"绝地反击"：按已损失生命比例加伤+短暂吸收，被动与沙漠剑共用（缓速+抗性）
+     */
     public static final DeferredItem<Item> TRUE_DESERT_SWORD =
-            ItemAPI.toolItem("true_desert_sword")
-                    .type(ToolType.SWORD).durability(1561)
-                    .attackDamage(11.0f).attackSpeed(-3.1f)
-                    .enchantment(8)
-                    .build();
+            PDItems.ITEMS.register("true_desert_sword",
+                    () -> new TrueDesertSwordItem(new Item.Properties()));
+    /**
+     * 『天丛云』草薙 (true_grass_sword) — 更长中毒被动 + 战技"极致锋利"
+     * 改用自定义 {@link TrueGrassSwordItem}（属性与原 ItemAPI 注册逐项一致），
+     * 补上攻击施加更长时间的中毒（5 秒）与右键战技"极致锋利"（首次命中造成额外伤害）
+     */
     public static final DeferredItem<Item> TRUE_GRASS_SWORD =
-            ItemAPI.toolItem("true_grass_sword")
-                    .type(ToolType.SWORD).durability(1311)
-                    .attackDamage(6.5f).attackSpeed(-2.5f)
-                    .enchantment(16)
-                    .build();
+            PDItems.ITEMS.register("true_grass_sword",
+                    () -> new TrueGrassSwordItem(new Item.Properties()));
+    /**
+     * 真熔金剑 (true_moltengold_sword) — 可叠加引燃被动
+     * 改用自定义 {@link TrueMoltengoldSwordItem}（属性与原 ItemAPI 注册逐项一致，按原版补 fireResistant），
+     * 补上可无限叠加的引燃（剩余引燃时间上 +2 秒起叠）
+     */
     public static final DeferredItem<Item> TRUE_MOLTENGOLD_SWORD =
-            ItemAPI.toolItem("true_moltengold_sword")
-                    .type(ToolType.SWORD).durability(1255)
-                    .attackDamage(6.0f).attackSpeed(-2.2f)
-                    .enchantment(23)
-                    .build();
+            PDItems.ITEMS.register("true_moltengold_sword",
+                    () -> new TrueMoltengoldSwordItem(new Item.Properties()));
+    /**
+     * 真潮汐剑 (true_tide_sword) — W2-D 战技接入
+     * 改用自定义 {@link TrueTideSwordItem}（属性与原 ItemAPI 注册逐项一致），
+     * 补上战技"涌流剑技"：水中冲刺+免疫 80% 伤害、水环境条件伤害，被动水下呼吸
+     */
     public static final DeferredItem<Item> TRUE_TIDE_SWORD =
-            ItemAPI.toolItem("true_tide_sword")
-                    .type(ToolType.SWORD).durability(1561)
-                    .attackDamage(8.0f).attackSpeed(-2.8f)
-                    .enchantment(11)
-                    .build();
+            PDItems.ITEMS.register("true_tide_sword",
+                    () -> new TrueTideSwordItem(new Item.Properties()));
+    /**
+     * 至真熔金剑 (truest_moltengold_sword) — W2-D 战技接入
+     * 改用自定义 {@link TruestMoltengoldSwordItem}（属性与原 ItemAPI 注册逐项一致，按原版补 fireResistant），
+     * 补上战技"融骸斩击"：熔岩类型伤害（含引燃时长加成）+缓慢+清火，被动叠加引燃（+3 秒）
+     */
     public static final DeferredItem<Item> TRUEST_MOLTENGOLD_SWORD =
-            ItemAPI.toolItem("truest_moltengold_sword")
-                    .type(ToolType.SWORD).durability(1255)
-                    .attackDamage(6.0f).attackSpeed(-2.15f)
-                    .enchantment(23)
-                    .build();
+            PDItems.ITEMS.register("truest_moltengold_sword",
+                    () -> new TruestMoltengoldSwordItem(new Item.Properties()));
     /**
      * 白色灾厄 (white_sword) — W2-D 战技接入
      * 改用自定义 {@link WhiteSwordItem}（属性与原 ItemAPI 注册逐项一致，按原版补 fireResistant），
@@ -207,14 +235,14 @@ public class PDItemsTools {
     public static final DeferredItem<Item> MELTDREAM_PICKAXE =
             PDItems.ITEMS.register("meltdream_pickaxe",
                     () -> new MeltdreamPickaxeItem(new Item.Properties()));
+    /**
+     * 熔金镐 (moltengold_pickaxe) — 右键急迫
+     * 改用自定义 {@link MoltengoldPickaxeItem}（属性与原 ItemAPI 注册逐项一致，按原版补 fireResistant），
+     * 补上右键消耗饱食度换取 20 秒急迫（冷却 10 秒）
+     */
     public static final DeferredItem<Item> MOLTENGOLD_PICKAXE =
-            ItemAPI.toolItem("moltengold_pickaxe")
-                    .type(ToolType.PICKAXE).durability(251).miningSpeed(14.0f)
-                    .attackDamage(3.0f).attackSpeed(-2.7f)
-                    .enchantment(23)
-                    .incorrectTag("minecraft:incorrect_for_stone_tool")
-                    .repairWith(() -> new ItemStack(PDItems.MOLTENGOLD_INGOT.get()))
-                    .build();
+            PDItems.ITEMS.register("moltengold_pickaxe",
+                    () -> new MoltengoldPickaxeItem(new Item.Properties()));
     public static final DeferredItem<Item> SHADOW_EROSION_PICKAXE =
             ItemAPI.toolItem("shadow_erosion_pickaxe")
                     .type(ToolType.PICKAXE).durability(1725).miningSpeed(13.0f)
@@ -277,14 +305,14 @@ public class PDItemsTools {
                     .repairWith(() -> new ItemStack(PDItems.TITANIUM_INGOT.get()))
                     .build();
 
+    /**
+     * 真熔金镐 (true_moltengold_pickaxe) — 右键急迫（强化版）
+     * 改用自定义 {@link TrueMoltengoldPickaxeItem}（属性与原 ItemAPI 注册逐项一致，按原版补 fireResistant），
+     * 补上右键消耗饱食度换取 30 秒急迫（冷却仅 8 秒）
+     */
     public static final DeferredItem<Item> TRUE_MOLTENGOLD_PICKAXE =
-            ItemAPI.toolItem("true_moltengold_pickaxe")
-                    .type(ToolType.PICKAXE).durability(1255).miningSpeed(16.0f)
-                    .attackDamage(4.0f).attackSpeed(-2.6f)
-                    .enchantment(23)
-                    .incorrectTag("minecraft:incorrect_for_stone_tool")
-                    .repairWith(() -> new ItemStack(PDItems.MOLTENGOLD_INGOT.get()))
-                    .build();
+            PDItems.ITEMS.register("true_moltengold_pickaxe",
+                    () -> new TrueMoltengoldPickaxeItem(new Item.Properties()));
 
     // === Dyedream 工具 ===
     public static final DeferredItem<Item> DYEDREAM_AXE =
@@ -313,30 +341,30 @@ public class PDItemsTools {
                     .build();
 
     // === Moltengold 工具 ===
+    /**
+     * 熔金斧 (moltengold_axe) — 右键急迫
+     * 改用自定义 {@link MoltengoldAxeItem}（属性与原 ItemAPI 注册逐项一致，按原版补 fireResistant），
+     * 右键行为与熔金镐共用（消耗饱食度换取 20 秒急迫）
+     */
     public static final DeferredItem<Item> MOLTENGOLD_AXE =
-            ItemAPI.toolItem("moltengold_axe")
-                    .type(ToolType.AXE).durability(251).miningSpeed(14.0f)
-                    .attackDamage(8.0f).attackSpeed(-3.0f)
-                    .enchantment(23)
-                    .incorrectTag("minecraft:incorrect_for_stone_tool")
-                    .repairWith(() -> new ItemStack(PDItems.MOLTENGOLD_INGOT.get()))
-                    .build();
+            PDItems.ITEMS.register("moltengold_axe",
+                    () -> new MoltengoldAxeItem(new Item.Properties()));
+    /**
+     * 熔金锹 (moltengold_shovel) — 右键急迫
+     * 改用自定义 {@link MoltengoldShovelItem}（属性与原 ItemAPI 注册逐项一致，按原版补 fireResistant），
+     * 右键行为与熔金镐共用（消耗饱食度换取 20 秒急迫）
+     */
     public static final DeferredItem<Item> MOLTENGOLD_SHOVEL =
-            ItemAPI.toolItem("moltengold_shovel")
-                    .type(ToolType.SHOVEL).durability(251).miningSpeed(14.0f)
-                    .attackDamage(3.5f).attackSpeed(-2.9f)
-                    .enchantment(23)
-                    .incorrectTag("minecraft:incorrect_for_stone_tool")
-                    .repairWith(() -> new ItemStack(PDItems.MOLTENGOLD_INGOT.get()))
-                    .build();
+            PDItems.ITEMS.register("moltengold_shovel",
+                    () -> new MoltengoldShovelItem(new Item.Properties()));
+    /**
+     * 熔金锄 (moltengold_hoe) — 右键急迫
+     * 改用自定义 {@link MoltengoldHoeItem}（属性与原 ItemAPI 注册逐项一致，按原版补 fireResistant），
+     * 右键行为与熔金镐共用（消耗饱食度换取 20 秒急迫）
+     */
     public static final DeferredItem<Item> MOLTENGOLD_HOE =
-            ItemAPI.toolItem("moltengold_hoe")
-                    .type(ToolType.HOE).durability(251).miningSpeed(14.0f)
-                    .attackDamage(0.0f).attackSpeed(-0.5f)
-                    .enchantment(23)
-                    .incorrectTag("minecraft:incorrect_for_stone_tool")
-                    .repairWith(() -> new ItemStack(PDItems.MOLTENGOLD_INGOT.get()))
-                    .build();
+            PDItems.ITEMS.register("moltengold_hoe",
+                    () -> new MoltengoldHoeItem(new Item.Properties()));
 
     // === Meltdream 工具（融梦修补：手持消耗融梦能量自动修复）===
     /**
