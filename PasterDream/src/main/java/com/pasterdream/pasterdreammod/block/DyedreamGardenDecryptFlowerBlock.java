@@ -27,8 +27,8 @@ import net.minecraft.world.phys.BlockHitResult;
  * 原版 {@code Flower11Block} + {@code GardenDecryptionPr0Procedure} 的 1.21.1 移植：
  * 在<b>染梦世界</b>中，双格花下方 3 格处放有染梦书桌（{@code dyedream_desk}），
  * 且周围 2 格呈花阵布局（四角 {@code flower_13}/{@code crop_3a}/{@code flower_8}/{@code crop_2a}，
- * 四边 {@code grass_3}）时，右键下半花可触发解密：
- * 花阵销毁 → 裂纹/尘埃粒子 + 梦境音效 → 延迟 2 tick 后花 11 变花 12（迷梦冶梦莲）、书桌消失。
+ * 四边 {@code grass_3}）时，右键任意半格均可触发解密：
+ * 花阵销毁 → 裂纹/尘埃粒子 + 梦境音效 → 延迟 2 tick 后花 11 变花 12（迷梦冶梦莲），书桌保留。
  * <p>
  * 解密核心见 {@link #tryDecrypt(Level, BlockPos)}。
  */
@@ -66,20 +66,28 @@ public class DyedreamGardenDecryptFlowerBlock extends DyedreamDoublePlantBlock {
      * <p>
      * 校验顺序与参数与原版逐项一致：
      * <ol>
-     *   <li>必须在染梦世界维度，且点击格下方 3 格为染梦书桌；</li>
+     *   <li>必须在染梦世界维度，且归一化后的下半格下方 3 格为染梦书桌；</li>
      *   <li>周围 2 格 8 个位置为指定花阵（四角花 + 四边 {@code grass_3}）；</li>
-     *   <li>1 tick 后销毁花阵 → 裂纹粒子 ×32 + 尘埃粒子 ×128 → 播放 {@code dream0}；</li>
-     *   <li>2 tick 后花 11 完整替换为花 12（双格）、销毁书桌。</li>
+     *   <li>立即产生裂纹粒子 ×32 + 尘埃粒子 ×128，并播放 {@code dream0}；</li>
+     *   <li>1 tick 后销毁花阵；</li>
+     *   <li>2 tick 后花 11 完整替换为花 12（双格），书桌保留（相对原版的有意差异）。</li>
      * </ol>
      *
      * @param level 世界（服务端）
-     * @param pos   被点击的花 11 坐标
+     * @param pos   被点击的花 11 坐标（上下半格均可）
      * @return 是否成功触发解密
      */
     public static boolean tryDecrypt(Level level, BlockPos pos) {
         if (level.isClientSide) {
             return false;
         }
+        // 点击上半格时归一化到下半格，保证书桌与花阵按同一 y 层校验
+        BlockState clickedState = level.getBlockState(pos);
+        if (clickedState.hasProperty(DoublePlantBlock.HALF)
+                && clickedState.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER) {
+            pos = pos.below();
+        }
+        final BlockPos plantPos = pos;
         // ① 染梦世界 + 下方 3 格为染梦书桌
         if (!PDDimensions.isDyedreamWorld(level)) {
             return false;
@@ -101,14 +109,14 @@ public class DyedreamGardenDecryptFlowerBlock extends DyedreamDoublePlantBlock {
 
         // ③ 延迟 1 tick 销毁 8 格花阵（原版 queueServerWork(1)）
         ServerScheduler.schedule(1, () -> {
-            level.destroyBlock(pos.offset(2, 0, 2), false);
-            level.destroyBlock(pos.offset(2, 0, -2), false);
-            level.destroyBlock(pos.offset(-2, 0, -2), false);
-            level.destroyBlock(pos.offset(-2, 0, 2), false);
-            level.destroyBlock(pos.offset(2, 0, 0), false);
-            level.destroyBlock(pos.offset(-2, 0, 0), false);
-            level.destroyBlock(pos.offset(0, 0, 2), false);
-            level.destroyBlock(pos.offset(0, 0, -2), false);
+            level.destroyBlock(plantPos.offset(2, 0, 2), false);
+            level.destroyBlock(plantPos.offset(2, 0, -2), false);
+            level.destroyBlock(plantPos.offset(-2, 0, -2), false);
+            level.destroyBlock(plantPos.offset(-2, 0, 2), false);
+            level.destroyBlock(plantPos.offset(2, 0, 0), false);
+            level.destroyBlock(plantPos.offset(-2, 0, 0), false);
+            level.destroyBlock(plantPos.offset(0, 0, 2), false);
+            level.destroyBlock(plantPos.offset(0, 0, -2), false);
         });
 
         // 粒子：裂纹 ×32（高度 +1）+ 尘埃 ×128（大范围扩散）
@@ -121,19 +129,18 @@ public class DyedreamGardenDecryptFlowerBlock extends DyedreamDoublePlantBlock {
         // 声音：梦境音效 dream0
         level.playSound(null, pos, PDSounds.DREAM0.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
 
-        // ④ 延迟 2 tick：花 11 → 花 12（完整双格替换）+ 销毁书桌（原版 queueServerWork(2)）
-        ServerScheduler.schedule(2, () -> {
-            replaceWithFlower12(level, pos);
-            level.destroyBlock(pos.below(3), false);
-        });
+        // ④ 延迟 2 tick：花 11 → 花 12（完整双格替换），书桌保留（原版 queueServerWork(2)）
+        ServerScheduler.schedule(2, () -> replaceWithFlower12(level, plantPos));
         return true;
     }
 
     /**
      * 将花 11 原位完整替换为花 12（迷梦冶梦莲）。
      * <p>
-     * 修复原版只替换被点击半格的缺陷：双格植物需成对替换，
-     * 否则会留下"上半花 11 + 下半花 12"的半截状态。
+     * 双格植物必须成对替换：先由被点击半格归一化出下半格，再用
+     * {@link DoublePlantBlock#placeAt} 同时写入上下两半。更新标志必须带
+     * {@link Block#UPDATE_KNOWN_SHAPE}，跳过本次替换的形状更新；否则旧半格仍是花 11 时，
+     * 原版 {@link DoublePlantBlock#updateShape} 会将其判为失效并清空，最终整株消失。
      *
      * @param level 世界（服务端）
      * @param pos   花 11 坐标（被点击的半格）
@@ -141,22 +148,9 @@ public class DyedreamGardenDecryptFlowerBlock extends DyedreamDoublePlantBlock {
     private static void replaceWithFlower12(Level level, BlockPos pos) {
         BlockState oldState = level.getBlockState(pos);
         DoubleBlockHalf half = oldState.getValue(DoublePlantBlock.HALF);
-        level.setBlock(pos, PDBlocks.FLOWER_12.get().defaultBlockState()
-                .setValue(DoublePlantBlock.HALF, half), 3);
-        // 配对半格同步替换为花 12
-        if (half == DoubleBlockHalf.LOWER) {
-            BlockPos upper = pos.above();
-            if (level.getBlockState(upper).is(PDBlocks.FLOWER_11.get())) {
-                level.setBlock(upper, PDBlocks.FLOWER_12.get().defaultBlockState()
-                        .setValue(DoublePlantBlock.HALF, DoubleBlockHalf.UPPER), 3);
-            }
-        } else {
-            BlockPos lower = pos.below();
-            if (level.getBlockState(lower).is(PDBlocks.FLOWER_11.get())) {
-                level.setBlock(lower, PDBlocks.FLOWER_12.get().defaultBlockState()
-                        .setValue(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER), 3);
-            }
-        }
+        BlockPos lowerPos = half == DoubleBlockHalf.LOWER ? pos : pos.below();
+        DoublePlantBlock.placeAt(level, PDBlocks.FLOWER_12.get().defaultBlockState(), lowerPos,
+                Block.UPDATE_ALL | Block.UPDATE_KNOWN_SHAPE);
     }
 
     /**
