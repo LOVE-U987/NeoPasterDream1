@@ -37,18 +37,23 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * 世界生成 DataGen Provider —— 统一生成 ConfiguredFeature / PlacedFeature / BiomeModifier 的 JSON
+ * 世界生成 DataGen Provider —— 生成 ConfiguredFeature / PlacedFeature / BiomeModifier 的 JSON
  * <p>
  * 使用 NeoForge {@link DatapackBuiltinEntriesProvider} 与 {@link RegistrySetBuilder}，
  * 在 {@code runData} 阶段把代码中注册的世界生成条目写入
  * {@code src/generated/resources/data/pasterdream/...}，避免手写 JSON 与代码定义漂移。
  * <p>
  * 当前已迁移：{@code soul_ore}（灵魂矿土，注入 {@code minecraft:soul_sand_valley} 的
- * {@code underground_ores} 阶段）。
+ * {@code underground_ores} 阶段）；{@code titanium_ore}（钛矿石）与
+ * {@code deepslate_titanium_ore}（深层钛矿石）的 configured/placed feature。
+ * <p>
+ * 注意：{@code titanium_ore} 与 {@code deepslate_titanium_ore} 的 biome_modifier 仍为
+ * 手写资源。{@code titanium_ore} 的 {@code #pasterdream:is_dyedream} 在 runData 阶段
+ * 不可解析；{@code deepslate_titanium_ore} 为保持两者一致，也保留手写 modifier。
  * <p>
  * TODO(0.11.x): 将剩余手写矿石/世界生成迁移到本 Provider 统一注册，迁移完成后删除对应手写 JSON：
  * <ul>
- *   <li>地表矿石：titanium_ore / deepslate_titanium_ore / moltengold_ore / windrunner_crystal_ore</li>
+ *   <li>地表矿石：moltengold_ore / windrunner_crystal_ore</li>
  *   <li>原版方块替换特征：white_sand / congeal_wind_ore</li>
  *   <li>染梦矿石：ore_amber_candy / ore_dyedreamdust / ore_dyedreamquartz</li>
  * </ul>
@@ -60,6 +65,14 @@ public class PDWorldgenProvider extends DatapackBuiltinEntriesProvider {
     /** 灵魂矿土配置特征键 */
     private static final ResourceKey<ConfiguredFeature<?, ?>> SOUL_ORE_CONFIGURED =
             ResourceKey.create(Registries.CONFIGURED_FEATURE, id("soul_ore"));
+
+    /** 钛矿石配置特征键 */
+    private static final ResourceKey<ConfiguredFeature<?, ?>> TITANIUM_ORE_CONFIGURED =
+            ResourceKey.create(Registries.CONFIGURED_FEATURE, id("titanium_ore"));
+
+    /** 深层钛矿石配置特征键 */
+    private static final ResourceKey<ConfiguredFeature<?, ?>> DEEPSLATE_TITANIUM_ORE_CONFIGURED =
+            ResourceKey.create(Registries.CONFIGURED_FEATURE, id("deepslate_titanium_ore"));
 
     /** 灵魂矿土世界生成修饰符键 */
     private static final ResourceKey<BiomeModifier> SOUL_ORE_BIOME_MODIFIER =
@@ -82,7 +95,7 @@ public class PDWorldgenProvider extends DatapackBuiltinEntriesProvider {
     }
 
     /**
-     * 注册配置特征：以灵魂矿土替换灵魂沙
+     * 注册配置特征：灵魂矿土替换灵魂沙，钛矿石替换方解石，深层钛矿石替换深板岩
      *
      * @param context 配置特征引导上下文
      */
@@ -93,10 +106,23 @@ public class PDWorldgenProvider extends DatapackBuiltinEntriesProvider {
                                 new BlockStateMatchTest(Blocks.SOUL_SOIL.defaultBlockState()),
                                 PDBlocks.SOUL_ORE.get().defaultBlockState())),
                         16, 0.0f)));
+        context.register(TITANIUM_ORE_CONFIGURED, new ConfiguredFeature<>(Feature.ORE,
+                new OreConfiguration(
+                        List.of(OreConfiguration.target(
+                                new BlockStateMatchTest(Blocks.CALCITE.defaultBlockState()),
+                                PDBlocks.TITANIUM_ORE.get().defaultBlockState())),
+                        3, 0.0f)));
+        context.register(DEEPSLATE_TITANIUM_ORE_CONFIGURED, new ConfiguredFeature<>(Feature.ORE,
+                new OreConfiguration(
+                        List.of(OreConfiguration.target(
+                                new BlockStateMatchTest(Blocks.DEEPSLATE.defaultBlockState()),
+                                PDBlocks.DEEPSLATE_TITANIUM_ORE.get().defaultBlockState())),
+                        3, 0.0f)));
     }
 
     /**
-     * 注册放置特征：每区块 10 次尝试、y 0~120 均匀分布、仅目标群系
+     * 注册放置特征：灵魂矿土每区块 10 次尝试、y 0~120；
+     * 钛矿石每区块 6 次尝试、y -60~20；深层钛矿石每区块 3 次尝试、y -60~-10
      *
      * @param context 放置特征引导上下文
      */
@@ -108,6 +134,20 @@ public class PDWorldgenProvider extends DatapackBuiltinEntriesProvider {
                         CountPlacement.of(10),
                         InSquarePlacement.spread(),
                         HeightRangePlacement.uniform(VerticalAnchor.absolute(0), VerticalAnchor.absolute(120)),
+                        BiomeFilter.biome())));
+        context.register(PDPlacedFeatures.TITANIUM_ORE, new PlacedFeature(
+                configured.getOrThrow(TITANIUM_ORE_CONFIGURED),
+                List.of(
+                        CountPlacement.of(6),
+                        InSquarePlacement.spread(),
+                        HeightRangePlacement.uniform(VerticalAnchor.absolute(-60), VerticalAnchor.absolute(20)),
+                        BiomeFilter.biome())));
+        context.register(PDPlacedFeatures.DEEPSLATE_TITANIUM_ORE, new PlacedFeature(
+                configured.getOrThrow(DEEPSLATE_TITANIUM_ORE_CONFIGURED),
+                List.of(
+                        CountPlacement.of(3),
+                        InSquarePlacement.spread(),
+                        HeightRangePlacement.uniform(VerticalAnchor.absolute(-60), VerticalAnchor.absolute(-10)),
                         BiomeFilter.biome())));
     }
 

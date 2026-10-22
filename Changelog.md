@@ -154,6 +154,15 @@
 *   **改动**（`PasterDream` `registry/creativetabs/PDCreativeTabsDyedream.java`）：补入 `JUNGLE_SPORE_PLANT`、`FOURLEAF_CLOVER`、`FIG_VINE`、`CROP_0B~4B`、`DYEDREAM_DEEPSTONE`、`DYEDREAM_SANDSTONE` 等遗漏方块。
 *   **改动**（`PasterDream` `registry/creativetabs/PDCreativeTabsFunctional.java`、`PDCreativeTabsSouvenir.java`）：补入 `LIGHTBALL`、`CLAY_POT_0`、`CLAYPAN_0/2`、`CHRISTMAS_LIGHTS`、`MEMENTO_ITEM_11`、`CALLE_CARD_BLOCK` 等移植遗漏条目。
 
+### 修复：钛矿石与深层钛矿石无法生成（补齐 biome modifier）
+
+*   **根因**：`titanium_ore` / `deepslate_titanium_ore` 的 `configured_feature`/`placed_feature` 为手写 JSON，但缺少 `neoforge:add_features` biome modifier，没有注入任何群系，导致实际不生成。
+*   **改动**（`PasterDream` `data/PDWorldgenProvider.java`、`registry/PDPlacedFeatures.java`）：两者的 configured/placed 迁入 `PDWorldgenProvider` 经 DataGen 生成；新增 `TITANIUM_ORE` / `DEEPSLATE_TITANIUM_ORE` 键；钛矿 size 3、count 6、y -60~20，深层钛矿 size 3、count 3、y -60~-10。
+*   **改动**（`PasterDream` `data/pasterdream/neoforge/biome_modifier/titanium_ore.json`、`deepslate_titanium_ore.json`，新）：`neoforge:add_features` 分别注入 `#pasterdream:is_dyedream` 与 `#minecraft:is_overworld` 的 `underground_ores`。
+*   **迁移**（`PasterDream`）：删除 `src/main/resources` 下 4 个手写 worldgen JSON，改由 `src/generated/resources` 产出。
+*   **同步**（`docs/开发指南/问题排查.md`、`docs/架构/主模组架构详解.md`）：注明钛矿 configured/placed 已走 DataGen、biome_modifier 仍为手写。
+*   **验证**：`./gradlew :PasterDream:runData` BUILD SUCCESSFUL，生成 4 个 worldgen JSON；`./gradlew :PasterDream:compileJava` BUILD SUCCESSFUL；`runClient` 启动日志无 biome_modifier / configured_feature / placed_feature 解析报错；待游戏内实测染梦 y -60~20 方解石区与主世界 y -60~-10 深板岩区。
+
 ### 修复：灵魂矿土无法生成（迁移至 DataGen）
 
 *   **根因**：灵魂矿土 `soul_ore` 的 `configured_feature`/`placed_feature` 为手写 JSON，且缺少 `neoforge:add_features` 的 biome modifier 将其注入灵魂沙峡谷，导致实际不生成。

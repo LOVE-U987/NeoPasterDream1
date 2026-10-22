@@ -12,18 +12,28 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
  * 用于在代码中类型安全地引用 JSON 定义的 placed feature，
  * 配合 {@link com.pasterdream.pasterdreammod.worldgen.PDDyedreamBiomeModifier} 使用。
  * <p>
- * 对应的 JSON 定义存放在 data/pasterdream/worldgen/placed_feature/ 目录下，
- * 由数据驱动自动加载，此处仅提供 Java 侧的引用键。
+ * 手写 JSON 定义存放在 src/main/resources/data/pasterdream/worldgen/placed_feature/ 目录下，
+ * 由数据驱动自动加载；DataGen 生成的键见下方迁移说明。
  * <p>
  * <b>迁移说明</b>：世界生成正在迁移到
  * {@link com.pasterdream.pasterdreammod.data.PDWorldgenProvider} 经 DataGen 统一生成。
  * 标记为 {@link Deprecated} 的旧矿石键所对应的手写 JSON 将在 0.11.x 版本移除。
+ * <p>
+ * {@code SOUL_ORE} / {@code TITANIUM_ORE} / {@code DEEPSLATE_TITANIUM_ORE} 等标记为
+ * DataGen 生成的键，其 JSON 由 {@code PDWorldgenProvider} 产出到
+ * {@code src/generated/resources/.../placed_feature/}；其余键仍为手写 JSON。
  */
 public class PDPlacedFeatures {
 
     // ==================== 矿石 ====================
     /** 灵魂矿土（由 {@link com.pasterdream.pasterdreammod.data.PDWorldgenProvider} 经 DataGen 生成） */
     public static final ResourceKey<PlacedFeature> SOUL_ORE = createKey("soul_ore");
+
+    /** 钛矿石（由 {@link com.pasterdream.pasterdreammod.data.PDWorldgenProvider} 经 DataGen 生成） */
+    public static final ResourceKey<PlacedFeature> TITANIUM_ORE = createKey("titanium_ore");
+
+    /** 深层钛矿石（由 {@link com.pasterdream.pasterdreammod.data.PDWorldgenProvider} 经 DataGen 生成） */
+    public static final ResourceKey<PlacedFeature> DEEPSLATE_TITANIUM_ORE = createKey("deepslate_titanium_ore");
 
     /** @deprecated 旧手写世界生成矿石，待迁移至 DataGen 统一注册，将在 0.11.x 版本移除（见 PDWorldgenProvider TODO） */
     @Deprecated(since = "0.11.0", forRemoval = true)
