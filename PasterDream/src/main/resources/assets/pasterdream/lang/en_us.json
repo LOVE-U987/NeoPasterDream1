@@ -2662,7 +2662,7 @@
   "gui.pasterdream.dreamseeker_notes.sign_title": "Book Title",
   "gui.pasterdream.dreamseeker_notes.sign_author": "Author",
   "gui.pasterdream.dreamseeker_notes.by_author": "by %1$s",
-  "gui.pasterdream.dreamseeker_notes.sign_empty_title": "Title cannot be empty"
+  "gui.pasterdream.dreamseeker_notes.sign_empty_title": "Title cannot be empty",
   "item.pasterdream.shadowshelf_with_key": "Shadow Bookshelf with Key",
   "tooltip.pasterdream.grass_sword.inlay": "Inlay: §7None",
   "tooltip.pasterdream.grass_sword.poison": "§7▪ §9Attacks inflict Poison",

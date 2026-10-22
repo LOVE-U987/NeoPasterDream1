@@ -2659,7 +2659,7 @@
   "gui.pasterdream.dreamseeker_notes.sign_title": "书名",
   "gui.pasterdream.dreamseeker_notes.sign_author": "作者",
   "gui.pasterdream.dreamseeker_notes.by_author": "作者：%1$s",
-  "gui.pasterdream.dreamseeker_notes.sign_empty_title": "书名不能为空"
+  "gui.pasterdream.dreamseeker_notes.sign_empty_title": "书名不能为空",
   "item.pasterdream.shadowshelf_with_key": "有钥匙的暗影书架",
   "tooltip.pasterdream.grass_sword.inlay": "镶嵌：§7无",
   "tooltip.pasterdream.grass_sword.poison": "§7▪ §9攻击施加中毒效果",
