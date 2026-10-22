@@ -9,6 +9,7 @@ import com.pasterdream.pasterdreammod.block.GoldenFoxSculptureBlock;
 import com.pasterdream.pasterdreammod.entity.mob.GoldenFoxEntity;
 import com.pasterdream.pasterdreammod.registry.PDBlocks;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
+import com.pasterdream.pasterdreammod.registry.PDItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.MinecraftServer;
@@ -19,14 +20,15 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.animal.allay.Allay;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -42,8 +44,8 @@ import java.util.function.Consumer;
  *   <li><b>狐狸雕像仪式</b>：四角 ±9 迷梦冶梦莲（{@code flower_12}）+ 主手荧光浆果
  *       + 日出窗口 → 召唤 {@code golden_fox}、拆除雕像与四角花；
  *       缺花/错时/空手失败消息。</li>
- *   <li><b>迷梦冶梦莲多方块</b>：双格植物在染梦土上下半+上半成对；
- *       非染梦土 {@code canSurvive} 失败；下半掉落、上半不掉落。</li>
+ *   <li><b>迷梦冶梦莲多方块</b>：双格植物在染梦土上下半成对；
+ *       非染梦土 {@code canSurvive} 失败；剪刀/园艺钳破坏上下半格均掉落。</li>
  *   <li><b>染梦莲花</b>：仅水面可放置（{@link DyedreamLotusBlock}）。</li>
  * </ol>
  * <b>不</b>并入默认 {@code all}。
@@ -87,6 +89,7 @@ public final class PDDyedreamVerifyHooks {
 
         verifyFoxRitual(dream, player, base.offset(0, 1, 0), out);
         verifyFlower12Multiblock(dream, base.offset(16, 1, 0), out);
+        verifyDoublePlantDrops(dream, player, base.offset(8, 1, 0), out);
         verifyDyedreamLotus(dream, base.offset(-16, 1, 0), out);
         // 染梦解密玩法：花园解密（flower_11→12）、雪傀儡解密（flower_16→17）、冻结之花（flower_17 随机刻）
         verifyGardenDecryption(dream, player, base.offset(16, 1, 16), out);
@@ -237,21 +240,111 @@ public final class PDDyedreamVerifyHooks {
         boolean noSurviveOnStone = !level.getBlockState(bad).canSurvive(level, bad);
         out.accept(new Result(noSurviveOnStone, "dyedream.flower12.need_dyedream_soil",
                 "canSurvive on stone=" + !noSurviveOnStone));
+    }
 
-        // 掉落：仅下半
-        var lowerDrops = level.getBlockState(origin).getDrops(
-                new LootParams.Builder(level)
-                        .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(origin))
-                        .withParameter(LootContextParams.TOOL, ItemStack.EMPTY));
-        var upperDrops = level.getBlockState(origin.above()).getDrops(
-                new LootParams.Builder(level)
-                        .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(origin.above()))
-                        .withParameter(LootContextParams.TOOL, ItemStack.EMPTY));
-        boolean lowerDropsSelf = lowerDrops.stream().anyMatch(s -> s.is(PDBlocks.FLOWER_12.get().asItem()));
-        boolean upperEmpty = upperDrops.isEmpty();
-        out.accept(new Result(lowerDropsSelf && upperEmpty,
-                "dyedream.flower12.drops",
-                "lowerDropsSelf=" + lowerDropsSelf + " upperEmpty=" + upperEmpty));
+    /**
+     * 双层植物采集：剪刀/园艺钳破坏上下半格均掉 1，空手上下半格均不掉。
+     *
+     * @param level  染梦世界
+     * @param player 验证玩家
+     * @param origin 测试原点（下半格）
+     * @param out    结果接收器
+     */
+    private static void verifyDoublePlantDrops(ServerLevel level, ServerPlayer player, BlockPos origin,
+                                               Consumer<Result> out) {
+        GameType oldMode = player.gameMode.getGameModeForPlayer();
+        player.setGameMode(GameType.SURVIVAL);
+        try {
+            ItemStack shears = new ItemStack(Items.SHEARS);
+            ItemStack pliers = new ItemStack(PDItems.PLIERS.get());
+            boolean flower11Tool = bothHalvesDrop(level, player, PDBlocks.FLOWER_11.get(), origin, shears, 1)
+                    && bothHalvesDrop(level, player, PDBlocks.FLOWER_11.get(), origin, pliers, 1);
+            boolean flower11Empty = bothHalvesDrop(level, player, PDBlocks.FLOWER_11.get(), origin, ItemStack.EMPTY, 0);
+            out.accept(new Result(flower11Tool, "dyedream.flower11.drops", "shears/pliers lower+upper=1"));
+            out.accept(new Result(flower11Empty, "dyedream.flower11.no_drop_empty", "empty lower+upper=0"));
+
+            boolean flower12Tool = bothHalvesDrop(level, player, PDBlocks.FLOWER_12.get(), origin, shears, 1)
+                    && bothHalvesDrop(level, player, PDBlocks.FLOWER_12.get(), origin, pliers, 1);
+            boolean flower12Empty = bothHalvesDrop(level, player, PDBlocks.FLOWER_12.get(), origin, ItemStack.EMPTY, 0);
+            out.accept(new Result(flower12Tool, "dyedream.flower12.drops", "shears/pliers lower+upper=1"));
+            out.accept(new Result(flower12Empty, "dyedream.flower12.no_drop_empty", "empty lower+upper=0"));
+        } finally {
+            clearItemEntities(level, origin, 6);
+            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            player.setGameMode(oldMode);
+        }
+    }
+
+    /**
+     * 分别破坏上下半格，检查掉落数量是否均符合预期。
+     *
+     * @param level    染梦世界
+     * @param player   验证玩家
+     * @param block    双层植物方块
+     * @param origin   下半格坐标
+     * @param tool     主手工具
+     * @param expected 每次破坏的期望掉落数量
+     * @return 上下半格掉落数量均匹配返回 true
+     */
+    private static boolean bothHalvesDrop(ServerLevel level, ServerPlayer player, Block block, BlockPos origin,
+                                          ItemStack tool, int expected) {
+        return breakDropCount(level, player, block, origin, false, tool) == expected
+                && breakDropCount(level, player, block, origin, true, tool) == expected;
+    }
+
+    /**
+     * 重新摆放双层植物、破坏指定半格并统计本体掉落数量。
+     *
+     * @param level     染梦世界
+     * @param player    验证玩家
+     * @param block     双层植物方块
+     * @param lowerPos  下半格坐标
+     * @param breakUpper 是否破坏上半格
+     * @param tool      主手工具
+     * @return 本体掉落数量
+     */
+    private static int breakDropCount(ServerLevel level, ServerPlayer player, Block block, BlockPos lowerPos,
+                                      boolean breakUpper, ItemStack tool) {
+        placeDoublePlant(level, block, lowerPos);
+        clearItemEntities(level, lowerPos, 4);
+        player.setItemInHand(InteractionHand.MAIN_HAND, tool);
+        player.gameMode.destroyBlock(breakUpper ? lowerPos.above() : lowerPos);
+        int count = 0;
+        for (ItemEntity entity : level.getEntitiesOfClass(ItemEntity.class, new AABB(lowerPos).inflate(4))) {
+            if (entity.getItem().is(block.asItem())) {
+                count += entity.getItem().getCount();
+            }
+            entity.discard();
+        }
+        return count;
+    }
+
+    /**
+     * 在指定下半格位置摆放双层植物的上下两半。
+     *
+     * @param level    染梦世界
+     * @param block    双层植物方块
+     * @param lowerPos 下半格坐标
+     */
+    private static void placeDoublePlant(ServerLevel level, Block block, BlockPos lowerPos) {
+        clearArea(level, lowerPos, 2);
+        level.setBlock(lowerPos.below(), PDBlocks.DYEDREAM_DIRT.get().defaultBlockState(), 3);
+        BlockState plant = block.defaultBlockState();
+        level.setBlock(lowerPos, plant.setValue(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER), 3);
+        level.setBlock(lowerPos.above(), plant.setValue(DoublePlantBlock.HALF, DoubleBlockHalf.UPPER), 3);
+    }
+
+    /**
+     * 清理指定范围内的掉落物实体。
+     *
+     * @param level  染梦世界
+     * @param center 中心坐标
+     * @param range  范围半径
+     */
+    private static void clearItemEntities(ServerLevel level, BlockPos center, double range) {
+        for (ItemEntity entity : level.getEntitiesOfClass(ItemEntity.class, new AABB(center).inflate(range))) {
+            entity.discard();
+        }
     }
 
     // ==================== dyedream_lotus ====================
@@ -319,7 +412,7 @@ public final class PDDyedreamVerifyHooks {
         out.accept(new Result(still11 && deskStill, "dyedream.garden.fail_wrong_layout",
                 "flower_11=" + still11 + " desk=" + deskStill));
 
-        // 正例：完整花阵 → 延迟 1 tick 花阵销毁、2 tick 花 11→12 + 书桌消失
+        // 正例：完整花阵 → 延迟 1 tick 花阵销毁、2 tick 花 11→12，书桌保留
         setupGardenDecryption(level, origin, true);
         useBlock(level, player, origin);
         // 0 tick：花阵尚未销毁（queueServerWork(1) 未到期）
@@ -331,11 +424,28 @@ public final class PDDyedreamVerifyHooks {
                 && level.getBlockState(origin).getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.LOWER;
         boolean upper12 = level.getBlockState(origin.above()).is(PDBlocks.FLOWER_12.get())
                 && level.getBlockState(origin.above()).getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER;
-        boolean deskGone = level.getBlockState(origin.below(3)).isAir();
-        out.accept(new Result(intact0 && flowersGone && lower12 && upper12 && deskGone,
+        boolean successDeskStill = level.getBlockState(origin.below(3)).is(PDBlocks.DYEDREAM_DESK.get());
+        out.accept(new Result(intact0 && flowersGone && lower12 && upper12 && successDeskStill,
                 "dyedream.garden.success",
                 "intact0=" + intact0 + " flowersGone=" + flowersGone
-                        + " flower12=" + lower12 + "/" + upper12 + " deskGone=" + deskGone));
+                        + " flower12=" + lower12 + "/" + upper12 + " deskStill=" + successDeskStill));
+
+        // 正例：点击上半格 → 与点击下半格等价
+        setupGardenDecryption(level, origin, true);
+        useBlock(level, player, origin.above());
+        boolean upperIntact0 = isGardenLayoutIntact(level, origin);
+        ServerScheduler.advanceForTest(1);
+        boolean upperFlowersGone = !isGardenLayoutIntact(level, origin);
+        ServerScheduler.advanceForTest(1);
+        boolean upperLower12 = level.getBlockState(origin).is(PDBlocks.FLOWER_12.get())
+                && level.getBlockState(origin).getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.LOWER;
+        boolean upperUpper12 = level.getBlockState(origin.above()).is(PDBlocks.FLOWER_12.get())
+                && level.getBlockState(origin.above()).getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER;
+        boolean upperDeskStill = level.getBlockState(origin.below(3)).is(PDBlocks.DYEDREAM_DESK.get());
+        out.accept(new Result(upperIntact0 && upperFlowersGone && upperLower12 && upperUpper12 && upperDeskStill,
+                "dyedream.garden.success_from_upper",
+                "intact0=" + upperIntact0 + " flowersGone=" + upperFlowersGone
+                        + " flower12=" + upperLower12 + "/" + upperUpper12 + " deskStill=" + upperDeskStill));
     }
 
     /** 搭建花园解密布局：书桌（下 3 格）+ flower_11 双格 + 可选 8 格花阵 */
@@ -391,16 +501,16 @@ public final class PDDyedreamVerifyHooks {
         EntityType.ALLAY.spawn(level, origin.offset(0, 0, 2), MobSpawnType.COMMAND);
         useBlock(level, player, origin);
         boolean now17 = level.getBlockState(origin).is(PDBlocks.FLOWER_17.get());
-        boolean deskGone = level.getBlockState(origin.below(3)).isAir();
+        boolean successDeskStill = level.getBlockState(origin.below(3)).is(PDBlocks.DYEDREAM_DESK.get());
         boolean arrayGone = !level.getBlockState(origin.offset(0, 0, 5)).is(PDBlocks.CROP_0A.get())
                 && !level.getBlockState(origin.offset(0, 0, -5)).is(PDBlocks.DYEDREAM_SAPLING.get())
                 && !level.getBlockState(origin.offset(5, 0, 0)).is(PDBlocks.FLOWER_14.get())
                 && !level.getBlockState(origin.offset(-5, 0, 0)).is(PDBlocks.FLOWER_9.get());
         boolean mobsGone = level.getEntitiesOfClass(SnowGolem.class, new AABB(origin).inflate(15)).isEmpty()
                 && level.getEntitiesOfClass(Allay.class, new AABB(origin).inflate(15)).isEmpty();
-        out.accept(new Result(now17 && deskGone && arrayGone && mobsGone,
+        out.accept(new Result(now17 && successDeskStill && arrayGone && mobsGone,
                 "dyedream.snowpuzzle.success",
-                "flower17=" + now17 + " deskGone=" + deskGone + " arrayGone=" + arrayGone
+                "flower17=" + now17 + " deskStill=" + successDeskStill + " arrayGone=" + arrayGone
                         + " mobsGone=" + mobsGone));
     }
 
