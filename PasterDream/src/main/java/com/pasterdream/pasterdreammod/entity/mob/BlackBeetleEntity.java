@@ -1,7 +1,9 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMonsterEntity;
+import com.pasterdream.pasterdreammod.registry.PDItems;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -14,6 +16,7 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -130,6 +133,20 @@ public class BlackBeetleEntity extends GeckoLibMonsterEntity {
     }
 
     // ======================== 死亡处理 ========================
+
+    /**
+     * 死亡时掉落厚翅甲壳
+     * 原模组在 BlackBeetleEntity 中通过 dropCustomDeathLoot 硬编码掉落
+     *
+     * @param level       服务端世界
+     * @param source      伤害来源
+     * @param recentlyHit 是否被玩家击杀
+     */
+    @Override
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
+        super.dropCustomDeathLoot(level, source, recentlyHit);
+        this.spawnAtLocation(new ItemStack(PDItems.BLACK_BEETLE_CARAPACE.get()));
+    }
 
     @Override
     protected void tickDeath() {
