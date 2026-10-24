@@ -9,6 +9,7 @@
     "type": "pasterdream:dyedream_crack_spread",
     "spacing": 37,
     "separation": 20,
-    "salt": 2076406732
+    "salt": 2076406732,
+    "frequency": 0.5
   }
 }
