@@ -291,42 +291,21 @@ kubejs/assets/<ns>/
 }
 ```
 
-### 5.4 需要自己补的：战利品表
+### 5.4 战利品表：自动兜底，可自定义覆盖
 
-⚠️ **自动生成不包含战利品表** —— 不补的话，生存模式下挖掘玩偶**什么都不会掉**（被抱住的
-物品仍会弹出，但玩偶本体直接消失）。创造模式不受影响。
+注册时若玩偶不是主模组命名空间，`DollBuilder` 会**自动生成战利品表兜底文件**
+`kubejs/data/<namespace>/loot_table/blocks/<name>.json`（标准 1.21.1 自掉落：挖掘掉落本体，
+带 `survives_explosion` 条件），无需手写即可在生存模式正常掉落。
 
-模组内置玩偶都带有各自掉落表；KubeJS 玩偶需要在 `kubejs/data/` 下自行补齐。
-创建 `kubejs/data/kubejs/loot_table/blocks/my_doll.json`：
-
-```json
-{
-  "type": "minecraft:block",
-  "pools": [
-    {
-      "rolls": 1.0,
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "kubejs:my_doll"
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ]
-    }
-  ]
-}
-```
+**自定义掉落**：想改掉落行为时，在注册**之前**于同路径先放好手写的战利品表 JSON 即可——
+兜底生成检测到文件已存在时会跳过并记录日志，你的自定义掉落原样生效。
 
 注意 1.21 的目录规则（与 1.20 不同）：
 
 - ✅ 路径为单数 `loot_table/blocks/`（`data/<ns>/loot_table/blocks/<name>.json`）
 - ❌ 1.20 的复数 `loot_tables/` 目录会被静默忽略，方块不掉落且无任何报错
 
-若玩偶注册在其他 namespace（如 `mypack`），战利品表放在
+若玩偶注册在其他 namespace（如 `mypack`），兜底/自定义战利品表都在
 `kubejs/data/mypack/loot_table/blocks/my_doll.json`，`name` 字段对应 `mypack:my_doll`。
 
 ***
@@ -460,8 +439,14 @@ PasterDreamEvents.dollRegistry(event => {
 
 **Q：生存模式挖掉玩偶没有掉落**
 
-正常现象：自动生成不包含战利品表，按 [5.4 节](#54-需要自己补的战利品表) 补一份
-`loot_table/blocks/<name>.json` 即可（注意是单数 `loot_table`）。
+先查日志：KubeJS 玩偶注册时会自动生成兜底战利品表
+`kubejs/data/<ns>/loot_table/blocks/<name>.json`（见 [5.4 节](#54-战利品表自动兜底可自定义覆盖)），
+正常无需手写。没掉落时依次排查：
+
+1. 生成目录是否被手动清理过——重启游戏让兜底逻辑重新生成
+2. 该路径存在手写战利品表但内容是 1.20 旧格式（复数 `loot_tables/` 目录或旧 predicate 结构），
+   整表解析失败 → 无掉落且无报错，可删除该文件让兜底重新生成
+3. 是否注册到非 `kubejs` 命名空间而查错了目录（兜底文件在 `kubejs/data/<注册命名空间>/` 下）
 
 **Q：改了脚本** **`/reload`** **后没变化**
 
@@ -510,8 +495,8 @@ KubeJS 注册内容不持久化，注册名即身份。改名等于删除旧玩�
 
 | 源码                                                                                          | 内容                                             |
 | ------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `PasterDream/src/main/java/com/pasterdream/pasterdreammod/api/doll/DollAPI.java`            | 玩偶注册门面（含 KubeJS 便捷方法）                          |
-| `PasterDream/src/main/java/com/pasterdream/pasterdreammod/api/doll/DollBuilder.java`        | Builder 与 `registerDirect` 实现、KubeJS 资源自动生成    |
+| `PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/doll/DollAPI.java`          | 玩偶注册门面（含 KubeJS 便捷方法；实现经 Provider 注入）         |
+| `PasterDreamAPI/src/main/java/com/pasterdream/pasterdreammod/api/doll/DollBuilder.java`      | Builder 与 `registerDirect` 实现、KubeJS 资源与战利品表兜底自动生成 |
 | `PasterDream/src/main/java/com/pasterdream/pasterdreammod/integration/kubejs/`              | KubeJS 插件与 `PasterDreamEvents.dollRegistry` 事件 |
 | `PasterDream/src/main/java/com/pasterdream/pasterdreammod/client/model/DollBlockModel.java` | 模型/纹理/抱物切换的客户端解析逻辑                             |
 | `PasterDream/src/main/resources/assets/pasterdream/geo/block/eoul_doll.geo.json`            | 内置玩偶骨骼（换皮路线的模板）                                |

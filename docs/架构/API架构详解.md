@@ -334,13 +334,13 @@ API 的核心特色系统：七个子系统 + 后处理，统一遵循「**公�
 
 `PasterDreamAPI`（常量 + registerAll）、`PasterDreamAPIMod`（模组主类）、`ApiSoundRegistry`（维度声音注册器）、`ApiCodeGenConfig`（代码生成配置）。
 
-### 4.7 特例：api.doll（位于主模，未上收）
+### 4.7 api.doll（已上收，Provider 注入模式）
 
-`com.pasterdream.pasterdreammod.api.doll`（`DollAPI`/`DollBuilder`/`DollConfig`/`DollResult`/`DollModelType` 共 5 类）**包名属于 `api.*` 命名空间，但物理位于 PasterDream 主模**。主模 10+ 处引用（方块/DataGen/KubeJS 集成/创造模式标签）。
+`com.pasterdream.pasterdreammod.api.doll`（`DollAPI`/`DollBuilder`/`DollConfig`/`DollResult`/`DollModelType`/`DollImplementations` 共 6 类）现位于 **PasterDreamAPI 模块**（同包名迁移，全限定名不变，消费方 import 零改动）。
 
-该包是历史遗留的组织方式，符合上收条件时应在遵循 [API 边界](../参考/API边界.md) 判定的前提下迁移至 PasterDreamAPI 模块。**新代码不得模仿此模式。**
+玩偶的具体实现类（`DollBlock`/`DollBlockEntity`/`DollDisplayItem`）仍留主模组，经 **Provider 注入**解耦：主模组在构造阶段最前调用 `DollAPI.install(DollImplementations)` 注入三个实现工厂与注册命名空间 modId（`install` 幂等，重复且参数一致为无操作）；KubeJS 事件链路径由 `DollJSBuilder` 构造器守卫兜底（`PasterDreamMod.ensureDollInstalled()`）。API 层零实现依赖，`DollResult` 以通配泛型持有方块/物品/方块实体。
 
-该架构将在后续版本中移除
+时序约定：注册相关入口必须在实现安装后调用；第三方模组直接调用本 API 须声明对 PasterDream 的运行时依赖。
 
 ---
 
@@ -418,7 +418,7 @@ client / network                        （端相关层，可依赖注册域）
 | audio（BGM） | 演进中 | 状态机已上收（P1），播放层 glue 在主模迭代 |
 | fluid / particle / ruin / menu | 演进中 | 可用，但下游用量少，接口覆盖面有限 |
 | spell | 预留 | 仅 2 个接口类，当前无下游消费 |
-| api.doll（主模内） | 待上收 | 包名属 api 命名空间但物理在主模（见 4.7） |
+| api.doll | 已上收 | PasterDreamAPI 模块（Provider 注入，实现留主模，见 4.7） |
 
 ---
 

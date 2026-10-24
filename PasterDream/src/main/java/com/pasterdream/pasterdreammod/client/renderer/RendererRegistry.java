@@ -10,7 +10,10 @@ import com.pasterdream.pasterdreammod.registry.PDEntities;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
+import com.pasterdream.pasterdreammod.api.doll.DollResult;
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
+import com.pasterdream.pasterdreammod.block.entity.DollBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 /**
  * 渲染器注册器 —— 统一管理渲染器注册逻辑
  * <p>
@@ -126,16 +129,32 @@ public final class RendererRegistry {
         var dollRegs = com.pasterdream.pasterdreammod.api.doll.DollAPI.getRegistrations();
         PasterDreamMod.LOGGER.info("[RendererRegistry] 发现 {} 个已注册玩偶，准备注册方块实体渲染器", dollRegs.size());
         for (var reg : dollRegs) {
+            BlockEntityType<DollBlockEntity> beType = dollBlockEntityType(reg);
             if (reg.config().modelType() == com.pasterdream.pasterdreammod.api.doll.DollModelType.LEGACY) {
-                event.registerBlockEntityRenderer(reg.blockEntityType().get(), context -> new LegacyDollBlockRenderer(reg.name()));
+                event.registerBlockEntityRenderer(beType, context -> new LegacyDollBlockRenderer(reg.name()));
             } else {
-                event.registerBlockEntityRenderer(reg.blockEntityType().get(), DollBlockRenderer::new);
+                event.registerBlockEntityRenderer(beType, DollBlockRenderer::new);
             }
             PasterDreamMod.LOGGER.info("[RendererRegistry] 注册玩偶方块实体渲染器: {}", reg.name());
             count++;
         }
 
         PDDebugLogger.mainDebug("[RendererRegistry] 方块实体渲染器注册完成，共 {} 个", count);
+    }
+
+    /**
+     * 将玩偶注册结果的方块实体类型收敛为具体类型（供渲染器注册使用）
+     * <p>
+     * DollAPI 上收后以通配类型持有方块实体（API 不命名实现类）；本模组的运行时不变量是
+     * 所有经 DollAPI 注册的玩偶方块实体均为 {@link DollBlockEntity}（或其子类），
+     * 故在此收敛为上收前的静态类型，保持渲染器注册的泛型推断不变。
+     *
+     * @param reg 玩偶注册结果
+     * @return 方块实体类型
+     */
+    @SuppressWarnings("unchecked")
+    private static BlockEntityType<DollBlockEntity> dollBlockEntityType(DollResult reg) {
+        return (BlockEntityType<DollBlockEntity>) reg.blockEntityType().get();
     }
 
     /**

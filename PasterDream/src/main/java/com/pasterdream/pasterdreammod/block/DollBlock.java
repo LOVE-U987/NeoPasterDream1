@@ -49,7 +49,7 @@ public class DollBlock extends MemorialDollBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        Optional<DeferredHolder<BlockEntityType<?>, BlockEntityType<DollBlockEntity>>> holder = DollAPI.getBlockEntityHolder(this);
+        Optional<DeferredHolder<BlockEntityType<?>, ? extends BlockEntityType<?>>> holder = DollAPI.getBlockEntityHolder(this);
         if (holder.isEmpty()) {
             return null;
         }
