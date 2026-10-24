@@ -13,6 +13,16 @@
 *   **验证**：`gradlew compileJava` 全 5 模块 BUILD SUCCESSFUL（附属三模块零改动编译通过，证实无交叉引用）；`gradlew runData` BUILD SUCCESSFUL 且玩偶相关生成文件零 diff；审核文件与新增/修改文本均 LF、UTF-8 无 BOM；实机已验证（2026-10-25，用户确认全部通过）：KubeJS 启动脚本注册玩偶挖掘掉落本体、手写战利品表不被覆盖、4 个内置动态玩偶渲染/抱物/掉落正常、融梦水晶箱玩偶掉落池正常、启动脚本注册时序无回归
 *   **范围外**：玩偶 WIKI 由其他成员负责；旧手写玩偶注册方式、主模组命名空间战利品表 DataGen 迁移均不变
 
+### 修复：钛矿/深层钛矿/熔融金矿缺失 biome_modifier 导致不生成
+
+*   **现象**：钛矿、深层钛矿、熔融金矿三者的 configured_feature / placed_feature JSON 均已移植，但缺少 `neoforge/biome_modifier` 注入文件，矿石在世界中完全不生成（对照原模组 `forge/biome_modifier/*_biome_modifier.json` 确认）
+*   **改动**（`data/pasterdream/neoforge/biome_modifier/` 新增 3 个文件，`neoforge:add_features`，`underground_ores` 阶段）：
+    *   `titanium_ore.json`：注入 `#pasterdream:is_dyedream` 全部染梦群系（原模组仅 biome_dyedream_0~3，随既有 dyedream_ores.json 的有意差异扩展；经用户确认），placed 参数不变（count 6，高度 -60~20，替换 calcite）
+    *   `deepslate_titanium_ore.json`：注入 `#minecraft:is_overworld`，count 3，高度 -60~-10，替换 deepslate
+    *   `moltengold_ore.json`：注入 `#minecraft:is_nether`，count 3，高度 5~60，替换 netherrack
+*   **验证**：JSON 解析 + LF 行尾 + UTF-8 无 BOM 校验通过；实机待验：染梦维度挖钛矿、主世界深板岩层挖深层钛矿、下界挖熔融金矿
+*   **备注**：`PDWorldgenProvider` TODO 中"剩余矿石迁移到 DataGen"为后续事项，本次按既有手写 JSON 风格最小修复
+
 ### 修复：染梦粉尘与小撮染梦粉尘配方未对齐——比例定为 1:4（有意差异，经用户确认）
 
 *   **现象**：1 染梦粉尘可分解为 9 小撮染梦粉尘，但 4 小撮（2×2）即可合成 1 染梦粉尘——4→1→9 循环每轮白赚 5 个小撮，配方永动机
