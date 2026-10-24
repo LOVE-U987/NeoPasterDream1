@@ -99,6 +99,16 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
     private static final ResourceKey<LootTable> FALLBACK_RARE = lootKey("chests/loots_meltdream_chest_fallback_rare");
     private static final ResourceKey<LootTable> FALLBACK_LEGENDARY = lootKey("chests/loots_meltdream_chest_fallback_legendary");
 
+    /** 原版二级奖励表（Pr0/Pr1；数据包可覆盖） */
+    private static final ResourceKey<LootTable> SECONDARY_DYEDREAM_RARE =
+            lootKey("chests/loots_meltdream_chest_secondary_dyedream_rare");
+    private static final ResourceKey<LootTable> SECONDARY_DYEDREAM_LEGENDARY =
+            lootKey("chests/loots_meltdream_chest_secondary_dyedream_legendary");
+    private static final ResourceKey<LootTable> SECONDARY_WIND_RARE =
+            lootKey("chests/loots_meltdream_chest_secondary_wind_rare");
+    private static final ResourceKey<LootTable> SECONDARY_WIND_LEGENDARY =
+            lootKey("chests/loots_meltdream_chest_secondary_wind_legendary");
+
     private static final VoxelShape SHAPE_NORTH = Block.box(1, 0, 1, 15, 14, 15);
     private static final VoxelShape SHAPE_EAST = Block.box(1, 0, 1, 15, 14, 15);
 
@@ -423,7 +433,7 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
     }
 
     /**
-     * 在基础掉落之上叠加移植版附加内容：唱片/玩偶（代码，标签/API 驱动）+ 水晶/纪念品（附加表）。
+     * 在基础掉落之上叠加移植版附加内容：唱片/玩偶（代码，标签/API 驱动）+ 原版二级奖励 + 水晶/纪念品（附加表）。
      *
      * @param handler 存货处理器
      * @param level   服务端世界
@@ -433,35 +443,47 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
      */
     private static void applyQualityExtras(ItemStackHandler handler, ServerLevel level, BlockPos pos, Player player, int quality) {
         RandomSource random = level.random;
+        int overflowSlot = -1;
         if (quality == 2) {
-            applyRareExtras(handler, player, random);
+            overflowSlot = applyRareExtras(handler, player, random);
         } else if (quality == 3) {
-            applyLegendaryExtras(handler, player, random);
+            overflowSlot = applyLegendaryExtras(handler, player, random);
         }
+        applySecondary(handler, level, pos, player, quality, overflowSlot);
         applyBonus(handler, level, pos, player, quality);
         normalizeCrystal(handler);
     }
 
     /**
      * 稀有档附加：slot 0 唱片 + 50% 玩偶（放首个空槽）。
+     *
+     * @return 玩偶实际写入槽位；未写入返回 -1
      */
-    private static void applyRareExtras(ItemStackHandler handler, Player player, RandomSource random) {
+    private static int applyRareExtras(ItemStackHandler handler, Player player, RandomSource random) {
         placeDiscAtSlotZero(handler, player, random);
         if (random.nextFloat() < 0.5f) {
-            putInFirstEmpty(handler, rollDoll(player, random));
+            return putInFirstEmpty(handler, rollDoll(player, random));
         }
+        return -1;
     }
 
     /**
      * 传说档附加：玩偶（基础件 ≥2 时替换一槽保留至少一件，否则放空槽）。
+     *
+     * @return 玩偶实际写入槽位；未写入返回 -1
      */
-    private static void applyLegendaryExtras(ItemStackHandler handler, Player player, RandomSource random) {
+    private static int applyLegendaryExtras(ItemStackHandler handler, Player player, RandomSource random) {
+        ItemStack doll = rollDoll(player, random);
+        if (doll.isEmpty()) {
+            return -1;
+        }
         int baseCount = countLeadingFilled(handler);
         if (baseCount >= 2) {
-            handler.setStackInSlot(random.nextInt(baseCount), rollDoll(player, random));
-        } else {
-            putInFirstEmpty(handler, rollDoll(player, random));
+            int slot = random.nextInt(baseCount);
+            handler.setStackInSlot(slot, doll);
+            return slot;
         }
+        return putInFirstEmpty(handler, doll);
     }
 
     /**
@@ -480,11 +502,113 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
         }
         for (ItemStack stack : rollTable(bonus, level, pos, player)) {
             if (stack.is(PDItemTags.MELTDREAM_CHEST_CRYSTAL)) {
+                ItemStack displaced = handler.getStackInSlot(8);
+                if (!displaced.isEmpty() && !displaced.is(PDItemTags.MELTDREAM_CHEST_CRYSTAL)) {
+                    int slot = firstEmptySlotInRange(handler, 0, 7);
+                    if (slot >= 0) {
+                        handler.setStackInSlot(slot, displaced);
+                    } else {
+                        PasterDreamMod.LOGGER.warn("[MeltdreamChest] 附加水晶顶替 slot 8 时无 0..7 空槽，被顶替物品被跳过");
+                    }
+                } else if (!displaced.isEmpty()) {
+                    PasterDreamMod.LOGGER.debug("[MeltdreamChest] 附加水晶覆盖 slot 8 同类水晶");
+                }
                 handler.setStackInSlot(8, stack);
-            } else {
-                putInFirstEmpty(handler, stack);
+            } else if (putInFirstEmpty(handler, stack) < 0) {
+                PasterDreamMod.LOGGER.warn("[MeltdreamChest] 附加物品无空槽，已跳过：{}", stack);
             }
         }
+    }
+
+    /**
+     * 应用原版二级奖励（Pr0/Pr1）：按维度与品质抽 1 件写入容器。
+     * <p>传说档非水晶二级奖励限制在 slot 0..7，slot 8 留给 {@link #applyBonus} 的水晶实体；
+     * 稀有档允许使用 slot 8。水晶标签物品始终写 slot 8，被顶替物只允许迁到 0..7。</p>
+     *
+     * @param handler      存货处理器
+     * @param level        服务端世界
+     * @param pos          方块位置
+     * @param player       开箱玩家
+     * @param quality      品质（1=普通, 2=稀有, 3=传说）
+     * @param overflowSlot 本次玩偶扩展实际写入槽位；无则 -1
+     */
+    private static void applySecondary(ItemStackHandler handler, ServerLevel level, BlockPos pos, Player player,
+                                       int quality, int overflowSlot) {
+        ResourceKey<LootTable> key = secondaryLootTable(level, quality);
+        if (key == null) {
+            return;
+        }
+        LootTable table = getTable(level, key);
+        if (table == null) {
+            PasterDreamMod.LOGGER.warn("[MeltdreamChest] 二级奖励表缺失或无效：{}", key.location());
+            return;
+        }
+        List<ItemStack> rolls = rollTable(table, level, pos, player);
+        if (rolls.isEmpty()) {
+            return;
+        }
+        ItemStack stack = rolls.get(0);
+        if (stack.isEmpty()) {
+            return;
+        }
+
+        if (stack.is(PDItemTags.MELTDREAM_CHEST_CRYSTAL)) {
+            ItemStack displaced = handler.getStackInSlot(8);
+            handler.setStackInSlot(8, stack);
+            if (!displaced.isEmpty()) {
+                if (displaced.is(PDItemTags.MELTDREAM_CHEST_CRYSTAL)) {
+                    PasterDreamMod.LOGGER.debug("[MeltdreamChest] 二级水晶覆盖 slot 8 同类水晶");
+                } else {
+                    int slot = firstEmptySlotInRange(handler, 0, 7);
+                    if (slot >= 0) {
+                        handler.setStackInSlot(slot, displaced);
+                    } else {
+                        PasterDreamMod.LOGGER.warn("[MeltdreamChest] 二级水晶顶替 slot 8 时无 0..7 空槽，被顶替物品被跳过");
+                    }
+                }
+            }
+            return;
+        }
+
+        int maxSlot = quality == 3 ? 7 : 8;
+        int slot = firstEmptySlotInRange(handler, 0, maxSlot);
+        if (slot >= 0) {
+            handler.setStackInSlot(slot, stack);
+            return;
+        }
+        if (isUsableOverflow(quality, overflowSlot)) {
+            handler.setStackInSlot(overflowSlot, stack);
+            PasterDreamMod.LOGGER.warn("[MeltdreamChest] 二级奖励顶替玩偶扩展槽 {}", overflowSlot);
+            return;
+        }
+        PasterDreamMod.LOGGER.warn("[MeltdreamChest] 二级奖励无可用槽位，保留基础物品并跳过二级奖励");
+    }
+
+    /**
+     * 按维度与品质选择二级奖励表：染梦 → 染梦表；风旅/灯影 → 风旅表；其他维度或普通品质 → null。
+     *
+     * @param level   服务端世界
+     * @param quality 品质
+     * @return 二级奖励表键；不适用返回 null
+     */
+    @Nullable
+    private static ResourceKey<LootTable> secondaryLootTable(ServerLevel level, int quality) {
+        if (quality == 2) {
+            if (PDDimensions.isDyedreamWorld(level)) {
+                return SECONDARY_DYEDREAM_RARE;
+            }
+            if (PDDimensions.isWindJourneyWorld(level) || PDDimensions.isLampShadowWorld(level)) {
+                return SECONDARY_WIND_RARE;
+            }
+        } else if (quality == 3) {
+            if (PDDimensions.isDyedreamWorld(level)) {
+                return SECONDARY_DYEDREAM_LEGENDARY;
+            }
+            if (PDDimensions.isWindJourneyWorld(level) || PDDimensions.isLampShadowWorld(level)) {
+                return SECONDARY_WIND_LEGENDARY;
+            }
+        }
+        return null;
     }
 
     /**
@@ -522,15 +646,18 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
 
     /**
      * 将物品放入首个空槽；无空槽（或物品为空）则不操作。
+     *
+     * @return 实际写入槽位；未写入返回 -1
      */
-    private static void putInFirstEmpty(ItemStackHandler handler, ItemStack stack) {
+    private static int putInFirstEmpty(ItemStackHandler handler, ItemStack stack) {
         if (stack.isEmpty()) {
-            return;
+            return -1;
         }
         int slot = firstEmptySlot(handler);
         if (slot >= 0) {
             handler.setStackInSlot(slot, stack);
         }
+        return slot;
     }
 
     /**
@@ -546,6 +673,39 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
             }
         }
         return -1;
+    }
+
+    /**
+     * 在指定闭区间内查找首个空槽。
+     *
+     * @param handler 存货处理器
+     * @param min     起始下标（含）
+     * @param max     结束下标（含）
+     * @return 首个空槽下标；区间内无空槽返回 -1
+     */
+    private static int firstEmptySlotInRange(ItemStackHandler handler, int min, int max) {
+        int from = Math.max(0, min);
+        int to = Math.min(max, handler.getSlots() - 1);
+        for (int i = from; i <= to; i++) {
+            if (handler.getStackInSlot(i).isEmpty()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 判断玩偶溢出槽是否可用于二级奖励：传说档禁止 slot 8，稀有档允许 slot 8。
+     *
+     * @param quality 品质
+     * @param slot    待判断槽位
+     * @return 可用返回 true
+     */
+    private static boolean isUsableOverflow(int quality, int slot) {
+        if (slot < 0 || slot >= 9) {
+            return false;
+        }
+        return quality != 3 || slot <= 7;
     }
 
     /**

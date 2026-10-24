@@ -5,6 +5,7 @@
 覆盖新增的原版战利品表：
   - data/pasterdream/loot_table/chests/loots_meltdream_chest_0.json
   - data/pasterdream/loot_table/chests/loots_meltdream_chest_1.json
+  - data/pasterdream/loot_table/chests/loots_meltdream_chest_secondary_*.json
 """
 import json
 import os
@@ -22,6 +23,14 @@ LOOT_TABLES = [
                  "data", "pasterdream", "loot_table", "chests", "loots_meltdream_chest_0.json"),
     os.path.join(REPO_ROOT, "PasterDream", "src", "main", "resources",
                  "data", "pasterdream", "loot_table", "chests", "loots_meltdream_chest_1.json"),
+    os.path.join(REPO_ROOT, "PasterDream", "src", "main", "resources",
+                 "data", "pasterdream", "loot_table", "chests", "loots_meltdream_chest_secondary_dyedream_rare.json"),
+    os.path.join(REPO_ROOT, "PasterDream", "src", "main", "resources",
+                 "data", "pasterdream", "loot_table", "chests", "loots_meltdream_chest_secondary_dyedream_legendary.json"),
+    os.path.join(REPO_ROOT, "PasterDream", "src", "main", "resources",
+                 "data", "pasterdream", "loot_table", "chests", "loots_meltdream_chest_secondary_wind_rare.json"),
+    os.path.join(REPO_ROOT, "PasterDream", "src", "main", "resources",
+                 "data", "pasterdream", "loot_table", "chests", "loots_meltdream_chest_secondary_wind_legendary.json"),
 ]
 
 
