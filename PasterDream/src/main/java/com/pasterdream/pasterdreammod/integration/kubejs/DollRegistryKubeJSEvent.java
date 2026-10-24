@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.integration.kubejs;
 
+import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.doll.DollAPI;
 import com.pasterdream.pasterdreammod.api.doll.DollBuilder;
 import dev.latvian.mods.kubejs.event.KubeEvent;
@@ -28,6 +29,9 @@ public class DollRegistryKubeJSEvent implements KubeEvent {
         private final DollBuilder builder;
 
         private DollJSBuilder(String name) {
+            // 玩偶实现安装守卫（挂载点二）：KubeJS 事件链上的注册路径无论脚本在哪个阶段执行，
+            // 创建 Builder 必先经此方法，确保 DollAPI 已注入实现（幂等，重复调用无操作）
+            PasterDreamMod.ensureDollInstalled();
             this.builder = DollAPI.create(name);
         }
 

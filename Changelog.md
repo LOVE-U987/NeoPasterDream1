@@ -2,6 +2,17 @@
 
 ---
 ## v0.11.0（开发中）— 2026-10-11
+### 重构：玩偶 API 上收至 PasterDreamAPI + KubeJS 玩偶掉落兜底
+
+*   **上收**（`api.doll` 历史特例，见 API 架构详解 4.7）：`DollAPI`/`DollBuilder`/`DollResult`/`DollConfig`/`DollModelType` 5 类自主模组迁入 `PasterDreamAPI/.../api/doll/`（同包名，全限定名不变，消费方 import 零改动），并新增 `DollImplementations` record（6 类）
+*   **解耦方案**（Provider 注入）：实现类 `DollBlock`/`DollBlockEntity`/`DollDisplayItem` 留主模组；`PasterDreamMod` 新增 `public static ensureDollInstalled()`（构造方法首行 + `DollJSBuilder` 构造器首行双挂载，幂等守卫），经 `DollAPI.install(DollImplementations)` 注入三个实现工厂与注册命名空间 modId；API 层零实现依赖，`DollResult` 改通配泛型持有（`DeferredBlock<? extends Block>` 等）
+*   **关键约束**：DeferredRegister 由 `install` 按注入 modId（`"pasterdream"`）延迟创建——不得使用 `PasterDreamAPI.MOD_ID`（`"pasterdreamapi"`），否则玩偶资源 ID 命名空间全部错位；第三方模组直连 `DollAPI` 须声明对 PasterDream 的运行时依赖
+*   **掉落兜底**（KubeJS 联动补全）：非主模组命名空间的玩偶注册时自动生成 `kubejs/data/<ns>/loot_table/blocks/<name>.json`（标准 1.21.1 自掉落 + `survives_explosion`，与内置玩偶战利品表同构）；文件已存在则跳过（保留脚本作者自定义掉落）；`docs/教程/KubeJS玩偶.md` 5.4 节同步改写为"自动兜底，可自定义覆盖"
+*   **连带修正**（泛型通配化引发，均已编译验证）：`RendererRegistry` 新增 `dollBlockEntityType()` 收敛辅助（运行时不变量：DollAPI 玩偶 BE 均为 `DollBlockEntity`）；`DollBlock#newBlockEntity` 局部类型改通配；`BlockEntityAPI` 工厂类型取非通配 `BlockEntitySupplier<BlockEntity>`（方法引用协变兼容，避免 capture 逃逸）
+*   **文档同步**：`API架构详解.md`（4.7 改写为已上收 + 对照表）、`主模组架构详解.md`（目录树/分区表/注册流程/子包表 4 处）、`KubeJS玩偶.md`（5.4 + 源码索引路径）、`融梦水晶箱战利品.md`（关联实现路径）、`架构演变.md`（3.1 标记完成）
+*   **验证**：`gradlew compileJava` 全 5 模块 BUILD SUCCESSFUL（附属三模块零改动编译通过，证实无交叉引用）；`gradlew runData` BUILD SUCCESSFUL 且玩偶相关生成文件零 diff；审核文件与新增/修改文本均 LF、UTF-8 无 BOM；实机已验证（2026-10-25，用户确认全部通过）：KubeJS 启动脚本注册玩偶挖掘掉落本体、手写战利品表不被覆盖、4 个内置动态玩偶渲染/抱物/掉落正常、融梦水晶箱玩偶掉落池正常、启动脚本注册时序无回归
+*   **范围外**：玩偶 WIKI 由其他成员负责；旧手写玩偶注册方式、主模组命名空间战利品表 DataGen 迁移均不变
+
 ### 修复：染梦粉尘与小撮染梦粉尘配方未对齐——比例定为 1:4（有意差异，经用户确认）
 
 *   **现象**：1 染梦粉尘可分解为 9 小撮染梦粉尘，但 4 小撮（2×2）即可合成 1 染梦粉尘——4→1→9 循环每轮白赚 5 个小撮，配方永动机

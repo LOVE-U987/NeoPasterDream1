@@ -56,6 +56,10 @@ import com.pasterdream.pasterdreammod.worldgen.tree.DyedreamTreePlacers;
 import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationRegistry;
 import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
 import com.pasterdream.pasterdreammod.api.doll.DollAPI;
+import com.pasterdream.pasterdreammod.api.doll.DollImplementations;
+import com.pasterdream.pasterdreammod.block.DollBlock;
+import com.pasterdream.pasterdreammod.block.entity.DollBlockEntity;
+import com.pasterdream.pasterdreammod.item.DollDisplayItem;
 import com.pasterdream.pasterdreammod.api.util.PDDebugLogger;
 import com.pasterdream.pasterdreammod.api.util.ServerScheduler;
 import net.minecraft.data.DataGenerator;
@@ -99,12 +103,31 @@ public class PasterDreamMod {
     }
 
     /**
+     * 确保玩偶实现已安装（幂等：已安装则无操作）。
+     * <p>
+     * 玩偶 API 已上收至 PasterDreamAPI，本模组作为实现方在此注入 DollBlock/DollDisplayItem/
+     * DollBlockEntity 三个具体实现工厂。挂载点一：本模组构造方法首行（正常路径，早于注册与
+     * DataGen，同时覆盖脚本 Java.loadClass 直连 DollAPI 的路径——依赖正常时序：KubeJS 启动
+     * 脚本在注册阶段之后执行）；挂载点二：{@code DollJSBuilder} 构造器首行（KubeJS 事件链
+     * 路径守卫，无论脚本何时执行均先经本方法）。
+     */
+    public static void ensureDollInstalled() {
+        if (!DollAPI.isInstalled()) {
+            DollAPI.install(new DollImplementations(
+                    MOD_ID, DollBlock::new, DollDisplayItem::new, DollBlockEntity::new));
+        }
+    }
+
+    /**
      * 构造函数
      *
      * @param modEventBus NeoForge 事件总线
      * @param modContainer NeoForge 模组容器
      */
     public PasterDreamMod(IEventBus modEventBus, ModContainer modContainer) {
+        // 玩偶实现安装必须最前（早于 DeferredRegister 注册与 PDCustomDolls.register()）
+        ensureDollInstalled();
+
         // PasterDreamAPI 已作为独立前置 mod 加载，由其主类 PasterDreamAPIMod 统一注册 API 层 DeferredRegister，
         // 下游模组不再重复调用 registerAll，避免 "Cannot register DeferredRegister to more than one event bus"。
 
@@ -118,9 +141,9 @@ public class PasterDreamMod {
         clientModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.CLIENT, PDClientConfig.SPEC, modContainer, "PasterDream-Client.toml");
         commonModConfig = ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.COMMON, PDCommonConfig.SPEC, modContainer, "PasterDream-Common.toml");
 
-        // 注册玩偶 API 的 DeferredRegister
-        DollAPI.BLOCK_REGISTRY.register(modEventBus);
-        DollAPI.ITEM_REGISTRY.register(modEventBus);
+        // 注册玩偶 API 的 DeferredRegister（DeferredRegister 由 DollAPI.install 按主模组 modId 创建）
+        DollAPI.blocks().register(modEventBus);
+        DollAPI.items().register(modEventBus);
 
         // 注册自定义玩偶（玩家皮肤模型，支持抱物）
         com.pasterdream.pasterdreammod.registry.PDCustomDolls.register();
