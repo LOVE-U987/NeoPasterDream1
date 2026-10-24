@@ -335,6 +335,31 @@ public final class SkyboxRenderer {
     }
 
     /**
+     * Static 模式渲染（renderSky @Inject 调用）
+     * <p>
+     * caller 提供的 PoseStack 已含 NPD 旋转（X(-90)Y(skyAngle)），
+     * 不做额外 rotation 也不做 cleanup——由 StaticSkyRenderer/vanilla 管理状态。
+     *
+     * @param poseStack   已旋转的 PoseStack
+     * @param camera      当前相机
+     * @param partialTick 帧间插值
+     */
+    public static void renderStatic(PoseStack poseStack, Camera camera, float partialTick) {
+        SkyboxRenderContext context = makeContext(poseStack, camera, partialTick);
+        if (context == null) return;
+
+        // 深度状态对齐 vanilla 天空契约：renderSky 全程仅关闭深度写入，
+        // 不主动开启深度测试（sky 阶段深度缓冲尚无地形，开启也无实际作用，
+        // 反而作为非预期状态被后续 darkBuffer 绘制与光影程序继承）
+        RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        render(poseStack, context);
+        // 不做 cleanup，caller 管理状态
+    }
+
+    /**
      * 渲染玩家连线星体（星空枕创建，独立于候选机制）
      * <p>
      * 由 AFTER_SKY 事件在主天空渲染完成后调用；数据来自
@@ -361,6 +386,36 @@ public final class SkyboxRenderer {
             SKY_LINK.render(context, skylinkAlpha);
         }
         poseStack.popPose();
+    }
+
+    /**
+     * Static 模式渲染玩家连线星体（renderSky @Inject 路径调用）
+     * <p>
+     * caller 提供的 PoseStack 已含 NPD 旋转，不重复旋转也不做 cleanup。
+     * 与动态路径的差异：显式启用标准混合（动态路径在 render() cleanup 后
+     * 混合已关闭，连线星体以不透明方式渲染；静态路径显式开混合以正确表现 alpha）。
+     *
+     * @param poseStack   已旋转的 PoseStack
+     * @param camera      当前相机
+     * @param partialTick 帧间插值
+     */
+    public static void renderPlayerSkyLinksStatic(PoseStack poseStack, Camera camera, float partialTick) {
+        SkyboxRenderContext context = makeContext(poseStack, camera, partialTick);
+        if (context == null) {
+            return;
+        }
+        // 静态路径显式设置混合状态（render 不做 cleanup，状态由本方法与 caller 管理）；
+        // 深度状态对齐 vanilla 天空契约：仅关闭深度写入，不开启深度测试
+        RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        float target = SKY_LINK.targetAlpha(context);
+        float speed = 0.15F * Math.max(context.partialTick(), 0.25F);
+        skylinkAlpha = Mth.lerp(speed, skylinkAlpha, target);
+        if (skylinkAlpha > 0.003F) {
+            SKY_LINK.render(context, skylinkAlpha);
+        }
     }
 
     /**

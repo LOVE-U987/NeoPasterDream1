@@ -125,6 +125,16 @@ public final class SkyGeometry {
     private static void addBillboard(
             BufferBuilder buffer, Matrix4f matrix, SkyPoint center, float size, float angle, SkyColor color, float alpha, boolean textured, boolean writeColor
     ) {
+        // 地平线以下裁剪：中心位于下半球（y<=0）的图元直接跳过。
+        // 动机：sky 渲染阶段深度缓冲尚无地形，光影（Iris）的 composite 按
+        // "depth==far 即天空"判定，下半球内容会在渲染距离边缘/未加载区块的
+        // 天空区域透出（"透过地面渲染"）；同时与原版 darkBuffer 仅在玩家
+        // 眼位低于地平线时才遮挡下半球的行为对齐。
+        // pitch>0 的广告牌下缘 y=(100-size)*sin(pitch)>=0（size<100 恒成立），
+        // 因此按中心 y 判定即可完整覆盖，无残余泄漏。
+        if (center.y() <= 0.0F) {
+            return;
+        }
         float unitX = center.x() / SKY_RADIUS;
         float unitY = center.y() / SKY_RADIUS;
         float unitZ = center.z() / SKY_RADIUS;
@@ -170,6 +180,11 @@ public final class SkyGeometry {
      * @param alpha  透明度
      */
     public static void addLine(BufferBuilder buffer, Matrix4f matrix, SkyPoint from, SkyPoint to, float width, SkyColor color, float alpha) {
+        // 地平线以下裁剪：两端都在下半球的连线整段跳过（主体不可见）；
+        // 跨地平线的连线保留，仅少量尾端伸入下半球，被地形自然遮挡。
+        if (from.y() <= 0.0F && to.y() <= 0.0F) {
+            return;
+        }
         float dx = to.x() - from.x();
         float dy = to.y() - from.y();
         float dz = to.z() - from.z();

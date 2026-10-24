@@ -157,7 +157,9 @@ public class RainbowSkyContent implements SkyContent {
     private SkyPoint point(float progress, float arcRadius) {
         float angle = (progress - 0.5F) * this.arc;
         float horizontal = Mth.sin(angle) * arcRadius;
-        float vertical = this.basePitch + Mth.cos(angle) * arcRadius;
+        // 地平线以下裁剪：弧脚沉入下半球的部分钳到地平线（y=0 贴地展开），
+        // 避免彩虹两端在光影下透过地面渲染；钳制后 x/z 模长恒 >=1，归一化安全
+        float vertical = Math.max(0.0F, this.basePitch + Mth.cos(angle) * arcRadius);
         float normalX = Mth.sin(this.yaw);
         float normalZ = Mth.cos(this.yaw);
         float sideX = Mth.cos(this.yaw);

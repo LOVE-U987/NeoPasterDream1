@@ -380,7 +380,9 @@ public class SkyRibbonContent implements SkyContent {
      * @return 钳制结果
      */
     private static float clampPitch(float pitch) {
-        return Mth.clamp(pitch, -1.42F, 1.42F);
+        // 下界从 -1.42 收紧到 0：光带不再垂入地平线以下（下半球内容在
+        // 光影下会透过地面渲染），下摆改为沿地平线展开
+        return Mth.clamp(pitch, 0.0F, 1.42F);
     }
 
     /**

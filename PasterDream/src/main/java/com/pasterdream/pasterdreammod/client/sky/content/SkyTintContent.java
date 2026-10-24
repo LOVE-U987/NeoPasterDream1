@@ -77,6 +77,12 @@ public class SkyTintContent implements SkyContent {
         for (int ring = 0; ring < RINGS; ring++) {
             float pitch0 = (float) ring / RINGS * (float) Math.PI - (float) Math.PI / 2.0F;
             float pitch1 = (float) (ring + 1) / RINGS * (float) Math.PI - (float) Math.PI / 2.0F;
+            // 地平线以下裁剪：整环位于下半球（pitch1<=0）的纬度圈跳过，
+            // 避免天底方向染色在光影下透过地面渲染。RINGS=20 时环边界
+            // 恰好切于地平线（ring=10 的 pitch0=0），无跨环截断，渐变连续
+            if (pitch1 <= 0.0F) {
+                continue;
+            }
             float alpha0 = tintAlpha * gradientAlpha((float) ring / RINGS);
             float alpha1 = tintAlpha * gradientAlpha((float) (ring + 1) / RINGS);
             for (int slice = 0; slice < SLICES; slice++) {

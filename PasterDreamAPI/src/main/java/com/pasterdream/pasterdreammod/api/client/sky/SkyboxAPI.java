@@ -48,8 +48,10 @@ public final class SkyboxAPI {
     /**
      * 判断渲染阶段事件是否为 AFTER_SKY（天空渲染完成、云之前）
      * <p>
-     * ⚠️ Iris 光影下必须用 AFTER_SKY 事件渲染天空内容；
-     * {@code renderSky} Mixin 注入会把内容当世界几何体处理（变黑/消失）。
+     * AFTER_SKY 仅用于 DYNAMIC 渲染模式（无光影环境）。Iris/Oculus 光影下
+     * 默认走 STATIC 模式：内容在 {@code LevelRenderer.renderSky} 内注入渲染
+     * （见 {@code StaticSkyRenderer} 与 {@code LevelRendererMixin}），由光影
+     * 包天空管线捕获合成；此时 AFTER_SKY 事件被跳过，不应依赖。
      *
      * @param event 渲染阶段事件
      * @return 是否为 AFTER_SKY
