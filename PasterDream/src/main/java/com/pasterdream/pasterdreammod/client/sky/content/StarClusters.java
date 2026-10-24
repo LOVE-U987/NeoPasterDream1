@@ -34,13 +34,16 @@ final class StarClusters {
      * @return 聚类分布器
      */
     static StarClusters make(int count, LegacyRandomSource random) {
-        // 聚类数量随星数增长（约 1/15），最少 2 个
-        int clusterCount = Math.max(2, count / 15);
+        // 聚类数量随星数增长（约 1/30），最少 2 个。
+        // 原 1/15 且 pitch 范围 [-0.9, 0.9]——一半聚类中心落在地平线以下
+        // 不可见；pitch 改为正值域 [0.05, 0.90] 后数量减半，保持可见密度不变
+        int clusterCount = Math.max(2, count / 30);
         List<SkyPoint> centers = new ArrayList<>(clusterCount);
         for (int i = 0; i < clusterCount; i++) {
-            // 聚类中心偏向中高纬度（银道面效果）
+            // 聚类中心偏向中高纬度（银道面效果），限制在地平线以上，
+            // 避免下半球内容在光影下透过地面渲染
             float yaw = random.nextFloat() * 6.2831855F;
-            float pitch = -0.9F + random.nextFloat() * 1.8F;
+            float pitch = 0.05F + random.nextFloat() * 0.85F;
             centers.add(skyPoint(yaw, pitch));
         }
         return new StarClusters(centers);

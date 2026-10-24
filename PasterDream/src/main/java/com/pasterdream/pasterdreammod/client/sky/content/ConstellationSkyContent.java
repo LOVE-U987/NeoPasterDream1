@@ -359,6 +359,11 @@ public class ConstellationSkyContent implements SkyContent {
                 continue;
             }
             Star star = this.stars.get(index);
+            // 地平线以下裁剪：与主星点（SkyGeometry.addBillboard 的 center.y<=0
+            // 跳过）保持一致，避免星点被裁而瞄准十字星芒仍单独显示
+            if (star.point().y() <= 0.0F) {
+                continue;
+            }
             // 粒子式淡入淡出：smoothstep 缓动（起止都慢，进入轻盈、消散拖尾），
             // 同时驱动透明度渐入渐出与尺寸从小到大/从大到小
             float fade = smoothstep(state);
