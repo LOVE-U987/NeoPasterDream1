@@ -739,3 +739,11 @@
     *   `moltengold_ore.json`：注入 `#minecraft:is_nether`，count 3，高度 5~60，替换 netherrack
 *   **验证**：JSON 解析 + LF 行尾 + UTF-8 无 BOM 校验通过；实机待验：染梦维度挖钛矿、主世界深板岩层挖深层钛矿、下界挖熔融金矿
 *   **备注**：`PDWorldgenProvider` TODO 中"剩余矿石迁移到 DataGen"为后续事项，本次按既有手写 JSON 风格最小修复
+
+### 调整：主世界染梦裂隙自然生成概率减半
+
+*   **需求**：主世界染梦裂隙（struct_dyedream_crack_1）生成密度偏高，降低约 50%
+*   **改动**（`data/pasterdream/worldgen/structure_set/struct_dyedream_crack_1_set.json`）：placement 新增 `"frequency": 0.5`——原版标准字段（`StructurePlacement.placementCodec` 可选字段，经 `DyedreamCrackPlacement` CODEC 解析无碍），DEFAULT 频率削减方式按 salt 哈希对每个候选点做 50% 概率判定；spacing/separation/salt 不变，候选点网格不动、分布平滑变稀
+*   **行为**：新世界裂隙密度约减半；已生成区块不受影响；`/locate` 仍可定位但更稀疏；配置 `DYEDREAM_CRACK_GENERATE` 关闭时先被放置策略拦截，frequency 无机会参与，行为不变；染梦维度裂隙（struct_dyedream_crack_0）不受影响
+*   **其他**：该 JSON 原为 CRLF，随本次改动整文件转 LF（UTF-8 无 BOM）
+*   **验证**：JSON 解析 + 字段值域校验通过；`gradlew :PasterDream:processResources` BUILD SUCCESSFUL；行尾 LF 复查通过；实机待验：新世界探索/`/locate structure pasterdream:struct_dyedream_crack_1` 确认裂隙仍可生成但明显变稀
