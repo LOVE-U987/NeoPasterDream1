@@ -164,6 +164,23 @@ public class PDCreativeTabsDebug {
                         output.accept(PDItems.LOST_SWORD_BLOCK.get());
                         output.accept(PDItems.CLAYPAN_1.get());
                         output.accept(PDItems.PASTER_BLOCK_RESET_TOOL.get());
+                        // 战利品表调试工具
+                        output.accept(PDItems.LOOT_TABLE_DEBUG_WAND.get());
+                        output.accept(PDItems.LOOTSTABLE_CREATE_0.get());
+                        output.accept(PDItems.LOOTSTABLE_CREATE_1.get());
+                        output.accept(PDItems.LOOTSTABLE_CREATE_2.get());
+                        output.accept(PDItems.LOOTSTABLE_CREATE_3.get());
+                        output.accept(PDItems.LOOTSTABLE_CREATE_4.get());
+                        output.accept(PDItems.LOOTSTABLE_CREATE_5.get());
+                        output.accept(PDItems.LOOTSTABLE_CREATE_6.get());
+                        output.accept(PDItems.LOOTSTABLE_CREATE_7.get());
+                        output.accept(PDItems.LOOTSTABLE_CREATE_8.get());
+                        output.accept(PDItems.LOOTSTABLE_CREATE_9.get());
+                        // 调试用挖掘工具
+                        output.accept(PDItems.EXCAVATOR.get());
+                        // 原版调试栏/拓展栏图标占位物品
+                        output.accept(PDItems.TABITEM_1.get());
+                        output.accept(PDItems.TABITEM_2.get());
                         // BOSS 调试物品
                         output.accept(PDItems.AARONCOS_ARENA_CREATE.get());
                         output.accept(PDItems.TEST_CURIO.get());

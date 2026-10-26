@@ -4,6 +4,7 @@ import com.pasterdream.pasterdreammod.api.menu.MenuAPI;
 import com.pasterdream.pasterdreammod.menu.DreamAccumulatorMenu;
 import com.pasterdream.pasterdreammod.menu.DreamCauldronMenu;
 import com.pasterdream.pasterdreammod.menu.DyedreamDeskMenu;
+import com.pasterdream.pasterdreammod.menu.LootTableDebugMenu;
 import com.pasterdream.pasterdreammod.menu.ResearchTableMenu;
 import com.pasterdream.pasterdreammod.menu.ShadowBlastFurnaceMenu;
 import com.pasterdream.pasterdreammod.menu.ShadowSelectEndMenu;
@@ -160,6 +161,15 @@ public class PDMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<StorageBagMenu>> STORAGE_BAG_0 =
             MenuAPI.<StorageBagMenu>createMenu("storage_bag_0")
                     .factory(StorageBagMenu::new)
+                    .build();
+
+    /**
+     * 战利品库调试器选择界面（无槽位）
+     * 提供战利品表翻页、分类跳转与箱体类型切换
+     */
+    public static final DeferredHolder<MenuType<?>, MenuType<LootTableDebugMenu>> LOOT_TABLE_DEBUG =
+            MenuAPI.<LootTableDebugMenu>createMenu("loot_table_debug")
+                    .factory(LootTableDebugMenu::new)
                     .build();
 }
 

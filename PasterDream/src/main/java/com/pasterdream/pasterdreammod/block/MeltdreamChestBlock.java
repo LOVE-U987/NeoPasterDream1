@@ -210,7 +210,28 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
     // ==================== 右键交互 ====================
 
     /**
-     * 右键点击融梦水晶箱时的完整流程：
+     * 右键点击融梦水晶箱时按方块实体状态分派：
+     * <ul>
+     *   <li>{@code debugLootTable} 非空 → 调试开箱（{@link #openDebugChest}）</li>
+     *   <li>否则 → 普通开箱（{@link #openNormalChest}）</li>
+     * </ul>
+     */
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
+        if (state.getValue(ANIMATION) != 0) return InteractionResult.CONSUME;
+
+        BlockEntity be = level.getBlockEntity(pos);
+        if (!(be instanceof MeltdreamChestBlockEntity chest)) return InteractionResult.PASS;
+
+        if (chest.getDebugLootTable() != null) {
+            return openDebugChest(chest, state, level, pos, player);
+        }
+        return openNormalChest(chest, state, level, pos, player);
+    }
+
+    /**
+     * 普通开箱流程：
      * <ol>
      *   <li>检查玩家冷却（每人独立）</li>
      *   <li>随机决定品质（普通50%/稀有30%/传说20%），仅用于动画/音效与附加档位</li>
@@ -221,14 +242,8 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
      *   <li>状态机由 {@link MeltdreamChestBlockEntity#serverTick} 接管</li>
      * </ol>
      */
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (level.isClientSide()) return InteractionResult.SUCCESS;
-        if (state.getValue(ANIMATION) != 0) return InteractionResult.CONSUME;
-
-        BlockEntity be = level.getBlockEntity(pos);
-        if (!(be instanceof MeltdreamChestBlockEntity chest)) return InteractionResult.PASS;
-
+    private static InteractionResult openNormalChest(MeltdreamChestBlockEntity chest, BlockState state, Level level,
+                                                     BlockPos pos, Player player) {
         // 1. 检查冷却
         if (!chest.canOpen(player)) {
             // 冷却中提示
@@ -270,6 +285,21 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
             MeltDreamEnergyAPI.addEnergy(player, 2.0 * multiplier);
         }
 
+        return InteractionResult.CONSUME;
+    }
+
+    /**
+     * 调试开箱流程：品质仍随机（仅影响音效与动画），战利品完全由调试表覆盖；
+     * 跳过冷却、成就与融梦能量，可无限重复开箱。
+     */
+    private static InteractionResult openDebugChest(MeltdreamChestBlockEntity chest, BlockState state, Level level,
+                                                    BlockPos pos, Player player) {
+        int quality = selectQuality(level.random);
+        populateDebugLoot(chest, (ServerLevel) level, pos, player, chest.getDebugLootTable());
+        SoundEvent sound = quality == 3 ? PDSounds.MELTDREAM_CHEST.get() : PDSounds.MELTDREAM_CHEST_0.get();
+        level.playSound(null, pos, sound, SoundSource.BLOCKS, 1.5f, 1.0f);
+        level.setBlock(pos, state.setValue(ANIMATION, quality), 3);
+        chest.initOpening(player, quality);
         return InteractionResult.CONSUME;
     }
 
@@ -351,6 +381,43 @@ public class MeltdreamChestBlock extends BaseEntityBlock implements SimpleWaterl
             }
         }
         applyQualityExtras(handler, level, pos, player, quality);
+    }
+
+    /**
+     * 调试表填充：清空 9 格后按表顺序写入（最多 9 件），
+     * 不执行品质附加、二级奖励、纪念品或水晶归位。
+     *
+     * @param chest   融梦水晶箱方块实体
+     * @param level   服务端世界
+     * @param pos     方块位置
+     * @param player  开箱玩家
+     * @param tableId 调试战利品表 ID
+     */
+    private static void populateDebugLoot(MeltdreamChestBlockEntity chest, ServerLevel level, BlockPos pos,
+                                          Player player, @Nullable ResourceLocation tableId) {
+        ItemStackHandler handler = chest.getItemHandler();
+        clearHandler(handler);
+        if (tableId == null) {
+            return;
+        }
+        ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE, tableId);
+        LootTable table = getTable(level, key);
+        if (table == null) {
+            PasterDreamMod.LOGGER.warn("[MeltdreamChest] 调试战利品表缺失或无效：{}", tableId);
+            if (player instanceof ServerPlayer sp) {
+                sp.displayClientMessage(net.minecraft.network.chat.Component.translatable(
+                        "message.pasterdream.loot_table_debug.table_missing"), true);
+            }
+            return;
+        }
+        List<ItemStack> rolled = rollTable(table, level, pos, player);
+        int n = Math.min(rolled.size(), 9);
+        if (rolled.size() > 9) {
+            PasterDreamMod.LOGGER.warn("[MeltdreamChest] 调试战利品表产出 {} 件，超过 9 件已截断", rolled.size());
+        }
+        for (int i = 0; i < n; i++) {
+            handler.setStackInSlot(i, rolled.get(i));
+        }
     }
 
     /**

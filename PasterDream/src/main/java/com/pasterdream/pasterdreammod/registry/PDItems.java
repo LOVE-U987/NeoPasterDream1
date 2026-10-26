@@ -870,6 +870,7 @@ public class PDItems {
     public static final DeferredItem<?> LOOTSTABLE_CREATE_7 = PDItemsFunctional.LOOTSTABLE_CREATE_7;
     public static final DeferredItem<?> LOOTSTABLE_CREATE_8 = PDItemsFunctional.LOOTSTABLE_CREATE_8;
     public static final DeferredItem<?> LOOTSTABLE_CREATE_9 = PDItemsFunctional.LOOTSTABLE_CREATE_9;
+    public static final DeferredItem<?> LOOT_TABLE_DEBUG_WAND = PDItemsFunctional.LOOT_TABLE_DEBUG_WAND;
     public static final DeferredItem<?> ROOTS_PALE_BONENEEDLE = PDItemsFunctional.ROOTS_PALE_BONENEEDLE;
 
     // --- PDItemsMaterials（杂项补全：简单物品） ---

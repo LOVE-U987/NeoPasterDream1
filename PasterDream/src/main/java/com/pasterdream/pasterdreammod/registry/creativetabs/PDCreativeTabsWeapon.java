@@ -170,8 +170,6 @@ public class PDCreativeTabsWeapon {
                         output.accept(PDItems.SHADOW_EROSION_AXE.get());
                         output.accept(PDItems.SHADOW_EROSION_SHOVEL.get());
                         output.accept(PDItems.SHADOW_EROSION_HOE.get());
-                        // 杂项补全：挖掘机3000!（调试用挖掘工具，原版调试栏 tab_8）
-                        output.accept(PDItems.EXCAVATOR.get());
                         output.accept(PDItems.GLASS_CUP.get());
                         output.accept(PDItems.DOUGH.get());
                         output.accept(PDItems.RYESEED.get());

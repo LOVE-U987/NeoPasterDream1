@@ -1041,6 +1041,13 @@ public class PDItemsFunctional {
             () -> new LootstableCreateItem("chests/loots_relic_9", "§e野餐篮食物"));
 
     /**
+     * 战利品库调试器 (loot_table_debug_wand)
+     * 右键打开战利品表选择界面，关闭后右键方块生成对应箱子
+     */
+    public static final DeferredItem<LootTableDebugItem> LOOT_TABLE_DEBUG_WAND = PDItems.ITEMS.register("loot_table_debug_wand",
+            LootTableDebugItem::new);
+
+    /**
      * 溯源苍白骨针 (roots_pale_boneneedle)
      * 潜行右击设置标记点；使用后从帕斯特之梦维度返回主世界标记点/重生点（可重复使用）
      */

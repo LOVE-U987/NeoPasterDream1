@@ -11,6 +11,7 @@ import com.pasterdream.pasterdreammod.client.particle.StardustParticle;
 import com.pasterdream.pasterdreammod.client.renderer.RendererRegistry;
 import com.pasterdream.pasterdreammod.client.screen.DreamAccumulatorScreen;
 import com.pasterdream.pasterdreammod.client.screen.DreamCauldronScreen;
+import com.pasterdream.pasterdreammod.client.screen.LootTableDebugScreen;
 import com.pasterdream.pasterdreammod.client.screen.ResearchTableScreen;
 import com.pasterdream.pasterdreammod.client.screen.ShadowBlastFurnaceScreen;
 import com.pasterdream.pasterdreammod.client.screen.ShadowSelectEndScreen;
@@ -208,6 +209,9 @@ public class ClientSetup {
         event.register(PDMenus.STORAGE_BAG.get(), StorageBagScreen::new);
         event.register(PDMenus.STORAGE_BAG_0.get(), StorageBagScreen::new);
         PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: storage_bag / storage_bag_0 → StorageBagScreen");
+
+        event.register(PDMenus.LOOT_TABLE_DEBUG.get(), LootTableDebugScreen::new);
+        PDDebugLogger.mainDebug("[ClientSetup] 注册 GUI 屏幕: loot_table_debug → LootTableDebugScreen");
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.pasterdream.pasterdreammod.block.entity;
 
+import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.api.meltdream.MeltDreamEnergyConfigRegistry;
 import com.pasterdream.pasterdreammod.block.MeltdreamChestBlock;
 import com.pasterdream.pasterdreammod.registry.PDBlockEntities;
@@ -17,6 +18,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -89,6 +91,10 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
     /** 弹出阶段是否已完成 */
     private boolean popComplete = false;
 
+    /** 调试战利品表（非空时开箱完全由该表覆盖） */
+    @Nullable
+    private ResourceLocation debugLootTable = null;
+
     /** 各品质对应的弹出总时长（tick），用于 tick 阶段判定 */
     private static final int[] POP_DURATIONS = {0, 46, 62, 83};
 
@@ -104,6 +110,7 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
     private static final String TAG_OPENING_TICK = "openingTick";
     private static final String TAG_QUALITY = "quality";
     private static final String TAG_POP_COMPLETE = "popComplete";
+    private static final String TAG_DEBUG_LOOT_TABLE = "debugLootTable";
     private static final String TAG_COOLDOWNS = "playerCooldowns";
     private static final String TAG_COOLDOWN_UUID = "uuid";
     private static final String TAG_COOLDOWN_TIME = "time";
@@ -126,6 +133,26 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
      */
     public ItemStackHandler getItemHandler() {
         return itemHandler;
+    }
+
+    /**
+     * 获取调试战利品表。
+     *
+     * @return 调试表；null 表示走普通开箱逻辑
+     */
+    @Nullable
+    public ResourceLocation getDebugLootTable() {
+        return debugLootTable;
+    }
+
+    /**
+     * 设置调试战利品表。
+     *
+     * @param table 调试表；null 表示恢复普通开箱逻辑
+     */
+    public void setDebugLootTable(@Nullable ResourceLocation table) {
+        this.debugLootTable = table;
+        setChanged();
     }
 
     // ==================== 冷却 API ====================
@@ -294,7 +321,8 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
         }
 
         // 第 9 格（下标 8）若为水晶标签物品，生成水晶实体（原版 MeltdreamChestPr4）；否则物品掉落
-        if (slot == 8 && stack.is(PDItemTags.MELTDREAM_CHEST_CRYSTAL)) {
+        // 调试表覆盖时水晶标签按普通物品弹出，不生成水晶实体
+        if (slot == 8 && debugLootTable == null && stack.is(PDItemTags.MELTDREAM_CHEST_CRYSTAL)) {
             spawnCrystalEntity(level, pos);
         } else {
             spawnItemEntity(level, pos, stack);
@@ -537,6 +565,9 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
         tag.putInt(TAG_OPENING_TICK, openingTick);
         tag.putInt(TAG_QUALITY, quality);
         tag.putBoolean(TAG_POP_COMPLETE, popComplete);
+        if (debugLootTable != null) {
+            tag.putString(TAG_DEBUG_LOOT_TABLE, debugLootTable.toString());
+        }
 
         // 持久化冷却映射（复用冷却专用序列化方法）
         saveCooldownsToTag(tag);
@@ -552,6 +583,18 @@ public class MeltdreamChestBlockEntity extends BlockEntity implements GeoBlockEn
         openingTick = tag.getInt(TAG_OPENING_TICK);
         quality = tag.getInt(TAG_QUALITY);
         popComplete = tag.getBoolean(TAG_POP_COMPLETE);
+
+        // 调试战利品表（旧存档无该字段时保持普通逻辑）
+        debugLootTable = null;
+        if (tag.contains(TAG_DEBUG_LOOT_TABLE, Tag.TAG_STRING)) {
+            ResourceLocation parsed = ResourceLocation.tryParse(tag.getString(TAG_DEBUG_LOOT_TABLE));
+            if (parsed == null) {
+                PasterDreamMod.LOGGER.warn("[MeltdreamChest] 调试战利品表 ID 非法：{}",
+                        tag.getString(TAG_DEBUG_LOOT_TABLE));
+            } else {
+                debugLootTable = parsed;
+            }
+        }
 
         // 读取冷却映射
         playerCooldowns.clear();

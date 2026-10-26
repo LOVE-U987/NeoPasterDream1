@@ -121,20 +121,6 @@ public class PDCreativeTabsSouvenir {
                         output.accept(PDItems.CALLE_CARD_8.get());
                         output.accept(PDItems.CALLE_CARD_9.get());
                         output.accept(PDBlocks.CALLE_CARD_BLOCK.get());
-                        // 标签图标物品（原版调试栏/拓展栏 tab_8/tab_9 图标）
-                        output.accept(PDItems.TABITEM_1.get());
-                        output.accept(PDItems.TABITEM_2.get());
-                        // 战利品生成工具（原版调试栏 tab_8）
-                        output.accept(PDItems.LOOTSTABLE_CREATE_0.get());
-                        output.accept(PDItems.LOOTSTABLE_CREATE_1.get());
-                        output.accept(PDItems.LOOTSTABLE_CREATE_2.get());
-                        output.accept(PDItems.LOOTSTABLE_CREATE_3.get());
-                        output.accept(PDItems.LOOTSTABLE_CREATE_4.get());
-                        output.accept(PDItems.LOOTSTABLE_CREATE_5.get());
-                        output.accept(PDItems.LOOTSTABLE_CREATE_6.get());
-                        output.accept(PDItems.LOOTSTABLE_CREATE_7.get());
-                        output.accept(PDItems.LOOTSTABLE_CREATE_8.get());
-                        output.accept(PDItems.LOOTSTABLE_CREATE_9.get());
                     })
                     .build());
 
