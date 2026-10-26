@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.api.client.effect.particle;
 
 import com.pasterdream.pasterdreammod.api.effect.particle.EmitterProcessor;
 import com.pasterdream.pasterdreammod.api.effect.particle.ParticleEmitterData;
+import com.pasterdream.pasterdreammod.api.effect.particle.ParticleLimits;
 import com.pasterdream.pasterdreammod.api.effect.particle.processors.BoundToEntityProcessor;
 import com.pasterdream.pasterdreammod.api.effect.particle.processors.CircleSpawnProcessor;
 import net.minecraft.client.Minecraft;
@@ -21,8 +22,9 @@ import java.util.Random;
  * 客户端粒子发射器实例 —— 每 tick 生成粒子并驱动处理器
  * <p>
  * 借鉴开源模组 FDLib（作者 FINDERFEED）的 {@code ParticleEmitter} 设计思路
- * （独立实现，非复制）。由 {@link ParticleEmitterHandler} 持有并 tick，
- * 生命周期为 {@code lifetime} tick，到期标记移除。
+ * （独立实现，非复制）。由 {@link ParticleEmitterHandler} 持有并 tick。
+ * 生命周期为 {@code lifetime} tick，到期后停止生成新粒子并进入排空状态，
+ * 待已有粒子全部消亡才从活跃列表移除。
  * <p>
  * 处理器回调（{@link EmitterProcessor#initParticle(Object)} 等）在此处传入
  * 真实的客户端 {@link Particle} 对象；内置处理器参数由本类按类型分支消费。
@@ -37,6 +39,7 @@ public class ParticleEmitter {
     private final Vec3 position;
 
     private int age;
+    private boolean finished;
     private boolean removed;
 
     /**
@@ -48,11 +51,12 @@ public class ParticleEmitter {
         this.data = data;
         this.position = data.position();
         this.age = 0;
+        this.finished = false;
         this.removed = false;
     }
 
     /**
-     * 是否已移除（生命周期结束）
+     * 是否已移除（已排空并可从活跃列表摘除）
      *
      * @return 已移除返回 {@code true}
      */
@@ -64,37 +68,75 @@ public class ParticleEmitter {
      * 发射器每 tick
      */
     public void tick() {
+        tickBounded(ParticleLimits.MAX_PARTICLES_PER_TICK);
+    }
+
+    /**
+     * 带预算的每 tick 推进。生命周期结束后进入排空状态：
+     * 停止生成新粒子，但继续清理并统计已有粒子，直到全部消亡才移除。
+     * <p>
+     * 处理器回调窗口与原实现一致：到期当 tick 仍执行一次
+     * {@code tickEmitter}、生成与 {@code tickParticle}；之后的排空 tick
+     * 只移除已死亡粒子，不调用处理器。
+     *
+     * @param maxNewParticles 本 tick 允许尝试生成的粒子上限
+     * @return 尝试次数（包含 createParticle 返回 null 的尝试），用于保守扣减预算
+     */
+    int tickBounded(int maxNewParticles) {
         age++;
 
-        // 处理器：每 tick 发射器回调（如绑定实体更新位置）
         EmitterProcessor<?> processor = data.processor();
-        processor.tickEmitter(data);
+        // 本 tick 是否仍处于原实现的处理器回调窗口内。
+        // 到期当 tick 仍为 true，之后的排空 tick 为 false。
+        boolean active = !finished;
 
-        // 生成新粒子
-        ParticleEngine engine = Minecraft.getInstance().particleEngine;
-        for (int i = 0; i < data.particlesPerTick(); i++) {
-            ParticleOptions options = data.randomParticle(RANDOM);
-            Particle particle = engine.createParticle(options, position.x, position.y, position.z, 0, 0, 0);
-            if (particle != null) {
-                applyProcessorInit(processor, particle);
-                activeParticles.add(particle);
+        int attempted = 0;
+        if (active) {
+            processor.tickEmitter(data);
+
+            int activeCapacity = ParticleLimits.MAX_ACTIVE_PARTICLES_PER_EMITTER - activeParticles.size();
+            int limit = ParticleLimits.clampSpawnCount(data.particlesPerTick(), maxNewParticles, activeCapacity);
+
+            ParticleEngine engine = Minecraft.getInstance().particleEngine;
+            for (int i = 0; i < limit; i++) {
+                attempted++;
+                ParticleOptions options = data.randomParticle(RANDOM);
+                Particle particle = engine.createParticle(options, position.x, position.y, position.z, 0, 0, 0);
+                if (particle != null) {
+                    applyProcessorInit(processor, particle);
+                    activeParticles.add(particle);
+                }
+            }
+
+            if (age > data.lifetime()) {
+                this.finished = true;
             }
         }
 
-        // tick 现有粒子
+        // 清理已死亡粒子；排空 tick 不再调用 tickParticle。
         var iterator = activeParticles.listIterator();
         while (iterator.hasNext()) {
             Particle particle = iterator.next();
             if (!particle.isAlive()) {
                 iterator.remove();
-                continue;
+            } else if (active) {
+                processor.tickParticle(particle);
             }
-            processor.tickParticle(particle);
         }
 
-        if (age > data.lifetime()) {
+        if (finished && activeParticles.isEmpty()) {
             this.removed = true;
         }
+        return attempted;
+    }
+
+    /**
+     * 当前持有的活跃粒子数（含排空中的粒子，供全局预算统计）。
+     *
+     * @return 活跃粒子数
+     */
+    int activeParticleCount() {
+        return activeParticles.size();
     }
 
     /**

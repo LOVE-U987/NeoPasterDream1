@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.api.effect.particle;
 
 import com.pasterdream.pasterdreammod.api.effect.particle.processors.EmptyEmitterProcessor;
+import io.netty.handler.codec.DecoderException;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -12,6 +13,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -28,6 +30,10 @@ import java.util.Random;
  * </ul>
  * 通过 {@link #builder(ParticleOptions)} 链式构建；{@link #STREAM_CODEC}
  * 支持随网络包传输（服务端 → 客户端）。
+ * <p>
+ * 所有构建与网络解码路径都受 {@link ParticleLimits} 约束。公开构建路径
+ * （{@link Builder#build()}）对非法值抛 {@link IllegalArgumentException}；
+ * 网络解码路径会转换为 {@link DecoderException}，由网络层按坏包处理。
  *
  * @see EmitterProcessor
  */
@@ -52,17 +58,56 @@ public final class ParticleEmitterData {
 
     private ParticleEmitterData(Vec3 position, int lifetime, int particlesPerTick,
                                 EmitterProcessor<?> processor, List<ParticleOptions> particleTypes) {
+        if (position == null || !isValidPosition(position)) {
+            throw new IllegalArgumentException("Invalid particle position");
+        }
+        if (lifetime < 0 || lifetime > ParticleLimits.MAX_LIFETIME_TICKS) {
+            throw new IllegalArgumentException("Invalid lifetime: " + lifetime);
+        }
+        if (particlesPerTick < 0 || particlesPerTick > ParticleLimits.MAX_PARTICLES_PER_TICK) {
+            throw new IllegalArgumentException("Invalid particlesPerTick: " + particlesPerTick);
+        }
+        if (particleTypes == null || particleTypes.isEmpty()
+                || particleTypes.size() > ParticleLimits.MAX_PARTICLE_TYPES) {
+            throw new IllegalArgumentException("Invalid particle type list");
+        }
         this.position = position;
         this.lifetime = lifetime;
         this.particlesPerTick = particlesPerTick;
-        this.processor = processor;
-        this.particleTypes = particleTypes;
+        this.processor = processor == null ? new EmptyEmitterProcessor() : processor;
+        this.particleTypes = List.copyOf(particleTypes);
     }
 
-    /** StreamCodec 组合用的静态工厂（避免 record 构造器与 codec 泛型冲突） */
+    /**
+     * 判断坐标是否有限且未超出允许范围。
+     *
+     * @param vec 坐标
+     * @return 合法返回 true
+     */
+    private static boolean isValidPosition(Vec3 vec) {
+        return Math.abs(vec.x) <= ParticleLimits.MAX_ABSOLUTE_COORDINATE
+                && Math.abs(vec.y) <= ParticleLimits.MAX_ABSOLUTE_COORDINATE
+                && Math.abs(vec.z) <= ParticleLimits.MAX_ABSOLUTE_COORDINATE;
+    }
+
+    /**
+     * StreamCodec 组合用的静态工厂，把构造校验失败转换为解码失败。
+     *
+     * @param position        发射位置
+     * @param lifetime        生命周期
+     * @param particlesPerTick 每 tick 粒子数
+     * @param processor       处理器
+     * @param particleTypes   粒子类型列表
+     * @return 发射器数据
+     * @throws DecoderException 字段超出允许范围
+     */
     private static ParticleEmitterData fromFields(Vec3 position, int lifetime, int particlesPerTick,
                                                   EmitterProcessor<?> processor, List<ParticleOptions> particleTypes) {
-        return new ParticleEmitterData(position, lifetime, particlesPerTick, processor, particleTypes);
+        try {
+            return new ParticleEmitterData(position, lifetime, particlesPerTick, processor, particleTypes);
+        } catch (IllegalArgumentException e) {
+            throw new DecoderException("Invalid particle emitter data", e);
+        }
     }
 
     /**
@@ -70,6 +115,7 @@ public final class ParticleEmitterData {
      *
      * @param firstParticle 首个粒子类型（至少需要一个）
      * @return 构建器
+     * @throws NullPointerException 首个粒子类型为 null
      */
     public static Builder builder(ParticleOptions firstParticle) {
         return new Builder(firstParticle);
@@ -148,10 +194,11 @@ public final class ParticleEmitterData {
          * 构造构建器
          *
          * @param firstParticle 首个粒子类型
+         * @throws NullPointerException 首个粒子类型为 null
          */
         public Builder(ParticleOptions firstParticle) {
             this.particleTypes = new ArrayList<>();
-            this.particleTypes.add(firstParticle);
+            this.particleTypes.add(Objects.requireNonNull(firstParticle, "firstParticle"));
         }
 
         /**
@@ -213,10 +260,10 @@ public final class ParticleEmitterData {
          * 构建发射器数据
          *
          * @return 不可变数据对象
+         * @throws IllegalArgumentException 位置、生命周期、每 tick 数量或粒子类型列表超出允许范围
          */
         public ParticleEmitterData build() {
-            return new ParticleEmitterData(position, lifetime, particlesPerTick, processor,
-                    List.copyOf(particleTypes));
+            return new ParticleEmitterData(position, lifetime, particlesPerTick, processor, particleTypes);
         }
     }
 
@@ -238,11 +285,13 @@ public final class ParticleEmitterData {
                     @Override
                     public List<ParticleOptions> decode(RegistryFriendlyByteBuf buf) {
                         int size = buf.readVarInt();
+                        ParticleLimits.requireTypeCount(size, buf.readableBytes());
                         List<ParticleOptions> list = new ArrayList<>(size);
                         for (int i = 0; i < size; i++) {
                             int id = buf.readVarInt();
                             // 每项带数据长度前缀，未知类型也可安全跳过
                             int len = buf.readVarInt();
+                            ParticleLimits.requireDataLength(len, buf.readableBytes());
                             ParticleType<?> type = BuiltInRegistries.PARTICLE_TYPE.byId(id);
                             if (type == null) {
                                 // 未知粒子类型：跳过其数据字节
@@ -264,6 +313,9 @@ public final class ParticleEmitterData {
                             } catch (Exception e) {
                                 // 单个粒子解码失败不影响整体
                             }
+                        }
+                        if (list.isEmpty()) {
+                            throw new DecoderException("Particle type list is empty");
                         }
                         return list;
                     }

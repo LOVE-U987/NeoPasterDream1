@@ -339,6 +339,16 @@ tasks.register('runParticleApiTest', JavaExec) {
     standardOutput = System.out
 }
 
+tasks.register('runParticleEmitterSecurityTest', JavaExec) {
+    description = '运行粒子发射器网络安全回归测试'
+    group = 'PasterDream'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.test.ParticleEmitterSecurityTestRunner'
+    workingDir = project.projectDir
+    standardOutput = System.out
+    maxHeapSize = '1g'
+}
+
 tasks.register('runEntityApiTest', JavaExec) {
     description = '运行 EntityAPI 测试，验证实体 API 核心功能'
     group = 'PasterDream'

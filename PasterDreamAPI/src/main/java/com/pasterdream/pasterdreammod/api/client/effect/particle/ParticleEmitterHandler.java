@@ -1,6 +1,7 @@
 package com.pasterdream.pasterdreammod.api.client.effect.particle;
 
 import com.pasterdream.pasterdreammod.api.effect.particle.ParticleEmitterData;
+import com.pasterdream.pasterdreammod.api.effect.particle.ParticleLimits;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -30,7 +31,7 @@ public final class ParticleEmitterHandler {
     }
 
     /**
-     * 加入一个新粒子发射器
+     * 加入一个新粒子发射器。超过活跃上限时丢弃。
      *
      * @param data 发射器数据
      */
@@ -38,17 +39,27 @@ public final class ParticleEmitterHandler {
         if (Minecraft.getInstance().level == null) {
             return;
         }
-        ParticleEmitter emitter = new ParticleEmitter(data);
-        ACTIVE_EMITTERS.add(emitter);
+        if (!ParticleLimits.canAcceptEmitter(ACTIVE_EMITTERS.size())) {
+            return;
+        }
+        ACTIVE_EMITTERS.add(new ParticleEmitter(data));
     }
 
     /**
-     * 客户端每 tick 驱动全部活跃发射器（无客户端世界时跳过）
+     * 客户端每 tick 驱动全部活跃发射器（带全局粒子预算与存量上限）。
      */
     public static void tickAll() {
         if (Minecraft.getInstance().level == null || ACTIVE_EMITTERS.isEmpty()) {
             return;
         }
+
+        int activeParticles = 0;
+        for (ParticleEmitter emitter : ACTIVE_EMITTERS) {
+            activeParticles += emitter.activeParticleCount();
+        }
+        int tickBudget = ParticleLimits.MAX_TOTAL_PARTICLES_PER_TICK;
+        int activeCapacity = Math.max(ParticleLimits.MAX_ACTIVE_PARTICLES - activeParticles, 0);
+
         Iterator<ParticleEmitter> iterator = ACTIVE_EMITTERS.iterator();
         while (iterator.hasNext()) {
             ParticleEmitter emitter = iterator.next();
@@ -56,7 +67,10 @@ public final class ParticleEmitterHandler {
                 iterator.remove();
                 continue;
             }
-            emitter.tick();
+            int allowed = Math.min(tickBudget, activeCapacity);
+            int attempted = emitter.tickBounded(allowed);
+            tickBudget -= attempted;
+            activeCapacity -= attempted;
         }
     }
 

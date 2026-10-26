@@ -26,6 +26,7 @@ import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 /**
@@ -80,6 +81,18 @@ public class PDEffectClientEvents {
         if (event.getLevel().isClientSide) {
             ParticleEmitterHandler.tickAll();
             GhostHandler.tickAll();
+        }
+    }
+
+    /**
+     * 客户端世界卸载时清理发射器。
+     *
+     * @param event 世界卸载事件
+     */
+    @SubscribeEvent
+    public static void onLevelUnload(LevelEvent.Unload event) {
+        if (event.getLevel().isClientSide()) {
+            ParticleEmitterHandler.clearAll();
         }
     }
 
