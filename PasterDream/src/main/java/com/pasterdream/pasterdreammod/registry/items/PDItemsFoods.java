@@ -101,7 +101,9 @@ public class PDItemsFoods {
     public static final DeferredItem<Item> MELTDREAM_ELIXIR_BOTTLE = PDItems.ITEMS.register("meltdream_elixir_bottle",
             () -> new GlassDrinkItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.25f).alwaysEdible().build()), PDItems.ELIXIR_BOTTLE::get));
     public static final DeferredItem<Item> MILK_GLASSJAR = PDItems.ITEMS.register("milk_glassjar",
-            () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build()), PDItems.GLASSJAR::get));
+            () -> new GlassJarDrinkItem(new Item.Properties()
+                    .food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build()),
+                    PDItems.GLASSJAR::get));
     public static final DeferredItem<Item> ODD_BACONE_EGG = PDItems.ITEMS.registerSimpleItem("odd_bacone_egg",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(11).saturationModifier(1.5f).build()));
     public static final DeferredItem<Item> PINEAPPLE_LOVE_SEA = PDItems.ITEMS.register("pineapple_love_sea",
@@ -141,7 +143,9 @@ public class PDItemsFoods {
     public static final DeferredItem<Item> UNCOOKED_DYEDREAM_FLOWER_TEA = PDItems.ITEMS.register("uncooked_dyedream_flower_tea",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build()), PDItems.GLASS_CUP::get));
     public static final DeferredItem<Item> WATER_GLASSJAR = PDItems.ITEMS.register("water_glassjar",
-            () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build()), PDItems.GLASSJAR::get));
+            () -> new GlassJarDrinkItem(new Item.Properties()
+                    .food(new FoodProperties.Builder().nutrition(0).saturationModifier(0f).alwaysEdible().build()),
+                    PDItems.GLASSJAR::get));
     public static final DeferredItem<Item> WATERMELON_JUICE = PDItems.ITEMS.register("watermelon_juice",
             () -> new GlassDrinkItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(2).saturationModifier(0.1f).alwaysEdible().build()), PDItems.GLASS_CUP::get));
     public static final DeferredItem<Item> SILVER_FOX_COTTON_CANDY = PDItems.ITEMS.register("silver_fox_cotton_candy",

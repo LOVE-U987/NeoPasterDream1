@@ -536,7 +536,9 @@ public final class PDPortingVerifyTest {
                     checkDetail("stale-comments", r.pass(), r.name(), r.detail())));
             at(c + 11, () -> PDCurioVerifyHooks.verify(player(), r ->
                     checkDetail("curios", r.pass(), r.name(), r.detail())));
-            cursor = c + 13;
+            at(c + 12, () -> PDGlassJarVerifyHooks.verify(r ->
+                    checkDetail("glassjar", r.pass(), r.name(), r.detail())));
+            cursor = c + 14;
         }
 
         if (suite(Suite.STRUCTURES)) {

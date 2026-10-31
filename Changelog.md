@@ -7,6 +7,12 @@
 
 ## v0.10.0
 
+### 修复：牛奶罐/水瓶罐标签补全与合成返还玻璃罐
+
+*   **修复**：`PasterDream` 新增 `data/c/tags/item/drinks/milk.json`、`water.json`，牛奶罐归入 `#c:drinks/milk`、水瓶罐归入 `#c:drinks/water`（同时经 NeoForge 默认链路进入 `#c:drinks/watery`），父标签 `drinks.json` 保持 `replace: false` 合并不变。
+*   **修复**：补齐移植遗漏——新增 `GlassJarDrinkItem`，`milk_glassjar`、`water_glassjar` 改用它，覆写 `hasCraftingRemainingItem(ItemStack)` / `getCraftingRemainingItem(ItemStack)`，作为合成材料时返还空玻璃罐（原模组 `PasterdreamModItems` 已声明 `craftRemainder(GLASSJAR)`）；不改 `GlassDrinkItem` 类，避免波及其它饮品。
+*   **验证**：`PDGlassJarVerifyHooks` 接入 `core` 套件，断言标签归属、父标签聚合、`minecraft:milk_bucket` 默认值保留、残留返还物与负向回归。
+
 ### 调整：染梦解密仪式保留书桌并修复上半格触发与采集
 
 *   **背景**：玩家反馈花园解密只有在点击 `flower_11` 下半格时才能触发；剪刀/园艺钳破坏 `flower_11`、`flower_12` 上半格无掉落；同时两处解密仪式成功后都会销毁没有合成配方的染梦书桌。经确认，第二项与上半格判定同源，书桌销毁为原版行为，但本项目决定改为保留。
