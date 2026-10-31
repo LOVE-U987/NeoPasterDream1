@@ -3,7 +3,7 @@
 import re
 import pathlib
 
-root = pathlib.Path(r'c:\Users\97128\Documents\GitHub\NeoPasterDream1')
+root = pathlib.Path(__file__).resolve().parents[1]
 # 原模组数据: name -> (uses, speed, finalDmg, spd, ench)
 ORIG = {
     # 剑: finalDmg = ctor + bonus

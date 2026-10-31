@@ -6,8 +6,10 @@ import com.pasterdream.pasterdreammod.client.audio.ModMusicManager;
 import com.pasterdream.pasterdreammod.client.audio.MusicSystemFactory;
 import com.pasterdream.pasterdreammod.registry.PDBiomes;
 import com.pasterdream.pasterdreammod.registry.PDItemTags;
+import com.pasterdream.pasterdreammod.registry.PDDataComponents;
 import com.pasterdream.pasterdreammod.registry.PDDimensions;
 import com.pasterdream.pasterdreammod.registry.PDParticles;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -642,7 +644,7 @@ public class PDClientEvents {
     }
 
     /**
-     * 物品悬浮提示处理：宝藏类物品（paster_treasure 标签）显示专属说明。
+     * 物品悬浮提示处理：显示梦之强化来源或宝藏类物品专属说明。
      * <p>
      * 还原自原版 {@code ItemTooltips0Procedure} 的 paster_treasure 分支：
      * 按住 Shift 显示"宝藏类物品 无法通过合成获取"，否则提示按 Shift 查看。
@@ -653,6 +655,11 @@ public class PDClientEvents {
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
+        if (stack.get(PDDataComponents.DREAM_ENHANCED.get()) != null) {
+            event.getToolTip().add(Component.translatable("tooltip.pasterdream.dream_enhanced")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            return;
+        }
         if (!stack.is(PDItemTags.PASTER_TREASURE)) {
             return;
         }

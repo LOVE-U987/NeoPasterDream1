@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -360,38 +359,7 @@ public class DollBuilder {
      * @param name      注册名
      */
     private static void generateKubeJsRuntimeAssets(String namespace, String name) {
-        Path assetsDir = FMLPaths.GAMEDIR.get().resolve("kubejs/assets").resolve(namespace);
-        Path blockstatesDir = assetsDir.resolve("blockstates");
-        Path modelsItemDir = assetsDir.resolve("models/item");
-
-        try {
-            Files.createDirectories(blockstatesDir);
-            Files.createDirectories(modelsItemDir);
-
-            String blockstateJson = """
-                    {
-                      "variants": {
-                        "facing=north": { "model": "pasterdream:custom/doll_generic_particle" },
-                        "facing=east": { "model": "pasterdream:custom/doll_generic_particle", "y": 90 },
-                        "facing=south": { "model": "pasterdream:custom/doll_generic_particle", "y": 180 },
-                        "facing=west": { "model": "pasterdream:custom/doll_generic_particle", "y": 270 }
-                      }
-                    }
-                    """;
-            Files.writeString(blockstatesDir.resolve(name + ".json"), blockstateJson);
-
-            String itemModelJson = """
-                    {
-                      "parent": "pasterdream:displaysettings/doll_generic.item"
-                    }
-                    """;
-            Files.writeString(modelsItemDir.resolve(name + ".json"), itemModelJson);
-
-            LOGGER.info("[DollBuilder] 为 {}:{} 生成 KubeJS 资源文件", namespace, name);
-        } catch (IOException e) {
-            LOGGER.error("[DollBuilder] 为 {}:{} 生成 KubeJS 资源文件失败", namespace, name, e);
-        }
-
+        DollAPI.requireImpls().assetGenerator().accept(namespace, name);
         generateLootTableFallback(namespace, name);
     }
 
@@ -456,21 +424,18 @@ public class DollBuilder {
     }
 
     private static ResourceLocation defaultModel(String name) {
-        return ResourceLocation.fromNamespaceAndPath(DollAPI.modId(), "geo/block/" + name + ".geo.json");
+        return DollAPI.requireImpls().defaultConfig().apply(name).model();
     }
 
     private static ResourceLocation defaultTexture(String name) {
-        return ResourceLocation.fromNamespaceAndPath(DollAPI.modId(), "textures/block/" + name + ".png");
+        return DollAPI.requireImpls().defaultConfig().apply(name).texture();
     }
 
     private static ResourceLocation defaultHoldingModel(String name) {
-        return ResourceLocation.fromNamespaceAndPath(DollAPI.modId(), "geo/block/" + name + "_holding.geo.json");
+        return DollAPI.requireImpls().defaultConfig().apply(name).holdingModel();
     }
 
     private static BlockBehaviour.Properties defaultBlockProperties() {
-        return BlockBehaviour.Properties.of()
-                .strength(1.0f)
-                .sound(SoundType.DECORATED_POT)
-                .noOcclusion();
+        return DollAPI.requireImpls().defaultBlockProperties().get();
     }
 }

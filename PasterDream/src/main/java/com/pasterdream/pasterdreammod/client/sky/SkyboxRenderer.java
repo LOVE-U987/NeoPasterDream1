@@ -304,6 +304,20 @@ public final class SkyboxRenderer {
         poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
         poseStack.mulPose(Axis.YP.rotationDegrees(context.skyAngle()));
 
+        renderCore(context);
+
+        poseStack.popPose();
+        RenderSystem.depthMask(true);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    /**
+     * 绘制天空内容，旋转和渲染状态由调用者管理。
+     * @param context 当前天空上下文
+     */
+    private static void renderCore(SkyboxRenderContext context) {
         List<SkyboxEntry> entries = SkyboxRegistry.entries();
         Candidate selected = updateSelectedCandidate(entries, context);
 
@@ -326,12 +340,6 @@ public final class SkyboxRenderer {
                 entry.content().render(context, nextAlpha);
             }
         }
-
-        poseStack.popPose();
-        RenderSystem.depthMask(true);
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     /**
@@ -355,7 +363,8 @@ public final class SkyboxRenderer {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        render(poseStack, context);
+        checkDayRollback();
+        renderCore(context);
         // 不做 cleanup，caller 管理状态
     }
 

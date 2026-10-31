@@ -57,6 +57,7 @@ import com.pasterdream.pasterdreammod.api.worldgen.decor.DecorationRegistry;
 import com.pasterdream.pasterdreammod.api.PasterDreamAPI;
 import com.pasterdream.pasterdreammod.api.doll.DollAPI;
 import com.pasterdream.pasterdreammod.api.doll.DollImplementations;
+import com.pasterdream.pasterdreammod.registry.DollResourceGenerator;
 import com.pasterdream.pasterdreammod.block.DollBlock;
 import com.pasterdream.pasterdreammod.block.entity.DollBlockEntity;
 import com.pasterdream.pasterdreammod.item.DollDisplayItem;
@@ -114,7 +115,9 @@ public class PasterDreamMod {
     public static void ensureDollInstalled() {
         if (!DollAPI.isInstalled()) {
             DollAPI.install(new DollImplementations(
-                    MOD_ID, DollBlock::new, DollDisplayItem::new, DollBlockEntity::new));
+                    MOD_ID, DollBlock::new, DollDisplayItem::new, DollBlockEntity::new,
+                    DollResourceGenerator::defaultConfig, DollResourceGenerator::defaultBlockProperties,
+                    DollResourceGenerator::skinConfig, DollResourceGenerator::generateAssets));
         }
     }
 

@@ -184,7 +184,7 @@ public final class DollAPI {
     }
 
     /**
-     * 使用默认 eoul_doll 模型快速注册自定义皮肤玩偶
+     * 使用内容模块提供的默认模型快速注册自定义皮肤玩偶
      * <p>
      * 只需提供命名空间、注册名和皮肤纹理路径，即可复用模组内置的玩偶骨骼与抱物模型。
      * 适合 KubeJS 玩家仅想替换皮肤、不想自己制作 GeckoLib 模型的场景。
@@ -197,11 +197,12 @@ public final class DollAPI {
      */
     public static DollResult registerDollWithSkin(String namespace, String name, String skinTexture,
                                                   boolean canHoldItems) {
-        String holdingModel = canHoldItems ? modId() + ":geo/block/eoul_doll_holding.geo.json" : null;
+        DollConfig defaults = requireImpls().skinConfig().get();
+        String holdingModel = canHoldItems ? defaults.holdingModel().toString() : null;
         return registerDoll(
                 namespace,
                 name,
-                modId() + ":geo/block/eoul_doll.geo.json",
+                defaults.model().toString(),
                 skinTexture,
                 canHoldItems,
                 holdingModel
