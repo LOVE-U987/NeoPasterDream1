@@ -1,6 +1,6 @@
 # 版权声明与授权状态 / Copyright and Authorization Status
 
-[中文介绍](README.md) · [English overview](README_EN.md)
+[中文介绍](README.HISTORY.md) · [English overview](README_EN_HISTORY.md)
 
 ## 简体中文
 

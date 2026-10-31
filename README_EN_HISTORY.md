@@ -1,6 +1,6 @@
 # NeoPasterDream
 
-[简体中文](README.md) | English
+[简体中文](README.HISTORY.md) | English
 
 **A port of PasterDream to Minecraft 1.21.1 / NeoForge, formally authorized by the original author.**
 

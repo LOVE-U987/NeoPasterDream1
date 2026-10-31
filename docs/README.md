@@ -1,7 +1,7 @@
 # docs 索引
 
 > 更新：2026-10-26  
-> 根 README 进度表与安装说明见仓库 [`../README.md`](../README.md)。
+> 根 README 进度表与安装说明见仓库 [`../README.HISTORY.md`](../README.HISTORY.md)。
 
 ## 文档地图
 
