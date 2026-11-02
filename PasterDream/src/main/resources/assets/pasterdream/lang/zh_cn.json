@@ -2530,6 +2530,7 @@
   "message.pasterdream.debug_wand.structure_empty": "§e结构放置返回空: §f%s §e(可能没有方块数据)",
   "message.pasterdream.debug_wand.structure_not_found": "§c未找到结构: %s",
   "message.pasterdream.debug_wand.structure_placed": "§a已放置结构: §f%s §a于 %s",
+  "message.pasterdream.dyedream.note_found": "你发现了一张寻梦者笔记，并收进了你的背包",
   "message.pasterdream.dyedream_crack.blocked": "一种神秘的力量阻止了你，或许可以想想通过别的办法回去...",
   "message.pasterdream.dyedream_crack.first_contact.1": "§5身体从这个奇怪的空洞中穿过，但并没有什么反应。",
   "message.pasterdream.dyedream_crack.first_contact.2": "§5你能感觉到这个类似裂隙一样的东西在与这个世界和另外一处地方交互，附近不同的环境可能正是因此而诞生。",

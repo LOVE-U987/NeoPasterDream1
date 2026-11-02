@@ -2532,6 +2532,7 @@
   "message.pasterdream.debug_wand.structure_empty": "§eStructure placement returned empty: §f%s §e(possibly no block data)",
   "message.pasterdream.debug_wand.structure_not_found": "§cStructure not found: %s",
   "message.pasterdream.debug_wand.structure_placed": "§aPlaced structure: §f%s §aat %s",
+  "message.pasterdream.dyedream.note_found": "You found a Dream Seeker's Note and put it in your inventory",
   "message.pasterdream.dyedream_crack.blocked": "A mysterious force holds you back. Perhaps you should find another way back...",
   "message.pasterdream.dyedream_crack.first_contact.1": "§5Your body passes through this strange rift, but nothing happens.",
   "message.pasterdream.dyedream_crack.first_contact.2": "§5You can feel this rift-like thing interacting between this world and another; the unusual surroundings may have been born from it.",

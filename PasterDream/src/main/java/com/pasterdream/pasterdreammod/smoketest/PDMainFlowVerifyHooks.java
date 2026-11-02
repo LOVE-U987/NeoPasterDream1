@@ -37,6 +37,7 @@ import com.pasterdream.pasterdreammod.registry.PDEntities;
 import com.pasterdream.pasterdreammod.registry.PDItems;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksDungeon;
 import com.pasterdream.pasterdreammod.registry.blocks.PDBlocksFurniture;
+import com.pasterdream.pasterdreammod.registry.items.PDItemsDreamnotes;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsMaterials;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
@@ -390,6 +391,11 @@ public final class PDMainFlowVerifyHooks {
 	    player.move(MoverType.SELF, Vec3.ZERO); // 零位移仍触发 tryCheckInsideBlocks → entityInside
 	    boolean inDye = player.level().dimension().equals(PDDimensions.DYEDREAM_WORLD_LEVEL_KEY);
 	    acceptHard(out, inDye, "裂隙进染梦", "dim=" + player.level().dimension().location());
+
+	    // 进染梦自动发放（原版 DyedreamWorldPr0Procedure）：未完成 b_0 时入维应获得 dreamnotes_2。
+	    // 消除旧盲区：下方 useDreamnote 自建 ItemStack，无法覆盖「获取链」是否完好。
+	    acceptHard(out, countItem(player, PDItemsDreamnotes.DREAMNOTES_2.get()) >= 1,
+	            "进染梦自动发放 dreamnotes_2", "inv");
 
 	    ServerLevel dye = (ServerLevel) player.level();
 	    useDreamnote(player, dye, 2, out, "dreamnotes_2"); // b_0

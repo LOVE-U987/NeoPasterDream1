@@ -310,6 +310,9 @@ public class PasterDreamMod {
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.WindJourneyEvents::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.WindJourneyEvents::onPlayerChangedDimension);
 
+        // 染梦进维：未完成 b_0 时发放 dreamnotes_2（原版 DyedreamWorldPr0Procedure）
+        NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.DyedreamWorldEvents::onPlayerChangedDimension);
+
         // 入睡：rest_buff / dreamnotes_1·8 / 梦愿进染梦 / 普通床+暮影笼进灯影（原版 SleepPr0）
         NeoForge.EVENT_BUS.addListener(com.pasterdream.pasterdreammod.world.PDSleepEvents::onCanPlayerSleep);
 
