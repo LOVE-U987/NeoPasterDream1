@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "experience": 1,
+  "cookingtime": 100,
+  "ingredient": {
+    "item": "pasterdream:raw_titanium"
+  },
+  "result": {
+    "id": "pasterdream:titanium_ingot",
+    "count": 1
+  }
+}

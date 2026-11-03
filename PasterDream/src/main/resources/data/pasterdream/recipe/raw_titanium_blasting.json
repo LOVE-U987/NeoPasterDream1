@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "experience": 1,
+  "cookingtime": 100,
+  "ingredient": {
+    "item": "pasterdream:deepslate_titanium_ore"
+  },
+  "result": {
+    "id": "pasterdream:raw_titanium",
+    "count": 1
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "experience": 1,
+  "cookingtime": 100,
+  "ingredient": {
+    "item": "pasterdream:raw_moltengold"
+  },
+  "result": {
+    "id": "pasterdream:moltengold_ingot",
+    "count": 1
+  }
+}
