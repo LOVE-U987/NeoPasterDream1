@@ -14,7 +14,7 @@
       "item": "minecraft:echo_shard"
     },
     "c": {
-      "tag": "forge:sculk_heart"
+      "tag": "c:sculk_heart"
     },
     "d": {
       "item": "minecraft:sculk_vein"
