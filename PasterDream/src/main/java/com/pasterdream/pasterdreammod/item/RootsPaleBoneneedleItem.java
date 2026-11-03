@@ -37,13 +37,17 @@ import java.util.List;
  * <p>
  * 还原自原版 RootsPaleBoneneedleItem + RootsPaleBoneneedlePr0/Pr1Procedure：
  * <ul>
- *   <li>潜行右击方块：记录该坐标为标记点（存入物品自定义数据），冷却 1 秒；</li>
+ *   <li>潜行右击方块：记录该坐标为标记点（存入物品自定义数据，含维度 ID），冷却 1 秒；</li>
  *   <li>右键使用（已设标记）：受 1 点伤害，若身处帕斯特之梦维度
- *       （染梦世界 / 影灯世界 / 亚伦柯斯竞技场），1 秒后传送回主世界的标记坐标，冷却 5 秒；</li>
+ *       （染梦世界 / 影灯世界 / 亚伦柯斯竞技场 / 风之旅途），1 秒后传送回主世界的标记坐标，冷却 5 秒；</li>
  *   <li>右键使用（未设标记）：行为同苍白骨针 —— 受 1 点伤害并返回主世界重生点
  *       （无重生点则回世界出生点），同时授予成就 achievement_b_2。</li>
  * </ul>
  * 与消耗型的苍白骨针不同，本物品可无限重复使用（不消耗）。
+ * <p>
+ * 有意差异（相对原版）：维度白名单补入风之旅途（原版风维无主动返回手段）；
+ * 标记点附带维度 ID，非主世界标记不作为返回目标——避免风维 Y 0~128 坐标
+ * 直接套用到主世界导致落进地形或虚空（原版无维度记录，属移植补强）。
  */
 public class RootsPaleBoneneedleItem extends Item {
 
@@ -53,6 +57,9 @@ public class RootsPaleBoneneedleItem extends Item {
 
     /** 自定义数据键：是否已设置标记（与原版 NBT 键一致） */
     private static final String TAG_SWITCH = "switch";
+
+    /** 自定义数据键：标记所在维度 ID（移植补强，原版无维度记录） */
+    private static final String TAG_DIM = "dim";
 
     public RootsPaleBoneneedleItem(Properties properties) {
         super(properties.stacksTo(1).rarity(Rarity.COMMON));
@@ -66,7 +73,7 @@ public class RootsPaleBoneneedleItem extends Item {
         tooltip.add(Component.translatable("tooltip.pasterdream.roots_pale_boneneedle.default_respawn"));
     }
 
-    /** 潜行右击方块：记录标记坐标 */
+    /** 潜行右击方块：记录标记坐标与所在维度 */
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Player player = context.getPlayer();
@@ -79,6 +86,7 @@ public class RootsPaleBoneneedleItem extends Item {
             ItemStack stack = context.getItemInHand();
             CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> {
                 tag.putBoolean(TAG_SWITCH, true);
+                tag.putString(TAG_DIM, level.dimension().location().toString());
                 tag.putDouble("x", pos.getX());
                 tag.putDouble("y", pos.getY());
                 tag.putDouble("z", pos.getZ());
@@ -100,13 +108,17 @@ public class RootsPaleBoneneedleItem extends Item {
             return InteractionResultHolder.success(stack);
         }
         CompoundTag data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        boolean marked = data.getBoolean(TAG_SWITCH);
+        // 标记维度校验：仅主世界标记可作为返回目标；非主世界标记（如风维 Y 0~128）
+        // 套用到主世界会落进地形或虚空，降级为重生点返回。
+        // 旧存档标记无维度记录（空串）按主世界处理，保持兼容。
+        // 判定在声明处合并，保持 effectively final 供下方 lambda 使用。
+        boolean marked = data.getBoolean(TAG_SWITCH) && isOverworldMark(data.getString(TAG_DIM));
 
         // 与原版一致：使用即受 1 点伤害并挥手
         player.swing(InteractionHand.MAIN_HAND, true);
         player.hurt(serverLevel.damageSources().generic(), 1);
 
-        // 仅在帕斯特之梦三维度内可触发返回主世界
+        // 仅在帕斯特之梦维度（染梦 / 灯影 / 竞技场 / 风之旅途）内可触发返回主世界
         if (!isPasterDreamDimension(serverLevel)) {
             return InteractionResultHolder.success(stack);
         }
@@ -145,11 +157,29 @@ public class RootsPaleBoneneedleItem extends Item {
         return InteractionResultHolder.success(stack);
     }
 
-    /** 判定是否处于帕斯特之梦三维度（染梦 / 影灯 / 亚伦柯斯竞技场，与原版判定一致） */
+    /**
+     * 判定是否处于帕斯特之梦维度（染梦 / 影灯 / 亚伦柯斯竞技场 / 风之旅途）。
+     * <p>
+     * 原版仅前三者；风之旅途为本移植有意补充（原版风维无主动返回手段）。
+     *
+     * @param level 当前维度
+     * @return 是否可触发返回主世界
+     */
     private static boolean isPasterDreamDimension(ServerLevel level) {
         return level.dimension().equals(PDDimensions.DYEDREAM_WORLD_LEVEL_KEY)
                 || level.dimension().equals(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY)
-                || level.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY);
+                || level.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY)
+                || level.dimension().equals(PDDimensions.WIND_JOURNEY_WORLD_LEVEL_KEY);
+    }
+
+    /**
+     * 判断标记维度是否为主世界。
+     *
+     * @param dim 标记记录的维度 ID 字符串
+     * @return 是否可按标记坐标返回主世界
+     */
+    private static boolean isOverworldMark(String dim) {
+        return dim.isEmpty() || Level.OVERWORLD.location().toString().equals(dim);
     }
 
     /** 计算主世界返回坐标：优先玩家重生点，否则世界出生点（与原版 fallback 一致） */

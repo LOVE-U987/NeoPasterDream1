@@ -7,6 +7,7 @@ import com.pasterdream.pasterdreammod.entity.mob.WeakenessTerrorbeakEntity;
 import com.pasterdream.pasterdreammod.registry.PDAdvancements;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsArmor;
 import com.pasterdream.pasterdreammod.registry.items.PDItemsCurios;
+import com.pasterdream.pasterdreammod.world.WindJourneyEvents;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
@@ -43,6 +44,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -356,7 +358,8 @@ public class PDEffects {
      * 云雾 (cloudmist_buff) — 原版 CloudmistBuffMobEffect + CloudmistBuffPr0Procedure
      * <p>
      * 中性 0xFFD6FCFF（原 -2687745）。风之旅途维度坠落机制：
-     * 每 tick 记录云雾浓度百分比（HUD 用），低于 y=5 时传送回主世界重生点上空 y=304。
+     * 每 tick 记录云雾浓度百分比（HUD 用），低于 y=5 时传回主世界安全落点
+     * （原版固定 y=304 高空会致命坠落，改走 {@link WindJourneyEvents#returnToOverworldSafe}）。
      */
     public static final MobEffectResult CLOUDMIST_BUFF =
             MobEffectAPI.createEffect("cloudmist_buff")
@@ -773,29 +776,13 @@ public class PDEffects {
                 // HUD 云雾浓度百分比（原版 CloudmistHud 读取）
                 entity.getPersistentData().putDouble("cloudmist_percent", (50 - entity.getY()) * 2);
                 if (entity.getY() <= 5) {
-                    // 跌破云层：传送回主世界重生点上空 y=304
+                    // 跌破云层：传回主世界安全落点（原版固定 y=304 高空坠落必死，改 heightmap 落点，有意差异）
                     if (entity instanceof ServerPlayer player) {
-                        ServerLevel overworld = player.server.getLevel(Level.OVERWORLD);
-                        if (overworld != null && player.level().dimension() != Level.OVERWORLD) {
-                            // 1.21.1 teleportTo(ServerLevel,...) 自带能力/效果同步，
-                            // 等价原版 WIN_GAME + teleportTo + 手动补包序列
-                            player.teleportTo(overworld, player.getX(), player.getY(), player.getZ(),
-                                    player.getYRot(), player.getXRot());
-                        }
-                        double tx;
-                        double tz;
-                        BlockPos respawn = player.getRespawnPosition();
-                        if (player.getRespawnDimension().equals(player.level().dimension()) && respawn != null) {
-                            tx = respawn.getX();
-                            tz = respawn.getZ();
-                        } else {
-                            BlockPos spawn = player.serverLevel().getSharedSpawnPos();
-                            tx = spawn.getX();
-                            tz = spawn.getZ();
-                        }
-                        player.connection.teleport(tx, 304, tz, player.getYRot(), player.getXRot());
+                        WindJourneyEvents.returnToOverworldSafe(player);
                     } else {
-                        entity.teleportTo(0, 304, 0);
+                        // 非玩家实体：留在风维落到 (0,0) 地表（原版固定 304 同样会坠落）
+                        int groundY = entity.level().getHeight(Heightmap.Types.MOTION_BLOCKING, 0, 0);
+                        entity.teleportTo(0, Math.max(groundY, entity.level().getMinBuildHeight() + 1), 0);
                     }
                 }
             } else {
@@ -908,6 +895,9 @@ public class PDEffects {
      * {@code [minBuildHeight, maxBuildHeight - 2]}。风维 datapack
      * {@code height=256 / min_y=0}，主世界进维门槛 Y≥306 会超出建造顶，
      * 原版同写 {@code teleportTo(next, x,y,z)}，Neo 补 clamp 避免顶天/越界。
+     * <p>
+     * 进维后的高空降落防摔由 {@link WindJourneyEvents#onPlayerTick} 在风维内
+     * 统一补刷缓降（原版从 254 落向 0~128 地形无缓降必摔死，属有意差异）。
      */
     private static void fondillusionTick(LivingEntity entity) {
         if (entity.level().isClientSide || !(entity instanceof Player)) {

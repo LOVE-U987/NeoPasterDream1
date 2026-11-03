@@ -18,8 +18,11 @@ import net.minecraft.world.level.portal.DimensionTransition;
 /**
  * 苍白骨针 (Pale Bone Needle)
  * <p>
- * 右键使用时，若玩家处于染梦 / 灯影 / 亚伦柯斯竞技场，则消耗 1 点生命值将玩家传送回主世界。
- * 一次性消耗品，使用后减少 1 个物品数量（对齐原 {@code PaleBoneneedlePr0} 三维度）。
+ * 右键使用时，若玩家处于染梦 / 灯影 / 亚伦柯斯竞技场 / 风之旅途，则消耗 1 点生命值将玩家传送回主世界。
+ * 一次性消耗品，使用后减少 1 个物品数量（对齐原 {@code PaleBoneneedlePr0}）。
+ * <p>
+ * 有意差异：原版白名单仅染梦 / 灯影 / 竞技场三维度；风之旅途原无任何主动返回手段
+ * （仅能靠跌破云层被动回主世界），移植版将风之旅途纳入骨针适用维度。
  */
 public class PaleBoneneedleItem extends Item {
 
@@ -36,9 +39,9 @@ public class PaleBoneneedleItem extends Item {
     }
 
     /**
-     * 右键使用苍白骨针：染梦维度 → 主世界单向传送
+     * 右键使用苍白骨针：帕斯特之梦维度 → 主世界单向传送
      * <p>
-     * 仅在染梦维度生效，消耗 1 点生命值并消耗 1 个物品，
+     * 仅在染梦 / 灯影 / 竞技场 / 风之旅途维度生效，消耗 1 点生命值并消耗 1 个物品，
      * 将玩家传送至主世界的重生点或世界出生点。
      *
      * @param level   当前世界
@@ -55,7 +58,7 @@ public class PaleBoneneedleItem extends Item {
             return InteractionResultHolder.success(stack);
         }
 
-        // 染梦 / 灯影 / 竞技场（原 PaleBoneneedlePr0）
+        // 染梦 / 灯影 / 竞技场 / 风之旅途（原 PaleBoneneedlePr0 三维度，移植版补入风之旅途）
         if (!isPasterDreamDimension(level)) {
             return InteractionResultHolder.fail(stack);
         }
@@ -107,10 +110,19 @@ public class PaleBoneneedleItem extends Item {
         return InteractionResultHolder.consume(stack);
     }
 
+    /**
+     * 判定是否处于帕斯特之梦维度（染梦 / 灯影 / 竞技场 / 风之旅途）。
+     * <p>
+     * 原版仅前三者；风之旅途为本移植有意补充（原版风维无主动返回手段）。
+     *
+     * @param level 当前维度
+     * @return 是否可触发返回主世界
+     */
     private static boolean isPasterDreamDimension(Level level) {
         return level.dimension().equals(PDDimensions.DYEDREAM_WORLD_LEVEL_KEY)
                 || level.dimension().equals(PDDimensions.LAMP_SHADOW_WORLD_LEVEL_KEY)
-                || level.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY);
+                || level.dimension().equals(PDDimensions.AARONCOS_ARENA_WORLD_LEVEL_KEY)
+                || level.dimension().equals(PDDimensions.WIND_JOURNEY_WORLD_LEVEL_KEY);
     }
 
     /**

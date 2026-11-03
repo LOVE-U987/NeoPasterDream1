@@ -38,6 +38,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -227,8 +228,13 @@ public final class PDWindJourneyVerifyHooks {
         double y = player.getY();
         out.accept(new Result(back, "cloudmist Y≤5 返主世界",
                 "dim=" + player.level().dimension().location() + " y=" + y));
-        out.accept(new Result(back && Math.abs(y - 304.0D) < 2.0D,
-                "出维落点 Y≈304", "y=" + y));
+        // 原版固定 y=304 高空会致命坠落；移植版改为 heightmap 安全落点，断言贴地
+        ServerLevel overworld = server.getLevel(Level.OVERWORLD);
+        int exitGroundY = overworld == null ? Integer.MIN_VALUE
+                : overworld.getHeight(Heightmap.Types.MOTION_BLOCKING,
+                        player.getBlockX(), player.getBlockZ());
+        out.accept(new Result(back && overworld != null && Math.abs(y - exitGroundY) < 3.0D,
+                "出维落点贴地安全（heightmap）", "y=" + y + " ground=" + exitGroundY));
     }
 
     // ==================== 祭坛（多 tick：启动后 90t 读 aftermath） ====================

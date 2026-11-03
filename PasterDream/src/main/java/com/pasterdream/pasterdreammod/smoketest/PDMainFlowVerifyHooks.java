@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -782,7 +783,10 @@ accept(out, wind.getBlockState(altar).getValue(WindKnightSpawnblockBlock.STAGE) 
 	    }
 	    boolean back = player.level().dimension() == Level.OVERWORLD;
 	    accept(out, back, "cloudmist Y≤5 回主", "dim=" + player.level().dimension().location() + " y=" + player.getY());
-	    accept(out, back && Math.abs(player.getY() - 304.0) < 3.0, "落点 Y≈304", "y=" + player.getY());
+	    // 原版固定 y=304 高空会致命坠落；移植版改为 heightmap 安全落点，断言贴地
+	    int exitGroundY = ow.getHeight(Heightmap.Types.MOTION_BLOCKING, player.getBlockX(), player.getBlockZ());
+	    accept(out, back && Math.abs(player.getY() - exitGroundY) < 3.0, "落点贴地安全（heightmap）",
+	            "y=" + player.getY() + " ground=" + exitGroundY);
 	    setFlag("wind_exit", back);
 
 	    // 清理祭坛/实体

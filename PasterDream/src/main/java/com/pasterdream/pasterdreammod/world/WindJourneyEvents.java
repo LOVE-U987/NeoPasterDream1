@@ -17,9 +17,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -39,6 +41,12 @@ public final class WindJourneyEvents {
 
     /** 上次已处理的日序号（dayTime/24000），避免 dayTime==0 或卡在日界时每 tick 重roll */
     private static long lastWindDayIndex = Long.MIN_VALUE;
+
+    /** 风维缓降保护：玩家高于脚下地表该格数时视为高空状态，开始补刷缓降 */
+    private static final double SLOW_FALLING_TRIGGER_ABOVE_GROUND = 8.0D;
+
+    /** 风维缓降保护：补刷时长（tick），接近耗尽时才重挂，避免每 tick 刷同步包 */
+    private static final int SLOW_FALLING_REFRESH_TICKS = 60;
 
     private WindJourneyEvents() {
     }
@@ -153,22 +161,31 @@ public final class WindJourneyEvents {
     }
 
     /**
-     * 风维虚空保护：玩家掉出世界底部时传送回主世界上空。
+     * 传回主世界安全落点：优先玩家重生点（重生维为主世界时），否则世界出生点，
+     * 用主世界 heightmap 取地表上方 Y。
+     * <p>
+     * 替代原版固定 {@code y=304} 的高空传送——原版返回后需坠落约 270 格，
+     * 无缓降/鞘翅必摔死（原版缺陷，移植版改为 heightmap 安全落点，属有意差异）。
+     *
+     * @param player 触发返回的玩家
      */
-    private static void voidFallbackToOverworld(ServerPlayer player) {
+    public static void returnToOverworldSafe(ServerPlayer player) {
         ServerLevel overworld = player.server.getLevel(Level.OVERWORLD);
-        if (overworld == null) return;
-        double tx, tz;
+        if (overworld == null) {
+            return;
+        }
+        BlockPos target;
         BlockPos respawn = player.getRespawnPosition();
         if (player.getRespawnDimension().equals(Level.OVERWORLD) && respawn != null) {
-            tx = respawn.getX();
-            tz = respawn.getZ();
+            target = respawn;
         } else {
-            BlockPos spawn = overworld.getSharedSpawnPos();
-            tx = spawn.getX();
-            tz = spawn.getZ();
+            target = overworld.getSharedSpawnPos();
         }
-        player.teleportTo(overworld, tx, 304, tz, player.getYRot(), player.getXRot());
+        int surfaceY = overworld.getHeight(Heightmap.Types.MOTION_BLOCKING, target.getX(), target.getZ());
+        // 项目惯例（对齐 PDCustomSpawnEvents）：getHeight 取地表后 +1 作为落脚 Y，避免嵌进地表
+        player.teleportTo(overworld, target.getX() + 0.5D,
+                Math.max(surfaceY + 1, overworld.getMinBuildHeight() + 1), target.getZ() + 0.5D,
+                player.getYRot(), player.getXRot());
     }
 
     /**
@@ -184,10 +201,23 @@ public final class WindJourneyEvents {
         if (!PDDimensions.isWindJourneyWorld(sp.level())) {
             return;
         }
-        // 虚空保护：掉到世界底部以下 → 传回主世界上空
+        // 虚空保护：掉到世界底部以下 → 传回主世界安全落点
         if (sp.getY() < -10) {
-            voidFallbackToOverworld(sp);
+            returnToOverworldSafe(sp);
             return;
+        }
+        // 缓降保护：高于脚下地表 8 格以上时补刷缓降，覆盖进维 254 高空降落与岛间失足
+        //（原版无此保护，进维/失足摔死，属有意差异；接近耗尽才重挂，避免每 tick 刷同步包）
+        if (!sp.isCreative() && !sp.isSpectator()) {
+            MobEffectInstance slowFalling = sp.getEffect(MobEffects.SLOW_FALLING);
+            if (slowFalling == null || slowFalling.getDuration() < 20) {
+                int groundY = sp.level().getHeight(Heightmap.Types.MOTION_BLOCKING,
+                        sp.getBlockX(), sp.getBlockZ());
+                if (sp.getY() - groundY > SLOW_FALLING_TRIGGER_ABOVE_GROUND) {
+                    sp.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,
+                            SLOW_FALLING_REFRESH_TICKS, 0, true, false));
+                }
+            }
         }
         int interval = Math.max(1, PDCommonConfig.PLAYER_TOTAL_TICK_UPDATE.get());
         if (sp.tickCount % interval != 0) {
