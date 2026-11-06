@@ -159,6 +159,14 @@ public class PDEntityEvents {
 
         // ==================== 阴影系列 ====================
 
+        // 暗影魔像：地面生成
+        // shadow_barrens.json 刷怪表已引用，缺放置规则会在自然生成时被拒并告警
+        event.register(PDEntities.SHADOW_GOLEM.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
         // 暗影幽灵：地面生成（飞行实体）
         event.register(PDEntities.SHADOW_GHOST.get(),
                 SpawnPlacementTypes.ON_GROUND,
@@ -182,6 +190,30 @@ public class PDEntityEvents {
 
         // 暗影之手：地面生成（飞行实体）
         event.register(PDEntities.SHADOW_HAND.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        // ==================== 恐怖尖喙系列 ====================
+
+        // 恐怖尖喙：地面生成（飞行实体，初始生成在地面）
+        // shadow_wastes.json 刷怪表已引用，缺放置规则会在自然生成时被拒并告警
+        event.register(PDEntities.TERRORBEAK.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        // 疯狂恐怖尖喙：地面生成（变体，防御性补齐，当前无群系刷怪表引用）
+        event.register(PDEntities.CRAZY_TERRORBEAK.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        // 虚弱恐怖尖喙：地面生成（变体，经 PDEffects 程序化刷出，此处为一致性补齐）
+        event.register(PDEntities.WEAKENESS_TERRORBEAK.get(),
                 SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,
