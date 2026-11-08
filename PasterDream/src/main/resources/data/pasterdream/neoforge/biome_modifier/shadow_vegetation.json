@@ -1,0 +1,13 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:shadow_forest",
+  "features": [
+    "pasterdream:grass_8",
+    "pasterdream:grass_9",
+    "pasterdream:grass_10",
+    "pasterdream:grass_11",
+    "pasterdream:grass_12",
+    "pasterdream:shadow_fungus"
+  ],
+  "step": "vegetal_decoration"
+}
