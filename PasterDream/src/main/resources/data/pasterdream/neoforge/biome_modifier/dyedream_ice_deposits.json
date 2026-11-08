@@ -1,0 +1,11 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "pasterdream:dyedream_plains",
+    "pasterdream:dyedream_forest"
+  ],
+  "features": [
+    "pasterdream:dyedream_ice"
+  ],
+  "step": "underground_ores"
+}

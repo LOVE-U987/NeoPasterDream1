@@ -1,0 +1,27 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "pasterdream:dyedream_plains",
+    "pasterdream:dyedream_forest",
+    "pasterdream:dyedream_dense_forest",
+    "pasterdream:dyedream_frozen_tundra",
+    "pasterdream:dyedream_mushroom_plains",
+    "pasterdream:dyedream_shore"
+  ],
+  "features": [
+    "pasterdream:ground_feature_dyedream_2",
+    "pasterdream:ground_feature_dyedream_4",
+    "pasterdream:ground_feature_dyedream_5",
+    "pasterdream:ground_feature_dyedream_6",
+    "pasterdream:ground_feature_dyedream_7",
+    "pasterdream:ground_feature_dyedream_8",
+    "pasterdream:ground_feature_dyedream_9",
+    "pasterdream:ground_feature_dyedream_10",
+    "pasterdream:ground_feature_dyedream_11",
+    "pasterdream:ground_feature_dyedream_12",
+    "pasterdream:ground_feature_dyedream_13",
+    "pasterdream:ground_feature_dyedream_14",
+    "pasterdream:ground_feature_dyedream_15"
+  ],
+  "step": "surface_structures"
+}

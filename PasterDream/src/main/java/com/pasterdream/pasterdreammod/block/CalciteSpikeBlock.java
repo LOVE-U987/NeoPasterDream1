@@ -1,10 +1,14 @@
 package com.pasterdream.pasterdreammod.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -37,6 +41,39 @@ public class CalciteSpikeBlock extends Block {
     public CalciteSpikeBlock(Properties properties, VoxelShape shape) {
         super(properties);
         this.shape = shape;
+    }
+
+    /**
+     * 石笋必须贴在坚固的向上表面，普通方块默认的无条件存活会造成浮空。
+     *
+     * @param state 小笋状态
+     * @param level 所在世界
+     * @param pos 小笋位置
+     * @return 下方是否有坚固支撑
+     */
+    @Override
+    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        BlockPos below = pos.below();
+        return level.getBlockState(below).isFaceSturdy(level, below, Direction.UP);
+    }
+
+    /**
+     * 下方支撑消失时同步移除石笋，避免玩家挖掘后留下悬空装饰。
+     *
+     * @param state 当前状态
+     * @param direction 变化邻居方向
+     * @param neighborState 邻居状态
+     * @param level 所在世界
+     * @param pos 小笋位置
+     * @param neighborPos 邻居位置
+     * @return 更新后的状态
+     */
+    @Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+                                     LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        return direction == Direction.DOWN && !state.canSurvive(level, pos)
+                ? Blocks.AIR.defaultBlockState()
+                : super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
     /**

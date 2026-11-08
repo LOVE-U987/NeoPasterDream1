@@ -26,6 +26,7 @@ import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.EnumSet;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -188,10 +189,6 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
     private @NotNull ChunkAccess applyDyedreamTerrain(@NotNull ChunkAccess chunkAccess,
                                                        @NotNull RandomState randomState) {
         ChunkPos chunkPos = chunkAccess.getPos();
-        // 初始化高度图
-        Heightmap oceanFloorMap = chunkAccess.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
-        Heightmap worldSurfaceMap = chunkAccess.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
-
         int minBlockX = chunkPos.getMinBlockX();
         int minBlockZ = chunkPos.getMinBlockZ();
         int minY = getMinY();
@@ -236,10 +233,6 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
                         // 与海平面取值无关（任何 seaLevel 都存在沉没岛），海平面调整
                         // 不可回退时此修复天然兼容。
                         section.setBlockState(localX, localY, localZ, blockState, false);
-                        if (!blockState.isAir()) {
-                            oceanFloorMap.update(localX, worldY, localZ, blockState);
-                            worldSurfaceMap.update(localX, worldY, localZ, blockState);
-                        }
                         if (!blockState.getFluidState().isEmpty()) {
                             mutablePos.set(worldX, worldY, worldZ);
                             chunkAccess.markPosForPostprocessing(mutablePos);
@@ -248,6 +241,9 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
                 }
             }
         }
+
+        // 直接覆盖 section 后必须清空旧高度图，父类较高的地形不能残留为假表面。
+        rebuildTerrainHeightmaps(chunkAccess);
 
         // ==================== 梦河河流系统 ====================
         // 在填充完基础地形后，使用侵蚀度噪声采样判定河流位置
@@ -597,6 +593,20 @@ public class DyedreamChunkGenerator extends NoiseBasedChunkGenerator {
             states[y - minY] = getBlockForPosition(x, y, z, surfaceHeight, minY, randomState);
         }
         return new NoiseColumn(minY, states);
+    }
+
+    /**
+     * 从实际区块重建生成阶段高度图，包含全空气列和含水列。
+     *
+     * @param chunk 已被染梦地形覆盖的区块
+     */
+    static void rebuildTerrainHeightmaps(ChunkAccess chunk) {
+        var types = EnumSet.of(Heightmap.Types.OCEAN_FLOOR_WG, Heightmap.Types.WORLD_SURFACE_WG);
+        for (Heightmap.Types type : types) {
+            Heightmap heightmap = chunk.getOrCreateHeightmapUnprimed(type);
+            chunk.setHeightmap(type, new long[heightmap.getRawData().length]);
+        }
+        Heightmap.primeHeightmaps(chunk, types);
     }
 
     // ==================== 私有辅助方法 ====================

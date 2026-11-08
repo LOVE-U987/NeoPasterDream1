@@ -1,0 +1,21 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "pasterdream:dyedream_plains",
+    "pasterdream:dyedream_forest",
+    "pasterdream:dyedream_dense_forest",
+    "pasterdream:dyedream_frozen_tundra",
+    "pasterdream:dyedream_mushroom_plains",
+    "pasterdream:dyedream_shore"
+  ],
+  "features": [
+    "pasterdream:crop_0a",
+    "pasterdream:crop_1a",
+    "pasterdream:crop_2a",
+    "pasterdream:crop_3a",
+    "pasterdream:crop_4a",
+    "pasterdream:goldenrod",
+    "pasterdream:vine_0"
+  ],
+  "step": "vegetal_decoration"
+}

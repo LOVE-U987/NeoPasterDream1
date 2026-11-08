@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "pasterdream:dyedream_forest",
+  "features": [
+    "pasterdream:white_sand",
+    "pasterdream:dyedream_sand"
+  ],
+  "step": "underground_ores"
+}

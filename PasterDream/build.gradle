@@ -330,6 +330,15 @@ tasks.register('generateDimensionTestJsons', JavaExec) {
 
 // ======================== API 测试任务 ========================
 
+tasks.register('runDyedreamWorldgenTest', JavaExec) {
+    description = '运行染梦地下方解石笋及地形高度图回归测试'
+    group = 'PasterDream'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.pasterdream.pasterdreammod.worldgen.chunkgen.DyedreamWorldgenTestRunner'
+    workingDir = project.projectDir
+    maxHeapSize = '1g'
+}
+
 tasks.register('runParticleApiTest', JavaExec) {
     description = '运行 ParticleAPI 测试，验证粒子 API 核心功能'
     group = 'PasterDream'

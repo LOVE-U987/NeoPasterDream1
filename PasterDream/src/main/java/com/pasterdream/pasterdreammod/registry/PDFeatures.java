@@ -2,6 +2,7 @@ package com.pasterdream.pasterdreammod.registry;
 
 import com.pasterdream.pasterdreammod.PasterDreamMod;
 import com.pasterdream.pasterdreammod.worldgen.feature.CaveGlowMushroomFeature;
+import com.pasterdream.pasterdreammod.worldgen.feature.CaveCalciteSpikeFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.FloatingIslandFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.MegaCalcitePillarFeature;
 import com.pasterdream.pasterdreammod.worldgen.feature.MegaMushroomFeature;
@@ -26,6 +27,10 @@ public class PDFeatures {
 
     public static final DeferredRegister<Feature<?>> FEATURES =
             DeferredRegister.create(Registries.FEATURE, PasterDreamMod.MOD_ID);
+
+    /** 方解石小笋：检查随机散布后的实际洞底、支撑和顶盖。 */
+    public static final DeferredHolder<Feature<?>, CaveCalciteSpikeFeature> CAVE_CALCITE_SPIKE =
+            FEATURES.register("cave_calcite_spike", CaveCalciteSpikeFeature::new);
 
     /** 粉丁菇巨簇特征 —— 在染梦草原地面生成丛生的粉丁菇群 */
     public static final DeferredHolder<Feature<?>, PinkagaricClusterFeature> PINKAGARIC_CLUSTER =
