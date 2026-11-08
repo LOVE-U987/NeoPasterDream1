@@ -15,6 +15,7 @@ def load(relative):
 
 def check():
     """断言关键资源行为，配置回退时以非零退出。"""
+    check_cave_terrain_preserved()
     for number in (5, 6):
         patch = load(f"worldgen/configured_feature/grass_{number}.json")["config"]
         inner = patch["feature"]["feature"]
@@ -54,6 +55,24 @@ def check():
     cold = load("neoforge/biome_modifier/dyedream_surface_ice.json")
     assert set(cold["features"]) == ice
     print("PASS: underground calcite, compact clouds, cold-only ice columns")
+
+
+def check_cave_terrain_preserved():
+    """地下围岩不得被地物修复意外启用的大规模冰岩、冰和砂矿脉替换。"""
+    unexpected = {
+        "pasterdream:ground_feature_dyedream_12",
+        "pasterdream:ground_feature_dyedream_13",
+        "pasterdream:dyedream_ice",
+        "pasterdream:white_sand",
+        "pasterdream:dyedream_sand",
+    }
+    for path in (DATA / "neoforge/biome_modifier").glob("*.json"):
+        modifier = json.loads(path.read_text(encoding="utf-8"))
+        if modifier.get("type") != "neoforge:add_features":
+            continue
+        features = modifier.get("features", [])
+        features = [features] if isinstance(features, str) else features
+        assert not unexpected.intersection(features), (path, unexpected.intersection(features))
 
 
 if __name__ == "__main__":
