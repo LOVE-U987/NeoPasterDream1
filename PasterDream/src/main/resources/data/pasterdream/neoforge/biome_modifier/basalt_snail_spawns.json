@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "minecraft:basalt_deltas",
+  "spawners": {
+    "type": "pasterdream:basalt_snail",
+    "weight": 20,
+    "minCount": 2,
+    "maxCount": 4
+  }
+}

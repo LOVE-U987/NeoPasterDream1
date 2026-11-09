@@ -193,7 +193,9 @@ public final class PDPortingVerifyTest {
          * KubeJS 配方联动专项（暗影高炉 + 精铸工坊 schema 注入与匹配）；
          * 不在 all（依赖 dev 环境 localRuntime KubeJS 与 run/kubejs 测试脚本）。
          */
-        KUBEJS_RECIPES("kubejs-recipes", "kubejs_recipes", "kubejs");
+        KUBEJS_RECIPES("kubejs-recipes", "kubejs_recipes", "kubejs"),
+        /** 玄武岩蜗牛生成链路专项（W1 诊断，临时；定位修复后移除）；不在 all */
+        BASALT_SNAIL("basalt-snail", "basalt_snail", "snail");
 
         private final String[] aliases;
 
@@ -316,6 +318,7 @@ public final class PDPortingVerifyTest {
         all.remove(Suite.ARENA_INFECTION);
         all.remove(Suite.SAN_TICK);
         all.remove(Suite.KUBEJS_RECIPES);
+        all.remove(Suite.BASALT_SNAIL);
         return all;
     }
 
@@ -626,6 +629,12 @@ public final class PDPortingVerifyTest {
             at(st + 2, PDPortingVerifyTest::sanTickSuite);
             // hooks 内 schedule 40t 观察窗口 + 收尾；给余量
             cursor = st + 60;
+        }
+
+        if (suite(Suite.BASALT_SNAIL)) {
+            int bs = cursor;
+            at(bs + 2, PDPortingVerifyTest::basaltSnailSuite);
+            cursor = bs + PDBasaltSnailVerifyHooks.OBSERVATION_TICKS + 40;
         }
 
         if (suite(Suite.WORKSHOP)) {
@@ -1458,6 +1467,13 @@ public final class PDPortingVerifyTest {
     private static void twilightLanternSuite() {
         PDTwilightLanternVerifyHooks.verify(server(), player(), r ->
                 checkDetail("twilight-lantern", r.pass(), r.name(), r.detail()));
+    }
+
+    // ==================== 玄武岩蜗牛生成链路专项（临时诊断） ====================
+
+    private static void basaltSnailSuite() {
+        PDBasaltSnailVerifyHooks.verify(server(), player(), r ->
+                checkDetail("basalt-snail", r.pass(), r.name(), r.detail()));
     }
 
     // ==================== 第三梦境风之旅途流程核实 ====================

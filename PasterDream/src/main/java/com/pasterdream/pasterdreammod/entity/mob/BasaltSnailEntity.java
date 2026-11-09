@@ -1,12 +1,14 @@
 package com.pasterdream.pasterdreammod.entity.mob;
 
 import com.pasterdream.pasterdreammod.api.entity.base.GeckoLibMobEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -19,6 +21,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -27,7 +30,7 @@ import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 
 /**
- * 玄武岩蜗牛 (Basalt Snail) —— 游荡在染梦世界的中性生物！
+ * 玄武岩蜗牛 (Basalt Snail) —— 生成于玄武岩三角洲的中性生物！
  * <p>
  * 行为要点：
  * <ul>
@@ -53,6 +56,20 @@ public class BasaltSnailEntity extends GeckoLibMobEntity {
     public BasaltSnailEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
         this.xpReward = 2;
+    }
+
+    /**
+     * 自然生成使用蜗牛专用配额，逐只检查防止整组生成超额。
+     *
+     * @param level 生成所在世界
+     * @param reason 生成原因
+     * @return 基类条件通过且自然配额有空位时为 true
+     */
+    @Override
+    public boolean checkSpawnRules(LevelAccessor level, MobSpawnType reason) {
+        return super.checkSpawnRules(level, reason)
+                && (reason != MobSpawnType.NATURAL || !(level instanceof ServerLevel serverLevel)
+                        || BasaltSnailSpawning.hasCapacity(serverLevel));
     }
 
     /**

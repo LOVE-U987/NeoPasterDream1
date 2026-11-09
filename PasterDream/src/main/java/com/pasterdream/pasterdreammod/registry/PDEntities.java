@@ -6,6 +6,7 @@ import com.pasterdream.pasterdreammod.entity.mob.AaroncosLefthand0Entity;
 import com.pasterdream.pasterdreammod.entity.mob.AaroncosRighthand0Entity;
 import com.pasterdream.pasterdreammod.entity.mob.AshBoneWingEntity;
 import com.pasterdream.pasterdreammod.entity.mob.BasaltSnailEntity;
+import com.pasterdream.pasterdreammod.entity.mob.BasaltSnailSpawning;
 import com.pasterdream.pasterdreammod.entity.mob.BlackBeetleEntity;
 import com.pasterdream.pasterdreammod.entity.mob.BlackBeetleMotherEntity;
 import com.pasterdream.pasterdreammod.entity.mob.BoneWingEntity;
@@ -494,12 +495,12 @@ public class PDEntities {
 
     /**
      * 玄武岩蜗牛实体注册结果
-     * 染梦世界游荡的中性 GeckoLib 生物，受攻击时缩壳获得抗性
+     * 玄武岩三角洲自然生成的中性 GeckoLib 生物，受攻击时缩壳获得抗性
      * 尺寸: 0.8f x 0.6f
      */
     private static final EntityResult<BasaltSnailEntity> BASALT_SNAIL_RESULT =
             EntityAPI.createEntity("basalt_snail")
-                    .category(MobCategory.CREATURE)
+                    .category(BasaltSnailSpawning.CATEGORY)
                     .size(0.8f, 0.6f)
                     .trackingRange(64)
                     .updateInterval(3)

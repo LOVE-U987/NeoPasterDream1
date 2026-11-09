@@ -1,0 +1,10 @@
+{
+  "entries": [
+    {
+      "enum": "net/minecraft/world/entity/MobCategory",
+      "name": "PASTERDREAM_BASALT_SNAIL",
+      "constructor": "(Ljava/lang/String;IZZI)V",
+      "parameters": ["pasterdream:basalt_snail", 16, true, true, 128]
+    }
+  ]
+}
