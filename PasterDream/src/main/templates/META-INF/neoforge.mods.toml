@@ -39,11 +39,11 @@ displayName="${mod_name}" #mandatory
 # A file name (in the root of the mod JAR) containing a logo for display
 #logoFile="examplemod.png" #optional
 
-# A text field displayed in the mod UI
-#credits="" #optional
-
 # The authors of the mod, displayed in the mod UI (optional)
-#authors=""
+authors="${mod_authors}"
+
+# A text field displayed in the mod UI
+credits="异星之尘 (Aerolite_Dust)" #optional
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''

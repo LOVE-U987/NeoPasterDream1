@@ -6,6 +6,7 @@ license="${mod_license}"
 modId="pasterdreamsanity"
 version="${mod_version}"
 displayName="PasterDreamSanity"
+authors="${mod_authors}"
 description='''
 PasterDream San 值系统附属模组。
 提供 San 值相关的物品、效果、饰品与环境逻辑。

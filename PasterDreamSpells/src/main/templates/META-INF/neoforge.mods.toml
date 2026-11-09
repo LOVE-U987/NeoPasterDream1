@@ -6,6 +6,7 @@ license="${mod_license}"
 modId="pasterdreamspells"
 version="${mod_version}"
 displayName="PasterDreamSpells"
+authors="${mod_authors}"
 description='''
 PasterDream 法术系统附属模组。
 提供法术卷轴、法杖、法术投射物与场地效果。

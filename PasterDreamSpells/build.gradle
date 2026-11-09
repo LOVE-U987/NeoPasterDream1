@@ -144,6 +144,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_name               : 'PasterDreamSpells',
             mod_license            : mod_license,
             mod_version            : mod_version,
+            mod_authors            : mod_authors,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

@@ -6,6 +6,7 @@ license="${mod_license}"
 modId="pasterdreammeltdream"
 version="${mod_version}"
 displayName="PasterDreamMeltDream"
+authors="${mod_authors}"
 description='''
 PasterDream 融梦能量系统附属模组。
 提供融梦能量相关的物品、方块、流体、实体与效果。

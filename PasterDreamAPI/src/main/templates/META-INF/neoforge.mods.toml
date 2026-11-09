@@ -7,6 +7,7 @@ license="${mod_license}"
 modId="pasterdreamapi"
 version="${mod_version}"
 displayName="${mod_name}"
+authors="${mod_authors}"
 description='''
 PasterDream API - 梦境与暗影的前置库
 提供物品、方块、实体、维度、世界生成等 Builder/Facade API，

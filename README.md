@@ -1,33 +1,41 @@
-# 关于 NeoPasterDream 项目停止维护的预告
+# 关于 NeoPasterDream 项目停止维护的正式通知
 
 各位玩家、关注者和支持者：
 
-经过慎重考虑，我们决定在发布最后一个版本后，停止 NeoPasterDream（NPD）项目的后续开发与维护，并解散 NPD 项目组。
+NeoPasterDream（NPD）项目的最后一个版本现已发布。按照此前的安排，项目自即日起正式停止开发与维护，NPD 项目组也随之解散。
 
-综合项目现状与团队的实际情况，现有开发团队已无力继续承担长期开发和维护工作。作出这个决定并不容易，我们对项目仍有不舍，也遗憾没能完成更多原本想做的事情。
+项目仓库将保留在现有地址，源代码、开发记录等内容仍可查阅，但项目不会再继续更新。项目将继续沿用现有的 MIT 许可证。
 
-接下来，项目组将完成最后一个版本的收尾工作，并在版本发布后另行发布正式的停止维护通知。
+从前期的内容移植，到对历史问题的清理以及工程规范的建立和完善，项目凝聚了开发者们大量的时间与心血。我们一直希望让这份移植成果更加完整、稳定，也为此付出了许多努力。
 
-感谢原作者对移植工作的授权，也感谢每一位参与开发、反馈问题、关注和支持项目的朋友。你们的帮助与陪伴，是我们一路走到现在的重要支撑。
+再次感谢原作者对移植工作的授权，也感谢每一位参与开发、反馈问题、关注和支持项目的朋友。你们的帮助与陪伴，是我们一路走到现在的重要支撑。
+
+很遗憾只能陪大家走到这里。感谢这一路的相遇与支持。
+
+再见。
 
 NPD 项目组
 
-2026年10月31日
+2026年11月9日
 
 ---
 
-# Advance Notice: NeoPasterDream Development and Maintenance to End
+# Official Notice: NeoPasterDream Development and Maintenance Have Ended
 
 To our players, followers, and supporters,
 
-After careful consideration, we have decided to end further development and maintenance of NeoPasterDream (NPD) after one final release. The NPD team will disband at that time.
+The final version of NeoPasterDream (NPD) has now been released. As previously announced, development and maintenance of the project end as of today, and the NPD team is now disbanded.
 
-Given the project's current state and the team's circumstances, we are no longer able to sustain its long-term development and maintenance. This was not an easy decision. The project still means a great deal to us, and we regret that we could not accomplish more of what we had hoped to do.
+The project repository will remain at its current address, where the source code, development history, and other materials will still be available for reference. There will be no further updates. The project will continue under its existing MIT License.
 
-The team will now focus on completing the final release. Once it is available, we will issue a separate formal notice confirming the end of development and maintenance.
+From the early porting work to resolving longstanding issues and establishing and refining our development practices, the project has taken a great deal of time and dedication from its developers. We have always hoped to make this port more complete and stable, and have put considerable effort into that goal.
 
-We thank the original creator for authorizing this port, and everyone who has contributed to development, reported issues, followed the project, or supported us. Your help and support have been an important part of what has kept us going.
+Once again, we thank the original creator for authorizing this port, and everyone who has contributed to development, reported issues, followed the project, or supported us. Your help and support have been an important part of what has kept us going.
+
+We are sorry that our journey together ends here. Thank you for being part of it and for supporting us along the way.
+
+Goodbye.
 
 The NPD Team
 
-October 31, 2026
+November 9, 2026
